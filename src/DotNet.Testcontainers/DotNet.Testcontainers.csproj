@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Docker.DotNet" Version="3.125.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Builders\" />
+    <Folder Include="Containers\" />
+    <Folder Include="Images\" />
+    <Folder Include="Configurations\" />
+    <Folder Include="Configurations\Parser\" />
+    <Folder Include="Diagnostics\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Configurations\Parser\EmptyClass.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
+</Project>

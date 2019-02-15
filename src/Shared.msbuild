@@ -1,0 +1,44 @@
+<Project>
+  <!-- General package metadata -->
+  <PropertyGroup>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Copyright>Copyright (c) Andre Hofmeister</Copyright>
+    <Authors>Andre Hofmeister</Authors>
+    <Company>Andre Hofmeister</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl></PackageIconUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>.NET;Test;Docker;Container</PackageTags>
+    <PackageProjectUrl></PackageProjectUrl>
+  </PropertyGroup>
+  <!-- Global solution information -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SolutionInfo.cs" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
+  <!-- Warnings as errors -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <!-- Attribute generation -->
+  <PropertyGroup>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+  </PropertyGroup>
+  <!-- StyleCop -->
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)DotNet.Testcontainers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-rc.94">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
