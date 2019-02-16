@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests
+namespace DotNet.Testcontainers.Tests
 {
   using DotNet.Testcontainers.Builder;
   using DotNet.Testcontainers.Images;
@@ -27,6 +27,7 @@
     {
       using (var dockerImage = new ContainerBuilder().WithImage("alpine").Build())
       {
+        dockerImage.Pull();
         dockerImage.Run();
         dockerImage.Start();
         dockerImage.Stop();

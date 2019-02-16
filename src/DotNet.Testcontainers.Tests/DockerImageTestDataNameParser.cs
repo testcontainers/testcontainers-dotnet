@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests
+namespace DotNet.Testcontainers.Tests
 {
   using DotNet.Testcontainers.Images;
   using Xunit;

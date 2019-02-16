@@ -1,0 +1,45 @@
+name: $(date:yyyyMMdd)$(rev:.r)
+
+variables:
+  dotNetCoreVersion: 2.1.500
+
+jobs:
+- job: 'Build'
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: DotNetCoreInstaller@0
+    displayName: 'Use .NET Core SDK $(dotNetCoreVersion)'
+    inputs:
+      version: $(dotNetCoreVersion)
+
+  - powershell: |
+      echo "##vso[task.setvariable variable=sonarcloudUrl;]$(sonarcloud.url)"
+      echo "##vso[task.setvariable variable=sonarcloudKey;]$(sonarcloud.key)"
+      echo "##vso[task.setvariable variable=sonarcloudToken;]$(sonarcloud.token)"
+      echo "##vso[task.setvariable variable=sonarcloudOrganization;]$(sonarcloud.organization)"
+      echo "##vso[task.setvariable variable=nuGetSource;]$(feed.source)"
+      echo "##vso[task.setvariable variable=nuGetApiKey;]$(feed.apikey)"
+      ./build.sh --target=Restore-NuGet-Packages
+    displayName: 'Prepare'
+
+  - powershell: ./build.sh --target=Build
+    displayName: 'Build'
+
+  - powershell: ./build.sh --target=Test
+    displayName: 'Test'
+
+  - powershell: ./build.sh --target=Sonar
+    displayName: 'Sonar'
+    env:
+      SONARQUBE_URL: $(sonarcloudUrl)
+      SONARQUBE_KEY: $(sonarcloudKey)
+      SONARQUBE_TOKEN: $(sonarcloudToken)
+      SONARQUBE_ORGANIZATION: $(sonarcloudOrganization)
+
+  - powershell: ./build.sh --target=Publish
+    displayName: 'Publish'
+    env:
+      NUGET_SOURCE: $(nuGetSource)
+      NUGET_APIKEY: $(nuGetApiKey)
+      PRERELEASE: $(build.buildNumber)

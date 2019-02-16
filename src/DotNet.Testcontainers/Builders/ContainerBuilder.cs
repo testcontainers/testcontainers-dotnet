@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builder
+namespace DotNet.Testcontainers.Builder
 {
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;

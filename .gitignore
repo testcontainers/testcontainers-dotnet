@@ -350,3 +350,10 @@ MigrationBackup/
 # Cakebuild
 tools/*
 !tools/packages.config
+
+# Project
+test-results/
+test-coverage/
+
+# SonarQube
+.sonarqube/

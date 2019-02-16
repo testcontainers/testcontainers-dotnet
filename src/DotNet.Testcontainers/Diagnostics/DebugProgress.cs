@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Diagnostics
+namespace DotNet.Testcontainers.Diagnostics
 {
   using System;
   using System.Diagnostics;

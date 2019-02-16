@@ -4,7 +4,7 @@
     <id>DotNet.Testcontainers</id>
     <version>0.0.0</version>
     <authors>Andre Hofmeister and contributors</authors>
-    <description>A Lightweight library to run tests with throwaway instances of Docker container.</description>
+    <description>A lightweight library to run tests with throwaway instances of Docker containers.</description>
     <summary>.NET Testcontainers makes it easy to run tests with Docker containers. Create reliable and fast environments within seconds and throw them away if not needed anymore.</summary>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/HofmeisterAn/dotnet-testcontainers</projectUrl>

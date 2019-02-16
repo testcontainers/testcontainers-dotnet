@@ -19,6 +19,8 @@ Setup(context =>
     toClean.Add(project.Path.GetDirectory().Combine("Release"));
     toClean.Add(project.Path.GetDirectory().Combine("Debug"));
   }
+
+  Information("Building version {0} of .NET Testcontainers ({1})", param.Version, param.Branch);
 });
 
 Teardown(context =>
@@ -80,7 +82,13 @@ Task("Test")
       Configuration = param.Configuration,
       Verbosity = param.Verbosity,
       NoRestore = true,
-      NoBuild = true
+      NoBuild = true,
+      Logger = "trx",
+      ResultsDirectory = param.Paths.Directories.TestResults,
+      ArgumentCustomization = args => args
+        .Append("/p:CollectCoverage=true")
+        .Append("/p:CoverletOutputFormat=opencover")
+        .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/\"")
     });
   }
 });
@@ -99,6 +107,33 @@ Task("Copy-Artifacts")
   });
 
   CopyFileToDirectory("./LICENSE", param.Paths.Directories.ArtifactsBinStandard);
+});
+
+Task("SonarBegin")
+  .WithCriteria(() => param.ShouldPublish)
+  .Does(() =>
+{
+  SonarBegin(new SonarBeginSettings
+  {
+    Url = param.SonarQubeCredentials.Url,
+    Key = param.SonarQubeCredentials.Key,
+    Login = param.SonarQubeCredentials.Token,
+    Organization = param.SonarQubeCredentials.Organization,
+    Branch = param.Branch,
+    Silent = true,
+    VsTestReportsPath = $"{param.Paths.Directories.TestResults}/*.trx",
+    OpenCoverReportsPath = $"{param.Paths.Directories.TestCoverage}/coverage.opencover.xml"
+  });
+});
+
+Task("SonarEnd")
+  .WithCriteria(() => param.ShouldPublish)
+  .Does(() =>
+{
+  SonarEnd(new SonarEndSettings
+  {
+    Login = param.SonarQubeCredentials.Token
+  });
 });
 
 Task("Create-NuGet-Packages")
@@ -151,6 +186,14 @@ Task("Default")
   .IsDependentOn("Restore-NuGet-Packages")
   .IsDependentOn("Build")
   .IsDependentOn("Test");
+
+Task("Sonar")
+  .IsDependentOn("Clean")
+  .IsDependentOn("Restore-NuGet-Packages")
+  .IsDependentOn("SonarBegin")
+  .IsDependentOn("Build")
+  .IsDependentOn("Test")
+  .IsDependentOn("SonarEnd");
 
 Task("Publish")
   .IsDependentOn("Copy-Artifacts")

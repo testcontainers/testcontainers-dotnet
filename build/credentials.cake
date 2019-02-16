@@ -12,24 +12,27 @@ internal class BuildCredentials
 
 internal class SonarQubeCredentials
 {
-  public string Key { get; private set; }
   public string Url { get; private set; }
+  public string Key { get; private set; }
   public string Token { get; private set; }
+  public string Organization { get; private set; }
 
-  private SonarQubeCredentials(string key, string url, string token)
+  private SonarQubeCredentials(string url, string key, string token, string organization)
   {
-    Key = key;
     Url = url;
+    Key = key;
     Token = token;
+    Organization = organization;
   }
 
   public static SonarQubeCredentials GetSonarQubeCredentials(ICakeContext context)
   {
     return new SonarQubeCredentials
     (
-      context.EnvironmentVariable("SONARQUBE_KEY"),
       context.EnvironmentVariable("SONARQUBE_URL"),
-      context.EnvironmentVariable("SONARQUBE_TOKEN")
+      context.EnvironmentVariable("SONARQUBE_KEY"),
+      context.EnvironmentVariable("SONARQUBE_TOKEN"),
+      context.EnvironmentVariable("SONARQUBE_ORGANIZATION")
     );
   }
 }
@@ -49,10 +52,10 @@ internal class NuGetCredentials : BuildCredentials
   {
     return new NuGetCredentials
     (
-      context.EnvironmentVariable("NUGET_USERNAME"),
-      context.EnvironmentVariable("NUGET_PASSWORD"),
+      context.EnvironmentVariable("NUGET_USERNAME") ?? "",
+      context.EnvironmentVariable("NUGET_PASSWORD") ?? "",
       context.EnvironmentVariable("NUGET_SOURCE"),
-      context.EnvironmentVariable("NUGET_API_KEY")
+      context.EnvironmentVariable("NUGET_APIKEY")
     );
   }
 }

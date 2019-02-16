@@ -13,6 +13,7 @@ internal class BuildParameters
   public string Target { get; private set; }
   public string Configuration { get; private set; }
   public string Version { get; private set; }
+  public string Branch { get; private set; }
   public bool IsLocalBuild { get; private set; }
   public bool ShouldPublish { get; private set; }
   public DotNetCoreVerbosity Verbosity { get; private set; }
@@ -39,6 +40,7 @@ internal class BuildParameters
         Target = context.Argument("target", "Default"),
         Configuration = context.Argument("configuration", "Debug"),
         Version = version,
+        Branch = branch,
         IsLocalBuild = isLocalBuild,
         ShouldPublish = !isLocalBuild && ShouldPublishing(branch),
         Verbosity = DotNetCoreVerbosity.Quiet,

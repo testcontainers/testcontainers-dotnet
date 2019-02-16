@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Configurations\Parser\EmptyClass.cs" />
+    <Compile Remove="Containers\GenericContainers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

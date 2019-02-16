@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 [assembly: AssemblyProduct(".NET Testcontainers")]
 [assembly: AssemblyVersion("0.0.1")]

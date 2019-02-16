@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Containers
+namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Runtime.InteropServices;
@@ -31,7 +31,7 @@
 
     public void Pull()
     {
-      Client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = this.Image.Image }, null, DebugProgress.Instance);
+      Client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = this.Image.Image }, null, DebugProgress.Instance).Wait();
     }
 
     public void Run()
@@ -52,7 +52,8 @@
 
     public void Dispose()
     {
-      this.Dispose(true);       GC.SuppressFinalize(this);
+      this.Dispose(true);
+      GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)

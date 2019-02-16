@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configuration.Parser
+namespace DotNet.Testcontainers.Configuration.Parser
 {
   using System.Linq;
   using System.Text.RegularExpressions;

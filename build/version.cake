@@ -9,13 +9,13 @@ internal class BuildVersion
 
   public static Lazy<BuildVersion> Instance(ICakeContext context)
   {
-    var branch = context.GitBranchCurrent(".").FriendlyName;
-
-    var version = context.ParseAssemblyInfo("src/SolutionInfo.cs").AssemblyVersion;
+    var branch = context.EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? context.GitBranchCurrent(".").FriendlyName;
 
     var prerelease = context.EnvironmentVariable("PRERELEASE");
 
     var metadata = context.EnvironmentVariable("METADATA");
+
+    var version = context.ParseAssemblyInfo("src/SolutionInfo.cs").AssemblyVersion;
 
     if (!"master".Equals(branch))
     {
