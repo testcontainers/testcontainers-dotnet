@@ -12,10 +12,12 @@
     <Folder Include="Configurations\" />
     <Folder Include="Configurations\Parser\" />
     <Folder Include="Diagnostics\" />
+    <Folder Include="Collections\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Configurations\Parser\EmptyClass.cs" />
     <Compile Remove="Containers\GenericContainers.cs" />
+    <Compile Remove="Diagnostics\Foo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

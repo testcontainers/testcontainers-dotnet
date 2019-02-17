@@ -42,4 +42,3 @@ jobs:
     env:
       NUGET_SOURCE: $(nuGetSource)
       NUGET_APIKEY: $(nuGetApiKey)
-      PRERELEASE: $(build.buildNumber)

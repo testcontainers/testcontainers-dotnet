@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests
 {
+  using System.Net;
   using DotNet.Testcontainers.Builder;
   using DotNet.Testcontainers.Images;
   using Xunit;
@@ -23,16 +24,51 @@ namespace DotNet.Testcontainers.Tests
     }
 
     [Fact]
-    public void Test_Start()
+    public void Test_DockerContainerStartStop_WithValidImage_NoException()
     {
-      using (var dockerImage = new ContainerBuilder().WithImage("alpine").Build())
-      {
-        dockerImage.Pull();
-        dockerImage.Run();
-        dockerImage.Start();
-        dockerImage.Stop();
-        dockerImage.Start();
-      }
+      // Given
+      var dockerImage = "alpine";
+
+      // When
+      var dockerContainer = new ContainerBuilder().WithImage(dockerImage).Build();
+
+      // Then
+      dockerContainer.Pull();
+      dockerContainer.Run();
+      dockerContainer.Start();
+      dockerContainer.Stop();
+    }
+
+    [Fact]
+    public void Test_DockerContainerPortBindings_WithValidImage_NoException()
+    {
+      // Given
+      var isAvailable = false;
+
+      var port = 80;
+
+      var dockerImage = new GenericImage("nginx");
+
+      // When
+      var dockerContainer = new ContainerBuilder()
+        .WithImage(dockerImage)
+        .WithPortBindings(port)
+        .Build();
+
+      // Then
+      dockerContainer.Pull();
+      dockerContainer.Run();
+      dockerContainer.Start();
+
+      var request = WebRequest.Create($"http://localhost:{port}");
+
+      var response = (HttpWebResponse)request.GetResponse();
+
+      dockerContainer.Stop();
+
+      isAvailable = response != null && response.StatusCode == HttpStatusCode.OK;
+
+      Assert.True(isAvailable, $"nginx port {port} is not available.");
     }
   }
 }

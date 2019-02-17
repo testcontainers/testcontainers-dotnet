@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
-  using System.Diagnostics;
   using System.Linq;
   using DotNet.Testcontainers.Configuration.Parser;
 

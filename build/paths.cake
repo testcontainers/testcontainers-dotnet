@@ -59,8 +59,7 @@ internal class BuildDirectories
     DirectoryPath testCoverageDir,
     DirectoryPath nugetRoot,
     DirectoryPath artifactsBinDir,
-    DirectoryPath artifactsBinStandard
-    )
+    DirectoryPath artifactsBinStandard)
   {
     TestResults = testResultsDir;
     TestCoverage = testCoverageDir;

@@ -11,7 +11,7 @@ internal class BuildVersion
   {
     var branch = context.EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? context.GitBranchCurrent(".").FriendlyName;
 
-    var prerelease = context.EnvironmentVariable("PRERELEASE");
+    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER");
 
     var metadata = context.EnvironmentVariable("METADATA");
 
@@ -22,9 +22,9 @@ internal class BuildVersion
       version = $"{version}-beta";
     }
 
-    if (!"master".Equals(branch) && !string.IsNullOrEmpty(prerelease))
+    if (!"master".Equals(branch) && !string.IsNullOrEmpty(buildNumber))
     {
-      version = $"{version}.{prerelease}";
+      version = $"{version}.{buildNumber}";
     }
 
     if (!"master".Equals(branch) && !string.IsNullOrEmpty(metadata))
