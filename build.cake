@@ -96,8 +96,7 @@ Task("Test")
 Task("Copy-Artifacts")
   .Does(() =>
 {
-  var project = param.Projects.NoneTests.Single(p => "DotNet.Testcontainers".Equals(p.Name)).Path.FullPath;
-  DotNetCorePublish(project, new DotNetCorePublishSettings
+  DotNetCorePublish(param.Projects.TestContainers.Path.FullPath, new DotNetCorePublishSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
@@ -139,31 +138,17 @@ Task("SonarEnd")
 Task("Create-NuGet-Packages")
   .Does(() =>
 {
-  var standardFullArtifactPath = MakeAbsolute(param.Paths.Directories.ArtifactsBinStandard).FullPath;
-  var standardFullArtifactPathLength = standardFullArtifactPath.Length + 1;
-
-  NuGetPack("./nuspec/DotNet.Testcontainers.symbols.nuspec", new NuGetPackSettings
+  DotNetCorePack(param.Projects.TestContainers.Path.FullPath, new DotNetCorePackSettings
   {
-    Verbosity = NuGetVerbosity.Quiet,
-    Version = param.Version,
-    BasePath = param.Paths.Directories.ArtifactsBinStandard,
+    Configuration = param.Configuration,
+    Verbosity = param.Verbosity,
+    NoRestore = true,
+    NoBuild = true,
+    IncludeSymbols = true,
     OutputDirectory = param.Paths.Directories.NugetRoot,
-    Symbols = true,
-    NoPackageAnalysis = true
-  });
-
-  NuGetPack("./nuspec/DotNet.Testcontainers.nuspec", new NuGetPackSettings
-  {
-    Verbosity = NuGetVerbosity.Quiet,
-    Version = param.Version,
-    BasePath = param.Paths.Directories.ArtifactsBinStandard,
-    OutputDirectory = param.Paths.Directories.NugetRoot,
-    Symbols = false,
-    NoPackageAnalysis = true,
-    Files = GetFiles(param.Paths.Directories.ArtifactsBinStandard + "/**/*")
-      .Select(file => file.FullPath.Substring(standardFullArtifactPathLength))
-      .Select(file => new NuSpecContent { Source = file, Target = file })
-      .ToArray()
+    ArgumentCustomization = args => args
+      .Append($"/p:Version={param.Version}")
+      .Append("/p:SymbolPackageFormat=snupkg")
   });
 });
 
@@ -171,7 +156,7 @@ Task("Publish-NuGet-Packages")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
-  foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.nupkg"))
+  foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.(nupkg|snupkgs)"))
   {
     NuGetPush(package, new NuGetPushSettings
     {

@@ -2,14 +2,17 @@
   <!-- General package metadata -->
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Copyright>Copyright (c) Andre Hofmeister</Copyright>
-    <Authors>Andre Hofmeister</Authors>
+    <version>0.0.1</version>
+    <copyright>Copyright (c) 2019 Andre Hofmeister and other authors</copyright>
+    <authors>Andre Hofmeister and contributors</authors>
     <Company>Andre Hofmeister</Company>
+    <description>A lightweight library to run tests with throwaway instances of Docker containers.</description>
+    <summary>.NET Testcontainers makes it easy to run tests with Docker containers. Create reliable and fast environments within seconds and throw them away if not needed anymore.</summary>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl></PackageIconUrl>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/HofmeisterAn/dotnet-testcontainers</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>.NET;Test;Docker;Container</PackageTags>
+    <PackageTags>.NET;Docker;Container;Test</PackageTags>
     <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
   <!-- Global solution information -->
