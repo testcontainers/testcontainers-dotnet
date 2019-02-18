@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Builder
 
     public ContainerBuilder WithPortBindings(string port)
     {
-      return this.WithPortBindings(port);
+      return this.WithPortBindings(port, port);
     }
 
     public ContainerBuilder WithPortBindings(string hostPort, string containerPort)

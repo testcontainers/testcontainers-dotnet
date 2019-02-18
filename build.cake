@@ -121,7 +121,7 @@ Task("SonarBegin")
     Branch = param.Branch,
     Silent = true,
     VsTestReportsPath = $"{param.Paths.Directories.TestResults}/*.trx",
-    OpenCoverReportsPath = $"{param.Paths.Directories.TestCoverage}/coverage.opencover.xml"
+    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.opencover.xml"
   });
 });
 
