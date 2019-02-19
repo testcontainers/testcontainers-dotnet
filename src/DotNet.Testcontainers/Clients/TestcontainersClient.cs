@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Linq;
   using System.Runtime.InteropServices;
-  using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Diagnostics;
@@ -31,6 +30,11 @@ namespace DotNet.Testcontainers.Clients
 
     public bool HasImage(string image)
     {
+      if (string.IsNullOrWhiteSpace(image))
+      {
+        return false;
+      }
+
       return Docker.Images.ListImagesAsync(new ImagesListParameters
       {
         MatchName = image,
@@ -39,6 +43,11 @@ namespace DotNet.Testcontainers.Clients
 
     public bool HasContainer(string containerId)
     {
+      if (string.IsNullOrWhiteSpace(containerId))
+      {
+        return false;
+      }
+
       return Docker.Containers.ListContainersAsync(new ContainersListParameters
       {
         All = true,
@@ -54,33 +63,28 @@ namespace DotNet.Testcontainers.Clients
       }).Result.Any();
     }
 
-    public Task Pull(string image)
+    public void Pull(string image)
     {
-      return Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance);
+      Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+    }
+
+    public void Start(string containerId)
+    {
+      Docker.Containers.StartContainerAsync(containerId, new ContainerStartParameters { }).Wait();
+    }
+
+    public void Stop(string containerId)
+    {
+      Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }).Wait();
     }
 
     public string Run(string image, HostConfig hostConfig)
     {
-      if (!this.HasImage(image))
-      {
-        this.Pull(image);
-      }
-
       return Docker.Containers.CreateContainerAsync(new CreateContainerParameters
       {
         Image = image,
         HostConfig = hostConfig,
       }).Result.ID;
-    }
-
-    public Task Start(string containerId)
-    {
-      return Docker.Containers.StartContainerAsync(containerId, new ContainerStartParameters { });
-    }
-
-    public Task Stop(string containerId)
-    {
-      return Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 });
     }
   }
 }

@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Clients
 {
-  using System.Threading.Tasks;
   using Docker.DotNet.Models;
 
   public interface ITestcontainersClient
@@ -9,12 +8,12 @@ namespace DotNet.Testcontainers.Clients
 
     bool HasContainer(string containerId);
 
-    Task Pull(string image);
+    void Pull(string image);
+
+    void Start(string containerId);
+
+    void Stop(string containerId);
 
     string Run(string image, HostConfig hostConfig);
-
-    Task Start(string containerId);
-
-    Task Stop(string containerId);
   }
 }

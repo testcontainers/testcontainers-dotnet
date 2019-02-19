@@ -13,16 +13,13 @@ Choose from existing pre-configured configurations [^1] and start containers wit
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
 ```csharp
-var containerBuilder = new ContainerBuilder()
+var containerBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithPortBindings(80);
 
 using (var container = containerBuilder.Build())
 {
-  container.Pull();
-  container.Run();
   container.Start();
-
   var request = WebRequest.Create($"http://localhost:80");
 }
 ```
