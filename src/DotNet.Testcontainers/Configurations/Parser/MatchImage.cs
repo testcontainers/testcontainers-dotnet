@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.Configuration.Parser
     {
     }
 
-    public GenericImage Match(string input)
+    public TestcontainersImage Match(string input)
     {
       var match = this.pattern.Match(input);
 
@@ -45,9 +45,9 @@ namespace DotNet.Testcontainers.Configuration.Parser
       }
     }
 
-    protected virtual GenericImage Match(params string[] matches)
+    protected virtual TestcontainersImage Match(params string[] matches)
     {
-      return new GenericImage(string.Empty, matches[0], string.Empty);
+      return new TestcontainersImage(string.Empty, matches[0], string.Empty);
     }
   }
 }

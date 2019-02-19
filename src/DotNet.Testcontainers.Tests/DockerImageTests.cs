@@ -9,10 +9,10 @@ namespace DotNet.Testcontainers.Tests
   {
     [Theory]
     [ClassData(typeof(DockerImageTestDataNameParser))]
-    public void Test_DockerImageNameParser_WithValidImageNames_NoException(GenericImage expected, string fullName)
+    public void Test_DockerImageNameParser_WithValidImageNames_NoException(IDockerImage expected, string fullName)
     {
       // Given
-      var dockerImage = new GenericImage();
+      var dockerImage = new TestcontainersImage();
 
       // When
       dockerImage.Image = fullName;
@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Tests
       var dockerImage = "alpine";
 
       // When
-      var dockerContainer = new ContainerBuilder().WithImage(dockerImage).Build();
+      var dockerContainer = new TestcontainersBuilder().WithImage(dockerImage).Build();
 
       // Then
       dockerContainer.Pull();
@@ -47,10 +47,10 @@ namespace DotNet.Testcontainers.Tests
 
       var port = 80;
 
-      var dockerImage = new GenericImage("nginx");
+      var dockerImage = "nginx";
 
       // When
-      var dockerContainer = new ContainerBuilder()
+      var dockerContainer = new TestcontainersBuilder()
         .WithImage(dockerImage)
         .WithPortBindings(port)
         .Build();
