@@ -4,18 +4,18 @@ namespace DotNet.Testcontainers.Images
   using System.Linq;
   using DotNet.Testcontainers.Configuration.Parser;
 
-  public class GenericImage
+  public class TestcontainersImage : IDockerImage
   {
-    public GenericImage()
+    public TestcontainersImage()
     {
     }
 
-    public GenericImage(string image)
+    public TestcontainersImage(string image)
     {
       this.Image = image ?? throw new ArgumentNullException(nameof(image));
     }
 
-    public GenericImage(string repository, string name, string tag)
+    public TestcontainersImage(string repository, string name, string tag)
     {
       this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 

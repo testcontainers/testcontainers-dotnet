@@ -8,9 +8,9 @@ namespace DotNet.Testcontainers.Configuration.Parser
     {
     }
 
-    protected override GenericImage Match(params string[] matches)
+    protected override TestcontainersImage Match(params string[] matches)
     {
-      return new GenericImage(string.Empty, matches[0], matches[1]);
+      return new TestcontainersImage(string.Empty, matches[0], matches[1]);
     }
   }
 }
