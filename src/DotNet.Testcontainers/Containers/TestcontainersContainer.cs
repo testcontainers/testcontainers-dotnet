@@ -49,25 +49,27 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
-    public void Pull()
-    {
-      // TODO: Implement a proper strategy to wait until the container is up and running.
-      TestcontainersClient.Instance.Pull(this.Image.Image).Wait();
-    }
-
-    public void Run()
-    {
-      this.Id = TestcontainersClient.Instance.Run(this.Image.Image, this.HostConfig);
-    }
-
     public void Start()
     {
-      TestcontainersClient.Instance.Start(this.Id).Wait();
+      if (!TestcontainersClient.Instance.HasImage(this.Image.Image))
+      {
+        TestcontainersClient.Instance.Pull(this.Image.Image);
+      }
+
+      if (!TestcontainersClient.Instance.HasContainer(this.Id))
+      {
+        this.Id = TestcontainersClient.Instance.Run(this.Image.Image, this.HostConfig);
+      }
+
+      TestcontainersClient.Instance.Start(this.Id);
     }
 
     public void Stop()
     {
-      TestcontainersClient.Instance.Stop(this.Id).Wait();
+      if (TestcontainersClient.Instance.HasContainer(this.Id))
+      {
+        TestcontainersClient.Instance.Stop(this.Id);
+      }
     }
 
     public void Dispose()

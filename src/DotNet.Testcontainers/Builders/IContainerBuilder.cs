@@ -63,8 +63,6 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="IContainerBuilder"/>.</returns>
     IContainerBuilder WithPortBindings(string hostPort, string containerPort);
 
-    IContainerBuilder WaitingFor();
-
     /// <summary>
     /// Builds the instance of <see cref="IDockerContainer"/> with the given configuration.
     /// </summary>

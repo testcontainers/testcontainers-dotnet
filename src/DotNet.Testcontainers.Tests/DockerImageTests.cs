@@ -33,10 +33,9 @@ namespace DotNet.Testcontainers.Tests
       var dockerContainer = new TestcontainersBuilder().WithImage(dockerImage).Build();
 
       // Then
-      dockerContainer.Pull();
-      dockerContainer.Run();
       dockerContainer.Start();
       dockerContainer.Stop();
+      dockerContainer.Dispose();
     }
 
     [Fact]
@@ -56,8 +55,6 @@ namespace DotNet.Testcontainers.Tests
         .Build();
 
       // Then
-      dockerContainer.Pull();
-      dockerContainer.Run();
       dockerContainer.Start();
 
       var request = WebRequest.Create($"http://localhost:{port}");
@@ -65,6 +62,7 @@ namespace DotNet.Testcontainers.Tests
       var response = (HttpWebResponse)request.GetResponse();
 
       dockerContainer.Stop();
+      dockerContainer.Dispose();
 
       isAvailable = response != null && response.StatusCode == HttpStatusCode.OK;
 

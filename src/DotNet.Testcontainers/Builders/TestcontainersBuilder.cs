@@ -56,11 +56,6 @@ namespace DotNet.Testcontainers.Builder
       return this;
     }
 
-    public IContainerBuilder WaitingFor()
-    {
-      return this;
-    }
-
     public IDockerContainer Build()
     {
       return new TestcontainersContainer(this.image, this.exposedPort, this.portBindings);

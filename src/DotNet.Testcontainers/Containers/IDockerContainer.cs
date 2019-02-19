@@ -4,10 +4,6 @@ namespace DotNet.Testcontainers.Containers
 
   public interface IDockerContainer : IDisposable
   {
-    void Pull();
-
-    void Run();
-
     void Start();
 
     void Stop();
