@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images;
-
   using static LanguageExt.Prelude;
 
   public class TestcontainersContainer : IDockerContainer
@@ -15,8 +14,8 @@ namespace DotNet.Testcontainers.Containers
 
     public TestcontainersContainer(
       IDockerImage image,
-      IDictionary<string, string> exposedPorts,
-      IDictionary<string, string> portBindings)
+      IReadOnlyDictionary<string, string> exposedPorts,
+      IReadOnlyDictionary<string, string> portBindings)
     {
       this.Image = image;
       this.ExposedPorts = exposedPorts;
@@ -32,15 +31,15 @@ namespace DotNet.Testcontainers.Containers
 
     private IDockerImage Image { get; }
 
-    private IDictionary<string, string> ExposedPorts { get; }
+    private IReadOnlyDictionary<string, string> ExposedPorts { get; }
 
-    private IDictionary<string, string> PortBindings { get; }
+    private IReadOnlyDictionary<string, string> PortBindings { get; }
 
     private HostConfig HostConfig
     {
       get
       {
-        var portBindings = this.PortBindings.ToDictionary(binding => $"{binding.Key}/tcp", binding => (IList<PortBinding>)List(new PortBinding { HostPort = binding.Value }).ToList());
+        var portBindings = this.PortBindings.ToDictionary(binding => $"{binding.Value}/tcp", binding => (IList<PortBinding>)List(new PortBinding { HostPort = binding.Key }).ToList());
 
         return new HostConfig
         {
