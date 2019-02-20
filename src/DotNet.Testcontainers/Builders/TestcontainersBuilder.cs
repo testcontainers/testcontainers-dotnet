@@ -9,6 +9,8 @@ namespace DotNet.Testcontainers.Builder
 
   public class TestcontainersBuilder : ContainerBuilder
   {
+    private readonly string name;
+
     private readonly IDockerImage image = new TestcontainersImage();
 
     private readonly IReadOnlyDictionary<string, string> exposedPorts = new Dictionary<string, string>();
@@ -20,20 +22,29 @@ namespace DotNet.Testcontainers.Builder
     }
 
     protected TestcontainersBuilder(
+      string name = null,
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null)
     {
+      this.name = name;
       this.image = image;
       this.exposedPorts = exposedPorts;
       this.portBindings = portBindings;
     }
+
+    public override string Name => this.name;
 
     public override IDockerImage Image => this.image;
 
     public override IReadOnlyDictionary<string, string> ExposedPorts => this.exposedPorts;
 
     public override IReadOnlyDictionary<string, string> PortBindings => this.portBindings;
+
+    public override ContainerBuilder WithName(string name)
+    {
+      return Build(this, name: name);
+    }
 
     public override ContainerBuilder WithImage(string image)
     {
@@ -42,7 +53,7 @@ namespace DotNet.Testcontainers.Builder
 
     public override ContainerBuilder WithImage(IDockerImage image)
     {
-      return Build(this, image);
+      return Build(this, image: image);
     }
 
     public override ContainerBuilder WithExposedPort(int port)
@@ -78,13 +89,15 @@ namespace DotNet.Testcontainers.Builder
     public override IDockerContainer Build()
     {
       return new TestcontainersContainer(
-        this.image,
-        this.exposedPorts,
-        this.portBindings);
+        this.Name,
+        this.Image,
+        this.ExposedPorts,
+        this.PortBindings);
     }
 
     private static ContainerBuilder Build(
       ContainerBuilder old,
+      string name = null,
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null)
@@ -109,6 +122,7 @@ namespace DotNet.Testcontainers.Builder
       }
 
       return new TestcontainersBuilder(
+        name ?? old.Name,
         image ?? old.Image,
         exposedPorts,
         portBindings);

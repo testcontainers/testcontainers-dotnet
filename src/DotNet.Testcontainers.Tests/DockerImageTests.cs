@@ -66,5 +66,39 @@ namespace DotNet.Testcontainers.Tests
         }
       });
     }
+
+    [Fact]
+    public void Test_DockerContainerName_WithoutName_NoException()
+    {
+      // When
+      var dockerContainer = new TestcontainersBuilder()
+        .WithImage("alpine")
+        .Build();
+
+      dockerContainer.Start();
+      dockerContainer.Dispose();
+
+      // Then
+      Assert.NotEmpty(dockerContainer.Name);
+    }
+
+    [Fact]
+    public void Test_DockerContainerName_WithName_NoException()
+    {
+      // Given
+      var name = "foo";
+
+      // When
+      var dockerContainer = new TestcontainersBuilder()
+        .WithImage("alpine")
+        .WithName(name)
+        .Build();
+
+      dockerContainer.Start();
+      dockerContainer.Dispose();
+
+      // Then
+      Assert.Equal(name, dockerContainer.Name);
+    }
   }
 }

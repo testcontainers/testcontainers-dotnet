@@ -6,17 +6,22 @@ namespace DotNet.Testcontainers.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images;
+  using LanguageExt;
   using static LanguageExt.Prelude;
 
   public class TestcontainersContainer : IDockerContainer
   {
+    private readonly Option<string> name;
+
     private bool disposed = false;
 
     public TestcontainersContainer(
+      string name,
       IDockerImage image,
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings)
     {
+      this.name = Optional(name);
       this.Image = image;
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
@@ -28,6 +33,16 @@ namespace DotNet.Testcontainers.Containers
     }
 
     public string Id { get; private set; }
+
+    public string Name
+    {
+      get
+      {
+        return this.name.Match(
+          Some: name => name,
+          None: () => TestcontainersClient.Instance.GetContainerName(this.Id));
+      }
+    }
 
     private IDockerImage Image { get; }
 
@@ -57,7 +72,7 @@ namespace DotNet.Testcontainers.Containers
 
       if (!TestcontainersClient.Instance.HasContainer(this.Id))
       {
-        this.Id = TestcontainersClient.Instance.Run(this.Image.Image, this.HostConfig);
+        this.Id = TestcontainersClient.Instance.Run(this.Name, this.Image.Image, this.HostConfig);
       }
 
       TestcontainersClient.Instance.Start(this.Id);

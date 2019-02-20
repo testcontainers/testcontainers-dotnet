@@ -4,16 +4,20 @@ namespace DotNet.Testcontainers.Clients
 
   public interface ITestcontainersClient
   {
-    bool HasImage(string image);
+    bool HasImage(string imageName);
 
     bool HasContainer(string containerId);
 
-    void Pull(string image);
+    string GetImageName(string containerId);
+
+    string GetContainerName(string containerId);
+
+    void Pull(string imageName);
 
     void Start(string containerId);
 
     void Stop(string containerId);
 
-    string Run(string image, HostConfig hostConfig);
+    string Run(string containerName, string image, HostConfig hostConfig);
   }
 }

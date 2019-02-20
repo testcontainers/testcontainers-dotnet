@@ -6,11 +6,20 @@ namespace DotNet.Testcontainers.Builders
 
   public abstract class ContainerBuilder
   {
+    public abstract string Name { get; }
+
     public abstract IDockerImage Image { get; }
 
     public abstract IReadOnlyDictionary<string, string> ExposedPorts { get; }
 
     public abstract IReadOnlyDictionary<string, string> PortBindings { get; }
+
+    /// <summary>
+    /// Sets the name of the Docker container.
+    /// </summary>
+    /// <param name="name">Docker container name.</param>
+    /// <returns>A configured instance of <see cref="ContainerBuilder"/>.</returns>
+    public abstract ContainerBuilder WithName(string name);
 
     /// <summary>
     /// Sets the Docker image, which is used to create the Docker container instances.
