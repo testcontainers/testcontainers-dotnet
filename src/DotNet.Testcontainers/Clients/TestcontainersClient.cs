@@ -1,19 +1,13 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Runtime.InteropServices;
-  using Docker.DotNet;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Clients.MetaData;
   using DotNet.Testcontainers.Diagnostics;
+  using static LanguageExt.Prelude;
 
-  internal sealed class TestcontainersClient : ITestcontainersClient
+  internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
-    private static readonly Uri Endpoint = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Uri("npipe://./pipe/docker_engine") : new Uri("unix:/var/run/docker.sock");
-
-    private static readonly DockerClient Docker = new DockerClientConfiguration(Endpoint).CreateClient();
-
     private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
 
     private TestcontainersClient()
@@ -28,39 +22,32 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public bool HasImage(string image)
+    public bool HasImage(string imageName)
     {
-      if (string.IsNullOrWhiteSpace(image))
-      {
-        return false;
-      }
-
-      return Docker.Images.ListImagesAsync(new ImagesListParameters
-      {
-        MatchName = image,
-      }).Result.Any();
+      return Optional(imageName).Match(
+        Some: name => notnull(MetaDataClientImages.Instance.ByName(name)),
+        None: () => false);
     }
 
     public bool HasContainer(string containerId)
     {
-      if (string.IsNullOrWhiteSpace(containerId))
-      {
-        return false;
-      }
+      return Optional(containerId).Match(
+        Some: id => notnull(MetaDataClientContainers.Instance.ByName(id)),
+        None: () => false);
+    }
 
-      return Docker.Containers.ListContainersAsync(new ContainersListParameters
-      {
-        All = true,
-        Filters = new Dictionary<string, IDictionary<string, bool>>
-        {
-          {
-            "id", new Dictionary<string, bool>
-            {
-              { containerId, true },
-            }
-          },
-        },
-      }).Result.Any();
+    public string GetImageName(string imageName)
+    {
+      return Optional(imageName).Match(
+        Some: name => MetaDataClientImages.Instance.ByName(name).ToString(),
+        None: () => string.Empty);
+    }
+
+    public string GetContainerName(string containerId)
+    {
+      return Optional(containerId).Match(
+        Some: id => MetaDataClientContainers.Instance.ById(id).ToString(),
+        None: () => string.Empty);
     }
 
     public void Pull(string image)
@@ -76,12 +63,14 @@ namespace DotNet.Testcontainers.Clients
     public void Stop(string containerId)
     {
       Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }).Wait();
+      Docker.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { }).Wait();
     }
 
-    public string Run(string image, HostConfig hostConfig)
+    public string Run(string name, string image, HostConfig hostConfig)
     {
       return Docker.Containers.CreateContainerAsync(new CreateContainerParameters
       {
+        Name = name,
         Image = image,
         HostConfig = hostConfig,
       }).Result.ID;
