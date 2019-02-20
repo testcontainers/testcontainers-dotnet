@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests
   using DotNet.Testcontainers.Builder;
   using DotNet.Testcontainers.Images;
   using Xunit;
+  using static LanguageExt.Prelude;
 
   public class DockerImageTests
   {
@@ -30,43 +31,40 @@ namespace DotNet.Testcontainers.Tests
       var dockerImage = "alpine";
 
       // When
-      var dockerContainer = new TestcontainersBuilder().WithImage(dockerImage).Build();
-
       // Then
-      dockerContainer.Start();
-      dockerContainer.Stop();
-      dockerContainer.Dispose();
+      using (var dockerContainer = new TestcontainersBuilder().WithImage(dockerImage).Build())
+      {
+        dockerContainer.Start();
+      }
     }
 
     [Fact]
     public void Test_DockerContainerPortBindings_WithValidImage_NoException()
     {
       // Given
-      var isAvailable = false;
-
-      var port = 80;
-
-      var dockerImage = "nginx";
+      var http = Tuple(80, 80);
+      var https = Tuple(443, 80);
 
       // When
-      var dockerContainer = new TestcontainersBuilder()
-        .WithImage(dockerImage)
-        .WithPortBindings(port)
-        .Build();
+      var nginx = new TestcontainersBuilder().WithImage("nginx");
 
       // Then
-      dockerContainer.Start();
+      List(http, https).Iter(port =>
+      {
+        using (var dockerContainer = port.Map(nginx.WithPortBinding).Build())
+        {
+          dockerContainer.Start();
 
-      var request = WebRequest.Create($"http://localhost:{port}");
+          var request = WebRequest.Create($"http://localhost:{port.Item1}");
 
-      var response = (HttpWebResponse)request.GetResponse();
+          var response = (HttpWebResponse)request.GetResponse();
 
-      dockerContainer.Stop();
-      dockerContainer.Dispose();
-
-      isAvailable = response != null && response.StatusCode == HttpStatusCode.OK;
-
-      Assert.True(isAvailable, $"nginx port {port} is not available.");
+          if (response == null || response.StatusCode != HttpStatusCode.OK)
+          {
+            Assert.True(false, $"nginx port {port.Item1} is not available.");
+          }
+        }
+      });
     }
   }
 }

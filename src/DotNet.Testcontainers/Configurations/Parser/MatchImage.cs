@@ -33,6 +33,7 @@ namespace DotNet.Testcontainers.Configuration.Parser
 
     public TestcontainersImage Match(string input)
     {
+      // Maybe we can use a better functional approache here?
       var match = this.pattern.Match(input);
 
       if (match.Success)
