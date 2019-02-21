@@ -12,11 +12,5 @@
     <Folder Include="Diagnostics\" />
     <Folder Include="Clients\" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Configurations\Parser\EmptyClass.cs" />
-    <Compile Remove="Containers\GenericContainers.cs" />
-    <Compile Remove="Diagnostics\Foo.cs" />
-    <Compile Remove="Configurations\ContainerConfiguration.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

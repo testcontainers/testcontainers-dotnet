@@ -13,18 +13,22 @@ namespace DotNet.Testcontainers.Containers
   {
     private readonly Option<string> name;
 
+    private readonly bool cleanUp;
+
     private bool disposed = false;
 
     public TestcontainersContainer(
       string name,
       IDockerImage image,
       IReadOnlyDictionary<string, string> exposedPorts,
-      IReadOnlyDictionary<string, string> portBindings)
+      IReadOnlyDictionary<string, string> portBindings,
+      bool cleanUp = true)
     {
       this.name = Optional(name);
       this.Image = image;
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
+      this.cleanUp = cleanUp;
     }
 
     ~TestcontainersContainer()
@@ -97,6 +101,11 @@ namespace DotNet.Testcontainers.Containers
       if (!this.disposed)
       {
         this.Stop();
+
+        if (this.cleanUp)
+        {
+          TestcontainersClient.Instance.Remove(this.Id);
+        }
 
         this.disposed = true;
       }

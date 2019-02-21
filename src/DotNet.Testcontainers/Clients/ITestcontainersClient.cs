@@ -18,6 +18,8 @@ namespace DotNet.Testcontainers.Clients
 
     void Stop(string containerId);
 
+    void Remove(string containerId);
+
     string Run(string containerName, string image, HostConfig hostConfig);
   }
 }

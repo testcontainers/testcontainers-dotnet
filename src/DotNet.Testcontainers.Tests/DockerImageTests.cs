@@ -31,10 +31,13 @@ namespace DotNet.Testcontainers.Tests
       var dockerImage = "alpine";
 
       // When
+      var testcontainersBuilder = new TestcontainersBuilder()
+        .WithImage(dockerImage);
+
       // Then
-      using (var dockerContainer = new TestcontainersBuilder().WithImage(dockerImage).Build())
+      using (var testcontainers = testcontainersBuilder.Build())
       {
-        dockerContainer.Start();
+        testcontainers.Start();
       }
     }
 
@@ -46,14 +49,15 @@ namespace DotNet.Testcontainers.Tests
       var https = Tuple(443, 80);
 
       // When
-      var nginx = new TestcontainersBuilder().WithImage("nginx");
+      var nginx = new TestcontainersBuilder()
+        .WithImage("nginx");
 
       // Then
       List(http, https).Iter(port =>
       {
-        using (var dockerContainer = port.Map(nginx.WithPortBinding).Build())
+        using (var testcontainers = port.Map(nginx.WithPortBinding).Build())
         {
-          dockerContainer.Start();
+          testcontainers.Start();
 
           var request = WebRequest.Create($"http://localhost:{port.Item1}");
 
@@ -70,16 +74,17 @@ namespace DotNet.Testcontainers.Tests
     [Fact]
     public void Test_DockerContainerName_WithoutName_NoException()
     {
+      // Given
       // When
-      var dockerContainer = new TestcontainersBuilder()
-        .WithImage("alpine")
-        .Build();
-
-      dockerContainer.Start();
-      dockerContainer.Dispose();
+      var testcontainersBuilder = new TestcontainersBuilder()
+        .WithImage("alpine");
 
       // Then
-      Assert.NotEmpty(dockerContainer.Name);
+      using (var testcontainers = testcontainersBuilder.Build())
+      {
+        testcontainers.Start();
+        Assert.NotEmpty(testcontainers.Name);
+      }
     }
 
     [Fact]
@@ -89,16 +94,16 @@ namespace DotNet.Testcontainers.Tests
       var name = "foo";
 
       // When
-      var dockerContainer = new TestcontainersBuilder()
+      var testcontainersBuilder = new TestcontainersBuilder()
         .WithImage("alpine")
-        .WithName(name)
-        .Build();
-
-      dockerContainer.Start();
-      dockerContainer.Dispose();
+        .WithName(name);
 
       // Then
-      Assert.Equal(name, dockerContainer.Name);
+      using (var testcontainers = testcontainersBuilder.Build())
+      {
+        testcontainers.Start();
+        Assert.Equal(name, testcontainers.Name);
+      }
     }
   }
 }
