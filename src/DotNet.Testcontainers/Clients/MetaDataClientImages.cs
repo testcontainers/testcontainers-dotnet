@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients.MetaData
   using System.Collections.Generic;
   using System.Linq;
   using Docker.DotNet.Models;
+  using static LanguageExt.Prelude;
 
   internal sealed class MetaDataClientImages : DockerMetaDataClient<ImagesListResponse>
   {
@@ -16,7 +17,7 @@ namespace DotNet.Testcontainers.Clients.MetaData
     {
     }
 
-    public static DockerMetaDataClient<ImagesListResponse> Instance
+    internal static DockerMetaDataClient<ImagesListResponse> Instance
     {
       get
       {
@@ -24,7 +25,7 @@ namespace DotNet.Testcontainers.Clients.MetaData
       }
     }
 
-    public override ICollection<ImagesListResponse> All
+    internal override ICollection<ImagesListResponse> All
     {
       get
       {
@@ -32,17 +33,17 @@ namespace DotNet.Testcontainers.Clients.MetaData
       }
     }
 
-    public override ImagesListResponse ById(string id)
+    internal override ImagesListResponse ById(string id)
     {
-      return this.ByProperty("id", id);
+      return notnull(id) ? this.All.FirstOrDefault(value => id.Equals(value.ID)) : null;
     }
 
-    public override ImagesListResponse ByName(string name)
+    internal override ImagesListResponse ByName(string name)
     {
       return this.ByProperty("label", name);
     }
 
-    protected override ImagesListResponse ByProperty(string property, string value)
+    internal override ImagesListResponse ByProperty(string property, string value)
     {
       return Docker.Images.ListImagesAsync(new ImagesListParameters
       {

@@ -16,6 +16,8 @@ namespace DotNet.Testcontainers.Builders
 
     internal abstract IReadOnlyDictionary<string, string> PortBindings { get; }
 
+    internal abstract IReadOnlyDictionary<string, string> Volumes { get; }
+
     /// <summary>
     /// If true, Testcontainers will remove the Docker container on finalize. Otherwise, Testcontainers will keep the Docker container.
     /// </summary>
@@ -87,6 +89,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="containerPort">Port of the Docker container.</param>
     /// <returns>A configured instance of <see cref="ContainerBuilder"/>.</returns>
     public abstract ContainerBuilder WithPortBinding(string hostPort, string containerPort);
+
+    /// <summary>
+    /// Binds and mounts the specified host machine volume into the Docker container.
+    /// </summary>
+    /// <param name="source">An absolute path or a name value within the host machine.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ContainerBuilder"/>.</returns>
+    public abstract ContainerBuilder WithVolume(string source, string destination);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerContainer"/> with the given configuration.

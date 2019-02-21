@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Linq;
   using Docker.DotNet.Models;
+  using static LanguageExt.Prelude;
 
   internal sealed class MetaDataClientContainers : DockerMetaDataClient<ContainerListResponse>
   {
@@ -16,7 +17,7 @@ namespace DotNet.Testcontainers.Clients
     {
     }
 
-    public static DockerMetaDataClient<ContainerListResponse> Instance
+    internal static DockerMetaDataClient<ContainerListResponse> Instance
     {
       get
       {
@@ -24,7 +25,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public override ICollection<ContainerListResponse> All
+    internal override ICollection<ContainerListResponse> All
     {
       get
       {
@@ -32,17 +33,17 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public override ContainerListResponse ById(string id)
+    internal override ContainerListResponse ById(string id)
     {
-      return this.ByProperty("id", id);
+      return notnull(id) ? this.All.FirstOrDefault(value => id.Equals(value.ID)) : null;
     }
 
-    public override ContainerListResponse ByName(string name)
+    internal override ContainerListResponse ByName(string name)
     {
       return this.ByProperty("name", name);
     }
 
-    protected override ContainerListResponse ByProperty(string property, string value)
+    internal override ContainerListResponse ByProperty(string property, string value)
     {
       return Docker.Containers.ListContainersAsync(new ContainersListParameters
       {

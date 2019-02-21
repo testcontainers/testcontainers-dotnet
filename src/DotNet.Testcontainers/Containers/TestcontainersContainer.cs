@@ -13,8 +13,6 @@ namespace DotNet.Testcontainers.Containers
   {
     private readonly Option<string> name;
 
-    private readonly bool cleanUp;
-
     private bool disposed = false;
 
     public TestcontainersContainer(
@@ -22,13 +20,15 @@ namespace DotNet.Testcontainers.Containers
       IDockerImage image,
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings,
+      IReadOnlyDictionary<string, string> volumes,
       bool cleanUp = true)
     {
       this.name = Optional(name);
       this.Image = image;
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
-      this.cleanUp = cleanUp;
+      this.Volumes = volumes;
+      this.CleanUp = cleanUp;
     }
 
     ~TestcontainersContainer()
@@ -44,15 +44,19 @@ namespace DotNet.Testcontainers.Containers
       {
         return this.name.Match(
           Some: name => name,
-          None: () => TestcontainersClient.Instance.GetContainerName(this.Id));
+          None: () => TestcontainersClient.Instance.FindContainerNameById(this.Id));
       }
     }
+
+    private bool CleanUp { get; }
 
     private IDockerImage Image { get; }
 
     private IReadOnlyDictionary<string, string> ExposedPorts { get; }
 
     private IReadOnlyDictionary<string, string> PortBindings { get; }
+
+    private IReadOnlyDictionary<string, string> Volumes { get; }
 
     private HostConfig HostConfig
     {
@@ -69,12 +73,12 @@ namespace DotNet.Testcontainers.Containers
 
     public void Start()
     {
-      if (!TestcontainersClient.Instance.HasImage(this.Image.Image))
+      if (!TestcontainersClient.Instance.ExistImageByName(this.Image.Image))
       {
         TestcontainersClient.Instance.Pull(this.Image.Image);
       }
 
-      if (!TestcontainersClient.Instance.HasContainer(this.Id))
+      if (!TestcontainersClient.Instance.ExistContainerById(this.Id))
       {
         this.Id = TestcontainersClient.Instance.Run(this.Name, this.Image.Image, this.HostConfig);
       }
@@ -84,7 +88,7 @@ namespace DotNet.Testcontainers.Containers
 
     public void Stop()
     {
-      if (TestcontainersClient.Instance.HasContainer(this.Id))
+      if (TestcontainersClient.Instance.ExistContainerById(this.Id))
       {
         TestcontainersClient.Instance.Stop(this.Id);
       }
@@ -102,7 +106,7 @@ namespace DotNet.Testcontainers.Containers
       {
         this.Stop();
 
-        if (this.cleanUp)
+        if (this.CleanUp)
         {
           TestcontainersClient.Instance.Remove(this.Id);
         }

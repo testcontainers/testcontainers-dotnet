@@ -15,6 +15,7 @@ Pulls `nginx`, creates a new container with port binding `80:80` and hits the de
 ```csharp
 var containerBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
+  .WithName("nginx")
   .WithPortBindings(80);
 
 using (var container = containerBuilder.Build())

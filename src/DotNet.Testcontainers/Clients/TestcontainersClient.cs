@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Clients
     {
     }
 
-    public static ITestcontainersClient Instance
+    internal static ITestcontainersClient Instance
     {
       get
       {
@@ -22,31 +22,59 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public bool HasImage(string imageName)
+    public bool ExistImageById(string id)
     {
-      return Optional(imageName).Match(
-        Some: name => notnull(MetaDataClientImages.Instance.ByName(name)),
+      return Optional(id).Match(
+        Some: value => notnull(MetaDataClientImages.Instance.ById(value)),
         None: () => false);
     }
 
-    public bool HasContainer(string containerId)
+    public bool ExistImageByName(string name)
     {
-      return Optional(containerId).Match(
-        Some: id => notnull(MetaDataClientContainers.Instance.ByName(id)),
+      return Optional(name).Match(
+        Some: value => notnull(MetaDataClientImages.Instance.ByName(value)),
         None: () => false);
     }
 
-    public string GetImageName(string imageName)
+    public bool ExistContainerById(string id)
     {
-      return Optional(imageName).Match(
-        Some: name => MetaDataClientImages.Instance.ByName(name).ToString(),
+      return Optional(id).Match(
+        Some: value => notnull(MetaDataClientContainers.Instance.ById(value)),
+        None: () => false);
+    }
+
+    public bool ExistContainerByName(string name)
+    {
+      return Optional(name).Match(
+        Some: value => notnull(MetaDataClientContainers.Instance.ByName(value)),
+        None: () => false);
+    }
+
+    public string FindImageNameById(string id)
+    {
+      return Optional(id).Match(
+        Some: value => MetaDataClientImages.Instance.ById(value).ToString(),
         None: () => string.Empty);
     }
 
-    public string GetContainerName(string containerId)
+    public string FindImageNameByName(string name)
     {
-      return Optional(containerId).Match(
-        Some: id => MetaDataClientContainers.Instance.ById(id).ToString(),
+      return Optional(name).Match(
+        Some: value => MetaDataClientImages.Instance.ByName(value).ToString(),
+        None: () => string.Empty);
+    }
+
+    public string FindContainerNameById(string id)
+    {
+      return Optional(id).Match(
+        Some: value => MetaDataClientContainers.Instance.ById(value).ToString(),
+        None: () => string.Empty);
+    }
+
+    public string FindContainerNameByName(string name)
+    {
+      return Optional(name).Match(
+        Some: value => MetaDataClientContainers.Instance.ByName(value).ToString(),
         None: () => string.Empty);
     }
 
@@ -55,19 +83,19 @@ namespace DotNet.Testcontainers.Clients
       Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
     }
 
-    public void Start(string containerId)
+    public void Start(string id)
     {
-      Docker.Containers.StartContainerAsync(containerId, new ContainerStartParameters { }).Wait();
+      Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }).Wait();
     }
 
-    public void Stop(string containerId)
+    public void Stop(string id)
     {
-      Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { }).Wait();
+      Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { }).Wait();
     }
 
-    public void Remove(string containerId)
+    public void Remove(string id)
     {
-      Docker.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true }).Wait();
+      Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }).Wait();
     }
 
     public string Run(string name, string image, HostConfig hostConfig)
