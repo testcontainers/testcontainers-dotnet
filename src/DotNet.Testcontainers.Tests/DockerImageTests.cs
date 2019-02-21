@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests
 {
   using System.Net;
   using DotNet.Testcontainers.Builder;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images;
   using Xunit;
   using static LanguageExt.Prelude;
@@ -22,6 +23,18 @@ namespace DotNet.Testcontainers.Tests
       Assert.Equal(expected.Repository, dockerImage.Repository);
       Assert.Equal(expected.Name, dockerImage.Name);
       Assert.Equal(expected.Tag, dockerImage.Tag);
+    }
+
+    [Fact]
+    public void Test_DockerImageExist_WithInValidImage_NoException()
+    {
+      Assert.False(TestcontainersClient.Instance.ExistImageById(string.Empty));
+    }
+
+    [Fact]
+    public void Test_DockerContainerExist_WithInValidImage_NoException()
+    {
+      Assert.False(TestcontainersClient.Instance.ExistContainerById(string.Empty));
     }
 
     [Fact]

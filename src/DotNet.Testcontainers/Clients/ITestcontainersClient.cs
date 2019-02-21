@@ -2,24 +2,33 @@ namespace DotNet.Testcontainers.Clients
 {
   using Docker.DotNet.Models;
 
-  public interface ITestcontainersClient
+  internal interface ITestcontainersClient
   {
-    bool HasImage(string imageName);
+    // Wrap image and container query into proper classes.
+    bool ExistImageById(string id);
 
-    bool HasContainer(string containerId);
+    bool ExistImageByName(string name);
 
-    string GetImageName(string containerId);
+    bool ExistContainerById(string id);
 
-    string GetContainerName(string containerId);
+    bool ExistContainerByName(string name);
 
-    void Pull(string imageName);
+    string FindImageNameById(string id);
 
-    void Start(string containerId);
+    string FindImageNameByName(string name);
 
-    void Stop(string containerId);
+    string FindContainerNameById(string id);
 
-    void Remove(string containerId);
+    string FindContainerNameByName(string name);
 
-    string Run(string containerName, string image, HostConfig hostConfig);
+    void Pull(string name);
+
+    void Start(string id);
+
+    void Stop(string id);
+
+    void Remove(string id);
+
+    string Run(string name, string image, HostConfig hostConfig);
   }
 }

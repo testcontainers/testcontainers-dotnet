@@ -19,6 +19,8 @@ namespace DotNet.Testcontainers.Builder
 
     private readonly IReadOnlyDictionary<string, string> portBindings = new Dictionary<string, string>();
 
+    private readonly IReadOnlyDictionary<string, string> volumes = new Dictionary<string, string>();
+
     public TestcontainersBuilder()
     {
     }
@@ -28,12 +30,14 @@ namespace DotNet.Testcontainers.Builder
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
+      IReadOnlyDictionary<string, string> volumes = null,
       bool cleanUp = true)
     {
       this.name = name;
       this.image = image;
       this.exposedPorts = exposedPorts;
       this.portBindings = portBindings;
+      this.volumes = volumes;
       this.cleanUp = cleanUp;
     }
 
@@ -46,6 +50,8 @@ namespace DotNet.Testcontainers.Builder
     internal override IReadOnlyDictionary<string, string> ExposedPorts => this.exposedPorts;
 
     internal override IReadOnlyDictionary<string, string> PortBindings => this.portBindings;
+
+    internal override IReadOnlyDictionary<string, string> Volumes => this.volumes;
 
     public override ContainerBuilder WithCleanUp(bool cleanUp)
     {
@@ -97,6 +103,11 @@ namespace DotNet.Testcontainers.Builder
       return Build(this, portBindings: HashMap((hostPort, containerPort)).ToDictionary());
     }
 
+    public override ContainerBuilder WithVolume(string source, string destination)
+    {
+      return Build(this, volumes: this.volumes);
+    }
+
     public override IDockerContainer Build()
     {
       return new TestcontainersContainer(
@@ -104,6 +115,7 @@ namespace DotNet.Testcontainers.Builder
         this.Image,
         this.ExposedPorts,
         this.PortBindings,
+        this.Volumes,
         this.CleanUp);
     }
 
@@ -113,33 +125,33 @@ namespace DotNet.Testcontainers.Builder
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
+      IReadOnlyDictionary<string, string> volumes = null,
       bool cleanUp = true)
     {
       // Is any functional method from C# language-ext possible here?
-      if (exposedPorts == null)
-      {
-        exposedPorts = old.ExposedPorts;
-      }
-      else
-      {
-        exposedPorts = exposedPorts.Concat(old.ExposedPorts).ToDictionary(key => key.Key, value => value.Value);
-      }
-
-      if (portBindings == null)
-      {
-        portBindings = old.PortBindings;
-      }
-      else
-      {
-        portBindings = portBindings.Concat(old.PortBindings).ToDictionary(key => key.Key, value => value.Value);
-      }
+      Merge(old.ExposedPorts, ref exposedPorts);
+      Merge(old.PortBindings, ref portBindings);
+      Merge(old.Volumes, ref volumes);
 
       return new TestcontainersBuilder(
         name ?? old.Name,
         image ?? old.Image,
         exposedPorts,
         portBindings,
+        volumes,
         cleanUp);
+    }
+
+    private static void Merge<T>(IReadOnlyDictionary<T, T> previous, ref IReadOnlyDictionary<T, T> next)
+    {
+      if (notnull(next))
+      {
+        next = previous.Concat(next).ToDictionary(key => key.Key, value => value.Value);
+      }
+      else
+      {
+        next = previous;
+      }
     }
   }
 }
