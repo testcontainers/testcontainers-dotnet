@@ -9,6 +9,8 @@ namespace DotNet.Testcontainers.Builder
 
   public class TestcontainersBuilder : ContainerBuilder
   {
+    private readonly bool cleanUp;
+
     private readonly string name;
 
     private readonly IDockerImage image = new TestcontainersImage();
@@ -25,21 +27,30 @@ namespace DotNet.Testcontainers.Builder
       string name = null,
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
-      IReadOnlyDictionary<string, string> portBindings = null)
+      IReadOnlyDictionary<string, string> portBindings = null,
+      bool cleanUp = true)
     {
       this.name = name;
       this.image = image;
       this.exposedPorts = exposedPorts;
       this.portBindings = portBindings;
+      this.cleanUp = cleanUp;
     }
 
-    public override string Name => this.name;
+    internal override bool CleanUp => this.cleanUp;
 
-    public override IDockerImage Image => this.image;
+    internal override string Name => this.name;
 
-    public override IReadOnlyDictionary<string, string> ExposedPorts => this.exposedPorts;
+    internal override IDockerImage Image => this.image;
 
-    public override IReadOnlyDictionary<string, string> PortBindings => this.portBindings;
+    internal override IReadOnlyDictionary<string, string> ExposedPorts => this.exposedPorts;
+
+    internal override IReadOnlyDictionary<string, string> PortBindings => this.portBindings;
+
+    public override ContainerBuilder WithCleanUp(bool cleanUp)
+    {
+      return Build(this, cleanUp: cleanUp);
+    }
 
     public override ContainerBuilder WithName(string name)
     {
@@ -92,7 +103,8 @@ namespace DotNet.Testcontainers.Builder
         this.Name,
         this.Image,
         this.ExposedPorts,
-        this.PortBindings);
+        this.PortBindings,
+        this.CleanUp);
     }
 
     private static ContainerBuilder Build(
@@ -100,7 +112,8 @@ namespace DotNet.Testcontainers.Builder
       string name = null,
       IDockerImage image = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
-      IReadOnlyDictionary<string, string> portBindings = null)
+      IReadOnlyDictionary<string, string> portBindings = null,
+      bool cleanUp = true)
     {
       // Is any functional method from C# language-ext possible here?
       if (exposedPorts == null)
@@ -125,7 +138,8 @@ namespace DotNet.Testcontainers.Builder
         name ?? old.Name,
         image ?? old.Image,
         exposedPorts,
-        portBindings);
+        portBindings,
+        cleanUp);
     }
   }
 }

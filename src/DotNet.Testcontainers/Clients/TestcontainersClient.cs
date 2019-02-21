@@ -62,8 +62,12 @@ namespace DotNet.Testcontainers.Clients
 
     public void Stop(string containerId)
     {
-      Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }).Wait();
-      Docker.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { }).Wait();
+      Docker.Containers.StopContainerAsync(containerId, new ContainerStopParameters { }).Wait();
+    }
+
+    public void Remove(string containerId)
+    {
+      Docker.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true }).Wait();
     }
 
     public string Run(string name, string image, HostConfig hostConfig)

@@ -6,13 +6,22 @@ namespace DotNet.Testcontainers.Builders
 
   public abstract class ContainerBuilder
   {
-    public abstract string Name { get; }
+    internal abstract bool CleanUp { get; }
 
-    public abstract IDockerImage Image { get; }
+    internal abstract string Name { get; }
 
-    public abstract IReadOnlyDictionary<string, string> ExposedPorts { get; }
+    internal abstract IDockerImage Image { get; }
 
-    public abstract IReadOnlyDictionary<string, string> PortBindings { get; }
+    internal abstract IReadOnlyDictionary<string, string> ExposedPorts { get; }
+
+    internal abstract IReadOnlyDictionary<string, string> PortBindings { get; }
+
+    /// <summary>
+    /// If true, Testcontainers will remove the Docker container on finalize. Otherwise, Testcontainers will keep the Docker container.
+    /// </summary>
+    /// <param name="cleanUp">True, Testcontainers will remove the Docker container on finalize. Otherwise, Otherwise, Testcontainers will keep it.</param>
+    /// <returns>A configured instance of <see cref="ContainerBuilder"/>.</returns>
+    public abstract ContainerBuilder WithCleanUp(bool cleanUp);
 
     /// <summary>
     /// Sets the name of the Docker container.
