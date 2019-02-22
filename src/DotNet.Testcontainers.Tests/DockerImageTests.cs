@@ -76,10 +76,11 @@ namespace DotNet.Testcontainers.Tests
 
           var response = (HttpWebResponse)request.GetResponse();
 
-          if (response == null || response.StatusCode != HttpStatusCode.OK)
-          {
-            Assert.True(false, $"nginx port {port.Item1} is not available.");
-          }
+          var isAvailable = Optional(response).Match(
+            Some: value => value.StatusCode == HttpStatusCode.OK,
+            None: () => false);
+
+          Assert.True(isAvailable, $"nginx port {port.Item1} is not available.");
         }
       });
     }

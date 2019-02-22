@@ -22,34 +22,31 @@ internal class BuildParameters
   public BuildProjects Projects { get; private set; }
   public BuildPaths Paths { get; private set; }
 
-  public static Lazy<BuildParameters> Instance(ICakeContext context, string solution)
+  public static BuildParameters Instance(ICakeContext context, string solution)
   {
-    return new Lazy<BuildParameters>(() =>
+    var buildVersion = BuildVersion.Instance(context);
+
+    var version = buildVersion.Version;
+
+    var branch = buildVersion.Branch;
+
+    var isLocalBuild = context.BuildSystem().IsLocalBuild;
+
+    return new BuildParameters
     {
-      var buildVersion = BuildVersion.Instance(context).Value;
-
-      var version = buildVersion.Version;
-
-      var branch = buildVersion.Branch;
-
-      var isLocalBuild = context.BuildSystem().IsLocalBuild;
-
-      return new BuildParameters
-      {
-        Solution = context.MakeAbsolute(new DirectoryPath($"src/{solution}.sln")).FullPath,
-        Target = context.Argument("target", "Default"),
-        Configuration = context.Argument("configuration", "Debug"),
-        Version = version,
-        Branch = branch,
-        IsLocalBuild = isLocalBuild,
-        ShouldPublish = !isLocalBuild && ShouldPublishing(branch),
-        Verbosity = DotNetCoreVerbosity.Quiet,
-        SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
-        NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
-        Projects = BuildProjects.Instance(context, solution).Value,
-        Paths = BuildPaths.Instance(context, version).Value
-      };
-    });
+      Solution = context.MakeAbsolute(new DirectoryPath($"src/{solution}.sln")).FullPath,
+      Target = context.Argument("target", "Default"),
+      Configuration = context.Argument("configuration", "Debug"),
+      Version = version,
+      Branch = branch,
+      IsLocalBuild = isLocalBuild,
+      ShouldPublish = !isLocalBuild && ShouldPublishing(branch),
+      Verbosity = DotNetCoreVerbosity.Quiet,
+      SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
+      NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
+      Projects = BuildProjects.Instance(context, solution),
+      Paths = BuildPaths.Instance(context, version)
+    };
   }
 
   public static bool ShouldPublishing(string branch)

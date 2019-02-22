@@ -6,7 +6,7 @@
 
 #load "./build/parameters.cake"
 
-BuildParameters param = BuildParameters.Instance(Context, "DotNet.Testcontainers").Value;
+BuildParameters param = BuildParameters.Instance(Context, "DotNet.Testcontainers");
 
 Setup(context =>
 {

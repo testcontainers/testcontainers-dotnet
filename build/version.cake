@@ -7,11 +7,11 @@ internal class BuildVersion
   public string Branch { get; private set; }
   public string Version { get; private set; }
 
-  public static Lazy<BuildVersion> Instance(ICakeContext context)
+  public static BuildVersion Instance(ICakeContext context)
   {
-    var branch = context.EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? context.GitBranchCurrent(".").FriendlyName;
+    var branch = context.EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? context.GitBranchCurrent(".").FriendlyName; // Azure Pipelines variable
 
-    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER");
+    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER"); // Azure Pipelines variable
 
     var metadata = context.EnvironmentVariable("METADATA");
 
@@ -32,13 +32,10 @@ internal class BuildVersion
       version = $"{version}+{metadata}";
     }
 
-    return new Lazy<BuildVersion>(() =>
+    return new BuildVersion
     {
-      return new BuildVersion
-      {
-        Branch = branch,
-        Version = version
-      };
-    });
+      Branch = branch,
+      Version = version
+    };
   }
 }

@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface ITestcontainersClient
   {
-    // Wrap image and container query into proper classes.
+    // Wrap image and container query into proper response classes.
     bool ExistImageById(string id);
 
     bool ExistImageByName(string name);

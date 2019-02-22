@@ -9,19 +9,16 @@ internal class BuildProjects
   public ICollection<SolutionProject> OnlyTests { get; private set; }
   public SolutionProject TestContainers { get; private set; }
 
-  public static Lazy<BuildProjects> Instance(ICakeContext context, string solution)
+  public static BuildProjects Instance(ICakeContext context, string solution)
   {
-    return new Lazy<BuildProjects>(() =>
-    {
-      var allProjects = context.ParseSolution($"src/{solution}.sln").Projects.ToList();
+    var allProjects = context.ParseSolution($"src/{solution}.sln").Projects.ToList();
 
-      return new BuildProjects
-      {
-        All = allProjects,
-        NoneTests = allProjects.Where(project => !project.Name.EndsWith("Tests")).ToList(),
-        OnlyTests = allProjects.Where(project => project.Name.EndsWith("Tests")).ToList(),
-        TestContainers = allProjects.Single(p => "DotNet.Testcontainers".Equals(p.Name))
-      };
-    });
+    return new BuildProjects
+    {
+      All = allProjects,
+      NoneTests = allProjects.Where(project => !project.Name.EndsWith("Tests")).ToList(),
+      OnlyTests = allProjects.Where(project => project.Name.EndsWith("Tests")).ToList(),
+      TestContainers = allProjects.Single(p => "DotNet.Testcontainers".Equals(p.Name))
+    };
   }
 }

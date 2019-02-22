@@ -78,9 +78,9 @@ namespace DotNet.Testcontainers.Clients
         None: () => string.Empty);
     }
 
-    public void Pull(string image)
+    public void Pull(string name)
     {
-      Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+      Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = name }, null, DebugProgress.Instance).Wait();
     }
 
     public void Start(string id)

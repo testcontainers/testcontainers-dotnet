@@ -26,12 +26,12 @@ namespace DotNet.Testcontainers.Builder
     }
 
     protected TestcontainersBuilder(
-      string name = null,
-      IDockerImage image = null,
-      IReadOnlyDictionary<string, string> exposedPorts = null,
-      IReadOnlyDictionary<string, string> portBindings = null,
-      IReadOnlyDictionary<string, string> volumes = null,
-      bool cleanUp = true)
+      string name,
+      IDockerImage image,
+      IReadOnlyDictionary<string, string> exposedPorts,
+      IReadOnlyDictionary<string, string> portBindings,
+      IReadOnlyDictionary<string, string> volumes,
+      bool cleanUp)
     {
       this.name = name;
       this.image = image;
