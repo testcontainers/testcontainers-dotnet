@@ -25,17 +25,14 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    internal override ICollection<ContainerListResponse> All
+    internal override ICollection<ContainerListResponse> GetAll()
     {
-      get
-      {
-        return Docker.Containers.ListContainersAsync(new ContainersListParameters { }).Result.ToList();
-      }
+      return Docker.Containers.ListContainersAsync(new ContainersListParameters { }).Result.ToList();
     }
 
     internal override ContainerListResponse ById(string id)
     {
-      return notnull(id) ? this.All.FirstOrDefault(value => id.Equals(value.ID)) : null;
+      return notnull(id) ? this.GetAll().FirstOrDefault(value => id.Equals(value.ID)) : null;
     }
 
     internal override ContainerListResponse ByName(string name)

@@ -25,17 +25,14 @@ namespace DotNet.Testcontainers.Clients.MetaData
       }
     }
 
-    internal override ICollection<ImagesListResponse> All
+    internal override ICollection<ImagesListResponse> GetAll()
     {
-      get
-      {
-        return Docker.Images.ListImagesAsync(new ImagesListParameters { }).Result.ToList();
-      }
+      return Docker.Images.ListImagesAsync(new ImagesListParameters { }).Result.ToList();
     }
 
     internal override ImagesListResponse ById(string id)
     {
-      return notnull(id) ? this.All.FirstOrDefault(value => id.Equals(value.ID)) : null;
+      return notnull(id) ? this.GetAll().FirstOrDefault(value => id.Equals(value.ID)) : null;
     }
 
     internal override ImagesListResponse ByName(string name)
