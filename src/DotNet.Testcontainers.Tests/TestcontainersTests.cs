@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests
 {
+  using System;
   using System.IO;
   using System.Net;
   using DotNet.Testcontainers.Clients;
@@ -164,15 +165,17 @@ namespace DotNet.Testcontainers.Tests
       public void MountedVolumeAndCommand()
       {
         // Given
-        var dir = "tmp";
+        var source = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // Gets accessible dir on build server.
+
+        var target = "tmp";
 
         var file = "hostname";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
           .WithImage("nginx")
-          .WithMount(".", $"/{dir}")
-          .WithCommand("/bin/bash", "-c", $"hostname > /{dir}/{file}");
+          .WithMount(source, $"/{target}")
+          .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
         using (var testcontainers = testcontainersBuilder.Build())
@@ -180,7 +183,7 @@ namespace DotNet.Testcontainers.Tests
           testcontainers.Start();
         }
 
-        Assert.True(File.Exists($"{file}"), $"{file} does not exist.");
+        Assert.True(File.Exists($"{source}/{file}"), $"{file} does not exist.");
       }
     }
   }
