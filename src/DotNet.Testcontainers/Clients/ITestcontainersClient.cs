@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
-  using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Core.Builder;
 
   internal interface ITestcontainersClient
   {
@@ -21,14 +21,12 @@ namespace DotNet.Testcontainers.Clients
 
     string FindContainerNameByName(string name);
 
-    void Pull(string name);
-
     void Start(string id);
 
     void Stop(string id);
 
     void Remove(string id);
 
-    string Run(string name, string image, HostConfig hostConfig);
+    string Run(DockerContainerConfig dockerContainerConfig, DockerHostConfig dockerHostConfig);
   }
 }

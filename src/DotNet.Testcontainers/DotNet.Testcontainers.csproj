@@ -7,10 +7,14 @@
     <PackageReference Include="LanguageExt.Core" Version="3.1.15" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Configurations\" />
-    <Folder Include="Configurations\Parser\" />
-    <Folder Include="Diagnostics\" />
     <Folder Include="Clients\" />
+    <Folder Include="Configurations\" />
+    <Folder Include="Core\" />
+    <Folder Include="Core\Builder\" />
+    <Folder Include="Core\Container\" />
+    <Folder Include="Core\Image\" />
+    <Folder Include="Core\Parser\" />
+    <Folder Include="Diagnostics\" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

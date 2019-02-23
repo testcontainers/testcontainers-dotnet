@@ -7,8 +7,6 @@
 
 Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
 
-:warning: A lot of features are not yet implemented. I try to add as much as I can and hope you will contribute to this great project as well.
-
 ## Examples
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
@@ -16,7 +14,9 @@ Pulls `nginx`, creates a new container with port binding `80:80` and hits the de
 var containerBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithPortBindings(80);
+  .WithPortBinding(80)
+  .WithVolume(".", $"/tmp")
+  .WithCommand("/bin/bash", "-c", $"hostname > /tmp/hostname");
 
 using (var container = containerBuilder.Build())
 {

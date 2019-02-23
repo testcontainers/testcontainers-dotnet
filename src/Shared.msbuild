@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-rc.94">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-rc.108">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
