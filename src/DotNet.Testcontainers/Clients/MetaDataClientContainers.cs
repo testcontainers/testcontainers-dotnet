@@ -32,12 +32,12 @@ namespace DotNet.Testcontainers.Clients
 
     internal override ContainerListResponse ById(string id)
     {
-      return notnull(id) ? this.GetAll().FirstOrDefault(value => id.Equals(value.ID)) : null;
+      return string.IsNullOrWhiteSpace(id) ? null : this.ByProperty("id", id);
     }
 
     internal override ContainerListResponse ByName(string name)
     {
-      return this.ByProperty("name", name);
+      return string.IsNullOrWhiteSpace(name) ? null : this.ByProperty("name", name);
     }
 
     internal override ContainerListResponse ByProperty(string property, string value)

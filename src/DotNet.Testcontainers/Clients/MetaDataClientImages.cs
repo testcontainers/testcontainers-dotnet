@@ -27,17 +27,17 @@ namespace DotNet.Testcontainers.Clients
 
     internal override IReadOnlyCollection<ImagesListResponse> GetAll()
     {
-      return Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }).Result.ToList();
+      return Docker.Images.ListImagesAsync(new ImagesListParameters { }).Result.ToList();
     }
 
     internal override ImagesListResponse ById(string id)
     {
-      return notnull(id) ? this.GetAll().FirstOrDefault(value => id.Equals(value.ID)) : null;
+      return string.IsNullOrWhiteSpace(id) ? null : this.GetAll().FirstOrDefault(value => id.Equals(value.ID));
     }
 
     internal override ImagesListResponse ByName(string name)
     {
-      return this.ByProperty("label", name);
+      return string.IsNullOrWhiteSpace(name) ? null : this.ByProperty("label", name);
     }
 
     internal override ImagesListResponse ByProperty(string property, string value)
