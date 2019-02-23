@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Images
+namespace DotNet.Testcontainers.Core.Image
 {
   public interface IDockerImage
   {

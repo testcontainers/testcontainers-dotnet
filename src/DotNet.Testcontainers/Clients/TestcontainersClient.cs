@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Clients.MetaData;
+  using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Diagnostics;
   using static LanguageExt.Prelude;
 
@@ -78,32 +78,50 @@ namespace DotNet.Testcontainers.Clients
         None: () => string.Empty);
     }
 
-    public void Pull(string name)
-    {
-      Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = name }, null, DebugProgress.Instance).Wait();
-    }
-
     public void Start(string id)
     {
-      Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }).Wait();
+      if (this.ExistContainerById(id))
+      {
+        Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }).Wait();
+      }
     }
 
     public void Stop(string id)
     {
-      Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { }).Wait();
+      if (this.ExistContainerById(id))
+      {
+        Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }).Wait();
+      }
     }
 
     public void Remove(string id)
     {
-      Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }).Wait();
+      if (this.ExistContainerById(id))
+      {
+        Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }).Wait();
+      }
     }
 
-    public string Run(string name, string image, HostConfig hostConfig)
+    public string Run(DockerContainerConfig dockerContainerConfig, DockerHostConfig dockerHostConfig)
     {
+      var image = dockerContainerConfig.Image;
+
+      if (!this.ExistImageByName(image))
+      {
+        Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+      }
+
+      var hostConfig = new HostConfig
+      {
+        PortBindings = dockerHostConfig.PortBindings,
+        Mounts = dockerHostConfig.Mounts,
+      };
+
       return Docker.Containers.CreateContainerAsync(new CreateContainerParameters
       {
-        Name = name,
         Image = image,
+        Name = dockerContainerConfig.Name,
+        Cmd = dockerContainerConfig.Command,
         HostConfig = hostConfig,
       }).Result.ID;
     }

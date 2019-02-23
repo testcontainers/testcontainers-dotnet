@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- Added Docker container volume and cmd to .NET Testcontainers. [@HofmeisterAn](https://github.com/HofmeisterAn).
 - Added Docker container name to .NET Testcontainers. [@HofmeisterAn](https://github.com/HofmeisterAn).
 - Added Docker port bindings to .NET Testcontainers. [@HofmeisterAn](https://github.com/HofmeisterAn).
 - Initialed project and added the build pipeline scripts [@HofmeisterAn](https://github.com/HofmeisterAn).

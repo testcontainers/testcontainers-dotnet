@@ -1,8 +1,8 @@
-namespace DotNet.Testcontainers.Configuration.Parser
+namespace DotNet.Testcontainers.Core.Parser
 {
   using System.Linq;
   using System.Text.RegularExpressions;
-  using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Core.Image;
 
   internal class MatchImage
   {

@@ -1,7 +1,7 @@
 name: $(date:yyyyMMdd)$(rev:.r)
 
 variables:
-  dotNetCoreVersion: 2.1.500
+  dotNetCoreVersion: 2.2.104
 
 jobs:
 - job: 'Build'

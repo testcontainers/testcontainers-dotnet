@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal abstract class DockerMetaDataClient<T> : DockerApiClient
   {
-    internal abstract ICollection<T> GetAll();
+    internal abstract IReadOnlyCollection<T> GetAll();
 
     internal abstract T ById(string id);
 

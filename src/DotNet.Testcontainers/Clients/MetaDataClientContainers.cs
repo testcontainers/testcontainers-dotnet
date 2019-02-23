@@ -25,9 +25,9 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    internal override ICollection<ContainerListResponse> GetAll()
+    internal override IReadOnlyCollection<ContainerListResponse> GetAll()
     {
-      return Docker.Containers.ListContainersAsync(new ContainersListParameters { }).Result.ToList();
+      return Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }).Result.ToList();
     }
 
     internal override ContainerListResponse ById(string id)

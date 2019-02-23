@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Clients.MetaData
+namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
@@ -25,9 +25,9 @@ namespace DotNet.Testcontainers.Clients.MetaData
       }
     }
 
-    internal override ICollection<ImagesListResponse> GetAll()
+    internal override IReadOnlyCollection<ImagesListResponse> GetAll()
     {
-      return Docker.Images.ListImagesAsync(new ImagesListParameters { }).Result.ToList();
+      return Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }).Result.ToList();
     }
 
     internal override ImagesListResponse ById(string id)
