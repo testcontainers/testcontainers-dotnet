@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Core.Parser
 {
-  using DotNet.Testcontainers.Core.Image;
+  using DotNet.Testcontainers.Core.Images;
 
   internal sealed class MatchImageRepository : MatchImage
   {

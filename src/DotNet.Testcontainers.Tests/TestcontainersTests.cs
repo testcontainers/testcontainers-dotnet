@@ -5,12 +5,14 @@ namespace DotNet.Testcontainers.Tests
   using System.Net;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Builder;
-  using DotNet.Testcontainers.Core.Image;
+  using DotNet.Testcontainers.Core.Images;
   using Xunit;
   using static LanguageExt.Prelude;
 
-  public class TestcontainersTests
+  public static class TestcontainersTests
   {
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // Gets accessible dir on build server.
+
     public class ParseDockerImageName
     {
       [Theory]
@@ -96,7 +98,7 @@ namespace DotNet.Testcontainers.Tests
       public void SpecifiedContainerName()
       {
         // Given
-        var name = "alpine";
+        var name = "/alpine";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
@@ -165,8 +167,6 @@ namespace DotNet.Testcontainers.Tests
       public void MountedVolumeAndCommand()
       {
         // Given
-        var source = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // Gets accessible dir on build server.
-
         var target = "tmp";
 
         var file = "hostname";
@@ -174,7 +174,7 @@ namespace DotNet.Testcontainers.Tests
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
           .WithImage("nginx")
-          .WithMount(source, $"/{target}")
+          .WithMount(TempDir, $"/{target}")
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
@@ -183,7 +183,7 @@ namespace DotNet.Testcontainers.Tests
           testcontainers.Start();
         }
 
-        Assert.True(File.Exists($"{source}/{file}"), $"{file} does not exist.");
+        Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
       }
     }
   }

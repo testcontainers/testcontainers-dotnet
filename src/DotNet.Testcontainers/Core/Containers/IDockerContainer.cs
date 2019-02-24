@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Core.Container
+namespace DotNet.Testcontainers.Core.Containers
 {
   using System;
 

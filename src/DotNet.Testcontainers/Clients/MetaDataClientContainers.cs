@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Linq;
   using Docker.DotNet.Models;
-  using static LanguageExt.Prelude;
 
   internal sealed class MetaDataClientContainers : DockerMetaDataClient<ContainerListResponse>
   {

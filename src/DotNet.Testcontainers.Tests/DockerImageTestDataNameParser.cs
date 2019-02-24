@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Tests
 {
-  using DotNet.Testcontainers.Core.Image;
+  using DotNet.Testcontainers.Core.Images;
   using Xunit;
 
   public class DockerImageTestDataNameParser : TheoryData<IDockerImage, string>
