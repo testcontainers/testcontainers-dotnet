@@ -132,17 +132,17 @@ namespace DotNet.Testcontainers.Clients
         Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
       }
 
-      var cmd = ConverterFactory.Get<IReadOnlyCollection<string>,
-        IList<string>>().Convert(configuration.Container.Command);
+      var cmd = GenericConverter.Convert<IReadOnlyCollection<string>,
+        IList<string>>(configuration.Container.Command);
 
-      var exposedPorts = ConverterFactory.Get<IReadOnlyDictionary<string, string>,
-        IDictionary<string, EmptyStruct>>("ExposedPorts").Convert(configuration.Container.ExposedPorts);
+      var exposedPorts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
+        IDictionary<string, EmptyStruct>>(configuration.Container.ExposedPorts, "ExposedPorts");
 
-      var portBindings = ConverterFactory.Get<IReadOnlyDictionary<string, string>,
-        IDictionary<string, IList<PortBinding>>>("PortBindings").Convert(configuration.Host.PortBindings);
+      var portBindings = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
+        IDictionary<string, IList<PortBinding>>>(configuration.Host.PortBindings, "PortBindings");
 
-      var mounts = ConverterFactory.Get<IReadOnlyDictionary<string, string>,
-        IList<Mount>>("Mounts").Convert(configuration.Host.Mounts);
+      var mounts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
+        IList<Mount>>(configuration.Host.Mounts, "Mounts");
 
       var hostConfig = new HostConfig
       {
@@ -155,6 +155,7 @@ namespace DotNet.Testcontainers.Clients
         Image = image,
         Name = name,
         Cmd = cmd,
+        ExposedPorts = exposedPorts,
         HostConfig = hostConfig,
       }).Result.ID;
     }
