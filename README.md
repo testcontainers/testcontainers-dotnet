@@ -16,9 +16,9 @@ var testcontainersBuilder = new TestcontainersBuilder()
   .WithName("nginx")
   .WithPortBinding(80);
 
-using (var container = containerBuilder.Build())
+using (var testcontainers = testcontainersBuilder.Build())
 {
-  testcontainersBuilder.Start();
+  testcontainers.Start();
   var request = WebRequest.Create($"http://localhost:80");
 }
 ```
