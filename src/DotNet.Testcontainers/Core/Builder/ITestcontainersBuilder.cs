@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Core.Builder
 {
-  using DotNet.Testcontainers.Core.Container;
-  using DotNet.Testcontainers.Core.Image;
+  using DotNet.Testcontainers.Core.Containers;
+  using DotNet.Testcontainers.Core.Images;
 
   public interface ITestcontainersBuilder
   {

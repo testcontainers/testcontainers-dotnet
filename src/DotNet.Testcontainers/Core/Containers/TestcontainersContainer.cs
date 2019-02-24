@@ -1,19 +1,18 @@
-namespace DotNet.Testcontainers.Core.Container
+namespace DotNet.Testcontainers.Core.Containers
 {
   using System;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Core.Builder;
+  using DotNet.Testcontainers.Core.Models;
+  using LanguageExt;
   using static LanguageExt.Prelude;
 
   public class TestcontainersContainer : IDockerContainer
   {
-    internal TestcontainersContainer(
-      DockerContainerConfig containerConfig,
-      DockerHostConfig hostConfig,
-      bool cleanUp = true)
+    private Option<string> id;
+
+    internal TestcontainersContainer(TestcontainersConfiguration configuration, bool cleanUp = true)
     {
-      this.ContainerConfig = containerConfig;
-      this.HostConfig = hostConfig;
+      this.Configuration = configuration;
       this.CleanUp = cleanUp;
     }
 
@@ -22,28 +21,36 @@ namespace DotNet.Testcontainers.Core.Container
       this.Dispose(false);
     }
 
-    public string Id { get; private set; }
+    public string Id
+    {
+      get
+      {
+        return this.id.IfNone(() => string.Empty);
+      }
+
+      set
+      {
+        this.id = Some(value);
+      }
+    }
 
     public string Name
     {
       get
       {
-        return Optional(this.ContainerConfig.Name).IfNone(TestcontainersClient.Instance.FindContainerNameById(this.Id));
+        return this.id.Match(
+          Some: TestcontainersClient.Instance.FindContainerNameById,
+          None: () => $"/{this.Configuration.Container.Name}");
       }
     }
 
-    private DockerContainerConfig ContainerConfig { get; }
-
-    private DockerHostConfig HostConfig { get; }
+    private TestcontainersConfiguration Configuration { get; }
 
     private bool CleanUp { get; }
 
     public void Start()
     {
-      this.Id = Optional(this.Id).IfNone(
-        TestcontainersClient.Instance.Run(
-          this.ContainerConfig,
-          this.HostConfig));
+      this.id = this.id.IfNone(TestcontainersClient.Instance.Run(this.Configuration));
 
       TestcontainersClient.Instance.Start(this.Id);
     }
@@ -61,7 +68,7 @@ namespace DotNet.Testcontainers.Core.Container
 
     protected virtual void Dispose(bool disposing)
     {
-      Optional(this.Id).IfSomeAsync(id =>
+      this.id.IfSomeAsync(id =>
       {
         if (!this.CleanUp)
         {
@@ -69,7 +76,7 @@ namespace DotNet.Testcontainers.Core.Container
         }
         else
         {
-          this.Id = null;
+          this.id = None;
           TestcontainersClient.Instance.Remove(id);
         }
       });

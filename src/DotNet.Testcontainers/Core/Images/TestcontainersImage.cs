@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Core.Image
+namespace DotNet.Testcontainers.Core.Images
 {
   using System;
   using System.Linq;

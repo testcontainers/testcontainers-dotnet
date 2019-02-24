@@ -1,10 +1,10 @@
 namespace DotNet.Testcontainers.Clients
 {
-  using DotNet.Testcontainers.Core.Builder;
+  using DotNet.Testcontainers.Core.Models;
 
   internal interface ITestcontainersClient
   {
-    // Wrap image and container query into proper response classes.
+    // Wrap image and container queries into proper response classes.
     bool ExistImageById(string id);
 
     bool ExistImageByName(string name);
@@ -27,6 +27,6 @@ namespace DotNet.Testcontainers.Clients
 
     void Remove(string id);
 
-    string Run(DockerContainerConfig dockerContainerConfig, DockerHostConfig dockerHostConfig);
+    string Run(TestcontainersConfiguration configuration);
   }
 }

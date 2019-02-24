@@ -8,13 +8,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Clients\" />
-    <Folder Include="Configurations\" />
     <Folder Include="Core\" />
     <Folder Include="Core\Builder\" />
-    <Folder Include="Core\Container\" />
-    <Folder Include="Core\Image\" />
+    <Folder Include="Core\Containers\" />
+    <Folder Include="Core\Images\" />
+    <Folder Include="Core\Mapper\" />
+    <Folder Include="Core\Models\" />
     <Folder Include="Core\Parser\" />
     <Folder Include="Diagnostics\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Configurations\.gitkeep" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

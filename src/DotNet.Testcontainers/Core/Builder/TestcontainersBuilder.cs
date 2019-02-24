@@ -3,8 +3,9 @@ namespace DotNet.Testcontainers.Core.Builder
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
-  using DotNet.Testcontainers.Core.Container;
-  using DotNet.Testcontainers.Core.Image;
+  using DotNet.Testcontainers.Core.Containers;
+  using DotNet.Testcontainers.Core.Images;
+  using DotNet.Testcontainers.Core.Models;
   using static LanguageExt.Prelude;
 
   public class TestcontainersBuilder : ITestcontainersBuilder
@@ -95,9 +96,9 @@ namespace DotNet.Testcontainers.Core.Builder
       return Build(this, mounts: HashMap((source, destination)).ToDictionary());
     }
 
-    public ITestcontainersBuilder WithCommand(params string[] commands)
+    public ITestcontainersBuilder WithCommand(params string[] command)
     {
-      return Build(this, commands: new ReadOnlyCollection<string>(commands));
+      return Build(this, commands: new ReadOnlyCollection<string>(command));
     }
 
     public ITestcontainersBuilder WithCleanUp(bool cleanUp)
@@ -107,21 +108,18 @@ namespace DotNet.Testcontainers.Core.Builder
 
     public IDockerContainer Build()
     {
-      var dockerContainerConfig = new DockerContainerConfig();
-      dockerContainerConfig.SetImage(this.image.Image);
-      dockerContainerConfig.SetName(this.name);
-      dockerContainerConfig.SetExposedPorts(this.exposedPorts);
-      dockerContainerConfig.SetCommand(this.command);
+      var configuration = default(TestcontainersConfiguration);
+      configuration.Container.Image = this.image.Image;
+      configuration.Container.Name = this.name;
+      configuration.Container.ExposedPorts = this.exposedPorts;
+      configuration.Container.Command = this.command;
+      configuration.Host.PortBindings = this.portBindings;
+      configuration.Host.Mounts = this.mounts;
 
-      var dockerHostConfig = new DockerHostConfig();
-      dockerHostConfig.SetPortBindings(this.portBindings);
-      dockerHostConfig.SetMounts(this.mounts);
-
-      return new TestcontainersContainer(
-        dockerContainerConfig,
-        dockerHostConfig,
-        this.cleanUp);
+      return new TestcontainersContainer(configuration, this.cleanUp);
     }
+
+#pragma warning disable S107 // Any changes to reduce the amount of parameters?
 
     private static ITestcontainersBuilder Build(
       TestcontainersBuilder old,
@@ -147,6 +145,8 @@ namespace DotNet.Testcontainers.Core.Builder
         commands,
         cleanUp);
     }
+
+#pragma warning restore S107
 
     private static void Merge<T>(IReadOnlyDictionary<T, T> previous, ref IReadOnlyDictionary<T, T> next)
     {

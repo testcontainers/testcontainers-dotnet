@@ -11,17 +11,34 @@ Choose from existing pre-configured configurations [^1] and start containers wit
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
 ```csharp
-var containerBuilder = new TestcontainersBuilder()
+var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithPortBinding(80)
-  .WithVolume(".", $"/tmp")
-  .WithCommand("/bin/bash", "-c", $"hostname > /tmp/hostname");
+  .WithPortBinding(80);
 
 using (var container = containerBuilder.Build())
 {
-  container.Start();
+  testcontainersBuilder.Start();
   var request = WebRequest.Create($"http://localhost:80");
+}
+```
+
+Mounts the current directory as volume into the container and runs `hostname > /tmp/hostname` on startup.
+
+```csharp
+var target = "tmp";
+
+var file = "hostname";
+
+var testcontainersBuilder = new TestcontainersBuilder()
+  .WithImage("nginx")
+  .WithName("nginx")
+  .WithMount(".", $"/{target}")
+  .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
+
+using (var testcontainers = testcontainersBuilder.Build())
+{
+  testcontainers.Start();
 }
 ```
 
