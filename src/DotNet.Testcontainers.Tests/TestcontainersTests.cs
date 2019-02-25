@@ -62,14 +62,26 @@ namespace DotNet.Testcontainers.Tests
     public class With
     {
       [Fact]
-      public void SimpleImage()
+      public void Finalizer()
       {
         // Given
-        var dockerImage = "alpine";
-
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
-          .WithImage(dockerImage);
+          .WithImage("alpine");
+
+        // Then
+        var testcontainer = testcontainersBuilder.Build();
+        testcontainer.Start();
+        testcontainer.Stop();
+      }
+
+      [Fact]
+      public void Disposable()
+      {
+        // Given
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder()
+          .WithImage("alpine");
 
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
@@ -117,13 +129,10 @@ namespace DotNet.Testcontainers.Tests
       public void ExposedPorts()
       {
         // Given
-        var name = "alpine";
-
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
           .WithImage("alpine")
-          .WithExposedPort(80)
-          .WithName(name);
+          .WithExposedPort(80);
 
         // Then
         using (var testcontainer = testcontainersBuilder.Build())

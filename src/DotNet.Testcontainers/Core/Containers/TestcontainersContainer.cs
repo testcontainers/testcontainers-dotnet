@@ -27,11 +27,6 @@ namespace DotNet.Testcontainers.Core.Containers
       {
         return this.id.IfNone(() => string.Empty);
       }
-
-      set
-      {
-        this.id = Some(value);
-      }
     }
 
     public string Name

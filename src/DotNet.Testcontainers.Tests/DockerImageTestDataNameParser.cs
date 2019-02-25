@@ -8,9 +8,9 @@ namespace DotNet.Testcontainers.Tests
     public DockerImageTestDataNameParser()
     {
       this.Add(new TestcontainersImage("foo", "bar", "1.0.0"), "foo/bar:1.0.0");
-      this.Add(new TestcontainersImage("foo", "bar", "latest"), "foo/bar:latest");
+      this.Add(new TestcontainersImage("foo", "bar", string.Empty), "foo/bar:latest");
       this.Add(new TestcontainersImage(string.Empty, "bar", "1.0.0"), "bar:1.0.0");
-      this.Add(new TestcontainersImage(string.Empty, "bar", "latest"), "bar:latest");
+      this.Add(new TestcontainersImage(string.Empty, "bar", string.Empty), "bar:latest");
     }
   }
 }
