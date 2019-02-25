@@ -7,6 +7,15 @@
 
 Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
 
+## Supported commands
+- `WithImage` specify an `IMAGE[:TAG]` to derive the container from.
+- `WithCommand` specify and override the `[COMMAND]` instruction provided from the Dockerfile.
+- `WithEnvironment` set an environment variable in the container e. g.`-e "deep=purple"`.
+- `WithExposedPort` expose a port inside the container e. g. `--expose=80`.
+- `WithPortBinding` publish a container port to the host e. g. `-p 80:80`.
+- `WithMount` mount a volume into the container e. g. `-v, --volume .:/tmp`.
+- `WithName` set the container name e. g. `--name nginx`.
+
 ## Examples
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
@@ -16,9 +25,9 @@ var testcontainersBuilder = new TestcontainersBuilder()
   .WithName("nginx")
   .WithPortBinding(80);
 
-using (var testcontainers = testcontainersBuilder.Build())
+using (var testcontainer = testcontainersBuilder.Build())
 {
-  testcontainers.Start();
+  testcontainer.Start();
   var request = WebRequest.Create($"http://localhost:80");
 }
 ```
@@ -26,19 +35,15 @@ using (var testcontainers = testcontainersBuilder.Build())
 Mounts the current directory as volume into the container and runs `hostname > /tmp/hostname` on startup.
 
 ```csharp
-var target = "tmp";
-
-var file = "hostname";
-
 var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithMount(".", $"/{target}")
-  .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
+  .WithMount(".", $"/tmp")
+  .WithCommand("/bin/bash", "-c", $"hostname > /tmp/hostname");
 
-using (var testcontainers = testcontainersBuilder.Build())
+using (var testcontainer = testcontainersBuilder.Build())
 {
-  testcontainers.Start();
+  testcontainer.Start();
 }
 ```
 

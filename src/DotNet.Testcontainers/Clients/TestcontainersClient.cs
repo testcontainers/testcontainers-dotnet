@@ -23,6 +23,9 @@ namespace DotNet.Testcontainers.Clients
       ConverterFactory.Register<IReadOnlyCollection<string>, IList<string>>(
         () => new ConvertList());
 
+      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IList<string>>(
+        () => new ConvertList());
+
       ConverterFactory.Register<IReadOnlyDictionary<string, string>, IDictionary<string, EmptyStruct>>(
         () => new ConvertExposedPort(), "ExposedPorts");
 
@@ -135,6 +138,9 @@ namespace DotNet.Testcontainers.Clients
       var cmd = GenericConverter.Convert<IReadOnlyCollection<string>,
         IList<string>>(configuration.Container.Command);
 
+      var env = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
+        IList<string>>(configuration.Container.Environments);
+
       var exposedPorts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
         IDictionary<string, EmptyStruct>>(configuration.Container.ExposedPorts, "ExposedPorts");
 
@@ -154,6 +160,7 @@ namespace DotNet.Testcontainers.Clients
       {
         Image = image,
         Name = name,
+        Env = env,
         Cmd = cmd,
         ExposedPorts = exposedPorts,
         HostConfig = hostConfig,

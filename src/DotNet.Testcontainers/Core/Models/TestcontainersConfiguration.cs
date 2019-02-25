@@ -14,9 +14,11 @@ namespace DotNet.Testcontainers.Core.Models
 
       public string Name;
 
-      public IReadOnlyDictionary<string, string> ExposedPorts;
-
       public IReadOnlyCollection<string> Command;
+
+      public IReadOnlyDictionary<string, string> Environments;
+
+      public IReadOnlyDictionary<string, string> ExposedPorts;
     }
 
     public struct HostConfiguration

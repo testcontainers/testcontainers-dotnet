@@ -14,13 +14,15 @@ namespace DotNet.Testcontainers.Core.Builder
 
     private readonly string name;
 
+    private readonly IReadOnlyCollection<string> command = new List<string>();
+
+    private readonly IReadOnlyDictionary<string, string> environments = new Dictionary<string, string>();
+
     private readonly IReadOnlyDictionary<string, string> exposedPorts = new Dictionary<string, string>();
 
     private readonly IReadOnlyDictionary<string, string> portBindings = new Dictionary<string, string>();
 
     private readonly IReadOnlyDictionary<string, string> mounts = new Dictionary<string, string>();
-
-    private readonly IReadOnlyCollection<string> command = new List<string>();
 
     private readonly bool cleanUp = true;
 
@@ -28,23 +30,29 @@ namespace DotNet.Testcontainers.Core.Builder
     {
     }
 
+#pragma warning disable S107
+
     protected TestcontainersBuilder(
       IDockerImage image,
       string name,
+      IReadOnlyCollection<string> commands,
+      IReadOnlyDictionary<string, string> environments,
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings,
       IReadOnlyDictionary<string, string> mounts,
-      IReadOnlyCollection<string> commands,
       bool cleanUp)
     {
-      this.name = name;
       this.image = image;
+      this.name = name;
+      this.command = commands;
+      this.environments = environments;
       this.exposedPorts = exposedPorts;
       this.portBindings = portBindings;
       this.mounts = mounts;
-      this.command = commands;
       this.cleanUp = cleanUp;
     }
+
+#pragma warning restore S107
 
     public ITestcontainersBuilder WithImage(string image)
     {
@@ -59,6 +67,16 @@ namespace DotNet.Testcontainers.Core.Builder
     public ITestcontainersBuilder WithName(string name)
     {
       return Build(this, name: name);
+    }
+
+    public ITestcontainersBuilder WithCommand(params string[] command)
+    {
+      return Build(this, command: new ReadOnlyCollection<string>(command));
+    }
+
+    public ITestcontainersBuilder WithEnvironment(string name, string value)
+    {
+      return Build(this, environments: HashMap((name, value)).ToDictionary());
     }
 
     public ITestcontainersBuilder WithExposedPort(int port)
@@ -96,11 +114,6 @@ namespace DotNet.Testcontainers.Core.Builder
       return Build(this, mounts: HashMap((source, destination)).ToDictionary());
     }
 
-    public ITestcontainersBuilder WithCommand(params string[] command)
-    {
-      return Build(this, commands: new ReadOnlyCollection<string>(command));
-    }
-
     public ITestcontainersBuilder WithCleanUp(bool cleanUp)
     {
       return Build(this, cleanUp: cleanUp);
@@ -111,38 +124,42 @@ namespace DotNet.Testcontainers.Core.Builder
       var configuration = default(TestcontainersConfiguration);
       configuration.Container.Image = this.image.Image;
       configuration.Container.Name = this.name;
-      configuration.Container.ExposedPorts = this.exposedPorts;
       configuration.Container.Command = this.command;
+      configuration.Container.Environments = this.environments;
+      configuration.Container.ExposedPorts = this.exposedPorts;
       configuration.Host.PortBindings = this.portBindings;
       configuration.Host.Mounts = this.mounts;
 
       return new TestcontainersContainer(configuration, this.cleanUp);
     }
 
-#pragma warning disable S107 // Any changes to reduce the amount of parameters?
+#pragma warning disable S107
 
     private static ITestcontainersBuilder Build(
       TestcontainersBuilder old,
       IDockerImage image = null,
       string name = null,
+      IReadOnlyCollection<string> command = null,
+      IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IReadOnlyDictionary<string, string> mounts = null,
-      IReadOnlyCollection<string> commands = null,
       bool cleanUp = true)
     {
+      Merge(old.environments, ref environments);
       Merge(old.exposedPorts, ref exposedPorts);
       Merge(old.portBindings, ref portBindings);
+      Merge(old.command, ref command);
       Merge(old.mounts, ref mounts);
-      Merge(old.command, ref commands);
 
       return new TestcontainersBuilder(
         image ?? old.image,
         name ?? old.name,
+        command,
+        environments,
         exposedPorts,
         portBindings,
         mounts,
-        commands,
         cleanUp);
     }
 

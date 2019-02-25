@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Tests
 
   public static class TestcontainersTests
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // Gets accessible dir on build server.
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
 
     public class ParseDockerImageName
     {
@@ -72,9 +72,9 @@ namespace DotNet.Testcontainers.Tests
           .WithImage(dockerImage);
 
         // Then
-        using (var testcontainers = testcontainersBuilder.Build())
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainers.Start();
+          testcontainer.Start();
         }
       }
 
@@ -87,10 +87,10 @@ namespace DotNet.Testcontainers.Tests
           .WithImage("alpine");
 
         // Then
-        using (var testcontainers = testcontainersBuilder.Build())
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainers.Start();
-          Assert.NotEmpty(testcontainers.Name);
+          testcontainer.Start();
+          Assert.NotEmpty(testcontainer.Name);
         }
       }
 
@@ -106,10 +106,10 @@ namespace DotNet.Testcontainers.Tests
           .WithName(name);
 
         // Then
-        using (var testcontainers = testcontainersBuilder.Build())
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainers.Start();
-          Assert.Equal(name, testcontainers.Name);
+          testcontainer.Start();
+          Assert.Equal(name, testcontainer.Name);
         }
       }
 
@@ -126,9 +126,9 @@ namespace DotNet.Testcontainers.Tests
           .WithName(name);
 
         // Then
-        using (var testcontainers = testcontainersBuilder.Build())
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainers.Start();
+          testcontainer.Start();
         }
       }
 
@@ -146,9 +146,9 @@ namespace DotNet.Testcontainers.Tests
         // Then
         List(http, https).Iter(port =>
         {
-          using (var testcontainers = port.Map(nginx.WithPortBinding).Build())
+          using (var testcontainer = port.Map(nginx.WithPortBinding).Build())
           {
-            testcontainers.Start();
+            testcontainer.Start();
 
             var request = WebRequest.Create($"http://localhost:{port.Item1}");
 
@@ -164,7 +164,7 @@ namespace DotNet.Testcontainers.Tests
       }
 
       [Fact]
-      public void MountedVolumeAndCommand()
+      public void VolumeAndCommand()
       {
         // Given
         var target = "tmp";
@@ -178,12 +178,40 @@ namespace DotNet.Testcontainers.Tests
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
-        using (var testcontainers = testcontainersBuilder.Build())
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainers.Start();
+          testcontainer.Start();
         }
 
         Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
+      }
+
+      [Fact]
+      public void VolumeAndEnvironment()
+      {
+        // Given
+        var target = "tmp";
+
+        var file = "today";
+
+        var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
+
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder()
+          .WithImage("nginx")
+          .WithMount(TempDir, $"/{target}")
+          .WithEnvironment("dayOfWekk", dayOfWeek)
+          .WithCommand("/bin/bash", "-c", $"printf $dayOfWekk > /{target}/{file}");
+
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          testcontainer.Start();
+        }
+
+        string text = File.ReadAllText($"{TempDir}/{file}");
+
+        Assert.Equal(dayOfWeek, text);
       }
     }
   }
