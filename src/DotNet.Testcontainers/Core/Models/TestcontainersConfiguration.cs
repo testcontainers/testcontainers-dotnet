@@ -18,6 +18,8 @@ namespace DotNet.Testcontainers.Core.Models
 
       public IReadOnlyDictionary<string, string> Environments;
 
+      public IReadOnlyDictionary<string, string> Labels;
+
       public IReadOnlyDictionary<string, string> ExposedPorts;
     }
 

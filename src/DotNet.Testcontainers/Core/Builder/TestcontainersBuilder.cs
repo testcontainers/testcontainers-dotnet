@@ -18,6 +18,8 @@ namespace DotNet.Testcontainers.Core.Builder
 
     private readonly IReadOnlyDictionary<string, string> environments = new Dictionary<string, string>();
 
+    private readonly IReadOnlyDictionary<string, string> labels = new Dictionary<string, string>();
+
     private readonly IReadOnlyDictionary<string, string> exposedPorts = new Dictionary<string, string>();
 
     private readonly IReadOnlyDictionary<string, string> portBindings = new Dictionary<string, string>();
@@ -37,6 +39,7 @@ namespace DotNet.Testcontainers.Core.Builder
       string name,
       IReadOnlyCollection<string> commands,
       IReadOnlyDictionary<string, string> environments,
+      IReadOnlyDictionary<string, string> labels,
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings,
       IReadOnlyDictionary<string, string> mounts,
@@ -46,6 +49,7 @@ namespace DotNet.Testcontainers.Core.Builder
       this.name = name;
       this.command = commands;
       this.environments = environments;
+      this.labels = labels;
       this.exposedPorts = exposedPorts;
       this.portBindings = portBindings;
       this.mounts = mounts;
@@ -77,6 +81,11 @@ namespace DotNet.Testcontainers.Core.Builder
     public ITestcontainersBuilder WithEnvironment(string name, string value)
     {
       return Build(this, environments: HashMap((name, value)).ToDictionary());
+    }
+
+    public ITestcontainersBuilder WithLabel(string name, string value)
+    {
+      return Build(this, labels: HashMap((name, value)).ToDictionary());
     }
 
     public ITestcontainersBuilder WithExposedPort(int port)
@@ -142,12 +151,14 @@ namespace DotNet.Testcontainers.Core.Builder
       IReadOnlyCollection<string> command = null,
       IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
+      IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IReadOnlyDictionary<string, string> mounts = null,
       bool cleanUp = true)
     {
       Merge(old.environments, ref environments);
       Merge(old.exposedPorts, ref exposedPorts);
+      Merge(old.labels, ref labels);
       Merge(old.portBindings, ref portBindings);
       Merge(old.command, ref command);
       Merge(old.mounts, ref mounts);
@@ -157,6 +168,7 @@ namespace DotNet.Testcontainers.Core.Builder
         name ?? old.name,
         command,
         environments,
+        labels,
         exposedPorts,
         portBindings,
         mounts,

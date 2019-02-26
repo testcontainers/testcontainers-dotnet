@@ -67,7 +67,8 @@ namespace DotNet.Testcontainers.Tests
         // Given
         // When
         var testcontainersBuilder = new TestcontainersBuilder()
-          .WithImage("alpine");
+          .WithImage("alpine")
+          .WithLabel("alpine", "latest");
 
         // Then
         var testcontainer = testcontainersBuilder.Build();
@@ -201,7 +202,7 @@ namespace DotNet.Testcontainers.Tests
         // Given
         var target = "tmp";
 
-        var file = "today";
+        var file = "dayOfWeek";
 
         var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
 

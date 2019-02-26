@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net452;net462</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="3.125.2" />
@@ -8,11 +8,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Clients\" />
-    <Folder Include="Core\" />
     <Folder Include="Core\Builder\" />
     <Folder Include="Core\Containers\" />
     <Folder Include="Core\Images\" />
-    <Folder Include="Core\Mapper\" />
     <Folder Include="Core\Models\" />
     <Folder Include="Core\Parser\" />
     <Folder Include="Diagnostics\" />

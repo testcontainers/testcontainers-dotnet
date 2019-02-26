@@ -42,6 +42,14 @@ namespace DotNet.Testcontainers.Core.Builder
     ITestcontainersBuilder WithEnvironment(string name, string value);
 
     /// <summary>
+    /// Adds an user-defined metadata to the Testcontainer.
+    /// </summary>
+    /// <param name="name">Label name.</param>
+    /// <param name="value">Label value.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
+    ITestcontainersBuilder WithLabel(string name, string value);
+
+    /// <summary>
     /// Sets the port of the Testcontainer to expose, without publishing the port to the host system’s interfaces.
     /// </summary>
     /// <param name="port">Port to expose.</param>

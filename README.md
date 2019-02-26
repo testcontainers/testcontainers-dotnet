@@ -8,12 +8,13 @@
 Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
 
 ## Supported commands
-- `WithImage` specify an `IMAGE[:TAG]` to derive the container from.
-- `WithCommand` specify and override the `[COMMAND]` instruction provided from the Dockerfile.
-- `WithEnvironment` set an environment variable in the container e. g.`-e "deep=purple"`.
-- `WithExposedPort` expose a port inside the container e. g. `--expose=80`.
-- `WithPortBinding` publish a container port to the host e. g. `-p 80:80`.
-- `WithMount` mount a volume into the container e. g. `-v, --volume .:/tmp`.
+- `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
+- `WithCommand` specifies and overrides the `[COMMAND]` instruction provided from the Dockerfile.
+- `WithEnvironment` set an environment variable in the container e. g.`-e "test=containers"`.
+- `WithLabel` applies metadata to a container e. g.`-l, --label dotnet.testcontainers=awesome`.
+- `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
+- `WithPortBinding` publishes a container port to the host e. g. `-p 80:80`.
+- `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
 - `WithName` set the container name e. g. `--name nginx`.
 
 ## Examples
@@ -52,8 +53,8 @@ using (var testcontainer = testcontainersBuilder.Build())
 You are thinking about contributing to .NET Testcontainers? Awesome, it’s absolutely appreciated. To build the project just run the provided Cake script, `./build.sh` (Unix) or `.\build.ps1` (Windows).
 
 * Fork the .NET Testcontainers repository.
-* Create a branch to work with and use `feature/` or `bugfix/` as prefix.
-* Don not forget the unit tests and keep the SonarCloud statistics in mind.
+* Create a branch to work with and use `feature/` or `bugfix/` as a prefix.
+* Do not forget the unit tests and keep the SonarCloud statistics in mind.
 * If you are finished rebase and create a pull request.
 * Cheers, :beers:.
 
