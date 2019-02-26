@@ -14,22 +14,32 @@ jobs:
       version: $(dotNetCoreVersion)
 
   - powershell: |
+      # Disable dotnet cli telemetry
+      $env:DOTNET_CLI_TELEMETRY_OPTOUT=1
+      # Set environment variables
       echo "##vso[task.setvariable variable=sonarcloudUrl;]$(sonarcloud.url)"
       echo "##vso[task.setvariable variable=sonarcloudKey;]$(sonarcloud.key)"
       echo "##vso[task.setvariable variable=sonarcloudToken;]$(sonarcloud.token)"
       echo "##vso[task.setvariable variable=sonarcloudOrganization;]$(sonarcloud.organization)"
       echo "##vso[task.setvariable variable=nuGetSource;]$(feed.source)"
       echo "##vso[task.setvariable variable=nuGetApiKey;]$(feed.apikey)"
-      ./build.sh --target=Restore-NuGet-Packages
+      # Set Docker configuration, until Unix containers are supported native
+      Net stop docker
+      @{experimental=$true} | ConvertTo-Json | Out-File -FilePath C:\ProgramData\Docker\config\daemon.json
+      Net start docker
+      docker pull --platform linux alpine:latest
+      docker pull --platform linux nginx:latest
+      # Prepare build
+      ./build.ps1 --target=Restore-NuGet-Packages
     displayName: 'Prepare'
 
-  - powershell: ./build.sh --target=Build
+  - powershell: ./build.ps1 --target=Build
     displayName: 'Build'
 
-  - powershell: ./build.sh --target=Test
+  - powershell: ./build.ps1 --target=Test
     displayName: 'Test'
 
-  - powershell: ./build.sh --target=Sonar
+  - powershell: ./build.ps1 --target=Sonar
     displayName: 'Sonar'
     env:
       SONARQUBE_URL: $(sonarcloudUrl)
@@ -37,7 +47,7 @@ jobs:
       SONARQUBE_TOKEN: $(sonarcloudToken)
       SONARQUBE_ORGANIZATION: $(sonarcloudOrganization)
 
-  - powershell: ./build.sh --target=Publish
+  - powershell: ./build.ps1 --target=Publish
     displayName: 'Publish'
     env:
       NUGET_SOURCE: $(nuGetSource)

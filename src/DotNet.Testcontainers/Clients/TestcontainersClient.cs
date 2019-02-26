@@ -2,13 +2,11 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Mapper.Converters;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Diagnostics;
-  using static LanguageExt.Prelude;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
@@ -17,6 +15,8 @@ namespace DotNet.Testcontainers.Clients
     private static readonly ConverterFactory ConverterFactory = new ConverterFactory();
 
     private static readonly GenericConverter GenericConverter = new GenericConverter(ConverterFactory);
+
+    private static readonly object IsImageAvailableLock = new object();
 
     static TestcontainersClient()
     {
@@ -47,65 +47,9 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public bool ExistImageById(string id)
-    {
-      return Optional(id).Match(
-        Some: value => notnull(MetaDataClientImages.Instance.ById(value)),
-        None: () => false);
-    }
-
-    public bool ExistImageByName(string name)
-    {
-      return Optional(name).Match(
-        Some: value => notnull(MetaDataClientImages.Instance.ByName(value)),
-        None: () => false);
-    }
-
-    public bool ExistContainerById(string id)
-    {
-      return Optional(id).Match(
-        Some: value => notnull(MetaDataClientContainers.Instance.ById(value)),
-        None: () => false);
-    }
-
-    public bool ExistContainerByName(string name)
-    {
-      return Optional(name).Match(
-        Some: value => notnull(MetaDataClientContainers.Instance.ByName(value)),
-        None: () => false);
-    }
-
-    public string FindImageNameById(string id)
-    {
-      return Optional(id).Match(
-        Some: value => MetaDataClientImages.Instance.ById(value).RepoTags.FirstOrDefault(),
-        None: () => string.Empty);
-    }
-
-    public string FindImageNameByName(string name)
-    {
-      return Optional(name).Match(
-        Some: value => MetaDataClientImages.Instance.ByName(value).RepoTags.FirstOrDefault(),
-        None: () => string.Empty);
-    }
-
-    public string FindContainerNameById(string id)
-    {
-      return Optional(id).Match(
-        Some: value => MetaDataClientContainers.Instance.ById(value).Names.FirstOrDefault(),
-        None: () => string.Empty);
-    }
-
-    public string FindContainerNameByName(string name)
-    {
-      return Optional(name).Match(
-        Some: value => MetaDataClientContainers.Instance.ByName(value).Names.FirstOrDefault(),
-        None: () => string.Empty);
-    }
-
     public void Start(string id)
     {
-      if (this.ExistContainerById(id))
+      if (MetaDataClientContainers.Instance.ExistsWithId(id))
       {
         Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }).Wait();
       }
@@ -113,7 +57,7 @@ namespace DotNet.Testcontainers.Clients
 
     public void Stop(string id)
     {
-      if (this.ExistContainerById(id))
+      if (MetaDataClientContainers.Instance.ExistsWithId(id))
       {
         Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }).Wait();
       }
@@ -121,7 +65,7 @@ namespace DotNet.Testcontainers.Clients
 
     public void Remove(string id)
     {
-      if (this.ExistContainerById(id))
+      if (MetaDataClientContainers.Instance.ExistsWithId(id))
       {
         Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }).Wait();
       }
@@ -133,9 +77,15 @@ namespace DotNet.Testcontainers.Clients
 
       var name = configuration.Container.Name;
 
-      if (!this.ExistImageByName(image))
+      Console.WriteLine(image);
+      Console.WriteLine(image);
+
+      lock (IsImageAvailableLock)
       {
-        Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+        if (!MetaDataClientImages.Instance.ExistsWithName(image))
+        {
+          Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+        }
       }
 
       var cmd = GenericConverter.Convert<IReadOnlyCollection<string>,

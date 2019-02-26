@@ -37,25 +37,59 @@ namespace DotNet.Testcontainers.Tests
       [Fact]
       public void QueryNotExistingDockerImageById()
       {
-        Assert.False(TestcontainersClient.Instance.ExistImageById(string.Empty));
+        Assert.False(MetaDataClientImages.Instance.ExistsWithId(string.Empty));
       }
 
       [Fact]
       public void QueryNotExistingDockerContainerById()
       {
-        Assert.False(TestcontainersClient.Instance.ExistContainerById(string.Empty));
+        Assert.False(MetaDataClientContainers.Instance.ExistsWithId(string.Empty));
       }
 
       [Fact]
       public void QueryNotExistingDockerImageByName()
       {
-        Assert.False(TestcontainersClient.Instance.ExistImageByName(string.Empty));
+        Assert.False(MetaDataClientImages.Instance.ExistsWithName(string.Empty));
       }
 
       [Fact]
       public void QueryNotExistingDockerContainerByName()
       {
-        Assert.False(TestcontainersClient.Instance.ExistContainerByName(string.Empty));
+        Assert.False(MetaDataClientContainers.Instance.ExistsWithName(string.Empty));
+      }
+
+      [Fact]
+      public void QueryContainerInformationOfRunningContainer()
+      {
+        // Given
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder()
+          .WithImage("alpine");
+
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          testcontainer.Start();
+
+          Assert.NotEmpty(testcontainer.Name);
+          Assert.NotEmpty(testcontainer.IPAddress);
+          Assert.NotEmpty(testcontainer.MacAddress);
+        }
+      }
+
+      [Fact]
+      public void QueryContainerInformationOfStoppedContainer()
+      {
+        // Given
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder()
+          .WithImage("alpine");
+
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
+        }
       }
     }
 

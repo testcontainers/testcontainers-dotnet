@@ -3,15 +3,15 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
 # .NET Testcontainers
-.NET Testcontainers is a library to support tests with throwaway instances of Docker containers. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+.NET Testcontainers is a library to support tests with throwaway instances of Docker containers for `netstandard2.0`, `net452` and `net462`. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
 
 ## Supported commands
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
 - `WithCommand` specifies and overrides the `[COMMAND]` instruction provided from the Dockerfile.
-- `WithEnvironment` set an environment variable in the container e. g.`-e "test=containers"`.
-- `WithLabel` applies metadata to a container e. g.`-l, --label dotnet.testcontainers=awesome`.
+- `WithEnvironment` set an environment variable in the container e. g. `-e "test=containers"`.
+- `WithLabel` applies metadata to a container e. g. `-l, --label dotnet.testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
 - `WithPortBinding` publishes a container port to the host e. g. `-p 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.

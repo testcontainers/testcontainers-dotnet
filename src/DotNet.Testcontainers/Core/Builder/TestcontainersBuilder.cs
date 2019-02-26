@@ -136,6 +136,7 @@ namespace DotNet.Testcontainers.Core.Builder
       configuration.Container.Command = this.command;
       configuration.Container.Environments = this.environments;
       configuration.Container.ExposedPorts = this.exposedPorts;
+      configuration.Container.Labels = this.labels;
       configuration.Host.PortBindings = this.portBindings;
       configuration.Host.Mounts = this.mounts;
 

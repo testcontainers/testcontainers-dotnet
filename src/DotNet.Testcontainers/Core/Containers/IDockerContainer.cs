@@ -12,6 +12,14 @@ namespace DotNet.Testcontainers.Core.Containers
     /// <value>Returns the Docker container name if present or an empty string instead.</value>
     string Name { get; }
 
+    /// <summary>Gets the Testcontainer ip address.</summary>
+    /// <value>Returns the Docker container ip address if present or an empty string instead.</value>
+    string IPAddress { get; }
+
+    /// <summary>Gets the Testcontainer mac address.</summary>
+    /// <value>Returns the Docker container mac address if present or an empty string instead.</value>
+    string MacAddress { get; }
+
     /// <summary>
     /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
     /// </summary>
