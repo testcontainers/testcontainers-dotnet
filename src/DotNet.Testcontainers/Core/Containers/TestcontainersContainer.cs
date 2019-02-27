@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers
 {
   using System;
   using System.Linq;
+  using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Models;
@@ -75,21 +76,21 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private bool CleanUp { get; }
 
-    public void Start()
+    public async Task StartAsync()
     {
-      this.id = this.id.IfNone(TestcontainersClient.Instance.Run(this.Configuration));
-
-      TestcontainersClient.Instance.Start(this.Id);
-
-      this.id.IfSome(id =>
+      this.id = await this.id.IfNoneAsync(() =>
       {
-        this.container = MetaDataClientContainers.Instance.ById(id);
+        return TestcontainersClient.Instance.RunAsync(this.Configuration);
       });
+
+      await TestcontainersClient.Instance.StartAsync(this.Id);
+
+      await WaitStrategy.WaitUntil(this.ContainerIsUpAndRunning);
     }
 
-    public void Stop()
+    public async Task StopAsync()
     {
-      TestcontainersClient.Instance.Stop(this.Id);
+      await TestcontainersClient.Instance.StopAsync(this.Id);
 
       this.id.IfSome(id =>
       {
@@ -105,16 +106,26 @@ namespace DotNet.Testcontainers.Core.Containers
 
     protected virtual void Dispose(bool disposing)
     {
-      this.id.IfSomeAsync(id =>
+      this.id.IfSome(async id =>
       {
-        TestcontainersClient.Instance.Stop(id);
-
         if (this.CleanUp)
         {
           this.id = None;
-          TestcontainersClient.Instance.Remove(id);
+          await TestcontainersClient.Instance.RemoveAsync(id);
+        }
+        else
+        {
+          await TestcontainersClient.Instance.StopAsync(id);
         }
       });
+    }
+
+    private bool ContainerIsUpAndRunning()
+    {
+      this.container = MetaDataClientContainers.Instance.ByIdAsync(this.Id).GetAwaiter().GetResult();
+      return this.container.Match(
+        Some: value => !"Created".Equals(value.Status),
+        None: () => throw new InvalidOperationException("Testcontainer not running."));
     }
   }
 }

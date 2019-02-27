@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Core.Containers
 {
   using System;
+  using System.Threading.Tasks;
 
   public interface IDockerContainer : IDisposable
   {
@@ -23,11 +24,11 @@ namespace DotNet.Testcontainers.Core.Containers
     /// <summary>
     /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
     /// </summary>
-    void Start();
+    Task StartAsync();
 
     /// <summary>
     /// Stops the Testcontainer and removes the container automatically.
     /// </summary>
-    void Stop();
+    Task StopAsync();
   }
 }

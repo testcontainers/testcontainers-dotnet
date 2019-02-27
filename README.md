@@ -28,7 +28,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
 
 using (var testcontainer = testcontainersBuilder.Build())
 {
-  testcontainer.Start();
+  await testcontainer.Start();
   var request = WebRequest.Create($"http://localhost:80");
 }
 ```
@@ -44,7 +44,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
 
 using (var testcontainer = testcontainersBuilder.Build())
 {
-  testcontainer.Start();
+  await testcontainer.Start();
 }
 ```
 

@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
+  using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Mapper.Converters;
@@ -15,8 +16,6 @@ namespace DotNet.Testcontainers.Clients
     private static readonly ConverterFactory ConverterFactory = new ConverterFactory();
 
     private static readonly GenericConverter GenericConverter = new GenericConverter(ConverterFactory);
-
-    private static readonly object IsImageAvailableLock = new object();
 
     static TestcontainersClient()
     {
@@ -47,43 +46,53 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public void Start(string id)
+    public async Task StartAsync(string id)
     {
-      if (MetaDataClientContainers.Instance.ExistsWithId(id))
+      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
       {
-        Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }).Wait();
-      }
+        if (await containerExists)
+        {
+          await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { });
+        }
+      });
     }
 
-    public void Stop(string id)
+    public async Task StopAsync(string id)
     {
-      if (MetaDataClientContainers.Instance.ExistsWithId(id))
+      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
       {
-        Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }).Wait();
-      }
+        if (await containerExists)
+        {
+          await Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 });
+        }
+      });
     }
 
-    public void Remove(string id)
+    public async Task RemoveAsync(string id)
     {
-      if (MetaDataClientContainers.Instance.ExistsWithId(id))
+      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
       {
-        Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }).Wait();
-      }
+        if (await containerExists)
+        {
+          await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true });
+        }
+      });
     }
 
-    public string Run(TestcontainersConfiguration configuration)
+    public async Task<string> RunAsync(TestcontainersConfiguration configuration)
     {
       var image = configuration.Container.Image;
 
       var name = configuration.Container.Name;
 
-      lock (IsImageAvailableLock)
+      var pullImageTask = MetaDataClientImages.Instance.ExistsWithNameAsync(image).ContinueWith(async imageExists =>
       {
-        if (!MetaDataClientImages.Instance.ExistsWithName(image))
+        if (!await imageExists)
         {
-          Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).Wait();
+          // await ... does not work here, the image will not be pulled.
+          Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).GetAwaiter().GetResult();
         }
-      }
+      });
 
       var cmd = GenericConverter.Convert<IReadOnlyCollection<string>,
         IList<string>>(configuration.Container.Command);
@@ -103,13 +112,15 @@ namespace DotNet.Testcontainers.Clients
       var mounts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
         IList<Mount>>(configuration.Host.Mounts, "Mounts");
 
+      await pullImageTask;
+
       var hostConfig = new HostConfig
       {
         PortBindings = portBindings,
         Mounts = mounts,
       };
 
-      return Docker.Containers.CreateContainerAsync(new CreateContainerParameters
+      var response = await Docker.Containers.CreateContainerAsync(new CreateContainerParameters
       {
         Image = image,
         Name = name,
@@ -118,7 +129,9 @@ namespace DotNet.Testcontainers.Clients
         Cmd = cmd,
         ExposedPorts = exposedPorts,
         HostConfig = hostConfig,
-      }).Result.ID;
+      });
+
+      return response.ID;
     }
   }
 }

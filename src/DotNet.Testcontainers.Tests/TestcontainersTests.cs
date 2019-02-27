@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests
   using System;
   using System.IO;
   using System.Net;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Images;
@@ -35,31 +36,32 @@ namespace DotNet.Testcontainers.Tests
     public class AccessDockerInformation
     {
       [Fact]
-      public void QueryNotExistingDockerImageById()
+      public async Task QueryNotExistingDockerImageById()
       {
-        Assert.False(MetaDataClientImages.Instance.ExistsWithId(string.Empty));
+        Assert.False(await MetaDataClientImages.Instance.ExistsWithIdAsync(string.Empty));
       }
 
       [Fact]
-      public void QueryNotExistingDockerContainerById()
+      public async Task QueryNotExistingDockerContainerById()
       {
-        Assert.False(MetaDataClientContainers.Instance.ExistsWithId(string.Empty));
+        Assert.False(await MetaDataClientContainers.Instance.ExistsWithIdAsync(string.Empty));
       }
 
       [Fact]
-      public void QueryNotExistingDockerImageByName()
+      public async Task QueryNotExistingDockerImageByName()
       {
-        Assert.False(MetaDataClientImages.Instance.ExistsWithName(string.Empty));
+        Assert.False(await MetaDataClientImages.Instance.ExistsWithNameAsync(string.Empty));
       }
 
       [Fact]
-      public void QueryNotExistingDockerContainerByName()
+      public async Task QueryNotExistingDockerContainerByName()
       {
-        Assert.False(MetaDataClientContainers.Instance.ExistsWithName(string.Empty));
+        var a = await MetaDataClientContainers.Instance.ExistsWithNameAsync(string.Empty);
+        Assert.False(a);
       }
 
       [Fact]
-      public void QueryContainerInformationOfRunningContainer()
+      public async Task QueryContainerInformationOfRunningContainer()
       {
         // Given
         // When
@@ -69,7 +71,7 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
 
           Assert.NotEmpty(testcontainer.Name);
           Assert.NotEmpty(testcontainer.IPAddress);
@@ -96,7 +98,7 @@ namespace DotNet.Testcontainers.Tests
     public class With
     {
       [Fact]
-      public void Finalizer()
+      public async Task Finalizer()
       {
         // Given
         // When
@@ -106,12 +108,12 @@ namespace DotNet.Testcontainers.Tests
 
         // Then
         var testcontainer = testcontainersBuilder.Build();
-        testcontainer.Start();
-        testcontainer.Stop();
+        await testcontainer.StartAsync();
+        await testcontainer.StopAsync();
       }
 
       [Fact]
-      public void Disposable()
+      public async Task Disposable()
       {
         // Given
         // When
@@ -121,12 +123,12 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
         }
       }
 
       [Fact]
-      public void GeneratedContainerName()
+      public async Task GeneratedContainerName()
       {
         // Given
         // When
@@ -136,13 +138,13 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
           Assert.NotEmpty(testcontainer.Name);
         }
       }
 
       [Fact]
-      public void SpecifiedContainerName()
+      public async Task SpecifiedContainerName()
       {
         // Given
         var name = "/alpine";
@@ -155,13 +157,13 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
           Assert.Equal(name, testcontainer.Name);
         }
       }
 
       [Fact]
-      public void ExposedPorts()
+      public async Task ExposedPorts()
       {
         // Given
         // When
@@ -172,7 +174,7 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
         }
       }
 
@@ -188,11 +190,11 @@ namespace DotNet.Testcontainers.Tests
           .WithImage("nginx");
 
         // Then
-        List(http, https).Iter(port =>
+        List(http, https).Iter(async port =>
         {
           using (var testcontainer = port.Map(nginx.WithPortBinding).Build())
           {
-            testcontainer.Start();
+            await testcontainer.StartAsync();
 
             var request = WebRequest.Create($"http://localhost:{port.Item1}");
 
@@ -208,7 +210,7 @@ namespace DotNet.Testcontainers.Tests
       }
 
       [Fact]
-      public void VolumeAndCommand()
+      public async Task VolumeAndCommand()
       {
         // Given
         var target = "tmp";
@@ -224,14 +226,14 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
         }
 
         Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
       }
 
       [Fact]
-      public void VolumeAndEnvironment()
+      public async Task VolumeAndEnvironment()
       {
         // Given
         var target = "tmp";
@@ -250,7 +252,7 @@ namespace DotNet.Testcontainers.Tests
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
-          testcontainer.Start();
+          await testcontainer.StartAsync();
         }
 
         string text = File.ReadAllText($"{TempDir}/{file}");

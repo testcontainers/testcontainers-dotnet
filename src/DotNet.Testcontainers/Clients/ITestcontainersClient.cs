@@ -1,15 +1,16 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Models;
 
   internal interface ITestcontainersClient
   {
-    void Start(string id);
+    Task StartAsync(string id);
 
-    void Stop(string id);
+    Task StopAsync(string id);
 
-    void Remove(string id);
+    Task RemoveAsync(string id);
 
-    string Run(TestcontainersConfiguration configuration);
+    Task<string> RunAsync(TestcontainersConfiguration configuration);
   }
 }

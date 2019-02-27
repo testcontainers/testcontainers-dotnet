@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading.Tasks;
   using Docker.DotNet.Models;
 
   internal sealed class MetaDataClientContainers : DockerMetaDataClient<ContainerListResponse>
@@ -24,24 +25,29 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    internal override IReadOnlyCollection<ContainerListResponse> GetAll()
+    internal override async Task<IReadOnlyCollection<ContainerListResponse>> GetAllAsync()
     {
-      return Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }).Result.ToList();
+      return (await Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true })).ToList();
     }
 
-    internal override ContainerListResponse ById(string id)
+    internal override async Task<ContainerListResponse> ByIdAsync(string id)
     {
-      return string.IsNullOrWhiteSpace(id) ? null : this.ByProperty("id", id);
+      return await this.ByPropertyAsync("id", id);
     }
 
-    internal override ContainerListResponse ByName(string name)
+    internal override async Task<ContainerListResponse> ByNameAsync(string name)
     {
-      return string.IsNullOrWhiteSpace(name) ? null : this.ByProperty("name", name);
+      return await this.ByPropertyAsync("name", name);
     }
 
-    internal override ContainerListResponse ByProperty(string property, string value)
+    internal override async Task<ContainerListResponse> ByPropertyAsync(string property, string value)
     {
-      return Docker.Containers.ListContainersAsync(new ContainersListParameters
+      if (string.IsNullOrWhiteSpace(value))
+      {
+        return null;
+      }
+
+      var response = Docker.Containers.ListContainersAsync(new ContainersListParameters
       {
         All = true,
         Filters = new Dictionary<string, IDictionary<string, bool>>
@@ -53,7 +59,9 @@ namespace DotNet.Testcontainers.Clients
             }
           },
         },
-      }).Result.FirstOrDefault();
+      });
+
+      return (await response).FirstOrDefault();
     }
   }
 }

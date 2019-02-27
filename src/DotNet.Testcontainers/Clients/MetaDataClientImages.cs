@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading.Tasks;
   using Docker.DotNet.Models;
 
   internal sealed class MetaDataClientImages : DockerMetaDataClient<ImagesListResponse>
@@ -24,24 +25,29 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    internal override IReadOnlyCollection<ImagesListResponse> GetAll()
+    internal override async Task<IReadOnlyCollection<ImagesListResponse>> GetAllAsync()
     {
-      return Docker.Images.ListImagesAsync(new ImagesListParameters { }).Result.ToList();
+      return (await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true })).ToList();
     }
 
-    internal override ImagesListResponse ById(string id)
+    internal override async Task<ImagesListResponse> ByIdAsync(string id)
     {
-      return string.IsNullOrWhiteSpace(id) ? null : this.GetAll().FirstOrDefault(value => id.Equals(value.ID));
+      return (await this.GetAllAsync()).FirstOrDefault(image => image.ID.Equals(id));
     }
 
-    internal override ImagesListResponse ByName(string name)
+    internal override async Task<ImagesListResponse> ByNameAsync(string name)
     {
-      return string.IsNullOrWhiteSpace(name) ? null : this.ByProperty("label", name);
+      return await this.ByPropertyAsync("label", name);
     }
 
-    internal override ImagesListResponse ByProperty(string property, string value)
+    internal override async Task<ImagesListResponse> ByPropertyAsync(string property, string value)
     {
-      return Docker.Images.ListImagesAsync(new ImagesListParameters
+      if (string.IsNullOrWhiteSpace(value))
+      {
+        return null;
+      }
+
+      var reponse = Docker.Images.ListImagesAsync(new ImagesListParameters
       {
         All = true,
         Filters = new Dictionary<string, IDictionary<string, bool>>
@@ -53,7 +59,9 @@ namespace DotNet.Testcontainers.Clients
             }
           },
         },
-      }).Result.FirstOrDefault();
+      });
+
+      return (await reponse).FirstOrDefault();
     }
   }
 }
