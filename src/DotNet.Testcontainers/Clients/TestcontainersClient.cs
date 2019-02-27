@@ -77,9 +77,6 @@ namespace DotNet.Testcontainers.Clients
 
       var name = configuration.Container.Name;
 
-      Console.WriteLine(image);
-      Console.WriteLine(image);
-
       lock (IsImageAvailableLock)
       {
         if (!MetaDataClientImages.Instance.ExistsWithName(image))

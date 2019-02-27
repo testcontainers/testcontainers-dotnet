@@ -1,5 +1,5 @@
 {
   "$schema": "https://xunit.github.io/schema/current/xunit.runner.schema.json",
-  "parallelizeAssembly": false,
-  "parallelizeTestCollections": false
+  "parallelizeAssembly": true,
+  "parallelizeTestCollections": true
 }

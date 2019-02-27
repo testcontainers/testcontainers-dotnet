@@ -6,7 +6,7 @@
 
 #load "./build/parameters.cake"
 
-BuildParameters param = BuildParameters.Instance(Context, "DotNet.Testcontainers");
+readonly var param = BuildParameters.Instance(Context, "DotNet.Testcontainers");
 
 Setup(context =>
 {
@@ -93,21 +93,6 @@ Task("Test")
   }
 });
 
-Task("Copy-Artifacts")
-  .Does(() =>
-{
-  DotNetCorePublish(param.Projects.TestContainers.Path.FullPath, new DotNetCorePublishSettings
-  {
-    Configuration = param.Configuration,
-    Verbosity = param.Verbosity,
-    NoRestore = true,
-    Framework = "netstandard2.0",
-    OutputDirectory = param.Paths.Directories.ArtifactsBinStandard
-  });
-
-  CopyFileToDirectory("./LICENSE", param.Paths.Directories.ArtifactsBinStandard);
-});
-
 Task("SonarBegin")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
@@ -181,7 +166,6 @@ Task("Sonar")
   .IsDependentOn("SonarEnd");
 
 Task("Publish")
-  .IsDependentOn("Copy-Artifacts")
   .IsDependentOn("Create-NuGet-Packages")
   .IsDependentOn("Publish-NuGet-Packages");
 

@@ -3,7 +3,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
 # .NET Testcontainers
-.NET Testcontainers is a library to support tests with throwaway instances of Docker containers for `netstandard2.0`, `net452` and `net462`. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+.NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
 
