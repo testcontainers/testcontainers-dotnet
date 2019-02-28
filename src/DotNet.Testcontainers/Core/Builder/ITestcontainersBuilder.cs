@@ -27,7 +27,21 @@ namespace DotNet.Testcontainers.Core.Builder
     ITestcontainersBuilder WithName(string name);
 
     /// <summary>
-    /// Adds a command to the Testcontainer to provide defaults for an executing.
+    /// Overrides the working directory of the Testcontainer for the instruction sets.
+    /// </summary>
+    /// <param name="workingDirectory">Working directory.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
+    ITestcontainersBuilder WithWorkingDirectory(string workingDirectory);
+
+    /// <summary>
+    /// Overrides the entrypoint of the Testcontainer to configure an executable.
+    /// </summary>
+    /// <param name="entrypoint">Entrypoint executable.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
+    ITestcontainersBuilder WithEntrypoint(params string[] entrypoint);
+
+    /// <summary>
+    /// Overrides the command of the Testcontainer to provide defaults for an executing.
     /// </summary>
     /// <param name="command">List of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>

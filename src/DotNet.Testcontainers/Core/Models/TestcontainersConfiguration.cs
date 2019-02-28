@@ -14,6 +14,10 @@ namespace DotNet.Testcontainers.Core.Models
 
       public string Name;
 
+      public string WorkingDirectory;
+
+      public IReadOnlyCollection<string> Entrypoint;
+
       public IReadOnlyCollection<string> Command;
 
       public IReadOnlyDictionary<string, string> Environments;

@@ -5,6 +5,10 @@ namespace DotNet.Testcontainers.Core
 
   internal class WaitStrategy
   {
+    private WaitStrategy()
+    {
+    }
+
     public static async Task WaitWhile(Func<bool> condition, int frequency = 25, int timeout = -1)
     {
       var waitTask = Task.Run(async () =>

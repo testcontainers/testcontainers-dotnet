@@ -14,6 +14,10 @@ namespace DotNet.Testcontainers.Core.Builder
 
     private readonly string name;
 
+    private readonly string workingDirectory;
+
+    private readonly IReadOnlyCollection<string> entrypoint = new List<string>();
+
     private readonly IReadOnlyCollection<string> command = new List<string>();
 
     private readonly IReadOnlyDictionary<string, string> environments = new Dictionary<string, string>();
@@ -37,6 +41,8 @@ namespace DotNet.Testcontainers.Core.Builder
     protected TestcontainersBuilder(
       IDockerImage image,
       string name,
+      string workingDirectory,
+      IReadOnlyCollection<string> entrypoint,
       IReadOnlyCollection<string> commands,
       IReadOnlyDictionary<string, string> environments,
       IReadOnlyDictionary<string, string> labels,
@@ -47,6 +53,8 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       this.image = image;
       this.name = name;
+      this.workingDirectory = workingDirectory;
+      this.entrypoint = entrypoint;
       this.command = commands;
       this.environments = environments;
       this.labels = labels;
@@ -71,6 +79,16 @@ namespace DotNet.Testcontainers.Core.Builder
     public ITestcontainersBuilder WithName(string name)
     {
       return Build(this, name: name);
+    }
+
+    public ITestcontainersBuilder WithWorkingDirectory(string workingDirectory)
+    {
+      return Build(this, workingDirectory: workingDirectory);
+    }
+
+    public ITestcontainersBuilder WithEntrypoint(params string[] entrypoint)
+    {
+      return Build(this, entrypoint: entrypoint);
     }
 
     public ITestcontainersBuilder WithCommand(params string[] command)
@@ -133,6 +151,8 @@ namespace DotNet.Testcontainers.Core.Builder
       var configuration = default(TestcontainersConfiguration);
       configuration.Container.Image = this.image.Image;
       configuration.Container.Name = this.name;
+      configuration.Container.WorkingDirectory = this.workingDirectory;
+      configuration.Container.Entrypoint = this.entrypoint;
       configuration.Container.Command = this.command;
       configuration.Container.Environments = this.environments;
       configuration.Container.ExposedPorts = this.exposedPorts;
@@ -149,6 +169,8 @@ namespace DotNet.Testcontainers.Core.Builder
       TestcontainersBuilder old,
       IDockerImage image = null,
       string name = null,
+      string workingDirectory = null,
+      IReadOnlyCollection<string> entrypoint = null,
       IReadOnlyCollection<string> command = null,
       IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
@@ -161,12 +183,15 @@ namespace DotNet.Testcontainers.Core.Builder
       Merge(old.exposedPorts, ref exposedPorts);
       Merge(old.labels, ref labels);
       Merge(old.portBindings, ref portBindings);
+      Merge(old.entrypoint, ref entrypoint);
       Merge(old.command, ref command);
       Merge(old.mounts, ref mounts);
 
       return new TestcontainersBuilder(
         image ?? old.image,
         name ?? old.name,
+        workingDirectory ?? old.workingDirectory,
+        entrypoint,
         command,
         environments,
         labels,

@@ -1,42 +1,15 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
-  using System.Collections.Generic;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Core.Mapper;
-  using DotNet.Testcontainers.Core.Mapper.Converters;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Diagnostics;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
     private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
-
-    private static readonly ConverterFactory ConverterFactory = new ConverterFactory();
-
-    private static readonly GenericConverter GenericConverter = new GenericConverter(ConverterFactory);
-
-    static TestcontainersClient()
-    {
-      ConverterFactory.Register<IReadOnlyCollection<string>, IList<string>>(
-        () => new ConvertList());
-
-      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IList<string>>(
-        () => new ConvertList());
-
-      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IDictionary<string, string>>(
-        () => new ConvertDictionary());
-
-      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IDictionary<string, EmptyStruct>>(
-        () => new ConvertExposedPort(), "ExposedPorts");
-
-      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IDictionary<string, IList<PortBinding>>>(
-        () => new ConvertPortBinding(), "PortBindings");
-
-      ConverterFactory.Register<IReadOnlyDictionary<string, string>, IList<Mount>>(
-        () => new ConvertMount(), "Mounts");
-    }
 
     internal static ITestcontainersClient Instance
     {
@@ -83,8 +56,6 @@ namespace DotNet.Testcontainers.Clients
     {
       var image = configuration.Container.Image;
 
-      var name = configuration.Container.Name;
-
       var pullImageTask = MetaDataClientImages.Instance.ExistsWithNameAsync(image).ContinueWith(async imageExists =>
       {
         if (!await imageExists)
@@ -94,23 +65,25 @@ namespace DotNet.Testcontainers.Clients
         }
       });
 
-      var cmd = GenericConverter.Convert<IReadOnlyCollection<string>,
-        IList<string>>(configuration.Container.Command);
+      var name = configuration.Container.Name;
 
-      var env = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
-        IList<string>>(configuration.Container.Environments);
+      var workingDir = configuration.Container.WorkingDirectory;
 
-      var labels = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
-        IDictionary<string, string>>(configuration.Container.Labels);
+      var converter = new TestcontainersConfigurationConverter(configuration);
 
-      var exposedPorts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
-        IDictionary<string, EmptyStruct>>(configuration.Container.ExposedPorts, "ExposedPorts");
+      var entrypoint = converter.Entrypoint;
 
-      var portBindings = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
-        IDictionary<string, IList<PortBinding>>>(configuration.Host.PortBindings, "PortBindings");
+      var cmd = converter.Command;
 
-      var mounts = GenericConverter.Convert<IReadOnlyDictionary<string, string>,
-        IList<Mount>>(configuration.Host.Mounts, "Mounts");
+      var env = converter.Environments;
+
+      var labels = converter.Labels;
+
+      var exposedPorts = converter.ExposedPorts;
+
+      var portBindings = converter.PortBindings;
+
+      var mounts = converter.Mounts;
 
       await pullImageTask;
 
@@ -124,6 +97,8 @@ namespace DotNet.Testcontainers.Clients
       {
         Image = image,
         Name = name,
+        WorkingDir = workingDir,
+        Entrypoint = entrypoint,
         Env = env,
         Labels = labels,
         Cmd = cmd,
