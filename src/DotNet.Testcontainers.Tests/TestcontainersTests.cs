@@ -3,8 +3,10 @@ namespace DotNet.Testcontainers.Tests
   using System;
   using System.IO;
   using System.Net;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Images;
   using Xunit;
@@ -258,6 +260,59 @@ namespace DotNet.Testcontainers.Tests
         string text = File.ReadAllText($"{TempDir}/{file}");
 
         Assert.Equal(dayOfWeek, text);
+      }
+    }
+
+    public class Strategy
+    {
+      [Fact]
+      public async Task WaitWhile()
+      {
+        await WaitStrategy.WaitWhile(() =>
+        {
+          return false;
+        });
+      }
+
+      [Fact]
+      public async Task WaitUntil()
+      {
+        await WaitStrategy.WaitUntil(() =>
+        {
+          return true;
+        });
+      }
+
+      [Fact]
+      public async Task WaitWhileTimeout()
+      {
+        await Assert.ThrowsAsync<TimeoutException>(async () =>
+        {
+          await WaitStrategy.WaitWhile(
+          () =>
+          {
+            return Wait100ms(true);
+          }, timeout: 5);
+        });
+      }
+
+      [Fact]
+      public async Task WaitUntilTimeout()
+      {
+        await Assert.ThrowsAsync<TimeoutException>(async () =>
+        {
+          await WaitStrategy.WaitUntil(
+          () =>
+          {
+            return Wait100ms(false);
+          }, timeout: 5);
+        });
+      }
+
+      private static bool Wait100ms(bool value)
+      {
+        Task.Delay(100);
+        return value;
       }
     }
   }

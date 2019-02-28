@@ -2,12 +2,12 @@ namespace DotNet.Testcontainers.Core.Mapper
 {
   internal abstract class BaseConverter<TSource, TTarget>
   {
-    private readonly string name;
-
     protected BaseConverter(string name)
     {
-      this.name = name;
+      this.Name = name;
     }
+
+    public string Name { get; }
 
     public abstract TTarget Convert(TSource source);
   }
