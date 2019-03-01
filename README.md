@@ -9,14 +9,14 @@ Choose from existing pre-configured configurations [^1] and start containers wit
 
 ## Supported commands
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
-- `WithName` set the container name e. g. `--name nginx`.
 - `WithWorkingDirectory` specifies and overrides the `WORKDIR` for the instruction sets.
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
-- `WithCommand` specifies and overrides the `[COMMAND]` instruction provided from the Dockerfile.
-- `WithEnvironment` set an environment variable in the container e. g. `-e "test=containers"`.
+- `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
+- `WithName` sets the container name e. g. `--name nginx`.
+- `WithEnvironment` sets an environment variable in the container e. g. `-e, --env "test=containers"`.
 - `WithLabel` applies metadata to a container e. g. `-l, --label dotnet.testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
-- `WithPortBinding` publishes a container port to the host e. g. `-p 80:80`.
+- `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
 
 ## Examples
