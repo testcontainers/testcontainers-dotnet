@@ -58,8 +58,7 @@ namespace DotNet.Testcontainers.Tests
       [Fact]
       public async Task QueryNotExistingDockerContainerByName()
       {
-        var a = await MetaDataClientContainers.Instance.ExistsWithNameAsync(string.Empty);
-        Assert.False(a);
+        Assert.False(await MetaDataClientContainers.Instance.ExistsWithNameAsync(string.Empty));
       }
 
       [Fact]
