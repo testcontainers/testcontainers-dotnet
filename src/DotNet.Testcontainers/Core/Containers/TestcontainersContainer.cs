@@ -15,10 +15,10 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private Option<ContainerListResponse> container = None;
 
-    internal TestcontainersContainer(TestcontainersConfiguration configuration, bool cleanUp = true)
+    internal TestcontainersContainer(TestcontainersConfiguration configuration)
     {
       this.Configuration = configuration;
-      this.CleanUp = cleanUp;
+      this.CleanUp = configuration.CleanUp;
     }
 
     ~TestcontainersContainer()
@@ -111,6 +111,7 @@ namespace DotNet.Testcontainers.Core.Containers
         if (this.CleanUp)
         {
           this.id = None;
+          this.container = None;
           await TestcontainersClient.Instance.RemoveAsync(id);
         }
         else

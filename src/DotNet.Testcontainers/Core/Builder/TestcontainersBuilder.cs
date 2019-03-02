@@ -1,70 +1,23 @@
 namespace DotNet.Testcontainers.Core.Builder
 {
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
-  using System.Linq;
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
   using DotNet.Testcontainers.Core.Models;
-  using static LanguageExt.Prelude;
+  using static DotNet.Testcontainers.Core.Models.TestcontainersConfiguration;
 
   public class TestcontainersBuilder : ITestcontainersBuilder
   {
-    private readonly IDockerImage image = new TestcontainersImage();
-
-    private readonly string name;
-
-    private readonly string workingDirectory;
-
-    private readonly IReadOnlyCollection<string> entrypoint = new List<string>();
-
-    private readonly IReadOnlyCollection<string> command = new List<string>();
-
-    private readonly IReadOnlyDictionary<string, string> environments = new Dictionary<string, string>();
-
-    private readonly IReadOnlyDictionary<string, string> labels = new Dictionary<string, string>();
-
-    private readonly IReadOnlyDictionary<string, string> exposedPorts = new Dictionary<string, string>();
-
-    private readonly IReadOnlyDictionary<string, string> portBindings = new Dictionary<string, string>();
-
-    private readonly IReadOnlyDictionary<string, string> mounts = new Dictionary<string, string>();
-
-    private readonly bool cleanUp = true;
+    private readonly TestcontainersConfiguration config = new TestcontainersConfiguration();
 
     public TestcontainersBuilder()
     {
     }
 
-#pragma warning disable S107
-
-    protected TestcontainersBuilder(
-      IDockerImage image,
-      string name,
-      string workingDirectory,
-      IReadOnlyCollection<string> entrypoint,
-      IReadOnlyCollection<string> commands,
-      IReadOnlyDictionary<string, string> environments,
-      IReadOnlyDictionary<string, string> labels,
-      IReadOnlyDictionary<string, string> exposedPorts,
-      IReadOnlyDictionary<string, string> portBindings,
-      IReadOnlyDictionary<string, string> mounts,
-      bool cleanUp)
+    internal TestcontainersBuilder(TestcontainersConfiguration config)
     {
-      this.image = image;
-      this.name = name;
-      this.workingDirectory = workingDirectory;
-      this.entrypoint = entrypoint;
-      this.command = commands;
-      this.environments = environments;
-      this.labels = labels;
-      this.exposedPorts = exposedPorts;
-      this.portBindings = portBindings;
-      this.mounts = mounts;
-      this.cleanUp = cleanUp;
+      this.config = config;
     }
-
-#pragma warning restore S107
 
     public ITestcontainersBuilder WithImage(string image)
     {
@@ -73,37 +26,58 @@ namespace DotNet.Testcontainers.Core.Builder
 
     public ITestcontainersBuilder WithImage(IDockerImage image)
     {
-      return Build(this, image: image);
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Image = image.Image }
+      });
     }
 
     public ITestcontainersBuilder WithName(string name)
     {
-      return Build(this, name: name);
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Name = name }
+      });
     }
 
     public ITestcontainersBuilder WithWorkingDirectory(string workingDirectory)
     {
-      return Build(this, workingDirectory: workingDirectory);
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { WorkingDirectory = workingDirectory }
+      });
     }
 
     public ITestcontainersBuilder WithEntrypoint(params string[] entrypoint)
     {
-      return Build(this, entrypoint: entrypoint);
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Entrypoint = entrypoint }
+      });
     }
 
     public ITestcontainersBuilder WithCommand(params string[] command)
     {
-      return Build(this, command: new ReadOnlyCollection<string>(command));
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Command = command }
+      });
     }
 
     public ITestcontainersBuilder WithEnvironment(string name, string value)
     {
-      return Build(this, environments: HashMap((name, value)).ToDictionary());
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Environments = new Dictionary<string, string> { { name, value } } }
+      });
     }
 
     public ITestcontainersBuilder WithLabel(string name, string value)
     {
-      return Build(this, labels: HashMap((name, value)).ToDictionary());
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { name, value } } }
+      });
     }
 
     public ITestcontainersBuilder WithExposedPort(int port)
@@ -113,7 +87,10 @@ namespace DotNet.Testcontainers.Core.Builder
 
     public ITestcontainersBuilder WithExposedPort(string port)
     {
-      return Build(this, exposedPorts: HashMap((port, port)).ToDictionary());
+      return Build(this, new TestcontainersConfiguration
+      {
+        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { port, port } } }
+      });
     }
 
     public ITestcontainersBuilder WithPortBinding(int port)
@@ -133,88 +110,38 @@ namespace DotNet.Testcontainers.Core.Builder
 
     public ITestcontainersBuilder WithPortBinding(string hostPort, string containerPort)
     {
-      return Build(this, portBindings: HashMap((hostPort, containerPort)).ToDictionary());
+      return Build(this, new TestcontainersConfiguration
+      {
+        Host = new HostConfiguration { PortBindings = new Dictionary<string, string> { { hostPort, containerPort } } }
+      });
     }
 
     public ITestcontainersBuilder WithMount(string source, string destination)
     {
-      return Build(this, mounts: HashMap((source, destination)).ToDictionary());
+      return Build(this, new TestcontainersConfiguration
+      {
+        Host = new HostConfiguration { Mounts = new Dictionary<string, string> { { source, destination } } }
+      });
     }
 
     public ITestcontainersBuilder WithCleanUp(bool cleanUp)
     {
-      return Build(this, cleanUp: cleanUp);
+      return Build(this, new TestcontainersConfiguration
+      {
+        CleanUp = cleanUp
+      });
     }
 
     public IDockerContainer Build()
     {
-      var configuration = default(TestcontainersConfiguration);
-      configuration.Container.Image = this.image.Image;
-      configuration.Container.Name = this.name;
-      configuration.Container.WorkingDirectory = this.workingDirectory;
-      configuration.Container.Entrypoint = this.entrypoint;
-      configuration.Container.Command = this.command;
-      configuration.Container.Environments = this.environments;
-      configuration.Container.ExposedPorts = this.exposedPorts;
-      configuration.Container.Labels = this.labels;
-      configuration.Host.PortBindings = this.portBindings;
-      configuration.Host.Mounts = this.mounts;
-
-      return new TestcontainersContainer(configuration, this.cleanUp);
+      return new TestcontainersContainer(this.config);
     }
-
-#pragma warning disable S107
 
     private static ITestcontainersBuilder Build(
       TestcontainersBuilder old,
-      IDockerImage image = null,
-      string name = null,
-      string workingDirectory = null,
-      IReadOnlyCollection<string> entrypoint = null,
-      IReadOnlyCollection<string> command = null,
-      IReadOnlyDictionary<string, string> environments = null,
-      IReadOnlyDictionary<string, string> exposedPorts = null,
-      IReadOnlyDictionary<string, string> labels = null,
-      IReadOnlyDictionary<string, string> portBindings = null,
-      IReadOnlyDictionary<string, string> mounts = null,
-      bool cleanUp = true)
+      TestcontainersConfiguration config)
     {
-      Merge(old.environments, ref environments);
-      Merge(old.exposedPorts, ref exposedPorts);
-      Merge(old.labels, ref labels);
-      Merge(old.portBindings, ref portBindings);
-      Merge(old.entrypoint, ref entrypoint);
-      Merge(old.command, ref command);
-      Merge(old.mounts, ref mounts);
-
-      return new TestcontainersBuilder(
-        image ?? old.image,
-        name ?? old.name,
-        workingDirectory ?? old.workingDirectory,
-        entrypoint,
-        command,
-        environments,
-        labels,
-        exposedPorts,
-        portBindings,
-        mounts,
-        cleanUp);
-    }
-
-#pragma warning restore S107
-
-    private static void Merge<T>(IReadOnlyDictionary<T, T> previous, ref IReadOnlyDictionary<T, T> next)
-    {
-      next = Optional(next).Match(
-        Some: some => previous.Concat(some).ToDictionary(key => key.Key, value => value.Value),
-        None: () => previous);
-    }
-
-    private static void Merge<T>(IReadOnlyCollection<T> previous, ref IReadOnlyCollection<T> next)
-    {
-      next = Optional(next).Match(
-        Some: some => previous.Concat(some).ToList(),
-        None: () => previous);
+      return new TestcontainersBuilder(config.Merge(old.config));
     }
   }
 }

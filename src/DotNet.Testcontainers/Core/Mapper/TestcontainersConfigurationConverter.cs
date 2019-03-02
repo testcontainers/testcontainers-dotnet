@@ -8,26 +8,26 @@ namespace DotNet.Testcontainers.Core.Mapper
 
   internal class TestcontainersConfigurationConverter
   {
-    public TestcontainersConfigurationConverter(TestcontainersConfiguration configuration)
+    public TestcontainersConfigurationConverter(TestcontainersConfiguration config)
     {
-      this.Configuration = configuration;
+      this.Config = config;
     }
 
-    public IList<string> Entrypoint => new ToList().Convert(this.Configuration.Container.Entrypoint);
+    public IList<string> Entrypoint => new ToList().Convert(this.Config.Container.Entrypoint);
 
-    public IList<string> Command => new ToList().Convert(this.Configuration.Container.Command);
+    public IList<string> Command => new ToList().Convert(this.Config.Container.Command);
 
-    public IList<string> Environments => new ToMappedList().Convert(this.Configuration.Container.Environments);
+    public IList<string> Environments => new ToMappedList().Convert(this.Config.Container.Environments);
 
-    public IDictionary<string, string> Labels => new ToDictionary().Convert(this.Configuration.Container.Labels);
+    public IDictionary<string, string> Labels => new ToDictionary().Convert(this.Config.Container.Labels);
 
-    public IDictionary<string, EmptyStruct> ExposedPorts => new ToExposedPorts().Convert(this.Configuration.Container.ExposedPorts);
+    public IDictionary<string, EmptyStruct> ExposedPorts => new ToExposedPorts().Convert(this.Config.Container.ExposedPorts);
 
-    public IDictionary<string, IList<PortBinding>> PortBindings => new ToPortBindings().Convert(this.Configuration.Host.PortBindings);
+    public IDictionary<string, IList<PortBinding>> PortBindings => new ToPortBindings().Convert(this.Config.Host.PortBindings);
 
-    public IList<Mount> Mounts => new ToMounts().Convert(this.Configuration.Host.Mounts);
+    public IList<Mount> Mounts => new ToMounts().Convert(this.Config.Host.Mounts);
 
-    private TestcontainersConfiguration Configuration { get; }
+    private TestcontainersConfiguration Config { get; }
 
     private class ToList : CollectionConverter<IList<string>>
     {

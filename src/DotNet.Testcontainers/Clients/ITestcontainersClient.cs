@@ -11,6 +11,6 @@ namespace DotNet.Testcontainers.Clients
 
     Task RemoveAsync(string id);
 
-    Task<string> RunAsync(TestcontainersConfiguration configuration);
+    Task<string> RunAsync(TestcontainersConfiguration config);
   }
 }

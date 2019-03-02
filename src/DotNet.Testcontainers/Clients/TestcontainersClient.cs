@@ -52,9 +52,9 @@ namespace DotNet.Testcontainers.Clients
       });
     }
 
-    public async Task<string> RunAsync(TestcontainersConfiguration configuration)
+    public async Task<string> RunAsync(TestcontainersConfiguration config)
     {
-      var image = configuration.Container.Image;
+      var image = config.Container.Image;
 
       var pullImageTask = MetaDataClientImages.Instance.ExistsWithNameAsync(image).ContinueWith(async imageExists =>
       {
@@ -65,11 +65,11 @@ namespace DotNet.Testcontainers.Clients
         }
       });
 
-      var name = configuration.Container.Name;
+      var name = config.Container.Name;
 
-      var workingDir = configuration.Container.WorkingDirectory;
+      var workingDir = config.Container.WorkingDirectory;
 
-      var converter = new TestcontainersConfigurationConverter(configuration);
+      var converter = new TestcontainersConfigurationConverter(config);
 
       var entrypoint = converter.Entrypoint;
 
