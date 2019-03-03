@@ -164,8 +164,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         var testcontainersBuilder = new TestcontainersBuilder()
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
-          .WithEnvironment("dayOfWekk", dayOfWeek)
-          .WithCommand("/bin/bash", "-c", $"printf $dayOfWekk > /{target}/{file}");
+          .WithEnvironment("dayOfWeek", dayOfWeek)
+          .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         // Then
         using (var testcontainer = testcontainersBuilder.Build())

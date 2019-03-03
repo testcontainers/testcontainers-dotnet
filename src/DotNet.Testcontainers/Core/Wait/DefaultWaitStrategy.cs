@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Core
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
 
-  public class DefaultWaitStrategy : WaitStrategy
+  public sealed class DefaultWaitStrategy : WaitStrategy
   {
     private string id;
 
