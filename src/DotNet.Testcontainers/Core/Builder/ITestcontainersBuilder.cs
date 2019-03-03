@@ -123,6 +123,13 @@ namespace DotNet.Testcontainers.Core.Builder
     ITestcontainersBuilder WithCleanUp(bool cleanUp);
 
     /// <summary>
+    /// Sets the wait strategy to complete the Testcontainer asynchronous start task.
+    /// </summary>
+    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation <see cref="DefaultWaitStrategy"/>.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
+    ITestcontainersBuilder WithWaitStrategy(WaitStrategy waitStrategy);
+
+    /// <summary>
     /// Builds the instance of <see cref="IDockerContainer"/> with the given configuration.
     /// </summary>
     /// <returns>A configured instance of <see cref="IDockerContainer"/>.</returns>

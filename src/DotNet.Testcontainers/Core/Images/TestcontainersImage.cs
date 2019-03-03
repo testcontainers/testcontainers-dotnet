@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Core.Images
 {
   using System;
   using System.Linq;
+  using System.Runtime.Serialization;
   using DotNet.Testcontainers.Core.Parser;
   using static LanguageExt.Prelude;
 

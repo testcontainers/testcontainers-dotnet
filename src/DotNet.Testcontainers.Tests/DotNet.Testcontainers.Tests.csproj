@@ -19,5 +19,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fixtures\" />
+    <Folder Include="Unit\" />
+  </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

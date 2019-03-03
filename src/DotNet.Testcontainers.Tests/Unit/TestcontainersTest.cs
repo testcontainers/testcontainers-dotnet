@@ -1,100 +1,17 @@
-namespace DotNet.Testcontainers.Tests
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.IO;
   using System.Net;
-  using System.Threading;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Builder;
-  using DotNet.Testcontainers.Core.Images;
+  using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
   using static LanguageExt.Prelude;
 
-  public static class TestcontainersTests
+  public static class TestcontainersTest
   {
     private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
-
-    public class ParseDockerImageName
-    {
-      [Theory]
-      [ClassData(typeof(DockerImageTestDataNameParser))]
-      public void WhenImageNameGetsAssigend(IDockerImage expected, string fullName)
-      {
-        // Given
-        var dockerImage = new TestcontainersImage();
-
-        // When
-        dockerImage.Image = fullName;
-
-        // Then
-        Assert.Equal(expected.Repository, dockerImage.Repository);
-        Assert.Equal(expected.Name, dockerImage.Name);
-        Assert.Equal(expected.Tag, dockerImage.Tag);
-      }
-    }
-
-    public class AccessDockerInformation
-    {
-      [Fact]
-      public async Task QueryNotExistingDockerImageById()
-      {
-        Assert.False(await MetaDataClientImages.Instance.ExistsWithIdAsync(string.Empty));
-      }
-
-      [Fact]
-      public async Task QueryNotExistingDockerContainerById()
-      {
-        Assert.False(await MetaDataClientContainers.Instance.ExistsWithIdAsync(string.Empty));
-      }
-
-      [Fact]
-      public async Task QueryNotExistingDockerImageByName()
-      {
-        Assert.False(await MetaDataClientImages.Instance.ExistsWithNameAsync(string.Empty));
-      }
-
-      [Fact]
-      public async Task QueryNotExistingDockerContainerByName()
-      {
-        Assert.False(await MetaDataClientContainers.Instance.ExistsWithNameAsync(string.Empty));
-      }
-
-      [Fact]
-      public async Task QueryContainerInformationOfRunningContainer()
-      {
-        // Given
-        // When
-        var testcontainersBuilder = new TestcontainersBuilder()
-          .WithImage("alpine");
-
-        // Then
-        using (var testcontainer = testcontainersBuilder.Build())
-        {
-          await testcontainer.StartAsync();
-
-          Assert.NotEmpty(testcontainer.Name);
-          Assert.NotEmpty(testcontainer.IPAddress);
-          Assert.NotEmpty(testcontainer.MacAddress);
-        }
-      }
-
-      [Fact]
-      public void QueryContainerInformationOfStoppedContainer()
-      {
-        // Given
-        // When
-        var testcontainersBuilder = new TestcontainersBuilder()
-          .WithImage("alpine");
-
-        // Then
-        using (var testcontainer = testcontainersBuilder.Build())
-        {
-          Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
-        }
-      }
-    }
 
     public class With
     {
@@ -260,58 +177,21 @@ namespace DotNet.Testcontainers.Tests
 
         Assert.Equal(dayOfWeek, text);
       }
-    }
-
-    public class Strategy
-    {
-      [Fact]
-      public async Task WaitWhile()
-      {
-        await WaitStrategy.WaitWhile(() =>
-        {
-          return false;
-        });
-      }
 
       [Fact]
-      public async Task WaitUntil()
+      public async Task WaitStrategy()
       {
-        await WaitStrategy.WaitUntil(() =>
-        {
-          return true;
-        });
-      }
+        // Given
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder()
+          .WithImage("alpine")
+          .WithWaitStrategy(new WaitStrategyFixture());
 
-      [Fact]
-      public async Task WaitWhileTimeout()
-      {
-        await Assert.ThrowsAsync<TimeoutException>(async () =>
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
         {
-          await WaitStrategy.WaitWhile(
-          () =>
-          {
-            return Wait100ms(true);
-          }, timeout: 5);
-        });
-      }
-
-      [Fact]
-      public async Task WaitUntilTimeout()
-      {
-        await Assert.ThrowsAsync<TimeoutException>(async () =>
-        {
-          await WaitStrategy.WaitUntil(
-          () =>
-          {
-            return Wait100ms(false);
-          }, timeout: 5);
-        });
-      }
-
-      private static bool Wait100ms(bool value)
-      {
-        Task.Delay(100);
-        return value;
+          await testcontainer.StartAsync();
+        }
       }
     }
   }

@@ -12,6 +12,8 @@ namespace DotNet.Testcontainers.Core.Models
 
     public bool CleanUp { get; set; } = true;
 
+    public WaitStrategy WaitStrategy { get; set; }
+
     public TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {
       this.Container.Image = Merge(this.Container.Image, old.Container.Image);
@@ -33,6 +35,10 @@ namespace DotNet.Testcontainers.Core.Models
       this.Host.PortBindings = Merge(this.Host.PortBindings, old.Host.PortBindings);
 
       this.Host.Mounts = Merge(this.Host.Mounts, old.Host.Mounts);
+
+      this.CleanUp = old.CleanUp;
+
+      this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy);
 
       return this;
     }

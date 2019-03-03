@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Image = image.Image }
+        Container = new ContainerConfiguration { Image = image.Image },
       });
     }
 
@@ -36,7 +36,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Name = name }
+        Container = new ContainerConfiguration { Name = name },
       });
     }
 
@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { WorkingDirectory = workingDirectory }
+        Container = new ContainerConfiguration { WorkingDirectory = workingDirectory },
       });
     }
 
@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Entrypoint = entrypoint }
+        Container = new ContainerConfiguration { Entrypoint = entrypoint },
       });
     }
 
@@ -60,7 +60,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Command = command }
+        Container = new ContainerConfiguration { Command = command },
       });
     }
 
@@ -68,7 +68,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Environments = new Dictionary<string, string> { { name, value } } }
+        Container = new ContainerConfiguration { Environments = new Dictionary<string, string> { { name, value } } },
       });
     }
 
@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { name, value } } }
+        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { name, value } } },
       });
     }
 
@@ -89,7 +89,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { port, port } } }
+        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { port, port } } },
       });
     }
 
@@ -112,7 +112,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Host = new HostConfiguration { PortBindings = new Dictionary<string, string> { { hostPort, containerPort } } }
+        Host = new HostConfiguration { PortBindings = new Dictionary<string, string> { { hostPort, containerPort } } },
       });
     }
 
@@ -120,7 +120,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Host = new HostConfiguration { Mounts = new Dictionary<string, string> { { source, destination } } }
+        Host = new HostConfiguration { Mounts = new Dictionary<string, string> { { source, destination } } },
       });
     }
 
@@ -128,7 +128,15 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        CleanUp = cleanUp
+        CleanUp = cleanUp,
+      });
+    }
+
+    public ITestcontainersBuilder WithWaitStrategy(WaitStrategy waitStrategy)
+    {
+      return Build(this, new TestcontainersConfiguration
+      {
+        WaitStrategy = waitStrategy,
       });
     }
 

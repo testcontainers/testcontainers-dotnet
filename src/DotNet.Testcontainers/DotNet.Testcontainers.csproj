@@ -13,6 +13,7 @@
     <Folder Include="Core\Images\" />
     <Folder Include="Core\Models\" />
     <Folder Include="Core\Parser\" />
+    <Folder Include="Core\Wait\" />
     <Folder Include="Diagnostics\" />
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,8 @@ namespace DotNet.Testcontainers.Core.Containers
 
   public class TestcontainersContainer : IDockerContainer
   {
+    private static readonly DefaultWaitStrategy Wait = new DefaultWaitStrategy();
+
     private Option<string> id = None;
 
     private Option<ContainerListResponse> container = None;
@@ -18,7 +20,6 @@ namespace DotNet.Testcontainers.Core.Containers
     internal TestcontainersContainer(TestcontainersConfiguration configuration)
     {
       this.Configuration = configuration;
-      this.CleanUp = configuration.CleanUp;
     }
 
     ~TestcontainersContainer()
@@ -74,8 +75,6 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private TestcontainersConfiguration Configuration { get; }
 
-    private bool CleanUp { get; }
-
     public async Task StartAsync()
     {
       this.id = await this.id.IfNoneAsync(() =>
@@ -83,9 +82,13 @@ namespace DotNet.Testcontainers.Core.Containers
         return TestcontainersClient.Instance.RunAsync(this.Configuration);
       });
 
-      await TestcontainersClient.Instance.StartAsync(this.Id);
+      var startTask = TestcontainersClient.Instance.StartAsync(this.Id);
 
-      await WaitStrategy.WaitUntil(this.ContainerIsUpAndRunning);
+      var waitTask = this.Configuration.WaitStrategy?.WaitUntil() ?? Wait.ForContainer(this.Id).WaitUntil();
+
+      await Task.WhenAll(startTask, waitTask);
+
+      this.container = await MetaDataClientContainers.Instance.ByIdAsync(this.Id);
     }
 
     public async Task StopAsync()
@@ -108,7 +111,7 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       this.id.IfSome(async id =>
       {
-        if (this.CleanUp)
+        if (this.Configuration.CleanUp)
         {
           this.id = None;
           this.container = None;
@@ -119,14 +122,6 @@ namespace DotNet.Testcontainers.Core.Containers
           await TestcontainersClient.Instance.StopAsync(id);
         }
       });
-    }
-
-    private bool ContainerIsUpAndRunning()
-    {
-      this.container = MetaDataClientContainers.Instance.ByIdAsync(this.Id).GetAwaiter().GetResult();
-      return this.container.Match(
-        Some: value => !"Created".Equals(value.Status),
-        None: () => throw new InvalidOperationException("Testcontainer not running."));
     }
   }
 }
