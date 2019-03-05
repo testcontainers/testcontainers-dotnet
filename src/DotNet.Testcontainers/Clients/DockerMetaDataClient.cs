@@ -2,9 +2,9 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
   using System.Threading.Tasks;
-  using static LanguageExt.Prelude;
 
   internal abstract class DockerMetaDataClient<T> : DockerApiClient
+    where T : class
   {
     internal abstract Task<IReadOnlyCollection<T>> GetAllAsync();
 
@@ -16,12 +16,12 @@ namespace DotNet.Testcontainers.Clients
 
     internal async Task<bool> ExistsWithIdAsync(string id)
     {
-      return notnull(await this.ByIdAsync(id));
+      return !(await this.ByIdAsync(id) is null);
     }
 
     internal async Task<bool> ExistsWithNameAsync(string name)
     {
-      return notnull(await this.ByNameAsync(name));
+      return !(await this.ByNameAsync(name) is null);
     }
   }
 }

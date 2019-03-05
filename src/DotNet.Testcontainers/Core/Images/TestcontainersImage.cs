@@ -2,9 +2,7 @@ namespace DotNet.Testcontainers.Core.Images
 {
   using System;
   using System.Linq;
-  using System.Runtime.Serialization;
   using DotNet.Testcontainers.Core.Parser;
-  using static LanguageExt.Prelude;
 
   public class TestcontainersImage : IDockerImage
   {
@@ -60,7 +58,7 @@ namespace DotNet.Testcontainers.Core.Images
 
         var dockerImage = MatchImage.Matcher
           .Select(matcher => matcher.Match(value))
-          .FirstOrDefault(notnull);
+          .First(result => !(result is null));
 
         this.Repository = dockerImage.Repository;
 

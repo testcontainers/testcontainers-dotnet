@@ -18,7 +18,7 @@ Choose from existing pre-configured configurations [^1] and start containers wit
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
 - `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
-- `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when Testcontainer is ready.
+- `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
 
 ## Examples
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
