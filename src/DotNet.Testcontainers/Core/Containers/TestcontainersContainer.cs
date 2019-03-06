@@ -77,28 +77,16 @@ namespace DotNet.Testcontainers.Core.Containers
 
     public async Task StartAsync()
     {
-      this.id = await this.id.IfNoneAsync(() =>
-      {
-        return TestcontainersClient.Instance.RunAsync(this.Configuration);
-      });
+      await this.Create();
 
-      var startTask = TestcontainersClient.Instance.StartAsync(this.Id);
-
-      var waitTask = this.Configuration.WaitStrategy?.WaitUntil() ?? Wait.ForContainer(this.Id).WaitUntil();
-
-      await Task.WhenAll(startTask, waitTask);
+      await this.Start();
 
       this.container = await MetaDataClientContainers.Instance.ByIdAsync(this.Id);
     }
 
     public async Task StopAsync()
     {
-      await TestcontainersClient.Instance.StopAsync(this.Id);
-
-      this.id.IfSome(id =>
-      {
-        this.container = None;
-      });
+      await this.Stop();
     }
 
     public void Dispose()
@@ -109,18 +97,52 @@ namespace DotNet.Testcontainers.Core.Containers
 
     protected virtual void Dispose(bool disposing)
     {
-      this.id.IfSome(async id =>
+      if (this.Configuration.CleanUp)
       {
-        if (this.Configuration.CleanUp)
-        {
-          this.id = None;
-          this.container = None;
-          await TestcontainersClient.Instance.RemoveAsync(id);
-        }
-        else
-        {
-          await TestcontainersClient.Instance.StopAsync(id);
-        }
+        Task.Run(this.CleanUp);
+      }
+      else
+      {
+        Task.Run(this.Stop);
+      }
+    }
+
+    private async Task Create()
+    {
+      this.id = await this.id.IfNoneAsync(() =>
+      {
+        return TestcontainersClient.Instance.RunAsync(this.Configuration);
+      });
+    }
+
+    private async Task Start()
+    {
+      await this.id.IfSomeAsync(async id =>
+      {
+        var startTask = TestcontainersClient.Instance.StartAsync(id);
+
+        var waitTask = this.Configuration.WaitStrategy?.WaitUntil() ?? Wait.ForContainer(id).WaitUntil();
+
+        await Task.WhenAll(startTask, waitTask);
+      });
+    }
+
+    private async Task Stop()
+    {
+      await this.id.IfSomeAsync(async id =>
+      {
+        this.container = None;
+        await TestcontainersClient.Instance.StopAsync(id);
+      });
+    }
+
+    private async Task CleanUp()
+    {
+      await this.id.IfSomeAsync(async id =>
+      {
+        this.id = None;
+        this.container = None;
+        await TestcontainersClient.Instance.RemoveAsync(id);
       });
     }
   }

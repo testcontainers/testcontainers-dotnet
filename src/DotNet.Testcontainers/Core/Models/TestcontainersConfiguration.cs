@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Core.Models
       return myself ?? old;
     }
 
-    private static IReadOnlyCollection<T> Merge<T>(IReadOnlyCollection<T> myself, ref IReadOnlyCollection<T> old)
+    private static IReadOnlyCollection<T> Merge<T>(IReadOnlyCollection<T> myself, IReadOnlyCollection<T> old)
       where T : class
     {
       if (myself == null)
