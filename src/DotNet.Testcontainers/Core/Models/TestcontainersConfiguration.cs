@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Core.Models
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
+  using DotNet.Testcontainers.Diagnostics;
 
   internal class TestcontainersConfiguration
   {
@@ -11,6 +12,8 @@ namespace DotNet.Testcontainers.Core.Models
     public HostConfiguration Host { get; set; } = new HostConfiguration();
 
     public bool CleanUp { get; set; } = true;
+
+    public IOutputConsumer OutputConsumer { get; set; }
 
     public WaitStrategy WaitStrategy { get; set; }
 
@@ -37,6 +40,8 @@ namespace DotNet.Testcontainers.Core.Models
       this.Host.Mounts = Merge(this.Host.Mounts, old.Host.Mounts);
 
       this.CleanUp = old.CleanUp;
+
+      this.OutputConsumer = Merge(this.OutputConsumer, old.OutputConsumer);
 
       this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy);
 

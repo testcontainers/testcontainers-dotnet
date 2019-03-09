@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Core.Mapper;
@@ -52,6 +53,25 @@ namespace DotNet.Testcontainers.Clients
       });
     }
 
+    public async Task AttachAsync(string id, IOutputConsumer outputConsumer)
+    {
+      if (outputConsumer is null)
+      {
+        return;
+      }
+
+      var attachParameters = new ContainerAttachParameters
+      {
+        Stdout = true,
+        Stderr = true,
+        Stream = true,
+      };
+
+      var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters);
+
+      await stream.CopyOutputToAsync(null, outputConsumer.Stdout, outputConsumer.Stderr, default(CancellationToken));
+    }
+
     public async Task<string> RunAsync(TestcontainersConfiguration config)
     {
       var image = config.Container.Image;
@@ -85,15 +105,13 @@ namespace DotNet.Testcontainers.Clients
 
       var mounts = converter.Mounts;
 
-      await pullImageTask;
-
       var hostConfig = new HostConfig
       {
         PortBindings = portBindings,
         Mounts = mounts,
       };
 
-      var response = await Docker.Containers.CreateContainerAsync(new CreateContainerParameters
+      var createParameters = new CreateContainerParameters
       {
         Image = image,
         Name = name,
@@ -104,9 +122,11 @@ namespace DotNet.Testcontainers.Clients
         Cmd = cmd,
         ExposedPorts = exposedPorts,
         HostConfig = hostConfig,
-      });
+      };
 
-      return response.ID;
+      await pullImageTask;
+
+      return (await Docker.Containers.CreateContainerAsync(createParameters)).ID;
     }
   }
 }

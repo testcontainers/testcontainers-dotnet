@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Core.Builder
 {
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
+  using DotNet.Testcontainers.Diagnostics;
 
   public interface ITestcontainersBuilder
   {
@@ -121,6 +122,13 @@ namespace DotNet.Testcontainers.Core.Builder
     /// <param name="cleanUp">True, Testcontainer will remove the Testcontainer on finalize. Otherwise, Testcontainer will keep it.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
     ITestcontainersBuilder WithCleanUp(bool cleanUp);
+
+    /// <summary>
+    /// Sets the output consumer to capture the Testcontainer stdout and stderr messages.
+    /// </summary>
+    /// <param name="outputConsumer">Output consumer to capture stdout and strerr.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder"/>.</returns>
+    ITestcontainersBuilder WithOutputConsumer(IOutputConsumer outputConsumer);
 
     /// <summary>
     /// Sets the wait strategy to complete the Testcontainer asynchronous start task.

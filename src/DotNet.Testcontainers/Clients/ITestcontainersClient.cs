@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Diagnostics;
 
   internal interface ITestcontainersClient
   {
@@ -10,6 +11,8 @@ namespace DotNet.Testcontainers.Clients
     Task StopAsync(string id);
 
     Task RemoveAsync(string id);
+
+    Task AttachAsync(string id, IOutputConsumer outputConsumer);
 
     Task<string> RunAsync(TestcontainersConfiguration config);
   }

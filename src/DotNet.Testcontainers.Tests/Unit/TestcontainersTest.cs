@@ -179,6 +179,39 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task OutputConsumer()
+      {
+        // Given
+        using (var output = new DefaultConsumerFixture())
+        {
+          // When
+          var testcontainersBuilder = new TestcontainersBuilder()
+            .WithImage("nginx")
+            .WithOutputConsumer(output)
+            .WithCommand("/bin/bash", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
+
+          // Then
+          using (var testcontainer = testcontainersBuilder.Build())
+          {
+            await testcontainer.StartAsync();
+          }
+
+          output.Stdout.Position = 0;
+          output.Stderr.Position = 0;
+
+          using (var streamReader = new StreamReader(output.Stdout))
+          {
+            Assert.NotEmpty(streamReader.ReadToEnd());
+          }
+
+          using (var streamReader = new StreamReader(output.Stderr))
+          {
+            Assert.NotEmpty(streamReader.ReadToEnd());
+          }
+        }
+      }
+
+      [Fact]
       public async Task WaitStrategy()
       {
         // Given

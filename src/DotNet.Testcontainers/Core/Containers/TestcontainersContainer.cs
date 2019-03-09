@@ -6,12 +6,15 @@ namespace DotNet.Testcontainers.Core.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Diagnostics;
   using LanguageExt;
   using static LanguageExt.Prelude;
 
   public class TestcontainersContainer : IDockerContainer
   {
     private static readonly DefaultWaitStrategy Wait = new DefaultWaitStrategy();
+
+    private bool disposed;
 
     private Option<string> id = None;
 
@@ -97,6 +100,11 @@ namespace DotNet.Testcontainers.Core.Containers
 
     protected virtual void Dispose(bool disposing)
     {
+      if (this.disposed)
+      {
+        return;
+      }
+
       if (this.Configuration.CleanUp)
       {
         Task.Run(this.CleanUp);
@@ -105,6 +113,8 @@ namespace DotNet.Testcontainers.Core.Containers
       {
         Task.Run(this.Stop);
       }
+
+      this.disposed = true;
     }
 
     private async Task Create()
@@ -119,11 +129,13 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       await this.id.IfSomeAsync(async id =>
       {
+        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer);
+
         var startTask = TestcontainersClient.Instance.StartAsync(id);
 
         var waitTask = this.Configuration.WaitStrategy?.WaitUntil() ?? Wait.ForContainer(id).WaitUntil();
 
-        await Task.WhenAll(startTask, waitTask);
+        await Task.WhenAll(attachConsumerTask, startTask, waitTask);
       });
     }
 

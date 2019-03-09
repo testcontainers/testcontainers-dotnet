@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Core.Builder
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Diagnostics;
   using static DotNet.Testcontainers.Core.Models.TestcontainersConfiguration;
 
   public class TestcontainersBuilder : ITestcontainersBuilder
@@ -129,6 +130,14 @@ namespace DotNet.Testcontainers.Core.Builder
       return Build(this, new TestcontainersConfiguration
       {
         CleanUp = cleanUp,
+      });
+    }
+
+    public ITestcontainersBuilder WithOutputConsumer(IOutputConsumer outputConsumer)
+    {
+      return Build(this, new TestcontainersConfiguration
+      {
+        OutputConsumer = outputConsumer,
       });
     }
 
