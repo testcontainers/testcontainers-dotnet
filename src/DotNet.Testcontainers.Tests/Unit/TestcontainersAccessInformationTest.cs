@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Builder;
+  using DotNet.Testcontainers.Core.Containers;
   using Xunit;
 
   public class TestcontainersAccessInformationTest
@@ -39,7 +40,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
         // Then
@@ -58,7 +59,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
         // Then

@@ -1,31 +1,44 @@
 namespace DotNet.Testcontainers.Core.Builder
 {
+  using System;
   using System.Collections.Generic;
+  using System.Reflection;
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Diagnostics;
   using static DotNet.Testcontainers.Core.Models.TestcontainersConfiguration;
 
-  public class TestcontainersBuilder : ITestcontainersBuilder
+  public class TestcontainersBuilder<T> : ITestcontainersBuilder<T>
+    where T : TestcontainersContainer
   {
     private readonly TestcontainersConfiguration config = new TestcontainersConfiguration();
+
+    private readonly Action<T> configureContainer;
 
     public TestcontainersBuilder()
     {
     }
 
-    internal TestcontainersBuilder(TestcontainersConfiguration config)
+    internal TestcontainersBuilder(
+      TestcontainersConfiguration config,
+      Action<T> configureContainer)
     {
       this.config = config;
+      this.configureContainer = configureContainer;
     }
 
-    public ITestcontainersBuilder WithImage(string image)
+    public ITestcontainersBuilder<T> ConfigureContainer(Action<T> configureContainer)
+    {
+      return Build(this, this.config, configureContainer);
+    }
+
+    public ITestcontainersBuilder<T> WithImage(string image)
     {
       return this.WithImage(new TestcontainersImage(image));
     }
 
-    public ITestcontainersBuilder WithImage(IDockerImage image)
+    public ITestcontainersBuilder<T> WithImage(IDockerImage image)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -33,7 +46,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithName(string name)
+    public ITestcontainersBuilder<T> WithName(string name)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -41,7 +54,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithWorkingDirectory(string workingDirectory)
+    public ITestcontainersBuilder<T> WithWorkingDirectory(string workingDirectory)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -49,7 +62,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithEntrypoint(params string[] entrypoint)
+    public ITestcontainersBuilder<T> WithEntrypoint(params string[] entrypoint)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -57,7 +70,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithCommand(params string[] command)
+    public ITestcontainersBuilder<T> WithCommand(params string[] command)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -65,7 +78,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithEnvironment(string name, string value)
+    public ITestcontainersBuilder<T> WithEnvironment(string name, string value)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -73,7 +86,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithLabel(string name, string value)
+    public ITestcontainersBuilder<T> WithLabel(string name, string value)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -81,12 +94,12 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithExposedPort(int port)
+    public ITestcontainersBuilder<T> WithExposedPort(int port)
     {
       return this.WithExposedPort($"{port}");
     }
 
-    public ITestcontainersBuilder WithExposedPort(string port)
+    public ITestcontainersBuilder<T> WithExposedPort(string port)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -94,22 +107,22 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithPortBinding(int port)
+    public ITestcontainersBuilder<T> WithPortBinding(int port)
     {
       return this.WithPortBinding(port, port);
     }
 
-    public ITestcontainersBuilder WithPortBinding(int hostPort, int containerPort)
+    public ITestcontainersBuilder<T> WithPortBinding(int hostPort, int containerPort)
     {
       return this.WithPortBinding($"{hostPort}", $"{containerPort}");
     }
 
-    public ITestcontainersBuilder WithPortBinding(string port)
+    public ITestcontainersBuilder<T> WithPortBinding(string port)
     {
       return this.WithPortBinding(port, port);
     }
 
-    public ITestcontainersBuilder WithPortBinding(string hostPort, string containerPort)
+    public ITestcontainersBuilder<T> WithPortBinding(string hostPort, string containerPort)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -117,7 +130,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithMount(string source, string destination)
+    public ITestcontainersBuilder<T> WithMount(string source, string destination)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -125,7 +138,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithCleanUp(bool cleanUp)
+    public ITestcontainersBuilder<T> WithCleanUp(bool cleanUp)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -133,7 +146,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithOutputConsumer(IOutputConsumer outputConsumer)
+    public ITestcontainersBuilder<T> WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -141,7 +154,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder WithWaitStrategy(WaitStrategy waitStrategy)
+    public ITestcontainersBuilder<T> WithWaitStrategy(WaitStrategy waitStrategy)
     {
       return Build(this, new TestcontainersConfiguration
       {
@@ -149,16 +162,24 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public IDockerContainer Build()
+    public T Build()
     {
-      return new TestcontainersContainer(this.config);
+      // Create container instance.
+      var container = (T)Activator.CreateInstance(typeof(T), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.config }, null); // TODO: Remove reflection.
+
+      // Apply specific container configuration.
+      this.configureContainer?.Invoke(container);
+
+      return container;
     }
 
-    private static ITestcontainersBuilder Build(
-      TestcontainersBuilder old,
-      TestcontainersConfiguration config)
+    private static ITestcontainersBuilder<T> Build(
+      TestcontainersBuilder<T> old,
+      TestcontainersConfiguration config,
+      Action<T> configureContainer = null)
     {
-      return new TestcontainersBuilder(config.Merge(old.config));
+      configureContainer = configureContainer ?? old.configureContainer;
+      return new TestcontainersBuilder<T>(config.Merge(old.config), configureContainer);
     }
   }
 }

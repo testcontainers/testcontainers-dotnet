@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Models
 
     public WaitStrategy WaitStrategy { get; set; }
 
-    public TestcontainersConfiguration Merge(TestcontainersConfiguration old)
+    internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {
       this.Container.Image = Merge(this.Container.Image, old.Container.Image);
 
@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Core.Models
       }
       else
       {
-        return myself.Concat(old).ToList();
+        return myself.Concat(old.Where(x => !myself.Contains(x))).ToList();
       }
     }
 
@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Core.Models
       }
       else
       {
-        return myself.Concat(old).ToDictionary(item => item.Key, item => item.Value);
+        return myself.Concat(old.Where(x => !myself.Keys.Contains(x.Key))).ToDictionary(item => item.Key, item => item.Value);
       }
     }
 

@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Core.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Models;
-  using DotNet.Testcontainers.Diagnostics;
   using LanguageExt;
   using static LanguageExt.Prelude;
 

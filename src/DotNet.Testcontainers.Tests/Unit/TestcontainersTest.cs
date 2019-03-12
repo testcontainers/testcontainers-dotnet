@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Net;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
+  using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
   using static LanguageExt.Prelude;
@@ -20,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithLabel("alpine", "latest");
 
@@ -35,7 +36,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine");
 
         // Then
@@ -50,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine");
 
         // Then
@@ -68,7 +69,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var name = "/alpine";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithName(name);
 
@@ -85,7 +86,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithExposedPort(80);
 
@@ -104,7 +105,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var https = Tuple(443, 80);
 
         // When
-        var nginx = new TestcontainersBuilder()
+        var nginx = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
         // Then
@@ -136,7 +137,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var file = "hostname";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
@@ -161,7 +162,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
@@ -185,7 +186,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         using (var output = new DefaultConsumerFixture())
         {
           // When
-          var testcontainersBuilder = new TestcontainersBuilder()
+          var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("nginx")
             .WithOutputConsumer(output)
             .WithCommand("/bin/bash", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
@@ -216,7 +217,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         // When
-        var testcontainersBuilder = new TestcontainersBuilder()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithWaitStrategy(new WaitStrategyFixture());
 

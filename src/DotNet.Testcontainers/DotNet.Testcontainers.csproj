@@ -10,7 +10,9 @@
     <Folder Include="Clients\" />
     <Folder Include="Core\Builder\" />
     <Folder Include="Core\Containers\" />
+    <Folder Include="Core\Containers\Database\" />    
     <Folder Include="Core\Images\" />
+    <Folder Include="Core\Mapper\" />
     <Folder Include="Core\Models\" />
     <Folder Include="Core\Parser\" />
     <Folder Include="Core\Wait\" />
