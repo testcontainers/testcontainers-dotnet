@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Clients
 
     Task AttachAsync(string id, IOutputConsumer outputConsumer);
 
+    Task ExecAsync(string id, params string[] command);
+
     Task<string> RunAsync(TestcontainersConfiguration config);
   }
 }

@@ -1,8 +1,8 @@
 namespace DotNet.Testcontainers.Core.Models
 {
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using System.Linq;
+  using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
 
   public class TestcontainersConfiguration
@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Core.Models
 
     public IOutputConsumer OutputConsumer { get; set; }
 
-    public WaitStrategy WaitStrategy { get; set; }
+    public IWaitUntil WaitStrategy { get; set; } = new WaitUntilContainerIsCreated();
 
     internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {

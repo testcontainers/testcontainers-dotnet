@@ -24,7 +24,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         await testcontainer.StartAsync();
 
-        /*
         using (var connection = new NpgsqlConnection(testcontainer.ConnectionString))
         {
           connection.Open();
@@ -36,7 +35,6 @@ namespace DotNet.Testcontainers.Tests.Unit
             cmd.ExecuteReader();
           }
         }
-        */
       }
     }
   }

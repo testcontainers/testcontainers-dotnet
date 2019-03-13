@@ -8,6 +8,6 @@ namespace DotNet.Testcontainers.Core.Containers.Database
     {
     }
 
-    public override string ConnectionString => $"Server={this.Hostname};Port={this.Port};Database={this.Database};User Id={this.Username};Password={this.Password};";
+    public override string ConnectionString => $"Server={this.Hostname};Port={this.Port};Database={this.Database};User Id={this.Username};Password={this.Password};Timeout=15;CommandTimeout=20";
   }
 }

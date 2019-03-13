@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Core.Builder
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
   using static DotNet.Testcontainers.Core.Models.TestcontainersConfiguration;
 
@@ -154,7 +155,7 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder<T> WithWaitStrategy(WaitStrategy waitStrategy)
+    public ITestcontainersBuilder<T> WithWaitStrategy(IWaitUntil waitStrategy)
     {
       return Build(this, new TestcontainersConfiguration
       {

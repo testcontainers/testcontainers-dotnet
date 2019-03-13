@@ -3,12 +3,8 @@ namespace DotNet.Testcontainers.Core
   using System;
   using System.Threading.Tasks;
 
-  public abstract class WaitStrategy
+  public static class WaitStrategy
   {
-    protected WaitStrategy()
-    {
-    }
-
     /// <summary>
     /// Blocks while condition is true or timeout occurs.
     /// </summary>
@@ -16,11 +12,11 @@ namespace DotNet.Testcontainers.Core
     /// <param name="timeout">Timeout in milliseconds.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public async Task WaitWhile(int frequency = 25, int timeout = -1)
+    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1)
     {
       var waitTask = Task.Run(async () =>
       {
-        while (await this.While())
+        while (await wait())
         {
           await Task.Delay(frequency);
         }
@@ -39,24 +35,20 @@ namespace DotNet.Testcontainers.Core
     /// <param name="timeout">The timeout in milliseconds.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public async Task WaitUntil(int frequency = 25, int timeout = -1)
+    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1)
     {
-      var waitTask = Task.Run((Func<Task>)(async () =>
+      var waitTask = Task.Run(async () =>
       {
-        while (!await this.Until())
+        while (!await wait())
         {
           await Task.Delay(frequency);
         }
-      }));
+      });
 
       if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
       {
         throw new TimeoutException();
       }
     }
-
-    protected abstract Task<bool> While();
-
-    protected abstract Task<bool> Until();
   }
 }

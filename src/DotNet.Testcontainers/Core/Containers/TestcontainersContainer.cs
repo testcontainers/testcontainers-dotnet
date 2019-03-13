@@ -11,8 +11,6 @@ namespace DotNet.Testcontainers.Core.Containers
 
   public class TestcontainersContainer : IDockerContainer
   {
-    private static readonly DefaultWaitStrategy Wait = new DefaultWaitStrategy();
-
     private bool disposed;
 
     private Option<string> id = None;
@@ -128,11 +126,13 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       await this.id.IfSomeAsync(async id =>
       {
+        var waitStrategy = this.Configuration.WaitStrategy ?? new WaitUntilContainerIsCreated();
+
         var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer);
 
         var startTask = TestcontainersClient.Instance.StartAsync(id);
 
-        var waitTask = this.Configuration.WaitStrategy?.WaitUntil() ?? Wait.ForContainer(id).WaitUntil();
+        var waitTask = WaitStrategy.WaitUntil(() => { return this.Configuration.WaitStrategy.Until(id); });
 
         await Task.WhenAll(attachConsumerTask, startTask, waitTask);
       });

@@ -3,65 +3,66 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core;
+  using DotNet.Testcontainers.Core.Wait;
   using Xunit;
 
   public class TestcontainersWaitStrategyTest
   {
-    public class Finish : WaitStrategy
+    public class Finish : IWaitUntil, IWaitWhile
     {
-      [Fact]
-      public async Task WhileImmediately()
-      {
-        await this.WaitWhile();
-      }
-
       [Fact]
       public async Task UntilImmediately()
       {
-        await this.WaitUntil();
+        await WaitStrategy.WaitUntil(() => { return this.Until(string.Empty); });
       }
 
-      protected override async Task<bool> While()
+      [Fact]
+      public async Task WhileImmediately()
       {
-        return await Task.Run(() => false);
+        await WaitStrategy.WaitWhile(() => { return this.While(string.Empty); });
       }
 
-      protected override async Task<bool> Until()
+      public Task<bool> Until(string id)
       {
-        return await Task.Run(() => true);
+        return Task.Run(() => true);
+      }
+
+      public Task<bool> While(string id)
+      {
+        return Task.Run(() => false);
       }
     }
 
-    public class Timeout : WaitStrategy
+    public class Timeout : IWaitUntil, IWaitWhile
     {
-      [Fact]
-      public async Task WhileAfter1ms()
-      {
-        await Assert.ThrowsAsync<TimeoutException>(async () =>
-        {
-          await this.WaitWhile(timeout: 1);
-        });
-      }
-
       [Fact]
       public async Task UntilAfter1ms()
       {
         await Assert.ThrowsAsync<TimeoutException>(async () =>
         {
-          await this.WaitUntil(timeout: 1);
+          await WaitStrategy.WaitUntil(() => this.Until(string.Empty), timeout: 1);
         });
       }
 
-      protected override async Task<bool> While()
+      [Fact]
+      public async Task WhileAfter1ms()
       {
-        await Task.Delay(100);
-        return false;
+        await Assert.ThrowsAsync<TimeoutException>(async () =>
+        {
+          await WaitStrategy.WaitWhile(() => this.Until(string.Empty), timeout: 1);
+        });
       }
 
-      protected override async Task<bool> Until()
+      public Task<bool> Until(string id)
       {
-        await Task.Delay(100);
-        return true;
+        Task.Delay(100);
+        return Task.Run(() => true);
+      }
+
+      public Task<bool> While(string id)
+      {
+        Task.Delay(100);
+        return Task.Run(() => false);
       }
     }
   }

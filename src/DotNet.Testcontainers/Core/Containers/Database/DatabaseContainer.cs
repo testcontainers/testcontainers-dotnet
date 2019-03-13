@@ -9,9 +9,9 @@ namespace DotNet.Testcontainers.Core.Containers.Database
     {
     }
 
-    public virtual string Hostname { get; set; }
+    public virtual int Port { get; set; }
 
-    public virtual string Port { get; set; }
+    public virtual string Hostname { get; set; }
 
     public virtual string Database { get; set; }
 

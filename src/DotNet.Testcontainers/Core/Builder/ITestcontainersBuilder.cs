@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Core.Builder
   using System;
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Images;
+  using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
 
   public interface ITestcontainersBuilder<T>
@@ -136,9 +137,9 @@ namespace DotNet.Testcontainers.Core.Builder
     /// <summary>
     /// Sets the wait strategy to complete the Testcontainer asynchronous start task.
     /// </summary>
-    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation <see cref="DefaultWaitStrategy"/>.</param>
+    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation <see cref="WaitUntilContainerIsCreated"/>.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{T}"/>.</returns>
-    ITestcontainersBuilder<T> WithWaitStrategy(WaitStrategy waitStrategy);
+    ITestcontainersBuilder<T> WithWaitStrategy(IWaitUntil waitStrategy);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerContainer"/> with the given configuration.

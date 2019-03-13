@@ -2,20 +2,15 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Core;
+  using DotNet.Testcontainers.Core.Wait;
 
-  public class WaitStrategyFixture : WaitStrategy
+  public class WaitStrategyFixture : IWaitUntil
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    protected override async Task<bool> While()
+    public Task<bool> Until(string id)
     {
-      return await Task.Run(() => true);
-    }
-
-    protected override async Task<bool> Until()
-    {
-      return await Task.Run(() =>
+      return Task.Run(() =>
       {
         return new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5;
       });
