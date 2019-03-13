@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Core.Mapper
     {
       public override IList<string> Convert(IReadOnlyCollection<string> source)
       {
-        return source.ToList();
+        return source?.ToList();
       }
     }
 
@@ -41,7 +41,7 @@ namespace DotNet.Testcontainers.Core.Mapper
     {
       public override IDictionary<string, string> Convert(IReadOnlyDictionary<string, string> source)
       {
-        return source.ToDictionary(item => item.Key, item => item.Value);
+        return source?.ToDictionary(item => item.Key, item => item.Value);
       }
     }
 
@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Core.Mapper
     {
       public override IList<string> Convert(IReadOnlyDictionary<string, string> source)
       {
-        return source.Select(item => $"{item.Key}={item.Value}").ToList();
+        return source?.Select(item => $"{item.Key}={item.Value}").ToList();
       }
     }
 
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Core.Mapper
 
       public override IDictionary<string, EmptyStruct> Convert(IReadOnlyDictionary<string, string> source)
       {
-        return source.ToDictionary(exposedPort => $"{exposedPort.Key}/tcp", exposedPort => default(EmptyStruct));
+        return source?.ToDictionary(exposedPort => $"{exposedPort.Key}/tcp", exposedPort => default(EmptyStruct));
       }
     }
 
@@ -73,7 +73,7 @@ namespace DotNet.Testcontainers.Core.Mapper
 
       public override IDictionary<string, IList<PortBinding>> Convert(IReadOnlyDictionary<string, string> source)
       {
-        return source.ToDictionary(binding => $"{binding.Value}/tcp", binding => new List<PortBinding> { new PortBinding { HostPort = binding.Key } } as IList<PortBinding>);
+        return source?.ToDictionary(binding => $"{binding.Value}/tcp", binding => new List<PortBinding> { new PortBinding { HostPort = binding.Key } } as IList<PortBinding>);
       }
     }
 
@@ -85,7 +85,7 @@ namespace DotNet.Testcontainers.Core.Mapper
 
       public override IList<Mount> Convert(IReadOnlyDictionary<string, string> source)
       {
-        return source.Select(mount => new Mount { Source = Path.GetFullPath(mount.Key), Target = mount.Value, Type = "bind" }).ToList();
+        return source?.Select(mount => new Mount { Source = Path.GetFullPath(mount.Key), Target = mount.Value, Type = "bind" }).ToList();
       }
     }
   }

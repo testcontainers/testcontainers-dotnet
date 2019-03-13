@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private Option<ContainerListResponse> container = None;
 
-    internal TestcontainersContainer(TestcontainersConfiguration configuration)
+    protected TestcontainersContainer(TestcontainersConfiguration configuration)
     {
       this.Configuration = configuration;
     }

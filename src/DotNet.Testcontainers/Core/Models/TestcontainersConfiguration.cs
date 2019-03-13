@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Core.Models
   using System.Linq;
   using DotNet.Testcontainers.Diagnostics;
 
-  internal class TestcontainersConfiguration
+  public class TestcontainersConfiguration
   {
     public ContainerConfiguration Container { get; set; } = new ContainerConfiguration();
 
@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Core.Models
 
       this.Host.Mounts = Merge(this.Host.Mounts, old.Host.Mounts);
 
-      this.CleanUp = old.CleanUp;
+      this.CleanUp = this.CleanUp && old.CleanUp;
 
       this.OutputConsumer = Merge(this.OutputConsumer, old.OutputConsumer);
 
@@ -57,22 +57,22 @@ namespace DotNet.Testcontainers.Core.Models
     private static IReadOnlyCollection<T> Merge<T>(IReadOnlyCollection<T> myself, IReadOnlyCollection<T> old)
       where T : class
     {
-      if (myself == null)
+      if (myself == null || old == null)
       {
-        return old ?? new ReadOnlyCollection<T>(new List<T>());
+        return myself ?? old;
       }
       else
       {
-        return myself.Concat(old.Where(x => !myself.Contains(x))).ToList();
+        return myself.Concat(old).ToList();
       }
     }
 
     private static IReadOnlyDictionary<T, T> Merge<T>(IReadOnlyDictionary<T, T> myself, IReadOnlyDictionary<T, T> old)
       where T : class
     {
-      if (myself == null)
+      if (myself == null || old == null)
       {
-        return old ?? new ReadOnlyDictionary<T, T>(new Dictionary<T, T>());
+        return myself ?? old;
       }
       else
       {
@@ -88,22 +88,22 @@ namespace DotNet.Testcontainers.Core.Models
 
       public string WorkingDirectory { get; set; }
 
-      public IReadOnlyCollection<string> Entrypoint { get; set; } = new List<string>();
+      public IReadOnlyCollection<string> Entrypoint { get; set; }
 
-      public IReadOnlyCollection<string> Command { get; set; } = new List<string>();
+      public IReadOnlyCollection<string> Command { get; set; }
 
-      public IReadOnlyDictionary<string, string> Environments { get; set; } = new Dictionary<string, string>();
+      public IReadOnlyDictionary<string, string> Environments { get; set; }
 
-      public IReadOnlyDictionary<string, string> Labels { get; set; } = new Dictionary<string, string>();
+      public IReadOnlyDictionary<string, string> Labels { get; set; }
 
-      public IReadOnlyDictionary<string, string> ExposedPorts { get; set; } = new Dictionary<string, string>();
+      public IReadOnlyDictionary<string, string> ExposedPorts { get; set; }
     }
 
     public class HostConfiguration
     {
-      public IReadOnlyDictionary<string, string> PortBindings { get; set; } = new Dictionary<string, string>();
+      public IReadOnlyDictionary<string, string> PortBindings { get; set; }
 
-      public IReadOnlyDictionary<string, string> Mounts { get; set; } = new Dictionary<string, string>();
+      public IReadOnlyDictionary<string, string> Mounts { get; set; }
     }
   }
 }

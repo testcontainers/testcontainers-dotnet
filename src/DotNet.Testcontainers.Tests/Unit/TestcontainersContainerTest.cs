@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Xunit;
   using static LanguageExt.Prelude;
 
-  public static class TestcontainersTest
+  public static class TestcontainersContainerTest
   {
     private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
 

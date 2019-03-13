@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public class Timeout : WaitStrategy
     {
       [Fact]
-      public async Task WhileAfter5ms()
+      public async Task WhileAfter1ms()
       {
         await Assert.ThrowsAsync<TimeoutException>(async () =>
         {
@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task UntilAfter5ms()
+      public async Task UntilAfter1ms()
       {
         await Assert.ThrowsAsync<TimeoutException>(async () =>
         {

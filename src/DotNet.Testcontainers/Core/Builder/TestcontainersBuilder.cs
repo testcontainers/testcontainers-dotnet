@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
       return Build(this, new TestcontainersConfiguration
       {
-        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { port, port } } },
+        Container = new ContainerConfiguration { ExposedPorts = new Dictionary<string, string> { { port, port } } },
       });
     }
 

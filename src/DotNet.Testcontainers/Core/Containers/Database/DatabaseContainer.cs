@@ -5,9 +5,13 @@ namespace DotNet.Testcontainers.Core.Containers.Database
 
   public abstract class DatabaseContainer : TestcontainersContainer
   {
-    internal DatabaseContainer(TestcontainersConfiguration configuration) : base(configuration)
+    protected DatabaseContainer(TestcontainersConfiguration configuration) : base(configuration)
     {
     }
+
+    public virtual string Hostname { get; set; }
+
+    public virtual string Port { get; set; }
 
     public virtual string Database { get; set; }
 
