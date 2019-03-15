@@ -3,11 +3,13 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
 # .NET Testcontainers
+
 .NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
-Choose from existing pre-configured configurations [^1] and start containers within a second, to support and run your tests.
+Choose from existing pre-configured configurations and start containers within a second, to support and run your tests.
 
 ## Supported commands
+
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
 - `WithWorkingDirectory` specifies and overrides the `WORKDIR` for the instruction sets.
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
@@ -21,7 +23,12 @@ Choose from existing pre-configured configurations [^1] and start containers wit
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
 - `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
 
+## Pre-configured containers
+
+- PostgreSqlContainer
+
 ## Examples
+
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
 ```csharp
@@ -52,6 +59,35 @@ using (var testcontainer = testcontainersBuilder.Build())
 }
 ```
 
+Here is an example of a pre-configured Testcontainer. In the example, Testcontainers starts a PostgreSQL database and executes a SQL query.
+
+```csharp
+var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlContainer>()
+  .WithDatabase(new DatabaseConfiguration
+  {
+    Database = "db",
+    Username = "postgres",
+    Password = "postgres",
+  });
+
+using (var testcontainer = testcontainersBuilder.Build())
+{
+  await testcontainer.StartAsync();
+
+  using (var connection = new NpgsqlConnection(testcontainer.ConnectionString))
+  {
+    connection.Open();
+
+    using (var cmd = new NpgsqlCommand())
+    {
+      cmd.Connection = connection;
+      cmd.CommandText = "SELECT 1";
+      cmd.ExecuteReader();
+    }
+  }
+}
+```
+
 ## Contributing
 
 You are thinking about contributing to .NET Testcontainers? Awesome, it’s absolutely appreciated. To build the project just run the provided Cake script, `./build.sh` (Unix) or `.\build.ps1` (Windows).
@@ -69,5 +105,3 @@ You are thinking about contributing to .NET Testcontainers? Awesome, it’s abso
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-[^1]: I will add pre-configured configurations within the next releases.
