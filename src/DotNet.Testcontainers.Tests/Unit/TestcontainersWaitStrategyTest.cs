@@ -49,20 +49,20 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         await Assert.ThrowsAsync<TimeoutException>(async () =>
         {
-          await WaitStrategy.WaitWhile(() => this.Until(string.Empty), timeout: 1);
+          await WaitStrategy.WaitWhile(() => this.While(string.Empty), timeout: 1);
         });
       }
 
-      public Task<bool> Until(string id)
+      public async Task<bool> Until(string id)
       {
-        Task.Delay(100);
-        return Task.Run(() => true);
+        await Task.Delay(1000);
+        return true;
       }
 
-      public Task<bool> While(string id)
+      public async Task<bool> While(string id)
       {
-        Task.Delay(100);
-        return Task.Run(() => false);
+        await Task.Delay(1000);
+        return false;
       }
     }
   }

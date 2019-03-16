@@ -8,17 +8,13 @@ namespace DotNet.Testcontainers.Core.Wait
   {
     private static readonly WaitUntilContainerIsCreated WaitUntilContainerIsCreated = new WaitUntilContainerIsCreated();
 
-    private readonly int port;
-
     private readonly string[][] commands;
 
     public WaitUntilPortIsAvailable(int port)
     {
-      this.port = port;
-
       this.commands = new string[][]
       {
-        new string[] { "/bin/bash", "-c", $"while ! timeout 1 bash -c \"echo > /dev/tcp/localhost/{this.port}\"; do sleep 1; done" },
+        new string[] { "/bin/bash", "-c", $"while ! timeout 1 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" },
       };
     }
 

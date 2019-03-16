@@ -124,36 +124,34 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private async Task Start()
     {
-      await this.id.IfSomeAsync(async id =>
+      await this.id.IfSomeAsync(id =>
       {
-        var waitStrategy = this.Configuration.WaitStrategy ?? new WaitUntilContainerIsCreated();
-
         var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer);
 
         var startTask = TestcontainersClient.Instance.StartAsync(id);
 
         var waitTask = WaitStrategy.WaitUntil(() => { return this.Configuration.WaitStrategy.Until(id); });
 
-        await Task.WhenAll(attachConsumerTask, startTask, waitTask);
+        return Task.WhenAll(attachConsumerTask, startTask, waitTask);
       });
     }
 
     private async Task Stop()
     {
-      await this.id.IfSomeAsync(async id =>
+      await this.id.IfSomeAsync(id =>
       {
         this.container = None;
-        await TestcontainersClient.Instance.StopAsync(id);
+        return TestcontainersClient.Instance.StopAsync(id);
       });
     }
 
     private async Task CleanUp()
     {
-      await this.id.IfSomeAsync(async id =>
+      await this.id.IfSomeAsync(id =>
       {
         this.id = None;
         this.container = None;
-        await TestcontainersClient.Instance.RemoveAsync(id);
+        return TestcontainersClient.Instance.RemoveAsync(id);
       });
     }
   }

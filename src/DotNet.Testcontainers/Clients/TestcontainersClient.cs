@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
-  using System.Diagnostics;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -76,19 +75,22 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task ExecAsync(string id, params string[] command)
     {
+      if (command is null)
+      {
+        return;
+      }
+
       var created = await Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters
       {
         Cmd = command,
       });
 
-      var startExecTask = Docker.Containers.StartContainerExecAsync(created.ID);
+      await Docker.Containers.StartContainerExecAsync(created.ID);
 
-      var commandFinishedTask = WaitStrategy.WaitWhile(async () =>
+      await WaitStrategy.WaitWhile(async () =>
       {
         return (await Docker.Containers.InspectContainerExecAsync(created.ID)).Running;
       });
-
-      await Task.WhenAll(startExecTask, commandFinishedTask);
     }
 
     public async Task<string> RunAsync(TestcontainersConfiguration config)

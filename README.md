@@ -25,6 +25,7 @@ Choose from existing pre-configured configurations and start containers within a
 
 ## Pre-configured containers
 
+- MySqlContainer
 - PostgreSqlContainer
 
 ## Examples
@@ -62,8 +63,8 @@ using (var testcontainer = testcontainersBuilder.Build())
 Here is an example of a pre-configured Testcontainer. In the example, Testcontainers starts a PostgreSQL database and executes a SQL query.
 
 ```csharp
-var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlContainer>()
-  .WithDatabase(new DatabaseConfiguration
+var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+  .WithDatabase(new PostgreSqlTestcontainerConfiguration
   {
     Database = "db",
     Username = "postgres",
