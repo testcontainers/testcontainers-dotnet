@@ -1,33 +1,34 @@
 namespace DotNet.Testcontainers.Core.Models.Database
 {
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
+
   public sealed class PostgreSqlTestcontainerConfiguration : DatabaseConfiguration
   {
+    private readonly IDictionary<string, string> environments = new Dictionary<string, string>();
+
     public PostgreSqlTestcontainerConfiguration() : base("postgres:11.2", 5432)
     {
     }
 
     public override string Database
     {
-      set
-      {
-        this.WithEnvironment("POSTGRES_DB", value, database => base.Database = database);
-      }
+      get => this.environments["POSTGRES_DB"];
+      set => this.environments["POSTGRES_DB"] = value;
     }
 
     public override string Username
     {
-      set
-      {
-        this.WithEnvironment("POSTGRES_USER", value, username => base.Username = username);
-      }
+      get => this.environments["POSTGRES_USER"];
+      set => this.environments["POSTGRES_USER"] = value;
     }
 
     public override string Password
     {
-      set
-      {
-        this.WithEnvironment("POSTGRES_PASSWORD", value, password => base.Password = password);
-      }
+      get => this.environments["POSTGRES_PASSWORD"];
+      set => this.environments["POSTGRES_PASSWORD"] = value;
     }
+
+    public override IReadOnlyDictionary<string, string> Environments => new ReadOnlyDictionary<string, string>(this.environments);
   }
 }

@@ -1,34 +1,35 @@
 namespace DotNet.Testcontainers.Core.Models.Database
 {
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
+
   public sealed class MySqlTestcontainerConfiguration : DatabaseConfiguration
   {
+    private readonly IDictionary<string, string> environments = new Dictionary<string, string>();
+
     public MySqlTestcontainerConfiguration() : base("mysql:8.0.15", 3306)
     {
-      this.WithEnvironment("MYSQL_ALLOW_EMPTY_PASSWORD", "yes", value => { });
+      this.environments["MYSQL_ALLOW_EMPTY_PASSWORD"] = "yes";
     }
 
     public override string Database
     {
-      set
-      {
-        this.WithEnvironment("MYSQL_DATABASE", value, database => base.Database = database);
-      }
+      get => this.environments["MYSQL_DATABASE"];
+      set => this.environments["MYSQL_DATABASE"] = value;
     }
 
     public override string Username
     {
-      set
-      {
-        this.WithEnvironment("MYSQL_USER", value, username => base.Username = username);
-      }
+      get => this.environments["MYSQL_USER"];
+      set => this.environments["MYSQL_USER"] = value;
     }
 
     public override string Password
     {
-      set
-      {
-        this.WithEnvironment("MYSQL_PASSWORD", value, password => base.Password = password);
-      }
+      get => this.environments["MYSQL_PASSWORD"];
+      set => this.environments["MYSQL_PASSWORD"] = value;
     }
+
+    public override IReadOnlyDictionary<string, string> Environments => new ReadOnlyDictionary<string, string>(this.environments);
   }
 }

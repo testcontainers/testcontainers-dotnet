@@ -16,12 +16,12 @@ namespace DotNet.Testcontainers.Core.Builder
 
       return builder
         .WithImage(configuration.Image)
-        .WithPortBinding(configuration.HostPort, configuration.ContainerPort)
-        .WithWaitStrategy(new WaitUntilPortIsAvailable(configuration.HostPort))
+        .WithPortBinding(configuration.Port, configuration.DefaultPort)
+        .WithWaitStrategy(new WaitUntilPortIsAvailable(configuration.Port))
         .ConfigureContainer((container) =>
         {
           container.Hostname = configuration.Hostname;
-          container.Port = configuration.HostPort;
+          container.Port = configuration.Port;
           container.Database = configuration.Database;
           container.Username = configuration.Username;
           container.Password = configuration.Password;
