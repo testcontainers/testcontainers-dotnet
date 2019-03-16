@@ -8,16 +8,20 @@ namespace DotNet.Testcontainers.Core.Models.Database
   {
     private readonly IDictionary<string, string> environments = new Dictionary<string, string>();
 
-    protected DatabaseConfiguration(string image)
+    protected DatabaseConfiguration(string image, int defaultPort)
     {
       this.Image = image;
+      this.HostPort = defaultPort;
+      this.ContainerPort = defaultPort;
     }
-
-    public int Port { get; set; }
 
     public string Image { get; }
 
-    public string Hostname { get; set; } = "127.0.0.1";
+    public int HostPort { get; set; }
+
+    public int ContainerPort { get; set; }
+
+    public string Hostname { get; set; } = "localhost";
 
     public virtual string Database { get; set; }
 

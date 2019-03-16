@@ -2,18 +2,12 @@ namespace DotNet.Testcontainers.Core.Models.Database
 {
   public sealed class PostgreSqlTestcontainerConfiguration : DatabaseConfiguration
   {
-    public PostgreSqlTestcontainerConfiguration() : base("postgres:11.2")
+    public PostgreSqlTestcontainerConfiguration() : base("postgres:11.2", 5432)
     {
-      this.Port = 5432;
     }
 
     public override string Database
     {
-      get
-      {
-        return base.Database;
-      }
-
       set
       {
         this.WithEnvironment("POSTGRES_DB", value, database => base.Database = database);
@@ -22,11 +16,6 @@ namespace DotNet.Testcontainers.Core.Models.Database
 
     public override string Username
     {
-      get
-      {
-        return base.Username;
-      }
-
       set
       {
         this.WithEnvironment("POSTGRES_USER", value, username => base.Username = username);
@@ -35,11 +24,6 @@ namespace DotNet.Testcontainers.Core.Models.Database
 
     public override string Password
     {
-      get
-      {
-        return base.Password;
-      }
-
       set
       {
         this.WithEnvironment("POSTGRES_PASSWORD", value, password => base.Password = password);

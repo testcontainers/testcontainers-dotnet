@@ -22,6 +22,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithCleanUp(true)
           .WithImage("alpine")
           .WithLabel("alpine", "latest");
 

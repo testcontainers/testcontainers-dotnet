@@ -166,7 +166,7 @@ namespace DotNet.Testcontainers.Core.Builder
     public T Build()
     {
       // Create container instance.
-      var container = (T)Activator.CreateInstance(typeof(T), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.config }, null); // TODO: Remove reflection.
+      var container = (T)Activator.CreateInstance(typeof(T), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.config }, null);
 
       // Apply specific container configuration.
       this.configureContainer?.Invoke(container);
