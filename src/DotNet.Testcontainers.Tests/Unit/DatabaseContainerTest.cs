@@ -13,6 +13,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task MySqlContainer()
     {
+      // Given
+      // When
       var testcontainersBuilder = new TestcontainersBuilder<MySqlTestcontainer>()
         .WithDatabase(new MySqlTestcontainerConfiguration
         {
@@ -21,6 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           Password = "mysql",
         });
 
+      // Then
       using (var testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync();
@@ -42,6 +45,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task PostgreSqlContainer()
     {
+      // Given
+      // When
       var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
         .WithDatabase(new PostgreSqlTestcontainerConfiguration
         {
@@ -50,6 +55,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           Password = "postgres",
         });
 
+      // Then
       using (var testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync();

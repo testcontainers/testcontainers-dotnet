@@ -55,13 +55,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public async Task<bool> Until(string id)
       {
-        await Task.Delay(1000);
+        await Task.Delay(TimeSpan.FromSeconds(1));
         return true;
       }
 
       public async Task<bool> While(string id)
       {
-        await Task.Delay(1000);
+        await Task.Delay(TimeSpan.FromSeconds(1));
         return false;
       }
     }

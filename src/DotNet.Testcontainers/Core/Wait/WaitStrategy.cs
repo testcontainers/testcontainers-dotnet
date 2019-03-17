@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Core
 {
   using System;
+  using System.Threading;
   using System.Threading.Tasks;
 
   public static class WaitStrategy
@@ -12,11 +13,11 @@ namespace DotNet.Testcontainers.Core
     /// <param name="timeout">Timeout in milliseconds.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1)
+    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default(CancellationToken))
     {
       var waitTask = Task.Run(async () =>
       {
-        while (await wait())
+        while (!cancellationToken.IsCancellationRequested && await wait())
         {
           await Task.Delay(frequency);
         }
@@ -35,11 +36,11 @@ namespace DotNet.Testcontainers.Core
     /// <param name="timeout">The timeout in milliseconds.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1)
+    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default(CancellationToken))
     {
       var waitTask = Task.Run(async () =>
       {
-        while (!await wait())
+        while (!cancellationToken.IsCancellationRequested && !await wait())
         {
           await Task.Delay(frequency);
         }

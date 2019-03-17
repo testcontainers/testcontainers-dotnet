@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers
 {
   using System;
   using System.Linq;
+  using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
@@ -122,32 +123,46 @@ namespace DotNet.Testcontainers.Core.Containers
       });
     }
 
-    private async Task Start()
+    private Task Start()
     {
-      await this.id.IfSomeAsync(id =>
+      return this.id.IfSomeAsync(async id =>
       {
-        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer);
+        var cts = new CancellationTokenSource();
 
-        var startTask = TestcontainersClient.Instance.StartAsync(id);
+        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer, CancellationToken.None);
 
-        var waitTask = WaitStrategy.WaitUntil(() => { return this.Configuration.WaitStrategy.Until(id); });
+        var startTask = TestcontainersClient.Instance.StartAsync(id, cts.Token);
 
-        return Task.WhenAll(attachConsumerTask, startTask, waitTask);
+        var waitTask = WaitStrategy.WaitUntil(() => { return this.Configuration.WaitStrategy.Until(id); }, cancellationToken: cts.Token);
+
+        var handleDockerExceptionTask = startTask.ContinueWith((task) =>
+        {
+          if (task.Exception != null)
+          {
+            task.Exception.Handle(exception =>
+            {
+              cts.Cancel();
+              return false;
+            });
+          }
+        });
+
+        await Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
       });
     }
 
-    private async Task Stop()
+    private Task Stop()
     {
-      await this.id.IfSomeAsync(id =>
+      return this.id.IfSomeAsync(id =>
       {
         this.container = None;
         return TestcontainersClient.Instance.StopAsync(id);
       });
     }
 
-    private async Task CleanUp()
+    private Task CleanUp()
     {
-      await this.id.IfSomeAsync(id =>
+      return this.id.IfSomeAsync(id =>
       {
         this.id = None;
         this.container = None;

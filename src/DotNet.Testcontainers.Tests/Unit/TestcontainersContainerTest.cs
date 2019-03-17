@@ -190,6 +190,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("nginx")
             .WithOutputConsumer(output)
+            .WithCleanUp(false)
             .WithCommand("/bin/bash", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
 
           // Then

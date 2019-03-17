@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -21,45 +22,33 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task StartAsync(string id)
+    public async Task StartAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
     {
-      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
+      if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
       {
-        if (await containerExists)
-        {
-          await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { });
-        }
-      });
-    }
-
-    public async Task StopAsync(string id)
-    {
-      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
-      {
-        if (await containerExists)
-        {
-          await Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 });
-        }
-      });
-    }
-
-    public async Task RemoveAsync(string id)
-    {
-      await MetaDataClientContainers.Instance.ExistsWithIdAsync(id).ContinueWith(async containerExists =>
-      {
-        if (await containerExists)
-        {
-          await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true });
-        }
-      });
-    }
-
-    public async Task AttachAsync(string id, IOutputConsumer outputConsumer)
-    {
-      if (outputConsumer is null)
-      {
-        return;
+        await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }, cancellationToken);
       }
+    }
+
+    public async Task StopAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+    {
+      if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
+      {
+        await Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, cancellationToken);
+      }
+    }
+
+    public async Task RemoveAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+    {
+      if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
+      {
+        await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }, cancellationToken);
+      }
+    }
+
+    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default(CancellationToken))
+    {
+      var containerExistsTask = MetaDataClientContainers.Instance.ExistsWithIdAsync(id);
 
       var attachParameters = new ContainerAttachParameters
       {
@@ -68,9 +57,17 @@ namespace DotNet.Testcontainers.Clients
         Stream = true,
       };
 
-      var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters);
+      if (outputConsumer is null)
+      {
+        return;
+      }
 
-      await stream.CopyOutputToAsync(null, outputConsumer.Stdout, outputConsumer.Stderr, default(CancellationToken));
+      if (await containerExistsTask)
+      {
+        var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, cancellationToken);
+
+        await stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
+      }
     }
 
     public async Task ExecAsync(string id, params string[] command)
@@ -80,10 +77,7 @@ namespace DotNet.Testcontainers.Clients
         return;
       }
 
-      var created = await Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters
-      {
-        Cmd = command,
-      });
+      var created = await Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command });
 
       await Docker.Containers.StartContainerExecAsync(created.ID);
 
