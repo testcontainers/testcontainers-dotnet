@@ -48,7 +48,10 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default(CancellationToken))
     {
-      var containerExistsTask = MetaDataClientContainers.Instance.ExistsWithIdAsync(id);
+      if (outputConsumer is null)
+      {
+        return;
+      }
 
       var attachParameters = new ContainerAttachParameters
       {
@@ -57,17 +60,9 @@ namespace DotNet.Testcontainers.Clients
         Stream = true,
       };
 
-      if (outputConsumer is null)
-      {
-        return;
-      }
+      var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, cancellationToken);
 
-      if (await containerExistsTask)
-      {
-        var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, cancellationToken);
-
-        await stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
-      }
+      await stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
     }
 
     public async Task ExecAsync(string id, params string[] command)

@@ -125,11 +125,11 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private Task Start()
     {
-      return this.id.IfSomeAsync(async id =>
+      return this.id.IfSomeAsync(id =>
       {
         var cts = new CancellationTokenSource();
 
-        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer, CancellationToken.None);
+        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer, cts.Token);
 
         var startTask = TestcontainersClient.Instance.StartAsync(id, cts.Token);
 
@@ -147,7 +147,7 @@ namespace DotNet.Testcontainers.Core.Containers
           }
         });
 
-        await Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
+        return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
       });
     }
 
