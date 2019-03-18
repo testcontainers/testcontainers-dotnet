@@ -4,9 +4,9 @@ namespace DotNet.Testcontainers.Core.Wait
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
 
-  public class WaitUntilPortIsAvailable : IWaitUntil
+  internal class WaitUntilPortIsAvailable : IWaitUntil
   {
-    private static readonly WaitUntilContainerIsCreated WaitUntilContainerIsCreated = new WaitUntilContainerIsCreated();
+    private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
 
     private readonly string[][] commands;
 

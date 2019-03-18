@@ -137,7 +137,7 @@ namespace DotNet.Testcontainers.Core.Builder
     /// <summary>
     /// Sets the wait strategy to complete the Testcontainer asynchronous start task.
     /// </summary>
-    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation <see cref="WaitUntilContainerIsCreated"/>.</param>
+    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation <see cref="WaitUntilContainerIsRunning"/>.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{T}"/>.</returns>
     ITestcontainersBuilder<T> WithWaitStrategy(IWaitUntil waitStrategy);
 

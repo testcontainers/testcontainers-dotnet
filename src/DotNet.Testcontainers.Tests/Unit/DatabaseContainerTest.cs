@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System.Data.SqlClient;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
@@ -10,6 +11,38 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public class DatabaseContainerTest
   {
+    [Fact]
+    public async Task MsSqlContainer()
+    {
+      // Given
+      // When
+      var testcontainersBuilder = new TestcontainersBuilder<MsSqlTestcontainer>()
+        .WithDatabase(new MsSqlTestcontainerConfiguration
+        {
+          Password = "mssql",
+        });
+
+      // Then
+      using (var testcontainer = testcontainersBuilder.Build())
+      {
+        await testcontainer.StartAsync();
+
+        /*
+        using (var connection = new SqlConnection(testcontainer.ConnectionString))
+        {
+          connection.Open();
+
+          using (var cmd = new SqlCommand())
+          {
+            cmd.Connection = connection;
+            cmd.CommandText = "SELECT 1";
+            cmd.ExecuteReader();
+          }
+        }
+        */
+      }
+    }
+
     [Fact]
     public async Task MySqlContainer()
     {

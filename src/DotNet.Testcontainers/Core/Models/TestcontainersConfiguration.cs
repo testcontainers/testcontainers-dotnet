@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Core.Models
 
     public IOutputConsumer OutputConsumer { get; set; }
 
-    public IWaitUntil WaitStrategy { get; set; } = new WaitUntilContainerIsCreated();
+    public IWaitUntil WaitStrategy { get; set; } = Wait.UntilContainerIsRunning();
 
     internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {

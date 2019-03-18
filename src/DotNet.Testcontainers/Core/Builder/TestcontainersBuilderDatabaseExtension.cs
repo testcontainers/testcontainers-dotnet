@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Builder
       return builder
         .WithImage(configuration.Image)
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
-        .WithWaitStrategy(new WaitUntilPortIsAvailable(configuration.Port))
+        .WithWaitStrategy(Wait.UntilPortIsAvailable(configuration.Port))
         .ConfigureContainer((container) =>
         {
           container.Hostname = configuration.Hostname;

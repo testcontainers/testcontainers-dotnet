@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Core.Parser
 
   internal sealed class MatchImageComplete : MatchImage
   {
-    internal MatchImageComplete() : base(@"([\w][\w.-]{0,127})\/([\w][\w.-]{0,127})\:([\w][\w.-]{0,127})") // Matches foo/bar:1.0.0
+    public MatchImageComplete() : base($"{Word}\\/{Word}\\:{Word}") // Matches foo/bar:1.0.0
     {
     }
 

@@ -6,15 +6,19 @@ namespace DotNet.Testcontainers.Core.Parser
 
   internal class MatchImage
   {
+    public const string Word = "([\\w][\\w.-]{0,127})";
+
     public static readonly MatchImage Complete = new MatchImageComplete();
 
-    public static readonly MatchImage Repository = new MatchImageRepository();
+    public static readonly MatchImage Registry = new MatchImageRegistry();
+
+    public static readonly MatchImage Latest = new MatchImageLatest();
 
     public static readonly MatchImage Tag = new MatchImageTag();
 
     public static readonly MatchImage Any = new MatchImage();
 
-    public static readonly MatchImage[] Matcher = { Complete, Repository, Tag, Any };
+    public static readonly MatchImage[] Matcher = { Registry, Complete, Latest, Tag, Any };
 
     private readonly Regex pattern;
 
@@ -27,7 +31,7 @@ namespace DotNet.Testcontainers.Core.Parser
       this.pattern = pattern;
     }
 
-    private MatchImage() : this(@"([\w][\w.-]{0,127})")
+    private MatchImage() : this(Word)
     {
     }
 

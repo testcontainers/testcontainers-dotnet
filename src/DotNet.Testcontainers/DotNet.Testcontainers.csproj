@@ -16,7 +16,6 @@
     <Folder Include="Core\Models\" />
     <Folder Include="Core\Models\Database\" />
     <Folder Include="Core\Parser\" />
-    <Folder Include="Core\Wait\" />
     <Folder Include="Diagnostics\" />
   </ItemGroup>
   <ItemGroup>
