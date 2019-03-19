@@ -25,9 +25,11 @@ Choose from existing pre-configured configurations and start containers within a
 
 ## Pre-configured containers
 
-- MsSqlTestcontainer
-- MySqlContainer
-- PostgreSqlContainer
+The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] and [DatabaseContainerTest][2].
+
+- MsSql
+- MySql
+- PostgreSql
 
 ## Examples
 
@@ -107,3 +109,7 @@ You are thinking about contributing to .NET Testcontainers? Awesome, it’s abso
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/TestcontainersContainerTest.cs
+[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/DatabaseContainerTest.cs
