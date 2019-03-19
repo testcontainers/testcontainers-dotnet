@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Core.Parser
 
   internal sealed class MatchImageRegistry : MatchImage
   {
-    public MatchImageRegistry() : base($"{Word}\\/{Word}\\/{Word}\\:{Word}") // Matches baz/foo/bar:1.0.0
+    public MatchImageRegistry() : base($@"{Part}\/{Part}\/{Part}\:{Part}") // Matches baz/foo/bar:1.0.0
     {
     }
 

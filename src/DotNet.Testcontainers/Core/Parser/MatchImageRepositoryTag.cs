@@ -2,9 +2,9 @@ namespace DotNet.Testcontainers.Core.Parser
 {
   using DotNet.Testcontainers.Core.Images;
 
-  internal sealed class MatchImageComplete : MatchImage
+  internal sealed class MatchImageRepositoryTag : MatchImage
   {
-    public MatchImageComplete() : base($"{Word}\\/{Word}\\:{Word}") // Matches foo/bar:1.0.0
+    public MatchImageRepositoryTag() : base($@"{Part}\/{Part}\:{Part}") // Matches foo/bar:1.0.0
     {
     }
 

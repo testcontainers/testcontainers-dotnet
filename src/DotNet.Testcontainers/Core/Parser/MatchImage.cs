@@ -6,39 +6,36 @@ namespace DotNet.Testcontainers.Core.Parser
 
   internal class MatchImage
   {
-    public const string Word = "([\\w][\\w.-]{0,127})";
+    public const string Part = @"([\w][\w.-]{0,127})";
 
-    public static readonly MatchImage Complete = new MatchImageComplete();
+    public static readonly MatchImage[] Matcher =
+    {
+      new MatchImageRegistry(),
+      new MatchImageRepositoryTag(),
+      new MatchImageRepositoryLatest(),
+      new MatchImageTag(),
+      new MatchImage(),
+    };
 
-    public static readonly MatchImage Registry = new MatchImageRegistry();
-
-    public static readonly MatchImage Latest = new MatchImageLatest();
-
-    public static readonly MatchImage Tag = new MatchImageTag();
-
-    public static readonly MatchImage Any = new MatchImage();
-
-    public static readonly MatchImage[] Matcher = { Registry, Complete, Latest, Tag, Any };
-
-    private readonly Regex pattern;
+    protected MatchImage(Regex pattern)
+    {
+      this.Pattern = pattern;
+    }
 
     protected MatchImage(string pattern) : this(new Regex(pattern, RegexOptions.Compiled))
     {
     }
 
-    protected MatchImage(Regex pattern)
+    private MatchImage() : this(Part)
     {
-      this.pattern = pattern;
     }
 
-    private MatchImage() : this(Word)
-    {
-    }
+    private Regex Pattern { get; }
 
     public TestcontainersImage Match(string input)
     {
       // Maybe we can use a better functional approache here?
-      var match = this.pattern.Match(input);
+      var match = this.Pattern.Match(input);
 
       if (match.Success)
       {

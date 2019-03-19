@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using System.Data.SqlClient;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
