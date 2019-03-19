@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System.Data.SqlClient;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
@@ -18,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var testcontainersBuilder = new TestcontainersBuilder<MsSqlTestcontainer>()
         .WithDatabase(new MsSqlTestcontainerConfiguration
         {
-          Password = "mssql",
+          Password = "yourStrong(!)Password", // See following password policy: https://hub.docker.com/r/microsoft/mssql-server-linux/
         });
 
       // Then
@@ -26,7 +27,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         await testcontainer.StartAsync();
 
-        /*
         using (var connection = new SqlConnection(testcontainer.ConnectionString))
         {
           connection.Open();
@@ -38,7 +38,6 @@ namespace DotNet.Testcontainers.Tests.Unit
             cmd.ExecuteReader();
           }
         }
-        */
       }
     }
 

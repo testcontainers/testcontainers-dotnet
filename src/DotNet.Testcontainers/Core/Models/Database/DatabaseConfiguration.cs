@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Core.Models.Database
 
     public string Image { get; }
 
-    public string Hostname { get; set; } = "localhost";
+    public virtual string Hostname { get; set; } = "localhost";
 
     public virtual string Database { get; set; }
 
