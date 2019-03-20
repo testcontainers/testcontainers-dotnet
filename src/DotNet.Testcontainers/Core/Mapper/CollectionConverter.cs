@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Core.Mapper
     /// <summary>
     /// Initializes a new instance of the <see cref="CollectionConverter{T}"/> class without converter name.
     /// </summary>
-    protected CollectionConverter() : base(string.Empty)
+    protected CollectionConverter() : this(string.Empty)
     {
     }
 

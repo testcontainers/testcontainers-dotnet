@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Core.Mapper
     /// <summary>
     /// Initializes a new instance of the <see cref="DictionaryConverter{T}"/> class without converter name.
     /// </summary>
-    protected DictionaryConverter() : base(string.Empty)
+    protected DictionaryConverter() : this(string.Empty)
     {
     }
 

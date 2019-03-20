@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
   using System.Data.SqlClient;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
@@ -102,6 +103,23 @@ namespace DotNet.Testcontainers.Tests.Unit
             cmd.ExecuteReader();
           }
         }
+      }
+    }
+
+    public class ConfigurationNotAllowed
+    {
+      [Fact]
+      public void MssqlSetDatabase()
+      {
+        DatabaseConfiguration mssql = new MsSqlTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => mssql.Database = string.Empty);
+      }
+
+      [Fact]
+      public void MssqlSetUsername()
+      {
+        DatabaseConfiguration mssql = new MsSqlTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => mssql.Username = string.Empty);
       }
     }
   }

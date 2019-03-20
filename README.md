@@ -27,9 +27,9 @@ Choose from existing pre-configured configurations and start containers within a
 
 The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] and [DatabaseContainerTest][2].
 
-- MsSql
-- MySql
-- PostgreSql
+- MsSql (server:2017-CU12-ubuntu)
+- MySql (mysql:8.0.15)
+- PostgreSql (postgres:11.2)
 
 ## Examples
 
