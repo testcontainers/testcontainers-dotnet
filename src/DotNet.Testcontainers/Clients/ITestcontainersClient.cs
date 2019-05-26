@@ -7,15 +7,17 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface ITestcontainersClient
   {
-    Task StartAsync(string id, CancellationToken cancellationToken = default(CancellationToken));
+    Task StartAsync(string id, CancellationToken cancellationToken = default);
 
-    Task StopAsync(string id, CancellationToken cancellationToken = default(CancellationToken));
+    Task StopAsync(string id, CancellationToken cancellationToken = default);
 
-    Task RemoveAsync(string id, CancellationToken cancellationToken = default(CancellationToken));
+    Task RemoveAsync(string id, CancellationToken cancellationToken = default);
 
-    Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default(CancellationToken));
+    Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default);
 
     Task ExecAsync(string id, params string[] command);
+
+    Task<string> BuildAsync(ImageFromDockerfileConfiguration config);
 
     Task<string> RunAsync(TestcontainersConfiguration config);
   }

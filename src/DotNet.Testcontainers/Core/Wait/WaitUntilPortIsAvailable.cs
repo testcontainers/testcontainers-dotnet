@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Core.Wait
     {
       this.commands = new string[][]
       {
-        new string[] { "/bin/bash", "-c", $"while ! timeout 1 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" },
+        new string[] { "/bin/bash", "-c", $"while ! timeout 2 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" },
       };
     }
 

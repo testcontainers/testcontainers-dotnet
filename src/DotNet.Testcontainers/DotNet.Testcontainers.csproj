@@ -6,20 +6,5 @@
     <PackageReference Include="Docker.DotNet" Version="3.125.2" />
     <PackageReference Include="LanguageExt.Core" Version="3.1.24" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Clients\" />
-    <Folder Include="Core\Builder\" />
-    <Folder Include="Core\Containers\" />
-    <Folder Include="Core\Containers\Database\" />    
-    <Folder Include="Core\Images\" />
-    <Folder Include="Core\Mapper\" />
-    <Folder Include="Core\Models\" />
-    <Folder Include="Core\Models\Database\" />
-    <Folder Include="Core\Parser\" />
-    <Folder Include="Diagnostics\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Configurations\.gitkeep" />
-  </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>

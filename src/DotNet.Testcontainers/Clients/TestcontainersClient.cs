@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.IO;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -80,6 +81,34 @@ namespace DotNet.Testcontainers.Clients
       {
         return (await Docker.Containers.InspectContainerExecAsync(created.ID)).Running;
       });
+    }
+
+    public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config)
+    {
+      var dockerfileDirectoryInfo = new DirectoryInfo(config.DockerfileDirectory);
+
+      if (!dockerfileDirectoryInfo.Exists)
+      {
+        throw new ArgumentException("Directory does not exist.");
+      }
+
+      if (!dockerfileDirectoryInfo.GetFiles().Any(file => "Dockerfile".Equals(file.Name)))
+      {
+        throw new ArgumentException("Dockerfile does not exist.");
+      }
+
+      if (config.DeleteIfExits)
+      {
+        await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
+      }
+
+      // TODO: Create temp archive (tar) of Dockerfile base directory.
+      using (var stream = new FileStream($"{config.DockerfileDirectory}/Dockerfile.tar", FileMode.Open))
+      {
+        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
+      }
+
+      return config.Image;
     }
 
     public async Task<string> RunAsync(TestcontainersConfiguration config)

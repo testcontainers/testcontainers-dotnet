@@ -23,8 +23,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Fixtures\" />
-    <Folder Include="Unit\" />
+    <None Include="Assets\Dockerfile">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Dockerfile.tar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../Shared.msbuild" />
 </Project>
