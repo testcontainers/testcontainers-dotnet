@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Diagnostics;
+  using ICSharpCode.SharpZipLib.Tar;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
@@ -85,25 +86,26 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config)
     {
-      var dockerfileDirectoryInfo = new DirectoryInfo(config.DockerfileDirectory);
+      var dockerfileDirectory = new DirectoryInfo(config.DockerfileDirectory);
 
-      if (!dockerfileDirectoryInfo.Exists)
+      if (!dockerfileDirectory.Exists)
       {
-        throw new ArgumentException("Directory does not exist.");
+        throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
       }
 
-      if (!dockerfileDirectoryInfo.GetFiles().Any(file => "Dockerfile".Equals(file.Name)))
+      if (!dockerfileDirectory.GetFiles().Any(file => "Dockerfile".Equals(file.Name)))
       {
-        throw new ArgumentException("Dockerfile does not exist.");
+        throw new ArgumentException($"Dockerfile does not exist in '{dockerfileDirectory.FullName}'.");
       }
 
-      if (config.DeleteIfExits)
+      if (config.DeleteIfExists)
       {
         await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
       }
 
-      // TODO: Create temp archive (tar) of Dockerfile base directory.
-      using (var stream = new FileStream($"{config.DockerfileDirectory}/Dockerfile.tar", FileMode.Open))
+      var dockerfileArchive = CreateDockerfileArchive(dockerfileDirectory.FullName);
+
+      using (var stream = new FileStream(dockerfileArchive, FileMode.Open))
       {
         await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
       }
@@ -166,6 +168,42 @@ namespace DotNet.Testcontainers.Clients
       await pullImageTask;
 
       return (await Docker.Containers.CreateContainerAsync(createParameters)).ID;
+    }
+
+    private static string CreateDockerfileArchive(string dockerfileRootDirectory)
+    {
+      var dockerfileArchiveFile = $"{Path.GetTempPath()}/Dockerfile.tar";
+
+      using (var dockerfileArchiveStream = File.Create(dockerfileArchiveFile))
+      {
+        using (var dockerfileArchive = TarArchive.CreateOutputTarArchive(dockerfileArchiveStream))
+        {
+          dockerfileArchive.RootPath = dockerfileRootDirectory;
+
+          void Tar(string baseDirectory)
+          {
+            void WriteEntry(string entry)
+            {
+              var tarEntry = TarEntry.CreateEntryFromFile(entry);
+              tarEntry.Name = entry.Replace(dockerfileRootDirectory, string.Empty);
+              dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
+            }
+
+            if (!dockerfileRootDirectory.Equals(baseDirectory))
+            {
+              WriteEntry(baseDirectory);
+            }
+
+            Directory.GetFiles(baseDirectory).ToList().ForEach(WriteEntry);
+
+            Directory.GetDirectories(baseDirectory).ToList().ForEach(Tar);
+          }
+
+          Tar(dockerfileRootDirectory);
+        }
+      }
+
+      return dockerfileArchiveFile;
     }
   }
 }

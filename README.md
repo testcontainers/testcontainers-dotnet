@@ -6,7 +6,7 @@
 
 .NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
-Choose from existing pre-configured configurations and start containers within a second, to support and run your tests.
+Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immidiatly afterwards.
 
 ## Supported commands
 
@@ -20,8 +20,11 @@ Choose from existing pre-configured configurations and start containers within a
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
 - `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
+- `WithCleanUp` removes a stopped container automatically.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
 - `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
+- `WithDockerfileDirectory` builds a Docker image based on a Dockerfile (`ImageFromDockerfileBuilder`).
+- `WithDeleteIfExists` removes the Docker image before it is rebuilt (`ImageFromDockerfileBuilder`).
 
 ## Pre-configured containers
 

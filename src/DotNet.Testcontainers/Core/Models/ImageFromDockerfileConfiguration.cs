@@ -4,10 +4,10 @@ namespace DotNet.Testcontainers.Core.Models
 
   internal class ImageFromDockerfileConfiguration
   {
-    public string Image { get; set; } = Guid.NewGuid().ToString("n");
+    public string Image { get; set; } = Guid.NewGuid().ToString("n").Substring(0, 12);
 
     public string DockerfileDirectory { get; set; } = ".";
 
-    public bool DeleteIfExits { get; set; } = true;
+    public bool DeleteIfExists { get; set; } = true;
   }
 }

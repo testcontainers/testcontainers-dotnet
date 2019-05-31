@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var imageFromDockerfile = await new ImageFromDockerfileBuilder()
         .WithName("alpine:custom")
         .WithDockerfileDirectory("Assets")
-        .WithDeleteIfExits(false)
+        .WithDeleteIfExists(false)
         .Build();
 
       Assert.NotEmpty(imageFromDockerfile);

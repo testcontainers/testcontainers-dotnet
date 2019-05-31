@@ -26,9 +26,9 @@ namespace DotNet.Testcontainers.Core.Builder
       return this;
     }
 
-    public IImageFromDockerfileBuilder WithDeleteIfExits(bool deleteIfExits)
+    public IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      this.configuration.DeleteIfExits = deleteIfExits;
+      this.configuration.DeleteIfExists = deleteIfExists;
       return this;
     }
 

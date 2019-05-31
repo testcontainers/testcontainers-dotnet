@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Core.Builder
 
     IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory);
 
-    IImageFromDockerfileBuilder WithDeleteIfExits(bool deleteIfExits);
+    IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
     Task<string> Build();
   }
