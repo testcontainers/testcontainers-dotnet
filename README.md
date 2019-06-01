@@ -47,7 +47,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
 using (var testcontainer = testcontainersBuilder.Build())
 {
   await testcontainer.Start();
-  var request = WebRequest.Create($"http://localhost:80");
+  var request = WebRequest.Create("http://localhost:80");
 }
 ```
 
@@ -57,8 +57,8 @@ Mounts the current directory as volume into the container and runs `hostname > /
 var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithMount(".", $"/tmp")
-  .WithCommand("/bin/bash", "-c", $"hostname > /tmp/hostname");
+  .WithMount(".", "/tmp")
+  .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname");
 
 using (var testcontainer = testcontainersBuilder.Build())
 {

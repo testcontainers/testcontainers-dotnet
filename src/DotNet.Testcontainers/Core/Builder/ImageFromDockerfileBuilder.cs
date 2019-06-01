@@ -9,14 +9,14 @@ namespace DotNet.Testcontainers.Core.Builder
   {
     private readonly ImageFromDockerfileConfiguration configuration = new ImageFromDockerfileConfiguration();
 
-    public IImageFromDockerfileBuilder WithName(string image)
+    public IImageFromDockerfileBuilder WithName(string name)
     {
-      return this.WithName(new TestcontainersImage(image));
+      return this.WithName(new TestcontainersImage(name));
     }
 
-    public IImageFromDockerfileBuilder WithName(IDockerImage image)
+    public IImageFromDockerfileBuilder WithName(IDockerImage name)
     {
-      this.configuration.Image = image.Image;
+      this.configuration.Image = name.Image;
       return this;
     }
 

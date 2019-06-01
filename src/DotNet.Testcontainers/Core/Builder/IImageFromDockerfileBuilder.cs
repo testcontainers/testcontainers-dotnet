@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Core.Builder
   {
     IImageFromDockerfileBuilder WithName(string name);
 
-    IImageFromDockerfileBuilder WithName(IDockerImage image);
+    IImageFromDockerfileBuilder WithName(IDockerImage name);
 
     IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory);
 

@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task StartAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task StartAsync(string id, CancellationToken cancellationToken = default)
     {
       if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
       {
@@ -32,7 +32,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task StopAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task StopAsync(string id, CancellationToken cancellationToken = default)
     {
       if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
       {
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task RemoveAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task RemoveAsync(string id, CancellationToken cancellationToken = default)
     {
       if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
       {
@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default)
     {
       if (outputConsumer is null)
       {
@@ -98,19 +98,7 @@ namespace DotNet.Testcontainers.Clients
         throw new ArgumentException($"Dockerfile does not exist in '{dockerfileDirectory.FullName}'.");
       }
 
-      if (config.DeleteIfExists)
-      {
-        await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
-      }
-
-      var dockerfileArchive = CreateDockerfileArchive(dockerfileDirectory.FullName);
-
-      using (var stream = new FileStream(dockerfileArchive, FileMode.Open))
-      {
-        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
-      }
-
-      return config.Image;
+      return await this.BuildInternalAsync(config);
     }
 
     public async Task<string> RunAsync(TestcontainersConfiguration config)
@@ -204,6 +192,26 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return dockerfileArchiveFile;
+    }
+
+    private async Task<string> BuildInternalAsync(ImageFromDockerfileConfiguration config)
+    {
+      var dockerfileArchive = CreateDockerfileArchive(config.DockerfileDirectory);
+
+      await MetaDataClientImages.Instance.ExistsWithNameAsync(config.Image).ContinueWith(async imageExists =>
+      {
+        if (!await imageExists && config.DeleteIfExists)
+        {
+          await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
+        }
+      });
+
+      using (var stream = new FileStream(dockerfileArchive, FileMode.Open))
+      {
+        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
+      }
+
+      return config.Image;
     }
   }
 }
