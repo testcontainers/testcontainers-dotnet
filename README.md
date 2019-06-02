@@ -6,7 +6,7 @@
 
 .NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
-Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immidiatly afterwards.
+Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immediately afterward.
 
 ## Supported commands
 
@@ -94,16 +94,6 @@ using (var testcontainer = testcontainersBuilder.Build())
   }
 }
 ```
-
-## Contributing
-
-You are thinking about contributing to .NET Testcontainers? Awesome, it’s absolutely appreciated. To build the project just run the provided Cake script, `./build.sh` (Unix) or `.\build.ps1` (Windows).
-
-* Fork the .NET Testcontainers repository.
-* Create a branch to work with and use `feature/` or `bugfix/` as a prefix.
-* Do not forget the unit tests and keep the SonarCloud statistics in mind.
-* If you are finished rebase and create a pull request.
-* Cheers, :beers:.
 
 ## Authors
 
