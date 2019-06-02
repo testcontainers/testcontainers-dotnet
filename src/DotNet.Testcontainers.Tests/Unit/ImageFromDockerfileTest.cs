@@ -4,9 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
-  using ICSharpCode.SharpZipLib.Tar;
   using Xunit;
-  using System.Linq;
 
   public class ImageFromDockerfileTest
   {
