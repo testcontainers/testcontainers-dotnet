@@ -95,14 +95,21 @@ using (var testcontainer = testcontainersBuilder.Build())
 }
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## Authors
 
 * **Andre Hofmeister** - *Initial work* - [HofmeisterAn](https://github.com/HofmeisterAn/)
 
+## Thanks
+
+Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers) who provide an [Open Source License](https://www.jetbrains.com/community/opensource/) for this project :heart:.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 
 [1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/TestcontainersContainerTest.cs
 [2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/DatabaseContainerTest.cs
