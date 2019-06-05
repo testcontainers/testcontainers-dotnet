@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Core.Builder
     {
     }
 
-    internal TestcontainersBuilder(
+    private TestcontainersBuilder(
       TestcontainersConfiguration config,
       Action<T> configureContainer)
     {

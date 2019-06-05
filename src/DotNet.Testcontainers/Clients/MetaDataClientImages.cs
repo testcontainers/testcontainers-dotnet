@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Clients
         return null;
       }
 
-      var reponse = Docker.Images.ListImagesAsync(new ImagesListParameters
+      var response = Docker.Images.ListImagesAsync(new ImagesListParameters
       {
         All = true,
         Filters = new Dictionary<string, IDictionary<string, bool>>
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Clients
         },
       });
 
-      return (await reponse).FirstOrDefault();
+      return (await response).FirstOrDefault();
     }
   }
 }

@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Core.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Core.Wait;
   using LanguageExt;
   using static LanguageExt.Prelude;
 
@@ -117,10 +118,7 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private async Task Create()
     {
-      this.id = await this.id.IfNoneAsync(() =>
-      {
-        return TestcontainersClient.Instance.RunAsync(this.Configuration);
-      });
+      this.id = await this.id.IfNoneAsync(() => TestcontainersClient.Instance.RunAsync(this.Configuration));
     }
 
     private Task Start()
@@ -133,18 +131,15 @@ namespace DotNet.Testcontainers.Core.Containers
 
         var startTask = TestcontainersClient.Instance.StartAsync(id, cts.Token);
 
-        var waitTask = WaitStrategy.WaitUntil(() => { return this.Configuration.WaitStrategy.Until(id); }, cancellationToken: cts.Token);
+        var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(id), cancellationToken: cts.Token);
 
         var handleDockerExceptionTask = startTask.ContinueWith((task) =>
         {
-          if (task.Exception != null)
+          task.Exception?.Handle(exception =>
           {
-            task.Exception.Handle(exception =>
-            {
-              cts.Cancel();
-              return false;
-            });
-          }
+            cts.Cancel();
+            return false;
+          });
         });
 
         return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);

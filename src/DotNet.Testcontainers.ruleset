@@ -4,6 +4,9 @@
     <Rule Id="UseConfigureAwait" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1305" Action="None" />
+    <Rule Id="CA1814" Action="None" />
+    <Rule Id="CA1819" Action="None" />
     <Rule Id="CA1001" Action="Warning" />
     <Rule Id="CA1009" Action="Warning" />
     <Rule Id="CA1016" Action="Warning" />
@@ -14,7 +17,6 @@
     <Rule Id="CA1063" Action="Warning" />
     <Rule Id="CA1065" Action="Warning" />
     <Rule Id="CA1301" Action="Warning" />
-    <Rule Id="CA1305" Action="None" />
     <Rule Id="CA1400" Action="Warning" />
     <Rule Id="CA1401" Action="Warning" />
     <Rule Id="CA1403" Action="Warning" />
@@ -22,8 +24,6 @@
     <Rule Id="CA1405" Action="Warning" />
     <Rule Id="CA1410" Action="Warning" />
     <Rule Id="CA1415" Action="Warning" />
-    <Rule Id="CA1814" Action="None" />
-    <Rule Id="CA1819" Action="None" />
     <Rule Id="CA1821" Action="Warning" />
     <Rule Id="CA1900" Action="Warning" />
     <Rule Id="CA1901" Action="Warning" />
@@ -79,12 +79,12 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="None" />
     <Rule Id="SA1128" Action="None" />
-    <Rule Id="SA1305" Action="Warning" />
     <Rule Id="SA1412" Action="None" />
     <Rule Id="SA1600" Action="None" />
-    <Rule Id="SA1609" Action="Warning" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1652" Action="None" />
+    <Rule Id="SA1305" Action="Warning" />
+    <Rule Id="SA1609" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="DocumentationAnalyzers" RuleNamespace="DocumentationAnalyzers">
     <Rule Id="DOC100" Action="Warning" />

@@ -6,9 +6,9 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Models;
+  using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
   using ICSharpCode.SharpZipLib.Tar;
 
@@ -16,13 +16,7 @@ namespace DotNet.Testcontainers.Clients
   {
     private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
 
-    internal static ITestcontainersClient Instance
-    {
-      get
-      {
-        return Testcontainers.Value;
-      }
-    }
+    internal static ITestcontainersClient Instance => Testcontainers.Value;
 
     public async Task StartAsync(string id, CancellationToken cancellationToken = default)
     {
@@ -78,10 +72,7 @@ namespace DotNet.Testcontainers.Clients
 
       await Docker.Containers.StartContainerExecAsync(created.ID);
 
-      await WaitStrategy.WaitWhile(async () =>
-      {
-        return (await Docker.Containers.InspectContainerExecAsync(created.ID)).Running;
-      });
+      await WaitStrategy.WaitWhile(async () => (await Docker.Containers.InspectContainerExecAsync(created.ID)).Running);
     }
 
     public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config)

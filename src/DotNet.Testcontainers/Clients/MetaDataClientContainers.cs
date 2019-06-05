@@ -8,22 +8,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class MetaDataClientContainers : DockerMetaDataClient<ContainerListResponse>
   {
-    private static readonly Lazy<DockerMetaDataClient<ContainerListResponse>> MetaDataClient = new Lazy<DockerMetaDataClient<ContainerListResponse>>(() =>
-    {
-      return new MetaDataClientContainers();
-    });
+    private static readonly Lazy<DockerMetaDataClient<ContainerListResponse>> MetaDataClient = new Lazy<DockerMetaDataClient<ContainerListResponse>>(() => new MetaDataClientContainers());
 
     private MetaDataClientContainers()
     {
     }
 
-    internal static DockerMetaDataClient<ContainerListResponse> Instance
-    {
-      get
-      {
-        return MetaDataClient.Value;
-      }
-    }
+    internal static DockerMetaDataClient<ContainerListResponse> Instance => MetaDataClient.Value;
 
     internal override async Task<IReadOnlyCollection<ContainerListResponse>> GetAllAsync()
     {

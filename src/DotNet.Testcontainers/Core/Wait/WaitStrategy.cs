@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Core
+namespace DotNet.Testcontainers.Core.Wait
 {
   using System;
   using System.Threading;
@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Core
     /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default(CancellationToken))
+    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default)
     {
       var waitTask = Task.Run(async () =>
       {
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Core
     /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
-    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default(CancellationToken))
+    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default)
     {
       var waitTask = Task.Run(async () =>
       {

@@ -36,7 +36,7 @@ internal class BuildParameters
     {
       Solution = context.MakeAbsolute(new DirectoryPath($"src/{solution}.sln")).FullPath,
       Target = context.Argument("target", "Default"),
-      Configuration = context.Argument("configuration", "Debug"),
+      Configuration = context.Argument("configuration", "master".Equals(branch) ? "Release" : "Debug"),
       Version = version,
       Branch = branch,
       IsLocalBuild = isLocalBuild,

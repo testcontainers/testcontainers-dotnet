@@ -1,8 +1,7 @@
-namespace DotNet.Testcontainers.Core
+namespace DotNet.Testcontainers.Core.Wait
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Core.Wait;
 
   internal class WaitUntilContainerIsRunning : IWaitUntil
   {
