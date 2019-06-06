@@ -7,7 +7,7 @@ internal class BuildProjects
   public ICollection<SolutionProject> All { get; private set; }
   public ICollection<SolutionProject> NoneTests { get; private set; }
   public ICollection<SolutionProject> OnlyTests { get; private set; }
-  public SolutionProject TestContainers { get; private set; }
+  public SolutionProject Testcontainers { get; private set; }
 
   public static BuildProjects Instance(ICakeContext context, string solution)
   {
@@ -18,7 +18,7 @@ internal class BuildProjects
       All = allProjects,
       NoneTests = allProjects.Where(project => !project.Name.EndsWith("Tests")).ToList(),
       OnlyTests = allProjects.Where(project => project.Name.EndsWith("Tests")).ToList(),
-      TestContainers = allProjects.Single(p => "DotNet.Testcontainers".Equals(p.Name))
+      Testcontainers = allProjects.Single(p => "DotNet.Testcontainers".Equals(p.Name))
     };
   }
 }

@@ -1,6 +1,6 @@
 #tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.6.0
 
-#addin nuget:?package=Cake.Sonar&version=1.1.18
+#addin nuget:?package=Cake.Sonar&version=1.1.22
 
 #addin nuget:?package=Cake.Git&version=0.19.0
 
@@ -52,7 +52,7 @@ Task("Restore-NuGet-Packages")
   });
 });
 
-Task("Build-Informations")
+Task("Build-Information")
   .Does(() =>
 {
   foreach (var project in param.Projects.All)
@@ -123,7 +123,7 @@ Task("SonarEnd")
 Task("Create-NuGet-Packages")
   .Does(() =>
 {
-  DotNetCorePack(param.Projects.TestContainers.Path.FullPath, new DotNetCorePackSettings
+  DotNetCorePack(param.Projects.Testcontainers.Path.FullPath, new DotNetCorePackSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,

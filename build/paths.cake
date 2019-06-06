@@ -16,9 +16,6 @@ internal class BuildPaths
 
     var artifactsDir = baseDir.Combine("artifacts");
     var artifactsVersionDir = artifactsDir.Combine(version);
-    var artifactsBinDir = artifactsVersionDir.Combine("bin");
-    var artifactsBinFullFx = artifactsBinDir.Combine("net461");
-    var artifactsBinStandard = artifactsBinDir.Combine("netstandard2.0");
     var nugetRoot = artifactsVersionDir.Combine("nuget");
 
     return new BuildPaths
@@ -28,8 +25,7 @@ internal class BuildPaths
         testResultsDir,
         testCoverageDir,
         nugetRoot,
-        artifactsDir,
-        artifactsBinStandard
+        artifactsDir
       )
     };
   }
@@ -48,21 +44,18 @@ internal class BuildDirectories
   public DirectoryPath TestCoverage { get; }
   public DirectoryPath NugetRoot { get; }
   public DirectoryPath ArtifactsBinDir { get; }
-  public DirectoryPath ArtifactsBinStandard { get; }
   public ICollection<DirectoryPath> ToClean { get; }
 
   public BuildDirectories(
     DirectoryPath testResultsDir,
     DirectoryPath testCoverageDir,
     DirectoryPath nugetRoot,
-    DirectoryPath artifactsBinDir,
-    DirectoryPath artifactsBinStandard)
+    DirectoryPath artifactsBinDir)
   {
     TestResults = testResultsDir;
     TestCoverage = testCoverageDir;
     NugetRoot = nugetRoot;
     ArtifactsBinDir = artifactsBinDir;
-    ArtifactsBinStandard = artifactsBinStandard;
     ToClean = new List<DirectoryPath>()
     {
       testResultsDir,

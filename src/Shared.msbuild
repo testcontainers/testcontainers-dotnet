@@ -32,7 +32,7 @@
   <!-- Global solution information -->
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)SolutionInfo.cs" />
-    <None Include="../../LICENSE" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+    <None Include="../../LICENSE" Pack="true" PackagePath="$(PackageLicenseFile) "/>
   </ItemGroup>
   <!-- StyleCop -->
   <PropertyGroup>
