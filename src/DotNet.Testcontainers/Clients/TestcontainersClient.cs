@@ -2,15 +2,14 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.IO;
-  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
-  using ICSharpCode.SharpZipLib.Tar;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
@@ -77,19 +76,22 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config)
     {
-      var dockerfileDirectory = new DirectoryInfo(config.DockerfileDirectory);
+      var dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory);
 
-      if (!dockerfileDirectory.Exists)
+      await MetaDataClientImages.Instance.ExistsWithNameAsync(config.Image).ContinueWith(async imageExists =>
       {
-        throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
+        if (!await imageExists && config.DeleteIfExists)
+        {
+          await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
+        }
+      });
+
+      using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
+      {
+        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
       }
 
-      if (!dockerfileDirectory.GetFiles().Any(file => "Dockerfile".Equals(file.Name)))
-      {
-        throw new ArgumentException($"Dockerfile does not exist in '{dockerfileDirectory.FullName}'.");
-      }
-
-      return await this.BuildInternalAsync(config);
+      return config.Image;
     }
 
     public async Task<string> RunAsync(TestcontainersConfiguration config)
@@ -147,62 +149,6 @@ namespace DotNet.Testcontainers.Clients
       await pullImageTask;
 
       return (await Docker.Containers.CreateContainerAsync(createParameters)).ID;
-    }
-
-    private static string CreateDockerfileArchive(string dockerfileRootDirectory)
-    {
-      var dockerfileArchiveFile = $"{Path.GetTempPath()}/Dockerfile.tar";
-
-      using (var dockerfileArchiveStream = File.Create(dockerfileArchiveFile))
-      {
-        using (var dockerfileArchive = TarArchive.CreateOutputTarArchive(dockerfileArchiveStream))
-        {
-          dockerfileArchive.RootPath = dockerfileRootDirectory;
-
-          void Tar(string baseDirectory)
-          {
-            void WriteEntry(string entry)
-            {
-              var tarEntry = TarEntry.CreateEntryFromFile(entry);
-              tarEntry.Name = entry.Replace(dockerfileRootDirectory, string.Empty);
-              dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
-            }
-
-            if (!dockerfileRootDirectory.Equals(baseDirectory))
-            {
-              WriteEntry(baseDirectory);
-            }
-
-            Directory.GetFiles(baseDirectory).ToList().ForEach(WriteEntry);
-
-            Directory.GetDirectories(baseDirectory).ToList().ForEach(Tar);
-          }
-
-          Tar(dockerfileRootDirectory);
-        }
-      }
-
-      return dockerfileArchiveFile;
-    }
-
-    private async Task<string> BuildInternalAsync(ImageFromDockerfileConfiguration config)
-    {
-      var dockerfileArchive = CreateDockerfileArchive(config.DockerfileDirectory);
-
-      await MetaDataClientImages.Instance.ExistsWithNameAsync(config.Image).ContinueWith(async imageExists =>
-      {
-        if (!await imageExists && config.DeleteIfExists)
-        {
-          await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
-        }
-      });
-
-      using (var stream = new FileStream(dockerfileArchive, FileMode.Open))
-      {
-        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
-      }
-
-      return config.Image;
     }
   }
 }

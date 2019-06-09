@@ -15,16 +15,16 @@
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DotNet.Testcontainers\DotNet.Testcontainers.csproj" />
+    <ProjectReference Include="../DotNet.Testcontainers/DotNet.Testcontainers.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\xunit.runner.json">
+    <None Include="../xunit.runner.json">
       <Link>xunit.runner.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Dockerfile">
+    <None Include="Assets/**/*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -53,16 +53,16 @@ namespace DotNet.Testcontainers.Tests.Unit
         });
       }
 
-      public Task<bool> Until(string id)
+      public async Task<bool> Until(string id)
       {
-        Task.Delay(TimeSpan.FromSeconds(1));
-        return Task.Run(() => true);
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        return true;
       }
 
-      public Task<bool> While(string id)
+      public async Task<bool> While(string id)
       {
-        Task.Delay(TimeSpan.FromSeconds(1));
-        return Task.Run(() => false);
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        return false;
       }
     }
   }
