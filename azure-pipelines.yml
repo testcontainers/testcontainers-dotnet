@@ -1,21 +1,21 @@
 name: $(date:yyyyMMdd)$(rev:.r)
 
 variables:
-  dotNetCoreVersion: 2.2.104
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  dotNetCoreVersion: 2.2.300
 
 jobs:
 - job: 'Build'
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
     displayName: 'Use .NET Core SDK $(dotNetCoreVersion)'
     inputs:
       version: $(dotNetCoreVersion)
 
   - powershell: |
-      # Disable dotnet cli telemetry
-      $env:DOTNET_CLI_TELEMETRY_OPTOUT=1
       # Set environment variables
       echo "##vso[task.setvariable variable=sonarcloudUrl;]$(sonarcloud.url)"
       echo "##vso[task.setvariable variable=sonarcloudKey;]$(sonarcloud.key)"
