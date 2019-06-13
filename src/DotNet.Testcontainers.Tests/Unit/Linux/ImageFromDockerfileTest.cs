@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit.Linux
 {
   using System;
   using System.IO;
@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       using (var file = new FileInfo(dockerFileArchive.Tar()).OpenRead())
       {
-        Assert.Equal("34BDCA7AB58F0BBDB64AA0178D69CD6E14586838", BitConverter.ToString(System.Security.Cryptography.SHA1.Create().ComputeHash(file)).Replace("-", string.Empty));
+        Assert.Equal("B95FEFA996B86D9BF0306A5C917CBA130E5FDE8D", BitConverter.ToString(System.Security.Cryptography.SHA1.Create().ComputeHash(file)).Replace("-", string.Empty));
       }
     }
 

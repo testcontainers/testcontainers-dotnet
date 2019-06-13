@@ -9,6 +9,8 @@ namespace DotNet.Testcontainers.Core
   {
     private static readonly DateTime DisableModTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
+    private static readonly char[] TrimLeadingChars = new char[] { '/' };
+
     public DockerfileArchive(string baseDirectory) : this(new DirectoryInfo(baseDirectory))
     {
     }
@@ -44,10 +46,14 @@ namespace DotNet.Testcontainers.Core
 
           void Tar(string baseDirectory)
           {
+            baseDirectory = baseDirectory.Replace('\\', '/');
+
             void WriteEntry(string entry)
             {
+              entry = entry.Replace('\\', '/');
+
               var tarEntry = TarEntry.CreateEntryFromFile(entry);
-              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty);
+              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(TrimLeadingChars);
               tarEntry.ModTime = DisableModTime;
               dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
             }

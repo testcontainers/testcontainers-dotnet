@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit.Linux
 {
   using System;
   using System.IO;
@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers;
+  using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
   using static LanguageExt.Prelude;
@@ -141,6 +142,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
+          .WithWaitStrategy(Wait.UntilFileExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
@@ -167,6 +169,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
+          .WithWaitStrategy(Wait.UntilFileExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         // Then

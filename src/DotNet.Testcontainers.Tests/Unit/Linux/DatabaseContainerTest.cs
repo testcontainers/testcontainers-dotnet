@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit.Linux
 {
   using System;
   using System.Data.SqlClient;

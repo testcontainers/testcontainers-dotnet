@@ -7,6 +7,8 @@ namespace DotNet.Testcontainers.Core.Models
 
   public class TestcontainersConfiguration
   {
+    private static readonly IWaitUntil DefaultWaitStrategy = Wait.UntilContainerIsRunning();
+
     public ContainerConfiguration Container { get; set; } = new ContainerConfiguration();
 
     public HostConfiguration Host { get; set; } = new HostConfiguration();
@@ -15,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Models
 
     public IOutputConsumer OutputConsumer { get; set; }
 
-    public IWaitUntil WaitStrategy { get; set; } = Wait.UntilContainerIsRunning();
+    public IWaitUntil WaitStrategy { get; set; } = DefaultWaitStrategy;
 
     internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {
@@ -43,15 +45,15 @@ namespace DotNet.Testcontainers.Core.Models
 
       this.OutputConsumer = Merge(this.OutputConsumer, old.OutputConsumer);
 
-      this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy);
+      this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy, DefaultWaitStrategy);
 
       return this;
     }
 
-    private static T Merge<T>(T myself, T old)
+    private static T Merge<T>(T myself, T old, T defaultConfiguration = null)
       where T : class
     {
-      return myself ?? old;
+      return (myself == null || myself.Equals(defaultConfiguration)) ? old : myself;
     }
 
     private static IReadOnlyCollection<T> Merge<T>(IReadOnlyCollection<T> myself, IReadOnlyCollection<T> old)

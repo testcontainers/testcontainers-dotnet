@@ -26,6 +26,7 @@ jobs:
       # Stop local MySQL server, port is used for tests
       sudo systemctl stop mysql.service
       # Prepare build
+      ./build.sh --target=Clean
       ./build.sh --target=Restore-NuGet-Packages
     displayName: 'Prepare'
 

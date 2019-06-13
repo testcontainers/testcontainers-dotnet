@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Wait;
   using Xunit;
 
