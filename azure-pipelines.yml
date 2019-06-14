@@ -6,12 +6,33 @@ variables:
   dotNetCoreVersion: 2.2.300
 
 jobs:
-- job: 'Build'
+- job: windows
+  displayName: Windows Build
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: windows-2019
   steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core SDK $(dotNetCoreVersion)'
+    displayName: Use .NET Core SDK $(dotNetCoreVersion)
+    inputs:
+      version: $(dotNetCoreVersion)
+
+  - powershell: ./build.ps1 --target=Restore-NuGet-Packages
+    displayName: Prepare
+
+  - powershell: ./build.ps1 --target=Build
+    displayName: Build
+
+  - powershell: ./build.ps1 --target=Test --test-filter="FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Windows"
+    displayName: Test
+
+- job: linux
+  displayName: Linux Build
+  dependsOn: windows
+  pool:
+    vmImage: ubuntu-16.04
+  steps:
+  - task: UseDotNet@2
+    displayName: Use .NET Core SDK $(dotNetCoreVersion)
     inputs:
       version: $(dotNetCoreVersion)
 
@@ -22,7 +43,7 @@ jobs:
       echo "##vso[task.setvariable variable=sonarcloudOrganization;]$(sonarcloud.organization)"
       echo "##vso[task.setvariable variable=nuGetSource;]$(feed.source)"
       echo "##vso[task.setvariable variable=nuGetApiKey;]$(feed.apikey)"
-    displayName: 'Set environment variables'
+    displayName: Set environment variables
     condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
 
   - powershell: |
@@ -30,16 +51,16 @@ jobs:
       sudo systemctl stop mysql.service
       # Restore NuGet packages
       ./build.sh --target=Restore-NuGet-Packages
-    displayName: 'Prepare'
+    displayName: Prepare
 
   - powershell: ./build.sh --target=Build
-    displayName: 'Build'
+    displayName: Build
 
   - powershell: ./build.sh --target=Test
-    displayName: 'Test'
+    displayName: Test
 
   - powershell: ./build.sh --target=Sonar
-    displayName: 'Sonar'
+    displayName: Sonar
     condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
     env:
       SONARQUBE_URL: $(sonarcloudUrl)
@@ -48,7 +69,7 @@ jobs:
       SONARQUBE_ORGANIZATION: $(sonarcloudOrganization)
 
   - powershell: ./build.sh --target=Publish
-    displayName: 'Publish'
+    displayName: Publish
     condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
     env:
       NUGET_SOURCE: $(nuGetSource)

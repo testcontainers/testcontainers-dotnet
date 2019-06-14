@@ -14,6 +14,7 @@ internal class BuildParameters
   public string Configuration { get; private set; }
   public string Version { get; private set; }
   public string Branch { get; private set; }
+  public string TestFilter { get; private set; }
   public bool IsLocalBuild { get; private set; }
   public bool ShouldPublish { get; private set; }
   public DotNetCoreVerbosity Verbosity { get; private set; }
@@ -39,6 +40,7 @@ internal class BuildParameters
       Configuration = context.Argument("configuration", "master".Equals(branch) ? "Release" : "Debug"),
       Version = version,
       Branch = branch,
+      TestFilter = context.Argument<string>("test-filter", null),
       IsLocalBuild = isLocalBuild,
       ShouldPublish = !isLocalBuild && ShouldPublishing(branch),
       Verbosity = DotNetCoreVerbosity.Quiet,

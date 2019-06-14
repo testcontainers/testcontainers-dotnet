@@ -84,6 +84,7 @@ Task("Test")
       NoRestore = true,
       NoBuild = true,
       Logger = "trx",
+      Filter = param.TestFilter,
       ResultsDirectory = param.Paths.Directories.TestResults,
       ArgumentCustomization = args => args
         .Append("/p:CollectCoverage=true")

@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Windows
       // Given
       // When
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("mcr.microsoft.com/windows/nanoserver:1803");
+        .WithImage("mcr.microsoft.com/windows/nanoserver:1809");
 
       // Then
       using (var testcontainer = testcontainersBuilder.Build())

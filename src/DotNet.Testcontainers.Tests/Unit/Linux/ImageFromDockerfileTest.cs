@@ -1,10 +1,12 @@
 namespace DotNet.Testcontainers.Tests.Unit.Linux
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core;
   using DotNet.Testcontainers.Core.Builder;
+  using ICSharpCode.SharpZipLib.Tar;
   using Xunit;
 
   public class ImageFromDockerfileTest
@@ -13,12 +15,22 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
     public void DockerfileArchiveTar()
     {
       // Given
+      var expected = new List<string> { "Dockerfile", "setup", "setup/setup.sh" };
+
+      var actual = new List<string>();
+
       var dockerFileArchive = new DockerfileArchive("./Assets");
 
-      using (var file = new FileInfo(dockerFileArchive.Tar()).OpenRead())
+      using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())
       {
-        Assert.Equal("B95FEFA996B86D9BF0306A5C917CBA130E5FDE8D", BitConverter.ToString(System.Security.Cryptography.SHA1.Create().ComputeHash(file)).Replace("-", string.Empty));
+        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut))
+        {
+          tarIn.ProgressMessageEvent += (archive, entry, message) => actual.Add(entry.Name);
+          tarIn.ListContents();
+        }
       }
+
+      Assert.Equal(expected, actual);
     }
 
     [Fact]

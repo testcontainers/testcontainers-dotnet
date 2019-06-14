@@ -1,5 +1,6 @@
 [![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
-[![Build Status](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_apis/build/status/Build%20release%20beta?branchName=develop)](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_build/latest?definitionId=10&branchName=develop)
+[![Build Status](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_apis/build/status/Build%20release%20beta?branchName=refs/heads/develop)](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_build/latest?definitionId=10&branchName=develop)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
 # .NET Testcontainers
@@ -7,6 +8,14 @@
 .NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immediately afterward.
+
+## Supported operating systems
+
+.NET Testcontainers supports Windows, Linux, and macOS as host systems. Linux Docker containers are supported on all three operating systems.
+
+Native Windows Docker containers are only supported on Windows. Windows requires the host operating system version to match the container operating system version. You'll find further information about Windows container version compatibility [here][windows-container-version-compatibility].
+
+Keep in mind to enable the correct Docker engine on Windows host systems to match the container operating system. With Docker CE you can switch the engine with: `$env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon` or `-SwitchLinuxEngine`, `-SwitchWindowsEngine`.
 
 ## Supported commands
 
@@ -113,3 +122,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/TestcontainersContainerTest.cs
 [2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/DatabaseContainerTest.cs
+
+[windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
