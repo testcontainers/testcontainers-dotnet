@@ -16,17 +16,19 @@ jobs:
       version: $(dotNetCoreVersion)
 
   - powershell: |
-      # Set environment variables
       echo "##vso[task.setvariable variable=sonarcloudUrl;]$(sonarcloud.url)"
       echo "##vso[task.setvariable variable=sonarcloudKey;]$(sonarcloud.key)"
       echo "##vso[task.setvariable variable=sonarcloudToken;]$(sonarcloud.token)"
       echo "##vso[task.setvariable variable=sonarcloudOrganization;]$(sonarcloud.organization)"
       echo "##vso[task.setvariable variable=nuGetSource;]$(feed.source)"
       echo "##vso[task.setvariable variable=nuGetApiKey;]$(feed.apikey)"
+    displayName: 'Set environment variables'
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
+
+  - powershell: |
       # Stop local MySQL server, port is used for tests
       sudo systemctl stop mysql.service
-      # Prepare build
-      ./build.sh --target=Clean
+      # Restore NuGet packages
       ./build.sh --target=Restore-NuGet-Packages
     displayName: 'Prepare'
 
@@ -38,6 +40,7 @@ jobs:
 
   - powershell: ./build.sh --target=Sonar
     displayName: 'Sonar'
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
     env:
       SONARQUBE_URL: $(sonarcloudUrl)
       SONARQUBE_KEY: $(sonarcloudKey)
@@ -46,6 +49,7 @@ jobs:
 
   - powershell: ./build.sh --target=Publish
     displayName: 'Publish'
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
     env:
       NUGET_SOURCE: $(nuGetSource)
       NUGET_APIKEY: $(nuGetApiKey)
