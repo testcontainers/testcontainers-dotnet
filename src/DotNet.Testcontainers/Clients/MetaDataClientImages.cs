@@ -8,10 +8,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class MetaDataClientImages : DockerMetaDataClient<ImagesListResponse>
   {
-    private static readonly Lazy<DockerMetaDataClient<ImagesListResponse>> MetaDataClient = new Lazy<DockerMetaDataClient<ImagesListResponse>>(() =>
-    {
-      return new MetaDataClientImages();
-    });
+    private static readonly Lazy<DockerMetaDataClient<ImagesListResponse>> MetaDataClient = new Lazy<DockerMetaDataClient<ImagesListResponse>>(() => new MetaDataClientImages());
 
     private MetaDataClientImages()
     {

@@ -106,7 +106,7 @@ Task("SonarBegin")
     Organization = param.SonarQubeCredentials.Organization,
     Branch = param.Branch,
     Silent = true,
-    VsTestReportsPath = $"{param.Paths.Directories.TestResults}/*.trx",
+    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResults)}/*.trx",
     OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.opencover.xml"
   });
 });

@@ -3,9 +3,16 @@ namespace DotNet.Testcontainers.Tests.Unit.Windows
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers;
+  using Xunit;
 
   public class TestcontainersContainerTest
   {
+    [IgnoreOnLinuxEngine]
+    public void IsWindowsEngineEnabled()
+    {
+      Assert.True(DockerHostConfiguration.IsWindowsEngineEnabled);
+    }
+
     [IgnoreOnLinuxEngine]
     public async Task Disposable()
     {
