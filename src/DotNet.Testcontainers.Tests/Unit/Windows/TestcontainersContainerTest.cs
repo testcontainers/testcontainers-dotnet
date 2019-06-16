@@ -7,24 +7,27 @@ namespace DotNet.Testcontainers.Tests.Unit.Windows
 
   public class TestcontainersContainerTest
   {
-    [IgnoreOnLinuxEngine]
-    public void IsWindowsEngineEnabled()
+    public class With
     {
-      Assert.True(DockerHostConfiguration.IsWindowsEngineEnabled);
-    }
-
-    [IgnoreOnLinuxEngine]
-    public async Task Disposable()
-    {
-      // Given
-      // When
-      var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("mcr.microsoft.com/windows/nanoserver:1809");
-
-      // Then
-      using (var testcontainer = testcontainersBuilder.Build())
+      [IgnoreOnLinuxEngine]
+      public void IsWindowsEngineEnabled()
       {
-        await testcontainer.StartAsync();
+        Assert.True(DockerHostConfiguration.IsWindowsEngineEnabled);
+      }
+
+      [IgnoreOnLinuxEngine]
+      public async Task Disposable()
+      {
+        // Given
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("mcr.microsoft.com/windows/nanoserver:1809");
+
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+        }
       }
     }
   }

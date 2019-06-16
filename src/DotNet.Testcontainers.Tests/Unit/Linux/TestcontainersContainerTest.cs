@@ -18,6 +18,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
     public class With
     {
       [Fact]
+      public void IsLinuxEngineEnabled()
+      {
+        Assert.False(DockerHostConfiguration.IsWindowsEngineEnabled);
+      }
+
+      [Fact]
       public async Task Finalizer()
       {
         // Given
