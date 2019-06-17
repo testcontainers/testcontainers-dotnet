@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using MyCouch;
   using MySql.Data.MySqlClient;
   using Npgsql;
+  using StackExchange.Redis;
   using Xunit;
 
   public class DatabaseContainerTest
@@ -132,6 +133,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       }
     }
 
+    [Fact]
+    public async Task RedisContainer()
+    {
+      // Given
+      // When
+      var testcontainersBuilder = new TestcontainersBuilder<RedisTestcontainer>()
+        .WithDatabase(new RedisTestcontainerConfiguration()); // TODO: Until now the configuration is not applied by `RedisTestcontainerConfiguration`. Use `WithCommand` or mount redis.conf instead.
+
+      // Then
+      using (var testcontainer = testcontainersBuilder.Build())
+      {
+        await testcontainer.StartAsync();
+
+        using (var connection = ConnectionMultiplexer.Connect(testcontainer.ConnectionString))
+        {
+          Assert.True(connection.GetServer(testcontainer.Hostname, testcontainer.Port).Ping().Milliseconds > 0, "Cannot connect to Redis Testcontainer.");
+        }
+      }
+    }
+
     public class ConfigurationNotAllowed
     {
       [Fact]
@@ -146,6 +167,27 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       {
         DatabaseConfiguration mssql = new MsSqlTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => mssql.Username = string.Empty);
+      }
+
+      [Fact]
+      public void RedisSetDatabase()
+      {
+        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => redis.Database = string.Empty);
+      }
+
+      [Fact]
+      public void RedisSetUsername()
+      {
+        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => redis.Username = string.Empty);
+      }
+
+      [Fact]
+      public void RedisSetPassword()
+      {
+        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => redis.Password = string.Empty);
       }
     }
   }

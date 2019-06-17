@@ -1,5 +1,5 @@
 [![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
-[![Build Status](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_apis/build/status/Build%20release%20beta?branchName=refs/heads/develop)](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_build/latest?definitionId=10&branchName=develop)
+[![Build Status](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_apis/build/status/Build%20release%20beta?branchName=refs/heads/develop)](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_build/latest?definitionId=10&branchName=refs/heads/develop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
@@ -43,6 +43,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - MsSql (server:2017-CU12-ubuntu)
 - MySql (mysql:8.0.15)
 - PostgreSql (postgres:11.2)
+- Redis (redis:5.0.5)
 
 ## Examples
 
@@ -68,6 +69,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
   .WithMount(".", "/tmp")
+  .WithWaitStrategy(Wait.UntilFileExists("/tmp/hostname"))
   .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname");
 
 using (var testcontainer = testcontainersBuilder.Build())
@@ -121,7 +123,7 @@ Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/TestcontainersContainerTest.cs
-[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/DatabaseContainerTest.cs
+[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/TestcontainersContainerTest.cs
+[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/DatabaseContainerTest.cs
 
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility

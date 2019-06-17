@@ -6,8 +6,6 @@ namespace DotNet.Testcontainers.Core.Models.Database
     {
     }
 
-    public override string Database { get; set; }
-
     public override string Username
     {
       get => this.environments["COUCHDB_USER"];
