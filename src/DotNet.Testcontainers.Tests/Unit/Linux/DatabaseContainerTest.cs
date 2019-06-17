@@ -6,12 +6,38 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
   using DotNet.Testcontainers.Core.Models.Database;
+  using MyCouch;
   using MySql.Data.MySqlClient;
   using Npgsql;
   using Xunit;
 
   public class DatabaseContainerTest
   {
+    [Fact]
+    public async Task CouchDbContainer()
+    {
+      // Given
+      // When
+      var testcontainersBuilder = new TestcontainersBuilder<CouchDbTestcontainer>()
+        .WithDatabase(new CouchDbTestcontainerConfiguration
+        {
+          Database = "db",
+          Username = "couchdb",
+          Password = "couchdb",
+        });
+
+      // Then
+      using (var testcontainer = testcontainersBuilder.Build())
+      {
+        await testcontainer.StartAsync();
+
+        using (var connection = new MyCouchClient(testcontainer.ConnectionString, testcontainer.Database))
+        {
+          await connection.Documents.PostAsync("{\"name\":\".NET Testcontainers\"}");
+        }
+      }
+    }
+
     [Fact]
     public async Task MsSqlContainer()
     {
