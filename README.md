@@ -39,11 +39,12 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 
 The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] and [DatabaseContainerTest][2].
 
-- CouchDb (couchdb:2.3.1)
+- CouchDB (couchdb:2.3.1)
 - MsSql (server:2017-CU12-ubuntu)
 - MySql (mysql:8.0.15)
 - PostgreSql (postgres:11.2)
 - Redis (redis:5.0.5)
+- RabbitMQ (rabbitmq:3.7.15)
 
 ## Examples
 
@@ -53,7 +54,8 @@ Pulls `nginx`, creates a new container with port binding `80:80` and hits the de
 var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithPortBinding(80);
+  .WithPortBinding(80)
+  .WithWaitStrategy(Wait.UntilPortsAreAvailable(80));
 
 using (var testcontainer = testcontainersBuilder.Build())
 {
@@ -69,7 +71,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
   .WithImage("nginx")
   .WithName("nginx")
   .WithMount(".", "/tmp")
-  .WithWaitStrategy(Wait.UntilFileExists("/tmp/hostname"))
+  .WithWaitStrategy(Wait.UntilFilesExists("/tmp/hostname"))
   .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname");
 
 using (var testcontainer = testcontainersBuilder.Build())

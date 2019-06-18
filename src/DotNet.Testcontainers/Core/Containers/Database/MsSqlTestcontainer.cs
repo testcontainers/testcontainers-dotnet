@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers.Database
 {
   using DotNet.Testcontainers.Core.Models;
 
-  public class MsSqlTestcontainer : DatabaseContainer
+  public sealed class MsSqlTestcontainer : TestcontainerDatabase
   {
     internal MsSqlTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
     {

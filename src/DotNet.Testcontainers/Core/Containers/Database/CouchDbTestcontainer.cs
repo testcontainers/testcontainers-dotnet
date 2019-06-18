@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers.Database
 {
   using DotNet.Testcontainers.Core.Models;
 
-  public class CouchDbTestcontainer : DatabaseContainer
+  public sealed class CouchDbTestcontainer : TestcontainerDatabase
   {
     internal CouchDbTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
     {

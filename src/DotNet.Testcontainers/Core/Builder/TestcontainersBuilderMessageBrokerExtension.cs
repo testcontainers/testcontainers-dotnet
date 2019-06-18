@@ -4,10 +4,10 @@ namespace DotNet.Testcontainers.Core.Builder
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Core.Wait;
 
-  public static class TestcontainersBuilderDatabaseExtension
+  public static class TestcontainersBuilderMessageBrokerExtension
   {
-    public static ITestcontainersBuilder<T> WithDatabase<T>(this ITestcontainersBuilder<T> builder, TestcontainerDatabaseConfiguration configuration)
-      where T : TestcontainerDatabase
+    public static ITestcontainersBuilder<T> WithMessageBroker<T>(this ITestcontainersBuilder<T> builder, TestcontainerMessageBrokerConfiguration configuration)
+      where T : TestcontainerMessageBroker
     {
       foreach (var environment in configuration.Environments)
       {
@@ -22,7 +22,6 @@ namespace DotNet.Testcontainers.Core.Builder
         {
           container.Hostname = configuration.Hostname;
           container.Port = configuration.Port;
-          container.Database = configuration.Database;
           container.Username = configuration.Username;
           container.Password = configuration.Password;
         });

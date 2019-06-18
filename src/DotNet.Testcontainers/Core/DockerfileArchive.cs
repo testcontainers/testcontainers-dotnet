@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Core
   using System.Linq;
   using ICSharpCode.SharpZipLib.Tar;
 
-  public class DockerfileArchive : ITarArchive
+  public sealed class DockerfileArchive : ITarArchive
   {
     private static readonly DateTime DisableModTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 

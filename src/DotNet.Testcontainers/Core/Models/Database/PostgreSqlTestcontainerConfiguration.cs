@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Core.Models.Database
 {
-  public sealed class PostgreSqlTestcontainerConfiguration : DatabaseConfiguration
+  public sealed class PostgreSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public PostgreSqlTestcontainerConfiguration() : base("postgres:11.2", 5432)
     {

@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Models.Database
 {
   using System;
 
-  public class RedisTestcontainerConfiguration : DatabaseConfiguration
+  public sealed class RedisTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public RedisTestcontainerConfiguration() : base("redis:5.0.5", 6379)
     {

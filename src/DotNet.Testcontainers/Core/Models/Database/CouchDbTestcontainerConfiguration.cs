@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Core.Models.Database
 {
-  public class CouchDbTestcontainerConfiguration : DatabaseConfiguration
+  public sealed class CouchDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public CouchDbTestcontainerConfiguration() : base("couchdb:2.3.1", 5984)
     {

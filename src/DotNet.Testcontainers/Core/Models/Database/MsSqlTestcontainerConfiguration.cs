@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Models.Database
 {
   using System;
 
-  public sealed class MsSqlTestcontainerConfiguration : DatabaseConfiguration
+  public sealed class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public MsSqlTestcontainerConfiguration() : base("mcr.microsoft.com/mssql/server:2017-CU12-ubuntu", 1433)
     {

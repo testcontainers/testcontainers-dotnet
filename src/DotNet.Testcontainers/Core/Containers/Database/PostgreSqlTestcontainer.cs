@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers.Database
 {
   using DotNet.Testcontainers.Core.Models;
 
-  public class PostgreSqlTestcontainer : DatabaseContainer
+  public sealed class PostgreSqlTestcontainer : TestcontainerDatabase
   {
     internal PostgreSqlTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
     {

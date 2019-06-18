@@ -7,14 +7,14 @@ namespace DotNet.Testcontainers.Core.Wait
       return new WaitUntilContainerIsRunning();
     }
 
-    public static IWaitUntil UntilFileExists(string file)
+    public static IWaitUntil UntilFilesExists(params string[] files)
     {
-      return new WaitUntilFileExists(file);
+      return new WaitUntilFilesExists(files);
     }
 
-    public static IWaitUntil UntilPortIsAvailable(int port)
+    public static IWaitUntil UntilPortsAreAvailable(params int[] ports)
     {
-      return new WaitUntilPortIsAvailable(port);
+      return new WaitUntilPortsAreAvailable(ports);
     }
   }
 }

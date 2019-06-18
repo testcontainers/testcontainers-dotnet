@@ -1,21 +1,21 @@
-namespace DotNet.Testcontainers.Core.Models.Database
+namespace DotNet.Testcontainers.Core.Models
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Diagnostics.CodeAnalysis;
 
-  public abstract class DatabaseConfiguration
+  public abstract class TestcontainerConfiguration
   {
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
     protected readonly IDictionary<string, string> environments = new Dictionary<string, string>();
 
-    protected DatabaseConfiguration(string image, int defaultPort)
+    protected TestcontainerConfiguration(string image, int defaultPort)
     {
+      this.Image = image;
+
       this.DefaultPort = defaultPort;
 
       this.Port = defaultPort;
-
-      this.Image = image;
     }
 
     public int DefaultPort { get; }
@@ -25,8 +25,6 @@ namespace DotNet.Testcontainers.Core.Models.Database
     public string Image { get; }
 
     public virtual string Hostname { get; set; } = "localhost";
-
-    public virtual string Database { get; set; }
 
     public virtual string Username { get; set; }
 

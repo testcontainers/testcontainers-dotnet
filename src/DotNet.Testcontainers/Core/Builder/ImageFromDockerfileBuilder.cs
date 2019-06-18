@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Core.Builder
   using DotNet.Testcontainers.Core.Images;
   using DotNet.Testcontainers.Core.Models;
 
-  public class ImageFromDockerfileBuilder : IImageFromDockerfileBuilder
+  public sealed class ImageFromDockerfileBuilder : IImageFromDockerfileBuilder
   {
     private readonly ImageFromDockerfileConfiguration configuration = new ImageFromDockerfileConfiguration();
 

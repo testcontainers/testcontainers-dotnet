@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Core.Models.Database
 {
-  public sealed class MySqlTestcontainerConfiguration : DatabaseConfiguration
+  public sealed class MySqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public MySqlTestcontainerConfiguration() : base("mysql:8.0.15", 3306)
     {

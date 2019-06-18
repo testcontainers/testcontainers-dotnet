@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
   using DotNet.Testcontainers.Core.Models.Database;
+  using DotNet.Testcontainers.Core.Wait;
   using MyCouch;
   using MySql.Data.MySqlClient;
   using Npgsql;
@@ -48,7 +49,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         .WithDatabase(new MsSqlTestcontainerConfiguration
         {
           Password = "yourStrong(!)Password", // See following password policy: https://hub.docker.com/r/microsoft/mssql-server-linux/
-        });
+        })
+        .WithWaitStrategy(Wait.UntilPortsAreAvailable(1433, 1434)); // TOOD: Allow vendor specific Testcontainer configuration.
 
       // Then
       using (var testcontainer = testcontainersBuilder.Build())
@@ -158,35 +160,35 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       [Fact]
       public void MssqlSetDatabase()
       {
-        DatabaseConfiguration mssql = new MsSqlTestcontainerConfiguration();
+        var mssql = new MsSqlTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => mssql.Database = string.Empty);
       }
 
       [Fact]
       public void MssqlSetUsername()
       {
-        DatabaseConfiguration mssql = new MsSqlTestcontainerConfiguration();
+        var mssql = new MsSqlTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => mssql.Username = string.Empty);
       }
 
       [Fact]
       public void RedisSetDatabase()
       {
-        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        var redis = new RedisTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => redis.Database = string.Empty);
       }
 
       [Fact]
       public void RedisSetUsername()
       {
-        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        var redis = new RedisTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => redis.Username = string.Empty);
       }
 
       [Fact]
       public void RedisSetPassword()
       {
-        DatabaseConfiguration redis = new RedisTestcontainerConfiguration();
+        var redis = new RedisTestcontainerConfiguration();
         Assert.Throws<NotImplementedException>(() => redis.Password = string.Empty);
       }
     }

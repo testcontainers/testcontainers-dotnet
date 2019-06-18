@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Core.Builder
   using DotNet.Testcontainers.Diagnostics;
   using static DotNet.Testcontainers.Core.Models.TestcontainersConfiguration;
 
-  public class TestcontainersBuilder<T> : ITestcontainersBuilder<T>
+  public sealed class TestcontainersBuilder<T> : ITestcontainersBuilder<T>
     where T : TestcontainersContainer
   {
     private readonly TestcontainersConfiguration config = new TestcontainersConfiguration();

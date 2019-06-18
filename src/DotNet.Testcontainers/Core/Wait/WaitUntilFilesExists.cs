@@ -1,24 +1,25 @@
 namespace DotNet.Testcontainers.Core.Wait
 {
   using System.IO;
+  using System.Linq;
   using System.Threading.Tasks;
 
-  internal class WaitUntilFileExists : IWaitUntil
+  internal class WaitUntilFilesExists : IWaitUntil
   {
     private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
 
-    private readonly string file;
+    private readonly string[] files;
 
-    public WaitUntilFileExists(string file)
+    public WaitUntilFilesExists(params string[] files)
     {
-      this.file = file;
+      this.files = files;
     }
 
     public async Task<bool> Until(string id)
     {
       await WaitStrategy.WaitUntil(() => { return WaitUntilContainerIsCreated.Until(id); });
 
-      return File.Exists(this.file);
+      return this.files.All(File.Exists);
     }
   }
 }

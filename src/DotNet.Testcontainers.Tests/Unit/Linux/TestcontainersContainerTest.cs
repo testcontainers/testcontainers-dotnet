@@ -106,24 +106,27 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       }
 
       [Fact]
-      public void PortBindingsHttpAndHttps()
+      public async Task PortBindingsHttpAndHttps()
       {
         // Given
-        var http = Tuple(80, 80);
-        var https = Tuple(443, 80);
+        var http = new { From = 80, To = 80 };
+        var https = new { From = 443, To = 80 };
 
         // When
         var nginx = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
         // Then
-        List(http, https).Iter(async port =>
+        foreach (var port in new[] { http, https })
         {
-          using (var testcontainer = port.Map(nginx.WithPortBinding).Build())
+          using (var testcontainer = nginx
+            .WithPortBinding(port.From, port.To)
+            .WithWaitStrategy(Wait.UntilPortsAreAvailable(port.To))
+            .Build())
           {
             await testcontainer.StartAsync();
 
-            var request = WebRequest.Create($"http://localhost:{port.Item1}");
+            var request = WebRequest.Create($"http://localhost:{port.From}");
 
             var response = (HttpWebResponse)request.GetResponse();
 
@@ -131,9 +134,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
               Some: value => value.StatusCode == HttpStatusCode.OK,
               None: () => false);
 
-            Assert.True(isAvailable, $"nginx port {port.Item1} is not available.");
+            Assert.True(isAvailable, $"nginx port {port.From} is not available.");
           }
-        });
+        }
       }
 
       [Fact]
@@ -148,7 +151,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
-          .WithWaitStrategy(Wait.UntilFileExists($"{TempDir}/{file}"))
+          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
@@ -175,7 +178,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithWaitStrategy(Wait.UntilFileExists($"{TempDir}/{file}"))
+          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         // Then

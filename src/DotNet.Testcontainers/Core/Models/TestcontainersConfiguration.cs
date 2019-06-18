@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Core.Models
   using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
 
-  public class TestcontainersConfiguration
+  public sealed class TestcontainersConfiguration
   {
     private static readonly IWaitUntil DefaultWaitStrategy = Wait.UntilContainerIsRunning();
 
@@ -82,7 +82,7 @@ namespace DotNet.Testcontainers.Core.Models
       }
     }
 
-    public class ContainerConfiguration
+    public sealed class ContainerConfiguration
     {
       public string Image { get; set; }
 
@@ -101,7 +101,7 @@ namespace DotNet.Testcontainers.Core.Models
       public IReadOnlyDictionary<string, string> ExposedPorts { get; set; }
     }
 
-    public class HostConfiguration
+    public sealed class HostConfiguration
     {
       public IReadOnlyDictionary<string, string> PortBindings { get; set; }
 

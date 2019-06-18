@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Core.Containers.Database
 {
   using DotNet.Testcontainers.Core.Models;
 
-  public class RedisTestcontainer : DatabaseContainer
+  public sealed class RedisTestcontainer : TestcontainerDatabase
   {
     internal RedisTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
     {

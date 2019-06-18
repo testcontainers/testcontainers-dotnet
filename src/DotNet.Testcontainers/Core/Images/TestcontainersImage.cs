@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Core.Images
   using System.Linq;
   using DotNet.Testcontainers.Core.Parser;
 
-  public class TestcontainersImage : IDockerImage
+  public sealed class TestcontainersImage : IDockerImage
   {
     public TestcontainersImage()
     {

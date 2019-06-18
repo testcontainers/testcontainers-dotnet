@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Core.Wait
   using System.Threading;
   using System.Threading.Tasks;
 
-  public static class WaitStrategy
+  internal static class WaitStrategy
   {
     /// <summary>
     /// Blocks while condition is true or timeout occurs.

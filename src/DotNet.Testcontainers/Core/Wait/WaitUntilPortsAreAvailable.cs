@@ -4,18 +4,15 @@ namespace DotNet.Testcontainers.Core.Wait
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
 
-  internal class WaitUntilPortIsAvailable : IWaitUntil
+  internal class WaitUntilPortsAreAvailable : IWaitUntil
   {
     private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
 
     private readonly string[][] commands;
 
-    public WaitUntilPortIsAvailable(int port)
+    public WaitUntilPortsAreAvailable(params int[] ports)
     {
-      this.commands = new string[][]
-      {
-        new string[] { "/bin/bash", "-c", $"while ! timeout 2 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" },
-      };
+      this.commands = ports.Select(port => new string[] { "/bin/bash", "-c", $"while ! timeout 15 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" }).ToArray();
     }
 
     public async Task<bool> Until(string id)
