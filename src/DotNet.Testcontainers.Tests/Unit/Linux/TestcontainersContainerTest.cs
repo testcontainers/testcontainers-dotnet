@@ -26,12 +26,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task Finalizer()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithCleanUp(true)
           .WithImage("alpine")
           .WithLabel("alpine", "latest");
 
+        // When
         // Then
         var testcontainer = testcontainersBuilder.Build();
         await testcontainer.StartAsync();
@@ -42,10 +42,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task Disposable()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine");
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -57,10 +57,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task GeneratedContainerName()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine");
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -92,11 +92,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task ExposedPorts()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithExposedPort(80);
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -112,10 +112,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
         var https = new { From = 443, To = 80 };
 
-        // When
         var nginx = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
+        // When
         // Then
         foreach (var port in new[] { http, https })
         {
@@ -152,12 +152,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
-        // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
 
+        // Then
         Assert.True(File.Exists($"{tempDir}/{file}"), $"{file} does not exist.");
       }
 
@@ -179,15 +179,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
-        // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
 
-        var text = File.ReadAllText($"{tempDir}/{file}");
-
-        Assert.Equal(dayOfWeek, text);
+        // Then
+        Assert.Equal(dayOfWeek, File.ReadAllText($"{tempDir}/{file}"));
       }
 
       [Fact]
@@ -202,7 +200,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
             .WithOutputConsumer(output)
             .WithCommand("/bin/bash", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
 
-          // Then
           using (var testcontainer = testcontainersBuilder.Build())
           {
             await testcontainer.StartAsync();
@@ -211,6 +208,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           output.Stdout.Position = 0;
           output.Stderr.Position = 0;
 
+          // Then
           using (var streamReader = new StreamReader(output.Stdout))
           {
             Assert.NotEmpty(streamReader.ReadToEnd());
@@ -227,11 +225,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task WaitStrategy()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithWaitStrategy(new WaitStrategyFixture());
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {

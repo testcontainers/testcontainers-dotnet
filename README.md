@@ -37,7 +37,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 
 ## Pre-configured containers
 
-The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] and [DatabaseContainerTest][2].
+The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][2] tests.
 
 - CouchDB (couchdb:2.3.1)
 - MsSql (server:2017-CU14-ubuntu)
@@ -126,6 +126,7 @@ Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 [1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/TestcontainersContainerTest.cs
-[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/DatabaseContainerTest.cs
+[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/Database
+[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/MessageBroker
 
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility

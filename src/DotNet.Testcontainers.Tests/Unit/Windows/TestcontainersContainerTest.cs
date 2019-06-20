@@ -19,10 +19,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Windows
       public async Task Disposable()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("mcr.microsoft.com/windows/nanoserver:1809");
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {

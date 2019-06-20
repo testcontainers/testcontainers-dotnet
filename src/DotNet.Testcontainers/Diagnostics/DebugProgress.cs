@@ -6,9 +6,9 @@ namespace DotNet.Testcontainers.Diagnostics
 
   internal sealed class DebugProgress : IProgress<JSONMessage>
   {
-    private static readonly Lazy<DebugProgress> progress = new Lazy<DebugProgress>(() => new DebugProgress());
+    private static readonly Lazy<DebugProgress> debugProgress = new Lazy<DebugProgress>(() => new DebugProgress());
 
-    public static DebugProgress Instance => progress.Value;
+    public static DebugProgress Instance => debugProgress.Value;
 
     public void Report(JSONMessage value)
     {

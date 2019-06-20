@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Linux
+namespace DotNet.Testcontainers.Tests.Unit.Linux.MessageBroker
 {
   using System;
   using System.Threading.Tasks;
@@ -8,13 +8,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using RabbitMQ.Client;
   using Xunit;
 
-  public class MessageBrokerContainerTest
+  public class RabbitMqTestcontainerTest
   {
     [Fact]
-    public async Task RabbitMqContainer()
+    public async Task ConnectionEstablished()
     {
       // Given
-      // When
       var testcontainersBuilder = new TestcontainersBuilder<RabbitMqTestcontainer>()
         .WithMessageBroker(new RabbitMqTestcontainerConfiguration
         {
@@ -22,6 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           Password = "rabbitmq",
         });
 
+      // When
       // Then
       using (var testcontainer = testcontainersBuilder.Build())
       {

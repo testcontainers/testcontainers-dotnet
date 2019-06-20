@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
       var dockerFileArchive = new DockerfileArchive("./Assets");
 
+      // When
       using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())
       {
         using (var tarIn = TarArchive.CreateInputTarArchive(tarOut))
@@ -30,6 +31,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         }
       }
 
+      // Then
       Assert.Equal(expected, actual);
     }
 

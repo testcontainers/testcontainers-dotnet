@@ -39,10 +39,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task QueryContainerInformationOfRunningContainer()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -58,10 +58,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void QueryContainerInformationOfStoppedContainer()
       {
         // Given
-        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
+        // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
