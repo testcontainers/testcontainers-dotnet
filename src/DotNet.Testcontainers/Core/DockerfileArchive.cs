@@ -7,9 +7,7 @@ namespace DotNet.Testcontainers.Core
 
   public sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly DateTime DisableModTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-
-    private static readonly char[] TrimLeadingChars = new char[] { '/' };
+    private static readonly char[] trimLeadingChars = { '/' };
 
     public DockerfileArchive(string baseDirectory) : this(new DirectoryInfo(baseDirectory))
     {
@@ -53,8 +51,7 @@ namespace DotNet.Testcontainers.Core
               entry = entry.Replace('\\', '/');
 
               var tarEntry = TarEntry.CreateEntryFromFile(entry);
-              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(TrimLeadingChars);
-              tarEntry.ModTime = DisableModTime;
+              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(trimLeadingChars);
               dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
             }
 

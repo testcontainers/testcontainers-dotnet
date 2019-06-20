@@ -13,9 +13,9 @@ namespace DotNet.Testcontainers.Clients
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
-    private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
+    private static readonly Lazy<ITestcontainersClient> testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
 
-    internal static ITestcontainersClient Instance => Testcontainers.Value;
+    internal static ITestcontainersClient Instance => testcontainers.Value;
 
     public async Task StartAsync(string id, CancellationToken cancellationToken = default)
     {
@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers.Clients
 
       var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, cancellationToken);
 
-      await stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
+      _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
     }
 
     public async Task ExecAsync(string id, params string[] command)

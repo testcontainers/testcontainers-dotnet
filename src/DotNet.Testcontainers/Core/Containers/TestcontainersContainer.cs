@@ -8,16 +8,14 @@ namespace DotNet.Testcontainers.Core.Containers
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Core.Wait;
-  using LanguageExt;
-  using static LanguageExt.Prelude;
 
   public class TestcontainersContainer : IDockerContainer
   {
     private bool disposed;
 
-    private Option<string> id = None;
+    private string id;
 
-    private Option<ContainerListResponse> container = None;
+    private ContainerListResponse container;
 
     protected TestcontainersContainer(TestcontainersConfiguration configuration)
     {
@@ -33,7 +31,7 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       get
       {
-        return this.id.IfNone(() => string.Empty);
+        return this.id ?? string.Empty;
       }
     }
 
@@ -41,9 +39,12 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       get
       {
-        return this.container.Match(
-          Some: value => value.Names.FirstOrDefault() ?? string.Empty,
-          None: () => throw new InvalidOperationException("Testcontainer not running."));
+        if (this.container == null)
+        {
+          throw new InvalidOperationException("Testcontainer is not running.");
+        }
+
+        return this.container.Names.FirstOrDefault() ?? string.Empty;
       }
     }
 
@@ -51,13 +52,13 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       get
       {
-        return this.container.Match(
-          Some: value =>
-          {
-            var ipAddress = value.NetworkSettings.Networks.FirstOrDefault();
-            return notnull(ipAddress) ? ipAddress.Value.IPAddress : string.Empty;
-          },
-          None: () => throw new InvalidOperationException("Testcontainer not running."));
+        if (this.container == null)
+        {
+          throw new InvalidOperationException("Testcontainer is not running.");
+        }
+
+        var ipAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
+        return ipAddress.Value == null ? string.Empty : ipAddress.Value.IPAddress;
       }
     }
 
@@ -65,13 +66,13 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       get
       {
-        return this.container.Match(
-          Some: value =>
-          {
-            var macAddress = value.NetworkSettings.Networks.FirstOrDefault();
-            return notnull(macAddress) ? macAddress.Value.MacAddress : string.Empty;
-          },
-          None: () => throw new InvalidOperationException("Testcontainer not running."));
+        if (this.container == null)
+        {
+          throw new InvalidOperationException("Testcontainer is not running.");
+        }
+
+        var macAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
+        return macAddress.Value == null ? string.Empty : macAddress.Value.IPAddress;
       }
     }
 
@@ -118,50 +119,63 @@ namespace DotNet.Testcontainers.Core.Containers
 
     private async Task Create()
     {
-      this.id = await this.id.IfNoneAsync(() => TestcontainersClient.Instance.RunAsync(this.Configuration));
+      if (string.IsNullOrEmpty(this.Id))
+      {
+        this.id = await TestcontainersClient.Instance.RunAsync(this.Configuration);
+      }
     }
 
     private Task Start()
     {
-      return this.id.IfSomeAsync(id =>
+      if (string.IsNullOrEmpty(this.Id))
       {
-        var cts = new CancellationTokenSource();
+        return Task.CompletedTask;
+      }
 
-        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(id, this.Configuration.OutputConsumer, cts.Token);
+      var cts = new CancellationTokenSource();
 
-        var startTask = TestcontainersClient.Instance.StartAsync(id, cts.Token);
+      var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(this.Id, this.Configuration.OutputConsumer, cts.Token);
 
-        var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(id), cancellationToken: cts.Token);
+      var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
 
-        var handleDockerExceptionTask = startTask.ContinueWith((task) =>
+      var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
+
+      var handleDockerExceptionTask = startTask.ContinueWith(task =>
+      {
+        task.Exception?.Handle(exception =>
         {
-          task.Exception?.Handle(exception =>
-          {
-            cts.Cancel();
-            return false;
-          });
+          cts.Cancel();
+          return false;
         });
-
-        return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
       });
+
+      return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
     }
 
     private Task Stop()
     {
-      return this.id.IfSomeAsync(id =>
+      if (string.IsNullOrEmpty(this.Id))
       {
-        this.container = None;
-        return TestcontainersClient.Instance.StopAsync(id);
+        return Task.CompletedTask;
+      }
+
+      return TestcontainersClient.Instance.StopAsync(this.Id).ContinueWith(task =>
+      {
+        this.container = null;
       });
     }
 
     private Task CleanUp()
     {
-      return this.id.IfSomeAsync(id =>
+      if (string.IsNullOrEmpty(this.Id))
       {
-        this.id = None;
-        this.container = None;
-        return TestcontainersClient.Instance.RemoveAsync(id);
+        return Task.CompletedTask;
+      }
+
+      return TestcontainersClient.Instance.RemoveAsync(this.Id).ContinueWith(task =>
+      {
+        this.container = null;
+        this.id = null;
       });
     }
   }

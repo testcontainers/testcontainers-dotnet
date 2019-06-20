@@ -8,14 +8,14 @@ namespace DotNet.Testcontainers.Core.Models.MessageBroker
 
     public override string Username
     {
-      get => this.environments["RABBITMQ_DEFAULT_USER"];
-      set => this.environments["RABBITMQ_DEFAULT_USER"] = value;
+      get => this.Environments["RABBITMQ_DEFAULT_USER"];
+      set => this.Environments["RABBITMQ_DEFAULT_USER"] = value;
     }
 
     public override string Password
     {
-      get => this.environments["RABBITMQ_DEFAULT_PASS"];
-      set => this.environments["RABBITMQ_DEFAULT_PASS"] = value;
+      get => this.Environments["RABBITMQ_DEFAULT_PASS"];
+      set => this.Environments["RABBITMQ_DEFAULT_PASS"] = value;
     }
   }
 }

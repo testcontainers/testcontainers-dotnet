@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Core.Models
 
   public sealed class TestcontainersConfiguration
   {
-    private static readonly IWaitUntil DefaultWaitStrategy = Wait.UntilContainerIsRunning();
+    private static readonly IWaitUntil defaultWaitStrategy = Wait.UntilContainerIsRunning();
 
     public ContainerConfiguration Container { get; set; } = new ContainerConfiguration();
 
@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Models
 
     public IOutputConsumer OutputConsumer { get; set; }
 
-    public IWaitUntil WaitStrategy { get; set; } = DefaultWaitStrategy;
+    public IWaitUntil WaitStrategy { get; set; } = defaultWaitStrategy;
 
     internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {
@@ -45,7 +45,7 @@ namespace DotNet.Testcontainers.Core.Models
 
       this.OutputConsumer = Merge(this.OutputConsumer, old.OutputConsumer);
 
-      this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy, DefaultWaitStrategy);
+      this.WaitStrategy = Merge(this.WaitStrategy, old.WaitStrategy, defaultWaitStrategy);
 
       return this;
     }

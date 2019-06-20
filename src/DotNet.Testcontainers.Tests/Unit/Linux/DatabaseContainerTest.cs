@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Containers.Database;
   using DotNet.Testcontainers.Core.Models.Database;
-  using DotNet.Testcontainers.Core.Wait;
   using MyCouch;
   using MySql.Data.MySqlClient;
   using Npgsql;
@@ -49,8 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         .WithDatabase(new MsSqlTestcontainerConfiguration
         {
           Password = "yourStrong(!)Password", // See following password policy: https://hub.docker.com/r/microsoft/mssql-server-linux/
-        })
-        .WithWaitStrategy(Wait.UntilPortsAreAvailable(1433, 1434)); // TOOD: Allow vendor specific Testcontainer configuration.
+        });
 
       // Then
       using (var testcontainer = testcontainersBuilder.Build())

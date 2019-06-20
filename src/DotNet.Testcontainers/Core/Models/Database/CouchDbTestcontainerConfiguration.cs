@@ -8,14 +8,14 @@ namespace DotNet.Testcontainers.Core.Models.Database
 
     public override string Username
     {
-      get => this.environments["COUCHDB_USER"];
-      set => this.environments["COUCHDB_USER"] = value;
+      get => this.Environments["COUCHDB_USER"];
+      set => this.Environments["COUCHDB_USER"] = value;
     }
 
     public override string Password
     {
-      get => this.environments["COUCHDB_PASSWORD"];
-      set => this.environments["COUCHDB_PASSWORD"] = value;
+      get => this.Environments["COUCHDB_PASSWORD"];
+      set => this.Environments["COUCHDB_PASSWORD"] = value;
     }
   }
 }

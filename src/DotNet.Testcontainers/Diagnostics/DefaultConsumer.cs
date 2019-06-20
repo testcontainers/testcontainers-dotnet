@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Diagnostics
     {
     }
 
-    protected DefaultConsumer(Stream stdout, Stream stderr)
+    public DefaultConsumer(Stream stdout, Stream stderr)
     {
       this.defaultOut = Console.Out;
       this.defaultErr = Console.Error;

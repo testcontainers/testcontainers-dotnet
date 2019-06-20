@@ -8,20 +8,20 @@ namespace DotNet.Testcontainers.Core.Models.Database
 
     public override string Database
     {
-      get => this.environments["POSTGRES_DB"];
-      set => this.environments["POSTGRES_DB"] = value;
+      get => this.Environments["POSTGRES_DB"];
+      set => this.Environments["POSTGRES_DB"] = value;
     }
 
     public override string Username
     {
-      get => this.environments["POSTGRES_USER"];
-      set => this.environments["POSTGRES_USER"] = value;
+      get => this.Environments["POSTGRES_USER"];
+      set => this.Environments["POSTGRES_USER"] = value;
     }
 
     public override string Password
     {
-      get => this.environments["POSTGRES_PASSWORD"];
-      set => this.environments["POSTGRES_PASSWORD"] = value;
+      get => this.Environments["POSTGRES_PASSWORD"];
+      set => this.Environments["POSTGRES_PASSWORD"] = value;
     }
   }
 }

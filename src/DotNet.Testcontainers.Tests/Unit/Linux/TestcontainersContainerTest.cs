@@ -9,11 +9,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
-  using static LanguageExt.Prelude;
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
+    private static readonly string tempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
 
     public class With
     {
@@ -110,6 +109,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       {
         // Given
         var http = new { From = 80, To = 80 };
+
         var https = new { From = 443, To = 80 };
 
         // When
@@ -130,9 +130,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
             var response = (HttpWebResponse)request.GetResponse();
 
-            var isAvailable = Optional(response).Match(
-              Some: value => value.StatusCode == HttpStatusCode.OK,
-              None: () => false);
+            var isAvailable = response != null && response.StatusCode == HttpStatusCode.OK;
 
             Assert.True(isAvailable, $"nginx port {port.From} is not available.");
           }
@@ -150,8 +148,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithMount(TempDir, $"/{target}")
-          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
+          .WithMount(tempDir, $"/{target}")
+          .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         // Then
@@ -160,7 +158,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           await testcontainer.StartAsync();
         }
 
-        Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
+        Assert.True(File.Exists($"{tempDir}/{file}"), $"{file} does not exist.");
       }
 
       [Fact]
@@ -176,9 +174,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithMount(TempDir, $"/{target}")
+          .WithMount(tempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
+          .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         // Then
@@ -187,7 +185,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
           await testcontainer.StartAsync();
         }
 
-        string text = File.ReadAllText($"{TempDir}/{file}");
+        var text = File.ReadAllText($"{tempDir}/{file}");
 
         Assert.Equal(dayOfWeek, text);
       }

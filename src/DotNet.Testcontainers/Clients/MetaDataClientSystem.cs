@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class MetaDataClientSystem : DockerApiClient
   {
-    private static readonly Lazy<MetaDataClientSystem> MetaDataClient = new Lazy<MetaDataClientSystem>(() => new MetaDataClientSystem());
+    private static readonly Lazy<MetaDataClientSystem> metaDataClient = new Lazy<MetaDataClientSystem>(() => new MetaDataClientSystem());
 
     private MetaDataClientSystem()
     {
@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Clients
     {
       get
       {
-        return MetaDataClient.Value;
+        return metaDataClient.Value;
       }
     }
 

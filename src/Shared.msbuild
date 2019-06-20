@@ -34,17 +34,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)SolutionInfo.cs" />
     <None Include="../../LICENSE" Pack="true" PackagePath="$(PackageLicenseFile) "/>
   </ItemGroup>
-  <!-- StyleCop -->
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)DotNet.Testcontainers.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
 </Project>
