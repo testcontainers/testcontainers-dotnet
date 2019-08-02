@@ -13,9 +13,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
-    private static readonly Lazy<ITestcontainersClient> testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
+    private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
 
-    internal static ITestcontainersClient Instance => testcontainers.Value;
+    private TestcontainersClient()
+    {
+    }
+
+    internal static ITestcontainersClient Instance { get; } = Testcontainers.Value;
 
     public async Task StartAsync(string id, CancellationToken cancellationToken = default)
     {

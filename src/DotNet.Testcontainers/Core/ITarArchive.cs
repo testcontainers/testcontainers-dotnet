@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Core
 {
-  public interface ITarArchive
+  internal interface ITarArchive
   {
     string Tar();
   }

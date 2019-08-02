@@ -4,19 +4,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class MetaDataClientSystem : DockerApiClient
   {
-    private static readonly Lazy<MetaDataClientSystem> metaDataClient = new Lazy<MetaDataClientSystem>(() => new MetaDataClientSystem());
+    private static readonly Lazy<MetaDataClientSystem> MetaDataClient = new Lazy<MetaDataClientSystem>(() => new MetaDataClientSystem());
 
     private MetaDataClientSystem()
     {
     }
 
-    internal static MetaDataClientSystem Instance
-    {
-      get
-      {
-        return metaDataClient.Value;
-      }
-    }
+    internal static MetaDataClientSystem Instance { get; } = MetaDataClient.Value;
 
     internal bool IsWindowsEngineEnabled { get; } = "Windows_NT".Equals(Docker.System.GetSystemInfoAsync().Result.OperatingSystem);
   }

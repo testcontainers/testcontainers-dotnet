@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string tempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
 
     public class With
     {
@@ -148,8 +148,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithMount(tempDir, $"/{target}")
-          .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
+          .WithMount(TempDir, $"/{target}")
+          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
 
         using (var testcontainer = testcontainersBuilder.Build())
@@ -158,7 +158,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         }
 
         // Then
-        Assert.True(File.Exists($"{tempDir}/{file}"), $"{file} does not exist.");
+        Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
       }
 
       [Fact]
@@ -174,9 +174,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithMount(tempDir, $"/{target}")
+          .WithMount(TempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithWaitStrategy(Wait.UntilFilesExists($"{tempDir}/{file}"))
+          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         using (var testcontainer = testcontainersBuilder.Build())
@@ -185,7 +185,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
         }
 
         // Then
-        Assert.Equal(dayOfWeek, File.ReadAllText($"{tempDir}/{file}"));
+        Assert.Equal(dayOfWeek, File.ReadAllText($"{TempDir}/{file}"));
       }
 
       [Fact]

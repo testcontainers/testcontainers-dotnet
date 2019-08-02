@@ -66,6 +66,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         using (var testcontainer = testcontainersBuilder.Build())
         {
           Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
+          Assert.Throws<InvalidOperationException>(() => testcontainer.IPAddress);
+          Assert.Throws<InvalidOperationException>(() => testcontainer.MacAddress);
         }
       }
     }

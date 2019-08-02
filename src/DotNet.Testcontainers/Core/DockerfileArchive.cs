@@ -5,9 +5,9 @@ namespace DotNet.Testcontainers.Core
   using System.Linq;
   using ICSharpCode.SharpZipLib.Tar;
 
-  public sealed class DockerfileArchive : ITarArchive
+  internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly char[] trimLeadingChars = { '/' };
+    private static readonly char[] TrimLeadingChars = { '/' };
 
     public DockerfileArchive(string baseDirectory) : this(new DirectoryInfo(baseDirectory))
     {
@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Core
               entry = entry.Replace('\\', '/');
 
               var tarEntry = TarEntry.CreateEntryFromFile(entry);
-              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(trimLeadingChars);
+              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(TrimLeadingChars);
               dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
             }
 

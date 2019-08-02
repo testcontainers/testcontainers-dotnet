@@ -37,7 +37,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 
 ## Pre-configured containers
 
-The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][2] tests.
+The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][3] tests.
 
 - CouchDB (couchdb:2.3.1)
 - MsSql (server:2017-CU14-ubuntu)

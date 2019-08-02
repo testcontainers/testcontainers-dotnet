@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Core.Wait
 
   internal class WaitUntilFilesExists : IWaitUntil
   {
-    private static readonly IWaitUntil waitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
+    private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
 
     private readonly string[] files;
 
@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Wait
 
     public async Task<bool> Until(string id)
     {
-      await WaitStrategy.WaitUntil(() => { return waitUntilContainerIsCreated.Until(id); });
+      await WaitStrategy.WaitUntil(() => { return WaitUntilContainerIsCreated.Until(id); });
 
       return this.files.All(File.Exists);
     }

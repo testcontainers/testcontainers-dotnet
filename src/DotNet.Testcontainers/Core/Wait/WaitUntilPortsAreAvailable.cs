@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Core.Wait
 
   internal class WaitUntilPortsAreAvailable : IWaitUntil
   {
-    private static readonly IWaitUntil waitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
+    private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
 
     private readonly string[][] commands;
 
@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Core.Wait
 
     public async Task<bool> Until(string id)
     {
-      await WaitStrategy.WaitUntil(() => { return waitUntilContainerIsCreated.Until(id); });
+      await WaitStrategy.WaitUntil(() => { return WaitUntilContainerIsCreated.Until(id); });
 
       await Task.WhenAll(this.commands.Select(command => TestcontainersClient.Instance.ExecAsync(id, command)));
 
