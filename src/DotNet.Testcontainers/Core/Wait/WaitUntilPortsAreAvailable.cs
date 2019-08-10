@@ -4,10 +4,8 @@ namespace DotNet.Testcontainers.Core.Wait
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
 
-  internal class WaitUntilPortsAreAvailable : IWaitUntil
+  internal class WaitUntilPortsAreAvailable : WaitUntilContainerIsRunning
   {
-    private static readonly IWaitUntil WaitUntilContainerIsCreated = Wait.UntilContainerIsRunning();
-
     private readonly string[][] commands;
 
     public WaitUntilPortsAreAvailable(params int[] ports)
@@ -15,9 +13,9 @@ namespace DotNet.Testcontainers.Core.Wait
       this.commands = ports.Select(port => new string[] { "/bin/bash", "-c", $"while ! timeout 15 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" }).ToArray();
     }
 
-    public async Task<bool> Until(string id)
+    public override async Task<bool> Until(string id)
     {
-      await WaitStrategy.WaitUntil(() => { return WaitUntilContainerIsCreated.Until(id); });
+      await WaitStrategy.WaitUntil(() => base.Until(id));
 
       await Task.WhenAll(this.commands.Select(command => TestcontainersClient.Instance.ExecAsync(id, command)));
 

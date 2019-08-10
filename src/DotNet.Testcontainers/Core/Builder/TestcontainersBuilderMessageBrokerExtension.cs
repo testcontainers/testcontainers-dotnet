@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Core.Builder
 {
   using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Models;
-  using DotNet.Testcontainers.Core.Wait;
 
   public static class TestcontainersBuilderMessageBrokerExtension
   {
@@ -17,7 +16,8 @@ namespace DotNet.Testcontainers.Core.Builder
       return builder
         .WithImage(configuration.Image)
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
-        .WithWaitStrategy(Wait.UntilPortsAreAvailable(configuration.DefaultPort))
+        .WithOutputConsumer(configuration.OutputConsumer)
+        .WithWaitStrategy(configuration.WaitStrategy)
         .ConfigureContainer((container) =>
         {
           container.Hostname = configuration.Hostname;

@@ -132,24 +132,25 @@ namespace DotNet.Testcontainers.Core.Containers
         return Task.CompletedTask;
       }
 
-      var cts = new CancellationTokenSource();
-
-      var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(this.Id, this.Configuration.OutputConsumer, cts.Token);
-
-      var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
-
-      var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
-
-      var handleDockerExceptionTask = startTask.ContinueWith(task =>
+      using (var cts = new CancellationTokenSource())
       {
-        task.Exception?.Handle(exception =>
-        {
-          cts.Cancel();
-          return false;
-        });
-      });
+        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(this.Id, this.Configuration.OutputConsumer, cts.Token);
 
-      return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
+        var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
+
+        var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
+
+        var handleDockerExceptionTask = startTask.ContinueWith(task =>
+        {
+          task.Exception?.Handle(exception =>
+          {
+            cts.Cancel();
+            return false;
+          });
+        });
+
+        return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
+      }
     }
 
     private Task Stop()

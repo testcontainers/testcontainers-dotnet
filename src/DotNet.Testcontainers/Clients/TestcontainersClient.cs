@@ -92,7 +92,9 @@ namespace DotNet.Testcontainers.Clients
 
       using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } });
+        using (var builtImage = await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } }))
+        {
+        }
       }
 
       return config.Image;

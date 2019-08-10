@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Core.Wait
 {
+  using System.IO;
+
   public static class Wait
   {
     public static IWaitUntil UntilContainerIsRunning()
@@ -10,6 +12,11 @@ namespace DotNet.Testcontainers.Core.Wait
     public static IWaitUntil UntilFilesExists(params string[] files)
     {
       return new WaitUntilFilesExists(files);
+    }
+
+    public static IWaitUntil UntilMessagesAreLogged(Stream outputConsumerStream, params string[] messages)
+    {
+      return new WaitUntilMessagesAreLogged(outputConsumerStream, messages);
     }
 
     public static IWaitUntil UntilPortsAreAvailable(params int[] ports)

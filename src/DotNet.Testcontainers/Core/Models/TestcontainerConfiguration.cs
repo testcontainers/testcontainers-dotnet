@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Core.Models
 {
   using System.Collections.Generic;
+  using DotNet.Testcontainers.Core.Wait;
+  using DotNet.Testcontainers.Diagnostics;
 
   public abstract class TestcontainerConfiguration
   {
@@ -26,5 +28,9 @@ namespace DotNet.Testcontainers.Core.Models
     public virtual string Password { get; set; }
 
     public virtual IDictionary<string, string> Environments { get; set; } = new Dictionary<string, string>();
+
+    public virtual IOutputConsumer OutputConsumer => null;
+
+    public virtual IWaitUntil WaitStrategy => Wait.UntilContainerIsRunning();
   }
 }

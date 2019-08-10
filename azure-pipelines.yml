@@ -3,7 +3,7 @@ name: $(date:yyyyMMdd)$(rev:.r)
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  dotNetCoreVersion: 2.2.300
+  dotNetCoreVersion: 2.2.401
 
 jobs:
 - job: windows
