@@ -17,8 +17,8 @@ namespace DotNet.Testcontainers.Clients
 
     Task ExecAsync(string id, params string[] command);
 
-    Task<string> BuildAsync(ImageFromDockerfileConfiguration config);
+    Task<string> BuildAsync(ImageFromDockerfileConfiguration config, CancellationToken cancellationToken = default);
 
-    Task<string> RunAsync(TestcontainersConfiguration config);
+    Task<string> RunAsync(TestcontainersConfiguration config, CancellationToken cancellationToken = default);
   }
 }

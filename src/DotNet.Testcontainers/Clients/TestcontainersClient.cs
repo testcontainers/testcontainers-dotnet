@@ -78,7 +78,7 @@ namespace DotNet.Testcontainers.Clients
       await WaitStrategy.WaitWhile(async () => (await Docker.Containers.InspectContainerExecAsync(created.ID)).Running);
     }
 
-    public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config)
+    public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config, CancellationToken cancellationToken = default)
     {
       var dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory);
 
@@ -86,21 +86,22 @@ namespace DotNet.Testcontainers.Clients
       {
         if (!await imageExists && config.DeleteIfExists)
         {
-          await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true });
+          await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true }, cancellationToken);
         }
       });
 
       using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        using (var builtImage = await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } }))
+        using (var builtImage = await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } }, cancellationToken))
         {
+          // New Docker image built, ready to use.
         }
       }
 
       return config.Image;
     }
 
-    public async Task<string> RunAsync(TestcontainersConfiguration config)
+    public async Task<string> RunAsync(TestcontainersConfiguration config, CancellationToken cancellationToken = default)
     {
       var image = config.Container.Image;
 
@@ -109,7 +110,7 @@ namespace DotNet.Testcontainers.Clients
         if (!await imageExists)
         {
           // await ... does not work here, the image will not be pulled.
-          Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance).GetAwaiter().GetResult();
+          Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance, cancellationToken).GetAwaiter().GetResult();
         }
       });
 
@@ -154,7 +155,7 @@ namespace DotNet.Testcontainers.Clients
 
       await pullImageTask;
 
-      return (await Docker.Containers.CreateContainerAsync(createParameters)).ID;
+      return (await Docker.Containers.CreateContainerAsync(createParameters, cancellationToken)).ID;
     }
   }
 }

@@ -12,6 +12,6 @@ namespace DotNet.Testcontainers.Clients
 
     internal static MetaDataClientSystem Instance { get; } = MetaDataClient.Value;
 
-    internal bool IsWindowsEngineEnabled { get; } = "Windows_NT".Equals(Docker.System.GetSystemInfoAsync().Result.OperatingSystem);
+    internal bool IsWindowsEngineEnabled { get; } = Docker.System.GetSystemInfoAsync().GetAwaiter().GetResult().OperatingSystem.Contains("Windows");
   }
 }

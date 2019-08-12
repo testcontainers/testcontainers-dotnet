@@ -27,6 +27,14 @@ namespace DotNet.Testcontainers.Core.Containers
       this.Dispose(false);
     }
 
+    public bool HasId
+    {
+      get
+      {
+        return !string.IsNullOrEmpty(this.id);
+      }
+    }
+
     public string Id
     {
       get
@@ -105,79 +113,65 @@ namespace DotNet.Testcontainers.Core.Containers
         return;
       }
 
-      if (this.Configuration.CleanUp)
-      {
-        Task.Run(this.CleanUp);
-      }
-      else
-      {
-        Task.Run(this.Stop);
-      }
+      var cleanOrStopTask = this.Configuration.CleanUp ? this.CleanUp() : this.Stop();
+      cleanOrStopTask.GetAwaiter().GetResult();
 
       this.disposed = true;
     }
 
     private async Task Create()
     {
-      if (string.IsNullOrEmpty(this.Id))
+      if (!this.HasId)
       {
         this.id = await TestcontainersClient.Instance.RunAsync(this.Configuration);
       }
     }
 
-    private Task Start()
+    private async Task Start()
     {
-      if (string.IsNullOrEmpty(this.Id))
+      if (this.HasId)
       {
-        return Task.CompletedTask;
-      }
-
-      using (var cts = new CancellationTokenSource())
-      {
-        var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(this.Id, this.Configuration.OutputConsumer, cts.Token);
-
-        var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
-
-        var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
-
-        var handleDockerExceptionTask = startTask.ContinueWith(task =>
+        using (var cts = new CancellationTokenSource())
         {
-          task.Exception?.Handle(exception =>
+          var attachConsumerTask = TestcontainersClient.Instance.AttachAsync(this.Id, this.Configuration.OutputConsumer, cts.Token);
+
+          var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
+
+          var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
+
+          var handleDockerExceptionTask = startTask.ContinueWith(task =>
           {
-            cts.Cancel();
-            return false;
+            task.Exception?.Handle(exception =>
+            {
+              cts.Cancel();
+              return false;
+            });
           });
-        });
 
-        return Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
+          await Task.WhenAll(attachConsumerTask, startTask, waitTask, handleDockerExceptionTask);
+        }
       }
     }
 
-    private Task Stop()
+    private async Task Stop()
     {
-      if (string.IsNullOrEmpty(this.Id))
+      if (this.HasId)
       {
-        return Task.CompletedTask;
-      }
+        await TestcontainersClient.Instance.StopAsync(this.Id);
 
-      return TestcontainersClient.Instance.StopAsync(this.Id).ContinueWith(task =>
-      {
         this.container = null;
-      });
+      }
     }
 
-    private Task CleanUp()
+    private async Task CleanUp()
     {
-      if (string.IsNullOrEmpty(this.Id))
+      if (this.HasId)
       {
-        return Task.CompletedTask;
-      }
+        await TestcontainersClient.Instance.RemoveAsync(this.Id);
 
-      return TestcontainersClient.Instance.RemoveAsync(this.Id).ContinueWith(task =>
-      {
         this.container = null;
         this.id = null;
-      });
+      }
     }
   }
 }
