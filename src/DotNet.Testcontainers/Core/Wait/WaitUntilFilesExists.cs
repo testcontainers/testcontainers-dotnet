@@ -16,7 +16,6 @@ namespace DotNet.Testcontainers.Core.Wait
     public override async Task<bool> Until(string id)
     {
       await WaitStrategy.WaitUntil(() => base.Until(id));
-
       return this.files.All(File.Exists);
     }
   }
