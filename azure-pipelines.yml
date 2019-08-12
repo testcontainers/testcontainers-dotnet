@@ -38,8 +38,8 @@ jobs:
   condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
 
   dependsOn:
-  - Linux
   - Windows
+  - Linux
 
   pool:
     vmImage: ubuntu-16.04
@@ -50,10 +50,7 @@ jobs:
     inputs:
       version: $(dotNetCoreVersion)
 
-  - powershell: dotnet tool install --tool-path ./tools --version $(cakeVersion) Cake.Tool
-    displayName: Setup prerequisites
-
-  - powershell: ./tools/dotnet-cake --target=Sonar
+  - powershell: ./build.sh --target=Sonar
     displayName: Sonar
     env:
       SONARQUBE_URL: $(sonarcloud.url)
@@ -61,7 +58,7 @@ jobs:
       SONARQUBE_TOKEN: $(sonarcloud.token)
       SONARQUBE_ORGANIZATION: $(sonarcloud.organization)
 
-  - powershell: ./tools/dotnet-cake --target=Publish
+  - powershell: ./build.sh --target=Publish
     displayName: Publish
     env:
       NUGET_SOURCE: $(feed.source)
