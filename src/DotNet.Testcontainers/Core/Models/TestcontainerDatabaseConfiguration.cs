@@ -1,10 +1,11 @@
 namespace DotNet.Testcontainers.Core.Models
 {
+  using DotNet.Testcontainers.Core.Builder;
   using DotNet.Testcontainers.Core.Wait;
 
   public abstract class TestcontainerDatabaseConfiguration : TestcontainerConfiguration
   {
-    protected TestcontainerDatabaseConfiguration(string image, int defaultPort) : base(image, defaultPort)
+    protected TestcontainerDatabaseConfiguration(string image, int defaultPort) : base(image, defaultPort, TestcontainersNetworkService.GetAvailablePort())
     {
     }
 

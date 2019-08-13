@@ -18,8 +18,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux.Database
         {
           Database = "db",
           Username = "mysql",
-          Password = "mysql",
-          Port = 33061
+          Password = "mysql"
         });
 
       // When

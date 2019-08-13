@@ -6,13 +6,17 @@ namespace DotNet.Testcontainers.Core.Models
 
   public abstract class TestcontainerConfiguration
   {
-    protected TestcontainerConfiguration(string image, int defaultPort)
+    protected TestcontainerConfiguration(string image, int defaultPort) : this(image, defaultPort, defaultPort)
+    {
+    }
+
+    protected TestcontainerConfiguration(string image, int defaultPort, int port)
     {
       this.Image = image;
 
       this.DefaultPort = defaultPort;
 
-      this.Port = defaultPort;
+      this.Port = port;
     }
 
     public string Image { get; }

@@ -108,9 +108,10 @@ namespace DotNet.Testcontainers.Core.Builder
       });
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(int port)
+    public ITestcontainersBuilder<T> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
-      return this.WithPortBinding(port, port);
+      var hostPort = assignRandomHostPort ? TestcontainersNetworkService.GetAvailablePort() : port;
+      return this.WithPortBinding(hostPort, port);
     }
 
     public ITestcontainersBuilder<T> WithPortBinding(int hostPort, int containerPort)
@@ -118,9 +119,10 @@ namespace DotNet.Testcontainers.Core.Builder
       return this.WithPortBinding($"{hostPort}", $"{containerPort}");
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(string port)
+    public ITestcontainersBuilder<T> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
-      return this.WithPortBinding(port, port);
+      var hostPort = assignRandomHostPort ? $"{TestcontainersNetworkService.GetAvailablePort()}" : port;
+      return this.WithPortBinding(hostPort, port);
     }
 
     public ITestcontainersBuilder<T> WithPortBinding(string hostPort, string containerPort)

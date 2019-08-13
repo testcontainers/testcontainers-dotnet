@@ -86,8 +86,9 @@ namespace DotNet.Testcontainers.Core.Builder
     /// Binds the port of the Testcontainer to the same port of the host machine.
     /// </summary>
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
+    /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{T}"/>.</returns>
-    ITestcontainersBuilder<T> WithPortBinding(int port);
+    ITestcontainersBuilder<T> WithPortBinding(int port, bool assignRandomHostPort = false);
 
     /// <summary>
     /// Binds the port of the Testcontainer to the specified port of the host machine.
@@ -101,8 +102,9 @@ namespace DotNet.Testcontainers.Core.Builder
     /// Binds the port of the Testcontainer to the same port of the host machine.
     /// </summary>
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
+    /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{T}"/>.</returns>
-    ITestcontainersBuilder<T> WithPortBinding(string port);
+    ITestcontainersBuilder<T> WithPortBinding(string port, bool assignRandomHostPort = false);
 
     /// <summary>
     /// Binds the port of the Testcontainer to the specified port of the host machine.
