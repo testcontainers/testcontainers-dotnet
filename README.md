@@ -13,7 +13,7 @@ Choose from existing pre-configured configurations and start containers within a
 
 .NET Testcontainers supports Windows, Linux, and macOS as host systems. Linux Docker containers are supported on all three operating systems.
 
-Native Windows Docker containers are only supported on Windows. Windows requires the host operating system version to match the container operating system version. You'll find further information about Windows container version compatibility [here][windows-container-version-compatibility].
+Native Windows Docker containers are only supported on Windows. Windows requires the host operating system version to match the container operating system version. You'll find further information about Windows container version compatibility [here](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility).
 
 Keep in mind to enable the correct Docker engine on Windows host systems to match the container operating system. With Docker CE you can switch the engine with: `$env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon` or `-SwitchLinuxEngine`, `-SwitchWindowsEngine`.
 
@@ -109,6 +109,10 @@ using (var testcontainer = testcontainersBuilder.Build())
 }
 ```
 
+## Note
+
+Please keep in mind this is not the official repository. Unfortunately, my requirements are not supported by the official implementation yet. Although we try to add new features and refactor the current version of [testcontainers/testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet), the progress is slow. As long as the official implementation does not cover all my requirements, I will work on both projects.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -128,5 +132,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/TestcontainersContainerTest.cs
 [2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/Database
 [3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/MessageBroker
-
-[windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility

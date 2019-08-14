@@ -130,7 +130,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
             var response = (HttpWebResponse)request.GetResponse();
 
-            var isAvailable = response != null && response.StatusCode == HttpStatusCode.OK;
+            var isAvailable = response.StatusCode == HttpStatusCode.OK;
 
             Assert.True(isAvailable, $"nginx port {port.From} is not available.");
           }
