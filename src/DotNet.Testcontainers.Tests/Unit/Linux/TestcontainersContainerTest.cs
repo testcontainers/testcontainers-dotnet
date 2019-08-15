@@ -112,14 +112,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
         var https = new { From = 443, To = 80 };
 
-        var nginx = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx");
 
         // When
         // Then
         foreach (var port in new[] { http, https })
         {
-          using (var testcontainer = nginx
+          using (var testcontainer = testcontainersBuilder
             .WithPortBinding(port.From, port.To)
             .WithWaitStrategy(Wait.UntilPortsAreAvailable(port.To))
             .Build())
@@ -134,6 +134,23 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
 
             Assert.True(isAvailable, $"nginx port {port.From} is not available.");
           }
+        }
+      }
+
+      [Fact]
+      public async Task RandomHostPortBindings()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("nginx")
+          .WithPortBinding(80, true);
+
+        // When
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.NotEqual(0, testcontainer.GetMappedPublicPort(80));
         }
       }
 

@@ -110,8 +110,7 @@ namespace DotNet.Testcontainers.Core.Builder
 
     public ITestcontainersBuilder<T> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
-      var hostPort = assignRandomHostPort ? TestcontainersNetworkService.GetAvailablePort() : port;
-      return this.WithPortBinding(hostPort, port);
+      return this.WithPortBinding($"{port}", assignRandomHostPort);
     }
 
     public ITestcontainersBuilder<T> WithPortBinding(int hostPort, int containerPort)

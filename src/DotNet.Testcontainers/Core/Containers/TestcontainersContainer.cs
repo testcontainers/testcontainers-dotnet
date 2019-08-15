@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Core.Containers
         }
 
         var ipAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
-        return ipAddress.Value == null ? string.Empty : ipAddress.Value.IPAddress;
+        return ipAddress.Value?.IPAddress ?? string.Empty;
       }
     }
 
@@ -80,11 +80,27 @@ namespace DotNet.Testcontainers.Core.Containers
         }
 
         var macAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
-        return macAddress.Value == null ? string.Empty : macAddress.Value.IPAddress;
+        return macAddress.Value?.MacAddress ?? string.Empty;
       }
     }
 
     private TestcontainersConfiguration Configuration { get; }
+
+    public int GetMappedPublicPort(int privatePort)
+    {
+      return this.GetMappedPublicPort($"{privatePort}");
+    }
+
+    public int  GetMappedPublicPort(string privatePort)
+    {
+      if (this.container == null)
+      {
+        throw new InvalidOperationException("Testcontainer is not running.");
+      }
+
+      var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));
+      return mappedPort?.PublicPort ?? 0;
+    }
 
     public async Task StartAsync()
     {

@@ -22,6 +22,20 @@ namespace DotNet.Testcontainers.Core.Containers
     string MacAddress { get; }
 
     /// <summary>
+    /// Gets the public host port associated with the private container port.
+    /// </summary>
+    /// <param name="privatePort">Private container port.</param>
+    /// <returns>Returns the public host port associated with the private container port.</returns>
+    int GetMappedPublicPort(int privatePort);
+
+    /// <summary>
+    /// Gets the public host port associated with the private container port.
+    /// </summary>
+    /// <param name="privatePort">Private container port.</param>
+    /// <returns>Returns the public host port associated with the private container port.</returns>
+    int GetMappedPublicPort(string privatePort);
+
+    /// <summary>
     /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
     /// </summary>
     /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>
