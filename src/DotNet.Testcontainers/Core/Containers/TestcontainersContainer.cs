@@ -91,7 +91,7 @@ namespace DotNet.Testcontainers.Core.Containers
       return this.GetMappedPublicPort($"{privatePort}");
     }
 
-    public int  GetMappedPublicPort(string privatePort)
+    public int GetMappedPublicPort(string privatePort)
     {
       if (this.container == null)
       {
@@ -100,6 +100,11 @@ namespace DotNet.Testcontainers.Core.Containers
 
       var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));
       return mappedPort?.PublicPort ?? 0;
+    }
+
+    public Task<long> GetExitCode()
+    {
+      return MetaDataClientContainers.Instance.GetExitCode(this.Id);
     }
 
     public async Task StartAsync()

@@ -36,6 +36,12 @@ namespace DotNet.Testcontainers.Core.Containers
     int GetMappedPublicPort(string privatePort);
 
     /// <summary>
+    /// Gets the Testcontainer exit code.
+    /// </summary>
+    /// <returns>Returns the Docker container exit code.</returns>
+    Task<long> GetExitCode();
+
+    /// <summary>
     /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
     /// </summary>
     /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>

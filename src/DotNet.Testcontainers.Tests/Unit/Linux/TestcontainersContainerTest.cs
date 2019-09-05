@@ -89,6 +89,24 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       }
 
       [Fact]
+      public async Task WorkingDirectory()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithWorkingDirectory("/tmp")
+          .WithCommand("/bin/ash", "-c", "test -d /tmp && exit $? || exit $?");
+
+        // When
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.Equal(0, await testcontainer.GetExitCode());
+        }
+      }
+
+      [Fact]
       public async Task ExposedPorts()
       {
         // Given
