@@ -10,7 +10,7 @@
     <PackageReference Include="MyCouch" Version="7.1.0" />
     <PackageReference Include="MySql.Data" Version="8.0.17" />
     <PackageReference Include="Npgsql" Version="4.1.0" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.0.601" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
