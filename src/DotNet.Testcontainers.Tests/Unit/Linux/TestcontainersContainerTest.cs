@@ -107,6 +107,23 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       }
 
       [Fact]
+      public async Task Entrypoint()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithEntrypoint("/bin/ash", "-c", "exit 255");
+
+        // When
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.Equal(255, await testcontainer.GetExitCode());
+        }
+      }
+
+      [Fact]
       public async Task ExposedPorts()
       {
         // Given
