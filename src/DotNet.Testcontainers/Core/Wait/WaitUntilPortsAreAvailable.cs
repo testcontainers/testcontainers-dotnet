@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Core.Wait
 
     public WaitUntilPortsAreAvailable(params int[] ports)
     {
-      this.commands = ports.Select(port => new string[] { "/bin/bash", "-c", $"while ! timeout 15 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" }).ToArray();
+      this.commands = ports.Select(port => new[] { "/bin/bash", "-c", $"while ! timeout 15 bash -c \"echo > /dev/tcp/localhost/{port}\"; do sleep 1; done" }).ToArray();
     }
 
     public override async Task<bool> Until(string id)

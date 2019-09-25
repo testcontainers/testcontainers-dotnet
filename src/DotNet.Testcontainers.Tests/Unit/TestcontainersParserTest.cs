@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       [Theory]
       [ClassData(typeof(ParseDockerImageFixture))]
-      public void WhenImageNameGetsAssigend(ParseDockerImageFixtureSerializable serializable, string fullName)
+      public void WhenImageNameGetsAssigned(ParseDockerImageFixtureSerializable serializable, string fullName)
       {
         var expected = serializable.Image;
 

@@ -21,11 +21,11 @@ namespace DotNet.Testcontainers.Core.Wait
       {
         while (!cancellationToken.IsCancellationRequested && await wait())
         {
-          await Task.Delay(frequency);
+          await Task.Delay(frequency, cancellationToken);
         }
-      });
+      }, cancellationToken);
 
-      if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
+      if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout, cancellationToken)))
       {
         throw new TimeoutException();
       }
@@ -46,11 +46,11 @@ namespace DotNet.Testcontainers.Core.Wait
       {
         while (!cancellationToken.IsCancellationRequested && !await wait())
         {
-          await Task.Delay(frequency);
+          await Task.Delay(frequency, cancellationToken);
         }
-      });
+      }, cancellationToken);
 
-      if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
+      if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout, cancellationToken)))
       {
         throw new TimeoutException();
       }

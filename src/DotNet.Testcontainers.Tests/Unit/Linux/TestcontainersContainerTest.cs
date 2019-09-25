@@ -73,7 +73,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task SpecifiedContainerName()
       {
         // Given
-        var name = "/alpine";
+        const string name = "/alpine";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -193,9 +193,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task VolumeAndCommand()
       {
         // Given
-        var target = "tmp";
+        const string target = "tmp";
 
-        var file = "hostname";
+        const string file = "hostname";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -217,9 +217,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
       public async Task VolumeAndEnvironment()
       {
         // Given
-        var target = "tmp";
+        const string target = "tmp";
 
-        var file = "dayOfWeek";
+        const string file = "dayOfWeek";
 
         var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
 

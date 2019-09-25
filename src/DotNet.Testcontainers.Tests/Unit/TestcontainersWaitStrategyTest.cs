@@ -12,13 +12,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public async Task UntilImmediately()
       {
-        await WaitStrategy.WaitUntil(() => { return this.Until(string.Empty); });
+        await WaitStrategy.WaitUntil(() => this.Until(string.Empty));
       }
 
       [Fact]
       public async Task WhileImmediately()
       {
-        await WaitStrategy.WaitWhile(() => { return this.While(string.Empty); });
+        await WaitStrategy.WaitWhile(() => this.While(string.Empty));
       }
 
       public Task<bool> Until(string id)

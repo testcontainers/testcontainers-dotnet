@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Core.Builder
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
         .WithOutputConsumer(configuration.OutputConsumer)
         .WithWaitStrategy(configuration.WaitStrategy)
-        .ConfigureContainer((container) =>
+        .ConfigureContainer(container =>
         {
           container.Hostname = configuration.Hostname;
           container.Port = configuration.Port;

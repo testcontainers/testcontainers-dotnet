@@ -13,9 +13,7 @@ namespace DotNet.Testcontainers.Core.Models
     protected TestcontainerConfiguration(string image, int defaultPort, int port)
     {
       this.Image = image;
-
       this.DefaultPort = defaultPort;
-
       this.Port = port;
     }
 

@@ -1,6 +1,5 @@
-namespace DotNet.Testcontainers.Core.Containers.Database
+namespace DotNet.Testcontainers.Core.Containers
 {
-  using DotNet.Testcontainers.Core.Containers;
   using DotNet.Testcontainers.Core.Models;
 
   public abstract class Testcontainer : TestcontainersContainer
