@@ -11,6 +11,8 @@ namespace DotNet.Testcontainers.Core.Containers
 
   public class TestcontainersContainer : IDockerContainer
   {
+    private const string ContainerIsNotRunning = "Testcontainer is not running.";
+
     private bool disposed;
 
     private string id;
@@ -49,7 +51,7 @@ namespace DotNet.Testcontainers.Core.Containers
       {
         if (this.container == null)
         {
-          throw new InvalidOperationException("Testcontainer is not running.");
+          throw new InvalidOperationException(ContainerIsNotRunning);
         }
 
         return this.container.Names.FirstOrDefault() ?? string.Empty;
@@ -62,7 +64,7 @@ namespace DotNet.Testcontainers.Core.Containers
       {
         if (this.container == null)
         {
-          throw new InvalidOperationException("Testcontainer is not running.");
+          throw new InvalidOperationException(ContainerIsNotRunning);
         }
 
         var ipAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
@@ -76,7 +78,7 @@ namespace DotNet.Testcontainers.Core.Containers
       {
         if (this.container == null)
         {
-          throw new InvalidOperationException("Testcontainer is not running.");
+          throw new InvalidOperationException(ContainerIsNotRunning);
         }
 
         var macAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
@@ -95,7 +97,7 @@ namespace DotNet.Testcontainers.Core.Containers
     {
       if (this.container == null)
       {
-        throw new InvalidOperationException("Testcontainer is not running.");
+        throw new InvalidOperationException(ContainerIsNotRunning);
       }
 
       var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));

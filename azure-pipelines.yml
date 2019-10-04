@@ -20,7 +20,8 @@ jobs:
   # Run Windows build and tests.
   - template: template/build.yml
     parameters:
-      name: Windows
+      name: BuildAndTestOnWindows
+      displayName: Windows
       vmImage: windows-2019
       dotNetCoreVersion: $(dotNetCoreVersion)
       cakeVersion: $(cakeVersion)
@@ -29,7 +30,8 @@ jobs:
   # Run Linux build and tests.
   - template: template/build.yml
     parameters:
-      name: Linux
+      name: BuildAndTestOnLinux
+      displayName: Linux
       vmImage: ubuntu-16.04
       dotNetCoreVersion: $(dotNetCoreVersion)
       cakeVersion: $(cakeVersion)
@@ -40,7 +42,8 @@ jobs:
   - ${{ if in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop') }}:
     - template: template/publish.yml
       parameters:
-        name: Linux
+        name: Release
+        displayName: Release
         vmImage: ubuntu-16.04
         dotNetCoreVersion: $(dotNetCoreVersion)
         cakeVersion: $(cakeVersion)

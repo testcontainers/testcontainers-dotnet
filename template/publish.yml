@@ -1,19 +1,22 @@
 jobs:
   - job: ${{ parameters.name }}
-    displayName: CI build for ${{ parameters.name }}
+    displayName: CI build for ${{ parameters.displayName }}
 
     pool:
       vmImage: ${{ parameters.vmImage }}
 
     dependsOn:
-      - Windows
-      - Linux
+      - BuildAndTestOnWindows
+      - BuildAndTestOnLinux
 
     steps:
       - task: UseDotNet@2
         displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
         inputs:
           version: ${{ parameters.dotNetCoreVersion }}
+
+      - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
+        displayName: Setup prerequisites
 
       - powershell: ./tools/dotnet-cake --target=Sonar
         displayName: Sonar

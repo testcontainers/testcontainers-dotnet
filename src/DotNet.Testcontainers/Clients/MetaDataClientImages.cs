@@ -8,13 +8,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class MetaDataClientImages : DockerMetaDataClient<ImagesListResponse>
   {
-    private static readonly Lazy<MetaDataClientImages> MetaDataClient = new Lazy<MetaDataClientImages>(() => new MetaDataClientImages());
+    private static readonly Lazy<MetaDataClientImages> MetaDataClientLazy = new Lazy<MetaDataClientImages>(() => new MetaDataClientImages());
 
     private MetaDataClientImages()
     {
     }
 
-    internal static MetaDataClientImages Instance { get; } = MetaDataClient.Value;
+    internal static MetaDataClientImages Instance { get; } = MetaDataClientLazy.Value;
 
     internal override async Task<IReadOnlyCollection<ImagesListResponse>> GetAllAsync()
     {

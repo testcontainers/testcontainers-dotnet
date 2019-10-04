@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Linux
   using System.Collections.Generic;
   using System.IO;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Core;
+  using DotNet.Testcontainers.Core.Archive;
   using DotNet.Testcontainers.Core.Builder;
   using ICSharpCode.SharpZipLib.Tar;
   using Xunit;

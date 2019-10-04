@@ -1,31 +1,49 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Diagnostics;
   using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Core;
+  using DotNet.Testcontainers.Core.Archive;
   using DotNet.Testcontainers.Core.Mapper;
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
+  using Microsoft.Extensions.Logging;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
-    private static readonly Lazy<ITestcontainersClient> Testcontainers = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
+    private static readonly Lazy<ITestcontainersClient> TestcontainersClientLazy = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
+
+    private static readonly ILogger<TestcontainersClient> Log = TestcontainersHost.GetLogger<TestcontainersClient>();
 
     private TestcontainersClient()
     {
+      AppDomain.CurrentDomain.ProcessExit += (sender, args) => PurgeOrphanedContainers();
+      Console.CancelKeyPress += (sender, args) => PurgeOrphanedContainers();
     }
 
-    internal static ITestcontainersClient Instance { get; } = Testcontainers.Value;
+    internal static ITestcontainersClient Instance { get; } = TestcontainersClientLazy.Value;
+
+    private static void PurgeOrphanedContainers()
+    {
+      var args = string.Join(" ", ContainerRegistry.GetRegisteredContainers());
+
+      if (string.IsNullOrEmpty(args))
+      {
+        return;
+      }
+
+      new Process { StartInfo = { FileName = "docker", Arguments = $"rm --force {args}" } }.Start();
+    }
 
     public async Task StartAsync(string id, CancellationToken cancellationToken = default)
     {
       if (await MetaDataClientContainers.Instance.ExistsWithIdAsync(id))
       {
-        await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters { }, cancellationToken);
+        await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters(), cancellationToken);
       }
     }
 
@@ -43,6 +61,8 @@ namespace DotNet.Testcontainers.Clients
       {
         await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }, cancellationToken);
       }
+
+      ContainerRegistry.Unregister(id);
     }
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default)
@@ -155,7 +175,11 @@ namespace DotNet.Testcontainers.Clients
 
       await pullImageTask;
 
-      return (await Docker.Containers.CreateContainerAsync(createParameters, cancellationToken)).ID;
+      var id = (await Docker.Containers.CreateContainerAsync(createParameters, cancellationToken)).ID;
+
+      ContainerRegistry.Register(id, config.CleanUp);
+
+      return id;
     }
   }
 }

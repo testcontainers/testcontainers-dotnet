@@ -1,6 +1,6 @@
 jobs:
   - job: ${{ parameters.name }}
-    displayName: CI build for ${{ parameters.name }}
+    displayName: CI build for ${{ parameters.displayName }}
 
     pool:
       vmImage: ${{ parameters.vmImage }}
