@@ -21,9 +21,9 @@ jobs:
       - powershell: ./tools/dotnet-cake --target=Sonar
         displayName: Sonar
         env:
-          SONARQUBE_TOKEN: $(sonarcloud.token)
+          SONARCLOUD_TOKEN: $(sonarcloud.token)
 
       - powershell: ./tools/dotnet-cake --target=Publish
         displayName: Publish
         env:
-          NUGET_APIKEY: $(feed.apikey)
+          FEED_APIKEY: $(feed.apikey)
