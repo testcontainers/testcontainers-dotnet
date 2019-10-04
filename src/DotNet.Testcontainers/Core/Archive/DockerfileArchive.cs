@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Core
+namespace DotNet.Testcontainers.Core.Archive
 {
   using System;
   using System.IO;

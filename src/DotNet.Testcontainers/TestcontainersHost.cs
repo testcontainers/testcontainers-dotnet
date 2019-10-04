@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers
   using Microsoft.Extensions.Hosting;
   using Microsoft.Extensions.Logging;
   using Serilog;
+  using ILogger = Microsoft.Extensions.Logging.ILogger;
 
   internal static class TestcontainersHost
   {
@@ -23,6 +24,11 @@ namespace DotNet.Testcontainers
       host = new HostBuilder()
         .ConfigureLogging(config => config.AddSerilog(logger, true))
         .Build();
+    }
+
+    internal static ILogger GetLogger(string categoryName)
+    {
+      return host.Services.GetRequiredService<ILoggerFactory>().CreateLogger(categoryName);
     }
 
     internal static ILogger<T> GetLogger<T>()
