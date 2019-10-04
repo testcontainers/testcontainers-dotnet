@@ -29,10 +29,10 @@ internal class SonarQubeCredentials
   {
     return new SonarQubeCredentials
     (
-      context.EnvironmentVariable("SONARQUBE_URL"),
-      context.EnvironmentVariable("SONARQUBE_KEY"),
-      context.EnvironmentVariable("SONARQUBE_TOKEN"),
-      context.EnvironmentVariable("SONARQUBE_ORGANIZATION")
+      context.EnvironmentVariable("SONARCLOUD_URL"),
+      context.EnvironmentVariable("SONARCLOUD_KEY"),
+      context.EnvironmentVariable("SONARCLOUD_TOKEN"),
+      context.EnvironmentVariable("SONARCLOUD_ORGANIZATION")
     );
   }
 }
@@ -52,10 +52,10 @@ internal class NuGetCredentials : BuildCredentials
   {
     return new NuGetCredentials
     (
-      context.EnvironmentVariable("NUGET_USERNAME") ?? "",
-      context.EnvironmentVariable("NUGET_PASSWORD") ?? "",
-      context.EnvironmentVariable("NUGET_SOURCE"),
-      context.EnvironmentVariable("NUGET_APIKEY")
+      context.EnvironmentVariable("FEED_USERNAME") ?? "",
+      context.EnvironmentVariable("FEED_PASSWORD") ?? "",
+      context.EnvironmentVariable("FEED_SOURCE"),
+      context.EnvironmentVariable("FEED_APIKEY")
     );
   }
 }

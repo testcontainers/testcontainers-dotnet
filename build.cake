@@ -146,6 +146,7 @@ Task("Publish-NuGet-Packages")
   {
     NuGetPush(package, new NuGetPushSettings
     {
+      ToolPath = "./tools/nuget.exe",
       Source = param.NuGetCredentials.Source,
       ApiKey = param.NuGetCredentials.ApiKey
     });

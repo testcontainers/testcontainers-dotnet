@@ -11,13 +11,10 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Core.Models;
   using DotNet.Testcontainers.Core.Wait;
   using DotNet.Testcontainers.Diagnostics;
-  using Microsoft.Extensions.Logging;
 
   internal class TestcontainersClient : DockerApiClient, ITestcontainersClient
   {
     private static readonly Lazy<ITestcontainersClient> TestcontainersClientLazy = new Lazy<ITestcontainersClient>(() => new TestcontainersClient());
-
-    private static readonly ILogger<TestcontainersClient> Log = TestcontainersHost.GetLogger<TestcontainersClient>();
 
     private TestcontainersClient()
     {
