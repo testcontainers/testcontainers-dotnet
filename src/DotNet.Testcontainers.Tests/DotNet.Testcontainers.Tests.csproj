@@ -20,7 +20,13 @@
     <ProjectReference Include="../DotNet.Testcontainers/DotNet.Testcontainers.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../xunit.runner.json">
+    <None Include="appsettings.json">
+      <Link>appsettings.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xunit.runner.json">
       <Link>xunit.runner.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

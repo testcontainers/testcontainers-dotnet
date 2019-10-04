@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Core.Wait
     public virtual async Task<bool> Until(string id)
     {
       var container = await MetaDataClientContainers.Instance.ByIdAsync(id);
-      return !container?.Status.Equals("Created") ?? false;
+      return !"Created".Equals(container?.Status);
     }
   }
 }
