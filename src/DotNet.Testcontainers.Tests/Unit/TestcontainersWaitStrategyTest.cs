@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Core.Wait;
   using Xunit;
 
-  public class TestcontainersWaitStrategyTest
+  public static class TestcontainersWaitStrategyTest
   {
     public class Finish : IWaitUntil, IWaitWhile
     {

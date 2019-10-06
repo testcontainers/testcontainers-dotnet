@@ -10,10 +10,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public Task<bool> Until(string id)
     {
-      return Task.Run(() =>
-      {
-        return new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5;
-      });
+      return Task.Run(() => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
     }
   }
 }

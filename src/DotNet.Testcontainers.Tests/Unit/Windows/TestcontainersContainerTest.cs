@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Windows
   using DotNet.Testcontainers.Core.Containers;
   using Xunit;
 
-  public class TestcontainersContainerTest
+  public static class TestcontainersContainerTest
   {
     public class With
     {

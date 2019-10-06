@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  public class TestcontainersParserTest
+  public static class TestcontainersParserTest
   {
     public class ParseDockerImage
     {

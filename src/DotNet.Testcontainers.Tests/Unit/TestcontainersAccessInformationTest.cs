@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Core.Containers;
   using Xunit;
 
-  public class TestcontainersAccessInformationTest
+  public static class TestcontainersAccessInformationTest
   {
     public class AccessDockerInformation
     {

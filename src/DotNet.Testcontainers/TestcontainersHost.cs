@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers
 {
-  using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Hosting;
   using Microsoft.Extensions.Logging;
@@ -9,22 +8,7 @@ namespace DotNet.Testcontainers
 
   internal static class TestcontainersHost
   {
-    private static readonly IHost host;
-
-    static TestcontainersHost()
-    {
-      var configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json")
-        .Build();
-
-      var logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(configuration)
-        .CreateLogger();
-
-      host = new HostBuilder()
-        .ConfigureLogging(config => config.AddSerilog(logger, true))
-        .Build();
-    }
+    private static readonly IHost host = InitHost();
 
     internal static ILogger GetLogger(string categoryName)
     {
@@ -34,6 +18,13 @@ namespace DotNet.Testcontainers
     internal static ILogger<T> GetLogger<T>()
     {
       return host.Services.GetRequiredService<ILogger<T>>();
+    }
+
+    private static IHost InitHost()
+    {
+      return new HostBuilder()
+        .ConfigureLogging(config => config.AddSerilog(TestcontainersLoggerConfiguration.Production.CreateLogger(), true))
+        .Build();
     }
   }
 }
