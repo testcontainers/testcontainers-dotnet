@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
-  using DotNet.Testcontainers.Core.Images;
+  using DotNet.Testcontainers.Images;
   using Xunit.Abstractions;
 
   public class ParseDockerImageFixtureSerializable : IXunitSerializable
@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var repository = info.GetValue<string>("Repository");
       var name = info.GetValue<string>("Name");
       var tag = info.GetValue<string>("Tag");
-      this.Image = new TestcontainersImage(repository, name, tag);
+      this.Image = new DockerImage(repository, name, tag);
     }
 
     public void Serialize(IXunitSerializationInfo info)

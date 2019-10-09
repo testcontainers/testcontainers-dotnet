@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Core.Wait;
+  using DotNet.Testcontainers.Containers.WaitStrategies;
 
   public class WaitStrategyFixture : IWaitUntil
   {
