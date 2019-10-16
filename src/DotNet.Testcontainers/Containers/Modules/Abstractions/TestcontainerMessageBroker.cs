@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Abstractions
   /// </summary>
   public abstract class TestcontainerMessageBroker : HostedServiceContainer
   {
-    internal TestcontainerMessageBroker(TestcontainersConfiguration configuration) : base(configuration)
+    protected TestcontainerMessageBroker(TestcontainersConfiguration configuration) : base(configuration)
     {
     }
   }

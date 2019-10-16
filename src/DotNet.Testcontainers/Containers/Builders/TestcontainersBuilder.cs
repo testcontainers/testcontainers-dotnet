@@ -11,12 +11,32 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Services;
   using static Configurations.TestcontainersConfiguration;
 
+  /// <summary>
+  /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{T}" />.
+  /// With this behaviour we can reuse previous configured configurations and create similar Testcontainer with only little effort.
+  /// </summary>
+  /// <example>
+  /// var builder = new builder&lt;TestcontainersContainer&gt;()
+  ///   .WithName(&quot;nginx&quot;)
+  ///   .WithImage(&quot;nginx&quot;)
+  ///   .WithEntrypoint(&quot;...&quot;)
+  ///   .WithCommand(&quot;...&quot;);
+  ///
+  /// var http = builder
+  ///   .WithPortBinding(80, 08)
+  ///   .Build();
+  ///
+  /// var https = builder
+  ///   .WithPortBinding(443, 443)
+  ///   .Build();
+  /// </example>
+  /// <typeparam name="T">Type of <see cref="TestcontainersContainer" />.</typeparam>
   public sealed class TestcontainersBuilder<T> : ITestcontainersBuilder<T>
     where T : TestcontainersContainer
   {
     private readonly TestcontainersConfiguration config = new TestcontainersConfiguration();
 
-    private readonly Action<T> configureContainer;
+    private readonly Action<T> overrideConfiguration;
 
     public TestcontainersBuilder()
     {
@@ -24,15 +44,15 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private TestcontainersBuilder(
       TestcontainersConfiguration config,
-      Action<T> configureContainer)
+      Action<T> overrideConfiguration)
     {
       this.config = config;
-      this.configureContainer = configureContainer;
+      this.overrideConfiguration = overrideConfiguration;
     }
 
-    public ITestcontainersBuilder<T> ConfigureContainer(Action<T> configureContainer)
+    public ITestcontainersBuilder<T> ConfigureContainer(Action<T> moduleConfiguration)
     {
-      return Build(this, this.config, configureContainer);
+      return Build(this, this.config, moduleConfiguration);
     }
 
     public ITestcontainersBuilder<T> WithImage(string image)
@@ -171,7 +191,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var container = (T)Activator.CreateInstance(typeof(T), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.config }, null);
 
       // Apply specific container configuration.
-      this.configureContainer?.Invoke(container);
+      this.overrideConfiguration?.Invoke(container);
 
       return container;
     }
@@ -181,7 +201,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       TestcontainersConfiguration config,
       Action<T> configureContainer = null)
     {
-      configureContainer = configureContainer ?? old.configureContainer;
+      configureContainer = configureContainer ?? old.overrideConfiguration;
       return new TestcontainersBuilder<T>(config.Merge(old.config), configureContainer);
     }
   }

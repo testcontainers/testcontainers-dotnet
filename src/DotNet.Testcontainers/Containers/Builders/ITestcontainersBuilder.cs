@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
   public interface ITestcontainersBuilder<T>
   {
-    ITestcontainersBuilder<T> ConfigureContainer(Action<T> configureContainer);
+    ITestcontainersBuilder<T> ConfigureContainer(Action<T> moduleConfiguration);
 
     /// <summary>
     /// Sets the Docker image, which is used to create the Testcontainer instances.

@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Abstractions
   /// </summary>
   public abstract class TestcontainerDatabase : HostedServiceContainer
   {
-    internal TestcontainerDatabase(TestcontainersConfiguration configuration) : base(configuration)
+    protected TestcontainerDatabase(TestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

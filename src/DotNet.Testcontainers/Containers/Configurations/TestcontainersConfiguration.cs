@@ -2,13 +2,14 @@ namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System.Collections.Generic;
   using System.Linq;
+  using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
   /// <summary>
   /// This class represents a Testcontainer configuration. Based on this configuration, the desired Testcontainer is created.
   /// </summary>
-  internal sealed class TestcontainersConfiguration
+  public sealed class TestcontainersConfiguration
   {
     private static readonly IOutputConsumer DefaultOutputConsumer = new OutputConsumerNull();
 
@@ -24,6 +25,11 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     public IWaitUntil WaitStrategy { get; set; } = DefaultWaitStrategy;
 
+    /// <summary>
+    /// Merges all existing and new Testcontainer configuration changes. This allows us to reuse previous configured configurations, <seealso cref="TestcontainersBuilder{T}" />.
+    /// </summary>
+    /// <param name="old">Previous Testcontainer configuration.</param>
+    /// <returns>An updated Testcontainer configuration.</returns>
     internal TestcontainersConfiguration Merge(TestcontainersConfiguration old)
     {
       this.Container.Image = Merge(this.Container.Image, old.Container.Image);
@@ -55,12 +61,27 @@ namespace DotNet.Testcontainers.Containers.Configurations
       return this;
     }
 
+    /// <summary>
+    /// Returns the changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object is returned.
+    /// </summary>
+    /// <param name="myself">Changed Testcontainer configuration object.</param>
+    /// <param name="old">Previous Testcontainer configuration object.</param>
+    /// <param name="defaultConfiguration">Default Testcontainer configuration.</param>
+    /// <typeparam name="T">Any class.</typeparam>
+    /// <returns>Changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object.</returns>
     private static T Merge<T>(T myself, T old, T defaultConfiguration = null)
       where T : class
     {
       return myself == null || myself.Equals(defaultConfiguration) ? old : myself;
     }
 
+    /// <summary>
+    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
+    /// </summary>
+    /// <param name="myself">Changed Testcontainer configuration.</param>
+    /// <param name="old">Previous Testcontainer configuration.</param>
+    /// <typeparam name="T">Type of IReadOnlyCollection{T}.</typeparam>
+    /// <returns>An updated Testcontainer configuration.</returns>
     private static IReadOnlyCollection<T> Merge<T>(IReadOnlyCollection<T> myself, IReadOnlyCollection<T> old)
       where T : class
     {
@@ -74,6 +95,13 @@ namespace DotNet.Testcontainers.Containers.Configurations
       }
     }
 
+    /// <summary>
+    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
+    /// </summary>
+    /// <param name="myself">Changed Testcontainer configuration.</param>
+    /// <param name="old">Previous Testcontainer configuration.</param>
+    /// <typeparam name="T">Type of IReadOnlyDictionary{TKey, TValue}.</typeparam>
+    /// <returns>An updated Testcontainer configuration.</returns>
     private static IReadOnlyDictionary<T, T> Merge<T>(IReadOnlyDictionary<T, T> myself, IReadOnlyDictionary<T, T> old)
       where T : class
     {
@@ -87,6 +115,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
       }
     }
 
+    /// <summary>
+    /// This class represents the Docker container configurations.
+    /// </summary>
     public sealed class ContainerConfiguration
     {
       public string Image { get; set; }
@@ -106,6 +137,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
       public IReadOnlyDictionary<string, string> ExposedPorts { get; set; }
     }
 
+    /// <summary>
+    /// This class represents the Docker host configurations.
+    /// </summary>
     public sealed class HostConfiguration
     {
       public IReadOnlyDictionary<string, string> PortBindings { get; set; }

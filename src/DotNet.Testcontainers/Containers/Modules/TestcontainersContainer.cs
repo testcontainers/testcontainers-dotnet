@@ -163,7 +163,7 @@ namespace DotNet.Testcontainers.Containers.Modules
 
           var startTask = TestcontainersClient.Instance.StartAsync(this.Id, cts.Token);
 
-          var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), cancellationToken: cts.Token);
+          var waitTask = WaitStrategy.WaitUntil(() => this.Configuration.WaitStrategy.Until(this.Id), ct: cts.Token);
 
           var handleDockerExceptionTask = startTask.ContinueWith(task =>
           {

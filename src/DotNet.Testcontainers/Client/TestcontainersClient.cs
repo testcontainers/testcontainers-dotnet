@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Client
 {
   using System;
+  using System.Collections.Generic;
   using System.Diagnostics;
   using System.IO;
   using System.Threading;
@@ -8,7 +9,6 @@ namespace DotNet.Testcontainers.Client
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images.Archives;
   using DotNet.Testcontainers.Images.Configurations;
   using DotNet.Testcontainers.Internals.Mappers;
@@ -41,33 +41,33 @@ namespace DotNet.Testcontainers.Client
       new Process { StartInfo = { FileName = "docker", Arguments = $"rm --force {args}" } }.Start();
     }
 
-    public async Task StartAsync(string id, CancellationToken cancellationToken = default)
+    public async Task StartAsync(string id, CancellationToken ct = default)
     {
       if (await DockerApiClientContainer.Instance.ExistsWithIdAsync(id))
       {
-        await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters(), cancellationToken);
+        await Docker.Containers.StartContainerAsync(id, new ContainerStartParameters(), ct);
       }
     }
 
-    public async Task StopAsync(string id, CancellationToken cancellationToken = default)
+    public async Task StopAsync(string id, CancellationToken ct = default)
     {
       if (await DockerApiClientContainer.Instance.ExistsWithIdAsync(id))
       {
-        await Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, cancellationToken);
+        await Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
       }
     }
 
-    public async Task RemoveAsync(string id, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
       if (await DockerApiClientContainer.Instance.ExistsWithIdAsync(id))
       {
-        await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }, cancellationToken);
+        await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }, ct);
       }
 
       TestcontainersRegistryService.Unregister(id);
     }
 
-    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken cancellationToken = default)
+    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       if (outputConsumer is null || outputConsumer is OutputConsumerNull)
       {
@@ -81,35 +81,29 @@ namespace DotNet.Testcontainers.Client
         Stream = true,
       };
 
-      var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, cancellationToken);
+      var stream = await Docker.Containers.AttachContainerAsync(id, false, attachParameters, ct);
 
-      _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, cancellationToken);
+      _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, ct);
     }
 
-    public async Task<long> ExecAsync(string id, params string[] command)
+    public async Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
-      if (command is null)
+      var created = await Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command, }, ct);
+
+      await Docker.Containers.StartContainerExecAsync(created.ID, ct);
+
+      for (ContainerExecInspectResponse response; (response = await Docker.Containers.InspectContainerExecAsync(created.ID, ct)) != null;)
       {
-        throw new ArgumentException($"{nameof(command)} cannot be null.");
+        if (!response.Running)
+        {
+          return response.ExitCode;
+        }
       }
 
-      var exitCode = long.MinValue;
-
-      var created = await Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command });
-
-      await Docker.Containers.StartContainerExecAsync(created.ID);
-
-      await WaitStrategy.WaitWhile(async () =>
-      {
-        var response = await Docker.Containers.InspectContainerExecAsync(created.ID);
-        exitCode = response.ExitCode;
-        return response.Running;
-      });
-
-      return exitCode;
+      return long.MinValue;
     }
 
-    public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config, CancellationToken cancellationToken = default)
+    public async Task<string> BuildAsync(ImageFromDockerfileConfiguration config, CancellationToken ct = default)
     {
       var dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory);
 
@@ -117,12 +111,12 @@ namespace DotNet.Testcontainers.Client
 
       if (imageExists && config.DeleteIfExists)
       {
-        await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true }, cancellationToken);
+        await Docker.Images.DeleteImageAsync(config.Image, new ImageDeleteParameters { Force = true }, ct);
       }
 
       using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        using (var builtImage = await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } }, cancellationToken))
+        using (var builtImage = await Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image } }, ct))
         {
           // New Docker image built, ready to use.
         }
@@ -131,7 +125,7 @@ namespace DotNet.Testcontainers.Client
       return config.Image;
     }
 
-    public async Task<string> RunAsync(TestcontainersConfiguration config, CancellationToken cancellationToken = default)
+    public async Task<string> RunAsync(TestcontainersConfiguration config, CancellationToken ct = default)
     {
       var image = config.Container.Image;
 
@@ -141,7 +135,7 @@ namespace DotNet.Testcontainers.Client
 
       if (!await imageExistsTask)
       {
-        pullImageTask = Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance, cancellationToken);
+        pullImageTask = Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image }, null, DebugProgress.Instance, ct);
       }
 
       var name = config.Container.Name;
@@ -185,7 +179,7 @@ namespace DotNet.Testcontainers.Client
 
       await pullImageTask;
 
-      var id = (await Docker.Containers.CreateContainerAsync(createParameters, cancellationToken)).ID;
+      var id = (await Docker.Containers.CreateContainerAsync(createParameters, ct)).ID;
 
       TestcontainersRegistryService.Register(id, config.CleanUp);
 

@@ -17,7 +17,7 @@
     {
       await WaitStrategy.WaitUntil(() => base.Until(id));
 
-      var exitCodes = await Task.WhenAll(this.bashCommands.Select(command => TestcontainersClient.Instance.ExecAsync(id, "/bin/bash", "-c", command)).ToList());
+      var exitCodes = await Task.WhenAll(this.bashCommands.Select(command => TestcontainersClient.Instance.ExecAsync(id, new[] { "/bin/bash", "-c", command })).ToList());
 
       return exitCodes.All(exitCode => 0L.Equals(exitCode));
     }
