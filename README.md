@@ -40,11 +40,11 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][3] tests.
 
 - CouchDB (couchdb:2.3.1)
-- MsSql (server:2017-CU14-ubuntu)
-- MySql (mysql:8.0.15)
-- PostgreSql (postgres:11.2)
-- Redis (redis:5.0.5)
-- RabbitMQ (rabbitmq:3.7.15)
+- MsSql (server:2019-CTP3.2-ubuntu)
+- MySql (mysql:8.0.18)
+- PostgreSql (postgres:12.0)
+- Redis (redis:5.0.6)
+- RabbitMQ (rabbitmq:3.8.0)
 
 ## Examples
 

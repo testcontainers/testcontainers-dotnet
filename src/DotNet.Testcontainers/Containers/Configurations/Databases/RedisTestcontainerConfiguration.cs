@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
   public sealed class RedisTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public RedisTestcontainerConfiguration() : base("redis:5.0.5", 6379)
+    public RedisTestcontainerConfiguration() : base("redis:5.0.6", 6379)
     {
     }
 

@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
   public sealed class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public MsSqlTestcontainerConfiguration() : base("mcr.microsoft.com/mssql/server:2017-CU14-ubuntu", 1433)
+    public MsSqlTestcontainerConfiguration() : base("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu", 1433)
     {
       this.Environments["ACCEPT_EULA"] = "Y";
     }

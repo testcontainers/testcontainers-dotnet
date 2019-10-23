@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
 
   public sealed class RabbitMqTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
   {
-    public RabbitMqTestcontainerConfiguration() : base("rabbitmq:3.7.15", 5672)
+    public RabbitMqTestcontainerConfiguration() : base("rabbitmq:3.8.0", 5672)
     {
     }
 
