@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using Testcontainers.Containers.WaitStrategies;
   using Xunit;
 
-  public class WaitUntilOperationSucceedsTest
+  public class WaitUntilOperationSucceededTest
   {
     [Theory]
     [InlineData( 1,  1)]
@@ -16,16 +16,21 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
     [InlineData( 0,  0)]
     public async Task UntilMaxRepeats(int maxCallCount, int expectedCallsCount)
     {
+      // Given
       var callCounter = 0;
+
+      // When
       await Assert.ThrowsAsync<TimeoutException>(async () =>
       {
-        var wait = new WaitUntilOperationSucceeds(() =>
+        var wait = new WaitUntilOperationSucceeded(() =>
         {
           callCounter += 1;
           return false;
         }, maxCallCount);
         await WaitStrategy.WaitUntil(() => wait.Until(string.Empty));
       });
+
+      // Then
       Assert.Equal(expectedCallsCount, callCounter);
     }
 
@@ -40,9 +45,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
     [InlineData(10,  7)]
     public async Task UntilSomeRepeats(int maxCallCount, int expectedCallsCount)
     {
+      // Given
       var callCounter = 0;
-      var wait = new WaitUntilOperationSucceeds(() => ++callCounter >= expectedCallsCount, maxCallCount);
+
+      // When
+      var wait = new WaitUntilOperationSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
       await WaitStrategy.WaitUntil(() => wait.Until(string.Empty));
+
+      // Then
       Assert.Equal(expectedCallsCount, callCounter);
     }
   }

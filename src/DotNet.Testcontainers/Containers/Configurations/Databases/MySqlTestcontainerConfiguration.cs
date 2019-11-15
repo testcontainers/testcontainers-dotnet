@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
   public sealed class MySqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public MySqlTestcontainerConfiguration() : base("mysql:8.0.15", 3306)
+    public MySqlTestcontainerConfiguration() : base("mysql:8.0.18", 3306)
     {
       this.Environments["MYSQL_ALLOW_EMPTY_PASSWORD"] = "yes";
     }

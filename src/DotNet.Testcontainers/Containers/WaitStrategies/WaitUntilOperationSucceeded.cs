@@ -3,14 +3,15 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
   using System;
   using System.Threading.Tasks;
 
-  internal class WaitUntilOperationSucceeds : WaitUntilContainerIsRunning
+  internal class WaitUntilOperationSucceeded : WaitUntilContainerIsRunning
   {
     private readonly int maxCallCount;
+
     private readonly Func<bool> operation;
 
     private int tryCount = 0;
 
-    public WaitUntilOperationSucceeds(Func<bool> operation, int maxCallCount = 4)
+    public WaitUntilOperationSucceeded(Func<bool> operation, int maxCallCount = 4)
     {
       this.maxCallCount = maxCallCount;
       this.operation = operation;

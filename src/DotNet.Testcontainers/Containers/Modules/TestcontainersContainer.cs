@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Containers.Modules
 {
   using System;
+  using System.Collections.Generic;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -52,11 +53,7 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       get
       {
-        if (this.container == null)
-        {
-          throw new InvalidOperationException(ContainerIsNotRunning);
-        }
-
+        this.ThrowIfContainerIsNotRunning();
         return this.container.Names.FirstOrDefault() ?? string.Empty;
       }
     }
@@ -65,11 +62,7 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       get
       {
-        if (this.container == null)
-        {
-          throw new InvalidOperationException(ContainerIsNotRunning);
-        }
-
+        this.ThrowIfContainerIsNotRunning();
         var ipAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
         return ipAddress.Value?.IPAddress ?? string.Empty;
       }
@@ -79,11 +72,7 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       get
       {
-        if (this.container == null)
-        {
-          throw new InvalidOperationException(ContainerIsNotRunning);
-        }
-
+        this.ThrowIfContainerIsNotRunning();
         var macAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
         return macAddress.Value?.MacAddress ?? string.Empty;
       }
@@ -98,11 +87,7 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public ushort GetMappedPublicPort(string privatePort)
     {
-      if (this.container == null)
-      {
-        throw new InvalidOperationException(ContainerIsNotRunning);
-      }
-
+      this.ThrowIfContainerIsNotRunning();
       var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));
       return mappedPort?.PublicPort ?? ushort.MinValue;
     }
@@ -126,6 +111,12 @@ namespace DotNet.Testcontainers.Containers.Modules
       await this.Stop();
     }
 
+    public Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
+    {
+      this.ThrowIfContainerIsNotRunning();
+      return TestcontainersClient.Instance.ExecAsync(this.Id, command, ct);
+    }
+
     public void Dispose()
     {
       this.Dispose(true);
@@ -143,6 +134,14 @@ namespace DotNet.Testcontainers.Containers.Modules
       cleanOrStopTask.GetAwaiter().GetResult();
 
       this.disposed = true;
+    }
+
+    private void ThrowIfContainerIsNotRunning()
+    {
+      if (this.container == null)
+      {
+        throw new InvalidOperationException(ContainerIsNotRunning);
+      }
     }
 
     private async Task Create()

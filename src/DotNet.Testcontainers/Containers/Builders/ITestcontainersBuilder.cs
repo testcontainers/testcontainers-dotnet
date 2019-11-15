@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
 
-  public interface ITestcontainersBuilder<T>
+  public interface ITestcontainersBuilder<out T>
   {
     ITestcontainersBuilder<T> ConfigureContainer(Action<T> moduleConfiguration);
 
@@ -131,7 +131,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <summary>
     /// Sets the output consumer to capture the Testcontainer stdout and stderr messages.
     /// </summary>
-    /// <param name="outputConsumer">Output consumer to capture stdout and strerr.</param>
+    /// <param name="outputConsumer">Output consumer to capture stdout and stderr.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{T}"/>.</returns>
     ITestcontainersBuilder<T> WithOutputConsumer(IOutputConsumer outputConsumer);
 

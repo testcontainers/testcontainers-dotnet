@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Containers
 {
   using System;
+  using System.Collections.Generic;
+  using System.Threading;
   using System.Threading.Tasks;
 
   public interface IDockerContainer : IDisposable
@@ -52,5 +54,13 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
     Task StopAsync();
+
+    /// <summary>
+    /// Executes a command in the running Testcontainer.
+    /// </summary>
+    /// <param name="command">Shell command.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the shell command has been executed.</returns>
+    Task<long> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }

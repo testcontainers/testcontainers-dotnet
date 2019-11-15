@@ -289,6 +289,23 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           await testcontainer.StartAsync();
         }
       }
+
+      [Fact]
+      public async Task ExecCommandInRunningContainer()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithCommand("/bin/ash", "-c", "tail -f /dev/null");
+
+        // When
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.Equal(255, await testcontainer.ExecAsync(new [] { "/bin/ash", "-c", "exit 255" }));
+        }
+      }
     }
   }
 }

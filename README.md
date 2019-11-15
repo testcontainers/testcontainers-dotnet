@@ -41,10 +41,10 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 
 - CouchDB (couchdb:2.3.1)
 - MsSql (server:2017-CU14-ubuntu)
-- MySql (mysql:8.0.15)
-- PostgreSql (postgres:11.2)
-- Redis (redis:5.0.5)
-- RabbitMQ (rabbitmq:3.7.15)
+- MySql (mysql:8.0.18)
+- PostgreSql (postgres:11.5)
+- Redis (redis:5.0.6)
+- RabbitMQ (rabbitmq:3.7.21)
 
 ## Examples
 
