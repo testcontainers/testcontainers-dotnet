@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Client
     {
       if (await DockerApiClientContainer.Instance.ExistsWithIdAsync(id))
       {
-        await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true }, ct);
+        await Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
       }
 
       TestcontainersRegistryService.Unregister(id);
