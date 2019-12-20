@@ -3,33 +3,33 @@ namespace DotNet.Testcontainers.Services
   using System.Collections.Generic;
   using System.Linq;
 
-  internal static class TestcontainersRegistryService
+  internal sealed class TestcontainersRegistryService
   {
-    private static readonly object RegisteredContainersPadLock = new object();
+    private readonly object RegisteredContainersPadLock = new object();
 
-    private static readonly IDictionary<string, bool> RegisteredContainers = new Dictionary<string, bool>();
+    private readonly IDictionary<string, bool> RegisteredContainers = new Dictionary<string, bool>();
 
-    public static ICollection<string> GetRegisteredContainers()
+    public IEnumerable<string> GetRegisteredContainers()
     {
-      lock (RegisteredContainersPadLock)
+      lock (this.RegisteredContainersPadLock)
       {
-        return RegisteredContainers.Where(registeredContainer => true.Equals(registeredContainer.Value)).Select(registeredContainer => registeredContainer.Key).ToList();
+        return this.RegisteredContainers.Where(registeredContainer => true.Equals(registeredContainer.Value)).Select(registeredContainer => registeredContainer.Key).ToArray();
       }
     }
 
-    public static void Register(string id, bool cleanUp = false)
+    public void Register(string id, bool cleanUp = false)
     {
-      lock (RegisteredContainersPadLock)
+      lock (this.RegisteredContainersPadLock)
       {
-        RegisteredContainers.Add(id, cleanUp);
+        this.RegisteredContainers.Add(id, cleanUp);
       }
     }
 
-    public static void Unregister(string id)
+    public void Unregister(string id)
     {
-      lock (RegisteredContainersPadLock)
+      lock (this.RegisteredContainersPadLock)
       {
-        RegisteredContainers.Remove(id);
+        this.RegisteredContainers.Remove(id);
       }
     }
   }

@@ -1,12 +1,21 @@
 namespace DotNet.Testcontainers.Images.Builders
 {
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Client;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images.Configurations;
 
   public sealed class ImageFromDockerfileBuilder : IImageFromDockerfileBuilder
   {
-    private readonly ImageFromDockerfileConfiguration configuration = new ImageFromDockerfileConfiguration();
+    private readonly IImageFromDockerfileConfiguration configuration;
+
+    public ImageFromDockerfileBuilder() : this(new ImageFromDockerfileConfiguration())
+    {
+    }
+
+    private ImageFromDockerfileBuilder(IImageFromDockerfileConfiguration configuration)
+    {
+      this.configuration = configuration;
+    }
 
     public IImageFromDockerfileBuilder WithName(string name)
     {
@@ -15,25 +24,25 @@ namespace DotNet.Testcontainers.Images.Builders
 
     public IImageFromDockerfileBuilder WithName(IDockerImage name)
     {
-      this.configuration.Image = name.Image;
-      return this;
+      return new ImageFromDockerfileBuilder(
+        new ImageFromDockerfileConfiguration(name, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
     }
 
     public IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      this.configuration.DockerfileDirectory = dockerfileDirectory;
-      return this;
+      return new ImageFromDockerfileBuilder(
+        new ImageFromDockerfileConfiguration(this.configuration.Image, dockerfileDirectory, this.configuration.DeleteIfExists));
     }
 
     public IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      this.configuration.DeleteIfExists = deleteIfExists;
-      return this;
+      return new ImageFromDockerfileBuilder(
+        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.DockerfileDirectory, deleteIfExists));
     }
 
     public Task<string> Build()
     {
-      return TestcontainersClient.Instance.BuildAsync(this.configuration);
+      return new TestcontainersClient(DockerApiEndpoint.Local).BuildAsync(this.configuration);
     }
   }
 }

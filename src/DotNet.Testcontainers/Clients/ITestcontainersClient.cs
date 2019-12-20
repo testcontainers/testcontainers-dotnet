@@ -1,14 +1,37 @@
-namespace DotNet.Testcontainers.Client
+namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Images.Configurations;
 
   internal interface ITestcontainersClient
   {
+    /// <summary>
+    /// Returns true if the Docker Windows engine is enabled, otherwise false.
+    /// </summary>
+    /// <returns>Task that returns true if the Docker Windows engine is enabled, otherwise false.</returns>
+    Task<bool> GetIsWindowsEngineEnabled();
+
+    /// <summary>
+    /// Gets the Testcontainer exit code.
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that gets the Testcontainer exit code.</returns>
+    Task<long> GetContainerExitCode(string id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the Testcontainer.
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that gets the Testcontainer.</returns>
+    Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default);
+
     /// <summary>
     /// Starts a container.
     /// </summary>
@@ -52,19 +75,19 @@ namespace DotNet.Testcontainers.Client
     Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
     /// <summary>
-    /// Builds a Docker image from a Dockerfile.
-    /// </summary>
-    /// <param name="config">Dockerfile configuration.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the Docker image has been built.</returns>
-    Task<string> BuildAsync(ImageFromDockerfileConfiguration config, CancellationToken ct = default);
-
-    /// <summary>
     /// Creates a container.
     /// </summary>
-    /// <param name="config">Testcontainer configuration.</param>
+    /// <param name="configuration">Testcontainer configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker container has been created.</returns>
-    Task<string> RunAsync(TestcontainersConfiguration config, CancellationToken ct = default);
+    Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);
+
+    /// <summary>
+    /// Builds a Docker image from a Dockerfile.
+    /// </summary>
+    /// <param name="configuration">Dockerfile configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Docker image has been built.</returns>
+    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
   }
 }

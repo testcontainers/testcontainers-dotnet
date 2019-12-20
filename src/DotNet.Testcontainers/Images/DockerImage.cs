@@ -38,6 +38,6 @@ namespace DotNet.Testcontainers.Images
 
     public string Tag { get; }
 
-    public string Image => string.IsNullOrEmpty(this.Repository) ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
+    public string FullName => string.IsNullOrEmpty(this.Repository) ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
   }
 }

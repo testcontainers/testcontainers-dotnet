@@ -3,13 +3,13 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
   using System;
   using System.Threading.Tasks;
 
-  internal class WaitUntilOperationSucceeded : WaitUntilContainerIsRunning
+  internal class WaitUntilOperationSucceeded : IWaitUntil
   {
     private readonly int maxCallCount;
 
     private readonly Func<bool> operation;
 
-    private int tryCount = 0;
+    private int tryCount;
 
     public WaitUntilOperationSucceeded(Func<bool> operation, int maxCallCount = 4)
     {
@@ -17,9 +17,9 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
       this.operation = operation;
     }
 
-    public override async Task<bool> Until(string id)
+    public async Task<bool> Until(Uri endpoint, string id)
     {
-      await WaitStrategy.WaitUntil(() => base.Until(id));
+      await WaitStrategy.WaitUntil(() => WaitUntilContainerIsRunning.WaitStrategy.Until(endpoint, id));
 
       if (++this.tryCount > this.maxCallCount)
       {

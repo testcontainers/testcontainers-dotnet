@@ -5,18 +5,12 @@ namespace DotNet.Testcontainers.Internals.Mappers
   /// <summary>
   /// Converts or maps Testcontainers collection configurations to official Docker configurations.
   /// </summary>
-  /// <typeparam name="T">Official Docker configuration type.</typeparam>
-  internal abstract class CollectionConverter<T> : BaseConverter<IReadOnlyCollection<string>, T>
+  /// <typeparam name="TSource">Testcontainer configuration type.</typeparam>
+  /// <typeparam name="TTarget">Official Docker configuration type.</typeparam>
+  internal abstract class CollectionConverter<TSource, TTarget> : BaseConverter<IEnumerable<TSource>, IEnumerable<TTarget>>
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CollectionConverter{T}"/> class without converter name.
-    /// </summary>
-    protected CollectionConverter() : this(string.Empty)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CollectionConverter{T}"/> class.
+    /// Initializes a new instance of the <see cref="CollectionConverter{TSource,TTarget}" /> class.
     /// </summary>
     /// <param name="name">Name of the converter.</param>
     protected CollectionConverter(string name) : base(name)

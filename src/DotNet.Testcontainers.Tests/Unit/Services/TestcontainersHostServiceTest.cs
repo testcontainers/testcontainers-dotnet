@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
 
   public static class TestcontainersHostServiceTest
   {
-    public class ILogger
+    public class Logger
     {
       private static readonly string LogFile = $"testcontainers{DateTime.Now:yyyyMMdd}.log";
 
@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
         // Given
         const string message = nameof(this.FromClassName);
 
-        var log = TestcontainersHostService.GetLogger<ILogger>();
+        var log = TestcontainersHostService.GetLogger<Logger>();
 
         // When
         log.LogInformation(message);

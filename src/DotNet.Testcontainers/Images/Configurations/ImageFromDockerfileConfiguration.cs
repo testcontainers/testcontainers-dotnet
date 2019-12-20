@@ -2,12 +2,32 @@ namespace DotNet.Testcontainers.Images.Configurations
 {
   using System;
 
-  internal class ImageFromDockerfileConfiguration
+  /// <inheritdoc />
+  internal sealed class ImageFromDockerfileConfiguration : IImageFromDockerfileConfiguration
   {
-    public string Image { get; set; } = Guid.NewGuid().ToString("n").Substring(0, 12);
+    public ImageFromDockerfileConfiguration() : this(CreateDockerImage())
+    {
+    }
 
-    public string DockerfileDirectory { get; set; } = ".";
+    public ImageFromDockerfileConfiguration(IDockerImage image, string dockerfileDirectory = ".", bool deleteIfExists = true)
+    {
+      this.DeleteIfExists = deleteIfExists;
+      this.DockerfileDirectory = dockerfileDirectory;
+      this.Image = image;
+    }
 
-    public bool DeleteIfExists { get; set; } = true;
+    /// <inheritdoc />
+    public bool DeleteIfExists { get; }
+
+    /// <inheritdoc />
+    public string DockerfileDirectory { get; }
+
+    /// <inheritdoc />
+    public IDockerImage Image { get; }
+
+    private static IDockerImage CreateDockerImage()
+    {
+      return new DockerImage(Guid.NewGuid().ToString("n").Substring(0, 12));
+    }
   }
 }

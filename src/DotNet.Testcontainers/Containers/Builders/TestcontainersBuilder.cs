@@ -2,17 +2,17 @@ namespace DotNet.Testcontainers.Containers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
   using System.Reflection;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.Modules;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Services;
-  using static Configurations.TestcontainersConfiguration;
 
   /// <summary>
-  /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{T}" />.
+  /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
   /// With this behaviour we can reuse previous configured configurations and create similar Testcontainer with only little effort.
   /// </summary>
   /// <example>
@@ -30,179 +30,269 @@ namespace DotNet.Testcontainers.Containers.Builders
   ///   .WithPortBinding(443, 443)
   ///   .Build();
   /// </example>
-  /// <typeparam name="T">Type of <see cref="TestcontainersContainer" />.</typeparam>
-  public sealed class TestcontainersBuilder<T> : ITestcontainersBuilder<T>
-    where T : TestcontainersContainer
+  /// <typeparam name="TDockerContainer">Type of <see cref="IDockerContainer" />.</typeparam>
+  public sealed class TestcontainersBuilder<TDockerContainer> : ITestcontainersBuilder<TDockerContainer>
+    where TDockerContainer : IDockerContainer
   {
-    private readonly TestcontainersConfiguration config = new TestcontainersConfiguration();
+    private readonly ITestcontainersConfiguration configuration;
 
-    private readonly Action<T> overrideConfiguration;
+    private readonly Action<TDockerContainer> moduleConfiguration;
 
-    public TestcontainersBuilder()
+    public TestcontainersBuilder() : this(
+      Apply(),
+      testcontainer => { })
     {
     }
 
     private TestcontainersBuilder(
-      TestcontainersConfiguration config,
-      Action<T> overrideConfiguration)
+      ITestcontainersConfiguration configuration,
+      Action<TDockerContainer> moduleConfiguration)
     {
-      this.config = config;
-      this.overrideConfiguration = overrideConfiguration;
+      this.configuration = configuration;
+      this.moduleConfiguration = moduleConfiguration;
     }
 
-    public ITestcontainersBuilder<T> ConfigureContainer(Action<T> moduleConfiguration)
+    public ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration)
     {
-      return Build(this, this.config, moduleConfiguration);
+      return Build(this, this.configuration, moduleConfiguration);
     }
 
-    public ITestcontainersBuilder<T> WithImage(string image)
+    public ITestcontainersBuilder<TDockerContainer> WithImage(string image)
     {
       return this.WithImage(new DockerImage(image));
     }
 
-    public ITestcontainersBuilder<T> WithImage(IDockerImage image)
+    public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Image = image.Image },
-      });
+      return Build(this, Apply(image: image));
     }
 
-    public ITestcontainersBuilder<T> WithName(string name)
+    public ITestcontainersBuilder<TDockerContainer> WithName(string name)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Name = name },
-      });
+      return Build(this, Apply(name: name));
     }
 
-    public ITestcontainersBuilder<T> WithWorkingDirectory(string workingDirectory)
+    public ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { WorkingDirectory = workingDirectory },
-      });
+      return Build(this, Apply(workingDirectory: workingDirectory));
     }
 
-    public ITestcontainersBuilder<T> WithEntrypoint(params string[] entrypoint)
+    public ITestcontainersBuilder<TDockerContainer> WithEntrypoint(params string[] entrypoint)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Entrypoint = entrypoint },
-      });
+      return Build(this, Apply(entrypoint: entrypoint));
     }
 
-    public ITestcontainersBuilder<T> WithCommand(params string[] command)
+    public ITestcontainersBuilder<TDockerContainer> WithCommand(params string[] command)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Command = command },
-      });
+      return Build(this, Apply(command: command));
     }
 
-    public ITestcontainersBuilder<T> WithEnvironment(string name, string value)
+    public ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Environments = new Dictionary<string, string> { { name, value } } },
-      });
+      var environments = new Dictionary<string, string> { { name, value } };
+      return Build(this, Apply(environments: environments));
     }
 
-    public ITestcontainersBuilder<T> WithLabel(string name, string value)
+    public ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { Labels = new Dictionary<string, string> { { name, value } } },
-      });
+      var labels = new Dictionary<string, string> { { name, value } };
+      return Build(this, Apply(labels: labels));
     }
 
-    public ITestcontainersBuilder<T> WithExposedPort(int port)
+    public ITestcontainersBuilder<TDockerContainer> WithExposedPort(int port)
     {
       return this.WithExposedPort($"{port}");
     }
 
-    public ITestcontainersBuilder<T> WithExposedPort(string port)
+    public ITestcontainersBuilder<TDockerContainer> WithExposedPort(string port)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Container = new ContainerConfiguration { ExposedPorts = new Dictionary<string, string> { { port, port } } },
-      });
+      var exposedPorts = new Dictionary<string, string> { { port, port } };
+      return Build(this, Apply(exposedPorts: exposedPorts));
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(int port, bool assignRandomHostPort = false)
+    public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
       return this.WithPortBinding($"{port}", assignRandomHostPort);
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(int hostPort, int containerPort)
+    public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int hostPort, int containerPort)
     {
       return this.WithPortBinding($"{hostPort}", $"{containerPort}");
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(string port, bool assignRandomHostPort = false)
+    public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
       var hostPort = assignRandomHostPort ? $"{TestcontainersNetworkService.GetAvailablePort()}" : port;
       return this.WithPortBinding(hostPort, port);
     }
 
-    public ITestcontainersBuilder<T> WithPortBinding(string hostPort, string containerPort)
+    public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Host = new HostConfiguration { PortBindings = new Dictionary<string, string> { { hostPort, containerPort } } },
-      });
+      var portBindings = new Dictionary<string, string> { { hostPort, containerPort } };
+      return Build(this, Apply(portBindings: portBindings));
     }
 
-    public ITestcontainersBuilder<T> WithMount(string source, string destination)
+    public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        Host = new HostConfiguration { Mounts = new Dictionary<string, string> { { source, destination } } },
-      });
+      var mounts = new IBind[] { new Mount(source, destination, AccessMode.ReadWrite) };
+      return Build(this, Apply(mounts: mounts));
     }
 
-    public ITestcontainersBuilder<T> WithCleanUp(bool cleanUp)
+    public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        CleanUp = cleanUp,
-      });
+      return Build(this, Apply(cleanUp: cleanUp));
     }
 
-    public ITestcontainersBuilder<T> WithOutputConsumer(IOutputConsumer outputConsumer)
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        OutputConsumer = outputConsumer,
-      });
+      return Build(this, Apply(endpoint: new Uri(endpoint)));
     }
 
-    public ITestcontainersBuilder<T> WithWaitStrategy(IWaitUntil waitStrategy)
+    public ITestcontainersBuilder<TDockerContainer> WithOutputConsumer(IOutputConsumer outputConsumer)
     {
-      return Build(this, new TestcontainersConfiguration
-      {
-        WaitStrategy = waitStrategy,
-      });
+      return Build(this, Apply(outputConsumer: outputConsumer));
     }
 
-    public T Build()
+    public ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitUntil waitStrategy)
+    {
+      return Build(this, Apply(waitStrategy: waitStrategy));
+    }
+
+    public TDockerContainer Build()
     {
       // Create container instance.
-      var container = (T)Activator.CreateInstance(typeof(T), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.config }, null);
+      var container = (TDockerContainer)Activator.CreateInstance(typeof(TDockerContainer), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.configuration }, null);
 
       // Apply specific container configuration.
-      this.overrideConfiguration?.Invoke(container);
+      this.moduleConfiguration.Invoke(container);
 
       return container;
     }
 
-    private static ITestcontainersBuilder<T> Build(
-      TestcontainersBuilder<T> old,
-      TestcontainersConfiguration config,
-      Action<T> configureContainer = null)
+    private static ITestcontainersConfiguration Apply(
+      Uri endpoint = null,
+      IDockerImage image = null,
+      string name = null,
+      string workingDirectory = null,
+      IEnumerable<string> entrypoint = null,
+      IEnumerable<string> command = null,
+      IReadOnlyDictionary<string, string> environments = null,
+      IReadOnlyDictionary<string, string> labels = null,
+      IReadOnlyDictionary<string, string> exposedPorts = null,
+      IReadOnlyDictionary<string, string> portBindings = null,
+      IEnumerable<IBind> mounts = null,
+      IOutputConsumer outputConsumer = null,
+      IWaitUntil waitStrategy = null,
+      bool cleanUp = true)
     {
-      configureContainer = configureContainer ?? old.overrideConfiguration;
-      return new TestcontainersBuilder<T>(config.Merge(old.config), configureContainer);
+      return new TestcontainersConfiguration(
+        endpoint ?? DockerApiEndpoint.Local,
+        image,
+        name,
+        workingDirectory,
+        entrypoint,
+        command,
+        environments,
+        labels,
+        exposedPorts,
+        portBindings,
+        mounts,
+        outputConsumer ?? OutputConsumerNull.Consumer,
+        waitStrategy ?? WaitUntilContainerIsRunning.WaitStrategy,
+        cleanUp);
+    }
+
+    private static ITestcontainersBuilder<TDockerContainer> Build(
+      TestcontainersBuilder<TDockerContainer> previous,
+      ITestcontainersConfiguration next,
+      Action<TDockerContainer> moduleConfiguration = null)
+    {
+      var cleanUp = next.CleanUp && previous.configuration.CleanUp;
+      var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Local);
+      var image = Merge(next.Image, previous.configuration.Image);
+      var name = Merge(next.Name, previous.configuration.Name);
+      var workingDirectory = Merge(next.WorkingDirectory, previous.configuration.WorkingDirectory);
+      var entrypoint = Merge(next.Entrypoint, previous.configuration.Entrypoint);
+      var command = Merge(next.Command, previous.configuration.Command);
+      var environments = Merge(next.Environments, previous.configuration.Environments);
+      var labels = Merge(next.Labels, previous.configuration.Labels);
+      var exposedPorts = Merge(next.ExposedPorts, previous.configuration.ExposedPorts);
+      var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
+      var mounts = Merge(next.Mounts, previous.configuration.Mounts);
+      var outputConsumer = Merge(next.OutputConsumer, previous.configuration.OutputConsumer, OutputConsumerNull.Consumer);
+      var waitStrategy = Merge(next.WaitStrategy, previous.configuration.WaitStrategy, WaitUntilContainerIsRunning.WaitStrategy);
+
+      var configuration = Apply(
+        endpoint,
+        image,
+        name,
+        workingDirectory,
+        entrypoint,
+        command,
+        environments,
+        labels,
+        exposedPorts,
+        portBindings,
+        mounts,
+        outputConsumer,
+        waitStrategy,
+        cleanUp);
+
+      return new TestcontainersBuilder<TDockerContainer>(configuration, moduleConfiguration ?? previous.moduleConfiguration);
+    }
+
+    /// <summary>
+    /// Returns the changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object is returned.
+    /// </summary>
+    /// <param name="next">Changed Testcontainer configuration object.</param>
+    /// <param name="previous">Previous Testcontainer configuration object.</param>
+    /// <param name="defaultConfiguration">Default Testcontainer configuration.</param>
+    /// <typeparam name="T">Any class.</typeparam>
+    /// <returns>Changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object.</returns>
+    private static T Merge<T>(T next, T previous, T defaultConfiguration = null)
+      where T : class
+    {
+      return next == null || next.Equals(defaultConfiguration) ? previous : next;
+    }
+
+    /// <summary>
+    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
+    /// </summary>
+    /// <param name="next">Changed Testcontainer configuration.</param>
+    /// <param name="previous">Previous Testcontainer configuration.</param>
+    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
+    /// <returns>An updated Testcontainer configuration.</returns>
+    private static IEnumerable<T> Merge<T>(IEnumerable<T> next, IEnumerable<T> previous)
+      where T : class
+    {
+      if (next == null || previous == null)
+      {
+        return next ?? previous;
+      }
+      else
+      {
+        return next.Concat(previous).ToArray();
+      }
+    }
+
+    /// <summary>
+    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
+    /// </summary>
+    /// <param name="next">Changed Testcontainer configuration.</param>
+    /// <param name="previous">Previous Testcontainer configuration.</param>
+    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
+    /// <returns>An updated Testcontainer configuration.</returns>
+    private static IReadOnlyDictionary<T, T> Merge<T>(IReadOnlyDictionary<T, T> next, IReadOnlyDictionary<T, T> previous)
+      where T : class
+    {
+      if (next == null || previous == null)
+      {
+        return next ?? previous;
+      }
+      else
+      {
+        return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
+      }
     }
   }
 }

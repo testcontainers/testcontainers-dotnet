@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers.Builders
 {
+  using System.Linq;
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.Modules.Abstractions;
 
@@ -11,10 +12,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     public static ITestcontainersBuilder<T> WithDatabase<T>(this ITestcontainersBuilder<T> builder, TestcontainerDatabaseConfiguration configuration)
       where T : TestcontainerDatabase
     {
-      foreach (var environment in configuration.Environments)
-      {
-        builder = builder.WithEnvironment(environment.Key, environment.Value);
-      }
+      builder = configuration.Environments.Aggregate(builder, (current, environment) => current.WithEnvironment(environment.Key, environment.Value));
 
       return builder
         .WithImage(configuration.Image)

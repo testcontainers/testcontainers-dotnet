@@ -13,14 +13,17 @@ namespace DotNet.Testcontainers.Containers
 
     /// <summary>Gets the Testcontainer name.</summary>
     /// <value>Returns the Docker container name if present or an empty string instead.</value>
+    /// <exception cref="InvalidOperationException">If container is not running.</exception>
     string Name { get; }
 
     /// <summary>Gets the Testcontainer ip address.</summary>
     /// <value>Returns the Docker container ip address if present or an empty string instead.</value>
+    /// <exception cref="InvalidOperationException">If container is not running.</exception>
     string IpAddress { get; }
 
     /// <summary>Gets the Testcontainer mac address.</summary>
     /// <value>Returns the Docker container mac address if present or an empty string instead.</value>
+    /// <exception cref="InvalidOperationException">If container is not running.</exception>
     string MacAddress { get; }
 
     /// <summary>
@@ -28,6 +31,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="privatePort">Private container port.</param>
     /// <returns>Returns the public host port associated with the private container port.</returns>
+    /// <exception cref="InvalidOperationException">If container is not running.</exception>
     ushort GetMappedPublicPort(int privatePort);
 
     /// <summary>
@@ -35,6 +39,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="privatePort">Private container port.</param>
     /// <returns>Returns the public host port associated with the private container port.</returns>
+    /// <exception cref="InvalidOperationException">If container is not running.</exception>
     ushort GetMappedPublicPort(string privatePort);
 
     /// <summary>

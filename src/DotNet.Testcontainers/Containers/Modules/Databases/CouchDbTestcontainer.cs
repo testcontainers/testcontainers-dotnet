@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
 
   public sealed class CouchDbTestcontainer : TestcontainerDatabase
   {
-    internal CouchDbTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal CouchDbTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

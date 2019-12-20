@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
   {
     public static IWaitUntil UntilContainerIsRunning()
     {
-      return new WaitUntilContainerIsRunning();
+      return WaitUntilContainerIsRunning.WaitStrategy;
     }
 
     public static IWaitUntil UntilBashCommandsAreCompleted(params string[] commands)

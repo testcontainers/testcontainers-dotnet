@@ -1,10 +1,11 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
+  using System;
   using System.IO;
   using System.Linq;
   using System.Threading.Tasks;
 
-  internal class WaitUntilFilesExists : WaitUntilContainerIsRunning
+  internal class WaitUntilFilesExists : IWaitUntil
   {
     private readonly string[] files;
 
@@ -13,9 +14,9 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
       this.files = files;
     }
 
-    public override async Task<bool> Until(string id)
+    public async Task<bool> Until(Uri endpoint, string id)
     {
-      await WaitStrategy.WaitUntil(() => base.Until(id));
+      await WaitStrategy.WaitUntil(() => WaitUntilContainerIsRunning.WaitStrategy.Until(endpoint, id));
       return this.files.All(File.Exists);
     }
   }

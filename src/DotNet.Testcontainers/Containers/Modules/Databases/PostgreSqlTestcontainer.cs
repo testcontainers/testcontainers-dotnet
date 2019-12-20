@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
 
   public sealed class PostgreSqlTestcontainer : TestcontainerDatabase
   {
-    internal PostgreSqlTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal PostgreSqlTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

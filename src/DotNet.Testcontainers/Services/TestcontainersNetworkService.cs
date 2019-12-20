@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Services
 
   public static class TestcontainersNetworkService
   {
-    private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
+    private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, 0);
 
     public static int GetAvailablePort()
     {

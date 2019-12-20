@@ -10,6 +10,10 @@ jobs:
       - BuildAndTestOnLinux
 
     steps:
+      - checkout: self
+        clean: true
+        lfs: true
+
       - task: UseDotNet@2
         displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
         inputs:

@@ -1,13 +1,20 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
+  using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Client;
+  using DotNet.Testcontainers.Clients;
 
   internal class WaitUntilContainerIsRunning : IWaitUntil
   {
-    public virtual async Task<bool> Until(string id)
+    public static readonly IWaitUntil WaitStrategy = new WaitUntilContainerIsRunning();
+
+    private WaitUntilContainerIsRunning()
     {
-      var container = await DockerApiClientContainer.Instance.ByIdAsync(id);
+    }
+
+    public async Task<bool> Until(Uri endpoint, string id)
+    {
+      var container = await new TestcontainersClient(endpoint).GetContainer(id);
       return !"Created".Equals(container?.Status);
     }
   }

@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    public Task<bool> Until(string id)
+    public Task<bool> Until(Uri endpoint, string id)
     {
       return Task.Run(() => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
     }

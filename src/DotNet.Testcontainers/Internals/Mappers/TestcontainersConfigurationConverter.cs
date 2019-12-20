@@ -1,91 +1,94 @@
 namespace DotNet.Testcontainers.Internals.Mappers
 {
   using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
+  using Mount = Docker.DotNet.Models.Mount;
 
-  internal class TestcontainersConfigurationConverter
+  internal sealed class TestcontainersConfigurationConverter
   {
-    public TestcontainersConfigurationConverter(TestcontainersConfiguration config)
+    private readonly ITestcontainersConfiguration configuration;
+
+    public TestcontainersConfigurationConverter(ITestcontainersConfiguration configuration)
     {
-      this.Config = config;
+      this.configuration = configuration;
     }
 
-    public IList<string> Entrypoint => new ToList().Convert(this.Config.Container.Entrypoint);
+    public IList<string> Entrypoint => new ToCollection().Convert(this.configuration.Entrypoint)?.ToArray();
 
-    public IList<string> Command => new ToList().Convert(this.Config.Container.Command);
+    public IList<string> Command => new ToCollection().Convert(this.configuration.Command)?.ToArray();
 
-    public IList<string> Environments => new ToMappedList().Convert(this.Config.Container.Environments);
+    public IList<string> Environments => new ToMappedList().Convert(this.configuration.Environments)?.ToArray();
 
-    public IDictionary<string, string> Labels => new ToDictionary().Convert(this.Config.Container.Labels);
+    public IDictionary<string, string> Labels => new ToDictionary().Convert(this.configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
 
-    public IDictionary<string, EmptyStruct> ExposedPorts => new ToExposedPorts().Convert(this.Config.Container.ExposedPorts);
+    public IDictionary<string, EmptyStruct> ExposedPorts => new ToExposedPorts().Convert(this.configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
 
-    public IDictionary<string, IList<PortBinding>> PortBindings => new ToPortBindings().Convert(this.Config.Host.PortBindings);
+    public IDictionary<string, IList<PortBinding>> PortBindings => new ToPortBindings().Convert(this.configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
 
-    public IList<Mount> Mounts => new ToMounts().Convert(this.Config.Host.Mounts);
+    public IList<Mount> Mounts => new ToMounts().Convert(this.configuration.Mounts)?.ToArray();
 
-    private TestcontainersConfiguration Config { get; }
-
-    private class ToList : CollectionConverter<IList<string>>
+    private sealed class ToCollection : CollectionConverter<string, string>
     {
-      public override IList<string> Convert(IReadOnlyCollection<string> source)
-      {
-        return source?.ToList();
-      }
-    }
+      public ToCollection() : base(nameof(ToCollection)) { }
 
-    private class ToDictionary : DictionaryConverter<IDictionary<string, string>>
-    {
-      public override IDictionary<string, string> Convert(IReadOnlyDictionary<string, string> source)
+      public override IEnumerable<string> Convert(IEnumerable<string> source)
       {
-        return source?.ToDictionary(item => item.Key, item => item.Value);
+        return source;
       }
     }
 
-    private class ToMappedList : DictionaryConverter<IList<string>>
+    private sealed class ToMounts : CollectionConverter<IBind, Mount>
     {
-      public override IList<string> Convert(IReadOnlyDictionary<string, string> source)
+      public ToMounts() : base(nameof(ToMounts)) { }
+
+      public override IEnumerable<Mount> Convert(IEnumerable<IBind> source)
       {
-        return source?.Select(item => $"{item.Key}={item.Value}").ToList();
+        return source?.Select(mount => new Mount
+        {
+          Type = "bind", Source = mount.HostPath, Target = mount.ContainerPath, ReadOnly = AccessMode.ReadOnly.Equals(mount.AccessMode)
+        });
       }
     }
 
-    private class ToExposedPorts : DictionaryConverter<IDictionary<string, EmptyStruct>>
+    private sealed class ToMappedList : DictionaryConverter<IEnumerable<string>>
     {
-      public ToExposedPorts() : base(nameof(ToExposedPorts))
-      {
-      }
+      public ToMappedList() : base(nameof(ToMappedList)) { }
 
-      public override IDictionary<string, EmptyStruct> Convert(IReadOnlyDictionary<string, string> source)
+      public override IEnumerable<string> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.ToDictionary(exposedPort => $"{exposedPort.Key}/tcp", exposedPort => default(EmptyStruct));
+        return source?.Select(item => $"{item.Key}={item.Value}");
       }
     }
 
-    private class ToPortBindings : DictionaryConverter<IDictionary<string, IList<PortBinding>>>
+    private sealed class ToDictionary : DictionaryConverter<IEnumerable<KeyValuePair<string, string>>>
     {
-      public ToPortBindings() : base(nameof(ToPortBindings))
-      {
-      }
+      public ToDictionary() : base(nameof(ToDictionary)) { }
 
-      public override IDictionary<string, IList<PortBinding>> Convert(IReadOnlyDictionary<string, string> source)
+      public override IEnumerable<KeyValuePair<string, string>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.ToDictionary(binding => $"{binding.Value}/tcp", binding => new List<PortBinding> { new PortBinding { HostPort = binding.Key } } as IList<PortBinding>);
+        return source;
       }
     }
 
-    private class ToMounts : DictionaryConverter<IList<Mount>>
+    private sealed class ToExposedPorts : DictionaryConverter<IEnumerable<KeyValuePair<string, EmptyStruct>>>
     {
-      public ToMounts() : base(nameof(ToMounts))
-      {
-      }
+      public ToExposedPorts() : base(nameof(ToExposedPorts)) { }
 
-      public override IList<Mount> Convert(IReadOnlyDictionary<string, string> source)
+      public override IEnumerable<KeyValuePair<string, EmptyStruct>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.Select(mount => new Mount { Source = Path.GetFullPath(mount.Key), Target = mount.Value, Type = "bind" }).ToList();
+        return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>($"{exposedPort.Key}/tcp", default));
+      }
+    }
+
+    private sealed class ToPortBindings : DictionaryConverter<IEnumerable<KeyValuePair<string, IList<PortBinding>>>>
+    {
+      public ToPortBindings() : base(nameof(ToPortBindings)) { }
+
+      public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert(IEnumerable<KeyValuePair<string, string>> source)
+      {
+        return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>($"{portBinding.Value}/tcp", new List<PortBinding> { new PortBinding { HostPort = portBinding.Key } }));
       }
     }
   }

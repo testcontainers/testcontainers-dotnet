@@ -16,6 +16,6 @@ namespace DotNet.Testcontainers.Images
 
     /// <summary>Gets or sets the full Docker image name. Splits the full Docker image name into its components and sets each properties.</summary>
     /// <value>Full Docker image name, like "foo/bar:1.0.0" or "bar:latest" based on the components values.</value>
-    string Image { get; }
+    string FullName { get; }
   }
 }

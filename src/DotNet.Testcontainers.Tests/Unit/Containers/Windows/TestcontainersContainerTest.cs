@@ -1,9 +1,9 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 {
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
-  using DotNet.Testcontainers.Services;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -11,9 +11,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
     public class With
     {
       [IgnoreOnLinuxEngine]
-      public void IsWindowsEngineEnabled()
+      public async Task IsWindowsEngineEnabled()
       {
-        Assert.True(TestcontainersHostService.IsWindowsEngineEnabled);
+        Assert.True(await new TestcontainersClient().GetIsWindowsEngineEnabled());
       }
 
       [IgnoreOnLinuxEngine]

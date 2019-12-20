@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
 
   public sealed class RedisTestcontainer : TestcontainerDatabase
   {
-    internal RedisTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal RedisTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

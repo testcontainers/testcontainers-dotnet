@@ -4,10 +4,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
   using System.IO;
   using System.Net;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
   using DotNet.Testcontainers.Containers.WaitStrategies;
-  using DotNet.Testcontainers.Services;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
@@ -18,9 +18,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
     public class With
     {
       [Fact]
-      public void IsLinuxEngineEnabled()
+      public async Task IsLinuxEngineEnabled()
       {
-        Assert.False(TestcontainersHostService.IsWindowsEngineEnabled);
+        Assert.False(await new TestcontainersClient().GetIsWindowsEngineEnabled());
       }
 
       [Fact]
@@ -239,6 +239,22 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // Then
         Assert.Equal(dayOfWeek, File.ReadAllText($"{TempDir}/{file}"));
+      }
+
+      [Fact]
+      public async Task DockerEndpoint()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithDockerEndpoint(DockerApiEndpoint.Local.ToString())
+          .WithImage("alpine");
+
+        // When
+        // Then
+        using (var testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+        }
       }
 
       [Fact]

@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
 
   public sealed class MsSqlTestcontainer : TestcontainerDatabase
   {
-    internal MsSqlTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal MsSqlTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

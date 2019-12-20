@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.MessageBrokers
 
   public sealed class RabbitMqTestcontainer : TestcontainerMessageBroker
   {
-    internal RabbitMqTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal RabbitMqTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 

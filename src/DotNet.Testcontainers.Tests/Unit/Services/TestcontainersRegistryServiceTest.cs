@@ -7,6 +7,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
   {
     public class RegisterContainer
     {
+      private readonly TestcontainersRegistryService registryService = new TestcontainersRegistryService();
+
       [Fact]
       public void RunTestcontainerWithCleanUp()
       {
@@ -14,10 +16,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
         const string id = nameof(this.RunTestcontainerWithCleanUp);
 
         // When
-        TestcontainersRegistryService.Register(id, true);
+        this.registryService.Register(id, true);
 
         // Then
-        Assert.Contains(id, TestcontainersRegistryService.GetRegisteredContainers());
+        Assert.Contains(id, this.registryService.GetRegisteredContainers());
       }
 
       [Fact]
@@ -27,15 +29,17 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
         const string id = nameof(this.RunTestcontainerWithoutCleanUp);
 
         // When
-        TestcontainersRegistryService.Register(id);
+        this.registryService.Register(id);
 
         // Then
-        Assert.DoesNotContain(id, TestcontainersRegistryService.GetRegisteredContainers());
+        Assert.DoesNotContain(id, this.registryService.GetRegisteredContainers());
       }
     }
 
     public class UnregisterContainer
     {
+      private readonly TestcontainersRegistryService registryService = new TestcontainersRegistryService();
+
       [Fact]
       public void RemoveTestcontainer()
       {
@@ -43,11 +47,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
         const string id = nameof(this.RemoveTestcontainer);
 
         // When
-        TestcontainersRegistryService.Register(id, true);
-        TestcontainersRegistryService.Unregister(id);
+        this.registryService.Register(id, true);
+        this.registryService.Unregister(id);
 
         // Then
-        Assert.DoesNotContain(id, TestcontainersRegistryService.GetRegisteredContainers());
+        Assert.DoesNotContain(id, this.registryService.GetRegisteredContainers());
       }
     }
   }

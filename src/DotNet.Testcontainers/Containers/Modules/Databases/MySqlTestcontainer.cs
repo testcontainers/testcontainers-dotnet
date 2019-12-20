@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
 
   public sealed class MySqlTestcontainer : TestcontainerDatabase
   {
-    internal MySqlTestcontainer(TestcontainersConfiguration configuration) : base(configuration)
+    internal MySqlTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
     {
     }
 
