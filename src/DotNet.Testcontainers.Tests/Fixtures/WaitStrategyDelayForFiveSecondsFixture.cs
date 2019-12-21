@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public class WaitStrategyFixture : IWaitUntil
+  public class WaitStrategyDelayForFiveSecondsFixture : IWaitUntil
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 

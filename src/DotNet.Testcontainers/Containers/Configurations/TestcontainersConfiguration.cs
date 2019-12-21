@@ -9,6 +9,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
   /// <inheritdoc cref="ITestcontainersConfiguration" />
   public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
   {
+#pragma warning disable S107
+
     public TestcontainersConfiguration(
       Uri endpoint,
       IDockerImage image,
@@ -40,6 +42,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.OutputConsumer  = outputConsumer;
       this.WaitStrategy  = waitStrategy;
     }
+
+#pragma warning restore S107
 
     /// <inheritdoc />
     public bool CleanUp { get; }

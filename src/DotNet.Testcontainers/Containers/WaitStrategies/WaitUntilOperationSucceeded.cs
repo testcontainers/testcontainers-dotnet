@@ -9,17 +9,24 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
 
     private readonly Func<bool> operation;
 
+    private readonly IWaitUntil containerIsRunningWaitStrategy;
+
     private int tryCount;
 
-    public WaitUntilOperationSucceeded(Func<bool> operation, int maxCallCount = 4)
+    public WaitUntilOperationSucceeded(Func<bool> operation, int maxCallCount) : this(operation, maxCallCount, WaitUntilContainerIsRunning.WaitStrategy)
+    {
+    }
+
+    public WaitUntilOperationSucceeded(Func<bool> operation, int maxCallCount, IWaitUntil containerIsRunningWaitStrategy)
     {
       this.maxCallCount = maxCallCount;
       this.operation = operation;
+      this.containerIsRunningWaitStrategy = containerIsRunningWaitStrategy;
     }
 
     public async Task<bool> Until(Uri endpoint, string id)
     {
-      await WaitStrategy.WaitUntil(() => WaitUntilContainerIsRunning.WaitStrategy.Until(endpoint, id));
+      await WaitStrategy.WaitUntil(() => this.containerIsRunningWaitStrategy.Until(endpoint, id));
 
       if (++this.tryCount > this.maxCallCount)
       {

@@ -61,9 +61,9 @@ namespace DotNet.Testcontainers.Clients
       return await this.ByNameAsync(name, ct) != null;
     }
 
-    public async Task<long> GetExitCode(string id)
+    public async Task<long> GetExitCode(string id, CancellationToken ct = default)
     {
-      return (await this.Docker.Containers.WaitContainerAsync(id)).StatusCode;
+      return (await this.Docker.Containers.WaitContainerAsync(id, ct)).StatusCode;
     }
 
     public Task StartAsync(string id, CancellationToken ct = default)

@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Images.Builders
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images.Configurations;
+  using DotNet.Testcontainers.Internals;
 
   public sealed class ImageFromDockerfileBuilder : IImageFromDockerfileBuilder
   {
@@ -40,9 +41,10 @@ namespace DotNet.Testcontainers.Images.Builders
         new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.DockerfileDirectory, deleteIfExists));
     }
 
-    public Task<string> Build()
+    public async Task<string> Build()
     {
-      return new TestcontainersClient(DockerApiEndpoint.Local).BuildAsync(this.configuration);
+      await new SynchronizationContextRemover();
+      return await new TestcontainersClient().BuildAsync(this.configuration);
     }
   }
 }

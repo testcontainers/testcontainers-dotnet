@@ -169,6 +169,8 @@ namespace DotNet.Testcontainers.Containers.Builders
       return container;
     }
 
+#pragma warning disable S107
+
     private static ITestcontainersConfiguration Apply(
       Uri endpoint = null,
       IDockerImage image = null,
@@ -202,6 +204,8 @@ namespace DotNet.Testcontainers.Containers.Builders
         cleanUp);
     }
 
+#pragma warning restore S107
+
     private static ITestcontainersBuilder<TDockerContainer> Build(
       TestcontainersBuilder<TDockerContainer> previous,
       ITestcontainersConfiguration next,
@@ -222,7 +226,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var outputConsumer = Merge(next.OutputConsumer, previous.configuration.OutputConsumer, OutputConsumerNull.Consumer);
       var waitStrategy = Merge(next.WaitStrategy, previous.configuration.WaitStrategy, WaitUntilContainerIsRunning.WaitStrategy);
 
-      var configuration = Apply(
+      var mergedConfigurations = Apply(
         endpoint,
         image,
         name,
@@ -238,7 +242,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         waitStrategy,
         cleanUp);
 
-      return new TestcontainersBuilder<TDockerContainer>(configuration, moduleConfiguration ?? previous.moduleConfiguration);
+      return new TestcontainersBuilder<TDockerContainer>(mergedConfigurations, moduleConfiguration ?? previous.moduleConfiguration);
     }
 
     /// <summary>

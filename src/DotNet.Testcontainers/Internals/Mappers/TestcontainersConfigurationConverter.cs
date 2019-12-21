@@ -6,28 +6,32 @@ namespace DotNet.Testcontainers.Internals.Mappers
   using DotNet.Testcontainers.Containers.Configurations;
   using Mount = Docker.DotNet.Models.Mount;
 
-  internal sealed class TestcontainersConfigurationConverter
+  internal readonly struct TestcontainersConfigurationConverter
   {
-    private readonly ITestcontainersConfiguration configuration;
-
     public TestcontainersConfigurationConverter(ITestcontainersConfiguration configuration)
     {
-      this.configuration = configuration;
+      this.Entrypoint = new ToCollection().Convert(configuration.Entrypoint)?.ToArray();
+      this.Command = new ToCollection().Convert(configuration.Command)?.ToArray();
+      this.Environments = new ToMappedList().Convert(configuration.Environments)?.ToArray();
+      this.Labels = new ToDictionary().Convert(configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
+      this.ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
+      this.PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
+      this.Mounts = new ToMounts().Convert(configuration.Mounts)?.ToArray();
     }
 
-    public IList<string> Entrypoint => new ToCollection().Convert(this.configuration.Entrypoint)?.ToArray();
+    public IList<string> Entrypoint { get; }
 
-    public IList<string> Command => new ToCollection().Convert(this.configuration.Command)?.ToArray();
+    public IList<string> Command { get; }
 
-    public IList<string> Environments => new ToMappedList().Convert(this.configuration.Environments)?.ToArray();
+    public IList<string> Environments { get; }
 
-    public IDictionary<string, string> Labels => new ToDictionary().Convert(this.configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
+    public IDictionary<string, string> Labels { get; }
 
-    public IDictionary<string, EmptyStruct> ExposedPorts => new ToExposedPorts().Convert(this.configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
+    public IDictionary<string, EmptyStruct> ExposedPorts { get; }
 
-    public IDictionary<string, IList<PortBinding>> PortBindings => new ToPortBindings().Convert(this.configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
+    public IDictionary<string, IList<PortBinding>> PortBindings { get; }
 
-    public IList<Mount> Mounts => new ToMounts().Convert(this.configuration.Mounts)?.ToArray();
+    public IList<Mount> Mounts { get; }
 
     private sealed class ToCollection : CollectionConverter<string, string>
     {

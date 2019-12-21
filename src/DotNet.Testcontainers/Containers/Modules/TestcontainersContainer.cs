@@ -9,25 +9,78 @@ namespace DotNet.Testcontainers.Containers.Modules
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.WaitStrategies;
+  using DotNet.Testcontainers.Internals;
+  using JetBrains.Annotations;
 
-  /// <summary>
-  /// This class represents a configured and created Testcontainer.
-  /// </summary>
   public class TestcontainersContainer : IDockerContainer
   {
-    private const string ContainerIsNotRunning = "Testcontainer is not running.";
+    private static readonly TestcontainersState[] ContainerHasBeenCreatedStates = { TestcontainersState.Created, TestcontainersState.Running, TestcontainersState.Exited };
+
+    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
     private readonly ITestcontainersClient client;
 
     private readonly ITestcontainersConfiguration configuration;
 
-    private bool disposed;
+    [NotNull]
+    private ContainerListResponse container = new ContainerListResponse();
 
-    private string id;
+    /// <inheritdoc />
+    public string Id
+    {
+      get
+      {
+        this.ThrowIfContainerHasNotBeenCreated();
+        return this.container.ID;
+      }
+    }
 
-    private ContainerListResponse container;
+    /// <inheritdoc />
+    public string Name
+    {
+      get
+      {
+        this.ThrowIfContainerHasNotBeenCreated();
+        return this.container.Names.First();
+      }
+    }
 
-    internal TestcontainersContainer(ITestcontainersConfiguration configuration)
+    /// <inheritdoc />
+    public string IpAddress
+    {
+      get
+      {
+        this.ThrowIfContainerHasNotBeenCreated();
+        return this.container.NetworkSettings.Networks.First().Value.IPAddress;
+      }
+    }
+
+    /// <inheritdoc />
+    public string MacAddress
+    {
+      get
+      {
+        this.ThrowIfContainerHasNotBeenCreated();
+        return this.container.NetworkSettings.Networks.First().Value.MacAddress;
+      }
+    }
+
+    private TestcontainersState State
+    {
+      get
+      {
+        try
+        {
+          return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State, true);
+        }
+        catch (Exception)
+        {
+          return TestcontainersState.Undefined;
+        }
+      }
+    }
+
+    protected TestcontainersContainer(ITestcontainersConfiguration configuration)
     {
       this.client = new TestcontainersClient(configuration.Endpoint);
       this.configuration = configuration;
@@ -38,51 +91,6 @@ namespace DotNet.Testcontainers.Containers.Modules
       this.Dispose(false);
     }
 
-    public bool HasId
-    {
-      get
-      {
-        return !string.IsNullOrEmpty(this.id);
-      }
-    }
-
-    public string Id
-    {
-      get
-      {
-        return this.id ?? string.Empty;
-      }
-    }
-
-    public string Name
-    {
-      get
-      {
-        this.ThrowIfContainerIsNotRunning();
-        return this.container.Names.FirstOrDefault() ?? string.Empty;
-      }
-    }
-
-    public string IpAddress
-    {
-      get
-      {
-        this.ThrowIfContainerIsNotRunning();
-        var ipAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
-        return ipAddress.Value?.IPAddress ?? string.Empty;
-      }
-    }
-
-    public string MacAddress
-    {
-      get
-      {
-        this.ThrowIfContainerIsNotRunning();
-        var macAddress = this.container.NetworkSettings.Networks.FirstOrDefault();
-        return macAddress.Value?.MacAddress ?? string.Empty;
-      }
-    }
-
     public ushort GetMappedPublicPort(int privatePort)
     {
       return this.GetMappedPublicPort($"{privatePort}");
@@ -90,32 +98,9 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public ushort GetMappedPublicPort(string privatePort)
     {
-      this.ThrowIfContainerIsNotRunning();
+      this.ThrowIfContainerHasNotBeenCreated();
       var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));
       return mappedPort?.PublicPort ?? ushort.MinValue;
-    }
-
-    public Task<long> GetExitCode()
-    {
-      return this.client.GetContainerExitCode(this.Id);
-    }
-
-    public async Task StartAsync()
-    {
-      await this.Create();
-      await this.Start();
-      this.container = await this.client.GetContainer(this.Id);
-    }
-
-    public async Task StopAsync()
-    {
-      await this.Stop();
-    }
-
-    public Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
-    {
-      this.ThrowIfContainerIsNotRunning();
-      return this.client.ExecAsync(this.Id, command, ct);
     }
 
     public void Dispose()
@@ -124,84 +109,153 @@ namespace DotNet.Testcontainers.Containers.Modules
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    public async Task<long> GetExitCode(CancellationToken ct = default)
     {
-      if (this.disposed)
+      await new SynchronizationContextRemover();
+      await this.semaphoreSlim.WaitAsync(ct);
+
+      try
+      {
+        return await this.client.GetContainerExitCode(this.Id, ct);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
+    public async Task StartAsync(CancellationToken ct = default)
+    {
+      await new SynchronizationContextRemover();
+      await this.semaphoreSlim.WaitAsync(ct);
+
+      try
+      {
+        this.container = await this.Create(ct);
+        this.container = await this.Start(this.Id, ct);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
+    public async Task StopAsync(CancellationToken ct = default)
+    {
+      await new SynchronizationContextRemover();
+      await this.semaphoreSlim.WaitAsync(ct);
+
+      try
+      {
+        this.container = await this.Stop(this.Id, ct);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
+    public async Task CleanUpAsync(CancellationToken ct = default)
+    {
+      await new SynchronizationContextRemover();
+      await this.semaphoreSlim.WaitAsync(ct);
+
+      try
+      {
+        this.container = await this.CleanUp(this.Id, ct);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
+    public async Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
+    {
+      await new SynchronizationContextRemover();
+      await this.semaphoreSlim.WaitAsync(ct);
+
+      try
+      {
+        return await this.client.ExecAsync(this.Id, command, ct);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
+    private async Task<ContainerListResponse> Create(CancellationToken ct = default)
+    {
+      if (ContainerHasBeenCreatedStates.Contains(this.State))
+      {
+        return this.container;
+      }
+
+      var id = await this.client.RunAsync(this.configuration, ct);
+      return await this.client.GetContainer(id, ct);
+    }
+
+    private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
+    {
+      using (var cts = new CancellationTokenSource())
+      {
+        var attachOutputConsumerTask = this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token);
+
+        var startTask = this.client.StartAsync(id, cts.Token);
+
+        var waitTask = WaitStrategy.WaitUntil(() => this.configuration.WaitStrategy.Until(this.configuration.Endpoint, id), ct: cts.Token);
+
+        var tasks = Task.WhenAll(attachOutputConsumerTask, startTask, waitTask);
+
+        try
+        {
+          await tasks;
+        }
+        catch (Exception)
+        {
+          if (tasks.Exception != null)
+          {
+            throw tasks.Exception;
+          }
+        }
+        finally
+        {
+          cts.Cancel();
+        }
+      }
+
+      return await this.client.GetContainer(id, ct);
+    }
+
+    private async Task<ContainerListResponse> Stop(string id, CancellationToken ct = default)
+    {
+      await this.client.StopAsync(id, ct);
+      return await this.client.GetContainer(id, ct);
+    }
+
+    private async Task<ContainerListResponse> CleanUp(string id, CancellationToken ct = default)
+    {
+      await this.client.RemoveAsync(id, ct);
+      return new ContainerListResponse();
+    }
+
+    private void Dispose(bool disposing)
+    {
+      if (!ContainerHasBeenCreatedStates.Contains(this.State))
       {
         return;
       }
 
-      var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUp() : this.Stop();
+      var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
       cleanOrStopTask.GetAwaiter().GetResult();
-
-      this.disposed = true;
     }
 
-    private void ThrowIfContainerIsNotRunning()
+    private void ThrowIfContainerHasNotBeenCreated()
     {
-      if (this.container == null)
+      if (!ContainerHasBeenCreatedStates.Contains(this.State))
       {
-        throw new InvalidOperationException(ContainerIsNotRunning);
-      }
-    }
-
-    private async Task Create()
-    {
-      if (!this.HasId)
-      {
-        this.id = await this.client.RunAsync(this.configuration);
-      }
-    }
-
-    private async Task Start()
-    {
-      if (this.HasId)
-      {
-        using (var cts = new CancellationTokenSource())
-        {
-          var attachOutputConsumerTask = this.client.AttachAsync(this.Id, this.configuration.OutputConsumer, cts.Token);
-
-          var startTask = this.client.StartAsync(this.Id, cts.Token);
-
-          var waitTask = WaitStrategy.WaitUntil(() => this.configuration.WaitStrategy.Until(this.configuration.Endpoint, this.Id), ct: cts.Token);
-
-          var tasks = Task.WhenAll(attachOutputConsumerTask, startTask, waitTask);
-
-          try
-          {
-            await tasks;
-          }
-          catch (Exception)
-          {
-            if (tasks.Exception != null)
-            {
-              throw tasks.Exception;
-            }
-          }
-          finally
-          {
-            cts.Cancel();
-          }
-        }
-      }
-    }
-
-    private async Task Stop()
-    {
-      if (this.HasId)
-      {
-        await this.client.StopAsync(this.Id);
-        this.container = null;
-      }
-    }
-
-    private async Task CleanUp()
-    {
-      if (this.HasId)
-      {
-        await this.client.RemoveAsync(this.Id);
-        this.id = null;
-        this.container = null;
+        throw new InvalidOperationException("Testcontainer has not been created.");
       }
     }
   }

@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
   using System.Net;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
   using DotNet.Testcontainers.Containers.WaitStrategies;
@@ -82,7 +83,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           .WithName(name);
 
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.Equal(name, testcontainer.Name);
@@ -296,7 +297,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithWaitStrategy(new WaitStrategyFixture());
+          .WithWaitStrategy(new WaitStrategyDelayForFiveSecondsFixture());
 
         // When
         // Then

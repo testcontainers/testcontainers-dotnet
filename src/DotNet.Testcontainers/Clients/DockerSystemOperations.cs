@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Threading;
   using System.Threading.Tasks;
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
@@ -9,9 +10,9 @@ namespace DotNet.Testcontainers.Clients
     {
     }
 
-    public async Task<bool> GetIsWindowsEngineEnabled()
+    public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      return (await this.Docker.System.GetSystemInfoAsync()).OperatingSystem.Contains("Windows");
+      return (await this.Docker.System.GetSystemInfoAsync(ct)).OperatingSystem.Contains("Windows");
     }
   }
 }

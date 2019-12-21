@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Images.Configurations;
+  using DotNet.Testcontainers.Internals;
   using DotNet.Testcontainers.Services;
 
   internal sealed class TestcontainersClient : ITestcontainersClient
@@ -59,9 +60,10 @@ namespace DotNet.Testcontainers.Clients
       new Process { StartInfo = { FileName = "docker", Arguments = args.ToString() } }.Start();
     }
 
-    public Task<bool> GetIsWindowsEngineEnabled()
+    public async Task<bool> GetIsWindowsEngineEnabled()
     {
-      return this.system.GetIsWindowsEngineEnabled();
+      await new SynchronizationContextRemover();
+      return await this.system.GetIsWindowsEngineEnabled();
     }
 
     public Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default)
@@ -71,7 +73,7 @@ namespace DotNet.Testcontainers.Clients
 
     public Task<long> GetContainerExitCode(string id, CancellationToken ct = default)
     {
-      return this.containers.GetExitCode(id);
+      return this.containers.GetExitCode(id, ct);
     }
 
     public async Task StartAsync(string id, CancellationToken ct = default)
@@ -124,9 +126,9 @@ namespace DotNet.Testcontainers.Clients
       return id;
     }
 
-    public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      return this.images.BuildAsync(configuration, ct);
+      return await this.images.BuildAsync(configuration, ct);
     }
   }
 }

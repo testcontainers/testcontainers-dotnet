@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse>
   {
-    Task<long> GetExitCode(string id);
+    Task<long> GetExitCode(string id, CancellationToken ct = default);
 
     Task StartAsync(string id, CancellationToken ct = default);
 

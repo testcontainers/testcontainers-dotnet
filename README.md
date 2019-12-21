@@ -30,6 +30,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
 - `WithCleanUp` removes a stopped container automatically.
+- `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
 - `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
 - `WithDockerfileDirectory` builds a Docker image based on a Dockerfile (`ImageFromDockerfileBuilder`).

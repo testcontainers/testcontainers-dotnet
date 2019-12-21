@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
   using Xunit;
@@ -38,7 +39,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       }
 
       [Fact]
-      public async Task QueryContainerInformationOfRunningContainer()
+      public async Task QueryContainerInformationOfCreatedContainer()
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -46,10 +47,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
 
+          Assert.NotEmpty(testcontainer.Id);
           Assert.NotEmpty(testcontainer.Name);
           Assert.NotEmpty(testcontainer.IpAddress);
           Assert.NotEmpty(testcontainer.MacAddress);
@@ -57,7 +59,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       }
 
       [Fact]
-      public void QueryContainerInformationOfStoppedContainer()
+      public async Task QueryContainerInformationOfNotCreatedContainer()
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -65,12 +67,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
           Assert.Throws<InvalidOperationException>(() => testcontainer.IpAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.MacAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.GetMappedPublicPort(0));
+          await Assert.ThrowsAsync<InvalidOperationException>(() => testcontainer.StopAsync());
         }
       }
     }
