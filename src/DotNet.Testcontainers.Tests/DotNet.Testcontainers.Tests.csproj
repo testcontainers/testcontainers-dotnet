@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="2.7.0" />
+    <PackageReference Include="coverlet.msbuild" Version="2.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="MyCouch" Version="7.2.0" />
     <PackageReference Include="MySql.Data" Version="8.0.18" />
