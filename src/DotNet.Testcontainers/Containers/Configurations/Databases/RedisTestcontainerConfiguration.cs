@@ -28,6 +28,6 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       set => throw new NotImplementedException();
     }
 
-    public override IWaitUntil WaitStrategy => new WaitUntilBashCommandsAreCompleted("redis-cli ping");
+    public override IWaitUntil WaitStrategy => new WaitUntilShellCommandsAreCompleted("redis-cli ping");
   }
 }

@@ -1,15 +1,15 @@
-﻿namespace DotNet.Testcontainers.Containers.WaitStrategies
+namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
   using System;
   using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
 
-  internal class WaitUntilBashCommandsAreCompleted : IWaitUntil
+  internal class WaitUntilShellCommandsAreCompleted : IWaitUntil
   {
     private readonly string[] bashCommands;
 
-    public WaitUntilBashCommandsAreCompleted(params string[] bashCommands)
+    public WaitUntilShellCommandsAreCompleted(params string[] bashCommands)
     {
       this.bashCommands = bashCommands;
     }
