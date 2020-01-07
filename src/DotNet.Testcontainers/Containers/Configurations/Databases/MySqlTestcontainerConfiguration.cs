@@ -28,6 +28,6 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       set => this.Environments["MYSQL_PASSWORD"] = value;
     }
 
-    public override IWaitUntil WaitStrategy => new WaitUntilBashCommandsAreCompleted($"mysql --host='{this.Hostname}' --port='{this.DefaultPort}' --user='{this.Username}' --password='{this.Password}' --protocol=TCP --execute 'SHOW DATABASES;'");
+    public override IWaitUntil WaitStrategy => new WaitUntilShellCommandsAreCompleted($"mysql --host='{this.Hostname}' --port='{this.DefaultPort}' --user='{this.Username}' --password='{this.Password}' --protocol=TCP --execute 'SHOW DATABASES;'");
   }
 }

@@ -21,6 +21,6 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       set => this.Environments["COUCHDB_PASSWORD"] = value;
     }
 
-    public override IWaitUntil WaitStrategy => new WaitUntilBashCommandsAreCompleted($"curl -s 'http://{this.Hostname}:{this.DefaultPort}'");
+    public override IWaitUntil WaitStrategy => new WaitUntilShellCommandsAreCompleted($"curl -s 'http://{this.Hostname}:{this.DefaultPort}'");
   }
 }

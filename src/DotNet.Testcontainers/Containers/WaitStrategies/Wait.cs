@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
 
     public static IWaitUntil UntilBashCommandsAreCompleted(params string[] commands)
     {
-      return new WaitUntilBashCommandsAreCompleted(commands);
+      return new WaitUntilShellCommandsAreCompleted(commands);
     }
 
     public static IWaitUntil UntilFilesExists(params string[] files)
