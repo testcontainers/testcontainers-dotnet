@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithWorkingDirectory("/tmp")
-          .WithCommand("/bin/ash", "-c", "test -d /tmp && exit $? || exit $?");
+          .WithCommand("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?");
 
         // When
         // Then
@@ -114,7 +114,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint("/bin/ash", "-c", "exit 255");
+          .WithEntrypoint("/bin/sh", "-c", "exit 255");
 
         // When
         // Then
@@ -204,7 +204,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           .WithImage("nginx")
           .WithMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
-          .WithCommand("/bin/bash", "-c", $"hostname > /{target}/{file}");
+          .WithCommand("/bin/sh", "-c", $"hostname > /{target}/{file}");
 
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -231,7 +231,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           .WithMount(TempDir, $"/{target}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
-          .WithCommand("/bin/bash", "-c", $"printf $dayOfWeek > /{target}/{file}");
+          .WithCommand("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
         using (var testcontainer = testcontainersBuilder.Build())
         {
@@ -268,7 +268,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("nginx")
             .WithOutputConsumer(output)
-            .WithCommand("/bin/bash", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
+            .WithCommand("/bin/sh", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
 
           using (var testcontainer = testcontainersBuilder.Build())
           {
@@ -313,14 +313,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCommand("/bin/ash", "-c", "tail -f /dev/null");
+          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
 
         // When
         // Then
         using (var testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(255, await testcontainer.ExecAsync(new [] { "/bin/ash", "-c", "exit 255" }));
+          Assert.Equal(255, await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" }));
         }
       }
     }
