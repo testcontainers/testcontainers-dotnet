@@ -52,7 +52,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 Pulls `nginx`, creates a new container with port binding `80:80` and hits the default site.
 
 ```csharp
-var testcontainersBuilder = new TestcontainersBuilder()
+var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithImage("nginx")
   .WithName("nginx")
   .WithPortBinding(80)
@@ -60,7 +60,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
 
 using (var testcontainer = testcontainersBuilder.Build())
 {
-  await testcontainer.Start();
+  await testcontainer.StartAsync();
   var request = WebRequest.Create("http://localhost:80");
 }
 ```
@@ -68,7 +68,7 @@ using (var testcontainer = testcontainersBuilder.Build())
 Mounts the current directory as volume into the container and runs `hostname > /tmp/hostname` on startup.
 
 ```csharp
-var testcontainersBuilder = new TestcontainersBuilder()
+var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithImage("nginx")
   .WithName("nginx")
   .WithMount(".", "/tmp")
@@ -77,7 +77,7 @@ var testcontainersBuilder = new TestcontainersBuilder()
 
 using (var testcontainer = testcontainersBuilder.Build())
 {
-  await testcontainer.Start();
+  await testcontainer.StartAsync();
 }
 ```
 
