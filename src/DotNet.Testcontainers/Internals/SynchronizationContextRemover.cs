@@ -37,6 +37,7 @@ namespace DotNet.Testcontainers.Internals
 
     public void GetResult()
     {
+      // GetResult is required to be awaitable.
     }
 
     public SynchronizationContextRemover GetAwaiter()

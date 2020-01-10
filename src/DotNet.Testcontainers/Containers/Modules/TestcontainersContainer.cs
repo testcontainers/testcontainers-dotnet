@@ -240,7 +240,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       return new ContainerListResponse();
     }
 
-    private void Dispose(bool disposing)
+    protected void Dispose(bool disposing)
     {
       if (!ContainerHasBeenCreatedStates.Contains(this.State))
       {

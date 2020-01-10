@@ -84,7 +84,7 @@ namespace DotNet.Testcontainers.Clients
 
       using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        using (var unused = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = "Dockerfile", Tags = new[] { config.Image.FullName } }, ct))
+        using (var unused = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = config.Dockerfile, Tags = new[] { config.Image.FullName } }, ct))
         {
           // New Docker image built, ready to use.
         }

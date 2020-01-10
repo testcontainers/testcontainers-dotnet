@@ -26,19 +26,25 @@ namespace DotNet.Testcontainers.Images.Builders
     public IImageFromDockerfileBuilder WithName(IDockerImage name)
     {
       return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(name, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
+        new ImageFromDockerfileConfiguration(name, this.configuration.Dockerfile, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
+    }
+
+    public IImageFromDockerfileBuilder WithDockerfile(string dockerfile)
+    {
+      return new ImageFromDockerfileBuilder(
+        new ImageFromDockerfileConfiguration(this.configuration.Image, dockerfile, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
     }
 
     public IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
       return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(this.configuration.Image, dockerfileDirectory, this.configuration.DeleteIfExists));
+        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.Dockerfile, dockerfileDirectory, this.configuration.DeleteIfExists));
     }
 
     public IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
       return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.DockerfileDirectory, deleteIfExists));
+        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.Dockerfile, this.configuration.DockerfileDirectory, deleteIfExists));
     }
 
     public async Task<string> Build()

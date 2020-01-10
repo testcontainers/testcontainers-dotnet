@@ -9,15 +9,23 @@ namespace DotNet.Testcontainers.Images.Configurations
     {
     }
 
-    public ImageFromDockerfileConfiguration(IDockerImage image, string dockerfileDirectory = ".", bool deleteIfExists = true)
+    public ImageFromDockerfileConfiguration(
+      IDockerImage image,
+      string dockerfile = "Dockerfile",
+      string dockerfileDirectory = ".",
+      bool deleteIfExists = true)
     {
       this.DeleteIfExists = deleteIfExists;
+      this.Dockerfile = dockerfile;
       this.DockerfileDirectory = dockerfileDirectory;
       this.Image = image;
     }
 
     /// <inheritdoc />
     public bool DeleteIfExists { get; }
+
+    /// <inheritdoc />
+    public string Dockerfile { get; }
 
     /// <inheritdoc />
     public string DockerfileDirectory { get; }

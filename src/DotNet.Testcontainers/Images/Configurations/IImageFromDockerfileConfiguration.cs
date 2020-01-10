@@ -13,6 +13,12 @@ namespace DotNet.Testcontainers.Images.Configurations
     bool DeleteIfExists { get; }
 
     /// <summary>
+    /// Gets the Dockerfile.
+    /// </summary>
+    [NotNull]
+    string Dockerfile { get; }
+
+    /// <summary>
     /// Gets the Dockerfile directory.
     /// </summary>
     [NotNull]

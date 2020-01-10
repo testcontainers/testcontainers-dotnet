@@ -41,6 +41,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
       // Given
       var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
         new ImageFromDockerfileBuilder()
+          .WithDockerfile("Dockerfile")
           .WithDockerfileDirectory(".")
           .Build());
 

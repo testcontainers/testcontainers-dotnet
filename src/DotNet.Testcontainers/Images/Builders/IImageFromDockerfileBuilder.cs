@@ -19,6 +19,13 @@ namespace DotNet.Testcontainers.Images.Builders
     IImageFromDockerfileBuilder WithName(IDockerImage name);
 
     /// <summary>
+    /// Sets the name of the Dockerfile.
+    /// </summary>
+    /// <param name="dockerfile">Dockerfile name.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder"/>.</returns>
+    IImageFromDockerfileBuilder WithDockerfile(string dockerfile);
+
+    /// <summary>
     /// Sets the base directory of the Dockerfile.
     /// </summary>
     /// <param name="dockerfileDirectory">Dockerfile base directory.</param>
