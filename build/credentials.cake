@@ -10,7 +10,7 @@ internal class BuildCredentials
   }
 }
 
-internal class SonarQubeCredentials
+internal sealed class SonarQubeCredentials
 {
   public string Url { get; private set; }
   public string Key { get; private set; }
@@ -37,12 +37,12 @@ internal class SonarQubeCredentials
   }
 }
 
-internal class NuGetCredentials : BuildCredentials
+internal sealed class NuGetCredentials
 {
   public string Source { get; private set; }
   public string ApiKey { get; private set; }
 
-  private NuGetCredentials(string username, string password, string source, string apiKey) : base(username, password)
+  private NuGetCredentials(string source, string apiKey)
   {
     Source = source;
     ApiKey = apiKey;
@@ -52,8 +52,6 @@ internal class NuGetCredentials : BuildCredentials
   {
     return new NuGetCredentials
     (
-      context.EnvironmentVariable("FEED_USERNAME") ?? "",
-      context.EnvironmentVariable("FEED_PASSWORD") ?? "",
       context.EnvironmentVariable("FEED_SOURCE"),
       context.EnvironmentVariable("FEED_APIKEY")
     );

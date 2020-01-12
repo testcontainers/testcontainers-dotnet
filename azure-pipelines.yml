@@ -3,8 +3,8 @@ name: $(date:yyyyMMdd)$(rev:.r)
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  dotNetCoreVersion: 2.2.401
-  cakeVersion: 0.35.0
+  dotNetCoreVersion: 2.2.402
+  cakeVersion: 0.36.0
 
 trigger:
   - master
@@ -20,7 +20,7 @@ jobs:
   # Run Windows build and tests.
   - template: template/build.yml
     parameters:
-      name: BuildAndTestOnWindows
+      name: BuildAndTestsOnWindows
       displayName: Windows
       vmImage: windows-2019
       dotNetCoreVersion: $(dotNetCoreVersion)
@@ -30,7 +30,7 @@ jobs:
   # Run Linux build and tests.
   - template: template/build.yml
     parameters:
-      name: BuildAndTestOnLinux
+      name: BuildAndTestsOnLinux
       displayName: Linux
       vmImage: ubuntu-16.04
       dotNetCoreVersion: $(dotNetCoreVersion)

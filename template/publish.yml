@@ -6,8 +6,8 @@ jobs:
       vmImage: ${{ parameters.vmImage }}
 
     dependsOn:
-      - BuildAndTestOnWindows
-      - BuildAndTestOnLinux
+      - BuildAndTestsOnWindows
+      - BuildAndTestsOnLinux
 
     steps:
       - checkout: self
@@ -18,9 +18,6 @@ jobs:
         displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
         inputs:
           version: ${{ parameters.dotNetCoreVersion }}
-
-      - powershell: ./build.sh --bootstrap
-        displayName: Bootstrap
 
       - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
         displayName: Setup prerequisites
