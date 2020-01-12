@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        var testcontainer = testcontainersBuilder.Build();
+        IDockerContainer testcontainer = testcontainersBuilder.Build();
         await testcontainer.StartAsync();
         await testcontainer.StopAsync();
       }
@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.NotEmpty(testcontainer.Name);
@@ -101,7 +101,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.Equal(0, await testcontainer.GetExitCode());
@@ -118,7 +118,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.Equal(255, await testcontainer.GetExitCode());
@@ -135,7 +135,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -156,7 +156,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Then
         foreach (var port in new[] { http, https })
         {
-          using (var testcontainer = testcontainersBuilder
+          using (IDockerContainer testcontainer = testcontainersBuilder
             .WithPortBinding(port.From, port.To)
             .WithWaitStrategy(Wait.UntilPortsAreAvailable(port.To))
             .Build())
@@ -184,7 +184,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.NotEqual(0, testcontainer.GetMappedPublicPort(80));
@@ -206,7 +206,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/sh", "-c", $"hostname > /{target}/{file}");
 
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -233,7 +233,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
           .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
           .WithCommand("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file}");
 
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -252,7 +252,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -270,7 +270,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
             .WithOutputConsumer(output)
             .WithCommand("/bin/sh", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
 
-          using (var testcontainer = testcontainersBuilder.Build())
+          using (IDockerContainer testcontainer = testcontainersBuilder.Build())
           {
             await testcontainer.StartAsync();
           }
@@ -301,7 +301,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -317,7 +317,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.Equal(255, await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" }));

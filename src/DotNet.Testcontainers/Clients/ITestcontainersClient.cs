@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Clients
     /// Returns true if the Docker Windows engine is enabled, otherwise false.
     /// </summary>
     /// <returns>Task that returns true if the Docker Windows engine is enabled, otherwise false.</returns>
-    Task<bool> GetIsWindowsEngineEnabled();
+    Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
 
     /// <summary>
     /// Gets the Testcontainer exit code.

@@ -43,7 +43,7 @@ internal class BuildParameters
       TestFilter = context.Argument<string>("test-filter", null),
       IsLocalBuild = isLocalBuild,
       ShouldPublish = !isLocalBuild && ShouldPublishing(branch),
-      Verbosity = DotNetCoreVerbosity.Quiet,
+      Verbosity = DotNetCoreVerbosity.Normal,
       SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
       NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
       Projects = BuildProjects.Instance(context, solution),

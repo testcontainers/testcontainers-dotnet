@@ -60,10 +60,10 @@ namespace DotNet.Testcontainers.Clients
       new Process { StartInfo = { FileName = "docker", Arguments = args.ToString() } }.Start();
     }
 
-    public async Task<bool> GetIsWindowsEngineEnabled()
+    public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
       await new SynchronizationContextRemover();
-      return await this.system.GetIsWindowsEngineEnabled();
+      return await this.system.GetIsWindowsEngineEnabled(ct);
     }
 
     public Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default)
