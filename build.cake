@@ -72,7 +72,7 @@ Task("Build")
   });
 });
 
-Task("Test")
+Task("Tests")
   .Does(() =>
 {
   foreach(var testProject in param.Projects.OnlyTests)
@@ -107,7 +107,7 @@ Task("Sonar-Begin")
     Branch = param.Branch,
     Silent = true,
     VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResults)}/*.trx",
-    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.opencover.xml"
+    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/*.opencover.xml"
   });
 });
 
@@ -157,14 +157,14 @@ Task("Default")
   .IsDependentOn("Clean")
   .IsDependentOn("Restore-NuGet-Packages")
   .IsDependentOn("Build")
-  .IsDependentOn("Test");
+  .IsDependentOn("Tests");
 
 Task("Sonar")
   .IsDependentOn("Clean")
   .IsDependentOn("Restore-NuGet-Packages")
   .IsDependentOn("Sonar-Begin")
   .IsDependentOn("Build")
-  .IsDependentOn("Test")
+  .IsDependentOn("Tests")
   .IsDependentOn("Sonar-End");
 
 Task("Publish")

@@ -6,8 +6,8 @@ jobs:
       vmImage: ${{ parameters.vmImage }}
 
     dependsOn:
-      - BuildAndTestOnWindows
-      - BuildAndTestOnLinux
+      - BuildAndTestsOnWindows
+      - BuildAndTestsOnLinux
 
     steps:
       - checkout: self
