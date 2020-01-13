@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.MessageBroker
 
       // When
       // Then
-      using (var testcontainer = testcontainersBuilder.Build())
+      await using (var testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync();
 

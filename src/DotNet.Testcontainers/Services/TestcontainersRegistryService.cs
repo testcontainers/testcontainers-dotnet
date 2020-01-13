@@ -5,31 +5,31 @@ namespace DotNet.Testcontainers.Services
 
   internal sealed class TestcontainersRegistryService
   {
-    private readonly object RegisteredContainersPadLock = new object();
+    private readonly object registeredContainersPadLock = new object();
 
-    private readonly IDictionary<string, bool> RegisteredContainers = new Dictionary<string, bool>();
+    private readonly IDictionary<string, bool> registeredContainers = new Dictionary<string, bool>();
 
     public IEnumerable<string> GetRegisteredContainers()
     {
-      lock (this.RegisteredContainersPadLock)
+      lock (this.registeredContainersPadLock)
       {
-        return this.RegisteredContainers.Where(registeredContainer => true.Equals(registeredContainer.Value)).Select(registeredContainer => registeredContainer.Key).ToArray();
+        return this.registeredContainers.Where(registeredContainer => true.Equals(registeredContainer.Value)).Select(registeredContainer => registeredContainer.Key).ToArray();
       }
     }
 
     public void Register(string id, bool cleanUp = false)
     {
-      lock (this.RegisteredContainersPadLock)
+      lock (this.registeredContainersPadLock)
       {
-        this.RegisteredContainers.Add(id, cleanUp);
+        this.registeredContainers.Add(id, cleanUp);
       }
     }
 
     public void Unregister(string id)
     {
-      lock (this.RegisteredContainersPadLock)
+      lock (this.registeredContainersPadLock)
       {
-        this.RegisteredContainers.Remove(id);
+        this.registeredContainers.Remove(id);
       }
     }
   }
