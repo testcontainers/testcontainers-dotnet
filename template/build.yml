@@ -24,7 +24,10 @@ jobs:
       - powershell: ./tools/dotnet-cake --target=Build
         displayName: Build
 
-      - powershell: ./tools/dotnet-cake --target=Tests --test-filter="${{ parameters.testFilter }}"
+      - powershell: |
+          ./tools/dotnet-cake --target=Tests --test-filter="${{ parameters.testFilter }}"
+          ./tools/dotnet-cake --target=Tests --test-filter="${{ parameters.testFilter }}"
+          ./tools/dotnet-cake --target=Tests --test-filter="${{ parameters.testFilter }}"
         displayName: Tests
 
       - powershell: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
