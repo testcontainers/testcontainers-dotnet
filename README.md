@@ -58,7 +58,7 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithPortBinding(80)
   .WithWaitStrategy(Wait.UntilPortsAreAvailable(80));
 
-using (var testcontainer = testcontainersBuilder.Build())
+await using (var testcontainer = testcontainersBuilder.Build())
 {
   await testcontainer.StartAsync();
   var request = WebRequest.Create("http://localhost:80");
@@ -75,7 +75,7 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithWaitStrategy(Wait.UntilFilesExists("/tmp/hostname"))
   .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname");
 
-using (var testcontainer = testcontainersBuilder.Build())
+await using (var testcontainer = testcontainersBuilder.Build())
 {
   await testcontainer.StartAsync();
 }
@@ -92,7 +92,7 @@ var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
     Password = "postgres",
   });
 
-using (var testcontainer = testcontainersBuilder.Build())
+await using (var testcontainer = testcontainersBuilder.Build())
 {
   await testcontainer.StartAsync();
 

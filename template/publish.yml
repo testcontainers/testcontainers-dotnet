@@ -15,9 +15,14 @@ jobs:
         lfs: true
 
       - task: UseDotNet@2
-        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion3 }}
         inputs:
-          version: ${{ parameters.dotNetCoreVersion }}
+          version: ${{ parameters.dotNetCoreVersion3 }}
+
+      - task: UseDotNet@2
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion2 }}
+        inputs:
+          version: ${{ parameters.dotNetCoreVersion2 }}
 
       - powershell: ./build.sh --bootstrap
         displayName: Bootstrap

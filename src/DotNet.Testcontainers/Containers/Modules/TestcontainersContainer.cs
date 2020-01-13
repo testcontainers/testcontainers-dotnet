@@ -86,11 +86,6 @@ namespace DotNet.Testcontainers.Containers.Modules
       this.configuration = configuration;
     }
 
-    ~TestcontainersContainer()
-    {
-      this.Dispose(false);
-    }
-
     public ushort GetMappedPublicPort(int privatePort)
     {
       return this.GetMappedPublicPort($"{privatePort}");
@@ -101,12 +96,6 @@ namespace DotNet.Testcontainers.Containers.Modules
       this.ThrowIfContainerHasNotBeenCreated();
       var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort));
       return mappedPort?.PublicPort ?? ushort.MinValue;
-    }
-
-    public void Dispose()
-    {
-      this.Dispose(true);
-      GC.SuppressFinalize(this);
     }
 
     public async Task<long> GetExitCode(CancellationToken ct = default)
@@ -185,6 +174,17 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
+    public virtual ValueTask DisposeAsync()
+    {
+      if (!ContainerHasBeenCreatedStates.Contains(this.State))
+      {
+        return default;
+      }
+
+      var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
+      return new ValueTask(cleanOrStopTask);
+    }
+
     private async Task<ContainerListResponse> Create(CancellationToken ct = default)
     {
       if (ContainerHasBeenCreatedStates.Contains(this.State))
@@ -238,17 +238,6 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       await this.client.RemoveAsync(id, ct);
       return new ContainerListResponse();
-    }
-
-    protected void Dispose(bool disposing)
-    {
-      if (!ContainerHasBeenCreatedStates.Contains(this.State))
-      {
-        return;
-      }
-
-      var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
-      cleanOrStopTask.GetAwaiter().GetResult();
     }
 
     private void ThrowIfContainerHasNotBeenCreated()

@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
   using Xunit;
@@ -25,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
         // When
         // Then
-        using (var testcontainer = testcontainersBuilder.Build())
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }

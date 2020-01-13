@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
         // When
         // Then
-        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
 
@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
         // When
         // Then
-        using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
           Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
           Assert.Throws<InvalidOperationException>(() => testcontainer.IpAddress);

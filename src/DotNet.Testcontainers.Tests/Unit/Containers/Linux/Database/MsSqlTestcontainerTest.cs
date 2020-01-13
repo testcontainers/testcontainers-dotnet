@@ -22,15 +22,15 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.Database
 
       // When
       // Then
-      using (var testcontainer = testcontainersBuilder.Build())
+      await using (var testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync();
 
-        using (var connection = new SqlConnection(testcontainer.ConnectionString))
+        await using (var connection = new SqlConnection(testcontainer.ConnectionString))
         {
           connection.Open();
 
-          using (var cmd = new SqlCommand())
+          await using (var cmd = new SqlCommand())
           {
             cmd.Connection = connection;
             cmd.CommandText = "SELECT 1";

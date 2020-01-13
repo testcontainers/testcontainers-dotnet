@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using JetBrains.Annotations;
 
-  public interface IDockerContainer : IDisposable
+  public interface IDockerContainer : IAsyncDisposable
   {
     /// <summary>Gets the Testcontainer id.</summary>
     /// <value>Returns the Docker container id if present or an empty string instead.</value>

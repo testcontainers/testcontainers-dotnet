@@ -23,15 +23,15 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.Database
 
       // When
       // Then
-      using (var testcontainer = testcontainersBuilder.Build())
+      await using (var testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync();
 
-        using (var connection = new MySqlConnection(testcontainer.ConnectionString))
+        await using (var connection = new MySqlConnection(testcontainer.ConnectionString))
         {
           connection.Open();
 
-          using (var cmd = new MySqlCommand())
+          await using (var cmd = new MySqlCommand())
           {
             cmd.Connection = connection;
             cmd.CommandText = "SELECT 1";
