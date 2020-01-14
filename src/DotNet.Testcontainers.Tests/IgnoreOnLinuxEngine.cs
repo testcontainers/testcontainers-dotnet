@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests
   {
     public IgnoreOnLinuxEngine()
     {
-      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || !new TestcontainersClient().GetIsWindowsEngineEnabled().GetAwaiter().GetResult())
+      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))// || !new TestcontainersClient().GetIsWindowsEngineEnabled().GetAwaiter().GetResult())
       {
         this.Skip = "Ignore as long as Docker Windows engine is not available.";
       }
