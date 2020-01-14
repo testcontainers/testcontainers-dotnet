@@ -31,7 +31,7 @@ jobs:
   # Run Linux build and tests.
   - template: template/build.yml
     parameters:
-      name: BuildAndTestsOnLinux
+      name: BuildAndTestsOnUnix
       displayName: Linux
       vmImage: ubuntu-18.04
       dotNetCoreVersion3: $(dotNetCoreVersion3)

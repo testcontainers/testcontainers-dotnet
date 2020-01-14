@@ -25,7 +25,23 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
       }
 
       [Fact]
-      public async Task Disposable()
+      public async Task UnsafeDisposable()
+      {
+        // Given
+        IDockerContainer testcontainer = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithLabel(typeof(TestcontainersContainer).Assembly.GetName().Name, nameof(this.UnsafeDisposable))
+          .Build();
+
+        // When
+        // Then
+        await testcontainer.StartAsync();
+        await testcontainer.StopAsync();
+        await testcontainer.DisposeAsync();
+      }
+
+      [Fact]
+      public async Task SafeDisposable()
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()

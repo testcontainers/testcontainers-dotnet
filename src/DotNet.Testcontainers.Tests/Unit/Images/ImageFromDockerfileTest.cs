@@ -68,15 +68,19 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
     public async Task SimpleDockerfile()
     {
       // Given
-      var imageFromDockerfile = await new ImageFromDockerfileBuilder()
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName("alpine:custom")
         .WithDockerfileDirectory("Assets")
-        .WithDeleteIfExists(true)
-        .Build();
+        .WithDeleteIfExists(true);
 
       // When
+      var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build();
+      var imageFromDockerfile2 = await imageFromDockerfileBuilder.Build(); // Deletes the previously created image.
+
       // Then
-      Assert.NotEmpty(imageFromDockerfile);
+      Assert.NotEmpty(imageFromDockerfile1);
+      Assert.NotEmpty(imageFromDockerfile2);
+      Assert.Equal(imageFromDockerfile1, imageFromDockerfile2);
     }
   }
 }

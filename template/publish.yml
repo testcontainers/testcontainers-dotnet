@@ -7,7 +7,7 @@ jobs:
 
     dependsOn:
       - BuildAndTestsOnWindows
-      - BuildAndTestsOnLinux
+      - BuildAndTestsOnUnix
 
     steps:
       - checkout: self
@@ -24,18 +24,12 @@ jobs:
         inputs:
           version: ${{ parameters.dotNetCoreVersion2 }}
 
-      - powershell: ./build.sh --bootstrap
-        displayName: Bootstrap
-
-      - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
-        displayName: Setup prerequisites
-
-      - powershell: ./tools/dotnet-cake --target=Sonar
+      - powershell: |
+          $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
+          ./build.sh --target=Sonar
         displayName: Sonar
-        env:
-          SONARCLOUD_TOKEN: $(sonarcloud.token)
 
-      - powershell: ./tools/dotnet-cake --target=Publish
+      - powershell: |
+          $env:FEED_APIKEY = "$(feed.apikey)"
+          ./build.sh --target=Publish
         displayName: Publish
-        env:
-          FEED_APIKEY: $(feed.apikey)
