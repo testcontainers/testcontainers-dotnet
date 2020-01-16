@@ -21,7 +21,6 @@ namespace DotNet.Testcontainers.Containers.Builders
         .WithWaitStrategy(configuration.WaitStrategy)
         .ConfigureContainer(container =>
         {
-          container.Hostname = configuration.Hostname;
           container.Port = configuration.Port;
           container.Database = configuration.Database;
           container.Username = configuration.Username;

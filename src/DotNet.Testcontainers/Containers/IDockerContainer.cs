@@ -32,6 +32,12 @@ namespace DotNet.Testcontainers.Containers
     [NotNull]
     string MacAddress { get; }
 
+    /// <summary>Gets the Testcontainer hostname.</summary>
+    /// <value>Returns the Docker container hostname if present or an empty string instead.</value>
+    /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [NotNull]
+    string Hostname { get; }
+
     /// <summary>
     /// Gets the public host port associated with the private container port.
     /// </summary>

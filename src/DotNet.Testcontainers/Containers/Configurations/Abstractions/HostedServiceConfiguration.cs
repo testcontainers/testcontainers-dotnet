@@ -26,8 +26,6 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
 
     public int Port { get; set; }
 
-    public virtual string Hostname { get; set; } = "localhost";
-
     public virtual string Username { get; set; }
 
     public virtual string Password { get; set; }

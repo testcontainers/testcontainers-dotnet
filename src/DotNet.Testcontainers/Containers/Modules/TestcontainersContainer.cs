@@ -65,6 +65,9 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
+    /// <inheritdoc />
+    public string Hostname { get; }
+
     private TestcontainersState State
     {
       get
@@ -84,6 +87,10 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       this.client = new TestcontainersClient(configuration.Endpoint);
       this.configuration = configuration;
+
+      this.Hostname = "tcp" != this.configuration.Endpoint.Scheme
+        ? "localhost"
+        : this.configuration.Endpoint.Host;
     }
 
     public ushort GetMappedPublicPort(int privatePort)

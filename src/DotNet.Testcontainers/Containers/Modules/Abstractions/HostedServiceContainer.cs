@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers.Modules.Abstractions
 {
+  using Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.Configurations;
 
   /// <summary>
@@ -12,8 +13,6 @@ namespace DotNet.Testcontainers.Containers.Modules.Abstractions
     }
 
     public virtual int Port { get; set; }
-
-    public virtual string Hostname { get; set; }
 
     public virtual string Username { get; set; }
 

@@ -26,7 +26,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       Assert.Equal(0, notPreConfigured.DefaultPort);
       Assert.Equal(0, notPreConfigured.Port);
       Assert.Equal(0, notPreConfigured.Environments.Count);
-      Assert.Equal("localhost", notPreConfigured.Hostname);
       Assert.Null(notPreConfigured.Username);
       Assert.Null(notPreConfigured.Password);
       Assert.IsAssignableFrom<OutputConsumerNull>(notPreConfigured.OutputConsumer);

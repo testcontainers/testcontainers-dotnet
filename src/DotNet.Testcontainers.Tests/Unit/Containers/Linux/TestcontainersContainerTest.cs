@@ -258,6 +258,38 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         }
       }
 
+      [Theory]
+      [InlineData("npipe://./pipe/docker_engine")]
+      [InlineData("unix:/var/run/docker.sock")]
+      public async Task HostnameShouldDefaultToLocalhostIfDockerEndpointSchemeIsNotTcp(string endpoint)
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithDockerEndpoint(endpoint);
+
+        // When
+        // Then
+        await using (var testcontainer = testcontainersBuilder.Build())
+        {
+          Assert.Equal("localhost", testcontainer.Hostname);
+        }
+      }
+
+      [Fact]
+      public async Task HostnameShouldDefaultToDockerEndpointHostnameIfDockerEndpointSchemeIsTcp()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithDockerEndpoint("tcp://docker:2375");
+
+        // When
+        // Then
+        await using (var testcontainer = testcontainersBuilder.Build())
+        {
+          Assert.Equal("docker", testcontainer.Hostname);
+        }
+      }
+
       [Fact]
       public async Task OutputConsumer()
       {
