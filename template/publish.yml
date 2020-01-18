@@ -24,6 +24,9 @@ jobs:
         inputs:
           version: ${{ parameters.dotNetCoreVersion2 }}
 
+      - powershell: docker ps -a -q | % { docker rm $_ --force }
+        displayName: Remove All Orphaned Containers
+
       - powershell: |
           $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
           ./build.sh --target=Sonar

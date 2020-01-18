@@ -174,15 +174,17 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
-    public virtual ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
+      await new SynchronizationContextRemover();
+
       if (!ContainerHasBeenCreatedStates.Contains(this.State))
       {
-        return default;
+        return;
       }
 
       var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
-      return new ValueTask(cleanOrStopTask);
+      await cleanOrStopTask;
     }
 
     private async Task<ContainerListResponse> Create(CancellationToken ct = default)

@@ -15,6 +15,9 @@ jobs:
         inputs:
           version: ${{ parameters.dotNetCoreVersion3 }}
 
+      - powershell: docker ps -a -q | % { docker rm $_ --force }
+        displayName: Remove All Orphaned Containers
+
       - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
         displayName: Setup prerequisites
 
