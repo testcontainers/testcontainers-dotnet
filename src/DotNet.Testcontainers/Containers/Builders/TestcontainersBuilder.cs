@@ -199,7 +199,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         exposedPorts,
         portBindings,
         mounts,
-        outputConsumer ?? OutputConsumerNull.Consumer,
+        outputConsumer ?? DoNotConsumeStdoutOrStderr.OutputConsumer,
         waitStrategy ?? WaitUntilContainerIsRunning.WaitStrategy,
         cleanUp);
     }
@@ -223,7 +223,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var exposedPorts = Merge(next.ExposedPorts, previous.configuration.ExposedPorts);
       var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
       var mounts = Merge(next.Mounts, previous.configuration.Mounts);
-      var outputConsumer = Merge(next.OutputConsumer, previous.configuration.OutputConsumer, OutputConsumerNull.Consumer);
+      var outputConsumer = Merge(next.OutputConsumer, previous.configuration.OutputConsumer, DoNotConsumeStdoutOrStderr.OutputConsumer);
       var waitStrategy = Merge(next.WaitStrategy, previous.configuration.WaitStrategy, WaitUntilContainerIsRunning.WaitStrategy);
 
       var mergedConfigurations = Apply(

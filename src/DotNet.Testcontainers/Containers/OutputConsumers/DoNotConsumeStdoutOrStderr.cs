@@ -2,11 +2,11 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers
 {
   using System.IO;
 
-  public class OutputConsumerNull : IOutputConsumer
+  public class DoNotConsumeStdoutOrStderr : IOutputConsumer
   {
-    public static readonly IOutputConsumer Consumer = new OutputConsumerNull();
+    public static readonly IOutputConsumer OutputConsumer = new DoNotConsumeStdoutOrStderr();
 
-    private OutputConsumerNull()
+    private DoNotConsumeStdoutOrStderr()
     {
     }
 

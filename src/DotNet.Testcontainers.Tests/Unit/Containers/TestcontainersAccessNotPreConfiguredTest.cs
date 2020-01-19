@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       Assert.Equal(0, notPreConfigured.Environments.Count);
       Assert.Null(notPreConfigured.Username);
       Assert.Null(notPreConfigured.Password);
-      Assert.IsAssignableFrom<OutputConsumerNull>(notPreConfigured.OutputConsumer);
+      Assert.IsAssignableFrom<DoNotConsumeStdoutOrStderr>(notPreConfigured.OutputConsumer);
       Assert.IsAssignableFrom<IWaitUntil>(notPreConfigured.WaitStrategy);
     }
   }

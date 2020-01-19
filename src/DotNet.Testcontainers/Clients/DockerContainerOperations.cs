@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
-      if (outputConsumer is null || outputConsumer is OutputConsumerNull)
+      if (outputConsumer is null || outputConsumer is DoNotConsumeStdoutOrStderr)
       {
         return;
       }

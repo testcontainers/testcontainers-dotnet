@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
   using System;
+  using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Modules;
@@ -9,7 +10,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
   {
     public static readonly IWaitUntil WaitStrategy = new WaitUntilContainerIsRunning();
 
-    private static readonly string StateRunning = TestcontainersState.Running.ToString();
+    private static readonly TestcontainersState[] ContainerHasBeenRunningStates = { TestcontainersState.Running, TestcontainersState.Exited };
 
     private WaitUntilContainerIsRunning()
     {
@@ -18,7 +19,8 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
     public async Task<bool> Until(Uri endpoint, string id)
     {
       var container = await new TestcontainersClient(endpoint).GetContainer(id);
-      return string.Equals(StateRunning, container?.State, StringComparison.OrdinalIgnoreCase);
+      var state = (TestcontainersState)Enum.Parse(typeof(TestcontainersState), container.State, true);
+      return ContainerHasBeenRunningStates.Contains(state);
     }
   }
 }

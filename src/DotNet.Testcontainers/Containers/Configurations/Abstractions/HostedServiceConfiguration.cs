@@ -32,7 +32,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
 
     public virtual IDictionary<string, string> Environments { get; } = new Dictionary<string, string>();
 
-    public virtual IOutputConsumer OutputConsumer => OutputConsumerNull.Consumer;
+    public virtual IOutputConsumer OutputConsumer => DoNotConsumeStdoutOrStderr.OutputConsumer;
 
     public virtual IWaitUntil WaitStrategy => Wait.UntilContainerIsRunning();
   }
