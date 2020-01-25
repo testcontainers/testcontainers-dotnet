@@ -1,32 +1,26 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
-  using System.IO;
-
+  /// <summary>
+  /// Container platform specific wait strategies.
+  /// </summary>
   public static class Wait
   {
-    public static IWaitUntil UntilContainerIsRunning()
+    /// <summary>
+    /// Returns the pre-configured wait strategies for Unix containers.
+    /// </summary>
+    /// <returns>Implementation of <see cref="IWaitForContainerOS" /> for Unix containers.</returns>
+    public static IWaitForContainerOS ForUnixContainer()
     {
-      return WaitUntilContainerIsRunning.WaitStrategy;
+      return new WaitForContainerUnix();
     }
 
-    public static IWaitUntil UntilBashCommandsAreCompleted(params string[] commands)
+    /// <summary>
+    /// Returns the pre-configured wait strategies for Windows containers.
+    /// </summary>
+    /// <returns>Implementation of <see cref="IWaitForContainerOS" /> for Windows containers.</returns>
+    public static IWaitForContainerOS ForWindowsContainer()
     {
-      return new WaitUntilShellCommandsAreCompleted(commands);
-    }
-
-    public static IWaitUntil UntilFilesExists(params string[] files)
-    {
-      return new WaitUntilFilesExists(files);
-    }
-
-    public static IWaitUntil UntilMessagesAreLogged(Stream outputConsumerStream, params string[] messages)
-    {
-      return new WaitUntilMessagesAreLogged(outputConsumerStream, messages);
-    }
-
-    public static IWaitUntil UntilPortsAreAvailable(params int[] ports)
-    {
-      return new WaitUntilPortsAreAvailable(ports);
+      return new WaitForContainerWindows();
     }
   }
 }

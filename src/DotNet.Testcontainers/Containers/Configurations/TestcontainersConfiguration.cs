@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       IReadOnlyDictionary<string, string> portBindings,
       IEnumerable<IBind> mounts,
       IOutputConsumer outputConsumer,
-      IWaitUntil waitStrategy,
+      IEnumerable<IWaitUntil> waitStrategies,
       bool cleanUp = true)
     {
       this.CleanUp  = cleanUp;
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.PortBindings  = portBindings;
       this.Mounts  = mounts;
       this.OutputConsumer  = outputConsumer;
-      this.WaitStrategy  = waitStrategy;
+      this.WaitStrategies  = waitStrategies;
     }
 
 #pragma warning restore S107
@@ -85,6 +85,6 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public IOutputConsumer OutputConsumer { get; }
 
     /// <inheritdoc />
-    public IWaitUntil WaitStrategy { get; }
+    public IEnumerable<IWaitUntil> WaitStrategies { get; }
   }
 }

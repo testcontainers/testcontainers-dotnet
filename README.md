@@ -56,7 +56,7 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithImage("nginx")
   .WithName("nginx")
   .WithPortBinding(80)
-  .WithWaitStrategy(Wait.UntilPortsAreAvailable(80));
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80));
 
 await using (var testcontainer = testcontainersBuilder.Build())
 {
@@ -72,8 +72,8 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithImage("nginx")
   .WithName("nginx")
   .WithMount(".", "/tmp")
-  .WithWaitStrategy(Wait.UntilFilesExists("/tmp/hostname"))
-  .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname");
+  .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname")
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists("/tmp/hostname"));
 
 await using (var testcontainer = testcontainersBuilder.Build())
 {
@@ -108,6 +108,16 @@ await using (var testcontainer = testcontainersBuilder.Build())
     }
   }
 }
+```
+
+The implementation of the pre-configured wait strategies can be chained together to support individual requirements for Testcontainers with different container platform operating systems.
+
+```csharp
+Wait.ForUnixContainer()
+  .UntilPortIsAvailable(80)
+  .UntilFileExists("/tmp/foo")
+  .UntilFileExists("/tmp/bar")
+  .UntilOperationIsSucceeded(() => true, 1);
 ```
 
 ## Note

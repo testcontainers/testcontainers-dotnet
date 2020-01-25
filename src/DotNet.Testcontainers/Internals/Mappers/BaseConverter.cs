@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Internals.Mappers
   internal abstract class BaseConverter<TSource, TTarget>
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseConverter{TSource, TTarget}"/> class.
+    /// Initializes a new instance of the <see cref="BaseConverter{TSource, TTarget}" /> class.
     /// </summary>
     /// <param name="name">Name of the converter.</param>
     protected BaseConverter(string name)

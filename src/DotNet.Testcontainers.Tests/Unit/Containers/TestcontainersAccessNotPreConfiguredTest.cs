@@ -1,8 +1,9 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers
 {
+  using System.Linq;
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
-  using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Containers.WaitStrategies;
+  using DotNet.Testcontainers.Containers.OutputConsumers.Common;
+  using DotNet.Testcontainers.Containers.WaitStrategies.Common;
   using Xunit;
 
   public class TestcontainersAccessNotPreConfiguredTest
@@ -29,7 +30,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       Assert.Null(notPreConfigured.Username);
       Assert.Null(notPreConfigured.Password);
       Assert.IsAssignableFrom<DoNotConsumeStdoutOrStderr>(notPreConfigured.OutputConsumer);
-      Assert.IsAssignableFrom<IWaitUntil>(notPreConfigured.WaitStrategy);
+      Assert.IsAssignableFrom<UntilContainerIsRunning>(notPreConfigured.WaitStrategy.Build().First());
     }
   }
 }

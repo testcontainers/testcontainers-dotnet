@@ -3,14 +3,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Tests.Fixtures;
+  using DotNet.Testcontainers.Containers.WaitStrategies.Common;
   using Testcontainers.Containers.WaitStrategies;
   using Xunit;
 
   public class WaitUntilOperationSucceededTest
   {
-    private static readonly IWaitUntil ContainerIsRunning = new WaitStrategyImmediatelySucceedFixture();
-
     [Theory]
     [InlineData(1, 1)]
     [InlineData(2, 2)]
@@ -26,11 +24,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       // When
       await Assert.ThrowsAsync<TimeoutException>(async () =>
       {
-        var wait = new WaitUntilOperationSucceeded(() =>
+        var wait = new UntilOperationIsSucceeded(() =>
         {
           callCounter += 1;
           return false;
-        }, maxCallCount, ContainerIsRunning);
+        }, maxCallCount);
         await WaitStrategy.WaitUntil(() => wait.Until(DockerApiEndpoint.Local, string.Empty));
       });
 
@@ -53,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       var callCounter = 0;
 
       // When
-      var wait = new WaitUntilOperationSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount, ContainerIsRunning);
+      var wait = new UntilOperationIsSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
       await WaitStrategy.WaitUntil(() => wait.Until(DockerApiEndpoint.Local, string.Empty));
 
       // Then

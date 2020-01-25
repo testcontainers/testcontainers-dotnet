@@ -8,13 +8,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
+  using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
 
     public class With
     {
@@ -96,8 +97,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithWorkingDirectory("/tmp")
-          .WithCommand("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?");
+          .WithCommand("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
+          .WithWorkingDirectory("/tmp");
 
         // When
         // Then
@@ -158,7 +159,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         {
           await using (IDockerContainer testcontainer = testcontainersBuilder
             .WithPortBinding(port.From, port.To)
-            .WithWaitStrategy(Wait.UntilPortsAreAvailable(port.To))
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilPortIsAvailable(port.To))
             .Build())
           {
             await testcontainer.StartAsync();
@@ -167,9 +169,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
 
             var response = (HttpWebResponse)request.GetResponse();
 
-            var isAvailable = response.StatusCode == HttpStatusCode.OK;
-
-            Assert.True(isAvailable, $"nginx port {port.From} is not available.");
+            Assert.True(HttpStatusCode.OK.Equals(response.StatusCode), $"nginx port {port.From} is not available.");
           }
         }
       }
@@ -202,9 +202,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
+          .WithCommand("/bin/sh", "-c", $"hostname > /{target}/{file}")
           .WithMount(TempDir, $"/{target}")
-          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
-          .WithCommand("/bin/sh", "-c", $"hostname > /{target}/{file}");
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilFileExists($"{TempDir}/{file}"));
 
         await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -228,10 +229,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithMount(TempDir, $"/{target}")
+          .WithCommand("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file}")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithWaitStrategy(Wait.UntilFilesExists($"{TempDir}/{file}"))
-          .WithCommand("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file}");
+          .WithMount(TempDir, $"/{target}")
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilFileExists($"{TempDir}/{file}"));
 
         await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -294,29 +296,29 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
       public async Task OutputConsumer()
       {
         // Given
-        using (var output = new OutputConsumerConsoleFixture())
+        using (var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream()))
         {
           // When
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("nginx")
-            .WithOutputConsumer(output)
-            .WithCommand("/bin/sh", "-c", "hostname > /dev/stdout && hostname > /dev/stderr");
+            .WithCommand("/bin/sh", "-c", "hostname > /dev/stdout && hostname > /dev/stderr")
+            .WithOutputConsumer(consumer);
 
           await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
           {
             await testcontainer.StartAsync();
           }
 
-          output.Stdout.Position = 0;
-          output.Stderr.Position = 0;
+          consumer.Stdout.Position = 0;
+          consumer.Stderr.Position = 0;
 
           // Then
-          using (var streamReader = new StreamReader(output.Stdout))
+          using (var streamReader = new StreamReader(consumer.Stdout))
           {
             Assert.NotEmpty(streamReader.ReadToEnd());
           }
 
-          using (var streamReader = new StreamReader(output.Stderr))
+          using (var streamReader = new StreamReader(consumer.Stderr))
           {
             Assert.NotEmpty(streamReader.ReadToEnd());
           }
@@ -329,7 +331,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithWaitStrategy(new WaitStrategyDelayForFiveSecondsFixture());
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .AddCustomWaitStrategy(new WaitStrategyDelayForFiveSecondsFixture()));
 
         // When
         // Then

@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
       set => this.Environments["RABBITMQ_DEFAULT_PASS"] = value;
     }
 
-    public override IWaitUntil WaitStrategy => Wait.UntilPortsAreAvailable(this.DefaultPort);
+    public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
+      .UntilPortIsAvailable(this.DefaultPort);
   }
 }

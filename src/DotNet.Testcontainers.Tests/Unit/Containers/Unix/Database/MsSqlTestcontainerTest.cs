@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.Database
+namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
   using System;
   using System.Data.SqlClient;

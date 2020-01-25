@@ -90,9 +90,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
     IOutputConsumer OutputConsumer { get; }
 
     /// <summary>
-    /// Gets the wait strategy.
+    /// Gets the wait strategies.
     /// </summary>
     [NotNull]
-    IWaitUntil WaitStrategy { get; }
+    IEnumerable<IWaitUntil> WaitStrategies { get; }
   }
 }

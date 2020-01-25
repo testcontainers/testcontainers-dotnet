@@ -8,21 +8,21 @@ namespace DotNet.Testcontainers.Internals.Parsers
   {
     protected const string Part = @"([\w][\w.-]{0,127})";
 
+    private readonly Regex pattern;
+
     public MatchImage() : this(Part)
     {
     }
 
     protected MatchImage(string pattern)
     {
-      this.Pattern = new Regex(pattern, RegexOptions.Compiled);
+      this.pattern = new Regex(pattern, RegexOptions.Compiled);
     }
-
-    private Regex Pattern { get; }
 
     public IDockerImage Match(string input)
     {
-      var match = this.Pattern.Match(input);
-      return match.Success ? this.Match(match.Groups.Cast<Group>().Skip(1).Select(group => group.Value).ToArray()) : null;
+      var match = this.pattern.Match(input);
+      return match.Success ? this.Match(match.Groups.Skip(1).Select(group => group.Value).ToArray()) : null;
     }
 
     protected virtual IDockerImage Match(params string[] matches)

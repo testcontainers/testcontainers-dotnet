@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Containers.WaitStrategies
+namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 {
   using System;
   using System.Linq;
@@ -6,15 +6,9 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Modules;
 
-  internal class WaitUntilContainerIsRunning : IWaitUntil
+  internal class UntilContainerIsRunning : IWaitUntil
   {
-    public static readonly IWaitUntil WaitStrategy = new WaitUntilContainerIsRunning();
-
     private static readonly TestcontainersState[] ContainerHasBeenRunningStates = { TestcontainersState.Running, TestcontainersState.Exited };
-
-    private WaitUntilContainerIsRunning()
-    {
-    }
 
     public async Task<bool> Until(Uri endpoint, string id)
     {

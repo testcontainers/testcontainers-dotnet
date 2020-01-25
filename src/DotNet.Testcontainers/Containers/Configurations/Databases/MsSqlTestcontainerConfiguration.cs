@@ -29,6 +29,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       set => this.Environments["SA_PASSWORD"] = value;
     }
 
-    public override IWaitUntil WaitStrategy => new WaitUntilShellCommandsAreCompleted($"/opt/mssql-tools/bin/sqlcmd -S 'localhost,{this.DefaultPort}' -U '{this.Username}' -P '{this.Password}'");
+    public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
+      .UntilCommandIsCompleted($"/opt/mssql-tools/bin/sqlcmd -S 'localhost,{this.DefaultPort}' -U '{this.Username}' -P '{this.Password}'");
   }
 }

@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
+  using DotNet.Testcontainers.Containers.OutputConsumers.Common;
   using DotNet.Testcontainers.Internals.Mappers;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations

@@ -39,7 +39,9 @@ namespace DotNet.Testcontainers.Containers.Builders
     private readonly Action<TDockerContainer> moduleConfiguration;
 
     public TestcontainersBuilder() : this(
-      Apply(),
+      Apply(
+        outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
+        waitStrategies: Wait.ForUnixContainer().Build()),
       testcontainer => { })
     {
     }
@@ -52,112 +54,133 @@ namespace DotNet.Testcontainers.Containers.Builders
       this.moduleConfiguration = moduleConfiguration;
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration)
     {
       return Build(this, this.configuration, moduleConfiguration);
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithImage(string image)
     {
       return this.WithImage(new DockerImage(image));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
       return Build(this, Apply(image: image));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithName(string name)
     {
       return Build(this, Apply(name: name));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory)
     {
       return Build(this, Apply(workingDirectory: workingDirectory));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithEntrypoint(params string[] entrypoint)
     {
       return Build(this, Apply(entrypoint: entrypoint));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCommand(params string[] command)
     {
       return Build(this, Apply(command: command));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value)
     {
       var environments = new Dictionary<string, string> { { name, value } };
       return Build(this, Apply(environments: environments));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value)
     {
       var labels = new Dictionary<string, string> { { name, value } };
       return Build(this, Apply(labels: labels));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(int port)
     {
       return this.WithExposedPort($"{port}");
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(string port)
     {
       var exposedPorts = new Dictionary<string, string> { { port, port } };
       return Build(this, Apply(exposedPorts: exposedPorts));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
       return this.WithPortBinding($"{port}", assignRandomHostPort);
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int hostPort, int containerPort)
     {
       return this.WithPortBinding($"{hostPort}", $"{containerPort}");
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
       var hostPort = assignRandomHostPort ? $"{TestcontainersNetworkService.GetAvailablePort()}" : port;
       return this.WithPortBinding(hostPort, port);
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
       var portBindings = new Dictionary<string, string> { { hostPort, containerPort } };
       return Build(this, Apply(portBindings: portBindings));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
       var mounts = new IBind[] { new Mount(source, destination, AccessMode.ReadWrite) };
       return Build(this, Apply(mounts: mounts));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
       return Build(this, Apply(cleanUp: cleanUp));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint)
     {
       return Build(this, Apply(endpoint: new Uri(endpoint)));
     }
 
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Build(this, Apply(outputConsumer: outputConsumer));
     }
 
-    public ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitUntil waitStrategy)
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy)
     {
-      return Build(this, Apply(waitStrategy: waitStrategy));
+      return Build(this, Apply(waitStrategies: waitStrategy.Build()));
     }
 
+    /// <inheritdoc />
     public TDockerContainer Build()
     {
       // Create container instance.
@@ -184,7 +207,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       IReadOnlyDictionary<string, string> portBindings = null,
       IEnumerable<IBind> mounts = null,
       IOutputConsumer outputConsumer = null,
-      IWaitUntil waitStrategy = null,
+      IEnumerable<IWaitUntil> waitStrategies = null,
       bool cleanUp = true)
     {
       return new TestcontainersConfiguration(
@@ -199,8 +222,8 @@ namespace DotNet.Testcontainers.Containers.Builders
         exposedPorts,
         portBindings,
         mounts,
-        outputConsumer ?? DoNotConsumeStdoutOrStderr.OutputConsumer,
-        waitStrategy ?? WaitUntilContainerIsRunning.WaitStrategy,
+        outputConsumer,
+        waitStrategies,
         cleanUp);
     }
 
@@ -223,10 +246,11 @@ namespace DotNet.Testcontainers.Containers.Builders
       var exposedPorts = Merge(next.ExposedPorts, previous.configuration.ExposedPorts);
       var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
       var mounts = Merge(next.Mounts, previous.configuration.Mounts);
-      var outputConsumer = Merge(next.OutputConsumer, previous.configuration.OutputConsumer, DoNotConsumeStdoutOrStderr.OutputConsumer);
-      var waitStrategy = Merge(next.WaitStrategy, previous.configuration.WaitStrategy, WaitUntilContainerIsRunning.WaitStrategy);
 
-      var mergedConfigurations = Apply(
+      var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
+      var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
+
+      var mergedConfiguration = Apply(
         endpoint,
         image,
         name,
@@ -239,10 +263,10 @@ namespace DotNet.Testcontainers.Containers.Builders
         portBindings,
         mounts,
         outputConsumer,
-        waitStrategy,
+        waitStrategies,
         cleanUp);
 
-      return new TestcontainersBuilder<TDockerContainer>(mergedConfigurations, moduleConfiguration ?? previous.moduleConfiguration);
+      return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);
     }
 
     /// <summary>

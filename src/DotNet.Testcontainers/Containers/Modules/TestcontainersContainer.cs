@@ -66,7 +66,13 @@ namespace DotNet.Testcontainers.Containers.Modules
     }
 
     /// <inheritdoc />
-    public string Hostname { get; }
+    public string Hostname
+    {
+      get
+      {
+        return "tcp".Equals(this.configuration.Endpoint.Scheme) ? this.configuration.Endpoint.Host : "localhost";
+      }
+    }
 
     private TestcontainersState State
     {
@@ -87,10 +93,6 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       this.client = new TestcontainersClient(configuration.Endpoint);
       this.configuration = configuration;
-
-      this.Hostname = "tcp" != this.configuration.Endpoint.Scheme
-        ? "localhost"
-        : this.configuration.Endpoint.Host;
     }
 
     public ushort GetMappedPublicPort(int privatePort)
@@ -213,7 +215,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
         var startTask = this.client.StartAsync(id, cts.Token);
 
-        var waitTask = WaitStrategy.WaitUntil(() => this.configuration.WaitStrategy.Until(this.configuration.Endpoint, id), ct: cts.Token);
+        var waitTask = Task.Run(async () =>
+        {
+          foreach (var waitStrategy in this.configuration.WaitStrategies)
+          {
+            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), ct: cts.Token);
+          }
+        }, cts.Token);
 
         var tasks = Task.WhenAll(attachOutputConsumerTask, startTask, waitTask);
 

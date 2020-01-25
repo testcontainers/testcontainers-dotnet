@@ -27,6 +27,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       set => this.Environments["POSTGRES_PASSWORD"] = value;
     }
 
-    public override IWaitUntil WaitStrategy => new WaitUntilShellCommandsAreCompleted($"pg_isready -h 'localhost' -p '{this.DefaultPort}'");
+    public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
+      .UntilCommandIsCompleted($"pg_isready -h 'localhost' -p '{this.DefaultPort}'");
   }
 }

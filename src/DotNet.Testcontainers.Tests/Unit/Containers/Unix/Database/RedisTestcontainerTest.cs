@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.Database
+namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
   using System;
   using System.Threading.Tasks;
@@ -25,27 +25,27 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.Database
 
         using (var connection = ConnectionMultiplexer.Connect(testcontainer.ConnectionString))
         {
-          Assert.True(connection.GetServer(testcontainer.Hostname, testcontainer.Port).Ping().Milliseconds > 0, "Cannot connect to Redis Testcontainer.");
+          Assert.True(connection.GetServer(testcontainer.Hostname, testcontainer.Port).Ping().Milliseconds > 0, "Can not connect to Redis Testcontainer.");
         }
       }
     }
 
     [Fact]
-    public void CannotSetDatabase()
+    public void CanNotSetDatabase()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Database = string.Empty);
     }
 
     [Fact]
-    public void CannotSetUsername()
+    public void CanNotSetUsername()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Username = string.Empty);
     }
 
     [Fact]
-    public void CannotSetPassword()
+    public void CanNotSetPassword()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Password = string.Empty);

@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Containers.Modules.Abstractions
 {
-  using Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.Configurations;
 
   /// <summary>

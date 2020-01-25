@@ -32,8 +32,8 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
 
     public virtual IDictionary<string, string> Environments { get; } = new Dictionary<string, string>();
 
-    public virtual IOutputConsumer OutputConsumer => DoNotConsumeStdoutOrStderr.OutputConsumer;
+    public virtual IOutputConsumer OutputConsumer => Consume.DoNotConsumeStdoutAndStderr();
 
-    public virtual IWaitUntil WaitStrategy => Wait.UntilContainerIsRunning();
+    public virtual IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer();
   }
 }

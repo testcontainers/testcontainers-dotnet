@@ -1,9 +1,10 @@
-namespace DotNet.Testcontainers.Containers.OutputConsumers
+namespace DotNet.Testcontainers.Containers.OutputConsumers.Common
 {
   using System;
   using System.IO;
 
-  public class OutputConsumerConsole : IOutputConsumer, IDisposable
+  /// <inheritdoc cref="IOutputConsumer" />
+  internal sealed class RedirectStdoutAndStderrToStream : IOutputConsumer
   {
     private readonly TextWriter defaultOut;
 
@@ -15,11 +16,12 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers
 
     private bool disposed;
 
-    public OutputConsumerConsole() : this(Console.OpenStandardOutput(), Console.OpenStandardError())
+    public RedirectStdoutAndStderrToStream() : this(
+      Console.OpenStandardOutput(), Console.OpenStandardError())
     {
     }
 
-    public OutputConsumerConsole(Stream stdout, Stream stderr)
+    public RedirectStdoutAndStderrToStream(Stream stdout, Stream stderr)
     {
       this.defaultOut = Console.Out;
       this.defaultErr = Console.Error;
@@ -38,13 +40,15 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers
       Console.SetError(this.stderr);
     }
 
-    ~OutputConsumerConsole()
+    ~RedirectStdoutAndStderrToStream()
     {
       this.Dispose(false);
     }
 
+    /// <inheritdoc />
     public Stream Stdout => this.stdout.BaseStream;
 
+    /// <inheritdoc />
     public Stream Stderr => this.stderr.BaseStream;
 
     public void Dispose()
@@ -53,7 +57,7 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
       if (this.disposed)
       {
