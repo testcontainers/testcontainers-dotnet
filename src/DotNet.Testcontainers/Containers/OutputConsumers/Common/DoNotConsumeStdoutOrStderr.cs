@@ -13,6 +13,8 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers.Common
 
     public void Dispose()
     {
+      this.Stdout.Dispose();
+      this.Stderr.Dispose();
     }
   }
 }

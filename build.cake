@@ -144,9 +144,8 @@ Task("Publish-NuGet-Packages")
 {
   foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.(nupkg|snupkgs)"))
   {
-    NuGetPush(package, new NuGetPushSettings
+    DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings
     {
-      ToolPath = "./tools/nuget.exe",
       Source = param.NuGetCredentials.Source,
       ApiKey = param.NuGetCredentials.ApiKey
     });

@@ -1,0 +1,64 @@
+jobs:
+  - job: ${{ parameters.name }}
+    displayName: CI build for ${{ parameters.displayName }}
+
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+
+    dependsOn:
+      - BuildAndTestsOnWindows
+      - BuildAndTestsOnUnix
+
+    steps:
+      - checkout: self
+        clean: true
+        lfs: true
+
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          source: current
+          artifact: Unix.TestAndCoverageResults
+          path: $(Build.SourcesDirectory)
+
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          source: current
+          artifact: Windows.TestAndCoverageResults
+          path: $(Build.SourcesDirectory)
+
+      - task: UseDotNet@2
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion3 }}
+        inputs:
+          version: ${{ parameters.dotNetCoreVersion3 }}
+
+      - task: UseDotNet@2
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion2 }}
+        inputs:
+          version: ${{ parameters.dotNetCoreVersion2 }}
+
+      - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\\\/]+src', '$(Build.SourcesDirectory)/src' | Set-Content $_ }
+        displayName: Fix Absolute Code Coverage Paths
+
+      - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
+        displayName: Setup prerequisites
+
+      - powershell: ./tools/dotnet-cake --target=Restore-NuGet-Packages
+        displayName: Prepare
+
+      - powershell: |
+          $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
+          ./tools/dotnet-cake --target=Sonar-Begin
+        displayName: Sonar Begin
+
+      - powershell: ./tools/dotnet-cake --target=Build
+        displayName: Build
+
+      - powershell: |
+          $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
+          ./tools/dotnet-cake --target=Sonar-End
+        displayName: Sonar End
+
+      - powershell: |
+          $env:FEED_APIKEY = "$(feed.apikey)"
+          ./tools/dotnet-cake --target=Publish
+        displayName: Publish

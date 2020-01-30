@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
+  using DotNet.Testcontainers.Containers.WaitStrategies;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -18,11 +19,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       }
 
       [IgnoreOnLinuxEngine]
-      public async Task Disposable()
+      public async Task SafeDisposable()
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("mcr.microsoft.com/windows/nanoserver:1809");
+          .WithImage("mcr.microsoft.com/windows/nanoserver:1809")
+          .WithWaitStrategy(Wait.ForWindowsContainer());
 
         // When
         // Then
