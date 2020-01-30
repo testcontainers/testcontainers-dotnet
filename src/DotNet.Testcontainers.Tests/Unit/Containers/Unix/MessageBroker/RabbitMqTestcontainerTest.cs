@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Containers.Linux.MessageBroker
+namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.MessageBroker
 {
   using System;
   using System.Threading.Tasks;

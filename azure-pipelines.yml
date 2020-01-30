@@ -19,20 +19,20 @@ pr:
 
 jobs:
   # Run Windows build and tests.
-  - template: template/build.yml
+  - template: azure/build.yml
     parameters:
       name: BuildAndTestsOnWindows
       displayName: Windows
       vmImage: windows-2019
       dotNetCoreVersion3: $(dotNetCoreVersion3)
       cakeVersion: $(cakeVersion)
-      testFilter: FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Windows
+      testFilter: FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
-  # Run Linux build and tests.
-  - template: template/build.yml
+  # Run Unix build and tests.
+  - template: azure/build.yml
     parameters:
       name: BuildAndTestsOnUnix
-      displayName: Linux
+      displayName: Unix
       vmImage: ubuntu-18.04
       dotNetCoreVersion3: $(dotNetCoreVersion3)
       cakeVersion: $(cakeVersion)
@@ -41,7 +41,7 @@ jobs:
   # Run static code analysis and publish artifact.
   # Until now, we do not cover Windows only tests.
   - ${{ if in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop') }}:
-    - template: template/publish.yml
+    - template: azure/publish.yml
       parameters:
         name: Release
         displayName: Release
