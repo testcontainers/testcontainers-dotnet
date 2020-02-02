@@ -23,7 +23,19 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
     /// </summary>
     /// <param name="command">Command to be executed</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    /// <remarks>Invokes the operating system command shell. Expects the exit code to be 0.</remarks>
     IWaitForContainerOS UntilCommandIsCompleted(string command);
+
+    /// <summary>
+    /// Waits until the command is completed successfully.
+    /// </summary>
+    /// <param name="command">Command to be executed</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    /// <remarks>
+    /// Does not invoke the operating system command shell.
+    /// Normal shell processing does not happen. Expects the exit code to be 0.
+    /// </remarks>
+    IWaitForContainerOS UntilCommandIsCompleted(params string[] command);
 
     /// <summary>
     /// Waits until the file exists.

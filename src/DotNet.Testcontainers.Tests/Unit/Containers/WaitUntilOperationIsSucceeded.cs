@@ -1,13 +1,12 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers
 {
   using System;
+  using System.Linq;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Containers.WaitStrategies.Common;
-  using Testcontainers.Containers.WaitStrategies;
+  using DotNet.Testcontainers.Containers.WaitStrategies;
   using Xunit;
 
-  public class WaitUntilOperationSucceededTest
+  public class WaitUntilOperationIsSucceeded
   {
     [Theory]
     [InlineData(1, 1)]
@@ -24,12 +23,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       // When
       await Assert.ThrowsAsync<TimeoutException>(async () =>
       {
-        var wait = new UntilOperationIsSucceeded(() =>
+        var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() =>
         {
           callCounter += 1;
           return false;
         }, maxCallCount);
-        await WaitStrategy.WaitUntil(() => wait.Until(DockerApiEndpoint.Local, string.Empty));
+
+        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));
       });
 
       // Then
@@ -51,8 +51,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       var callCounter = 0;
 
       // When
-      var wait = new UntilOperationIsSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
-      await WaitStrategy.WaitUntil(() => wait.Until(DockerApiEndpoint.Local, string.Empty));
+      var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
+      await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));
 
       // Then
       Assert.Equal(expectedCallsCount, callCounter);

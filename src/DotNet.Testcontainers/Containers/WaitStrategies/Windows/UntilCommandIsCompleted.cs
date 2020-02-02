@@ -1,17 +1,13 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies.Windows
 {
-  using System;
-  using System.Threading.Tasks;
-
   internal class UntilCommandIsCompleted : Unix.UntilCommandIsCompleted
   {
-    public UntilCommandIsCompleted(string command) : base(command)
+    public UntilCommandIsCompleted(string command) : base("PowerShell", "-Command", command)
     {
     }
 
-    public override Task<bool> Until(Uri endpoint, string id)
+    public UntilCommandIsCompleted(params string[] command) : base(command)
     {
-      throw new NotImplementedException();
     }
   }
 }

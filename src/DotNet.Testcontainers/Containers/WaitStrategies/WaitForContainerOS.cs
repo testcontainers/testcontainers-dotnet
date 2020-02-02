@@ -12,6 +12,8 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
 
     public abstract IWaitForContainerOS UntilCommandIsCompleted(string command);
 
+    public abstract IWaitForContainerOS UntilCommandIsCompleted(params string[] command);
+
     public abstract IWaitForContainerOS UntilPortIsAvailable(int port);
 
     protected WaitForContainerOS()

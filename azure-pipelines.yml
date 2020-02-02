@@ -3,7 +3,7 @@ name: $(date:yyyyMMdd)$(rev:.r)
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  dotNetCoreVersion3: 3.1.100
+  dotNetCoreVersion3: 3.1.101
   dotNetCoreVersion2: 2.2.402
   cakeVersion: 0.36.0
 
@@ -39,7 +39,6 @@ jobs:
       testFilter: FullyQualifiedName~DotNet.Testcontainers
 
   # Run static code analysis and publish artifact.
-  # Until now, we do not cover Windows only tests.
   - ${{ if in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop') }}:
     - template: azure/publish.yml
       parameters:

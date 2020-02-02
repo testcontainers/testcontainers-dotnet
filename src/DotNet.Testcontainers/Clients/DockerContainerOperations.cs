@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Clients
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Containers.OutputConsumers.Common;
   using DotNet.Testcontainers.Internals.Mappers;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
@@ -84,7 +83,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
-      if (outputConsumer is null || outputConsumer is DoNotConsumeStdoutOrStderr)
+      if (outputConsumer is null)
       {
         return;
       }

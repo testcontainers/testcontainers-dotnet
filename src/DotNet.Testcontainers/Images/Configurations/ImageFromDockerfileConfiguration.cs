@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Images.Configurations
 {
   using System;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   internal sealed class ImageFromDockerfileConfiguration : IImageFromDockerfileConfiguration
   {
     public ImageFromDockerfileConfiguration() : this(CreateDockerImage())

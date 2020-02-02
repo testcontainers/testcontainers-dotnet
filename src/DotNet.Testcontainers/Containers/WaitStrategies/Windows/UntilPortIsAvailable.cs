@@ -1,17 +1,10 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies.Windows
 {
-  using System;
-  using System.Threading.Tasks;
-
-  internal class UntilPortIsAvailable : Unix.UntilPortIsAvailable
+  internal class UntilPortIsAvailable : UntilCommandIsCompleted
   {
-    public UntilPortIsAvailable(int port) : base(port)
+    public UntilPortIsAvailable(int port) : base(
+      $"exit !(Test-NetConnection -ComputerName 'localhost' -Port {port}).TcpTestSucceeded")
     {
-    }
-
-    public override Task<bool> Until(Uri endpoint, string id)
-    {
-      throw new NotImplementedException();
     }
   }
 }

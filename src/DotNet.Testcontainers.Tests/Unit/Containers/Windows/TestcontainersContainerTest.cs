@@ -19,12 +19,30 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       }
 
       [IgnoreOnLinuxEngine]
-      public async Task SafeDisposable()
+      public async Task UntilCommandIsCompleted()
       {
-        // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("mcr.microsoft.com/windows/nanoserver:1809")
-          .WithWaitStrategy(Wait.ForWindowsContainer());
+          .WithImage("mcr.microsoft.com/windows/servercore:1809")
+          .WithEntrypoint("PowerShell", "-Command", "Start-Sleep -Seconds 3600")
+          .WithWaitStrategy(Wait.ForWindowsContainer()
+            .UntilCommandIsCompleted("exit !(Test-Path -Path 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe')"));
+
+        // When
+        // Then
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+        }
+      }
+
+      [IgnoreOnLinuxEngine]
+      public async Task UntilPortIsAvailable()
+      {
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("mcr.microsoft.com/windows/servercore:1809")
+          .WithEntrypoint("PowerShell", "-Command", "$tcpListener = [System.Net.Sockets.TcpListener]1337; $tcpListener.Start(); Start-Sleep -Seconds 3600")
+          .WithWaitStrategy(Wait.ForWindowsContainer()
+            .UntilPortIsAvailable(1337));
 
         // When
         // Then

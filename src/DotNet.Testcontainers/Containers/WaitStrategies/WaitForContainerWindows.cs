@@ -13,6 +13,13 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
     }
 
     /// <inheritdoc />
+    public override IWaitForContainerOS UntilCommandIsCompleted(params string[] command)
+    {
+      this.AddCustomWaitStrategy(new UntilCommandIsCompleted(command));
+      return this;
+    }
+
+    /// <inheritdoc />
     public override IWaitForContainerOS UntilPortIsAvailable(int port)
     {
       this.AddCustomWaitStrategy(new UntilPortIsAvailable(port));

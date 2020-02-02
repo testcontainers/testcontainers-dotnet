@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Images
   using System.Linq;
   using DotNet.Testcontainers.Internals.Parsers;
 
+  /// <inheritdoc cref="IDockerImage" />
   public sealed class DockerImage : IDockerImage
   {
     private static readonly MatchImage[] MatchImages = { new MatchImageRegistry(), new MatchImageRepositoryTag(), new MatchImageRepositoryLatest(), new MatchImageTag(), new MatchImage() };
@@ -32,12 +33,16 @@ namespace DotNet.Testcontainers.Images
       }
     }
 
+    /// <inheritdoc />
     public string Repository { get; }
 
+    /// <inheritdoc />
     public string Name { get; }
 
+    /// <inheritdoc />
     public string Tag { get; }
 
+    /// <inheritdoc />
     public string FullName => string.IsNullOrEmpty(this.Repository) ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
   }
 }
