@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers.Modules
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -70,7 +71,22 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       get
       {
-        return "tcp".Equals(this.configuration.Endpoint.Scheme) ? this.configuration.Endpoint.Host : "localhost";
+        switch (this.configuration.Endpoint.Scheme)
+        {
+          case "unix":
+            return File.Exists("/.dockerenv") ? 
+            this.container.NetworkSettings.Networks.First().Value.Gateway : 
+            "localhost";
+          case "npipe":
+            return "localhost";
+          case "tcp":
+          case "http":
+          case "https":
+            return this.configuration.Endpoint.Host;
+          default:
+            this.ThrowIfContainerHasNotBeenCreated();
+            return null;
+        }
       }
     }
 
