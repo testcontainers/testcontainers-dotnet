@@ -11,6 +11,11 @@ namespace DotNet.Testcontainers.Clients
   internal interface ITestcontainersClient
   {
     /// <summary>
+    /// True if the container is running inside another Docker container, otherwise false.
+    /// </summary>
+    bool IsRunningInsideDocker { get; }
+
+    /// <summary>
     /// Returns true if the Docker Windows engine is enabled, otherwise false.
     /// </summary>
     /// <returns>Task that returns true if the Docker Windows engine is enabled, otherwise false.</returns>

@@ -274,7 +274,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithDockerEndpoint(endpoint);
-      
+
         // When
         // Then
         await using (var testcontainer = testcontainersBuilder.Build())
@@ -282,7 +282,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           Assert.Equal(expectedHostname, testcontainer.Hostname);
         }
       }
-
 
       [Fact]
       public async Task OutputConsumer()

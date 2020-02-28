@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Containers.Modules
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -73,19 +72,23 @@ namespace DotNet.Testcontainers.Containers.Modules
       {
         switch (this.configuration.Endpoint.Scheme)
         {
-          case "unix":
-            return File.Exists("/.dockerenv") ? 
-            this.container.NetworkSettings.Networks.First().Value.Gateway : 
-            "localhost";
-          case "npipe":
-            return "localhost";
           case "tcp":
           case "http":
           case "https":
             return this.configuration.Endpoint.Host;
+          case "unix":
+          case "npipe":
+            if (this.client.IsRunningInsideDocker)
+            {
+              this.ThrowIfContainerHasNotBeenCreated();
+              return this.container.NetworkSettings.Networks.First().Value.Gateway;
+            }
+            else
+            {
+              return "localhost";
+            }
           default:
-            this.ThrowIfContainerHasNotBeenCreated();
-            return null;
+            return this.IpAddress;
         }
       }
     }
@@ -210,6 +213,8 @@ namespace DotNet.Testcontainers.Containers.Modules
 
       var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
       await cleanOrStopTask;
+
+      this.semaphoreSlim.Dispose();
     }
 
     private async Task<ContainerListResponse> Create(CancellationToken ct = default)

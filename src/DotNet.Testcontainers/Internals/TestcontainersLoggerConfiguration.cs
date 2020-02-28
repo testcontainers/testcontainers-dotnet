@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Internals
   internal sealed class TestcontainersLoggerConfiguration : LoggerConfiguration
   {
     private TestcontainersLoggerConfiguration(string configuration) : this(
-      new ConfigurationBuilder().AddJsonFile(configuration, true)
+      new ConfigurationBuilder().AddJsonFile(configuration, true, true)
         .Build())
     {
     }

@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Services
 {
+  using System.IO;
   using DotNet.Testcontainers.Internals;
+  using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Hosting;
   using Microsoft.Extensions.Logging;
@@ -24,7 +26,14 @@ namespace DotNet.Testcontainers.Services
     private static IHost InitHost()
     {
       return new HostBuilder()
-        .ConfigureLogging(config => config.AddSerilog(TestcontainersLoggerConfiguration.Production.CreateLogger(), true))
+        .ConfigureAppConfiguration((hostContext, config) =>
+        {
+          config.SetBasePath(Directory.GetCurrentDirectory());
+        })
+        .ConfigureLogging((hostContext, config) =>
+        {
+          config.AddSerilog(TestcontainersLoggerConfiguration.Production.CreateLogger(), true);
+        })
         .Build();
     }
   }

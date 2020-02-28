@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Services
   {
     public class Logger
     {
-      private static readonly string LogFile = $"testcontainers{DateTime.Now:yyyyMMdd}.log";
+      private static readonly string LogFile = $"testcontainers-{DateTime.Now:yyyyMMdd}.log";
 
       [Fact]
       public void FromCategoryName()
