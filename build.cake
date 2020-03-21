@@ -1,6 +1,6 @@
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.6.0
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
 
-#addin nuget:?package=Cake.Sonar&version=1.1.22
+#addin nuget:?package=Cake.Sonar&version=1.1.25
 
 #addin nuget:?package=Cake.Git&version=0.21.0
 
