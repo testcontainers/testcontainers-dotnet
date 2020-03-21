@@ -27,14 +27,9 @@ jobs:
           path: $(Build.SourcesDirectory)
 
       - task: UseDotNet@2
-        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion3 }}
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
         inputs:
-          version: ${{ parameters.dotNetCoreVersion3 }}
-
-      - task: UseDotNet@2
-        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion2 }}
-        inputs:
-          version: ${{ parameters.dotNetCoreVersion2 }}
+          version: ${{ parameters.dotNetCoreVersion }}
 
       - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\\\/]+src', '$(Build.SourcesDirectory)/src' | Set-Content $_ }
         displayName: Fix Absolute Code Coverage Paths

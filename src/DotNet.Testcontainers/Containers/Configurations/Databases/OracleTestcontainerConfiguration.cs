@@ -3,9 +3,9 @@
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class OracleTestontainerConfiguration : TestcontainerDatabaseConfiguration
+  public sealed class OracleTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public OracleTestontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
+    public OracleTestcontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
     {
       this.Environments["ORACLE_ALLOW_EMPTY_PASSWORD"] = "yes";
     }

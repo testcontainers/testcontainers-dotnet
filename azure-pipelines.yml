@@ -3,9 +3,8 @@ name: $(date:yyyyMMdd)$(rev:.r)
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  dotNetCoreVersion3: 3.1.101
-  dotNetCoreVersion2: 2.2.402
-  cakeVersion: 0.36.0
+  dotNetCoreVersion: 3.1.102
+  cakeVersion: 0.37.0
 
 trigger:
   - master
@@ -24,7 +23,7 @@ jobs:
       name: BuildAndTestsOnWindows
       displayName: Windows
       vmImage: windows-2019
-      dotNetCoreVersion3: $(dotNetCoreVersion3)
+      dotNetCoreVersion: $(dotNetCoreVersion)
       cakeVersion: $(cakeVersion)
       testFilter: FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
@@ -34,7 +33,7 @@ jobs:
       name: BuildAndTestsOnUnix
       displayName: Unix
       vmImage: ubuntu-18.04
-      dotNetCoreVersion3: $(dotNetCoreVersion3)
+      dotNetCoreVersion: $(dotNetCoreVersion)
       cakeVersion: $(cakeVersion)
       testFilter: FullyQualifiedName~DotNet.Testcontainers
 
@@ -45,6 +44,5 @@ jobs:
         name: Release
         displayName: Release
         vmImage: ubuntu-18.04
-        dotNetCoreVersion3: $(dotNetCoreVersion3)
-        dotNetCoreVersion2: $(dotNetCoreVersion2)
+        dotNetCoreVersion: $(dotNetCoreVersion)
         cakeVersion: $(cakeVersion)

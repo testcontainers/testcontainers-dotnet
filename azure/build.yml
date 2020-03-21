@@ -11,9 +11,9 @@ jobs:
         lfs: true
 
       - task: UseDotNet@2
-        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion3 }}
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
         inputs:
-          version: ${{ parameters.dotNetCoreVersion3 }}
+          version: ${{ parameters.dotNetCoreVersion }}
 
       - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
         displayName: Setup prerequisites
