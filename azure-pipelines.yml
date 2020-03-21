@@ -3,6 +3,7 @@ name: $(date:yyyyMMdd)$(rev:.r)
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  TZ: CET # https://stackoverflow.com/q/53510011
   dotNetCoreVersion: 3.1.102
   cakeVersion: 0.37.0
 

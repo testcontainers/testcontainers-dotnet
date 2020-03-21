@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Containers.Configurations.Databases
 {
+  using System;
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
@@ -7,28 +8,29 @@
   {
     public OracleTestcontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
     {
-      this.Environments["ORACLE_ALLOW_EMPTY_PASSWORD"] = "yes";
+      // The Dockerfile author did not export $ORACLE_HOME/bin to the global paths. We will use $ORACLE_HOME/bin/sqlplus instead.
+      this.Environments["ORACLE_HOME"] = "/u01/app/oracle/product/11.2.0/xe";
     }
 
     public override string Database
     {
-      get => this.Environments["ORACLE_DATABASE"];
-      set => this.Environments["ORACLE_DATABASE"] = value;
+      get => string.Empty;
+      set => throw new NotImplementedException();
     }
 
     public override string Username
     {
-      get => this.Environments["ORACLE_USER"];
-      set => this.Environments["ORACLE_USER"] = value;
+      get => "system";
+      set => throw new NotImplementedException();
     }
 
     public override string Password
     {
-      get => this.Environments["ORACLE_PASSWORD"];
-      set => this.Environments["ORACLE_PASSWORD"] = value;
+      get => "oracle";
+      set => throw new NotImplementedException();
     }
 
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilPortIsAvailable(this.DefaultPort);
+      .UntilCommandIsCompleted($"echo \"exit\" | $ORACLE_HOME/bin/sqlplus -L {this.Username}/{this.Password}@localhost:{this.DefaultPort}/xe | grep Connected > /dev/null");
   }
 }
