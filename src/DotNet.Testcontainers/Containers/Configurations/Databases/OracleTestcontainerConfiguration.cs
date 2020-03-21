@@ -29,6 +29,10 @@
     }
 
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilPortIsAvailable(this.DefaultPort);
+      .UntilCommandIsCompleted("bin/bash","-c",
+        "export PATH=/u01/app/oracle/product/11.2.0/xe/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;" +
+        "export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe;" +
+        $"sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE " +
+        "<<< 'SELECT 123 FROM dual; exit;' | grep '123'");
   }
 }

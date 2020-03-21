@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using Oracle.ManagedDataAccess.Client;
   using Xunit;
 
   public class OracleTestcontainerTest : IClassFixture<OracleFixture>

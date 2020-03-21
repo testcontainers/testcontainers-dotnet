@@ -45,6 +45,7 @@
     public async Task DisposeAsync()
     {
       await this.OracleTestcontainer.StopAsync();
+      await this.OracleTestcontainer.DisposeAsync();
     }
   }
 }
