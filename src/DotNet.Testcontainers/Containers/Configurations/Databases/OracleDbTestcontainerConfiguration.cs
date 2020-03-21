@@ -3,9 +3,9 @@
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class OracleTestontainerConfiguration : TestcontainerDatabaseConfiguration
+  public sealed class OracleDbTestontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public OracleTestontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
+    public OracleDbTestontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
     {
       this.Environments["ORACLE_ALLOW_EMPTY_PASSWORD"] = "yes";
     }
@@ -29,6 +29,12 @@
     }
 
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilPortIsAvailable(this.DefaultPort);
+      .UntilCommandIsCompleted("bin/bash","-c",
+        "export ORACLE_SID=XE;"+
+        "export PATH=/u01/app/oracle/product/11.2.0/xe/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;" +
+        "export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe;" +
+        $"sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE " +
+        "<<< 'SELECT 123 FROM dual; exit;' | grep '123'");
+
   }
 }

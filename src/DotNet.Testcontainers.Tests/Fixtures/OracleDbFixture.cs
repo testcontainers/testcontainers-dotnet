@@ -17,7 +17,7 @@
     public OracleDbFixture()
     {
       this.OracleTestContainer = new TestcontainersBuilder<OracleTestContainer>()
-        .WithDatabase(new OracleTestontainerConfiguration
+        .WithDatabase(new OracleDbTestontainerConfiguration
         {
           Username = this.Username, Password = this.Password, Database = this.DatabaseName, Port = this.Port
         })
@@ -32,6 +32,7 @@
     public async Task DisposeAsync()
     {
       await this.OracleTestContainer.StopAsync();
+      await this.OracleTestContainer.DisposeAsync();
     }
   }
 }

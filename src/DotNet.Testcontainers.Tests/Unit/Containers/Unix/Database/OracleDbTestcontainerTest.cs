@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
+  using System.Threading.Tasks;
   using Fixtures;
+  using Oracle.ManagedDataAccess.Client;
   using Xunit;
 
   public class OracleDbTestcontainerTest : IClassFixture<OracleDbFixture>
@@ -20,6 +22,19 @@
 
       // Assert
       Assert.NotNull(connectionString);
+    }
+
+    [Fact]
+    public async Task CanConnectToOracleContainerAndOpenConnection()
+    {
+      // Arrange
+      await using var connection = new OracleConnection(this.oracleDbFixture.OracleTestContainer.ConnectionString);
+
+      // Act
+      await connection.OpenAsync();
+
+      // Assert
+      Assert.NotEmpty(connection.HostName);
     }
   }
 }
