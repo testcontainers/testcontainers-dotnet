@@ -7,7 +7,7 @@
   using DotNet.Testcontainers.Containers.Modules.Databases;
   using Xunit;
 
-  public class OracleFixture : IAsyncLifetime, IDisposable
+  public class OracleFixture : IAsyncLifetime
   {
     public OracleTestcontainer OracleTestcontainer { get; }
 
@@ -32,11 +32,6 @@
         .Build();
     }
 
-    public void Dispose()
-    {
-      this.OracleTestcontainer.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-
     public async Task InitializeAsync()
     {
       await this.OracleTestcontainer.StartAsync();
@@ -44,7 +39,6 @@
 
     public async Task DisposeAsync()
     {
-      await this.OracleTestcontainer.StopAsync();
       await this.OracleTestcontainer.DisposeAsync();
     }
   }

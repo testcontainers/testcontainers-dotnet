@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Containers.Configurations.Databases
 {
+  using System;
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
@@ -30,9 +31,8 @@
 
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
       .UntilCommandIsCompleted("bin/bash","-c",
-        "export PATH=/u01/app/oracle/product/11.2.0/xe/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;" +
         "export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe;" +
-        $"sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE " +
+        $"/u01/app/oracle/product/11.2.0/xe/bin/sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE " +
         "<<< 'SELECT 123 FROM dual; exit;' | grep '123'");
   }
 }
