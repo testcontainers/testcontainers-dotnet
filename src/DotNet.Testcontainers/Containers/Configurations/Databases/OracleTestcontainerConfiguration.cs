@@ -30,9 +30,7 @@
     }
 
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted("bin/bash","-c",
-        "export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe;" +
-        $"/u01/app/oracle/product/11.2.0/xe/bin/sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE " +
-        "<<< 'SELECT 123 FROM dual; exit;' | grep '123'");
+      .UntilCommandIsCompleted("bin/bash", "-i", "-c",
+        $"echo 'select 123 from dual; exit;' | sqlplus -s {this.Username}/{this.Password}@{this.Database}:{this.Port}/XE | grep -qi '123'");
   }
 }
