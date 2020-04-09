@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Images
   /// <inheritdoc cref="IDockerImage" />
   public sealed class DockerImage : IDockerImage
   {
-    private static readonly MatchImage[] MatchImages = { new MatchImageRegistry(), new MatchImageRepositoryTag(), new MatchImageRepositoryLatest(), new MatchImageTag(), new MatchImage() };
+    private static readonly MatchImage[] MatchImages = { new MatchImageRegistryTag(), new MatchImageRegistryLatest(), new MatchImageRepositoryTag(), new MatchImageRepositoryLatest(), new MatchImageTag(), new MatchImage() };
 
     private static readonly Func<string, IDockerImage> GetDockerImage = image => MatchImages.Select(matcher => matcher.Match(image)).First(result => result != null);
 
