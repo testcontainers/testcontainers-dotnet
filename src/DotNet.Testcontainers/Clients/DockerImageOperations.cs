@@ -86,7 +86,8 @@ namespace DotNet.Testcontainers.Clients
       {
         using (var unused = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = config.Dockerfile, Tags = new[] { config.Image.FullName } }, ct))
         {
-          // New Docker image built, ready to use.
+          // Need to read the stream to the end to avoid disposing before docker has done its job.
+          _ = await new StreamReader(unused).ReadToEndAsync();
         }
       }
 
