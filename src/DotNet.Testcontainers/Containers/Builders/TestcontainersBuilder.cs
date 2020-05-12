@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration)
     {
-      return Build(this, this.configuration, moduleConfiguration);
+      return Build(this, Apply(), moduleConfiguration);
     }
 
     /// <inheritdoc />

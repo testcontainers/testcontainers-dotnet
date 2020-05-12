@@ -304,14 +304,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           consumer.Stderr.Position = 0;
 
           // Then
-          using (var streamReader = new StreamReader(consumer.Stdout))
+          using (var streamReader = new StreamReader(consumer.Stdout, leaveOpen: true))
           {
-            Assert.NotEmpty(streamReader.ReadToEnd());
+            Assert.NotEmpty(await streamReader.ReadToEndAsync());
           }
 
-          using (var streamReader = new StreamReader(consumer.Stderr))
+          using (var streamReader = new StreamReader(consumer.Stderr, leaveOpen: true))
           {
-            Assert.NotEmpty(streamReader.ReadToEnd());
+            Assert.NotEmpty(await streamReader.ReadToEndAsync());
           }
         }
       }
