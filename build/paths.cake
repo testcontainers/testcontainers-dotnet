@@ -1,4 +1,4 @@
-internal class BuildPaths
+internal sealed class BuildPaths
 {
   private BuildPaths()
   {
@@ -31,14 +31,14 @@ internal class BuildPaths
   }
 }
 
-internal class BuildFiles
+internal sealed class BuildFiles
 {
   public BuildFiles()
   {
   }
 }
 
-internal class BuildDirectories
+internal sealed class BuildDirectories
 {
   public DirectoryPath TestResults { get; }
   public DirectoryPath TestCoverage { get; }

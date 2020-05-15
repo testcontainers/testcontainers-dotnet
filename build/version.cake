@@ -1,41 +1,100 @@
-internal class BuildVersion
+internal sealed class BuildInformation
 {
-  private BuildVersion()
+  private BuildInformation()
   {
   }
 
+  public string Sha { get; private set; }
   public string Branch { get; private set; }
+  public string SourceBranch { get; private set; }
+  public string TargetBranch { get; private set; }
+  public string PullRequestId { get; private set; }
   public string Version { get; private set; }
+  public bool IsLocalBuild { get; private set; }
+  public bool IsReleaseBuild { get; private set; }
+  public bool IsPullRequest { get; private set; }
+  public bool ShouldPublish { get; private set; }
 
-  public static BuildVersion Instance(ICakeContext context)
+  public static BuildInformation Instance(ICakeContext context)
   {
-    var branch = context.EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? context.GitBranchCurrent(".").FriendlyName; // Azure Pipelines variable
+    var buildReason = context.EnvironmentVariable("BUILD_REASON", string.Empty);
 
-    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER"); // Azure Pipelines variable
+    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER", string.Empty);
 
-    var metadata = context.EnvironmentVariable("METADATA");
+    var git = context.GitBranchCurrent(".");
+
+    var timeStamp = git.Tip.Committer.When.ToUnixTimeMilliseconds().ToString();
+
+    var sha = git.Tip.Sha;
+
+    var branch = string.Empty;
+
+    string sourceBranch = null;
+
+    string targetBranch = null;
+
+    string pullRequestId = null;
+
+    var isPullRequest = "PullRequest".Equals(buildReason);
+
+    if (isPullRequest)
+    {
+      branch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_SOURCEBRANCH", git.FriendlyName);
+      sourceBranch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_SOURCEBRANCH");
+      targetBranch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_TARGETBRANCH");
+      pullRequestId = context.EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER");
+      sourceBranch = sourceBranch?.Replace("refs/heads/", string.Empty);
+      targetBranch = targetBranch?.Replace("refs/heads/", string.Empty);
+    }
+    else
+    {
+      branch = context.EnvironmentVariable("BUILD_SOURCEBRANCH", git.FriendlyName);
+    }
+
+    branch = branch.Replace("refs/heads/", string.Empty);
 
     var version = context.ParseAssemblyInfo("src/SolutionInfo.cs").AssemblyVersion;
 
-    if (!"master".Equals(branch))
+    var isLocalBuild = context.BuildSystem().IsLocalBuild;
+
+    var isReleaseBuild = GetIsReleaseBuild(branch);
+
+    var shouldPublish = GetShouldPublish(branch);
+
+    if (!isReleaseBuild)
     {
       version = $"{version}-beta";
     }
 
-    if (!"master".Equals(branch) && !string.IsNullOrEmpty(buildNumber))
+    if (!isReleaseBuild && !string.IsNullOrEmpty(buildNumber))
     {
       version = $"{version}.{buildNumber}";
     }
 
-    if (!"master".Equals(branch) && !string.IsNullOrEmpty(metadata))
+    return new BuildInformation
     {
-      version = $"{version}+{metadata}";
-    }
-
-    return new BuildVersion
-    {
+      Sha = sha,
       Branch = branch,
-      Version = version
+      SourceBranch = sourceBranch,
+      TargetBranch = targetBranch,
+      PullRequestId = pullRequestId,
+      Version = version,
+      IsLocalBuild = isLocalBuild,
+      IsReleaseBuild = isReleaseBuild,
+      IsPullRequest = isPullRequest,
+      ShouldPublish = shouldPublish
     };
+  }
+
+  private static bool GetIsReleaseBuild(string branch)
+  {
+    var branches = new[] { "master" };
+    return branches.Any(b => StringComparer.OrdinalIgnoreCase.Equals(b, branch));
+  }
+
+  private static bool GetShouldPublish(string branch)
+  {
+    var branches = new[] { "master", "develop" };
+    return branches.Any(b => StringComparer.OrdinalIgnoreCase.Equals(b, branch));
   }
 }

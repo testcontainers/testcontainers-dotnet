@@ -40,11 +40,6 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers.Common
       Console.SetError(this.stderr);
     }
 
-    ~RedirectStdoutAndStderrToStream()
-    {
-      this.Dispose(false);
-    }
-
     /// <inheritdoc />
     public Stream Stdout => this.stdout.BaseStream;
 
@@ -52,12 +47,6 @@ namespace DotNet.Testcontainers.Containers.OutputConsumers.Common
     public Stream Stderr => this.stderr.BaseStream;
 
     public void Dispose()
-    {
-      this.Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
     {
       if (this.disposed)
       {

@@ -20,8 +20,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       {
         using (var streamWriter = new StreamWriter(memoryStream))
         {
-          streamWriter.Write(expectedMessage);
-          streamWriter.Flush();
+          await streamWriter.WriteAsync(expectedMessage);
+          await streamWriter.FlushAsync();
 
           var wait = Wait.ForUnixContainer().UntilMessageIsLogged(memoryStream, expectedMessage);
           await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));

@@ -34,20 +34,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ContainerListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      var response = this.Docker.Containers.ListContainersAsync(new ContainersListParameters
-      {
-        All = true,
-        Filters = new Dictionary<string, IDictionary<string, bool>>
-        {
-          {
-            property, new Dictionary<string, bool>
-            {
-              { value, true },
-            }
-          },
-        },
-      }, ct);
-
+      var response = this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct);
       return (await response).FirstOrDefault();
     }
 

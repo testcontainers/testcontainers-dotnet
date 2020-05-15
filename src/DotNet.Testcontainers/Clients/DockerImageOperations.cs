@@ -34,20 +34,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ImagesListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      var response = this.Docker.Images.ListImagesAsync(new ImagesListParameters
-      {
-        All = true,
-        Filters = new Dictionary<string, IDictionary<string, bool>>
-        {
-          {
-            property, new Dictionary<string, bool>
-            {
-              { value, true },
-            }
-          },
-        },
-      }, ct);
-
+      var response = this.Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct);
       return (await response).FirstOrDefault();
     }
 
@@ -84,10 +71,10 @@ namespace DotNet.Testcontainers.Clients
 
       using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        using (var unused = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = config.Dockerfile, Tags = new[] { config.Image.FullName } }, ct))
+        using (var image = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = config.Dockerfile, Tags = new[] { config.Image.FullName } }, ct))
         {
-          // Need to read the stream to the end to avoid disposing before docker has done its job.
-          _ = await new StreamReader(unused).ReadToEndAsync();
+          // Read the image stream to the end, to avoid disposing before Docker has done it's job.
+          _ = await new StreamReader(image).ReadToEndAsync();
         }
       }
 

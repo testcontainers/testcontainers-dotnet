@@ -1,4 +1,4 @@
-internal class BuildProjects
+internal sealed class BuildProjects
 {
   private BuildProjects()
   {
@@ -18,7 +18,7 @@ internal class BuildProjects
       All = allProjects,
       NoneTests = allProjects.Where(project => !project.Name.EndsWith("Tests")).ToList(),
       OnlyTests = allProjects.Where(project => project.Name.EndsWith("Tests")).ToList(),
-      Testcontainers = allProjects.Single(p => "DotNet.Testcontainers".Equals(p.Name))
+      Testcontainers = allProjects.Single(project => "DotNet.Testcontainers".Equals(project.Name))
     };
   }
 }

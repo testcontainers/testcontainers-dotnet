@@ -20,7 +20,7 @@ Setup(context =>
     toClean.Add(project.Path.GetDirectory().Combine("Debug"));
   }
 
-  Information("Building version {0} of .NET Testcontainers ({1})", param.Version, param.Branch);
+  Information("Building version {0} of .NET Testcontainers ({1}@{2})", param.Version, param.Branch, param.Sha);
 });
 
 Teardown(context =>
@@ -68,7 +68,9 @@ Task("Build")
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
-    NoRestore = true
+    NoRestore = true,
+    ArgumentCustomization = args => args
+      .Append($"/p:TreatWarningsAsErrors={param.IsReleaseBuild.ToString()}")
   });
 });
 
@@ -95,7 +97,6 @@ Task("Tests")
 });
 
 Task("Sonar-Begin")
-  .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
   SonarBegin(new SonarBeginSettings
@@ -104,15 +105,21 @@ Task("Sonar-Begin")
     Key = param.SonarQubeCredentials.Key,
     Login = param.SonarQubeCredentials.Token,
     Organization = param.SonarQubeCredentials.Organization,
-    Branch = param.Branch,
+    Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis can not have the branch analysis parameter 'sonar.branch.name'.
     Silent = true,
+    Version = param.Sha,
+    PullRequestProvider = "GitHub",
+    PullRequestGithubEndpoint = "https://api.github.com/",
+    PullRequestGithubRepository = "HofmeisterAn/dotnet-testcontainers",
+    PullRequestKey = System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
+    PullRequestBranch = param.SourceBranch,
+    PullRequestBase = param.TargetBranch,
     VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResults)}/*.trx",
     OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/*.opencover.xml"
   });
 });
 
 Task("Sonar-End")
-  .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
   SonarEnd(new SonarEndSettings
@@ -122,6 +129,7 @@ Task("Sonar-End")
 });
 
 Task("Create-NuGet-Packages")
+  .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
   DotNetCorePack(param.Projects.Testcontainers.Path.FullPath, new DotNetCorePackSettings

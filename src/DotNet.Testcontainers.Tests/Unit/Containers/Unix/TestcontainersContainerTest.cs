@@ -167,7 +167,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
             var request = WebRequest.Create($"http://localhost:{port.From}");
 
-            var response = (HttpWebResponse)request.GetResponse();
+            var response = (HttpWebResponse)await request.GetResponseAsync();
 
             Assert.True(HttpStatusCode.OK.Equals(response.StatusCode), $"nginx port {port.From} is not available.");
           }
@@ -241,7 +241,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.Equal(dayOfWeek, File.ReadAllText($"{TempDir}/{file}"));
+        Assert.Equal(dayOfWeek, await File.ReadAllTextAsync($"{TempDir}/{file}"));
       }
 
       [Fact]
