@@ -14,7 +14,7 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.1.50" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.2" />
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
