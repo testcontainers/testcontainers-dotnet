@@ -3,9 +3,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class MySqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public class MySqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public MySqlTestcontainerConfiguration() : base("mysql:8.0.18", 3306)
+    private const string MySqlImage = "mysql:8.0.18";
+
+    private const int MySqlPort = 3306;
+
+    public MySqlTestcontainerConfiguration()
+      : this(MySqlImage)
+    {
+    }
+
+    public MySqlTestcontainerConfiguration(string image)
+      : base(image, MySqlPort)
     {
       this.Environments["MYSQL_ALLOW_EMPTY_PASSWORD"] = "yes";
     }

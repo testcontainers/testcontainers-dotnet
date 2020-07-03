@@ -4,9 +4,19 @@
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class OracleTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public class OracleTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public OracleTestcontainerConfiguration() : base("wnameless/oracle-xe-11g-r2", 1521)
+    private const string OracleImage = "wnameless/oracle-xe-11g-r2";
+
+    private const int OraclePort = 1521;
+
+    public OracleTestcontainerConfiguration()
+      : this(OracleImage)
+    {
+    }
+
+    public OracleTestcontainerConfiguration(string image)
+      : base(image, OraclePort)
     {
       // The Dockerfile author did not export $ORACLE_HOME/bin to the global paths. We will use $ORACLE_HOME/bin/sqlplus instead.
       this.Environments["ORACLE_HOME"] = "/u01/app/oracle/product/11.2.0/xe";

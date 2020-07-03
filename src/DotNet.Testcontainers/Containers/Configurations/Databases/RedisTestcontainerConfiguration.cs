@@ -4,9 +4,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class RedisTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public class RedisTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public RedisTestcontainerConfiguration() : base("redis:5.0.6", 6379)
+    private const string RedisImage = "redis:5.0.6";
+
+    private const int RedisPort = 6379;
+
+    public RedisTestcontainerConfiguration()
+      : this(RedisImage)
+    {
+    }
+
+    public RedisTestcontainerConfiguration(string image)
+      : base(image, RedisPort)
     {
     }
 

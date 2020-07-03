@@ -4,9 +4,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public MsSqlTestcontainerConfiguration() : base("mcr.microsoft.com/mssql/server:2017-CU14-ubuntu", 1433)
+    private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2017-CU14-ubuntu";
+
+    private const int MsSqlPort = 1433;
+
+    public MsSqlTestcontainerConfiguration()
+      : this(MsSqlImage)
+    {
+    }
+
+    public MsSqlTestcontainerConfiguration(string image)
+      : base(image, MsSqlPort)
     {
       this.Environments["ACCEPT_EULA"] = "Y";
     }

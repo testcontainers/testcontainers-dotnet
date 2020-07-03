@@ -3,9 +3,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class CouchDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public class CouchDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    public CouchDbTestcontainerConfiguration() : base("couchdb:2.3.1", 5984)
+    private const string CouchDbImage = "couchdb:2.3.1";
+
+    private const int CouchDbPort = 5984;
+
+    public CouchDbTestcontainerConfiguration()
+      : this(CouchDbImage)
+    {
+    }
+
+    public CouchDbTestcontainerConfiguration(string image)
+      : base(image, CouchDbPort)
     {
     }
 

@@ -3,9 +3,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
   using DotNet.Testcontainers.Containers.Configurations.Abstractions;
   using DotNet.Testcontainers.Containers.WaitStrategies;
 
-  public sealed class RabbitMqTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
+  public class RabbitMqTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
   {
-    public RabbitMqTestcontainerConfiguration() : base("rabbitmq:3.7.21", 5672)
+    private const string RabbitMqImage = "rabbitmq:3.7.21";
+
+    private const int RabbitMqPort = 5672;
+
+    public RabbitMqTestcontainerConfiguration()
+      : this(RabbitMqImage)
+    {
+    }
+
+    public RabbitMqTestcontainerConfiguration(string image)
+      : base(image, RabbitMqPort)
     {
     }
 
