@@ -286,32 +286,37 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public async Task OutputConsumer()
       {
+        var unixTimeInMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+
         // Given
         using (var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream()))
         {
           // When
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-            .WithImage("nginx")
-            .WithCommand("/bin/sh", "-c", "hostname > /dev/stdout && hostname > /dev/stderr")
-            .WithOutputConsumer(consumer);
+            .WithImage("alpine")
+            .WithCommand("/bin/sh", "-c", $"printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+            .WithOutputConsumer(consumer)
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilMessageIsLogged(consumer.Stdout, unixTimeInMilliseconds)
+              .UntilMessageIsLogged(consumer.Stderr, unixTimeInMilliseconds));
 
           await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
           {
             await testcontainer.StartAsync();
           }
 
-          consumer.Stdout.Position = 0;
-          consumer.Stderr.Position = 0;
+          consumer.Stdout.Seek(0, SeekOrigin.Begin);
+          consumer.Stderr.Seek(0, SeekOrigin.Begin);
 
           // Then
           using (var streamReader = new StreamReader(consumer.Stdout, leaveOpen: true))
           {
-            Assert.NotEmpty(await streamReader.ReadToEndAsync());
+            Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
           }
 
           using (var streamReader = new StreamReader(consumer.Stderr, leaveOpen: true))
           {
-            Assert.NotEmpty(await streamReader.ReadToEndAsync());
+            Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
           }
         }
       }

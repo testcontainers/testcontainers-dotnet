@@ -18,14 +18,14 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.message = message;
     }
 
-    public Task<bool> Until(Uri endpoint, string id)
+    public async Task<bool> Until(Uri endpoint, string id)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
 
       using (var streamReader = new StreamReader(this.stream, Encoding.UTF8, false, 4096, true))
       {
-        var output = streamReader.ReadToEnd();
-        return Task.FromResult(Regex.IsMatch(output, this.message));
+        var output= await streamReader.ReadToEndAsync();
+        return Regex.IsMatch(output, this.message);
       }
     }
   }
