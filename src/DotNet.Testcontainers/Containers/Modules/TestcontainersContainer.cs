@@ -232,7 +232,7 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       using (var cts = new CancellationTokenSource())
       {
-        var attachOutputConsumerTask = this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token);
+        await this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token);
 
         var startTask = this.client.StartAsync(id, cts.Token);
 
@@ -244,7 +244,7 @@ namespace DotNet.Testcontainers.Containers.Modules
           }
         }, cts.Token);
 
-        var tasks = Task.WhenAll(attachOutputConsumerTask, startTask, waitTask);
+        var tasks = Task.WhenAll(startTask, waitTask);
 
         try
         {
@@ -252,6 +252,7 @@ namespace DotNet.Testcontainers.Containers.Modules
         }
         catch (Exception)
         {
+          // Get all thrown exceptions in tasks.
           if (tasks.Exception != null)
           {
             throw tasks.Exception;

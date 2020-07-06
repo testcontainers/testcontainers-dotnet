@@ -28,14 +28,16 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
     /// <summary>
     /// Gets the Docker image.
     /// </summary>
+    [PublicAPI]
     public string Image { get; }
 
     /// <summary>
     /// Gets the container port.
     /// </summary>
     /// <remarks>
-    /// Corresponds to the default port of the service.
+    /// Corresponds to the default port of the hosted service.
     /// </remarks>
+    [PublicAPI]
     public int DefaultPort { get; }
 
     /// <summary>
