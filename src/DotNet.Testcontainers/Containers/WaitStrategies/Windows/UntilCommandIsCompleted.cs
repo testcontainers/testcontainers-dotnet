@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Windows
 {
   internal class UntilCommandIsCompleted : Unix.UntilCommandIsCompleted
   {
-    public UntilCommandIsCompleted(string command) : base("PowerShell", "-Command", command)
+    public UntilCommandIsCompleted(string command) : this("PowerShell", "-Command", command)
     {
     }
 

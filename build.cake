@@ -2,7 +2,7 @@
 
 #addin nuget:?package=Cake.Sonar&version=1.1.25
 
-#addin nuget:?package=Cake.Git&version=0.21.0
+#addin nuget:?package=Cake.Git&version=0.22.0
 
 #load "./build/parameters.cake"
 
