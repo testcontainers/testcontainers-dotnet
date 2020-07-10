@@ -4,7 +4,7 @@
 
 #addin nuget:?package=Cake.Git&version=0.22.0
 
-#load "./build/parameters.cake"
+#load ".cake-scripts/parameters.cake"
 
 readonly var param = BuildParameters.Instance(Context, "DotNet.Testcontainers");
 

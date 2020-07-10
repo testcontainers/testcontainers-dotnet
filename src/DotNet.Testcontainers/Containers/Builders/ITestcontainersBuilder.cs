@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// A fluent Testcontainer builder.
@@ -17,6 +18,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="moduleConfiguration">Module configuration action.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration);
 
     /// <summary>
@@ -24,6 +26,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="image">Docker image name.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithImage(string image);
 
     /// <summary>
@@ -31,6 +34,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="image">Docker image instance.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image);
 
     /// <summary>
@@ -38,6 +42,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="name">Testcontainers name.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithName(string name);
 
     /// <summary>
@@ -45,6 +50,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="workingDirectory">Working directory.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory);
 
     /// <summary>
@@ -52,6 +58,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="entrypoint">Entrypoint executable.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithEntrypoint(params string[] entrypoint);
 
     /// <summary>
@@ -59,6 +66,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="command">List of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithCommand(params string[] command);
 
     /// <summary>
@@ -67,6 +75,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="name">Environment variable name.</param>
     /// <param name="value">Environment variable value.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value);
 
     /// <summary>
@@ -75,6 +84,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="name">Label name.</param>
     /// <param name="value">Label value.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value);
 
     /// <summary>
@@ -82,6 +92,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="port">Port to expose.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithExposedPort(int port);
 
     /// <summary>
@@ -89,6 +100,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="port">Port to expose.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithExposedPort(string port);
 
     /// <summary>
@@ -97,6 +109,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
     /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false);
 
     /// <summary>
@@ -105,6 +118,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="hostPort">Port of the host machine.</param>
     /// <param name="containerPort">Port of the Testcontainer.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(int hostPort, int containerPort);
 
     /// <summary>
@@ -113,6 +127,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
     /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false);
 
     /// <summary>
@@ -121,6 +136,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="hostPort">Port of the host machine.</param>
     /// <param name="containerPort">Port of the Testcontainer.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort);
 
     /// <summary>
@@ -129,6 +145,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="source">An absolute path or a name value within the host machine.</param>
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination);
 
     /// <summary>
@@ -136,6 +153,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="cleanUp">True, Testcontainer will remove the Testcontainer on finalize. Otherwise, Testcontainer will keep it.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp);
 
     /// <summary>
@@ -143,6 +161,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="endpoint">Docker API endpoint.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
 
     /// <summary>
@@ -150,6 +169,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="outputConsumer">Output consumer to capture stdout and stderr.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithOutputConsumer(IOutputConsumer outputConsumer);
 
     /// <summary>
@@ -158,12 +178,14 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation is <see cref="DotNet.Testcontainers.Containers.WaitStrategies.Common.UntilContainerIsRunning" />.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     /// <remarks>Multiple wait strategies are executed one after the other in th…</remarks>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerContainer" /> with the given configuration.
     /// </summary>
     /// <returns>A configured instance of <see cref="IDockerContainer" />.</returns>
+    [PublicAPI]
     TDockerContainer Build();
   }
 }

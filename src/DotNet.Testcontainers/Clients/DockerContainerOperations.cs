@@ -10,9 +10,13 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Internals.Mappers;
+  using DotNet.Testcontainers.Services;
+  using Microsoft.Extensions.Logging;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
   {
+    private static readonly ILogger<DockerContainerOperations> Logger = TestcontainersHostService.GetLogger<DockerContainerOperations>();
+
     public DockerContainerOperations(Uri endpoint) : base(endpoint)
     {
     }
@@ -55,25 +59,25 @@ namespace DotNet.Testcontainers.Clients
 
     public Task StartAsync(string id, CancellationToken ct = default)
     {
+      Logger.LogInformation("Starting container {id}", id);
       return this.Docker.Containers.StartContainerAsync(id, new ContainerStartParameters(), ct);
     }
 
     public Task StopAsync(string id, CancellationToken ct = default)
     {
+      Logger.LogInformation("Stopping container {id}", id);
       return this.Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
     }
 
     public Task RemoveAsync(string id, CancellationToken ct = default)
     {
+      Logger.LogInformation("Removing container {id}", id);
       return this.Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
     }
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
-      if (outputConsumer is null)
-      {
-        return;
-      }
+      Logger.LogInformation("Attaching {outputConsumer} at container {id}", outputConsumer.GetType(), id);
 
       var attachParameters = new ContainerAttachParameters
       {
@@ -88,6 +92,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
+      Logger.LogInformation("Executing {command} at container {id}", command, id);
+
       var created = await this.Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command, }, ct);
 
       await this.Docker.Containers.StartContainerExecAsync(created.ID, ct);
@@ -126,7 +132,10 @@ namespace DotNet.Testcontainers.Clients
         HostConfig = hostConfig,
       };
 
-      return (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)).ID;
+      var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)).ID;
+      Logger.LogInformation("Container {id} created", id);
+
+      return id;
     }
   }
 }

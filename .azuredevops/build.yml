@@ -1,0 +1,43 @@
+jobs:
+  - job: ${{ parameters.name }}
+    displayName: CI build for ${{ parameters.displayName }}
+
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+
+    steps:
+      - checkout: self
+        clean: true
+        lfs: true
+
+      - task: UseDotNet@2
+        displayName: Use .NET Core SDK ${{ parameters.dotNetCoreVersion }}
+        inputs:
+          version: ${{ parameters.dotNetCoreVersion }}
+
+      - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
+        displayName: Setup prerequisites
+
+      - powershell: ./tools/dotnet-cake --target=Restore-NuGet-Packages
+        displayName: Prepare
+
+      - powershell: ./tools/dotnet-cake --target=Build
+        displayName: Build
+
+      - powershell: ./tools/dotnet-cake --target=Tests --test-filter='${{ parameters.testFilter }}'
+        displayName: Tests
+
+      - powershell: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
+        displayName: Logs
+
+      - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage.netcoreapp3.1', '${{ parameters.displayName }}'.ToLower() }
+        displayName: Rename Test And Coverage Results
+
+      - powershell: "@('test-results', 'test-coverage') | % { Copy-Item -Path $_ -Destination '$(Build.ArtifactStagingDirectory)' -Recurse }"
+        displayName: Copy Test And Coverage Results To Staging Directory
+
+      - task: PublishPipelineArtifact@1
+        displayName: Publish Test And Coverage Results
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)
+          artifactName: ${{ parameters.displayName }}.TestAndCoverageResults

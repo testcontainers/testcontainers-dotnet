@@ -125,7 +125,6 @@ namespace DotNet.Testcontainers.Clients
       }
 
       var id = await this.containers.RunAsync(configuration, ct);
-
       this.registryService.Register(id, configuration.CleanUp);
 
       return id;

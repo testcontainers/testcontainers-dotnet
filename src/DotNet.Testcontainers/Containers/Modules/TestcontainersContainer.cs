@@ -10,7 +10,9 @@ namespace DotNet.Testcontainers.Containers.Modules
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Internals;
+  using DotNet.Testcontainers.Services;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   public class TestcontainersContainer : IDockerContainer
   {
@@ -24,6 +26,12 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     [NotNull]
     private ContainerListResponse container = new ContainerListResponse();
+
+    protected TestcontainersContainer(ITestcontainersConfiguration configuration)
+    {
+      this.client = new TestcontainersClient(configuration.Endpoint);
+      this.configuration = configuration;
+    }
 
     /// <inheritdoc />
     public string Id
@@ -106,12 +114,6 @@ namespace DotNet.Testcontainers.Containers.Modules
           return TestcontainersState.Undefined;
         }
       }
-    }
-
-    protected TestcontainersContainer(ITestcontainersConfiguration configuration)
-    {
-      this.client = new TestcontainersClient(configuration.Endpoint);
-      this.configuration = configuration;
     }
 
     public ushort GetMappedPublicPort(int privatePort)
@@ -255,6 +257,7 @@ namespace DotNet.Testcontainers.Containers.Modules
           // Get all thrown exceptions in tasks.
           if (tasks.Exception != null)
           {
+            TestcontainersHostService.GetLogger<TestcontainersContainer>().LogError(tasks.Exception, "Can not start container {id}", id);
             throw tasks.Exception;
           }
         }

@@ -120,6 +120,29 @@ Wait.ForUnixContainer()
   .UntilOperationIsSucceeded(() => true, 1);
 ```
 
+## Logging
+
+To enable and configure logging, choose your Serilog Sink, like `Serilog.Sinks.File` and add the Sink configuration to the section `Serilog` in your `appsettings.json` file:
+
+```json
+{
+  "Serilog": {
+    "MinimumLevel": "Information",
+    "Using": [
+      "Serilog.Sinks.File"
+    ],
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "Path": "testcontainers.log"
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Note
 
 Please keep in mind this is not the official repository. Unfortunately, my requirements are not supported by the official implementation yet. Although we try to add new features and refactor the current version of [testcontainers/testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet), the progress is slow. As long as the official implementation does not cover all my requirements, I will work on both projects.

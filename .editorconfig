@@ -420,3 +420,9 @@ dotnet_naming_rule.parameters_rule.severity = warning
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 ##########################################
+
+##########################################
+# Custom Settings
+##########################################
+
+max_line_length = 240

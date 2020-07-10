@@ -6,7 +6,7 @@ variables:
   MSBUILDDISABLENODEREUSE: true # https://github.com/dotnet/sdk/issues/9452
   TZ: CET # https://stackoverflow.com/q/53510011
   dotNetCoreVersion: 3.1.102
-  cakeVersion: 0.37.0
+  cakeVersion: 0.38.4
 
 trigger:
   - master
@@ -20,7 +20,7 @@ pr:
 
 jobs:
   # Run Windows build and tests.
-  - template: azure/build.yml
+  - template: .azuredevops/build.yml
     parameters:
       name: BuildAndTestsOnWindows
       displayName: Windows
@@ -30,7 +30,7 @@ jobs:
       testFilter: FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
   # Run Unix build and tests.
-  - template: azure/build.yml
+  - template: .azuredevops/build.yml
     parameters:
       name: BuildAndTestsOnUnix
       displayName: Unix
@@ -40,7 +40,7 @@ jobs:
       testFilter: FullyQualifiedName~DotNet.Testcontainers
 
   # Run static code analysis and publish artifact.
-  - template: azure/publish.yml
+  - template: .azuredevops/publish.yml
     parameters:
       name: Release
       displayName: Release

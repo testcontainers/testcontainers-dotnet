@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Services
 {
   using System.IO;
-  using DotNet.Testcontainers.Internals;
   using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Hosting;
@@ -11,6 +10,8 @@ namespace DotNet.Testcontainers.Services
 
   internal static class TestcontainersHostService
   {
+    private const string SerilogSectionName = "Serilog";
+
     private static readonly IHost Host = InitHost();
 
     public static ILogger GetLogger(string categoryName)
@@ -29,10 +30,13 @@ namespace DotNet.Testcontainers.Services
         .ConfigureAppConfiguration((hostContext, config) =>
         {
           config.SetBasePath(Directory.GetCurrentDirectory());
+          config.AddJsonFile("appsettings.json", true, true);
+          config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment}.json", true, true);
         })
-        .ConfigureLogging((hostContext, config) =>
+        .ConfigureServices((hostContext, config) =>
         {
-          config.AddSerilog(TestcontainersLoggerConfiguration.Production.CreateLogger(), true);
+          var logger = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration, SerilogSectionName).CreateLogger();
+          config.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(logger, true));
         })
         .Build();
     }

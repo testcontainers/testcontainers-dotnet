@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Images.Builders
 {
   using System.Threading.Tasks;
+  using JetBrains.Annotations;
 
   public interface IImageFromDockerfileBuilder
   {
@@ -9,6 +10,7 @@ namespace DotNet.Testcontainers.Images.Builders
     /// </summary>
     /// <param name="name">Docker image name.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     IImageFromDockerfileBuilder WithName(string name);
 
     /// <summary>
@@ -16,6 +18,7 @@ namespace DotNet.Testcontainers.Images.Builders
     /// </summary>
     /// <param name="name">Docker image name.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     IImageFromDockerfileBuilder WithName(IDockerImage name);
 
     /// <summary>
@@ -23,6 +26,7 @@ namespace DotNet.Testcontainers.Images.Builders
     /// </summary>
     /// <param name="dockerfile">Dockerfile name.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     IImageFromDockerfileBuilder WithDockerfile(string dockerfile);
 
     /// <summary>
@@ -30,6 +34,7 @@ namespace DotNet.Testcontainers.Images.Builders
     /// </summary>
     /// <param name="dockerfileDirectory">Dockerfile base directory.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory);
 
     /// <summary>
@@ -37,12 +42,14 @@ namespace DotNet.Testcontainers.Images.Builders
     /// </summary>
     /// <param name="deleteIfExists">True, Testcontainer will remove the Docker image. Otherwise, Testcontainer will keep it.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
     /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.
     /// </summary>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
     Task<string> Build();
   }
 }
