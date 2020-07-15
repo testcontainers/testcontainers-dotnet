@@ -1,9 +1,12 @@
 <Project>
-  <!-- General package metadata -->
+  <!-- Set common package metadata -->
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>0.0.1</Version>
-    <Copyright>Copyright (c) 2019 Andre Hofmeister and other authors</Copyright>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <Product>.NET Testcontainers</Product>
+    <Copyright>Copyright (c) 2019 - 2020 Andre Hofmeister and other authors</Copyright>
     <Authors>Andre Hofmeister and contributors</Authors>
     <Company>Andre Hofmeister</Company>
     <Description>A lightweight library to run tests with throwaway instances of Docker containers.</Description>
@@ -16,24 +19,19 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/HofmeisterAn/dotnet-testcontainers</RepositoryUrl>
   </PropertyGroup>
-  <!-- Attribute generation -->
-  <PropertyGroup>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-  </PropertyGroup>
-  <!-- Warnings as errors -->
+  <!-- Enable warnings as errors -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <!-- Global solution information -->
+  <!-- Set common package files -->
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)SolutionInfo.cs" />
-    <None Include="$(MSBuildThisFileDirectory)../LICENSE" Pack="true" PackagePath="" />
-    <None Include="$(MSBuildThisFileDirectory)../docs/DotNet.Testcontainers.png" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE" Visible="false" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)../docs/DotNet.Testcontainers.png" Visible="false" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <!-- Allow internal access to test projects  -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DotNet.Testcontainers.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>

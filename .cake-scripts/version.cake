@@ -53,7 +53,7 @@ internal sealed class BuildInformation
 
     branch = branch.Replace("refs/heads/", string.Empty);
 
-    var version = context.ParseAssemblyInfo("src/SolutionInfo.cs").AssemblyVersion;
+    var version = context.XmlPeek("src/Shared.msbuild", "/Project/PropertyGroup[1]/Version/text()");
 
     var isLocalBuild = context.BuildSystem().IsLocalBuild;
 

@@ -1,75 +1,109 @@
-namespace DotNet.Testcontainers.Images.Archives
+﻿namespace DotNet.Testcontainers.Images.Archives
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Text.RegularExpressions;
+  using DotNet.Testcontainers.Services;
   using ICSharpCode.SharpZipLib.Tar;
 
+  /// <summary>
+  /// Generates a tar archive with docker configuration files. The generated tar archive can be used to build a docker image.
+  /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly char[] TrimLeadingChars = { '/' };
+    private static readonly IOperatingSystem os;
 
-    public DockerfileArchive(string baseDirectory) : this(new DirectoryInfo(baseDirectory))
+    private readonly DirectoryInfo dockerfileDirectory;
+
+    private readonly IDockerImage image;
+
+    static DockerfileArchive()
+    {
+      os = new Unix();
+    }
+
+    /// <summary>
+    /// Creates an instance of <see cref="DockerfileArchive" /> for the specified parameters.
+    /// </summary>
+    /// <param name="dockerfileDirectory">Directory to docker configuration files.</param>
+    /// <param name="dockerfile">Name of the dockerfile, which is necessary to start the docker build.</param>
+    /// <param name="image">Docker image information to create the tar archive for.</param>
+    public DockerfileArchive(string dockerfileDirectory, string dockerfile, IDockerImage image)
+      : this(new DirectoryInfo(dockerfileDirectory), dockerfile, image)
     {
     }
 
-    public DockerfileArchive(DirectoryInfo baseDirectory)
+    /// <summary>
+    /// Creates an instance of <see cref="DockerfileArchive" /> for the specified parameters.
+    /// </summary>
+    /// <param name="dockerfileDirectory">Directory to docker configuration files.</param>
+    /// <param name="dockerfile">Name of the dockerfile, which is necessary to start the docker build.</param>
+    /// <param name="image">Docker image information to create the tar archive for.</param>
+    /// <exception cref="ArgumentException">Will be thrown if the dockerfile directory does not exist or the directory does not contain a dockerfile.</exception>
+    public DockerfileArchive(DirectoryInfo dockerfileDirectory, string dockerfile, IDockerImage image)
     {
-      this.BaseDirectory = baseDirectory;
-
-      this.DockerfileArchiveFile = new FileInfo($"{Path.GetTempPath()}/Dockerfile.tar");
-
-      if (!this.BaseDirectory.Exists)
+      if (!dockerfileDirectory.Exists)
       {
-        throw new ArgumentException($"Directory '{this.BaseDirectory.FullName}' does not exist.");
+        throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
       }
 
-      if (!this.BaseDirectory.GetFiles().Any(file => "Dockerfile".Equals(file.Name)))
+      if (!dockerfileDirectory.GetFiles(dockerfile, SearchOption.TopDirectoryOnly).Any())
       {
-        throw new ArgumentException($"Dockerfile does not exist in '{this.BaseDirectory.FullName}'.");
+        throw new ArgumentException($"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'.");
       }
+
+      this.dockerfileDirectory = dockerfileDirectory;
+      this.image = image;
     }
 
-    public DirectoryInfo BaseDirectory { get; }
-
-    public FileInfo DockerfileArchiveFile { get; }
-
+    /// <inheritdoc />
     public string Tar()
     {
-      using (var dockerfileArchiveStream = File.Create(this.DockerfileArchiveFile.FullName))
+      var dockerfileArchiveName = Regex.Replace(this.image.FullName, "[^a-zA-Z0-9]", "-").ToLowerInvariant();
+
+      var dockerfileArchivePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveName}.tar");
+
+      var dockerIgnoreFile = new DockerIgnoreFile(this.dockerfileDirectory.FullName, ".dockerignore");
+
+      using (var stream = new FileStream(dockerfileArchivePath, FileMode.Create))
       {
-        using (var dockerfileArchive = TarArchive.CreateOutputTarArchive(dockerfileArchiveStream))
+        using (var tarArchive = TarArchive.CreateOutputTarArchive(stream))
         {
-          dockerfileArchive.RootPath = this.BaseDirectory.FullName;
+          tarArchive.RootPath = os.NormalizePath(this.dockerfileDirectory.FullName);
 
-          void Tar(string baseDirectory)
+          foreach (var file in GetFiles(this.dockerfileDirectory.FullName))
           {
-            baseDirectory = baseDirectory.Replace('\\', '/');
+            var relativePath = file.Substring(tarArchive.RootPath.Length + 1);
 
-            void WriteEntry(string entry)
+            if (dockerIgnoreFile.Denies(relativePath))
             {
-              entry = entry.Replace('\\', '/');
-
-              var tarEntry = TarEntry.CreateEntryFromFile(entry);
-              tarEntry.Name = entry.Replace(dockerfileArchive.RootPath, string.Empty).TrimStart(TrimLeadingChars);
-              dockerfileArchive.WriteEntry(tarEntry, File.Exists(entry));
+              continue;
             }
 
-            if (!dockerfileArchive.RootPath.Equals(baseDirectory))
-            {
-              WriteEntry(baseDirectory);
-            }
-
-            Directory.GetFiles(baseDirectory).ToList().ForEach(WriteEntry);
-
-            Directory.GetDirectories(baseDirectory).ToList().ForEach(Tar);
+            var tarEntry = TarEntry.CreateEntryFromFile(file);
+            tarEntry.Name = relativePath;
+            tarArchive.WriteEntry(tarEntry, true);
           }
-
-          Tar(this.BaseDirectory.FullName);
         }
       }
 
-      return this.DockerfileArchiveFile.FullName;
+      return dockerfileArchivePath;
+    }
+
+    /// <summary>
+    /// Gets all accepted docker archive files.
+    /// </summary>
+    /// <param name="directory">Directory to docker configuration files.</param>
+    /// <returns>Returns a list with all accepted docker archive files.</returns>
+    private static IEnumerable<string> GetFiles(string directory)
+    {
+      return Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
+        .AsParallel()
+        .Select(Path.GetFullPath)
+        .Select(os.NormalizePath)
+        .ToArray();
     }
   }
 }

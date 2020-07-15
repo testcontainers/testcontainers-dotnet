@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
   using System.Collections.Generic;
   using System.IO;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Images.Archives;
   using DotNet.Testcontainers.Images.Builders;
   using ICSharpCode.SharpZipLib.Tar;
@@ -15,11 +16,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
     public void DockerfileArchiveTar()
     {
       // Given
-      var expected = new List<string> { "Dockerfile", "setup", "setup/setup.sh" };
+      var expected = new SortedSet<string> { "Dockerfile", "setup/setup.sh" };
 
-      var actual = new List<string>();
+      var actual = new SortedSet<string>();
 
-      var dockerFileArchive = new DockerfileArchive("./Assets");
+      var dockerFileArchive = new DockerfileArchive("Assets", "Dockerfile", new DockerImage("Testcontainers", "Test", "1.0.0"));
 
       // When
       using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())

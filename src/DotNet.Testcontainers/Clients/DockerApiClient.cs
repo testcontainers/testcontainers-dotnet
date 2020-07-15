@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Concurrent;
   using Docker.DotNet;
 
-  internal class DockerApiClient
+  internal abstract class DockerApiClient
   {
     private static readonly ConcurrentDictionary<Uri, IDockerClient> Clients = new ConcurrentDictionary<Uri, IDockerClient>();
 

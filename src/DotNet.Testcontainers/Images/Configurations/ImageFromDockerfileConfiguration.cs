@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Images.Configurations
 {
-  using System;
+  using System.IO;
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   internal sealed class ImageFromDockerfileConfiguration : IImageFromDockerfileConfiguration
@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Images.Configurations
 
     private static IDockerImage CreateDockerImage()
     {
-      return new DockerImage(Guid.NewGuid().ToString("n").Substring(0, 12));
+      return new DockerImage("Testcontainers", Path.GetRandomFileName().Substring(0, 8), string.Empty);
     }
   }
 }
