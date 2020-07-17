@@ -13,16 +13,11 @@
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly IOperatingSystem os;
+    private static readonly IOperatingSystem os = new Unix();
 
     private readonly DirectoryInfo dockerfileDirectory;
 
     private readonly IDockerImage image;
-
-    static DockerfileArchive()
-    {
-      os = new Unix();
-    }
 
     /// <summary>
     /// Creates an instance of <see cref="DockerfileArchive" /> for the specified parameters.

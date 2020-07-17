@@ -7,7 +7,11 @@ namespace DotNet.Testcontainers.Services
   /// </summary>
   internal readonly struct Windows : IOperatingSystem
   {
+#pragma warning disable S1075
+
     private static readonly Uri endpoint = new Uri("npipe://./pipe/docker_engine");
+
+#pragma warning restore S1075
 
     /// <inheritdoc />
     public Uri DockerApiEndpoint => endpoint;
