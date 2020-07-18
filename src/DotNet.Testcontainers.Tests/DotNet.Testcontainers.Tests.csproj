@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CouchbaseNetClient" Version="3.0.1" />
     <PackageReference Include="coverlet.msbuild" Version="2.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="MyCouch" Version="7.2.1" />
