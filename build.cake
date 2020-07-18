@@ -82,7 +82,7 @@ Task("Tests")
     DotNetCoreTest(testProject.Path.FullPath, new DotNetCoreTestSettings
     {
       Configuration = param.Configuration,
-      Verbosity = param.Verbosity,
+      Verbosity = Cake.Common.Tools.DotNetCore.DotNetCoreVerbosity.Normal,
       NoRestore = true,
       NoBuild = true,
       Logger = "trx",
