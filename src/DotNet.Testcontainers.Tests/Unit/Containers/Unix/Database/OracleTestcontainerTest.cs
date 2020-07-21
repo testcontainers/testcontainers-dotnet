@@ -3,6 +3,7 @@
   using System.Data;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases;
   using Oracle.ManagedDataAccess.Client;
   using Xunit;
 
@@ -18,16 +19,16 @@
     [Fact]
     public void CanQueryContainerUsingProvidedConnectionString()
     {
-      Assert.Equal("localhost", this.oracleFixture.OracleTestcontainer.Hostname);
-      Assert.Equal("system", this.oracleFixture.OracleTestcontainer.Username);
-      Assert.Equal("oracle", this.oracleFixture.OracleTestcontainer.Password);
+      Assert.Equal("localhost", this.oracleFixture.Container.Hostname);
+      Assert.Equal("system", this.oracleFixture.Container.Username);
+      Assert.Equal("oracle", this.oracleFixture.Container.Password);
     }
 
     [Fact]
     public async Task CanConnectToOracleContainerAndOpenConnection()
     {
       // Given
-      await using var connection = new OracleConnection(this.oracleFixture.OracleTestcontainer.ConnectionString);
+      await using var connection = new OracleConnection(this.oracleFixture.Container.ConnectionString);
 
       // When
       await connection.OpenAsync();

@@ -1,19 +1,15 @@
-namespace DotNet.Testcontainers.Tests.Fixtures
+namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
 {
   using System.Threading.Tasks;
-  using Containers.Builders;
-  using Containers.Configurations.Databases;
-  using Containers.Modules.Databases;
+  using DotNet.Testcontainers.Containers.Builders;
+  using DotNet.Testcontainers.Containers.Configurations.Databases;
+  using DotNet.Testcontainers.Containers.Modules.Databases;
   using Xunit;
 
-  public class  Couchbase : IAsyncLifetime
+  public class CouchbaseFixture : ModuleFixture<CouchbaseTestcontainer>, IAsyncLifetime
   {
-
-    public CouchbaseTestcontainer Container { get; }
-
-    public Couchbase()
-    {
-      this.Container = new TestcontainersBuilder<CouchbaseTestcontainer>()
+    public CouchbaseFixture()
+      : base(new TestcontainersBuilder<CouchbaseTestcontainer>()
         .WithDatabase(new CouchbaseTestcontainerConfiguration
         {
           Username = "Administrator",
@@ -26,7 +22,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         .WithPortBinding(8091, 8091)
         .WithPortBinding(8093, 8093)
         .WithPortBinding(11210, 11210)
-        .Build();
+        .Build())
+    {
     }
 
     public Task InitializeAsync()
