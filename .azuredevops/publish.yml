@@ -34,28 +34,27 @@ jobs:
       - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\\\/]+src', '$(Build.SourcesDirectory)/src' | Set-Content $_ }
         displayName: Fix Absolute Code Coverage Paths
 
-      - powershell: dotnet tool install --tool-path ./tools --version ${{ parameters.cakeVersion }} Cake.Tool
+      - powershell: dotnet tool install --tool-path ./cake-tools --version ${{ parameters.cakeVersion }} Cake.Tool
         displayName: Setup prerequisites
 
-      - powershell: ./tools/dotnet-cake --target=Restore-NuGet-Packages
+      - powershell: |
+          echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_11_X64)"
+          echo "##vso[task.setvariable variable=PATH]$(JAVA_HOME_11_X64)\bin;$(PATH)"
+          echo "##vso[task.setvariable variable=DOTNET_ROLL_FORWARD]Major"
+          ./cake-tools/dotnet-cake --target=Restore-NuGet-Packages
         displayName: Prepare
 
-      - powershell: |
-          $env:DOTNET_ROLL_FORWARD = "Major"
-          $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
-          ./tools/dotnet-cake --target=Sonar-Begin
+      - powershell: ./cake-tools/dotnet-cake --target=Sonar-Begin
         displayName: Sonar Begin
 
-      - powershell: ./tools/dotnet-cake --target=Build
+      - powershell: ./cake-tools/dotnet-cake --target=Build
         displayName: Build
 
-      - powershell: |
-          $env:DOTNET_ROLL_FORWARD = "Major"
-          $env:SONARCLOUD_TOKEN = "$(sonarcloud.token)"
-          ./tools/dotnet-cake --target=Sonar-End
+      - powershell: ./cake-tools/dotnet-cake --target=Sonar-End
         displayName: Sonar End
 
       - powershell: |
           $env:FEED_APIKEY = "$(feed.apikey)"
-          ./tools/dotnet-cake --target=Publish
+          ./cake-tools/dotnet-cake --target=Publish
         displayName: Publish
+        condition: and(succeeded(), eq(variables['System.PullRequest.IsFork'], False))

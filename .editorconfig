@@ -426,3 +426,9 @@ dotnet_naming_rule.parameters_rule.severity = warning
 ##########################################
 
 max_line_length = 240
+
+##########################################
+# JetBrains Rider
+##########################################
+
+resharper_convert_to_using_declaration_highlighting = do_not_show

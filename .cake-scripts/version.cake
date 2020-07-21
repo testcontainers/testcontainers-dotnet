@@ -17,6 +17,8 @@ internal sealed class BuildInformation
 
   public static BuildInformation Instance(ICakeContext context)
   {
+    var isFork = context.EnvironmentVariable("SYSTEM_PULLREQUEST_ISFORK", "False");
+
     var buildReason = context.EnvironmentVariable("BUILD_REASON", string.Empty);
 
     var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER", string.Empty);
@@ -60,6 +62,11 @@ internal sealed class BuildInformation
     var isReleaseBuild = GetIsReleaseBuild(branch);
 
     var shouldPublish = GetShouldPublish(branch);
+
+    if (bool.Parse(isFork) && isPullRequest && shouldPublish)
+    {
+      throw new ArgumentException("Use 'feature/' or 'bugfix/' prefix for pull request branches.");
+    }
 
     if (!isReleaseBuild)
     {
