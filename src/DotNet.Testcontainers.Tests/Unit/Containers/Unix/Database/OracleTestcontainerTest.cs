@@ -2,7 +2,6 @@
 {
   using System.Data;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Tests.Fixtures;
   using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases;
   using Oracle.ManagedDataAccess.Client;
   using Xunit;

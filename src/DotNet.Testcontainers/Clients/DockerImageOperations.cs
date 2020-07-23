@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Clients
 
     public Task CreateAsync(IDockerImage image, CancellationToken ct = default)
     {
-      return this.Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image.FullName }, null, DebugProgress.Provider, ct);
+      return this.Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image.FullName }, null, new TraceProgress(), ct);
     }
 
     public Task DeleteAsync(IDockerImage image, CancellationToken ct = default)

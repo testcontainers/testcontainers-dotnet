@@ -82,32 +82,67 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
     public string ClusterRamSize
     {
-      get => this.Environments["CLUSTER_RAMSIZE"];
-      set => this.Environments["CLUSTER_RAMSIZE"] = Validate(nameof(this.ClusterRamSize), value, DefaultClusterRamSize);
+      get
+      {
+        return this.Environments["CLUSTER_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterRamSize), value, DefaultClusterRamSize);
+        this.Environments["CLUSTER_RAMSIZE"] = value;
+      }
     }
 
     public string ClusterIndexRamSize
     {
-      get => this.Environments["CLUSTER_INDEX_RAMSIZE"];
-      set => this.Environments["CLUSTER_INDEX_RAMSIZE"] = Validate(nameof(this.ClusterIndexRamSize), value, DefaultClusterIndexRamSize);
+      get
+      {
+        return this.Environments["CLUSTER_INDEX_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterIndexRamSize), value, DefaultClusterIndexRamSize);
+        this.Environments["CLUSTER_INDEX_RAMSIZE"] = value;
+      }
     }
 
     public string ClusterEventingRamSize
     {
-      get => this.Environments["CLUSTER_EVENTING_RAMSIZE"];
-      set => this.Environments["CLUSTER_EVENTING_RAMSIZE"] = Validate(nameof(this.ClusterEventingRamSize), value, DefaultClusterEventingRamSize);
+      get
+      {
+        return this.Environments["CLUSTER_EVENTING_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterEventingRamSize), value, DefaultClusterEventingRamSize);
+        this.Environments["CLUSTER_EVENTING_RAMSIZE"] = value;
+      }
     }
 
     public string ClusterFtsRamSize
     {
-      get => this.Environments["CLUSTER_FTS_RAMSIZE"];
-      set => this.Environments["CLUSTER_FTS_RAMSIZE"] = Validate(nameof(this.ClusterFtsRamSize), value, DefaultClusterFtsRamSize);
+      get
+      {
+        return this.Environments["CLUSTER_FTS_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterFtsRamSize), value, DefaultClusterFtsRamSize);
+        this.Environments["CLUSTER_FTS_RAMSIZE"] = value;
+      }
     }
 
     public string ClusterAnalyticsRamSize
     {
-      get => this.Environments["CLUSTER_ANALYTICS_RAMSIZE"];
-      set => this.Environments["CLUSTER_ANALYTICS_RAMSIZE"] = Validate(nameof(this.ClusterAnalyticsRamSize), value, DefaultClusterAnalyticsRamSize);
+      get
+      {
+        return this.Environments["CLUSTER_ANALYTICS_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterAnalyticsRamSize), value, DefaultClusterAnalyticsRamSize);
+        this.Environments["CLUSTER_ANALYTICS_RAMSIZE"] = value;
+      }
     }
 
     public override string Username
@@ -126,14 +161,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
     public override IWaitForContainerOS WaitStrategy { get; }
 
-    private static string Validate(string propertyName, string memory, int minimum)
+    private static void ThrowIfMemoryIsLessThanMinimum(string propertyName, string value, int minimumMemoryInMb)
     {
-      if (int.Parse(memory) < minimum)
+      var succeeded = int.TryParse(value, out var memoryInMb);
+
+      if (!succeeded)
       {
-        throw new ArgumentOutOfRangeException(propertyName, $"Couchbase {propertyName} ram size can not be less than {minimum} MB.");
+        throw new ArgumentException($"{value} is not an integer.", propertyName);
       }
 
-      return memory;
+      if (memoryInMb < minimumMemoryInMb)
+      {
+        throw new ArgumentOutOfRangeException(propertyName, $"Couchbase {propertyName} ram size can not be less than {minimumMemoryInMb} MB.");
+      }
     }
   }
 }
