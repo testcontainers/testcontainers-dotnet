@@ -13,6 +13,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     public TestcontainersConfiguration(
       Uri endpoint,
+      IAuthenticationConfiguration authenticationConfigurations,
       IDockerImage image,
       string name,
       string workingDirectory,
@@ -29,6 +30,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     {
       this.CleanUp  = cleanUp;
       this.Endpoint  = endpoint;
+      this.AuthConfig = authenticationConfigurations;
       this.Image  = image;
       this.Name  = name;
       this.WorkingDirectory  = workingDirectory;
@@ -50,6 +52,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <inheritdoc />
     public Uri Endpoint { get; }
+
+    /// <inheritdoc />
+    public IAuthenticationConfiguration AuthConfig { get; }
 
     /// <inheritdoc />
     public IDockerImage Image { get; }

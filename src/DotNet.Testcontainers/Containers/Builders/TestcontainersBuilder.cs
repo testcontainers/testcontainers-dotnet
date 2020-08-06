@@ -40,6 +40,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     public TestcontainersBuilder() : this(
       Apply(
+        authConfig: new AuthenticationConfiguration(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
         waitStrategies: Wait.ForUnixContainer().Build()),
       testcontainer => { })
@@ -169,6 +170,12 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
+    {
+      return Build(this, Apply(authConfig: new AuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Build(this, Apply(outputConsumer: outputConsumer));
@@ -196,6 +203,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private static ITestcontainersConfiguration Apply(
       Uri endpoint = null,
+      IAuthenticationConfiguration authConfig = null,
       IDockerImage image = null,
       string name = null,
       string workingDirectory = null,
@@ -212,6 +220,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     {
       return new TestcontainersConfiguration(
         endpoint ?? DockerApiEndpoint.Local,
+        authConfig,
         image,
         name,
         workingDirectory,
@@ -247,11 +256,13 @@ namespace DotNet.Testcontainers.Containers.Builders
       var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
       var mounts = Merge(next.Mounts, previous.configuration.Mounts);
 
+      var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
       var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
       var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
 
       var mergedConfiguration = Apply(
         endpoint,
+        authConfig,
         image,
         name,
         workingDirectory,

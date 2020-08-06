@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Images.Archives;
   using DotNet.Testcontainers.Images.Configurations;
@@ -48,9 +49,20 @@ namespace DotNet.Testcontainers.Clients
       return await this.ByNameAsync(name, ct) != null;
     }
 
-    public Task CreateAsync(IDockerImage image, CancellationToken ct = default)
+    public Task CreateAsync(IDockerImage image, IAuthenticationConfiguration authConfig, CancellationToken ct = default)
     {
-      return this.Docker.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = image.FullName }, null, new TraceProgress(), ct);
+      return this.Docker.Images.CreateImageAsync(
+        new ImagesCreateParameters
+        {
+          FromImage = image.FullName
+        },
+        new AuthConfig
+        {
+          ServerAddress = authConfig.RegistryEndpoint?.AbsoluteUri,
+          Username = authConfig.Username,
+          Password = authConfig.Password
+        },
+        new TraceProgress(), ct);
     }
 
     public Task DeleteAsync(IDockerImage image, CancellationToken ct = default)

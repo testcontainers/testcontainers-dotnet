@@ -17,15 +17,15 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </summary>
     public static readonly AccessMode ReadWrite = new AccessMode("rw");
 
+    private AccessMode(string value)
+    {
+      this.Value = value;
+    }
+
     /// <summary>
     /// Gets the string representation of the Docker volume access mode.
     /// </summary>
     [NotNull]
     public string Value { get; }
-
-    private AccessMode(string value)
-    {
-      this.Value = value;
-    }
   }
 }

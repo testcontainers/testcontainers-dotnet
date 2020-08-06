@@ -165,6 +165,17 @@ namespace DotNet.Testcontainers.Containers.Builders
     ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
 
     /// <summary>
+    /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.
+    /// </summary>
+    /// <param name="registryEndpoint">Docker registry endpoint.</param>
+    /// <param name="username">Username to authenticate.</param>
+    /// <param name="password">Password to authenticate.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    [Obsolete("Be aware we will replace this method in the future. Instead, we will use the local Docker credential store. Then, no additional configurations are necessary.")]
+    ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password);
+
+    /// <summary>
     /// Sets the output consumer to capture the Testcontainer stdout and stderr messages.
     /// </summary>
     /// <param name="outputConsumer">Output consumer to capture stdout and stderr.</param>

@@ -36,8 +36,7 @@ namespace DotNet.Testcontainers.Clients
       new TestcontainersRegistryService(),
       new DockerContainerOperations(endpoint),
       new DockerImageOperations(endpoint),
-      new DockerSystemOperations(endpoint)
-      )
+      new DockerSystemOperations(endpoint))
     {
       this.endpoint = endpoint;
     }
@@ -121,7 +120,7 @@ namespace DotNet.Testcontainers.Clients
     {
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct))
       {
-        await this.images.CreateAsync(configuration.Image, ct);
+        await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct);
       }
 
       var id = await this.containers.RunAsync(configuration, ct);

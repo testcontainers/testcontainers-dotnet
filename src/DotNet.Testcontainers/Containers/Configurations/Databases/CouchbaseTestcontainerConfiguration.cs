@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
     /// </summary>
     private const string CouchbaseImage = "mustafaonuraydin/couchbase-testcontainer:6.5.1";
 
-    private const string WaitStrategyMessage = "couchbase-dev started";
+    private const string WaitUntilMessageIsLogged = "couchbase-dev started";
 
     private const int DefaultClusterRamSize = 1024;
 
@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
     public CouchbaseTestcontainerConfiguration() : base(CouchbaseImage, BootstrapHttpPort, BootstrapHttpPort)
     {
       this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(this.stderr, this.stdout);
-      this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, WaitStrategyMessage);
+      this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, WaitUntilMessageIsLogged);
     }
 
     public string BucketName

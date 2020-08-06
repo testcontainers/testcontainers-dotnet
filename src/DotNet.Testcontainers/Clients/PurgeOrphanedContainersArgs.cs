@@ -10,9 +10,7 @@ namespace DotNet.Testcontainers.Clients
     private readonly StringBuilder argsBuilder;
 
     public PurgeOrphanedContainersArgs(Uri endpoint, IEnumerable<string> registeredContainers) : this(
-      DockerApiEndpoint.Local.Equals(endpoint) ? string.Empty : endpoint.ToString(),
-      string.Join(" ", registeredContainers)
-      )
+      DockerApiEndpoint.Local.Equals(endpoint) ? string.Empty : endpoint.ToString(), string.Join(" ", registeredContainers))
     {
     }
 

@@ -5,9 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
   using System.Threading.Tasks;
   using Couchbase;
   using DotNet.Testcontainers.Containers.Configurations.Databases;
-  using DotNet.Testcontainers.Services;
   using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases;
-  using Microsoft.Extensions.Logging;
   using Xunit;
 
   public class CouchbaseTestcontainerTest : IClassFixture<CouchbaseFixture>
@@ -32,7 +30,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
         this.couchbaseFixture.Container.Username,
         this.couchbaseFixture.Container.Password))
       {
-        await using (var bucket = await cluster.BucketAsync("Customer"))
+        await using (var bucket = await cluster.BucketAsync("customers"))
         {
           // When
           // Then
@@ -129,6 +127,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       {
         BucketName = "Bucket",
         BucketType = "MEMCACHED",
+        BucketRamSize = "1024",
         ClusterRamSize = "1024",
         ClusterIndexRamSize = "512",
         ClusterEventingRamSize = "256",
@@ -143,6 +142,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       Assert.Null(exception);
       Assert.Equal("Bucket", configuration.BucketName);
       Assert.Equal("MEMCACHED", configuration.BucketType);
+      Assert.Equal("1024", configuration.BucketRamSize);
       Assert.Equal("1024", configuration.ClusterRamSize);
       Assert.Equal("512", configuration.ClusterIndexRamSize);
       Assert.Equal("256", configuration.ClusterEventingRamSize);

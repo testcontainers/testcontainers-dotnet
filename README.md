@@ -33,6 +33,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
 - `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
+- `WithRegistryAuthentication` basic authentication against a private Docker registry.
 - `WithDockerfileDirectory` builds a Docker image based on a Dockerfile (`ImageFromDockerfileBuilder`).
 - `WithDeleteIfExists` removes the Docker image before it is rebuilt (`ImageFromDockerfileBuilder`).
 

@@ -24,6 +24,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
     Uri Endpoint { get; }
 
     /// <summary>
+    /// Gets the Docker registry authentication configuration.
+    /// </summary>
+    [NotNull]
+    IAuthenticationConfiguration AuthConfig { get; }
+
+    /// <summary>
     /// Gets the Docker image.
     /// </summary>
     [NotNull]

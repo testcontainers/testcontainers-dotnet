@@ -12,9 +12,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
       : base(new TestcontainersBuilder<CouchbaseTestcontainer>()
         .WithDatabase(new CouchbaseTestcontainerConfiguration
         {
-          Username = "Administrator",
-          Password = "password",
-          BucketName = "Customer"
+          Username = "couchbase",
+          Password = "couchbase",
+          BucketName = "customers"
         })
         .WithExposedPort(8091)
         .WithExposedPort(8093)
