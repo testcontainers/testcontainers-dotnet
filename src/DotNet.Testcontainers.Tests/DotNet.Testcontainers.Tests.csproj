@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CouchbaseNetClient" Version="3.0.3" />
     <PackageReference Include="coverlet.msbuild" Version="2.9.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0" />
     <PackageReference Include="MyCouch" Version="7.2.1" />
     <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="Npgsql" Version="4.1.4" />
