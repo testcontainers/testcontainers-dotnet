@@ -165,6 +165,6 @@ Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/TestcontainersContainerTest.cs
-[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/Database
-[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Linux/MessageBroker
+[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
+[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Database
+[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/MessageBroker

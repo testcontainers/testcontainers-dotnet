@@ -94,11 +94,11 @@ namespace DotNet.Testcontainers.Clients
     {
       Logger.LogInformation("Executing {command} at container {id}", command, id);
 
-      var created = await this.Docker.Containers.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command, }, ct);
+      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command }, ct);
 
-      await this.Docker.Containers.StartContainerExecAsync(created.ID, ct);
+      await this.Docker.Exec.StartContainerExecAsync(created.ID, ct);
 
-      for (ContainerExecInspectResponse response; (response = await this.Docker.Containers.InspectContainerExecAsync(created.ID, ct)) != null;)
+      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(created.ID, ct)) != null;)
       {
         if (!response.Running)
         {
