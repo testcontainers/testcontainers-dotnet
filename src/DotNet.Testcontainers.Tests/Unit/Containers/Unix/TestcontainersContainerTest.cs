@@ -22,7 +22,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public async Task IsLinuxEngineEnabled()
       {
-        Assert.False(await new TestcontainersClient().GetIsWindowsEngineEnabled());
+        using (var client = new TestcontainersClient())
+        {
+          Assert.False(await client.GetIsWindowsEngineEnabled());
+        }
       }
 
       [Fact]

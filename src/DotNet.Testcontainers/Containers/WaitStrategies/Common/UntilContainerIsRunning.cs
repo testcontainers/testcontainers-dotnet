@@ -12,9 +12,12 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 
     public async Task<bool> Until(Uri endpoint, string id)
     {
-      var container = await new TestcontainersClient(endpoint).GetContainer(id);
-      var state = (TestcontainersState)Enum.Parse(typeof(TestcontainersState), container.State, true);
-      return ContainerHasBeenRunningStates.Contains(state);
+      using (var client = new TestcontainersClient(endpoint))
+      {
+        var container = await client.GetContainer(id);
+        var state = (TestcontainersState)Enum.Parse(typeof(TestcontainersState), container.State, true);
+        return ContainerHasBeenRunningStates.Contains(state);
+      }
     }
   }
 }

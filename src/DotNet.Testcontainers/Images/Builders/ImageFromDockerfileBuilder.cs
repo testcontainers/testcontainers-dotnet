@@ -57,7 +57,11 @@ namespace DotNet.Testcontainers.Images.Builders
     public async Task<string> Build()
     {
       await new SynchronizationContextRemover();
-      return await new TestcontainersClient().BuildAsync(this.configuration);
+
+      using (var client = new TestcontainersClient())
+      {
+        return await client.BuildAsync(this.configuration);
+      }
     }
   }
 }

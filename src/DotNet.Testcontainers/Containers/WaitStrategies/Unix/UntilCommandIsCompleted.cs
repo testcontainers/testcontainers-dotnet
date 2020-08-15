@@ -19,8 +19,11 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Unix
 
     public virtual async Task<bool> Until(Uri endpoint, string id)
     {
-      var exitCode = await new TestcontainersClient(endpoint).ExecAsync(id, this.command);
-      return 0L.Equals(exitCode);
+      using (var client = new TestcontainersClient(endpoint))
+      {
+        var exitCode = await client.ExecAsync(id, this.command);
+        return 0L.Equals(exitCode);
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System;
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Images.Configurations;
 
-  internal interface ITestcontainersClient
+  internal interface ITestcontainersClient : IDisposable
   {
     /// <summary>
     /// True if the container is running inside another Docker container, otherwise false.

@@ -242,7 +242,7 @@ namespace DotNet.Testcontainers.Containers.Modules
         {
           foreach (var waitStrategy in this.configuration.WaitStrategies)
           {
-            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), ct: cts.Token);
+            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: cts.Token);
           }
         }, cts.Token);
 

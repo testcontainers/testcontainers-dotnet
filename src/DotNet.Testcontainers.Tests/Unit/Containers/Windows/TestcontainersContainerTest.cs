@@ -15,7 +15,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       [IgnoreOnLinuxEngine]
       public async Task IsWindowsEngineEnabled()
       {
-        Assert.True(await new TestcontainersClient().GetIsWindowsEngineEnabled());
+        using (var client = new TestcontainersClient())
+        {
+          Assert.True(await client.GetIsWindowsEngineEnabled());
+        }
       }
 
       [IgnoreOnLinuxEngine]

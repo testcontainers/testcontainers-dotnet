@@ -52,8 +52,13 @@ namespace DotNet.Testcontainers.Clients
       this.images = imageOperations;
       this.system = systemOperations;
 
-      AppDomain.CurrentDomain.ProcessExit += (sender, args) => this.PurgeOrphanedContainers();
-      Console.CancelKeyPress += (sender, args) => this.PurgeOrphanedContainers();
+      AppDomain.CurrentDomain.ProcessExit += this.PurgeOrphanedContainers;
+      Console.CancelKeyPress += this.PurgeOrphanedContainers;
+    }
+
+    ~TestcontainersClient()
+    {
+      this.Dispose();
     }
 
     public bool IsRunningInsideDocker
@@ -62,6 +67,13 @@ namespace DotNet.Testcontainers.Clients
       {
         return File.Exists(Path.Combine(this.osRootDirectory, ".dockerenv"));
       }
+    }
+
+    public void Dispose()
+    {
+      AppDomain.CurrentDomain.ProcessExit -= this.PurgeOrphanedContainers;
+      Console.CancelKeyPress -= this.PurgeOrphanedContainers;
+      GC.SuppressFinalize(this);
     }
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
@@ -134,10 +146,10 @@ namespace DotNet.Testcontainers.Clients
       return await this.images.BuildAsync(configuration, ct);
     }
 
-    private void PurgeOrphanedContainers()
+    private void PurgeOrphanedContainers(object sender, EventArgs args)
     {
-      var args = new PurgeOrphanedContainersArgs(this.endpoint, this.registryService.GetRegisteredContainers());
-      new Process { StartInfo = { FileName = "docker", Arguments = args.ToString() } }.Start();
+      var arguments = new PurgeOrphanedContainersArgs(this.endpoint, this.registryService.GetRegisteredContainers());
+      new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
     }
   }
 }
