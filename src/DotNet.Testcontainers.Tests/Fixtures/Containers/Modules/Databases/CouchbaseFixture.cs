@@ -16,12 +16,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
           Password = "couchbase",
           BucketName = "customers"
         })
-        .WithExposedPort(8091)
-        .WithExposedPort(8093)
-        .WithExposedPort(11210)
-        .WithPortBinding(8091, 8091)
-        .WithPortBinding(8093, 8093)
-        .WithPortBinding(11210, 11210)
+        .WithPortBinding(8091)
+        .WithPortBinding(8093)
+        .WithPortBinding(11210)
         .Build())
     {
     }

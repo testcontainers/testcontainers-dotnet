@@ -25,35 +25,44 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 
       var customer2 = new Customer { Name = "Onur", Age = 30 };
 
+      var key = Guid.NewGuid().ToString();
+
       await using (var cluster = await Cluster.ConnectAsync(
         this.couchbaseFixture.Container.ConnectionString,
         this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password))
+        this.couchbaseFixture.Container.Password)
+        .ConfigureAwait(false))
       {
-        await using (var bucket = await cluster.BucketAsync("customers"))
+        await using (var bucket = await cluster.BucketAsync("customers")
+          .ConfigureAwait(false))
         {
           // When
           // Then
           var collection = bucket.DefaultCollection();
 
           // Create
-          await collection.InsertAsync("customer-id-1", customer1);
+          await collection.InsertAsync(key, customer1)
+            .ConfigureAwait(false);
 
           // Read
-          var customer = (await collection.GetAsync("customer-id-1")).ContentAs<Customer>();
-          Assert.Equal(customer1.Name, customer.Name);
-          Assert.Equal(customer1.Age, customer.Age);
+          var result1 = (await collection.GetAsync(key)
+            .ConfigureAwait(false)).ContentAs<Customer>();
+          Assert.Equal(customer1.Name, result1.Name);
+          Assert.Equal(customer1.Age, result1.Age);
 
           // Update
-          await collection.UpsertAsync("customer-id-1", customer2);
-
-          customer = (await collection.GetAsync("customer-id-1")).ContentAs<Customer>();
-          Assert.Equal(customer2.Name, customer.Name);
-          Assert.Equal(customer2.Age, customer.Age);
+          await collection.UpsertAsync(key, customer2);
+          var result2 = (await collection.GetAsync(key)
+            .ConfigureAwait(false)).ContentAs<Customer>();
+          Assert.Equal(customer2.Name, result2.Name);
+          Assert.Equal(customer2.Age, result2.Age);
 
           // Delete
-          await collection.RemoveAsync("customer-id-1");
-          Assert.False((await collection.ExistsAsync("customer-id-1")).Exists);
+          await collection.RemoveAsync(key)
+            .ConfigureAwait(false);
+          var exists = (await collection.ExistsAsync(key)
+            .ConfigureAwait(false)).Exists;
+          Assert.False(exists);
         }
       }
     }
@@ -67,16 +76,19 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       // When
       var exitCode = await this.couchbaseFixture.Container.CreateBucket(bucketName);
 
+      // Then
       await using (var cluster = await Cluster.ConnectAsync(
         this.couchbaseFixture.Container.ConnectionString,
         this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password))
+        this.couchbaseFixture.Container.Password)
+        .ConfigureAwait(false))
       {
-        var buckets = await cluster.Buckets.GetAllBucketsAsync();
-
-        // Then
-        Assert.True(buckets.ContainsKey(bucketName));
-        Assert.Equal(0, exitCode);
+        await using (var bucket = await cluster.BucketAsync(bucketName)
+          .ConfigureAwait(false))
+        {
+          Assert.Equal(bucketName, bucket.Name);
+          Assert.Equal(0, exitCode);
+        }
       }
     }
 
@@ -86,33 +98,37 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       // Given
       const string bucketName = nameof(this.ShouldFlushBucket);
 
-      await this.couchbaseFixture.Container.CreateBucket(bucketName);
+      var key = Guid.NewGuid().ToString();
+
+      _ = await this.couchbaseFixture.Container.CreateBucket(bucketName);
 
       await using (var cluster = await Cluster.ConnectAsync(
         this.couchbaseFixture.Container.ConnectionString,
         this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password))
+        this.couchbaseFixture.Container.Password)
+        .ConfigureAwait(false))
       {
-        var buckets = await cluster.Buckets.GetAllBucketsAsync();
-
-        await using (var bucket = await cluster.BucketAsync(bucketName))
+        await using (var bucket = await cluster.BucketAsync(bucketName)
+          .ConfigureAwait(false))
         {
+          // When
+          // Then
           var collection = bucket.DefaultCollection();
 
-          await cluster.QueryAsync<long>($"CREATE PRIMARY INDEX `#primary` ON `{bucketName}`");
+          // Create
+          await collection.InsertAsync(key, new { })
+            .ConfigureAwait(false);
 
-          await collection.InsertAsync("1", new { Name = ".NET Testcontainers" });
+          // Flush
+          var exitCode = await this.couchbaseFixture.Container.FlushBucket(bucketName)
+            .ConfigureAwait(false);
 
-          // When
-          var exitCode = await this.couchbaseFixture.Container.FlushBucket(bucketName);
+          var exists = (await collection.ExistsAsync(key)
+            .ConfigureAwait(false)).Exists;
 
-          var result = await cluster.QueryAsync<dynamic>($"SELECT * FROM {bucketName}");
-          var rows = await result.Rows.ToListAsync();
-
-          // Then
-          Assert.True(buckets.ContainsKey(bucketName));
+          Assert.Equal(bucketName, bucket.Name);
           Assert.Equal(0, exitCode);
-          //Assert.Empty(rows); TODO: It looks like Couchbase does not flush buckets immediately.
+          Assert.False(exists);
         }
       }
     }
