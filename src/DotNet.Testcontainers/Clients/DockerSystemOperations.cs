@@ -12,7 +12,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      return (await this.Docker.System.GetSystemInfoAsync(ct)).OperatingSystem.Contains("Windows");
+      return (await this.Docker.System.GetSystemInfoAsync(ct)
+        .ConfigureAwait(false)).OperatingSystem.Contains("Windows");
     }
   }
 }

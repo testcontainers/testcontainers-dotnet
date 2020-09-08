@@ -14,7 +14,9 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
     {
       using (var client = new TestcontainersClient(endpoint))
       {
-        var container = await client.GetContainer(id);
+        var container = await client.GetContainer(id)
+          .ConfigureAwait(false);
+
         var state = (TestcontainersState)Enum.Parse(typeof(TestcontainersState), container.State, true);
         return ContainerHasBeenRunningStates.Contains(state);
       }

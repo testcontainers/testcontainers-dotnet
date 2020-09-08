@@ -107,7 +107,7 @@ Task("Sonar-Begin")
     Organization = param.SonarQubeCredentials.Organization,
     Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis can not have the branch analysis parameter 'sonar.branch.name'.
     Silent = true,
-    Version = param.Version.Substring(5),
+    Version = param.Version.Substring(0, 5),
     PullRequestProvider = "GitHub",
     PullRequestGithubEndpoint = "https://api.github.com/",
     PullRequestGithubRepository = "HofmeisterAn/dotnet-testcontainers",

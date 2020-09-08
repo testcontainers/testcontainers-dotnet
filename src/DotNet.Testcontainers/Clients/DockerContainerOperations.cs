@@ -23,38 +23,42 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<IEnumerable<ContainerListResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }, ct)).ToArray();
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }, ct)
+        .ConfigureAwait(false)).ToArray();
     }
 
-    public async Task<ContainerListResponse> ByIdAsync(string id, CancellationToken ct = default)
+    public Task<ContainerListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      return await this.ByPropertyAsync("id", id, ct);
+      return this.ByPropertyAsync("id", id, ct);
     }
 
-    public async Task<ContainerListResponse> ByNameAsync(string name, CancellationToken ct = default)
+    public Task<ContainerListResponse> ByNameAsync(string name, CancellationToken ct = default)
     {
-      return await this.ByPropertyAsync("name", name, ct);
+      return this.ByPropertyAsync("name", name, ct);
     }
 
     public async Task<ContainerListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      var response = this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct);
-      return (await response).FirstOrDefault();
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct)
+        .ConfigureAwait(false)).FirstOrDefault();
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await this.ByIdAsync(id, ct) != null;
+      return await this.ByIdAsync(id, ct)
+        .ConfigureAwait(false) != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
-      return await this.ByNameAsync(name, ct) != null;
+      return await this.ByNameAsync(name, ct)
+        .ConfigureAwait(false) != null;
     }
 
     public async Task<long> GetExitCode(string id, CancellationToken ct = default)
     {
-      return (await this.Docker.Containers.WaitContainerAsync(id, ct)).StatusCode;
+      return (await this.Docker.Containers.WaitContainerAsync(id, ct)
+        .ConfigureAwait(false)).StatusCode;
     }
 
     public Task StartAsync(string id, CancellationToken ct = default)
@@ -86,19 +90,25 @@ namespace DotNet.Testcontainers.Clients
         Stream = true,
       };
 
-      var stream = await this.Docker.Containers.AttachContainerAsync(id, false, attachParameters, ct);
-      var _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, ct);
+      var stream = await this.Docker.Containers.AttachContainerAsync(id, false, attachParameters, ct)
+        .ConfigureAwait(false);
+
+      _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       Logger.LogInformation("Executing {command} at container {id}", command, id);
 
-      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command }, ct);
+      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command }, ct)
+        .ConfigureAwait(false);
 
-      await this.Docker.Exec.StartContainerExecAsync(created.ID, ct);
+      await this.Docker.Exec.StartContainerExecAsync(created.ID, ct)
+        .ConfigureAwait(false);
 
-      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(created.ID, ct)) != null;)
+      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(created.ID, ct)
+        .ConfigureAwait(false)) != null;)
       {
         if (!response.Running)
         {
@@ -132,7 +142,9 @@ namespace DotNet.Testcontainers.Clients
         HostConfig = hostConfig,
       };
 
-      var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)).ID;
+      var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)
+        .ConfigureAwait(false)).ID;
+
       Logger.LogInformation("Container {id} created", id);
 
       return id;

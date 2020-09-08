@@ -19,13 +19,17 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
     {
       var waitTask = Task.Run(async () =>
       {
-        while (!ct.IsCancellationRequested && await wait())
+        while (!ct.IsCancellationRequested && await wait()
+          .ConfigureAwait(false))
         {
-          await Task.Delay(frequency, ct);
+          await Task.Delay(frequency, ct)
+            .ConfigureAwait(false);
         }
       }, ct);
 
-      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct)), waitTask);
+      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
+          .ConfigureAwait(false), waitTask)
+        .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -41,13 +45,17 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
     {
       var waitTask = Task.Run(async () =>
       {
-        while (!ct.IsCancellationRequested && !await wait())
+        while (!ct.IsCancellationRequested && !await wait()
+          .ConfigureAwait(false))
         {
-          await Task.Delay(frequency, ct);
+          await Task.Delay(frequency, ct)
+            .ConfigureAwait(false);
         }
       }, ct);
 
-      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct)), waitTask);
+      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
+          .ConfigureAwait(false), waitTask)
+        .ConfigureAwait(false);
     }
 
     private static Task RethrowPotentialException(Task completedTask, Task waitTask)

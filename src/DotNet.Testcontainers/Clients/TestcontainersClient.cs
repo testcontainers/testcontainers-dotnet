@@ -10,7 +10,6 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Images.Configurations;
-  using DotNet.Testcontainers.Internals;
   using DotNet.Testcontainers.Services;
 
   internal sealed class TestcontainersClient : ITestcontainersClient
@@ -76,10 +75,9 @@ namespace DotNet.Testcontainers.Clients
       GC.SuppressFinalize(this);
     }
 
-    public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
+    public Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      return await this.system.GetIsWindowsEngineEnabled(ct);
+      return this.system.GetIsWindowsEngineEnabled(ct);
     }
 
     public Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default)
@@ -94,25 +92,31 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
-      if (await this.containers.ExistsWithIdAsync(id, ct))
+      if (await this.containers.ExistsWithIdAsync(id, ct)
+        .ConfigureAwait(false))
       {
-        await this.containers.StartAsync(id, ct);
+        await this.containers.StartAsync(id, ct)
+          .ConfigureAwait(false);
       }
     }
 
     public async Task StopAsync(string id, CancellationToken ct = default)
     {
-      if (await this.containers.ExistsWithIdAsync(id, ct))
+      if (await this.containers.ExistsWithIdAsync(id, ct)
+        .ConfigureAwait(false))
       {
-        await this.containers.StopAsync(id, ct);
+        await this.containers.StopAsync(id, ct)
+          .ConfigureAwait(false);
       }
     }
 
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
-      if (await this.containers.ExistsWithIdAsync(id, ct))
+      if (await this.containers.ExistsWithIdAsync(id, ct)
+        .ConfigureAwait(false))
       {
-        await this.containers.RemoveAsync(id, ct);
+        await this.containers.RemoveAsync(id, ct)
+          .ConfigureAwait(false);
       }
 
       this.registryService.Unregister(id);
@@ -130,20 +134,24 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
-      if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct))
+      if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
+        .ConfigureAwait(false))
       {
-        await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct);
+        await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct)
+          .ConfigureAwait(false);
       }
 
-      var id = await this.containers.RunAsync(configuration, ct);
+      var id = await this.containers.RunAsync(configuration, ct)
+        .ConfigureAwait(false);
+
       this.registryService.Register(id, configuration.CleanUp);
 
       return id;
     }
 
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      return await this.images.BuildAsync(configuration, ct);
+      return this.images.BuildAsync(configuration, ct);
     }
 
     private void PurgeOrphanedContainers(object sender, EventArgs args)

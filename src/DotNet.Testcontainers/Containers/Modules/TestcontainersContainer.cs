@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Containers.Modules
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.WaitStrategies;
-  using DotNet.Testcontainers.Internals;
   using DotNet.Testcontainers.Services;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -130,12 +129,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task<long> GetExitCode(CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      await this.semaphoreSlim.WaitAsync(ct);
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
 
       try
       {
-        return await this.client.GetContainerExitCode(this.Id, ct);
+        return await this.client.GetContainerExitCode(this.Id, ct)
+          .ConfigureAwait(false);
       }
       finally
       {
@@ -145,13 +145,15 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task StartAsync(CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      await this.semaphoreSlim.WaitAsync(ct);
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
 
       try
       {
-        this.container = await this.Create(ct);
-        this.container = await this.Start(this.Id, ct);
+        this.container = await this.Create(ct)
+          .ConfigureAwait(false);
+        this.container = await this.Start(this.Id, ct)
+          .ConfigureAwait(false);
       }
       finally
       {
@@ -161,12 +163,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task StopAsync(CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      await this.semaphoreSlim.WaitAsync(ct);
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
 
       try
       {
-        this.container = await this.Stop(this.Id, ct);
+        this.container = await this.Stop(this.Id, ct)
+          .ConfigureAwait(false);
       }
       finally
       {
@@ -176,12 +179,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task CleanUpAsync(CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      await this.semaphoreSlim.WaitAsync(ct);
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
 
       try
       {
-        this.container = await this.CleanUp(this.Id, ct);
+        this.container = await this.CleanUp(this.Id, ct)
+          .ConfigureAwait(false);
       }
       finally
       {
@@ -191,12 +195,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
-      await new SynchronizationContextRemover();
-      await this.semaphoreSlim.WaitAsync(ct);
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
 
       try
       {
-        return await this.client.ExecAsync(this.Id, command, ct);
+        return await this.client.ExecAsync(this.Id, command, ct)
+          .ConfigureAwait(false);
       }
       finally
       {
@@ -206,15 +211,13 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public virtual async ValueTask DisposeAsync()
     {
-      await new SynchronizationContextRemover();
-
       if (!ContainerHasBeenCreatedStates.Contains(this.State))
       {
         return;
       }
 
       var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
-      await cleanOrStopTask;
+      await cleanOrStopTask.ConfigureAwait(false);
 
       this.semaphoreSlim.Dispose();
     }
@@ -226,15 +229,18 @@ namespace DotNet.Testcontainers.Containers.Modules
         return this.container;
       }
 
-      var id = await this.client.RunAsync(this.configuration, ct);
-      return await this.client.GetContainer(id, ct);
+      var id = await this.client.RunAsync(this.configuration, ct)
+        .ConfigureAwait(false);
+      return await this.client.GetContainer(id, ct)
+        .ConfigureAwait(false);
     }
 
     private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
     {
       using (var cts = new CancellationTokenSource())
       {
-        await this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token);
+        await this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token)
+          .ConfigureAwait(false);
 
         var startTask = this.client.StartAsync(id, cts.Token);
 
@@ -242,7 +248,8 @@ namespace DotNet.Testcontainers.Containers.Modules
         {
           foreach (var waitStrategy in this.configuration.WaitStrategies)
           {
-            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: cts.Token);
+            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: cts.Token)
+              .ConfigureAwait(false);
           }
         }, cts.Token);
 
@@ -250,7 +257,7 @@ namespace DotNet.Testcontainers.Containers.Modules
 
         try
         {
-          await tasks;
+          await tasks.ConfigureAwait(false);
         }
         catch (Exception)
         {
@@ -267,18 +274,22 @@ namespace DotNet.Testcontainers.Containers.Modules
         }
       }
 
-      return await this.client.GetContainer(id, ct);
+      return await this.client.GetContainer(id, ct)
+        .ConfigureAwait(false);
     }
 
     private async Task<ContainerListResponse> Stop(string id, CancellationToken ct = default)
     {
-      await this.client.StopAsync(id, ct);
-      return await this.client.GetContainer(id, ct);
+      await this.client.StopAsync(id, ct)
+        .ConfigureAwait(false);
+      return await this.client.GetContainer(id, ct)
+        .ConfigureAwait(false);
     }
 
     private async Task<ContainerListResponse> CleanUp(string id, CancellationToken ct = default)
     {
-      await this.client.RemoveAsync(id, ct);
+      await this.client.RemoveAsync(id, ct)
+        .ConfigureAwait(false);
       return new ContainerListResponse();
     }
 

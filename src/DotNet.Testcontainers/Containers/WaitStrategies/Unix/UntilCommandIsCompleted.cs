@@ -21,7 +21,8 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Unix
     {
       using (var client = new TestcontainersClient(endpoint))
       {
-        var exitCode = await client.ExecAsync(id, this.command);
+        var exitCode = await client.ExecAsync(id, this.command)
+          .ConfigureAwait(false);
         return 0L.Equals(exitCode);
       }
     }

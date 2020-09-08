@@ -24,7 +24,8 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 
       using (var streamReader = new StreamReader(this.stream, Encoding.UTF8, false, 4096, true))
       {
-        var output= await streamReader.ReadToEndAsync();
+        var output= await streamReader.ReadToEndAsync()
+          .ConfigureAwait(false);
         return Regex.IsMatch(output, this.message);
       }
     }

@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
   using System;
-  using System.Linq;
   using System.Threading.Tasks;
   using Couchbase;
   using DotNet.Testcontainers.Containers.Configurations.Databases;
@@ -74,7 +73,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       const string bucketName = nameof(this.ShouldCreateBucket);
 
       // When
-      var exitCode = await this.couchbaseFixture.Container.CreateBucket(bucketName);
+      var exitCode = await this.couchbaseFixture.Container.CreateBucket(bucketName)
+        .ConfigureAwait(false);
 
       // Then
       await using (var cluster = await Cluster.ConnectAsync(
@@ -100,7 +100,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 
       var key = Guid.NewGuid().ToString();
 
-      _ = await this.couchbaseFixture.Container.CreateBucket(bucketName);
+      _ = await this.couchbaseFixture.Container.CreateBucket(bucketName)
+        .ConfigureAwait(false);
 
       await using (var cluster = await Cluster.ConnectAsync(
         this.couchbaseFixture.Container.ConnectionString,

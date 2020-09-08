@@ -2,7 +2,7 @@ version: 1
 update_configs:
   - package_manager: "dotnet:nuget"
     directory: "/"
-    update_schedule: "live"
+    update_schedule: "monthly"
     default_reviewers:
       - "HofmeisterAn"
     default_assignees:
