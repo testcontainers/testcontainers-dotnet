@@ -11,7 +11,7 @@
     <PackageReference Include="MyCouch" Version="7.2.1" />
     <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="Npgsql" Version="4.1.4" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.80" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.90" />
     <PackageReference Include="RabbitMQ.Client" Version="6.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
