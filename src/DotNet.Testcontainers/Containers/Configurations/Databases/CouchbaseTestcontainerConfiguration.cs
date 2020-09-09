@@ -40,13 +40,13 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
     private const string WaitUntilMessageIsLogged = "couchbase-dev started";
 
-    private const int DefaultClusterRamSize = 1024;
+    private const int DefaultClusterRamSize = 256;
 
-    private const int DefaultClusterIndexRamSize = 512;
-
-    private const int DefaultClusterEventingRamSize = 256;
+    private const int DefaultClusterIndexRamSize = 256;
 
     private const int DefaultClusterFtsRamSize = 256;
+
+    private const int DefaultClusterEventingRamSize = 256;
 
     private const int DefaultClusterAnalyticsRamSize = 1024;
 
@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
     public CouchbaseTestcontainerConfiguration() : base(CouchbaseImage, BootstrapHttpPort, BootstrapHttpPort)
     {
-      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(this.stderr, this.stdout);
+      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(this.stdout, this.stderr);
       this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, WaitUntilMessageIsLogged);
     }
 
@@ -106,19 +106,6 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       }
     }
 
-    public string ClusterEventingRamSize
-    {
-      get
-      {
-        return this.Environments["CLUSTER_EVENTING_RAMSIZE"];
-      }
-      set
-      {
-        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterEventingRamSize), value, DefaultClusterEventingRamSize);
-        this.Environments["CLUSTER_EVENTING_RAMSIZE"] = value;
-      }
-    }
-
     public string ClusterFtsRamSize
     {
       get
@@ -129,6 +116,19 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
       {
         ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterFtsRamSize), value, DefaultClusterFtsRamSize);
         this.Environments["CLUSTER_FTS_RAMSIZE"] = value;
+      }
+    }
+
+    public string ClusterEventingRamSize
+    {
+      get
+      {
+        return this.Environments["CLUSTER_EVENTING_RAMSIZE"];
+      }
+      set
+      {
+        ThrowIfMemoryIsLessThanMinimum(nameof(this.ClusterEventingRamSize), value, DefaultClusterEventingRamSize);
+        this.Environments["CLUSTER_EVENTING_RAMSIZE"] = value;
       }
     }
 

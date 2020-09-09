@@ -145,10 +145,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
         BucketName = "Bucket",
         BucketType = "MEMCACHED",
         BucketRamSize = "1024",
-        ClusterRamSize = "1024",
-        ClusterIndexRamSize = "512",
-        ClusterEventingRamSize = "256",
+        ClusterRamSize = "256",
+        ClusterIndexRamSize = "256",
         ClusterFtsRamSize = "256",
+        ClusterEventingRamSize = "256",
         ClusterAnalyticsRamSize = "1024"
       };
 
@@ -160,10 +160,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       Assert.Equal("Bucket", configuration.BucketName);
       Assert.Equal("MEMCACHED", configuration.BucketType);
       Assert.Equal("1024", configuration.BucketRamSize);
-      Assert.Equal("1024", configuration.ClusterRamSize);
-      Assert.Equal("512", configuration.ClusterIndexRamSize);
-      Assert.Equal("256", configuration.ClusterEventingRamSize);
+      Assert.Equal("256", configuration.ClusterRamSize);
+      Assert.Equal("256", configuration.ClusterIndexRamSize);
       Assert.Equal("256", configuration.ClusterFtsRamSize);
+      Assert.Equal("256", configuration.ClusterEventingRamSize);
       Assert.Equal("1024", configuration.ClusterAnalyticsRamSize);
     }
 
@@ -184,39 +184,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
     public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterRamSizeIsNotValid()
     {
       // Given
-      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterRamSize = "1023" };
+      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterRamSize = "255" };
 
       // When
       var exception = Assert.Throws<ArgumentOutOfRangeException>(action.Invoke);
 
       // Then
-      Assert.Equal("Couchbase ClusterRamSize ram size can not be less than 1024 MB. (Parameter 'ClusterRamSize')", exception.Message);
+      Assert.Equal("Couchbase ClusterRamSize ram size can not be less than 256 MB. (Parameter 'ClusterRamSize')", exception.Message);
     }
 
     [Fact]
-    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterAnalyticsRamSizeIsNotValid()
+    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterIndexRamSizeIsNotValid()
     {
       // Given
-      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterAnalyticsRamSize = "1023" };
+      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterIndexRamSize = "255" };
 
       // When
       var exception = Assert.Throws<ArgumentOutOfRangeException>(action.Invoke);
 
       // Then
-      Assert.Equal("Couchbase ClusterAnalyticsRamSize ram size can not be less than 1024 MB. (Parameter 'ClusterAnalyticsRamSize')", exception.Message);
-    }
-
-    [Fact]
-    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterEventingRamSizeIsNotValid()
-    {
-      // Given
-      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterEventingRamSize = "255" };
-
-      // When
-      var exception = Assert.Throws<ArgumentOutOfRangeException>(action.Invoke);
-
-      // Then
-      Assert.Equal("Couchbase ClusterEventingRamSize ram size can not be less than 256 MB. (Parameter 'ClusterEventingRamSize')", exception.Message);
+      Assert.Equal("Couchbase ClusterIndexRamSize ram size can not be less than 256 MB. (Parameter 'ClusterIndexRamSize')", exception.Message);
     }
 
     [Fact]
@@ -233,16 +220,29 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
     }
 
     [Fact]
-    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterIndexRamSizeIsNotValid()
+    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterEventingRamSizeIsNotValid()
     {
       // Given
-      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterIndexRamSize = "511" };
+      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterEventingRamSize = "255" };
 
       // When
       var exception = Assert.Throws<ArgumentOutOfRangeException>(action.Invoke);
 
       // Then
-      Assert.Equal("Couchbase ClusterIndexRamSize ram size can not be less than 512 MB. (Parameter 'ClusterIndexRamSize')", exception.Message);
+      Assert.Equal("Couchbase ClusterEventingRamSize ram size can not be less than 256 MB. (Parameter 'ClusterEventingRamSize')", exception.Message);
+    }
+
+    [Fact]
+    public void ShouldThrowArgumentOutOfRangeExceptionWhenClusterAnalyticsRamSizeIsNotValid()
+    {
+      // Given
+      Action action = () => _ = new CouchbaseTestcontainerConfiguration { ClusterAnalyticsRamSize = "1023" };
+
+      // When
+      var exception = Assert.Throws<ArgumentOutOfRangeException>(action.Invoke);
+
+      // Then
+      Assert.Equal("Couchbase ClusterAnalyticsRamSize ram size can not be less than 1024 MB. (Parameter 'ClusterAnalyticsRamSize')", exception.Message);
     }
 
     private sealed class Customer

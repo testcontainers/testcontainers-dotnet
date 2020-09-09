@@ -12,9 +12,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
       : base(new TestcontainersBuilder<CouchbaseTestcontainer>()
         .WithDatabase(new CouchbaseTestcontainerConfiguration
         {
-          Username = "couchbase",
-          Password = "couchbase",
-          BucketName = "customers"
+          Username = "Administrator",
+          Password = "password",
+          BucketName = "customers",
+          ClusterRamSize = "384",
+          ClusterIndexRamSize = "256",
+          ClusterFtsRamSize = "256",
+          ClusterEventingRamSize = "256",
+          ClusterAnalyticsRamSize = "1024"
         })
         .WithPortBinding(8091)
         .WithPortBinding(8093)
