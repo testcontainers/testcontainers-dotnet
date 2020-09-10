@@ -23,12 +23,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
       public Task<bool> Until(Uri endpoint, string id)
       {
-        return Task.Run(() => true);
+        return Task.FromResult(true);
       }
 
       public Task<bool> While(Uri endpoint, string id)
       {
-        return Task.Run(() => false);
+        return Task.FromResult(false);
       }
     }
 
