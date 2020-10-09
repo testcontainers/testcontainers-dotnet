@@ -2,7 +2,7 @@
   <!-- Set common package metadata -->
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>1.4.0</Version>
+    <Version>1.5.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>.NET Testcontainers</Product>
