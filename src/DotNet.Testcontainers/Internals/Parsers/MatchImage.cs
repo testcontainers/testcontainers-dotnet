@@ -6,11 +6,9 @@ namespace DotNet.Testcontainers.Internals.Parsers
 
   internal class MatchImage
   {
-    protected const string Part = @"([\w][\w.-]{0,127})";
-
     private readonly Regex pattern;
 
-    public MatchImage() : this(Part)
+    public MatchImage() : this(@"^([\w][\w\.\-]+)$")
     {
     }
 

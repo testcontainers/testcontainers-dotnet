@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Internals.Parsers
 
   internal sealed class MatchImageTag : MatchImage
   {
-    public MatchImageTag() : base($@"{Part}\:{Part}") // bar:1.0.0
+    public MatchImageTag() : base(@"^([\w][\w\.\-]+):([\w][\w\.\-]{0,127})$") // bar:1.0.0
     {
     }
 
