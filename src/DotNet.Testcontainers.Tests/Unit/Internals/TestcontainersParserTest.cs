@@ -12,16 +12,17 @@ namespace DotNet.Testcontainers.Tests.Unit.Internals
       [ClassData(typeof(ParseDockerImageFixture))]
       public void WhenImageNameGetsAssigned(ParseDockerImageFixtureSerializable serializable, string fullName)
       {
+        // Given
         var expected = serializable.Image;
 
-        // Given
-        var dockerImage = new DockerImage(fullName);
-
         // When
+        IDockerImage dockerImage = new DockerImage(fullName);
+
         // Then
         Assert.Equal(expected.Repository, dockerImage.Repository);
         Assert.Equal(expected.Name, dockerImage.Name);
         Assert.Equal(expected.Tag, dockerImage.Tag);
+        Assert.Equal(expected.FullName, dockerImage.FullName);
       }
     }
   }

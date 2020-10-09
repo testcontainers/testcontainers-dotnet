@@ -4,13 +4,13 @@ namespace DotNet.Testcontainers.Internals.Parsers
 
   internal sealed class MatchImageRegistryLatest : MatchImage
   {
-    public MatchImageRegistryLatest() : base($@"{Part}\/{Part}\/{Part}") // Matches baz/foo/bar
+    public MatchImageRegistryLatest() : base(@"^([\w][\w\.\-:/]+)/([\w][\w\.\-]+)$") // Matches baz/foo/bar
     {
     }
 
     protected override IDockerImage Match(params string[] matches)
     {
-      return new DockerImage($"{matches[0]}/{matches[1]}", matches[2], string.Empty);
+      return new DockerImage(matches[0], matches[1], string.Empty);
     }
   }
 }
