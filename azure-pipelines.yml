@@ -5,8 +5,8 @@ variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   MSBUILDDISABLENODEREUSE: true # https://github.com/dotnet/sdk/issues/9452
   TZ: CET # https://stackoverflow.com/q/53510011
-  dotNetCoreVersion: 3.1.106
-  cakeVersion: 0.38.4
+  dotNetCoreVersion: 3.1.108
+  cakeVersion: 0.38.5
 
 trigger:
   - master
