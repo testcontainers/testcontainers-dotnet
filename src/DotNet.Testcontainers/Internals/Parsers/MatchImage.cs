@@ -1,31 +1,32 @@
 namespace DotNet.Testcontainers.Internals.Parsers
 {
   using System.Linq;
-  using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
 
-  internal class MatchImage
+  internal static class MatchImage
   {
-    private readonly Regex pattern;
-
-    public MatchImage() : this(@"^([\w][\w\.\-]+)$")
+    public static IDockerImage Match(string image)
     {
-    }
+      Guard.Argument(image, nameof(image))
+        .NotNull()
+        .NotEmpty();
 
-    protected MatchImage(string pattern)
-    {
-      this.pattern = new Regex(pattern, RegexOptions.Compiled);
-    }
-
-    public IDockerImage Match(string input)
-    {
-      var match = this.pattern.Match(input);
-      return match.Success ? this.Match(match.Groups.Skip(1).Select(group => group.Value).ToArray()) : null;
-    }
-
-    protected virtual IDockerImage Match(params string[] matches)
-    {
-      return new DockerImage(string.Empty, matches[0], string.Empty);
+      var dockerImageParts = image.Split('/');
+      return new DockerImage(
+        string.Join('/',
+          dockerImageParts
+            .Take(dockerImageParts.Length - 1)
+            .ToArray()),
+          dockerImageParts
+            .Last()
+            .Split(':')
+            .FirstOrDefault() ?? string.Empty,
+          dockerImageParts
+            .Last()
+            .Split(':')
+            .Skip(1)
+            .FirstOrDefault() ?? string.Empty
+        );
     }
   }
 }

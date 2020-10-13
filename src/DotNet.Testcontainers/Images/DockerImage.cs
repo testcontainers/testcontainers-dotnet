@@ -1,33 +1,57 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
-  using System.Linq;
+  using DotNet.Testcontainers.Internals;
   using DotNet.Testcontainers.Internals.Parsers;
 
   /// <inheritdoc cref="IDockerImage" />
   public sealed class DockerImage : IDockerImage
   {
-    private static readonly MatchImage[] MatchImages = { new MatchImageRegistryTag(), new MatchImageRegistryLatest(), new MatchImageTag(), new MatchImage() };
+    private static readonly Func<string, IDockerImage> GetDockerImage = MatchImage.Match;
 
-    private static readonly Func<string, IDockerImage> GetDockerImage = image => MatchImages.Select(matcher => matcher.Match(image)).First(result => result != null);
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
+    /// <param name="image">The docker image.</param>
     public DockerImage(IDockerImage image) : this(image.Repository, image.Name, image.Tag)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
+    /// <param name="image">The docker image.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
+    /// <example>fedora/httpd:version1.0</example>
     public DockerImage(string image) : this(GetDockerImage(image))
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
+    /// <param name="repository">The docker image repository.</param>
+    /// <param name="name">The docker image name.</param>
+    /// <param name="tag">The docker image tag.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
+    /// <example>fedora/httpd:version1.0 where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
     public DockerImage(string repository, string name, string tag)
     {
-      this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+      Guard.Argument(repository, nameof(repository))
+        .NotNull();
 
-      this.Name = name ?? throw new ArgumentNullException(nameof(name));
+      Guard.Argument(name, nameof(name))
+        .NotNull()
+        .NotEmpty();
 
-      this.Tag = tag ?? throw new ArgumentNullException(nameof(tag));
+      Guard.Argument(tag, nameof(tag))
+        .NotNull();
 
-      if (string.IsNullOrEmpty(this.Tag))
+      this.Repository = repository;
+      this.Name = name;
+      this.Tag = tag;
+
+      if (this.Tag.Length == 0)
       {
         this.Tag = "latest";
       }
@@ -43,6 +67,6 @@ namespace DotNet.Testcontainers.Images
     public string Tag { get; }
 
     /// <inheritdoc />
-    public string FullName => string.IsNullOrEmpty(this.Repository) ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
+    public string FullName => this.Repository.Length == 0 ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
   }
 }
