@@ -27,8 +27,8 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
         }
       }, ct);
 
-      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
-          .ConfigureAwait(false), waitTask)
+      await (await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
+          .ConfigureAwait(false))
         .ConfigureAwait(false);
     }
 
@@ -53,14 +53,9 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
         }
       }, ct);
 
-      await RethrowPotentialException(await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
-          .ConfigureAwait(false), waitTask)
+      await (await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
+          .ConfigureAwait(false))
         .ConfigureAwait(false);
-    }
-
-    private static Task RethrowPotentialException(Task completedTask, Task waitTask)
-    {
-      return completedTask == waitTask ? completedTask : throw new TimeoutException();
     }
   }
 }

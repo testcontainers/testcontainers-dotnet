@@ -9,9 +9,7 @@ namespace DotNet.Testcontainers.Containers.Modules
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.WaitStrategies;
-  using DotNet.Testcontainers.Services;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   public class TestcontainersContainer : IDockerContainer
   {
@@ -237,41 +235,15 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
     {
-      using (var cts = new CancellationTokenSource())
+      await this.client.AttachAsync(id, this.configuration.OutputConsumer, ct)
+        .ConfigureAwait(false);
+      await this.client.StartAsync(id, ct)
+        .ConfigureAwait(false);
+
+      foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await this.client.AttachAsync(id, this.configuration.OutputConsumer, cts.Token)
+        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: ct)
           .ConfigureAwait(false);
-
-        var startTask = this.client.StartAsync(id, cts.Token);
-
-        var waitTask = Task.Run(async () =>
-        {
-          foreach (var waitStrategy in this.configuration.WaitStrategies)
-          {
-            await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: cts.Token)
-              .ConfigureAwait(false);
-          }
-        }, cts.Token);
-
-        var tasks = Task.WhenAll(startTask, waitTask);
-
-        try
-        {
-          await tasks.ConfigureAwait(false);
-        }
-        catch (Exception)
-        {
-          // Get all thrown exceptions in tasks.
-          if (tasks.Exception != null)
-          {
-            TestcontainersHostService.GetLogger<TestcontainersContainer>().LogError(tasks.Exception, "Can not start container {id}", id);
-            throw tasks.Exception;
-          }
-        }
-        finally
-        {
-          cts.Cancel();
-        }
       }
 
       return await this.client.GetContainer(id, ct)
