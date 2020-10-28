@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Internals
     [DebuggerStepThrough]
     public static ref readonly ArgumentInfo<string> Empty(in this ArgumentInfo<string> argument)
     {
-      if (argument.Value?.Length > 0)
+      if (argument.Value.Length > 0)
       {
         throw new ArgumentException($"{argument.Name} must be empty.", argument.Name);
       }
@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Internals
     [DebuggerStepThrough]
     public static ref readonly ArgumentInfo<string> NotEmpty(in this ArgumentInfo<string> argument)
     {
-      if (argument.Value?.Length == 0)
+      if (argument.Value.Length == 0)
       {
         throw new ArgumentException($"{argument.Name} can not be empty.", argument.Name);
       }

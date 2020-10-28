@@ -31,21 +31,21 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
     }
 
     [Fact]
-    public void CanNotSetDatabase()
+    public void CannotSetDatabase()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Database = string.Empty);
     }
 
     [Fact]
-    public void CanNotSetUsername()
+    public void CannotSetUsername()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Username = string.Empty);
     }
 
     [Fact]
-    public void CanNotSetPassword()
+    public void CannotSetPassword()
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Password = string.Empty);
