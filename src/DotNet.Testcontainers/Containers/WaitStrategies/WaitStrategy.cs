@@ -27,9 +27,14 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
         }
       }, ct);
 
-      await (await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
-          .ConfigureAwait(false))
-        .ConfigureAwait(false);
+      if (await Task.WhenAny(waitTask, Task.Delay(timeout, ct)) == waitTask)
+      {
+        await waitTask.ConfigureAwait(false);
+      }
+      else
+      {
+        throw new TimeoutException();
+      }
     }
 
     /// <summary>
@@ -53,9 +58,14 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
         }
       }, ct);
 
-      await (await Task.WhenAny(waitTask, Task.Delay(timeout, ct))
-          .ConfigureAwait(false))
-        .ConfigureAwait(false);
+      if (await Task.WhenAny(waitTask, Task.Delay(timeout, ct)) == waitTask)
+      {
+        await waitTask.ConfigureAwait(false);
+      }
+      else
+      {
+        throw new TimeoutException();
+      }
     }
   }
 }

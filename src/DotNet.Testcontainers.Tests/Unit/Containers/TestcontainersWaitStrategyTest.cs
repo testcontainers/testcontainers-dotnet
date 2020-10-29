@@ -37,25 +37,23 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       [Fact]
       public async Task UntilAfter1Ms()
       {
-        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntil(() => this.Until(null, string.Empty), timeout: 1));
+        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntil(() => this.Until(null, string.Empty), 1000, 1));
       }
 
       [Fact]
       public async Task WhileAfter1Ms()
       {
-        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhile(() => this.While(null, string.Empty), timeout: 1));
+        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhile(() => this.While(null, string.Empty), 1000, 1));
       }
 
-      public async Task<bool> Until(Uri endpoint, string id)
+      public Task<bool> Until(Uri endpoint, string id)
       {
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        return false;
+        return Task.FromResult(false);
       }
 
-      public async Task<bool> While(Uri endpoint, string id)
+      public Task<bool> While(Uri endpoint, string id)
       {
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        return true;
+        return Task.FromResult(true);
       }
     }
 
