@@ -9,7 +9,7 @@
     <PackageReference Include="coverlet.msbuild" Version="2.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="MyCouch" Version="7.4.0" />
-    <PackageReference Include="MySql.Data" Version="8.0.21" />
+    <PackageReference Include="MySql.Data" Version="8.0.22" />
     <PackageReference Include="Npgsql" Version="4.1.5" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.90" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
