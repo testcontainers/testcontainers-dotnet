@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Images.Archives;
@@ -25,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
       // When
       using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())
       {
-        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut))
+        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut, Encoding.UTF8))
         {
           tarIn.ProgressMessageEvent += (archive, entry, message) => actual.Add(entry.Name);
           tarIn.ListContents();
