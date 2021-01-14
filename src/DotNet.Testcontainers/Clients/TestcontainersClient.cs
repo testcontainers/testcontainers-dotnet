@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.IO;
+  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -11,6 +12,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Images.Configurations;
   using DotNet.Testcontainers.Services;
+  using ICSharpCode.SharpZipLib.Tar;
 
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
@@ -130,6 +132,34 @@ namespace DotNet.Testcontainers.Clients
     public Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       return this.containers.ExecAsync(id, command, ct);
+    }
+
+    public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
+    {
+      await using var memStream = new MemoryStream();
+      await using var tarOutputStream = new TarOutputStream(memStream, Encoding.Default)
+      {
+        IsStreamOwner = false
+      };
+
+      tarOutputStream.PutNextEntry(new TarEntry(new TarHeader()
+      {
+        Name = filePath,
+        UserId = userId,
+        GroupId = groupId,
+        Mode = accessMode,
+        Size = fileContent.Length
+      }));
+
+      await tarOutputStream.WriteAsync(fileContent, ct);
+
+      tarOutputStream.CloseEntry();
+      tarOutputStream.Close();
+      await tarOutputStream.FlushAsync(ct);
+
+      memStream.Position = 0;
+
+      await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct);
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

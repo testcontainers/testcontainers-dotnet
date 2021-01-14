@@ -1,8 +1,10 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Net;
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
@@ -355,6 +357,29 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         {
           await testcontainer.StartAsync();
           Assert.Equal(255, await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" }));
+        }
+      }
+
+      [Fact]
+      public async Task CopyFileToRunningContainer()
+      {
+        // Given
+        const string dayOfWeekFilePath = "/tmp/dayOfWeek";
+
+        var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
+
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
+
+        // When
+        // Then
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          await testcontainer.CopyFileAsync(dayOfWeekFilePath, Encoding.UTF8.GetBytes(dayOfWeek));
+          Assert.Equal(0, await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"test \"$(cat {dayOfWeekFilePath})\" = \"{dayOfWeek}\"" }));
+          Assert.Equal(0, await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"stat {dayOfWeekFilePath} | grep 0600" }));
         }
       }
     }
