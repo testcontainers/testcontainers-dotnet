@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -20,6 +21,8 @@ namespace DotNet.Testcontainers.Clients
     Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 
     Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
+
+    Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default);
 
     Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);
   }

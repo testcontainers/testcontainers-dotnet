@@ -119,6 +119,21 @@ namespace DotNet.Testcontainers.Clients
       return long.MinValue;
     }
 
+    public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
+    {
+      Logger.LogInformation("Copying tar stream to {path} at container {id}", path, id);
+
+      return this.Docker.Containers.ExtractArchiveToContainerAsync(
+        id,
+        new ContainerPathStatParameters()
+        {
+          Path = path,
+          AllowOverwriteDirWithFile = false
+        },
+        tarStream,
+        ct);
+    }
+
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
       var converter = new TestcontainersConfigurationConverter(configuration);

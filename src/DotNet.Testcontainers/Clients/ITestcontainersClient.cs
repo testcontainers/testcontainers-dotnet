@@ -81,6 +81,19 @@ namespace DotNet.Testcontainers.Clients
     Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
     /// <summary>
+    /// Copies a file to the container.
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="filePath">Path to the file in the container.</param>
+    /// <param name="fileContent">Content of the file as bytes.</param>
+    /// <param name="accessMode">Access mode for the file.</param>
+    /// <param name="userId">Owner of the file.</param>
+    /// <param name="groupId">Group of the file.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns></returns>
+    public Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
+
+    /// <summary>
     /// Creates a container.
     /// </summary>
     /// <param name="configuration">Testcontainer configuration.</param>

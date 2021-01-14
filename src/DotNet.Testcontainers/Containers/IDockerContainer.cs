@@ -79,5 +79,17 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
     Task<long> ExecAsync(IList<string> command, CancellationToken ct = default);
+
+    /// <summary>
+    /// Copies a file into the container.
+    /// </summary>
+    /// <param name="filePath">Path to the file in the container.</param>
+    /// <param name="fileContent">Content of the file as bytes.</param>
+    /// <param name="accessMode">Access mode for the file. (Default: 0600)</param>
+    /// <param name="userId">Owner of the file.</param>
+    /// <param name="groupId">Group of the file.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns></returns>
+    Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
   }
 }

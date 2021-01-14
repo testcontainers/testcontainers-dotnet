@@ -207,6 +207,22 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
+    public async Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
+    {
+      await this.semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
+
+      try
+      {
+        await this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct)
+          .ConfigureAwait(false);
+      }
+      finally
+      {
+        this.semaphoreSlim.Release();
+      }
+    }
+
     public virtual async ValueTask DisposeAsync()
     {
       if (!ContainerHasBeenCreatedStates.Contains(this.State))
