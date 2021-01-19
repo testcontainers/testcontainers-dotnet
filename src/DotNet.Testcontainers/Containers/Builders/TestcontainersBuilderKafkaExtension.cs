@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         .WithStartupCallback(configuration.StartupCallback)
         .ConfigureContainer(container =>
         {
-          container.Port = configuration.Port;
+          container.ContainerPort = configuration.DefaultPort;
         });
     }
   }

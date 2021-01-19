@@ -141,14 +141,14 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
-      var hostPort = assignRandomHostPort ? $"{TestcontainersNetworkService.GetAvailablePort()}" : port;
+      var hostPort = assignRandomHostPort ? null : port;
       return this.WithPortBinding(hostPort, port);
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
-      var portBindings = new Dictionary<string, string> { { hostPort, containerPort } };
+      var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
       return Build(this, Apply(portBindings: portBindings));
     }
 

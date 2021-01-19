@@ -235,6 +235,9 @@ namespace DotNet.Testcontainers.Containers.Modules
       await this.client.StartAsync(id, ct)
         .ConfigureAwait(false);
 
+      this.container = await this.client.GetContainer(id, ct)
+        .ConfigureAwait(false);
+
       if (this.configuration.StartupCallback != null)
       {
         await this.configuration.StartupCallback(this, ct);

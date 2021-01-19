@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
   /// </summary>
   public abstract class TestcontainerMessageBrokerConfiguration : HostedServiceConfiguration
   {
-    protected TestcontainerMessageBrokerConfiguration(string image, int defaultPort) : base(image, defaultPort, TestcontainersNetworkService.GetAvailablePort())
+    protected TestcontainerMessageBrokerConfiguration(string image, int defaultPort) : base(image, defaultPort)
     {
     }
   }

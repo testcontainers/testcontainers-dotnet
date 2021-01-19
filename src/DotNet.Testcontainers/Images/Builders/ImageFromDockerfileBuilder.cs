@@ -57,7 +57,8 @@ namespace DotNet.Testcontainers.Images.Builders
     {
       using (var client = new TestcontainersClient())
       {
-        return await client.BuildAsync(this.configuration);
+        return await client.BuildAsync(this.configuration)
+          .ConfigureAwait(false);
       }
     }
   }
