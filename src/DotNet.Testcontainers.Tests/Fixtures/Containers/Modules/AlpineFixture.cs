@@ -14,9 +14,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
     {
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-      return Task.WhenAll(this.Container.StartAsync(), this.Container.StopAsync());
+      await this.Container.StartAsync().ConfigureAwait(false);
+      await this.Container.StopAsync().ConfigureAwait(false);
     }
 
     public Task DisposeAsync()

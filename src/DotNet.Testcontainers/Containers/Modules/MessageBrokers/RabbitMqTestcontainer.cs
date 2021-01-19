@@ -9,6 +9,6 @@ namespace DotNet.Testcontainers.Containers.Modules.MessageBrokers
     {
     }
 
-    public override string ConnectionString => $"amqp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
+    public string ConnectionString => $"amqp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
   }
 }

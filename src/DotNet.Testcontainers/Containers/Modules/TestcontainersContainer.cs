@@ -193,34 +193,14 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     public async Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
-      await this.semaphoreSlim.WaitAsync(ct)
+      return await this.client.ExecAsync(this.Id, command, ct)
         .ConfigureAwait(false);
-
-      try
-      {
-        return await this.client.ExecAsync(this.Id, command, ct)
-          .ConfigureAwait(false);
-      }
-      finally
-      {
-        this.semaphoreSlim.Release();
-      }
     }
 
     public async Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
     {
-      await this.semaphoreSlim.WaitAsync(ct)
+      await this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct)
         .ConfigureAwait(false);
-
-      try
-      {
-        await this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct)
-          .ConfigureAwait(false);
-      }
-      finally
-      {
-        this.semaphoreSlim.Release();
-      }
     }
 
     public virtual async ValueTask DisposeAsync()
@@ -234,6 +214,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       await cleanOrStopTask.ConfigureAwait(false);
 
       this.semaphoreSlim.Dispose();
+      this.client.Dispose();
     }
 
     private async Task<ContainerListResponse> Create(CancellationToken ct = default)
@@ -255,6 +236,11 @@ namespace DotNet.Testcontainers.Containers.Modules
         .ConfigureAwait(false);
       await this.client.StartAsync(id, ct)
         .ConfigureAwait(false);
+
+      if (this.configuration.StartupCallback != null)
+      {
+        await this.configuration.StartupCallback(this, ct);
+      }
 
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {

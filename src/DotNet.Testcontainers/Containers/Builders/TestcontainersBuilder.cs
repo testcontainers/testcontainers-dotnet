@@ -4,6 +4,8 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System.Collections.Generic;
   using System.Linq;
   using System.Reflection;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
@@ -188,6 +190,12 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IDockerContainer, CancellationToken, Task> startupCallback)
+    {
+      return Build(this, Apply(startupCallback: startupCallback));
+    }
+
+    /// <inheritdoc />
     public TDockerContainer Build()
     {
       // Create container instance.
@@ -216,6 +224,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       IEnumerable<IBind> mounts = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
+      Func<IDockerContainer, CancellationToken, Task> startupCallback = null,
       bool cleanUp = true)
     {
       return new TestcontainersConfiguration(
@@ -233,6 +242,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         mounts,
         outputConsumer,
         waitStrategies,
+        startupCallback,
         cleanUp);
     }
 
@@ -259,6 +269,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
       var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
       var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
+      var startupCallback = Merge(next.StartupCallback, previous.configuration.StartupCallback);
 
       var mergedConfiguration = Apply(
         endpoint,
@@ -275,6 +286,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         mounts,
         outputConsumer,
         waitStrategies,
+        startupCallback,
         cleanUp);
 
       return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);

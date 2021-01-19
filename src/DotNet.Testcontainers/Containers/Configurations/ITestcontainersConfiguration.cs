@@ -2,10 +2,13 @@ namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
+  using Modules;
 
   /// <summary>
   /// A Testcontainer configuration.
@@ -100,5 +103,11 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </summary>
     [NotNull]
     IEnumerable<IWaitUntil> WaitStrategies { get; }
+
+    /// <summary>
+    /// Gets the startup callback.
+    /// This callback will be executed after starting the container, but before executing the wait strategies.
+    /// </summary>
+    public Func<IDockerContainer, CancellationToken, Task> StartupCallback { get; }
   }
 }
