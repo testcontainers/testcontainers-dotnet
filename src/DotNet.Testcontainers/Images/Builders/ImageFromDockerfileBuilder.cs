@@ -53,11 +53,11 @@ namespace DotNet.Testcontainers.Images.Builders
     }
 
     /// <inheritdoc />
-    public Task<string> Build()
+    public async Task<string> Build()
     {
       using (var client = new TestcontainersClient())
       {
-        return client.BuildAsync(this.configuration);
+        return await client.BuildAsync(this.configuration);
       }
     }
   }

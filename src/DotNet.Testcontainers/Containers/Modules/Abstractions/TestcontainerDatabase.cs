@@ -12,5 +12,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Abstractions
     }
 
     public string Database { get; set; }
+
+    public abstract string ConnectionString { get; }
   }
 }

@@ -2,6 +2,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -26,6 +28,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       IEnumerable<IBind> mounts,
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
+      Func<IDockerContainer, CancellationToken, Task> startupCallback,
       bool cleanUp = true)
     {
       this.CleanUp  = cleanUp;
@@ -43,6 +46,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.Mounts  = mounts;
       this.OutputConsumer  = outputConsumer;
       this.WaitStrategies  = waitStrategies;
+      this.StartupCallback = startupCallback;
     }
 
 #pragma warning restore S107
@@ -91,5 +95,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <inheritdoc />
     public IEnumerable<IWaitUntil> WaitStrategies { get; }
+
+    /// <inheritdoc />
+    public Func<IDockerContainer, CancellationToken, Task> StartupCallback { get; }
   }
 }
