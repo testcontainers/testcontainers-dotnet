@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
   /// </summary>
   public abstract class TestcontainerDatabaseConfiguration : HostedServiceConfiguration
   {
-    protected TestcontainerDatabaseConfiguration(string image, int defaultPort) : base(image, defaultPort, TestcontainersNetworkService.GetAvailablePort())
+    protected TestcontainerDatabaseConfiguration(string image, int defaultPort) : base(image, defaultPort)
     {
     }
 

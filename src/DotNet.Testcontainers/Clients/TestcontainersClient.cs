@@ -151,15 +151,18 @@ namespace DotNet.Testcontainers.Clients
         Size = fileContent.Length
       }));
 
-      await tarOutputStream.WriteAsync(fileContent, ct);
+      await tarOutputStream.WriteAsync(fileContent, ct)
+        .ConfigureAwait(false);
 
       tarOutputStream.CloseEntry();
       tarOutputStream.Close();
-      await tarOutputStream.FlushAsync(ct);
+      await tarOutputStream.FlushAsync(ct)
+        .ConfigureAwait(false);
 
       memStream.Position = 0;
 
-      await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct);
+      await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

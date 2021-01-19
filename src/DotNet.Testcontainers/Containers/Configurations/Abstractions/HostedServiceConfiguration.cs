@@ -10,12 +10,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.Abstractions
   /// </summary>
   public abstract class HostedServiceConfiguration
   {
-    protected HostedServiceConfiguration(string image, int defaultPort)
-      : this(image, defaultPort, defaultPort)
-    {
-    }
-
-    protected HostedServiceConfiguration(string image, int defaultPort, int port)
+    protected HostedServiceConfiguration(string image, int defaultPort, int port = 0)
     {
       this.Image = image;
       this.DefaultPort = defaultPort;

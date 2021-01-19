@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
     }
 
     public KafkaTestcontainerConfiguration(string image)
-      : base(image, KafkaPort, TestcontainersNetworkService.GetAvailablePort())
+      : base(image, KafkaPort)
     {
       // Use two listeners with different names, it will force Kafka to communicate with itself via internal
       // listener when KAFKA_INTER_BROKER_LISTENER_NAME is set, otherwise Kafka will try to use the advertised listener
