@@ -8,7 +8,6 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
-  using Modules;
 
   /// <summary>
   /// A Testcontainer configuration.
@@ -106,8 +105,11 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <summary>
     /// Gets the startup callback.
-    /// This callback will be executed after starting the container, but before executing the wait strategies.
     /// </summary>
+    /// <remarks>
+    /// This callback will be executed after starting the container, but before executing the wait strategies.
+    /// </remarks>
+    [NotNull]
     public Func<IDockerContainer, CancellationToken, Task> StartupCallback { get; }
   }
 }

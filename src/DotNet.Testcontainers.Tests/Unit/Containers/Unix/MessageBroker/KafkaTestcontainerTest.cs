@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.MessageBroker
   using System.Collections.Generic;
   using System.Threading.Tasks;
   using Confluent.Kafka;
-  using Fixtures.Containers.Modules.MessageBrokers;
+  using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.MessageBrokers;
   using Xunit;
 
   public class KafkaTestcontainerTest : IClassFixture<KafkaFixture>

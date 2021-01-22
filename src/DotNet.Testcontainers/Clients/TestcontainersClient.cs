@@ -136,33 +136,33 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
-      await using var memStream = new MemoryStream();
-      await using var tarOutputStream = new TarOutputStream(memStream, Encoding.Default)
+      await using (var memStream = new MemoryStream())
       {
-        IsStreamOwner = false
-      };
+        await using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
+        {
+          tarOutputStream.IsStreamOwner = false;
+          tarOutputStream.PutNextEntry(
+            new TarEntry(
+              new TarHeader
+              {
+                Name = filePath,
+                UserId = userId,
+                GroupId = groupId,
+                Mode = accessMode,
+                Size = fileContent.Length
+              }));
 
-      tarOutputStream.PutNextEntry(new TarEntry(new TarHeader()
-      {
-        Name = filePath,
-        UserId = userId,
-        GroupId = groupId,
-        Mode = accessMode,
-        Size = fileContent.Length
-      }));
+          await tarOutputStream.WriteAsync(fileContent, ct)
+            .ConfigureAwait(false);
 
-      await tarOutputStream.WriteAsync(fileContent, ct)
-        .ConfigureAwait(false);
+          tarOutputStream.CloseEntry();
+        }
 
-      tarOutputStream.CloseEntry();
-      tarOutputStream.Close();
-      await tarOutputStream.FlushAsync(ct)
-        .ConfigureAwait(false);
+        memStream.Seek(0, SeekOrigin.Begin);
 
-      memStream.Position = 0;
-
-      await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct)
-        .ConfigureAwait(false);
+        await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct)
+          .ConfigureAwait(false);
+      }
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

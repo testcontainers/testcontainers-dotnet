@@ -79,6 +79,12 @@ namespace DotNet.Testcontainers.Clients
       return this.Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
     }
 
+    public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
+    {
+      Logger.LogInformation("Copying tar stream to {path} at container {id}", path, id);
+      return this.Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
+    }
+
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       Logger.LogInformation("Attaching {outputConsumer} at container {id}", outputConsumer.GetType(), id);
@@ -117,21 +123,6 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return long.MinValue;
-    }
-
-    public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
-    {
-      Logger.LogInformation("Copying tar stream to {path} at container {id}", path, id);
-
-      return this.Docker.Containers.ExtractArchiveToContainerAsync(
-        id,
-        new ContainerPathStatParameters()
-        {
-          Path = path,
-          AllowOverwriteDirWithFile = false
-        },
-        tarStream,
-        ct);
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

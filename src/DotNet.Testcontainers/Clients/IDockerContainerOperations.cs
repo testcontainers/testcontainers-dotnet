@@ -18,11 +18,11 @@ namespace DotNet.Testcontainers.Clients
 
     Task RemoveAsync(string id, CancellationToken ct = default);
 
+    Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default);
+
     Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 
     Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
-
-    Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default);
 
     Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);
   }

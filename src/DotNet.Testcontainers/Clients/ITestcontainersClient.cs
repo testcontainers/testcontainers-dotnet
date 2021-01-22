@@ -90,7 +90,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="userId">Owner of the file.</param>
     /// <param name="groupId">Group of the file.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns></returns>
+    /// <returns>Task that completes when the file has been copied.</returns>
     public Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
 
     /// <summary>

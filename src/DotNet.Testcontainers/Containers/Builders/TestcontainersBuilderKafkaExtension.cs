@@ -1,10 +1,7 @@
 namespace DotNet.Testcontainers.Containers.Builders
 {
   using System.Linq;
-  using System.Text;
-  using System.Threading;
-  using System.Threading.Tasks;
-  using Configurations.MessageBrokers;
+  using DotNet.Testcontainers.Containers.Configurations.MessageBrokers;
   using DotNet.Testcontainers.Containers.Modules.MessageBrokers;
 
   /// <summary>

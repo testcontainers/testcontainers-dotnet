@@ -11,7 +11,6 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Services;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -44,7 +43,8 @@ namespace DotNet.Testcontainers.Containers.Builders
       Apply(
         authConfig: new AuthenticationConfiguration(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
-        waitStrategies: Wait.ForUnixContainer().Build()),
+        waitStrategies: Wait.ForUnixContainer().Build(),
+        startupCallback: (container, ct) => Task.CompletedTask),
       testcontainer => { })
     {
     }
@@ -269,7 +269,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
       var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
       var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
-      var startupCallback = Merge(next.StartupCallback, previous.configuration.StartupCallback);
+      var startupCallback = new[] { next.StartupCallback, previous.configuration.StartupCallback }.First(config => config != null);
 
       var mergedConfiguration = Apply(
         endpoint,

@@ -93,8 +93,7 @@ namespace DotNet.Testcontainers.Internals.Mappers
       public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
         return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
-          $"{portBinding.Key}/tcp",
-          new List<PortBinding> { new PortBinding { HostPort = portBinding.Value == "0" ? null : portBinding.Value } }));
+          $"{portBinding.Key}/tcp", new List<PortBinding> { new PortBinding { HostPort = portBinding.Value == "0" ? null : portBinding.Value } }));
       }
     }
   }

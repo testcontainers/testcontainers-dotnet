@@ -195,11 +195,10 @@ namespace DotNet.Testcontainers.Containers.Builders
     ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy);
 
     /// <summary>
-    /// Sets a startup callback to be executed after starting the container but before executing the wait strategy.
+    /// Sets the startup callback to be executed after starting the container, but before executing the wait strategy.
     /// </summary>
     /// <param name="startupCallback">The callback function to be executed.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    /// <remarks>Multiple wait strategies are executed one after the other in th…</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IDockerContainer, CancellationToken, Task> startupCallback);
 

@@ -73,14 +73,6 @@ namespace DotNet.Testcontainers.Containers
     Task StopAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Executes a command in the running Testcontainer.
-    /// </summary>
-    /// <param name="command">Shell command.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the shell command has been executed.</returns>
-    Task<long> ExecAsync(IList<string> command, CancellationToken ct = default);
-
-    /// <summary>
     /// Copies a file into the container.
     /// </summary>
     /// <param name="filePath">Path to the file in the container.</param>
@@ -89,7 +81,15 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="userId">Owner of the file.</param>
     /// <param name="groupId">Group of the file.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns></returns>
+    /// <returns>Task that completes when the file has been copied.</returns>
     Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
+
+    /// <summary>
+    /// Executes a command in the running Testcontainer.
+    /// </summary>
+    /// <param name="command">Shell command.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the shell command has been executed.</returns>
+    Task<long> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }

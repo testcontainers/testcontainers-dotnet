@@ -191,16 +191,14 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
-    public async Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
+    public Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
     {
-      return await this.client.ExecAsync(this.Id, command, ct)
-        .ConfigureAwait(false);
+      return this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct);
     }
 
-    public async Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
+    public Task<long> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
-      await this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct)
-        .ConfigureAwait(false);
+      return this.client.ExecAsync(this.Id, command, ct);
     }
 
     public virtual async ValueTask DisposeAsync()
@@ -240,10 +238,8 @@ namespace DotNet.Testcontainers.Containers.Modules
       this.container = await this.client.GetContainer(id, ct)
         .ConfigureAwait(false);
 
-      if (this.configuration.StartupCallback != null)
-      {
-        await this.configuration.StartupCallback(this, ct);
-      }
+      await this.configuration.StartupCallback(this, ct)
+        .ConfigureAwait(false);
 
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {

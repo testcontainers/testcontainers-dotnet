@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
-  using System.Collections.Generic;
   using System.IO;
   using System.Net;
   using System.Text;

@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Containers.Modules.Abstractions
 {
-  using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.Configurations;
 
   /// <summary>
@@ -12,9 +11,9 @@ namespace DotNet.Testcontainers.Containers.Modules.Abstractions
     {
     }
 
-    public virtual int ContainerPort { get; set; }
-
     public int Port => this.GetMappedPublicPort(this.ContainerPort);
+
+    public virtual int ContainerPort { get; set; }
 
     public virtual string Username { get; set; }
 
