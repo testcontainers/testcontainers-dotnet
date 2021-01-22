@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers.Tests", "tests\DotNet.Testcontainers.Tests\DotNet.Testcontainers.Tests.csproj", "{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers.ResourceReaper.Tests", "tests\DotNet.Testcontainers.ResourceReaper.Tests\DotNet.Testcontainers.ResourceReaper.Tests.csproj", "{9A944653-5D94-4A98-9265-A5F621A14D06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,9 +31,14 @@ Global
 		{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A944653-5D94-4A98-9265-A5F621A14D06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A944653-5D94-4A98-9265-A5F621A14D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A944653-5D94-4A98-9265-A5F621A14D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A944653-5D94-4A98-9265-A5F621A14D06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{3AA620E4-7EDE-4C2F-AA33-52E286AC518E} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{9A944653-5D94-4A98-9265-A5F621A14D06} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal

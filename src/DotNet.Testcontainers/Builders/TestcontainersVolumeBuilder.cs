@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
@@ -50,6 +51,12 @@ namespace DotNet.Testcontainers.Builders
     {
       var labels = new Dictionary<string, string> { { name, value } };
       return Build(this, Apply(labels: labels));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />

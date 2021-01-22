@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Network;
   using JetBrains.Annotations;
 
@@ -41,6 +43,15 @@
     /// <returns>A configured instance of <see cref="ITestcontainersNetworkBuilder" />.</returns>
     [PublicAPI]
     ITestcontainersNetworkBuilder WithLabel(string name, string value);
+
+    /// <summary>
+    /// Sets the resource reaper session id.
+    /// </summary>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
+    [PublicAPI]
+    ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerNetwork" /> with the given configuration.

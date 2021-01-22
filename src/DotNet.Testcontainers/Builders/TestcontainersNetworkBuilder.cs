@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Network;
   using JetBrains.Annotations;
 
@@ -20,8 +21,8 @@
       : this(
         Apply(
           endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          labels: DefaultLabels.Instance,
-          driver: NetworkDriver.Bridge))
+          driver: NetworkDriver.Bridge,
+          labels: DefaultLabels.Instance))
     {
     }
 
@@ -57,6 +58,12 @@
     {
       var labels = new Dictionary<string, string> { { name, value } };
       return Build(this, Apply(labels: labels));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />

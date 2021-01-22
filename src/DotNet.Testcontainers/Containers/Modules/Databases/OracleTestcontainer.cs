@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     {
       var tempScriptFile = this.GetTempScriptFile();
 
-      await this.CopyFileAsync(tempScriptFile, Encoding.UTF8.GetBytes(scriptContent), 493)
+      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493)
         .ConfigureAwait(false);
 
       return await this.ExecAsync(new[] { "/bin/sh", "-c", $"exit | $ORACLE_HOME/bin/sqlplus -S {this.Username}/{this.Password}@{this.Hostname} @{tempScriptFile}" })

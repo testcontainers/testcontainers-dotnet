@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Containers.Modules
+namespace DotNet.Testcontainers.Containers
 {
   using System.Threading.Tasks;
   using JetBrains.Annotations;

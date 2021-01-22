@@ -25,12 +25,6 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false)).Volumes.ToArray();
     }
 
-    public Task<IEnumerable<VolumeResponse>> GetOrphanedObjects(CancellationToken ct = default)
-    {
-      IEnumerable<VolumeResponse> volumes = Array.Empty<VolumeResponse>();
-      return Task.FromResult(volumes);
-    }
-
     public Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       throw new NotImplementedException();

@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System.IO;
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
@@ -9,28 +9,23 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
-    public ImageFromDockerfileConfiguration()
-      : this(CreateDockerImage())
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
-    /// </summary>
     /// <param name="image">The Docker image.</param>
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="deleteIfExists">A value indicating whether an existing image is removed or not.</param>
+    /// <param name="labels">A list of labels.</param>
     public ImageFromDockerfileConfiguration(
       IDockerImage image,
-      string dockerfile = "Dockerfile",
-      string dockerfileDirectory = ".",
-      bool deleteIfExists = true)
+      string dockerfile,
+      string dockerfileDirectory,
+      bool deleteIfExists,
+      IReadOnlyDictionary<string, string> labels)
     {
-      this.DeleteIfExists = deleteIfExists;
+      this.Image = image;
       this.Dockerfile = dockerfile;
       this.DockerfileDirectory = dockerfileDirectory;
-      this.Image = image;
+      this.DeleteIfExists = deleteIfExists;
+      this.Labels = labels;
     }
 
     /// <inheritdoc />
@@ -45,9 +40,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public IDockerImage Image { get; }
 
-    private static IDockerImage CreateDockerImage()
-    {
-      return new DockerImage("Testcontainers", Path.GetRandomFileName().Substring(0, 8), string.Empty);
-    }
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, string> Labels { get; }
   }
 }

@@ -15,9 +15,16 @@ namespace DotNet.Testcontainers.Configurations
   public interface ITestcontainersConfiguration
   {
     /// <summary>
-    /// Gets a value indicating whether the Testcontainer is removed on finalize or not.
+    /// Gets a value indicating whether the Testcontainer is removed by the Docker daemon or not.
     /// </summary>
-    bool CleanUp { get; }
+    [CanBeNull]
+    bool? AutoRemove { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the Testcontainer has extended privileges or not.
+    /// </summary>
+    [CanBeNull]
+    bool? Privileged { get; }
 
     /// <summary>
     /// Gets the Docker API endpoint.

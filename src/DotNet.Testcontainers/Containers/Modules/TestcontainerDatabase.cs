@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Containers
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers.Modules;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -53,7 +52,7 @@ namespace DotNet.Testcontainers.Containers
     {
       var tempScriptFile = this.GetTempScriptFile();
 
-      await this.CopyFileAsync(tempScriptFile, Encoding.UTF8.GetBytes(scriptContent), 493 /* 755 */)
+      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493 /* 755 */)
         .ConfigureAwait(false);
 
       return await this.ExecAsync(new[] { "/bin/sh", "-c", tempScriptFile })

@@ -73,7 +73,7 @@ namespace DotNet.Testcontainers.Configurations
         startupScript.AppendLine(". /etc/confluent/docker/bash-config");
         startupScript.AppendLine("/etc/confluent/docker/configure");
         startupScript.AppendLine("/etc/confluent/docker/launch");
-        return container.CopyFileAsync(StartupScriptPath, Encoding.UTF8.GetBytes(startupScript.ToString()), 0x1ff, ct: ct);
+        return container.CopyFileAsync(StartupScriptPath, Encoding.Default.GetBytes(startupScript.ToString()), 0x1ff, ct: ct);
       };
 
     /// <inheritdoc />

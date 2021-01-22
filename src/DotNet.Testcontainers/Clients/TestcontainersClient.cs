@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.IO;
-  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -19,11 +18,7 @@ namespace DotNet.Testcontainers.Clients
   {
     public const string TestcontainersLabel = "dotnet.testcontainers";
 
-    public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
-
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
-
-    private readonly TestcontainersRegistryService registryService;
 
     private readonly IDockerContainerOperations containers;
 
@@ -48,7 +43,6 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="logger">The logger.</param>
     public TestcontainersClient(Uri endpoint, ILogger logger)
       : this(
-        new TestcontainersRegistryService(),
         new DockerContainerOperations(endpoint, logger),
         new DockerImageOperations(endpoint, logger),
         new DockerSystemOperations(endpoint, logger))
@@ -56,12 +50,10 @@ namespace DotNet.Testcontainers.Clients
     }
 
     private TestcontainersClient(
-      TestcontainersRegistryService registryService,
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
       IDockerSystemOperations systemOperations)
     {
-      this.registryService = registryService;
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
@@ -137,8 +129,6 @@ namespace DotNet.Testcontainers.Clients
           }
         }
       }
-
-      this.registryService.Unregister(id);
     }
 
     /// <inheritdoc />
@@ -193,11 +183,15 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
-      // Killing or canceling the test process will prevent the cleanup.
-      // Remove labeled, orphaned containers from previous runs.
-      var removeOrphanedContainersTasks = (await this.containers.GetOrphanedObjects(ct)
-          .ConfigureAwait(false))
-        .Select(container => this.containers.RemoveAsync(container.ID, ct));
+      // TODO: Workaround until we have a Windows Docker image of Ryuk
+      var isWindowsEngineEnabled = await this.GetIsWindowsEngineEnabled(ct)
+        .ConfigureAwait(false);
+
+      if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.ToString("D").Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
+      {
+        _ = await ResourceReaper.GetAndStartDefaultAsync(ct: ct)
+          .ConfigureAwait(false);
+      }
 
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
@@ -206,13 +200,8 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      await Task.WhenAll(removeOrphanedContainersTasks)
-        .ConfigureAwait(false);
-
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
-
-      this.registryService.Register(id, configuration.CleanUp);
 
       return id;
     }

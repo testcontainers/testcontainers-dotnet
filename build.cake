@@ -72,6 +72,7 @@ Task("Build")
 });
 
 Task("Tests")
+  .IsDependentOn("Pull-Docker-Images")
   .Does(() =>
 {
   foreach(var testProject in param.Projects.OnlyTests)
@@ -88,7 +89,8 @@ Task("Tests")
       ArgumentCustomization = args => args
         .Append("/p:Platform=AnyCPU")
         .Append("/p:CollectCoverage=true")
-        .Append("/p:CoverletOutputFormat=opencover")
+        .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
+        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.net6.0.json\"")
         .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/\"")
     });
   }
@@ -159,6 +161,20 @@ Task("Publish-NuGet-Packages")
       ApiKey = param.NuGetCredentials.ApiKey
     });
   }
+});
+
+Task("Pull-Docker-Images")
+  .WithCriteria(() => PlatformFamily.Linux.Equals(Context.Environment.Platform.Family))
+  .Does(() =>
+{
+  StartProcess("docker", new ProcessSettings
+  {
+    RedirectStandardOutput = true,
+    RedirectStandardError = true,
+    Arguments = new ProcessArgumentBuilder()
+      .Append("pull")
+      .Append("ghcr.io/psanetra/ryuk:2021.12.20")
+  });
 });
 
 Task("Default")

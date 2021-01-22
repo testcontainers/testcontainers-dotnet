@@ -25,12 +25,6 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false)).ToArray();
     }
 
-    public Task<IEnumerable<NetworkResponse>> GetOrphanedObjects(CancellationToken ct = default)
-    {
-      IEnumerable<NetworkResponse> networks = Array.Empty<NetworkResponse>();
-      return Task.FromResult(networks);
-    }
-
     public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)

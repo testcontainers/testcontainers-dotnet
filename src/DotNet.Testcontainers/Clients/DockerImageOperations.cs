@@ -30,12 +30,6 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false)).ToArray();
     }
 
-    public Task<IEnumerable<ImagesListResponse>> GetOrphanedObjects(CancellationToken ct = default)
-    {
-      IEnumerable<ImagesListResponse> images = Array.Empty<ImagesListResponse>();
-      return Task.FromResult(images);
-    }
-
     public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
@@ -111,6 +105,7 @@ namespace DotNet.Testcontainers.Clients
       {
         Dockerfile = configuration.Dockerfile,
         Tags = new[] { image.FullName },
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
       using (var dockerFileStream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))

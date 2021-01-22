@@ -16,7 +16,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
+    // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory();
 
     [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
@@ -26,43 +27,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         var client = new TestcontainersClient();
         Assert.False(await client.GetIsWindowsEngineEnabled());
-      }
-
-      [Fact]
-      public async Task UnsafeDisposable()
-      {
-        // Given
-        ITestcontainersContainer testcontainer = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
-          .Build();
-
-        // When
-        await testcontainer.StartAsync();
-        await testcontainer.StopAsync();
-        await testcontainer.DisposeAsync();
-
-        // Then
-        Assert.Throws<InvalidOperationException>(() => testcontainer.Id);
-      }
-
-      [Fact]
-      public async Task SafeDisposable()
-      {
-        // Given
-        ITestcontainersContainer testcontainer = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
-          .Build();
-
-        // When
-        await using (testcontainer)
-        {
-          await testcontainer.StartAsync();
-        }
-
-        // Then
-        Assert.Throws<InvalidOperationException>(() => testcontainer.Id);
       }
 
       [Fact]
@@ -86,7 +50,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task SpecifiedContainerName()
       {
         // Given
-        var name = Guid.NewGuid().ToString("N");
+        var name = Guid.NewGuid().ToString("D");
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -112,7 +76,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null")
-          .WithCleanUp(false)
           .WithHostname(hostname);
 
         // Then
@@ -130,7 +93,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithEntrypoint("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
-          .WithCleanUp(false)
           .WithWorkingDirectory("/tmp");
 
         // When
@@ -148,8 +110,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint("/bin/sh", "-c", "exit 255")
-          .WithCleanUp(false);
+          .WithEntrypoint("/bin/sh", "-c", "exit 255");
 
         // When
         // Then
@@ -447,10 +408,54 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          await testcontainer.CopyFileAsync(dayOfWeekFilePath, Encoding.UTF8.GetBytes(dayOfWeek));
+          await testcontainer.CopyFileAsync(dayOfWeekFilePath, Encoding.Default.GetBytes(dayOfWeek));
           Assert.Equal(0, (await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"test \"$(cat {dayOfWeekFilePath})\" = \"{dayOfWeek}\"" })).ExitCode);
           Assert.Equal(0, (await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"stat {dayOfWeekFilePath} | grep 0600" })).ExitCode);
         }
+      }
+
+      [Fact]
+      public async Task AutoRemoveFalseShouldNotRemoveContainer()
+      {
+        // Given
+        string testcontainerId;
+
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithAutoRemove(false)
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+
+        // When
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          testcontainerId = testcontainer.Id;
+        }
+
+        // Then
+        Assert.True(Docker.Exists(DockerResource.Container, testcontainerId));
+      }
+
+      [Fact]
+      public async Task AutoRemoveTrueShouldRemoveContainer()
+      {
+        // Given
+        string testcontainerId;
+
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithAutoRemove(true)
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+
+        // When
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          testcontainerId = testcontainer.Id;
+        }
+
+        // Then
+        Assert.False(Docker.Exists(DockerResource.Container, testcontainerId));
       }
     }
   }

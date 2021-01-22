@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -30,5 +31,11 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     IDockerImage Image { get; }
+
+    /// <summary>
+    /// Gets a list of labels.
+    /// </summary>
+    [NotNull]
+    IReadOnlyDictionary<string, string> Labels { get; }
   }
 }

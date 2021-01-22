@@ -8,8 +8,6 @@ namespace DotNet.Testcontainers.Clients
   {
     Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
 
-    Task<IEnumerable<T>> GetOrphanedObjects(CancellationToken ct = default);
-
     Task<T> ByIdAsync(string id, CancellationToken ct = default);
 
     Task<T> ByNameAsync(string name, CancellationToken ct = default);

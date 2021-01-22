@@ -33,7 +33,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
-    /// <param name="cleanUp">A value indicating whether the Testcontainer is removed on finalize or not.</param>
+    /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
+    /// <param name="privileged">A value indicating whether the Testcontainer has extended  privilegesor not.</param>
     public TestcontainersConfiguration(
       Uri endpoint,
       IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations,
@@ -52,9 +53,11 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback,
-      bool cleanUp = true)
+      bool? autoRemove,
+      bool? privileged)
     {
-      this.CleanUp = cleanUp;
+      this.AutoRemove = autoRemove;
+      this.Privileged = privileged;
       this.Endpoint = endpoint;
       this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfigurations;
       this.Image = image;
@@ -77,7 +80,10 @@ namespace DotNet.Testcontainers.Configurations
 #pragma warning restore S107
 
     /// <inheritdoc />
-    public bool CleanUp { get; }
+    public bool? AutoRemove { get; }
+
+    /// <inheritdoc />
+    public bool? Privileged { get; }
 
     /// <inheritdoc />
     public Uri Endpoint { get; }

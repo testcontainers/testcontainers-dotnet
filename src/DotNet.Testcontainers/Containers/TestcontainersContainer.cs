@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -22,8 +23,6 @@ namespace DotNet.Testcontainers.Containers
 
     private readonly ITestcontainersConfiguration configuration;
 
-    private readonly ILogger logger;
-
     [NotNull]
     private ContainerListResponse container = new ContainerListResponse();
 
@@ -36,7 +35,7 @@ namespace DotNet.Testcontainers.Containers
     {
       this.client = new TestcontainersClient(configuration.Endpoint, logger);
       this.configuration = configuration;
-      this.logger = logger;
+      this.Logger = logger;
     }
 
     /// <inheritdoc />
@@ -103,6 +102,7 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <inheritdoc />
     public TestcontainersState State
     {
       get
@@ -118,17 +118,23 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <summary>
+    /// Gets the logger.
+    /// </summary>
+    [NotNull]
+    internal ILogger Logger { get; }
+
     /// <inheritdoc />
     public ushort GetMappedPublicPort(int privatePort)
     {
-      return this.GetMappedPublicPort($"{privatePort}");
+      return this.GetMappedPublicPort(Convert.ToString(privatePort, CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc />
     public ushort GetMappedPublicPort(string privatePort)
     {
       this.ThrowIfContainerHasNotBeenCreated();
-      var mappedPort = this.container.Ports.FirstOrDefault(port => $"{port.PrivatePort}".Equals(privatePort, StringComparison.Ordinal));
+      var mappedPort = this.container.Ports.FirstOrDefault(port => Convert.ToString(port.PrivatePort, CultureInfo.InvariantCulture).Equals(privatePort, StringComparison.Ordinal));
       return mappedPort?.PublicPort ?? ushort.MinValue;
     }
 
@@ -216,8 +222,20 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      var cleanOrStopTask = this.configuration.CleanUp ? this.CleanUpAsync() : this.StopAsync();
-      await cleanOrStopTask.ConfigureAwait(false);
+      // TODO: Workaround until we have a Windows Docker image of Ryuk
+      var isWindowsEngineEnabled = await this.client.GetIsWindowsEngineEnabled()
+        .ConfigureAwait(false);
+
+      if (isWindowsEngineEnabled && !Guid.Empty.ToString("D").Equals(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
+      {
+        await this.CleanUpAsync()
+          .ConfigureAwait(false);
+      }
+      else
+      {
+        await this.StopAsync()
+          .ConfigureAwait(false);
+      }
 
       this.semaphoreSlim.Dispose();
 
@@ -262,17 +280,17 @@ namespace DotNet.Testcontainers.Containers
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
         await WaitStrategy.WaitUntil(
-          async () =>
-          {
-            this.container = await this.client.GetContainer(id, ct)
-              .ConfigureAwait(false);
+            async () =>
+            {
+              this.container = await this.client.GetContainer(id, ct)
+                .ConfigureAwait(false);
 
-            return await waitStrategy.Until(this, this.logger)
-              .ConfigureAwait(false);
-          },
-          frequency,
-          timeout,
-          ct)
+              return await waitStrategy.Until(this, this.Logger)
+                .ConfigureAwait(false);
+            },
+            frequency,
+            timeout,
+            ct)
           .ConfigureAwait(false);
       }
 

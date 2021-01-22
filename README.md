@@ -15,31 +15,40 @@ Choose from existing pre-configured configurations and start containers within a
 
 Native Windows Docker containers are only supported on Windows. Windows requires the host operating system version to match the container operating system version. You'll find further information about Windows container version compatibility [here](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility).
 
-Keep in mind to enable the correct Docker engine on Windows host systems to match the container operating system. With Docker CE you can switch the engine with: `$env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon` or `-SwitchLinuxEngine`, `-SwitchWindowsEngine`.
+Keep in mind to enable the correct Docker engine on Windows host systems to match the container operating system. With Docker Desktop you can switch the engine either with the tray icon context menu or: `$env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon` or `-SwitchLinuxEngine`, `-SwitchWindowsEngine`.
 
 ## Supported commands
+
+To configure a container, use the `TestcontainersBuilder<TestcontainersContainer>` builder, that provides:
 
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
 - `WithWorkingDirectory` specifies and overrides the `WORKDIR` for the instruction sets.
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
-- `WithName` sets the container name e. g. `--name nginx`.
-- `WithHostname` sets the container hostname e. g. `--hostname my-nginx`.
-- `WithEnvironment` sets an environment variable in the container e. g. `-e, --env "test=containers"`.
-- `WithLabel` applies metadata to a container e. g. `-l, --label dotnet.testcontainers=awesome`.
-- `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
-- `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
-- `WithBindMount` binds a path of a file or directory into the container e. g. `-v, --volume .:/tmp`.
-- `WithVolumeMount` mounts a managed volume into the container e. g. `--mount type=volume,source=.,destination=/tmp`.
-- `WithNetwork` assigns a network to a container e. g. `--network="bridge"`.
-- `WithCleanUp` removes a stopped container automatically.
-- `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.
+- `WithName` sets the container name e.g. `--name nginx`.
+- `WithHostname` sets the container hostname e.g. `--hostname my-nginx`.
+- `WithEnvironment` sets an environment variable in the container e.g. `-e, --env "test=containers"`.
+- `WithLabel` applies metadata to the container e.g. `-l, --label dotnet.testcontainers=awesome`.
+- `WithExposedPort` exposes a port inside the container e.g. `--expose=80`.
+- `WithPortBinding` publishes the container port to the host e.g. `-p, --publish 80:80`.
+- `WithBindMount` binds a path of a file or directory into the container e.g. `-v, --volume .:/tmp`.
+- `WithVolumeMount` mounts a managed volume into the container e.g. `--mount type=volume,source=.,destination=/tmp`.
+- `WithNetwork` assigns a network to the container e.g. `--network="bridge"`.
+- `WithDockerEndpoint` sets the Docker API endpoint e.g. `-H tcp://0.0.0.0:2376`.
 - `WithRegistryAuthentication` basic authentication against a private Docker registry.
-- `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
-- `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
-- `WithStartupCallback` sets the startup callback to invoke after the Testcontainer start.
-- `WithDockerfileDirectory` builds a Docker image based on a Dockerfile (`ImageFromDockerfileBuilder`).
-- `WithDeleteIfExists` removes the Docker image before it is rebuilt (`ImageFromDockerfileBuilder`).
+- `WithOutputConsumer` redirects `stdout` and `stderr` to capture the container output.
+- `WithWaitStrategy` sets the wait strategy to complete the container start and indicates when it is ready.
+- `WithStartupCallback` sets the startup callback to invoke after the container start.
+- `WithPrivileged` sets the `--privileged` flag.
+- `WithAutoRemove` will remove the stopped container automatically like `--rm`.
+- `WithCleanUp` will remove the container automatically after all tests have been run (see [Resource Reaper](#Resource Reaper)).
+- `WithResourceReaperSessionId` assigns a Resource Reaper session id to the container.
+
+Use the additional builder for image (`ImageFromDockerfileBuilder`), network (`TestcontainersNetworkBuilder`) and volume (`TestcontainersVolumeBuilder`) to set up your individual test environment.
+
+## Resource Reaper
+
+Testcontainers assigns each Docker resource a Resource Reaper session id. After the tests are finished, [Ryuk][moby-ryuk] will take care of remaining Docker resources and removes them. You can change the Resource Reaper session and group Docker resources together with `WithResourceReaperSessionId`. Right now, only Linux containers are supported.
 
 ## Pre-configured containers
 
@@ -67,9 +76,9 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithPortBinding(80)
   .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80));
 
-await using (var testcontainer = testcontainersBuilder.Build())
+await using (var testcontainers = testcontainersBuilder.Build())
 {
-  await testcontainer.StartAsync();
+  await testcontainers.StartAsync();
   var request = WebRequest.Create("http://localhost:80");
 }
 ```
@@ -80,41 +89,49 @@ Mounts the current directory as volume into the container and runs `hostname > /
 var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
   .WithImage("nginx")
   .WithName("nginx")
-  .WithMount(".", "/tmp")
-  .WithCommand("/bin/bash", "-c", "hostname > /tmp/hostname")
+  .WithBindMount(".", "/tmp")
+  .WithEntrypoint("/bin/sh", "-c")
+  .WithCommand("hostname > /tmp/hostname")
   .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists("/tmp/hostname"));
 
-await using (var testcontainer = testcontainersBuilder.Build())
+await using (var testcontainers = testcontainersBuilder.Build())
 {
-  await testcontainer.StartAsync();
+  await testcontainers.StartAsync();
 }
 ```
 
-Here is an example of a pre-configured Testcontainer. In the example, Testcontainers starts a PostgreSQL database and executes a SQL query.
+Here is an example of a pre-configured container. In the example,  Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query.
 
 ```csharp
-var testcontainersBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-  .WithDatabase(new PostgreSqlTestcontainerConfiguration
-  {
-    Database = "db",
-    Username = "postgres",
-    Password = "postgres",
-  });
-
-await using (var testcontainer = testcontainersBuilder.Build())
+public sealed class PostgreSqlTest : IAsyncLifetime
 {
-  await testcontainer.StartAsync();
+  private readonly TestcontainerDatabase container = new TestcontainersBuilder<TestcontainerDatabase>()
+    .WithDatabase(new PostgreSqlTestcontainerConfiguration())
+    .Build();
 
-  using (var connection = new NpgsqlConnection(testcontainer.ConnectionString))
+  [Fact]
+  public void ExecuteCommand()
   {
-    connection.Open();
-
-    using (var cmd = new NpgsqlCommand())
+    using (var connection = new NpgsqlConnection(this.container.ConnectionString))
     {
-      cmd.Connection = connection;
-      cmd.CommandText = "SELECT 1";
-      cmd.ExecuteReader();
+      using (var command = new NpgsqlCommand())
+      {
+        connection.Open();
+        command.Connection = connection;
+        command.CommandText = "SELECT 1";
+        command.ExecuteReader();
+      }
     }
+  }
+
+  public Task InitializeAsync()
+  {
+    return this.container.StartAsync();
+  }
+
+  public Task DisposeAsync()
+  {
+    return this.container.DisposeAsync().AsTask();
   }
 }
 ```
@@ -153,6 +170,8 @@ Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
-[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Database
-[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/src/DotNet.Testcontainers.Tests/Unit/Containers/Unix/MessageBroker
+[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
+[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
+[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
+[moby-ryuk]: https://github.com/testcontainers/moby-ryuk
+[xunit]: https://xunit.net/

@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
+  using System.Net;
   using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
@@ -58,6 +59,12 @@
 
     private static readonly Action<ILogger, string, Exception> _DeleteDockerVolume
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
+
+    private static readonly Action<ILogger, EndPoint, Exception> _CanNotConnectToResourceReaper
+      = LoggerMessage.Define<EndPoint>(LogLevel.Error, default, "Can not connect to resource reaper at {ResourceReaper}");
+
+    private static readonly Action<ILogger, EndPoint, Exception> _LostConnectionToResourceReaper
+      = LoggerMessage.Define<EndPoint>(LogLevel.Error, default, "Lost connection to resource reaper at {ResourceReaper}");
 
     public static void Progress(this ILogger logger, string message)
     {
@@ -137,6 +144,16 @@
     public static void DeleteDockerVolume(this ILogger logger, string name)
     {
       _DeleteDockerVolume(logger, name, null);
+    }
+
+    public static void CanNotConnectToResourceReaper(this ILogger logger, EndPoint resourceReaper, Exception exception)
+    {
+      _CanNotConnectToResourceReaper(logger, resourceReaper, null);
+    }
+
+    public static void LostConnectionToResourceReaper(this ILogger logger, EndPoint resourceReaper, Exception exception)
+    {
+      _LostConnectionToResourceReaper(logger, resourceReaper, null);
     }
   }
 }

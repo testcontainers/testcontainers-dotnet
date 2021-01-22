@@ -1,8 +1,12 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -16,7 +20,12 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
     /// </summary>
     public ImageFromDockerfileBuilder()
-      : this(new ImageFromDockerfileConfiguration())
+      : this(
+        Apply(
+          image: new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"),
+          dockerfile: "Dockerfile",
+          dockerfileDirectory: ".",
+          labels: DefaultLabels.Instance))
     {
     }
 
@@ -32,35 +41,44 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public IImageFromDockerfileBuilder WithName(string name)
     {
-      return this.WithName(new DockerImage(name));
+      return Build(this, Apply(image: new DockerImage(name)));
     }
 
     /// <inheritdoc />
     public IImageFromDockerfileBuilder WithName(IDockerImage name)
     {
-      return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(name, this.configuration.Dockerfile, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
+      return Build(this, Apply(image: name));
     }
 
     /// <inheritdoc />
     public IImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(this.configuration.Image, dockerfile, this.configuration.DockerfileDirectory, this.configuration.DeleteIfExists));
+      return Build(this, Apply(dockerfile: dockerfile));
     }
 
     /// <inheritdoc />
     public IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.Dockerfile, dockerfileDirectory, this.configuration.DeleteIfExists));
+      return Build(this, Apply(dockerfileDirectory: dockerfileDirectory));
     }
 
     /// <inheritdoc />
     public IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      return new ImageFromDockerfileBuilder(
-        new ImageFromDockerfileConfiguration(this.configuration.Image, this.configuration.Dockerfile, this.configuration.DockerfileDirectory, deleteIfExists));
+      return Build(this, Apply(deleteIfExists: deleteIfExists));
+    }
+
+    /// <inheritdoc />
+    public IImageFromDockerfileBuilder WithLabel(string name, string value)
+    {
+      var labels = new Dictionary<string, string> { { name, value } };
+      return Build(this, Apply(labels: labels));
+    }
+
+    /// <inheritdoc />
+    public IImageFromDockerfileBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />
@@ -68,6 +86,37 @@ namespace DotNet.Testcontainers.Builders
     {
       var client = new TestcontainersClient();
       return client.BuildAsync(this.configuration);
+    }
+
+    private static IImageFromDockerfileConfiguration Apply(
+      IDockerImage image = null,
+      string dockerfile = null,
+      string dockerfileDirectory = null,
+      bool deleteIfExists = true,
+      IReadOnlyDictionary<string, string> labels = null)
+    {
+      return new ImageFromDockerfileConfiguration(image, dockerfile, dockerfileDirectory, deleteIfExists, labels);
+    }
+
+    private static IImageFromDockerfileBuilder Build(
+      ImageFromDockerfileBuilder previous,
+      IImageFromDockerfileConfiguration next)
+    {
+      var deleteIfExists = next.DeleteIfExists && previous.configuration.DeleteIfExists;
+      var labels = BuildConfiguration.Combine(next.Labels, previous.configuration.Labels);
+
+      var image = new[] { next.Image, previous.configuration.Image }.First(config => config != null);
+      var dockerfile = new[] { next.Dockerfile, previous.configuration.Dockerfile }.First(config => config != null);
+      var dockerfileDirectory = new[] { next.DockerfileDirectory, previous.configuration.DockerfileDirectory }.First(config => config != null);
+
+      var mergedConfiguration = Apply(
+        image,
+        dockerfile,
+        dockerfileDirectory,
+        deleteIfExists,
+        labels);
+
+      return new ImageFromDockerfileBuilder(mergedConfiguration);
     }
   }
 }
