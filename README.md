@@ -31,9 +31,10 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
 - `WithCleanUp` removes a stopped container automatically.
 - `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.
+- `WithRegistryAuthentication` basic authentication against a private Docker registry.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the Testcontainer output.
 - `WithWaitStrategy` sets the wait strategy to complete the Testcontainer start and indicates when it is ready.
-- `WithRegistryAuthentication` basic authentication against a private Docker registry.
+- `WithStartupCallback` sets the startup callback to invoke after the Testcontainer start.
 - `WithDockerfileDirectory` builds a Docker image based on a Dockerfile (`ImageFromDockerfileBuilder`).
 - `WithDeleteIfExists` removes the Docker image before it is rebuilt (`ImageFromDockerfileBuilder`).
 
@@ -41,12 +42,14 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 
 The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][3] tests.
 
+- Apache CouchDB (couchdb:2.3.1)
 - Couchbase (couchbase:6.5.1)
-- CouchDB (couchdb:2.3.1)
-- MsSql (server:2017-CU14-ubuntu)
-- MySql (mysql:8.0.18)
-- PostgreSql (postgres:11.5)
+- Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU14-ubuntu)
+- MySQL (mysql:8.0.18)
+- Oracle Database (wnameless/oracle-xe-11g-r2)
+- PostgreSQL (postgres:11.5)
 - Redis (redis:5.0.6)
+- Apache Kafka (confluentinc/cp-kafka:6.0.1)
 - RabbitMQ (rabbitmq:3.7.21)
 
 ## Examples

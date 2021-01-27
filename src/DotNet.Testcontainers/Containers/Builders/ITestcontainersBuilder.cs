@@ -190,17 +190,18 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// </summary>
     /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation is <see cref="DotNet.Testcontainers.Containers.WaitStrategies.Common.UntilContainerIsRunning" />.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    /// <remarks>Multiple wait strategies are executed one after the other in th…</remarks>
+    /// <remarks>Multiple wait strategies are executed one after the other.</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy);
 
     /// <summary>
-    /// Sets the startup callback to be executed after starting the container, but before executing the wait strategy.
+    /// Sets the startup callback to invoke after the Testcontainer start.
     /// </summary>
-    /// <param name="startupCallback">The callback function to be executed.</param>
+    /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    /// <remarks>Is invoked once after the Testcontainer is started and before the wait strategies are executed.</remarks>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IDockerContainer, CancellationToken, Task> startupCallback);
+    ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerContainer" /> with the given configuration.

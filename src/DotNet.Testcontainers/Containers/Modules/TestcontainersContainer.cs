@@ -125,20 +125,9 @@ namespace DotNet.Testcontainers.Containers.Modules
       return mappedPort?.PublicPort ?? ushort.MinValue;
     }
 
-    public async Task<long> GetExitCode(CancellationToken ct = default)
+    public Task<long> GetExitCode(CancellationToken ct = default)
     {
-      await this.semaphoreSlim.WaitAsync(ct)
-        .ConfigureAwait(false);
-
-      try
-      {
-        return await this.client.GetContainerExitCode(this.Id, ct)
-          .ConfigureAwait(false);
-      }
-      finally
-      {
-        this.semaphoreSlim.Release();
-      }
+      return this.client.GetContainerExitCode(this.Id, ct);
     }
 
     public async Task StartAsync(CancellationToken ct = default)
@@ -230,9 +219,11 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
     {
-      await this.client.AttachAsync(id, this.configuration.OutputConsumer, ct)
-        .ConfigureAwait(false);
-      await this.client.StartAsync(id, ct)
+      var startTask = this.client.StartAsync(id, ct);
+
+      var attachTask = this.client.AttachAsync(id, this.configuration.OutputConsumer, ct);
+
+      await Task.WhenAll(startTask, attachTask)
         .ConfigureAwait(false);
 
       this.container = await this.client.GetContainer(id, ct)
@@ -247,8 +238,7 @@ namespace DotNet.Testcontainers.Containers.Modules
           .ConfigureAwait(false);
       }
 
-      return await this.client.GetContainer(id, ct)
-        .ConfigureAwait(false);
+      return this.container;
     }
 
     private async Task<ContainerListResponse> Stop(string id, CancellationToken ct = default)

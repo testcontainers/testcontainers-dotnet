@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IDockerContainer, CancellationToken, Task> startupCallback)
+    public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback)
     {
       return Build(this, Apply(startupCallback: startupCallback));
     }

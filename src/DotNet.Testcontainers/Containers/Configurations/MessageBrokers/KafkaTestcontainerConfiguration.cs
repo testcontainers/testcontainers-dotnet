@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
     /// <summary>
     /// Gets the startup callback.
     /// </summary>
-    public virtual Func<IDockerContainer, CancellationToken, Task> StartupCallback
+    public virtual Func<IRunningDockerContainer, CancellationToken, Task> StartupCallback
       => (container, ct) =>
       {
         var startupScript = $@"#!/bin/sh

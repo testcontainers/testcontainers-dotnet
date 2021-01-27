@@ -6,7 +6,28 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using JetBrains.Annotations;
 
-  public interface IDockerContainer : IAsyncDisposable
+  public interface IDockerContainer : IRunningDockerContainer, IAsyncDisposable
+  {
+    /// <summary>
+    /// Gets the Testcontainer exit code.
+    /// </summary>
+    /// <returns>Returns the Docker container exit code.</returns>
+    Task<long> GetExitCode(CancellationToken ct = default);
+
+    /// <summary>
+    /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>
+    Task StartAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Stops the Testcontainer and removes the container automatically.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
+    Task StopAsync(CancellationToken ct = default);
+  }
+
+  public interface IRunningDockerContainer
   {
     /// <summary>Gets the Testcontainer id.</summary>
     /// <value>Returns the Docker container id if present or an empty string instead.</value>
@@ -55,29 +76,11 @@ namespace DotNet.Testcontainers.Containers
     ushort GetMappedPublicPort(string privatePort);
 
     /// <summary>
-    /// Gets the Testcontainer exit code.
-    /// </summary>
-    /// <returns>Returns the Docker container exit code.</returns>
-    Task<long> GetExitCode(CancellationToken ct = default);
-
-    /// <summary>
-    /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>
-    Task StartAsync(CancellationToken ct = default);
-
-    /// <summary>
-    /// Stops the Testcontainer and removes the container automatically.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
-    Task StopAsync(CancellationToken ct = default);
-
-    /// <summary>
     /// Copies a file into the container.
     /// </summary>
     /// <param name="filePath">Path to the file in the container.</param>
     /// <param name="fileContent">Content of the file as bytes.</param>
-    /// <param name="accessMode">Access mode for the file. (Default: 0600)</param>
+    /// <param name="accessMode">Access mode for the file (default: 0600).</param>
     /// <param name="userId">Owner of the file.</param>
     /// <param name="groupId">Group of the file.</param>
     /// <param name="ct">Cancellation token.</param>
