@@ -130,7 +130,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       return this.client.GetContainerExitCode(this.Id, ct);
     }
 
-    public async Task StartAsync(CancellationToken ct = default)
+    public virtual async Task StartAsync(CancellationToken ct = default)
     {
       await this.semaphoreSlim.WaitAsync(ct)
         .ConfigureAwait(false);
@@ -148,7 +148,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       }
     }
 
-    public async Task StopAsync(CancellationToken ct = default)
+    public virtual async Task StopAsync(CancellationToken ct = default)
     {
       await this.semaphoreSlim.WaitAsync(ct)
         .ConfigureAwait(false);
