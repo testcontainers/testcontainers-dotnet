@@ -18,12 +18,17 @@ namespace DotNet.Testcontainers.Containers
     /// Starts the Testcontainer. If the image does not exist, it will be downloaded automatically. Non-existing containers are created at first start.
     /// </summary>
     /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainer task gets canceled.</exception>
+    /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
     Task StartAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Stops the Testcontainer and removes the container automatically.
     /// </summary>
     /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainer task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
   }
 

@@ -298,7 +298,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           // When
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("alpine")
-            .WithCommand("/bin/sh", "-c", $"printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+            .WithCommand("/bin/sh", "-c", $"sleep 1 && printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
             .WithOutputConsumer(consumer)
             .WithWaitStrategy(Wait.ForUnixContainer()
               .UntilMessageIsLogged(consumer.Stdout, unixTimeInMilliseconds)
