@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.IO;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -16,6 +17,10 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
+    public const string TestcontainersLabel = "dotnet.testcontainers";
+
+    public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
+
     private readonly string osRootDirectory = Path.GetPathRoot(typeof(ITestcontainersClient).Assembly.Location);
 
     private readonly Uri endpoint;
@@ -174,6 +179,17 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
+
+
+      // TODO: Is this the right location?
+      var foo = (await this.containers.GetOrphanedObjects(ct))
+        .Select(container => container.ID)
+        .Select(id1 => this.RemoveAsync(id1, ct))
+        .ToArray();
+      await Task.WhenAll(foo);
+
+
+
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
 
@@ -190,7 +206,7 @@ namespace DotNet.Testcontainers.Clients
     private void PurgeOrphanedContainers(object sender, EventArgs args)
     {
       var arguments = new PurgeOrphanedContainersArgs(this.endpoint, this.registryService.GetRegisteredContainers());
-      new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
+      _ = new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
     }
   }
 }

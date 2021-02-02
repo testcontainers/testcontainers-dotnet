@@ -24,6 +24,12 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false)).ToArray();
     }
 
+    public Task<IEnumerable<ImagesListResponse>> GetOrphanedObjects(CancellationToken ct = default)
+    {
+      IEnumerable<ImagesListResponse> images = Array.Empty<ImagesListResponse>();
+      return Task.FromResult(images);
+    }
+
     public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
@@ -37,7 +43,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ImagesListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      return (await this.Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct)
+      var filters = new FilterByProperty(property, value);
+      return (await this.Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).FirstOrDefault();
     }
 

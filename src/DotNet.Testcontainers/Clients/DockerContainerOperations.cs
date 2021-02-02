@@ -27,6 +27,13 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false)).ToArray();
     }
 
+    public async Task<IEnumerable<ContainerListResponse>> GetOrphanedObjects(CancellationToken ct = default)
+    {
+      var filters = new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersCleanUpLabel}=true" }, { "status", "exited" } };
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
+        .ConfigureAwait(false)).ToArray();
+    }
+
     public Task<ContainerListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return this.ByPropertyAsync("id", id, ct);
@@ -39,7 +46,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ContainerListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = new FilterByProperty(property, value) }, ct)
+      var filters = new FilterByProperty(property, value);
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).FirstOrDefault();
     }
 

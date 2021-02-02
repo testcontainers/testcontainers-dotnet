@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
   /// <inheritdoc cref="IAuthenticationConfiguration" />
   /// <remarks>In the future, we will replace this class. Instead, we will use the local Docker credentials.</remarks>
-  internal class AuthenticationConfiguration : IAuthenticationConfiguration
+  internal readonly struct AuthenticationConfiguration : IAuthenticationConfiguration
   {
     /// <summary>
     /// Creates a <see cref="AuthenticationConfiguration" />.
