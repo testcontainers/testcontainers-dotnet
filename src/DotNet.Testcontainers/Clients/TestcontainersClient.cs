@@ -172,6 +172,12 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
+      // Killing or canceling the test process will prevent the cleanup.
+      // Remove labeled, orphaned containers from previous runs.
+      var removeOrphanedContainersTasks = (await this.containers.GetOrphanedObjects(ct)
+        .ConfigureAwait(false))
+        .Select(container => this.containers.RemoveAsync(container.ID, ct));
+
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
       {
@@ -179,16 +185,8 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-
-
-      // TODO: Is this the right location?
-      var foo = (await this.containers.GetOrphanedObjects(ct))
-        .Select(container => container.ID)
-        .Select(id1 => this.RemoveAsync(id1, ct))
-        .ToArray();
-      await Task.WhenAll(foo);
-
-
+      await Task.WhenAll(removeOrphanedContainersTasks)
+        .ConfigureAwait(false);
 
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
