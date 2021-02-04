@@ -21,6 +21,8 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
 
+    public const string TestcontainersSessionLabel = TestcontainersLabel + ".session";
+
     private readonly string osRootDirectory = Path.GetPathRoot(typeof(ITestcontainersClient).Assembly.Location);
 
     private readonly Uri endpoint;
@@ -175,7 +177,7 @@ namespace DotNet.Testcontainers.Clients
       // Killing or canceling the test process will prevent the cleanup.
       // Remove labeled, orphaned containers from previous runs.
       var removeOrphanedContainersTasks = (await this.containers.GetOrphanedObjects(ct)
-        .ConfigureAwait(false))
+          .ConfigureAwait(false))
         .Select(container => this.containers.RemoveAsync(container.ID, ct));
 
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)

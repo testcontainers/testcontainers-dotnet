@@ -29,7 +29,17 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<IEnumerable<ContainerListResponse>> GetOrphanedObjects(CancellationToken ct = default)
     {
-      var filters = new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersCleanUpLabel}=true" }, { "status", "exited" } };
+      // TODO: Create TestcontainersSession only once.
+      var session = new TestcontainersSession().Id.ToString();
+
+      // TODO: create FilterByProperty only once. Set correct filter.
+      var filters = new FilterByProperty
+      {
+        {"label", $"{TestcontainersClient.TestcontainersSessionLabel}={session}"},
+        {"label", $"{TestcontainersClient.TestcontainersCleanUpLabel}=true"},
+        {"status", "exited"}
+      };
+
       return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).ToArray();
     }
