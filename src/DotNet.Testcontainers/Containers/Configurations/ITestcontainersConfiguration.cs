@@ -44,6 +44,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
     string Name { get; }
 
     /// <summary>
+    /// Gets the hostname.
+    /// </summary>
+    [NotNull]
+    string Hostname { get; }
+
+    /// <summary>
     /// Gets the working directory.
     /// </summary>
     [NotNull]

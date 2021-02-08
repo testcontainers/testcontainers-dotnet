@@ -48,6 +48,13 @@ namespace DotNet.Testcontainers.Containers.Builders
     ITestcontainersBuilder<TDockerContainer> WithName(string name);
 
     /// <summary>
+    /// Sets the hostname of the Testcontainer.
+    /// </summary>
+    /// <param name="hostname">Testcontainers name.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname);
+
+    /// <summary>
     /// Overrides the working directory of the Testcontainer for the instruction sets.
     /// </summary>
     /// <param name="workingDirectory">Working directory.</param>

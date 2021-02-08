@@ -82,6 +82,12 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname)
+    {
+      return Build(this, Apply(hostname: hostname));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory)
     {
       return Build(this, Apply(workingDirectory: workingDirectory));
@@ -214,6 +220,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       IAuthenticationConfiguration authConfig = null,
       IDockerImage image = null,
       string name = null,
+      string hostname = null,
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
       IEnumerable<string> command = null,
@@ -232,6 +239,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         authConfig,
         image,
         name,
+        hostname,
         workingDirectory,
         entrypoint,
         command,
@@ -257,6 +265,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Local);
       var image = Merge(next.Image, previous.configuration.Image);
       var name = Merge(next.Name, previous.configuration.Name);
+      var hostname = Merge(next.Hostname, previous.configuration.Hostname);
       var workingDirectory = Merge(next.WorkingDirectory, previous.configuration.WorkingDirectory);
       var entrypoint = Merge(next.Entrypoint, previous.configuration.Entrypoint);
       var command = Merge(next.Command, previous.configuration.Command);
@@ -276,6 +285,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         authConfig,
         image,
         name,
+        hostname,
         workingDirectory,
         entrypoint,
         command,
