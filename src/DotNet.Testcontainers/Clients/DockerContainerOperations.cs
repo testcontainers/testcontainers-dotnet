@@ -146,6 +146,7 @@ namespace DotNet.Testcontainers.Clients
         Labels = converter.Labels,
         ExposedPorts = converter.ExposedPorts,
         HostConfig = hostConfig,
+        Hostname = configuration.Hostname
       };
 
       var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)

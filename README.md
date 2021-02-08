@@ -24,6 +24,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
 - `WithName` sets the container name e. g. `--name nginx`.
+- `WithHostname` sets the container hostname e. g. `--hostname my-nginx`.
 - `WithEnvironment` sets an environment variable in the container e. g. `-e, --env "test=containers"`.
 - `WithLabel` applies metadata to a container e. g. `-l, --label dotnet.testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
