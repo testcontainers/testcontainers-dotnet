@@ -170,7 +170,8 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      return Build(this, Apply(cleanUp: cleanUp));
+      return Build(this, Apply(cleanUp: cleanUp))
+        .WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString().ToLowerInvariant());
     }
 
     /// <inheritdoc />
@@ -360,11 +361,11 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private sealed class DefaultLabels : ReadOnlyDictionary<string, string>
     {
-      public DefaultLabels()
-        : base(new Dictionary<string, string>
-        {
-          { "dotnet.testcontainers", "true"},
-        })
+      public DefaultLabels() : base(new Dictionary<string, string>
+      {
+        { TestcontainersClient.TestcontainersLabel, "true" },
+        { TestcontainersClient.TestcontainersCleanUpLabel, "true" }
+      })
       {
       }
     }

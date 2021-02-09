@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -16,6 +17,10 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
+    public const string TestcontainersLabel = "dotnet.testcontainers";
+
+    public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
+
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly TestcontainersRegistryService registryService;
@@ -171,12 +176,21 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
+      // Killing or canceling the test process will prevent the cleanup.
+      // Remove labeled, orphaned containers from previous runs.
+      var removeOrphanedContainersTasks = (await this.containers.GetOrphanedObjects(ct)
+          .ConfigureAwait(false))
+        .Select(container => this.containers.RemoveAsync(container.ID, ct));
+
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
       {
         await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct)
           .ConfigureAwait(false);
       }
+
+      await Task.WhenAll(removeOrphanedContainersTasks)
+        .ConfigureAwait(false);
 
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
