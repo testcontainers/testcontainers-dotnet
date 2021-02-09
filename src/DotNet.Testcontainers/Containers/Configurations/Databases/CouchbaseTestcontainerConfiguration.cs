@@ -56,7 +56,8 @@ namespace DotNet.Testcontainers.Containers.Configurations.Databases
 
     private readonly MemoryStream stderr = new MemoryStream();
 
-    public CouchbaseTestcontainerConfiguration() : base(CouchbaseImage, BootstrapHttpPort, BootstrapHttpPort)
+    public CouchbaseTestcontainerConfiguration()
+      : base(CouchbaseImage, BootstrapHttpPort, BootstrapHttpPort)
     {
       this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(this.stdout, this.stderr);
       this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, WaitUntilMessageIsLogged);

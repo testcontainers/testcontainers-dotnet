@@ -15,9 +15,9 @@ namespace DotNet.Testcontainers.Containers.Configurations.MessageBrokers
 
     private const int KafkaPort = 9092;
 
-    private const int ZookeeperPort = 2181;
-
     private const int BrokerPort = 9093;
+
+    private const int ZookeeperPort = 2181;
 
     public KafkaTestcontainerConfiguration()
       : this(KafkaImage)

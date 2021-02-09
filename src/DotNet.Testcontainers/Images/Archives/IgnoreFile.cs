@@ -85,7 +85,7 @@ namespace DotNet.Testcontainers.Images.Archives
 
       foreach (var ignorePattern in this.ignorePatterns)
       {
-        Logger.LogInformation($"Pattern {ignorePattern.Key} added to Regex cache.");
+        Logger.LogInformation($"Pattern {ignorePattern.Key} added to RegEx cache.");
       }
     }
 
