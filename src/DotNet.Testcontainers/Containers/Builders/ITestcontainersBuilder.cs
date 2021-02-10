@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <summary>
     /// Sets the hostname of the Testcontainer.
     /// </summary>
-    /// <param name="hostname">Testcontainers name.</param>
+    /// <param name="hostname">Testcontainers hostname.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname);
 
