@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers.Containers.Modules
               return "localhost";
             }
           default:
-            return this.configuration.Hostname;
+            return this.IpAddress;
         }
       }
     }
