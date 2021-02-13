@@ -49,10 +49,7 @@ namespace DotNet.Testcontainers.Internals.Mappers
 
       public override IEnumerable<Mount> Convert(IEnumerable<IBind> source)
       {
-        return source?.Select(mount => new Mount
-        {
-          Type = "bind", Source = mount.HostPath, Target = mount.ContainerPath, ReadOnly = AccessMode.ReadOnly.Equals(mount.AccessMode)
-        });
+        return source?.Select(mount => new Mount { Type = "bind", Source = mount.HostPath, Target = mount.ContainerPath, ReadOnly = AccessMode.ReadOnly.Equals(mount.AccessMode) });
       }
     }
 

@@ -96,6 +96,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Fact]
+      public async Task Hostname()
+      {
+        // Given
+        const string hostname = "alpine";
+
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithHostname(hostname)
+          .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null");
+
+        // Then
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.Equal(0, await testcontainer.GetExitCode());
+        }
+      }
+
+      [Fact]
       public async Task WorkingDirectory()
       {
         // Given

@@ -4,6 +4,7 @@ variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   MSBUILDDISABLENODEREUSE: true # https://github.com/dotnet/sdk/issues/9452
+  DECODE_PERCENTS: true # https://github.com/microsoft/azure-pipelines-agent/pull/3152
   TZ: CET # https://stackoverflow.com/q/53510011
   dotNetCoreVersion: 3.1.111
   cakeVersion: 0.38.5

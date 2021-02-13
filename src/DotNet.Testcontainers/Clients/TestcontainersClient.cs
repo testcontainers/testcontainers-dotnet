@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
@@ -117,8 +118,20 @@ namespace DotNet.Testcontainers.Clients
       if (await this.containers.ExistsWithIdAsync(id, ct)
         .ConfigureAwait(false))
       {
-        await this.containers.RemoveAsync(id, ct)
-          .ConfigureAwait(false);
+        try
+        {
+          await this.containers.RemoveAsync(id, ct)
+            .ConfigureAwait(false);
+        }
+        catch (DockerApiException e)
+        {
+          // The Docker daemon may already start the progress to remove the container (AutoRemove).
+          // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
+          if (!e.Message.Contains($"removal of container {id} is already in progress"))
+          {
+            throw;
+          }
+        }
       }
 
       this.registryService.Unregister(id);

@@ -131,6 +131,7 @@ namespace DotNet.Testcontainers.Clients
 
       var hostConfig = new HostConfig
       {
+        AutoRemove = configuration.CleanUp,
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
       };
@@ -139,6 +140,7 @@ namespace DotNet.Testcontainers.Clients
       {
         Image = configuration.Image.FullName,
         Name = configuration.Name,
+        Hostname = configuration.Hostname,
         WorkingDir = configuration.WorkingDirectory,
         Entrypoint = converter.Entrypoint,
         Cmd = converter.Command,
@@ -146,7 +148,6 @@ namespace DotNet.Testcontainers.Clients
         Labels = converter.Labels,
         ExposedPorts = converter.ExposedPorts,
         HostConfig = hostConfig,
-        Hostname = configuration.Hostname
       };
 
       var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)
