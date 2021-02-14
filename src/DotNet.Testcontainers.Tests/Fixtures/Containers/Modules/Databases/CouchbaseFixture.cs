@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
 {
   using System.Threading.Tasks;
+  using Couchbase;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Configurations.Databases;
   using DotNet.Testcontainers.Containers.Modules.Databases;
@@ -8,13 +9,19 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
 
   public class CouchbaseFixture : ModuleFixture<CouchbaseTestcontainer>, IAsyncLifetime
   {
+    public const string BucketName = "Sample";
+
+    private const string Username = "Administrator";
+
+    private const string Password = "password";
+
     public CouchbaseFixture()
       : base(new TestcontainersBuilder<CouchbaseTestcontainer>()
         .WithDatabase(new CouchbaseTestcontainerConfiguration
         {
-          Username = "Administrator",
-          Password = "password",
-          BucketName = "customers",
+          Username = Username,
+          Password = Password,
+          BucketName = BucketName,
           ClusterRamSize = "384",
           ClusterIndexRamSize = "256",
           ClusterFtsRamSize = "256",
@@ -31,18 +38,29 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases
     {
     }
 
-    public Task InitializeAsync()
+    public ICluster Cluster { get; private set; }
+
+    public async Task InitializeAsync()
     {
-      // See comments in: CouchbaseTestcontainerTest.
-      return Task.CompletedTask;
-      return this.Container.StartAsync();
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Cluster = await Couchbase.Cluster.ConnectAsync(
+          this.Container.ConnectionString,
+          this.Container.Username,
+          this.Container.Password)
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-      // See comments in: CouchbaseTestcontainerTest.
-      return Task.CompletedTask;
-      return this.Container.DisposeAsync().AsTask();
+      await this.Cluster.DisposeAsync()
+        .AsTask()
+        .ConfigureAwait(false);
+
+      await this.Container.DisposeAsync()
+        .AsTask()
+        .ConfigureAwait(false);
     }
   }
 }

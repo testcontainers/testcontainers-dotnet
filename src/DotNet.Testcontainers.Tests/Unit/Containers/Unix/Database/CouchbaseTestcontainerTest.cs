@@ -2,21 +2,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
 {
   using System;
   using System.Threading.Tasks;
-  using Couchbase;
+  using Couchbase.KeyValue;
   using DotNet.Testcontainers.Containers.Configurations.Databases;
   using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.Databases;
   using Xunit;
 
   public class CouchbaseTestcontainerTest : IClassFixture<CouchbaseFixture>
   {
-    // Suddenly and without changes the below tests are not able to access Couchbase buckets on Microsoft Azure Pipelines (hosted agents) anymore:
-    // Bucket with name ... does not exist.
-    // The container still starts and binds the ports. Even curl can access http://127.0.0.1:8091/pools.
-    // So far we do not know why the tests fail. Either we remove Couchbase or fix them in the weeks.
-    // - https://forums.couchbase.com/t/bucket-with-name-mybucket-does-not-exist/26879.
-    // - https://stackoverflow.com/q/65591727/690017.
-    private const string TestFailOnMicrosoftAzurePipelines = "Test fail on hosted agents: Bucket with name ... does not exist.";
-
     private readonly CouchbaseFixture couchbaseFixture;
 
     public CouchbaseTestcontainerTest(CouchbaseFixture couchbaseFixture)
@@ -24,121 +16,113 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       this.couchbaseFixture = couchbaseFixture;
     }
 
-    [Fact(Skip = TestFailOnMicrosoftAzurePipelines)]
-    public async Task ConnectionEstablishedWithCrudTest()
+    [Fact]
+    public async Task ConnectToExistingBucketAndRunCrudOperations()
     {
       // Given
-      var customer1 = new Customer { Name = "Mustafa", Age = 29 };
+      var id = Guid.NewGuid().ToString();
 
-      var customer2 = new Customer { Name = "Onur", Age = 30 };
+      var customer1 = new Customer("Mustafa", 29);
 
-      var key = Guid.NewGuid().ToString();
+      var customer2 = new Customer("Onur", 30);
 
-      await using (var cluster = await Cluster.ConnectAsync(
-        this.couchbaseFixture.Container.ConnectionString,
-        this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password)
+      await using (var bucket = await this.couchbaseFixture.Cluster
+        .BucketAsync(CouchbaseFixture.BucketName)
         .ConfigureAwait(false))
       {
-        await using (var bucket = await cluster.BucketAsync("customers")
-          .ConfigureAwait(false))
-        {
-          // When
-          // Then
-          var collection = bucket.DefaultCollection();
+        // When
+        // Then
+        var collection = bucket.DefaultCollection();
 
-          // Create
-          await collection.InsertAsync(key, customer1)
-            .ConfigureAwait(false);
+        // Create
+        _ = await collection.InsertAsync(id, customer1)
+          .ConfigureAwait(false);
 
-          // Read
-          var result1 = (await collection.GetAsync(key)
-            .ConfigureAwait(false)).ContentAs<Customer>();
-          Assert.Equal(customer1.Name, result1.Name);
-          Assert.Equal(customer1.Age, result1.Age);
+        var createResult = (await collection.GetAsync(id)
+            .ConfigureAwait(false))
+          .ContentAs<Customer>();
 
-          // Update
-          await collection.UpsertAsync(key, customer2);
-          var result2 = (await collection.GetAsync(key)
-            .ConfigureAwait(false)).ContentAs<Customer>();
-          Assert.Equal(customer2.Name, result2.Name);
-          Assert.Equal(customer2.Age, result2.Age);
+        Assert.Equal(customer1.Name, createResult.Name);
+        Assert.Equal(customer1.Age, createResult.Age);
 
-          // Delete
-          await collection.RemoveAsync(key)
-            .ConfigureAwait(false);
-          var exists = (await collection.ExistsAsync(key)
-            .ConfigureAwait(false)).Exists;
-          Assert.False(exists);
-        }
+        // Update
+        _ = await collection.UpsertAsync(id, customer2)
+          .ConfigureAwait(false);
+
+        var updateResult = (await collection.GetAsync(id)
+            .ConfigureAwait(false))
+          .ContentAs<Customer>();
+
+        Assert.Equal(customer2.Name, updateResult.Name);
+        Assert.Equal(customer2.Age, updateResult.Age);
+
+        // Delete
+        await collection.RemoveAsync(id)
+          .ConfigureAwait(false);
+
+        Assert.False((await collection.ExistsAsync(id,
+            o => o.Timeout(TimeSpan.FromMinutes(1)))
+          .ConfigureAwait(false)).Exists);
       }
     }
 
-    [Fact(Skip = TestFailOnMicrosoftAzurePipelines)]
-    public async Task ShouldCreateBucket()
+    [Fact]
+    public async Task CreateBucket()
     {
       // Given
-      const string bucketName = nameof(this.ShouldCreateBucket);
+      var bucketName = Guid.NewGuid().ToString();
 
       // When
-      var exitCode = await this.couchbaseFixture.Container.CreateBucket(bucketName)
+      _ = await this.couchbaseFixture.Container
+        .CreateBucket(bucketName)
         .ConfigureAwait(false);
 
       // Then
-      await using (var cluster = await Cluster.ConnectAsync(
-        this.couchbaseFixture.Container.ConnectionString,
-        this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password)
+      await using (var bucket = await this.couchbaseFixture.Cluster
+        .BucketAsync(bucketName)
         .ConfigureAwait(false))
       {
-        await using (var bucket = await cluster.BucketAsync(bucketName)
-          .ConfigureAwait(false))
-        {
-          Assert.Equal(bucketName, bucket.Name);
-          Assert.Equal(0, exitCode);
-        }
+        Assert.Equal(bucketName, bucket.Name);
       }
     }
 
-    [Fact(Skip = TestFailOnMicrosoftAzurePipelines)]
-    public async Task ShouldFlushBucket()
+    [Fact]
+    public async Task FlushBucket()
     {
       // Given
-      const string bucketName = nameof(this.ShouldFlushBucket);
+      var id = Guid.NewGuid().ToString();
 
-      var key = Guid.NewGuid().ToString();
+      var bucketName = Guid.NewGuid().ToString();
 
-      _ = await this.couchbaseFixture.Container.CreateBucket(bucketName)
+      _ = await this.couchbaseFixture.Container
+        .CreateBucket(bucketName)
         .ConfigureAwait(false);
 
-      await using (var cluster = await Cluster.ConnectAsync(
-        this.couchbaseFixture.Container.ConnectionString,
-        this.couchbaseFixture.Container.Username,
-        this.couchbaseFixture.Container.Password)
+      await using (var bucket = await this.couchbaseFixture.Cluster
+        .BucketAsync(bucketName)
         .ConfigureAwait(false))
       {
-        await using (var bucket = await cluster.BucketAsync(bucketName)
-          .ConfigureAwait(false))
-        {
-          // When
-          // Then
-          var collection = bucket.DefaultCollection();
+        // When
+        // Then
+        var collection = bucket.DefaultCollection();
 
-          // Create
-          await collection.InsertAsync(key, new { })
-            .ConfigureAwait(false);
+        // Create
+        _ = await collection.InsertAsync(id, new { },
+            o => o.Timeout(TimeSpan.FromMinutes(1)))
+          .ConfigureAwait(false);
 
-          // Flush
-          var exitCode = await this.couchbaseFixture.Container.FlushBucket(bucketName)
-            .ConfigureAwait(false);
+        Assert.True((await collection.ExistsAsync(id,
+            o => o.Timeout(TimeSpan.FromMinutes(1)))
+          .ConfigureAwait(false)).Exists);
 
-          var exists = (await collection.ExistsAsync(key)
-            .ConfigureAwait(false)).Exists;
+        // Flush
+        _ = await this.couchbaseFixture.Container
+          .FlushBucket(bucketName)
+          .ConfigureAwait(false);
 
-          Assert.Equal(bucketName, bucket.Name);
-          Assert.Equal(0, exitCode);
-          Assert.False(exists);
-        }
+        Assert.False((await collection.ExistsAsync(id,
+            o => o.Timeout(TimeSpan.FromMinutes(1)))
+          .ConfigureAwait(false)).Exists);
       }
     }
 
@@ -253,11 +237,17 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Database
       Assert.Equal("Couchbase ClusterAnalyticsRamSize ram size can not be less than 1024 MB. (Parameter 'ClusterAnalyticsRamSize')", exception.Message);
     }
 
-    private sealed class Customer
+    private readonly struct Customer
     {
-      public string Name { get; set; }
+      public Customer(string name, int age)
+      {
+        this.Name = name;
+        this.Age = age;
+      }
 
-      public int Age { get; set; }
+      public string Name { get; }
+
+      public int Age { get; }
     }
   }
 }
