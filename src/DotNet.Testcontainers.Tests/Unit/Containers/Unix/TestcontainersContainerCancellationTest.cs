@@ -22,9 +22,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0)))
         {
+          var expectedExceptions = new[] { typeof(OperationCanceledException), typeof(TimeoutException) };
+
           // It depends on which part in the StartAsync gets canceled. Catch base exception.
-          // This test will not throw a TimeoutException. We do not cancel the wait strategy.
-          await Assert.ThrowsAnyAsync<OperationCanceledException>(() => this.alpineFixture.Container.StartAsync(cts.Token));
+          var exception = await Assert.ThrowsAnyAsync<SystemException>(() => this.alpineFixture.Container.StartAsync(cts.Token));
+          Assert.Contains(exception.GetType(), expectedExceptions);
         }
       }
     }
