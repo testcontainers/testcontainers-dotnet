@@ -22,8 +22,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0)))
         {
-          var expectedExceptions = new[] { typeof(OperationCanceledException), typeof(TimeoutException) };
-
+          var expectedExceptions = new[] { typeof(TaskCanceledException), typeof(OperationCanceledException), typeof(TimeoutException) };
           // It depends on which part in the StartAsync gets canceled. Catch base exception.
           var exception = await Assert.ThrowsAnyAsync<SystemException>(() => this.alpineFixture.Container.StartAsync(cts.Token));
           Assert.Contains(exception.GetType(), expectedExceptions);
