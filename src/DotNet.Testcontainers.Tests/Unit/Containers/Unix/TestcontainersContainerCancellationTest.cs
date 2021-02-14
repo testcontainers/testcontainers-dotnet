@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public async Task Start()
       {
-        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0)))
+        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
         {
           var expectedExceptions = new[] { typeof(TaskCanceledException), typeof(OperationCanceledException), typeof(TimeoutException) };
           // It depends on which part in the StartAsync gets canceled. Catch base exception.
