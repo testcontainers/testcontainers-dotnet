@@ -131,7 +131,7 @@ namespace DotNet.Testcontainers.Clients
 
       var hostConfig = new HostConfig
       {
-        AutoRemove = configuration.CleanUp,
+        AutoRemove = configuration.CleanUp, // TODO: Should we keep this? If the Docker daemon removes containers we're no longer able to call e. g. `CleanUp(true)` + `GetExitCode()`.
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
       };

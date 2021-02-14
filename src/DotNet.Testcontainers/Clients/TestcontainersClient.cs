@@ -203,7 +203,7 @@ namespace DotNet.Testcontainers.Clients
     private void PurgeOrphanedContainers(object sender, EventArgs args)
     {
       var arguments = new PurgeOrphanedContainersArgs(this.endpoint, this.registryService.GetRegisteredContainers());
-      new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
+      _ = new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
     }
   }
 }

@@ -104,6 +104,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithCleanUp(false)
           .WithHostname(hostname)
           .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null");
 
@@ -121,6 +122,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithCleanUp(false)
           .WithCommand("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
           .WithWorkingDirectory("/tmp");
 
@@ -139,6 +141,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithCleanUp(false)
           .WithEntrypoint("/bin/sh", "-c", "exit 255");
 
         // When
@@ -318,7 +321,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           // When
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("alpine")
-            .WithCommand("/bin/sh", "-c", $"sleep 1 && printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+            .WithCommand("/bin/sh", "-c", $"printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr && tail -f /dev/null")
             .WithOutputConsumer(consumer)
             .WithWaitStrategy(Wait.ForUnixContainer()
               .UntilMessageIsLogged(consumer.Stdout, unixTimeInMilliseconds)
@@ -368,7 +371,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
+          .WithCommand(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
@@ -389,7 +392,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
+          .WithCommand(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
