@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
     public AlpineFixture()
       : base(new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
+        .WithCommand(KeepTestcontainersUpAndRunning.Command)
         .Build())
     {
     }
@@ -18,6 +19,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
     {
       await this.Container.StartAsync()
         .ConfigureAwait(false);
+
       await this.Container.StopAsync()
         .ConfigureAwait(false);
     }

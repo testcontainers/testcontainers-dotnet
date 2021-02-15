@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
     {
     }
 
-    // TODO: The hostname won't work on Azure, ip address won't work on macOS.
+    // TODO: The hostname won't work on Azure, ip address won't work on Windows or macOS?
     public override string ConnectionString => $"couchbase://{this.IpAddress}";
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
     /// <returns>A task that returns the couchbase-cli exit code when it is finished.</returns>
     public Task<long> CreateBucket(string bucket, int memory = 128)
     {
-      var createBucketCommand = $"{couchbaseCli} bucket-create -c localhost:8091 --username {this.Username} --password {this.Password} --bucket {bucket} --bucket-type couchbase --bucket-ramsize {memory} --enable-flush 1 --bucket-replica 0 --wait";
+      var createBucketCommand = $"{couchbaseCli} bucket-create -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket} --bucket-type couchbase --bucket-ramsize {memory} --enable-flush 1 --bucket-replica 0 --wait";
       return this.ExecAsync(new[] { "/bin/sh", "-c", createBucketCommand });
     }
 
@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
     /// <returns>A task that returns the couchbase-cli exit code when it is finished.</returns>
     public Task<long> FlushBucket(string bucket)
     {
-      var flushBucketCommand = $"yes | {couchbaseCli} bucket-flush -c localhost:8091 --username {this.Username} --password {this.Password} --bucket {bucket}";
+      var flushBucketCommand = $"yes | {couchbaseCli} bucket-flush -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket}";
       return this.ExecAsync(new[] { "/bin/sh", "-c", flushBucketCommand });
     }
   }

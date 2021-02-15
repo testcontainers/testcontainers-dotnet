@@ -1,8 +1,8 @@
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
+#tool nuget:?package=dotnet-sonarscanner&version=5.0.4
 
 #addin nuget:?package=Cake.Sonar&version=1.1.25
 
-#addin nuget:?package=Cake.Git&version=0.22.0
+#addin nuget:?package=Cake.Git&version=1.0.0
 
 #load ".cake-scripts/parameters.cake"
 
@@ -106,6 +106,7 @@ Task("Sonar-Begin")
     Login = param.SonarQubeCredentials.Token,
     Organization = param.SonarQubeCredentials.Organization,
     Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis can not have the branch analysis parameter 'sonar.branch.name'.
+    UseCoreClr = true,
     Silent = true,
     Version = param.Version.Substring(0, 5),
     PullRequestProvider = "GitHub",
@@ -124,7 +125,8 @@ Task("Sonar-End")
 {
   SonarEnd(new SonarEndSettings
   {
-    Login = param.SonarQubeCredentials.Token
+    Login = param.SonarQubeCredentials.Token,
+    UseCoreClr = true
   });
 });
 

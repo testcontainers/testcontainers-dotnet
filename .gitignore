@@ -347,9 +347,9 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-# Cakebuild
-tools/*
-!tools/packages.config
+# Cake Build
+.cake-tools/*
+!.cake-tools/packages.config
 
 # Project
 test-results/

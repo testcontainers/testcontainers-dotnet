@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Containers.Modules
   {
     private static readonly TestcontainersState[] ContainerHasBeenCreatedStates = { TestcontainersState.Created, TestcontainersState.Running, TestcontainersState.Exited };
 
-    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim semaphoreSlim;
 
     private readonly ITestcontainersClient client;
 
@@ -26,6 +26,7 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     protected TestcontainersContainer(ITestcontainersConfiguration configuration)
     {
+      this.semaphoreSlim = new SemaphoreSlim(1, 1);
       this.client = new TestcontainersClient(configuration.Endpoint);
       this.configuration = configuration;
     }
@@ -219,11 +220,11 @@ namespace DotNet.Testcontainers.Containers.Modules
 
     private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
     {
-      var startTask = this.client.StartAsync(id, ct);
-
       var attachTask = this.client.AttachAsync(id, this.configuration.OutputConsumer, ct);
 
-      await Task.WhenAll(startTask, attachTask)
+      var startTask = this.client.StartAsync(id, ct);
+
+      await Task.WhenAll(attachTask, startTask)
         .ConfigureAwait(false);
 
       this.container = await this.client.GetContainer(id, ct)
@@ -232,9 +233,11 @@ namespace DotNet.Testcontainers.Containers.Modules
       await this.configuration.StartupCallback(this, ct)
         .ConfigureAwait(false);
 
+      // Do not use a to small frequency. Especially with a lot of containers,
+      // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 100, ct: ct)
+        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), 500, ct: ct)
           .ConfigureAwait(false);
       }
 

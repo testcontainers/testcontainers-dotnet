@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Linq;
   using System.Reflection;
   using System.Threading;
@@ -42,10 +43,11 @@ namespace DotNet.Testcontainers.Containers.Builders
     public TestcontainersBuilder() : this(
       Apply(
         authConfig: new AuthenticationConfiguration(),
+        labels: new DefaultLabels(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
         waitStrategies: Wait.ForUnixContainer().Build(),
-        startupCallback: (container, ct) => Task.CompletedTask),
-      testcontainer => { })
+        startupCallback: (_, _) => Task.CompletedTask),
+      _ => { })
     {
     }
 
@@ -353,6 +355,17 @@ namespace DotNet.Testcontainers.Containers.Builders
       else
       {
         return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
+      }
+    }
+
+    private sealed class DefaultLabels : ReadOnlyDictionary<string, string>
+    {
+      public DefaultLabels()
+        : base(new Dictionary<string, string>
+        {
+          { "dotnet.testcontainers", "true"},
+        })
+      {
       }
     }
   }

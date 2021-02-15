@@ -30,7 +30,7 @@ jobs:
       - powershell: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
         displayName: Logs
 
-      - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage.netcoreapp3.1', '${{ parameters.displayName }}'.ToLower() }
+      - powershell: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage.net5.0', '${{ parameters.displayName }}'.ToLower() }
         displayName: Rename Test And Coverage Results
 
       - powershell: "@('test-results', 'test-coverage') | % { Copy-Item -Path $_ -Destination '$(Build.ArtifactStagingDirectory)' -Recurse }"
