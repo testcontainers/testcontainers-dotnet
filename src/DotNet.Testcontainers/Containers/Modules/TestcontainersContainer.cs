@@ -233,7 +233,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       await this.configuration.StartupCallback(this, ct)
         .ConfigureAwait(false);
 
-      // Do not use a to small frequency. Especially with a lot of containers,
+      // Do not use a too small frequency. Especially with a lot of containers,
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {

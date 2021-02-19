@@ -85,7 +85,7 @@ Task("Tests")
       Verbosity = param.Verbosity,
       NoRestore = true,
       NoBuild = true,
-      Logger = "trx",
+      Loggers = new[] { "trx" },
       Filter = param.TestFilter,
       ResultsDirectory = param.Paths.Directories.TestResults,
       ArgumentCustomization = args => args

@@ -53,9 +53,6 @@ namespace DotNet.Testcontainers.Clients
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
-
-      AppDomain.CurrentDomain.ProcessExit += this.PurgeOrphanedContainers;
-      Console.CancelKeyPress += this.PurgeOrphanedContainers;
     }
 
     ~TestcontainersClient()
@@ -73,8 +70,6 @@ namespace DotNet.Testcontainers.Clients
 
     public void Dispose()
     {
-      AppDomain.CurrentDomain.ProcessExit -= this.PurgeOrphanedContainers;
-      Console.CancelKeyPress -= this.PurgeOrphanedContainers;
       GC.SuppressFinalize(this);
     }
 
@@ -125,7 +120,7 @@ namespace DotNet.Testcontainers.Clients
         }
         catch (DockerApiException e)
         {
-          // The Docker daemon may already start the progress to remove the container (AutoRemove).
+          // The Docker daemon may already start the progress to removes the container (AutoRemove).
           // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
           if (!e.Message.Contains($"removal of container {id} is already in progress"))
           {
@@ -198,12 +193,6 @@ namespace DotNet.Testcontainers.Clients
     public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
       return this.images.BuildAsync(configuration, ct);
-    }
-
-    private void PurgeOrphanedContainers(object sender, EventArgs args)
-    {
-      var arguments = new PurgeOrphanedContainersArgs(this.endpoint, this.registryService.GetRegisteredContainers());
-      _ = new Process { StartInfo = { FileName = "docker", Arguments = arguments.ToString() } }.Start();
     }
   }
 }
