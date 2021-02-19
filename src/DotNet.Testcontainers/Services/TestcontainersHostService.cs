@@ -53,9 +53,10 @@ namespace DotNet.Testcontainers.Services
       return new HostBuilder()
         .ConfigureAppConfiguration((hostContext, config) =>
         {
+          const string JsonConfigurationName = "appsettings";
           config.SetBasePath(Directory.GetCurrentDirectory());
-          config.AddJsonFile("appsettings.json", true, true);
-          config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment}.json", true, true);
+          config.AddJsonFile($"{JsonConfigurationName}.json", true, true);
+          config.AddJsonFile($"{JsonConfigurationName}.{hostContext.HostingEnvironment}.json", true, true);
         })
         .ConfigureServices((hostContext, config) =>
         {

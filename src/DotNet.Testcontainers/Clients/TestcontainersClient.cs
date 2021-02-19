@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
   using System.IO;
   using System.Text;
   using System.Threading;
@@ -17,9 +16,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
-    private readonly string osRootDirectory = Path.GetPathRoot(typeof(ITestcontainersClient).Assembly.Location);
-
-    private readonly Uri endpoint;
+    private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly TestcontainersRegistryService registryService;
 
@@ -40,7 +37,6 @@ namespace DotNet.Testcontainers.Clients
       new DockerImageOperations(endpoint),
       new DockerSystemOperations(endpoint))
     {
-      this.endpoint = endpoint;
     }
 
     private TestcontainersClient(

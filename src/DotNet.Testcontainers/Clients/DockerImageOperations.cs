@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration config, CancellationToken ct = default)
     {
-      var dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory, config.Dockerfile, config.Image);
+      ITarArchive dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory, config.Dockerfile, config.Image);
 
       var imageExists = await this.ExistsWithNameAsync(config.Image.FullName, ct)
         .ConfigureAwait(false);

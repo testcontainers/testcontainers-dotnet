@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
   public static class TestcontainersContainerTest
   {
-    public class With
+    public class WithConfiguration
     {
       [IgnoreOnLinuxEngine]
       public async Task IsWindowsEngineEnabled()

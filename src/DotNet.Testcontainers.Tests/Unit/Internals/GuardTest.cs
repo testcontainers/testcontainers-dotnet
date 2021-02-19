@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Internals
 
   public static class GuardTest
   {
-    public static class Null
+    public static class NullPreconditions
     {
       public class DoNotThrowException
       {
@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Internals
       }
     }
 
-    public static class String
+    public static class StringPreconditions
     {
       public class DoNotThrowException
       {

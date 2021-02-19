@@ -1,5 +1,5 @@
-# Version: 1.4.1 (Using https://semver.org/)
-# Updated: 2020-02-01
+# Version: 2.0.1 (Using https://semver.org/)
+# Updated: 2020-12-11
 # See https://github.com/RehanSaeed/EditorConfig/releases for release notes.
 # See https://github.com/RehanSaeed/EditorConfig for updates to this file.
 # See http://EditorConfig.org for more information about .editorconfig files.
@@ -29,15 +29,15 @@ trim_trailing_whitespace = true
 indent_style = tab
 
 # Visual Studio XML Project Files
-[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
+[*.{csproj,vbproj,vcxproj.filters,proj,projitems,shproj}]
 indent_size = 2
 
-# Various XML Configuration Files
+# XML Configuration Files
 [*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
 indent_size = 2
 
 # JSON Files
-[*.{json,json5}]
+[*.{json,json5,webmanifest}]
 indent_size = 2
 
 # YAML Files
@@ -49,7 +49,7 @@ indent_size = 2
 trim_trailing_whitespace = false
 
 # Web Files
-[*.{htm,html,js,ts,tsx,css,sass,scss,less,svg,vue}]
+[*.{htm,html,js,jsm,ts,tsx,css,sass,scss,less,svg,vue}]
 indent_size = 2
 
 # Batch Files
@@ -65,13 +65,34 @@ end_of_line = lf
 indent_style = tab
 
 ##########################################
+# Default .NET Code Style Severities
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/configuration-options#scope
+##########################################
+
+[*.{cs,csx,cake,vb,vbx}]
+# Default Severity for all .NET Code Style rules below
+dotnet_analyzer_diagnostic.severity = warning
+
+##########################################
+# File Header (Uncomment to support file headers)
+# https://docs.microsoft.com/visualstudio/ide/reference/add-file-header
+##########################################
+
+# [*.{cs,csx,cake,vb,vbx}]
+# file_header_template = <copyright file="{fileName}" company="PROJECT-AUTHOR">\n© PROJECT-AUTHOR\n</copyright>
+
+# SA1636: File header copyright text should match
+# Justification: .editorconfig supports file headers. If this is changed to a value other than "none", a stylecop.json file will need to added to the project.
+# dotnet_diagnostic.SA1636.severity = none
+
+##########################################
 # .NET Language Conventions
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions
 ##########################################
 
 # .NET Code Style Settings
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#net-code-style-settings
-[*.{cs,csx,cake,vb}]
+[*.{cs,csx,cake,vb,vbx}]
 # "this." and "Me." qualifiers
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#this-and-me
 dotnet_style_qualification_for_field = true:warning
@@ -85,8 +106,8 @@ dotnet_style_predefined_type_for_member_access = true:warning
 # Modifier preferences
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#normalize-modifiers
 dotnet_style_require_accessibility_modifiers = always:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
-visual_basic_preferred_modifier_order = Partial,Default,Private,Protected,Public,Friend,NotOverridable,Overridable,MustOverride,Overloads,Overrides,MustInherit,NotInheritable,Static,Shared,Shadows,ReadOnly,WriteOnly,Dim,Const,WithEvents,Widening,Narrowing,Custom,Async
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
+visual_basic_preferred_modifier_order = Partial,Default,Private,Protected,Public,Friend,NotOverridable,Overridable,MustOverride,Overloads,Overrides,MustInherit,NotInheritable,Static,Shared,Shadows,ReadOnly,WriteOnly,Dim,Const,WithEvents,Widening,Narrowing,Custom,Async:warning
 dotnet_style_readonly_field = true:warning
 # Parentheses preferences
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#parentheses-preferences
@@ -104,7 +125,9 @@ dotnet_style_prefer_inferred_anonymous_type_member_names = true:warning
 dotnet_style_prefer_auto_properties = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 dotnet_style_prefer_conditional_expression_over_assignment = false:suggestion
+dotnet_diagnostic.IDE0045.severity = suggestion
 dotnet_style_prefer_conditional_expression_over_return = false:suggestion
+dotnet_diagnostic.IDE0046.severity = suggestion
 dotnet_style_prefer_compound_assignment = true:warning
 # Null-checking preferences
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#null-checking-preferences
@@ -116,6 +139,8 @@ dotnet_code_quality_unused_parameters = all:warning
 # More style options (Undocumented)
 # https://github.com/MicrosoftDocs/visualstudio-docs/issues/3641
 dotnet_style_operator_placement_when_wrapping = end_of_line
+# https://github.com/dotnet/roslyn/pull/40070
+dotnet_style_prefer_simplified_interpolation = true:warning
 
 # C# Code Style Settings
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#c-code-style-settings
@@ -155,7 +180,9 @@ csharp_prefer_braces = true:warning
 # Unused value preferences
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#unused-value-preferences
 csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
+dotnet_diagnostic.IDE0058.severity = suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+dotnet_diagnostic.IDE0059.severity = suggestion
 # Index and range preferences
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#index-and-range-preferences
 csharp_style_prefer_index_operator = true:warning
@@ -167,6 +194,7 @@ csharp_style_pattern_local_over_anonymous_function = true:warning
 csharp_using_directive_placement = inside_namespace:warning
 csharp_prefer_static_local_function = true:warning
 csharp_prefer_simple_using_statement = true:suggestion
+dotnet_diagnostic.IDE0063.severity = suggestion
 
 ##########################################
 # .NET Formatting Conventions
@@ -227,7 +255,7 @@ csharp_preserve_single_line_blocks = true
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-naming-conventions
 ##########################################
 
-[*.{cs,csx,cake,vb}]
+[*.{cs,csx,cake,vb,vbx}]
 
 ##########################################
 # Styles
@@ -249,7 +277,7 @@ dotnet_naming_style.prefix_type_parameters_with_t_style.required_prefix = T
 dotnet_naming_style.disallowed_style.capitalization = pascal_case
 dotnet_naming_style.disallowed_style.required_prefix = ____RULE_VIOLATION____
 dotnet_naming_style.disallowed_style.required_suffix = ____RULE_VIOLATION____
-# internal_error_style - This style should never occur... if it does, it's indicates a bug in file or in the parser using the file
+# internal_error_style - This style should never occur... if it does, it indicates a bug in file or in the parser using the file
 dotnet_naming_style.internal_error_style.capitalization = pascal_case
 dotnet_naming_style.internal_error_style.required_prefix = ____INTERNAL_ERROR____
 dotnet_naming_style.internal_error_style.required_suffix = ____INTERNAL_ERROR____
@@ -431,4 +459,12 @@ max_line_length = 240
 # JetBrains Rider
 ##########################################
 
+resharper_arrange_object_creation_when_type_evident_highlighting = do_not_show
 resharper_convert_to_using_declaration_highlighting = do_not_show
+
+##########################################
+# DotNet.Testcontainers.Tests
+##########################################
+
+[src/DotNet.Testcontainers.Tests/**/*.cs]
+dotnet_code_quality.CA1711.allowed_suffixes = Exception

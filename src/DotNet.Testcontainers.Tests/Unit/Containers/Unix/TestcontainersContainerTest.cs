@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.Globalization;
   using System.IO;
   using System.Net;
   using System.Text;
@@ -18,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   {
     private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
 
-    public class With
+    public class WithConfiguration
     {
       [Fact]
       public async Task IsLinuxEngineEnabled()
@@ -313,7 +314,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public async Task OutputConsumer()
       {
-        var unixTimeInMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+        var unixTimeInMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
 
         // Given
         using (var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream()))
