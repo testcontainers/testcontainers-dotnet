@@ -17,6 +17,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
 
     public async Task InitializeAsync()
     {
+      return;
+
       await this.Container.StartAsync()
         .ConfigureAwait(false);
 
@@ -26,6 +28,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
 
     public Task DisposeAsync()
     {
+      return Task.CompletedTask;
+
       return this.Container.DisposeAsync().AsTask();
     }
   }
