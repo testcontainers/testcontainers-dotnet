@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.MessageBroker
 {
   using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Threading.Tasks;
   using Confluent.Kafka;
   using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules.MessageBrokers;
@@ -20,35 +21,49 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.MessageBroker
     public async Task StartsWorkingKafkaInstance()
     {
       // Given
+      const string topic = "sample";
+
+      var producerConfig = new ReadOnlyDictionary<string, string>(
+        new Dictionary<string, string>
+        {
+          { "bootstrap.servers", this.kafkaFixture.Container.BootstrapServers }
+        });
+
+      var consumerConfig = new ReadOnlyDictionary<string, string>(
+        new Dictionary<string, string>
+        {
+          { "bootstrap.servers", this.kafkaFixture.Container.BootstrapServers },
+          { "auto.offset.reset", "earliest" },
+          { "group.id", "sample-consumer" }
+        });
+
+      var message = new Message<string, string>
+        { Value = Guid.NewGuid().ToString() };
+
+      var deliveryReportTaskCompletionSource =
+        new TaskCompletionSource<DeliveryReport<string, string>>();
+
       // When
-      using var producer = new ProducerBuilder<string, string>(new Dictionary<string, string>()
+      ConsumeResult<string, string> result;
+
+      using (var producer = new ProducerBuilder<string, string>(producerConfig)
+        .Build())
       {
-        { "bootstrap.servers", this.kafkaFixture.Container.BootstrapServers }
-      }).Build();
+        producer.Produce(topic, message, deliveryHandler =>
+          deliveryReportTaskCompletionSource.SetResult(deliveryHandler));
+        await deliveryReportTaskCompletionSource.Task;
+      }
 
-      var productionReportTaskSrc = new TaskCompletionSource<DeliveryReport<string, string>>();
-
-      producer.Produce("test_topic", new Message<string, string>()
+      using (var consumer = new ConsumerBuilder<string, string>(consumerConfig)
+        .Build())
       {
-        Value = "TestMessage"
-      }, report => productionReportTaskSrc.SetResult(report));
-
-      await productionReportTaskSrc.Task;
+        consumer.Subscribe(topic);
+        result = consumer.Consume(TimeSpan.FromSeconds(5));
+      }
 
       // Then
-      using var consumer = new ConsumerBuilder<string, string>(new Dictionary<string, string>()
-      {
-        { "bootstrap.servers", this.kafkaFixture.Container.BootstrapServers },
-        { "auto.offset.reset", "earliest" },
-        { "group.id", "test_consumer" }
-      }).Build();
-
-      consumer.Subscribe("test_topic");
-
-      var result = consumer.Consume(TimeSpan.FromSeconds(5));
-
       Assert.NotNull(result);
-      Assert.Equal("TestMessage", result.Message.Value);
+      Assert.Equal(message.Value, result.Message.Value);
     }
   }
 }

@@ -140,9 +140,9 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
-      await using (var memStream = new MemoryStream())
+      using (var memStream = new MemoryStream())
       {
-        await using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
+        using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
           tarOutputStream.PutNextEntry(
