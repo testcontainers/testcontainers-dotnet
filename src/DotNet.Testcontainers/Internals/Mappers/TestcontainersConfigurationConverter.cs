@@ -73,13 +73,17 @@ namespace DotNet.Testcontainers.Internals.Mappers
       }
     }
 
+    private const string
+      UdpDenoter = "/udp",
+      TcpDenoter = "/tcp";
+
     private sealed class ToExposedPorts : DictionaryConverter<IEnumerable<KeyValuePair<string, EmptyStruct>>>
     {
       public ToExposedPorts() : base(nameof(ToExposedPorts)) { }
 
       public override IEnumerable<KeyValuePair<string, EmptyStruct>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>($"{exposedPort.Key}/tcp", default));
+        return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>(GetQualifiedPort(exposedPort.Key), default));
       }
     }
 
@@ -89,9 +93,16 @@ namespace DotNet.Testcontainers.Internals.Mappers
 
       public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
-          $"{portBinding.Key}/tcp", new List<PortBinding> { new PortBinding { HostPort = portBinding.Value == "0" ? null : portBinding.Value } }));
+        return source?
+          .Select(portBinding => new KeyValuePair<string, IList<PortBinding>>
+          (
+            GetQualifiedPort(portBinding.Key), new PortBinding[] { new PortBinding { HostPort = portBinding.Value == "0" ? null : portBinding.Value } })
+          );
       }
     }
+
+#pragma warning disable IDE0022 // Use block body for methods
+    private static string GetQualifiedPort(string val) => val.EndsWith(TcpDenoter) || val.EndsWith(UdpDenoter) ? val : $"{val}{TcpDenoter}";
+#pragma warning restore IDE0022 // Use block body for methods
   }
 }
