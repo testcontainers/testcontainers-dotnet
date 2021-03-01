@@ -10,10 +10,13 @@ namespace DotNet.Testcontainers.Internals.Mappers
 
   using Mount = Docker.DotNet.Models.Mount;
 
-  internal readonly struct TestcontainersConfigurationConverter
+  internal sealed class TestcontainersConfigurationConverter
   {
     private const string UdpPortSuffix = "/udp";
+
     private const string TcpPortSuffix = "/tcp";
+
+    private const string SctpPortSuffix = "/sctp";
 
     public TestcontainersConfigurationConverter(ITestcontainersConfiguration configuration)
     {
@@ -86,7 +89,8 @@ namespace DotNet.Testcontainers.Internals.Mappers
 
       public override IEnumerable<KeyValuePair<string, EmptyStruct>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>(GetQualifiedPort(exposedPort.Key), default));
+        return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>(
+          GetQualifiedPort(exposedPort.Key), default));
       }
     }
 
@@ -96,27 +100,17 @@ namespace DotNet.Testcontainers.Internals.Mappers
 
       public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert(IEnumerable<KeyValuePair<string, string>> source)
       {
-        return source?
-          .Select(portBinding => new KeyValuePair<string, IList<PortBinding>>
-          (
-            GetQualifiedPort(portBinding.Key), new PortBinding[] { new PortBinding { HostPort = portBinding.Value == "0" ? null : portBinding.Value } })
-          );
+        return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
+          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostPort = "0".Equals(portBinding.Value) ? null : portBinding.Value } }));
       }
     }
 
     private static string GetQualifiedPort(string containerPort)
     {
-      if (EndsWith(TcpPortSuffix) || EndsWith(UdpPortSuffix))
-      {
-        return containerPort.ToLowerInvariant();
-      }
-
-      return $"{containerPort}{TcpPortSuffix}";
-
-      bool EndsWith(string suffix)
-      {
-        return containerPort.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
-      }
+      return new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }
+        .Any(portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase))
+          ? containerPort.ToLowerInvariant()
+          : containerPort + TcpPortSuffix;
     }
   }
 }

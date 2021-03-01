@@ -1,145 +1,106 @@
 namespace DotNet.Testcontainers.Tests.Unit.Internals.Mapper
 {
-  using System;
   using System.Collections.Generic;
-  using System.Globalization;
   using System.Linq;
-
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Internals.Mappers;
-
+  using Moq;
   using Xunit;
 
-  public class TestcontainersConfigurationConverterTest
+  public static class TestcontainersConfigurationConverterTest
   {
-    #region Exposed ports
+    private const string Port = "7878";
 
-    [Fact]
-    public void ExposedPortsUdpSuffixIsKept()
+    public class ForExposedPorts
     {
-      const int port = 7878;
-      var qualifiedPort = $"{port}/uDp";
-      RunExposedPortsTest(qualifiedPort, qualifiedPort.ToLowerInvariant());
-    }
+      [Fact]
+      public void ShouldAddTcpPortSuffix()
+      {
+        // Given
+        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
+        containerConfiguration.Setup(config => config.ExposedPorts).Returns(
+          new Dictionary<string, string> { { Port, null } });
 
-    [Fact]
-    public void ExposedPortsTcpSuffixIsKept()
-    {
-      const int port = 7878;
-      var qualifiedPort = $"{port}/tcP";
-      RunExposedPortsTest(qualifiedPort, qualifiedPort.ToLowerInvariant());
-    }
-
-    [Fact]
-    public void ExposedPortTcpSuffixIsAdded()
-    {
-      const int port = 7878;
-      RunExposedPortsTest(port.ToString(CultureInfo.InvariantCulture), $"{port}/tcp");
-    }
-
-    private static void RunExposedPortsTest(string port, string gauge)
-    {
-      var testcontainersConfiguration = GetTestcontainersConfiguration(
-        new Dictionary<string, string> { { port, port } },
-        null);
-
-      var testcontainersConfigurationConverter = new TestcontainersConfigurationConverter
-      (testcontainersConfiguration);
-
-      Assert.NotNull(testcontainersConfigurationConverter.ExposedPorts);
-      Assert.Equal(1, testcontainersConfigurationConverter.ExposedPorts.Count);
-      Assert.True(
-        testcontainersConfigurationConverter
+        // When
+        var exposedPort = new TestcontainersConfigurationConverter(
+            containerConfiguration.Object)
           .ExposedPorts
-          .Keys
-          .First()
-          .Equals(gauge, StringComparison.Ordinal));
+          .Single()
+          .Key;
+
+        // Then
+        Assert.Equal($"{Port}/tcp", exposedPort);
+      }
+
+      [Theory]
+      [InlineData("UDP")]
+      [InlineData("TCP")]
+      [InlineData("SCTP")]
+      public void ShouldKeepPortSuffix(string portSuffix)
+      {
+        // Given
+        var qualifiedPort = $"{Port}/{portSuffix}";
+
+        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
+        containerConfiguration.Setup(config => config.ExposedPorts).Returns(
+          new Dictionary<string, string> { { qualifiedPort, null } });
+
+        // When
+        var exposedPort = new TestcontainersConfigurationConverter(
+            containerConfiguration.Object)
+          .ExposedPorts
+          .Single()
+          .Key;
+
+        // Then
+        Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), exposedPort);
+      }
     }
 
-    #endregion
-    #region Port bindings
-
-    [Fact]
-    public void PortBindingsUdpSuffixIsKept()
+    public class PortBindings
     {
-      const int port = 7878;
-      var qualifiedPort = $"{port}/uDp";
+      [Fact]
+      public void ShouldAddTcpPortSuffix()
+      {
+        // Given
+        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
+        containerConfiguration.Setup(config => config.PortBindings).Returns(
+          new Dictionary<string, string> { { Port, Port } });
 
-      RunPortBindingsTest(
-        port.ToString(CultureInfo.InvariantCulture),
-        qualifiedPort,
-        qualifiedPort.ToLowerInvariant());
-    }
+        // When
+        var portBinding = new TestcontainersConfigurationConverter(
+            containerConfiguration.Object)
+          .PortBindings
+          .Single()
+          .Key;
 
-    [Fact]
-    public void PortBindingsTcpSuffixIsKept()
-    {
-      const int port = 7878;
-      var qualifiedPort = $"{port}/tcP";
+        // Then
+        Assert.Equal($"{Port}/tcp", portBinding);
+      }
 
-      RunPortBindingsTest(
-        port.ToString(CultureInfo.InvariantCulture),
-        qualifiedPort,
-        qualifiedPort.ToLowerInvariant());
-    }
+      [Theory]
+      [InlineData("UDP")]
+      [InlineData("TCP")]
+      [InlineData("SCTP")]
+      public void ShouldKeepPortSuffix(string portSuffix)
+      {
+        // Given
+        var qualifiedPort = $"{Port}/{portSuffix}";
 
-    [Fact]
-    public void PortBindingsTcpSuffixIsAdded()
-    {
-      var port = "7878";
-      RunPortBindingsTest(port, port, $"{port}/tcp");
-    }
+        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
+        containerConfiguration.Setup(config => config.PortBindings).Returns(
+          new Dictionary<string, string> { { qualifiedPort, Port } });
 
-    private static void RunPortBindingsTest(string hostPort, string dockerPort, string dockerPortGauge)
-    {
-      var testcontainersConfiguration = GetTestcontainersConfiguration(
-        null,
-        new Dictionary<string, string> { { dockerPort, hostPort } });
+        // When
+        var portBinding = new TestcontainersConfigurationConverter(
+            containerConfiguration.Object)
+          .PortBindings
+          .Single()
+          .Key;
 
-      var testcontainersConfigurationConverter = new TestcontainersConfigurationConverter
-      (testcontainersConfiguration);
-
-      var portBindings = testcontainersConfigurationConverter.PortBindings;
-
-      Assert.NotNull(portBindings);
-      Assert.Equal(1, portBindings.Count);
-
-      Assert.NotNull(portBindings.Values);
-      Assert.Equal(1, portBindings.Values.Count);
-
-      var key = portBindings.Keys.First();
-      var value = portBindings.Values.First().First();
-
-      Assert.True(key.Equals(dockerPortGauge, StringComparison.Ordinal));
-      Assert.True(value.HostPort.Equals(hostPort, StringComparison.Ordinal));
-    }
-
-    #endregion
-
-    private static TestcontainersConfiguration GetTestcontainersConfiguration(
-      IReadOnlyDictionary<string, string> exposedPorts,
-      IReadOnlyDictionary<string, string> portBindings)
-    {
-      return new TestcontainersConfiguration
-            (
-              default,
-              default,
-              default,
-              default,
-              default,
-              default,
-              default,
-              default,
-              default,
-              default,
-              exposedPorts,
-              portBindings,
-              default,
-              default,
-              default,
-              default,
-              default
-            );
+        // Then
+        Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), portBinding);
+      }
     }
   }
 }
