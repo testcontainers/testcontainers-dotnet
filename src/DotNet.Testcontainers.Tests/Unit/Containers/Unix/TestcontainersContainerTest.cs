@@ -36,7 +36,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         IDockerContainer testcontainer = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithLabel(typeof(TestcontainersContainer).Assembly.GetName().Name, nameof(this.UnsafeDisposable))
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
           .Build();
 
         // When
@@ -51,7 +51,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine");
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
@@ -66,7 +67,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine");
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
@@ -86,6 +88,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
           .WithName(name);
 
         // Then
@@ -105,9 +108,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null")
           .WithCleanUp(false)
-          .WithHostname(hostname)
-          .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null");
+          .WithHostname(hostname);
 
         // Then
         await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
@@ -123,8 +126,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithEntrypoint("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
           .WithCleanUp(false)
-          .WithCommand("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
           .WithWorkingDirectory("/tmp");
 
         // When
@@ -142,8 +145,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCleanUp(false)
-          .WithEntrypoint("/bin/sh", "-c", "exit 255");
+          .WithEntrypoint("/bin/sh", "-c", "exit 255")
+          .WithCleanUp(false);
 
         // When
         // Then
@@ -160,6 +163,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
           .WithExposedPort(80);
 
         // When
@@ -194,7 +198,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
             await testcontainer.StartAsync();
 
             var request = WebRequest.Create($"http://localhost:{port.From}");
-
             var response = (HttpWebResponse)await request.GetResponseAsync();
 
             Assert.True(HttpStatusCode.OK.Equals(response.StatusCode), $"nginx port {port.From} is not available.");
@@ -208,6 +211,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
           .WithPortBinding(80, true);
 
         // When
@@ -230,7 +234,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithCommand("/bin/sh", "-c", $"hostname > /{target}/{file}")
+          .WithEntrypoint("/bin/sh", "-c")
+          .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
           .WithMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists($"{TempDir}/{file}"));
@@ -257,7 +262,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithCommand("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file}")
+          .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
@@ -278,7 +283,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithDockerEndpoint(DockerApiEndpoint.Local.ToString())
-          .WithImage("alpine");
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
@@ -322,7 +328,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           // When
           var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
             .WithImage("alpine")
-            .WithCommand("/bin/sh", "-c", $"printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr && tail -f /dev/null")
+            .WithEntrypoint("/bin/sh", "-c", $"printf \"{unixTimeInMilliseconds}\" | tee /dev/stderr && tail -f /dev/null")
             .WithOutputConsumer(consumer)
             .WithWaitStrategy(Wait.ForUnixContainer()
               .UntilMessageIsLogged(consumer.Stdout, unixTimeInMilliseconds)
@@ -355,6 +361,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
           .WithWaitStrategy(Wait.ForUnixContainer()
             .AddCustomWaitStrategy(new WaitStrategyDelayForFiveSecondsFixture()));
 
@@ -372,7 +379,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCommand(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then
@@ -393,7 +400,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithCommand(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
         // Then

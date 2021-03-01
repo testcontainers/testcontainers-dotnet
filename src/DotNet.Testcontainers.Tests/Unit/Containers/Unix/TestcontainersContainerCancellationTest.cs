@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures.Containers.Modules;
@@ -17,13 +18,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         this.alpineFixture = alpineFixture;
       }
 
-      [Fact(Skip = "Fix flaky Azure Pipelines test.")]
+      [Fact]
       public async Task Start()
       {
-        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0)))
+        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15)))
         {
-          var expectedExceptions = new[] { typeof(TaskCanceledException), typeof(OperationCanceledException), typeof(TimeoutException) };
-          // It depends on which part in the StartAsync gets canceled. Catch base exception.
+          var expectedExceptions = new[] { typeof(TaskCanceledException), typeof(OperationCanceledException), typeof(TimeoutException), typeof(IOException) };
+          // It depends which part in the StartAsync gets canceled. Catch base exception.
           var exception = await Assert.ThrowsAnyAsync<SystemException>(() => this.alpineFixture.Container.StartAsync(cts.Token));
           Assert.Contains(exception.GetType(), expectedExceptions);
         }

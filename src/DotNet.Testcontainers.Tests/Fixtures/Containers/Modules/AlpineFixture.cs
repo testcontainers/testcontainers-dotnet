@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
@@ -11,25 +12,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures.Containers.Modules
       : base(new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
         .WithCommand(KeepTestcontainersUpAndRunning.Command)
+        .WithStartupCallback((_ , ct) => Task.Delay(TimeSpan.FromMinutes(1), ct))
         .Build())
     {
     }
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-      return;
-
-      await this.Container.StartAsync()
-        .ConfigureAwait(false);
-
-      await this.Container.StopAsync()
-        .ConfigureAwait(false);
+      return Task.CompletedTask;
     }
 
     public Task DisposeAsync()
     {
-      return Task.CompletedTask;
-
       return this.Container.DisposeAsync().AsTask();
     }
   }
