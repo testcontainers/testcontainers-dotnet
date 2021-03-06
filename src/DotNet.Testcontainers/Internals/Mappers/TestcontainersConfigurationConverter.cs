@@ -1,13 +1,20 @@
 namespace DotNet.Testcontainers.Internals.Mappers
 {
+  using System;
   using System.Collections.Generic;
   using System.Linq;
+
   using Docker.DotNet.Models;
+
   using DotNet.Testcontainers.Containers.Configurations;
+
   using Mount = Docker.DotNet.Models.Mount;
 
   internal readonly struct TestcontainersConfigurationConverter
   {
+    private const string UdpPortSuffix = "/udp";
+    private const string TcpPortSuffix = "/tcp";
+
     public TestcontainersConfigurationConverter(ITestcontainersConfiguration configuration)
     {
       this.Entrypoint = new ToCollection().Convert(configuration.Entrypoint)?.ToArray();
@@ -73,10 +80,6 @@ namespace DotNet.Testcontainers.Internals.Mappers
       }
     }
 
-    private const string
-      UdpDenoter = "/udp",
-      TcpDenoter = "/tcp";
-
     private sealed class ToExposedPorts : DictionaryConverter<IEnumerable<KeyValuePair<string, EmptyStruct>>>
     {
       public ToExposedPorts() : base(nameof(ToExposedPorts)) { }
@@ -101,8 +104,19 @@ namespace DotNet.Testcontainers.Internals.Mappers
       }
     }
 
-#pragma warning disable IDE0022 // Use block body for methods
-    private static string GetQualifiedPort(string val) => val.EndsWith(TcpDenoter) || val.EndsWith(UdpDenoter) ? val : $"{val}{TcpDenoter}";
-#pragma warning restore IDE0022 // Use block body for methods
+    private static string GetQualifiedPort(string containerPort)
+    {
+      if (EndsWith(TcpPortSuffix) || EndsWith(UdpPortSuffix))
+      {
+        return containerPort.ToLowerInvariant();
+      }
+
+      return $"{containerPort}{TcpPortSuffix}";
+
+      bool EndsWith(string suffix)
+      {
+        return containerPort.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
+      }
+    }
   }
 }
