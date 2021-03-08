@@ -4,6 +4,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Docker.DotNet.X509" Version="3.125.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" PrivateAssets="All" />
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
