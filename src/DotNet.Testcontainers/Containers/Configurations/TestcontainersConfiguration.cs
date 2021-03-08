@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -15,6 +16,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     public TestcontainersConfiguration(
       Uri endpoint,
+      Credentials endpointCredentials,
       IAuthenticationConfiguration authenticationConfigurations,
       IDockerImage image,
       string name,
@@ -34,6 +36,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     {
       this.CleanUp  = cleanUp;
       this.Endpoint  = endpoint;
+      this.EndpointCredentials = endpointCredentials;
       this.AuthConfig = authenticationConfigurations;
       this.Image  = image;
       this.Name  = name;
@@ -58,6 +61,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <inheritdoc />
     public Uri Endpoint { get; }
+
+    /// <inheritdoc />
+    public Credentials EndpointCredentials { get; }
 
     /// <inheritdoc />
     public IAuthenticationConfiguration AuthConfig { get; }

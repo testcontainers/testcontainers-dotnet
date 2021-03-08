@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 {
   using System;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
@@ -17,25 +18,25 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       [Fact]
       public async Task QueryNotExistingDockerImageById()
       {
-        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Local).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Default, DockerApiEndpoint.DefaultCredentials).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerById()
       {
-        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Local).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Default, DockerApiEndpoint.DefaultCredentials).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerImageByName()
       {
-        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Local).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Default, DockerApiEndpoint.DefaultCredentials).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerByName()
       {
-        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Local).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Default, DockerApiEndpoint.DefaultCredentials).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]

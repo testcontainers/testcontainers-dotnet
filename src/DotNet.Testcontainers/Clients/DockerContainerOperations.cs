@@ -6,18 +6,19 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Internals.Mappers;
-  using DotNet.Testcontainers.Services;
+  using Containers.Configurations;
+  using Containers.OutputConsumers;
+  using Internals.Mappers;
+  using Services;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
   {
     private static readonly ILogger<DockerContainerOperations> Logger = TestcontainersHostService.GetLogger<DockerContainerOperations>();
 
-    public DockerContainerOperations(Uri endpoint) : base(endpoint)
+    public DockerContainerOperations(Uri endpoint, Credentials credentials) : base(endpoint)
     {
     }
 

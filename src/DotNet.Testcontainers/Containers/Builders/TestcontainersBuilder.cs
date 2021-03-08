@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
@@ -181,6 +182,12 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, Credentials credentials)
+    {
+      return Build(this, Apply(endpoint: new Uri(endpoint), endpointCredentials: credentials));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
     {
       return Build(this, Apply(authConfig: new AuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
@@ -220,6 +227,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private static ITestcontainersConfiguration Apply(
       Uri endpoint = null,
+      Credentials endpointCredentials = null,
       IAuthenticationConfiguration authConfig = null,
       IDockerImage image = null,
       string name = null,
@@ -238,7 +246,8 @@ namespace DotNet.Testcontainers.Containers.Builders
       bool cleanUp = true)
     {
       return new TestcontainersConfiguration(
-        endpoint ?? DockerApiEndpoint.Local,
+        endpoint ?? DockerApiEndpoint.Default,
+        endpointCredentials ?? DockerApiEndpoint.DefaultCredentials,
         authConfig,
         image,
         name,
@@ -265,7 +274,8 @@ namespace DotNet.Testcontainers.Containers.Builders
       Action<TDockerContainer> moduleConfiguration = null)
     {
       var cleanUp = next.CleanUp && previous.configuration.CleanUp;
-      var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Local);
+      var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Default);
+      var credentials = Merge(next.EndpointCredentials, previous.configuration.EndpointCredentials, DockerApiEndpoint.DefaultCredentials);
       var image = Merge(next.Image, previous.configuration.Image);
       var name = Merge(next.Name, previous.configuration.Name);
       var hostname = Merge(next.Hostname, previous.configuration.Hostname);
@@ -285,6 +295,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
       var mergedConfiguration = Apply(
         endpoint,
+        credentials,
         authConfig,
         image,
         name,

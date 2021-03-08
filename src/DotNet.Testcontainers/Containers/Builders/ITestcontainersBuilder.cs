@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -175,6 +176,16 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
+
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <param name="credentials"></param>
+    /// <returns></returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, Credentials credentials);
 
     /// <summary>
     /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.

@@ -7,6 +7,8 @@ namespace DotNet.Testcontainers.Services
   /// </summary>
   internal interface IOperatingSystem
   {
+    internal const string DockerHostEnvName = "DOCKER_HOST";
+
     /// <summary>
     /// Gets the default host Docker daemon endpoint address.
     /// </summary>

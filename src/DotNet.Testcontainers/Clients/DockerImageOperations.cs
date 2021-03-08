@@ -6,15 +6,16 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Images.Archives;
-  using DotNet.Testcontainers.Images.Configurations;
+  using Containers.Configurations;
+  using Images;
+  using Images.Archives;
+  using Images.Configurations;
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
-    public DockerImageOperations(Uri endpoint) : base(endpoint)
+    public DockerImageOperations(Uri endpoint, Credentials credentials) : base(endpoint)
     {
     }
 

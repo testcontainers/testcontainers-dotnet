@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -24,6 +25,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </summary>
     [NotNull]
     Uri Endpoint { get; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [CanBeNull]
+    Credentials EndpointCredentials { get; }
 
     /// <summary>
     /// Gets the Docker registry authentication configuration.
