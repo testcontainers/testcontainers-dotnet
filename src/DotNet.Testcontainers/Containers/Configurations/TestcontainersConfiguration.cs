@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -14,9 +15,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
 #pragma warning disable S107
 
     public TestcontainersConfiguration(
-      Uri endpoint,
-      DockerClientAuthConfig dockerClientAuthConfig,
-      IAuthenticationConfiguration authenticationConfigurations,
+      IDockerClientAuthenticationConfiguration clientAuthConfig,
+      IDockerRegistryAuthenticationConfiguration registryAuthConfig,
       IDockerImage image,
       string name,
       string hostname,
@@ -34,9 +34,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
       bool cleanUp = true)
     {
       this.CleanUp = cleanUp;
-      this.Endpoint = endpoint;
-      this.DockerClientAuthConfig = dockerClientAuthConfig;
-      this.AuthConfig = authenticationConfigurations;
+      this.DockerClientAuthConfig = clientAuthConfig;
+      this.DockerRegistryAuthConfig = registryAuthConfig;
       this.Image = image;
       this.Name = name;
       this.Hostname = hostname;
@@ -59,13 +58,10 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public bool CleanUp { get; }
 
     /// <inheritdoc />
-    public Uri Endpoint { get; }
+    public IDockerClientAuthenticationConfiguration DockerClientAuthConfig { get; }
 
     /// <inheritdoc />
-    public DockerClientAuthConfig DockerClientAuthConfig { get; }
-
-    /// <inheritdoc />
-    public IAuthenticationConfiguration AuthConfig { get; }
+    public IDockerRegistryAuthenticationConfiguration DockerRegistryAuthConfig { get; }
 
     /// <inheritdoc />
     public IDockerImage Image { get; }

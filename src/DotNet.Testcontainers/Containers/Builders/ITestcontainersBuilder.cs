@@ -3,8 +3,6 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System;
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -173,23 +171,22 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
-    /// <param name="endpoint">Docker API endpoint.</param>
+    /// <param name="clientEndpoint">Docker API endpoint.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
-
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint);
 
     /// <summary>
-    /// TODO
+    /// TODO: Add comment; Add implementation, etc.
     /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="dockerClientAuthConfig"></param>
+    /// <param name="clientEndpoint"></param>
+    /// <param name="tlsEnabled"></param>
     /// <returns></returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, DockerClientAuthConfig dockerClientAuthConfig);
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, bool tlsEnabled);
 
     /// <summary>
-    /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.
+    ///  Sets the Docker registry authentication configuration to authenticate against private Docker registries.
     /// </summary>
     /// <param name="registryEndpoint">Docker registry endpoint.</param>
     /// <param name="username">Username to authenticate.</param>

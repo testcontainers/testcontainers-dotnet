@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
   using System.Text;
   using System.Text.RegularExpressions;
   using System.Threading.Tasks;
-  using Configurations;
+  using DotNet.Testcontainers.Containers.Configurations;
 
   internal class UntilMessageIsLogged : IWaitUntil
   {
@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.message = message;
     }
 
-    public async Task<bool> Until(Uri endpoint, DockerClientAuthConfig clientAuthConfig, string id)
+    public async Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
 

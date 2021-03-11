@@ -5,6 +5,6 @@ namespace DotNet.Testcontainers.Clients
 
   internal static class DockerApiEndpoint
   {
-    public static Uri Default => TestcontainersHostService.GetService<IOperatingSystem>().DockerApiEndpoint;
+    public static Uri Local => TestcontainersHostService.GetService<IOperatingSystem>().DockerApiEndpoint;
   }
 }

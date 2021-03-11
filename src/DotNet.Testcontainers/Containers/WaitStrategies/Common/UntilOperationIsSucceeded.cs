@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 {
   using System;
   using System.Threading.Tasks;
-  using Configurations;
+  using DotNet.Testcontainers.Containers.Configurations;
 
   internal class UntilOperationIsSucceeded : IWaitUntil
   {
@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.maxCallCount = maxCallCount;
     }
 
-    public Task<bool> Until(Uri endpoint, DockerClientAuthConfig clientAuthConfig, string id)
+    public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
     {
       if (++this.tryCount > this.maxCallCount)
       {

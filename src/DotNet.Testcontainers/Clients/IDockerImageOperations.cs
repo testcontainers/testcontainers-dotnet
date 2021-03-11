@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface IDockerImageOperations : IHasListOperations<ImagesListResponse>
   {
-    Task CreateAsync(IDockerImage image, IAuthenticationConfiguration authConfig, CancellationToken ct = default);
+    Task CreateAsync(IDockerImage image, IDockerRegistryAuthenticationConfiguration authConfig, CancellationToken ct = default);
 
     Task DeleteAsync(IDockerImage image, CancellationToken ct = default);
 

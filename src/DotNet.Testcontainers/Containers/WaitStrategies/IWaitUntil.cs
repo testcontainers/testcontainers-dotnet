@@ -1,11 +1,10 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies
 {
-  using System;
   using System.Threading.Tasks;
-  using Configurations;
+  using DotNet.Testcontainers.Containers.Configurations;
 
   public interface IWaitUntil
   {
-    Task<bool> Until(Uri endpoint, DockerClientAuthConfig clientAuthConfig, string id);
+    Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id);
   }
 }

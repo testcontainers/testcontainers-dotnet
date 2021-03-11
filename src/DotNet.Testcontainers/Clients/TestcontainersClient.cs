@@ -31,15 +31,17 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly IDockerSystemOperations system;
 
-    public TestcontainersClient() : this(DockerApiEndpoint.Default, DockerClientAuthConfig.FromEnv())
+    public TestcontainersClient()
+      : this(new DockerClientAuthenticationConfiguration())
     {
     }
 
-    public TestcontainersClient(Uri endpoint, DockerClientAuthConfig clientAuthConfig) : this(
-      new TestcontainersRegistryService(),
-      new DockerContainerOperations(endpoint, clientAuthConfig.Credentials),
-      new DockerImageOperations(endpoint, clientAuthConfig.Credentials),
-      new DockerSystemOperations(endpoint, clientAuthConfig.Credentials))
+    public TestcontainersClient(IDockerClientAuthenticationConfiguration clientAuthConfig)
+      : this(
+        new TestcontainersRegistryService(),
+        new DockerContainerOperations(clientAuthConfig),
+        new DockerImageOperations(clientAuthConfig),
+        new DockerSystemOperations(clientAuthConfig))
     {
     }
 
@@ -184,7 +186,7 @@ namespace DotNet.Testcontainers.Clients
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
       {
-        await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct)
+        await this.images.CreateAsync(configuration.Image, configuration.DockerRegistryAuthConfig, ct)
           .ConfigureAwait(false);
       }
 

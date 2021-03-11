@@ -3,12 +3,15 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Concurrent;
   using Docker.DotNet;
+  using DotNet.Testcontainers.Containers.Configurations;
 
   internal abstract class DockerApiClient
   {
     private static readonly ConcurrentDictionary<Uri, IDockerClient> Clients = new ConcurrentDictionary<Uri, IDockerClient>();
 
-    protected DockerApiClient(Uri endpoint, Credentials credentials = null) : this(Clients.GetOrAdd(endpoint, _ => new DockerClientConfiguration(endpoint, credentials).CreateClient()))
+    // TODO: Add certificate credentials here.
+    protected DockerApiClient(IDockerClientAuthenticationConfiguration clientAuthConfig)
+      : this(Clients.GetOrAdd(clientAuthConfig.Endpoint, _ => new DockerClientConfiguration(clientAuthConfig.Endpoint).CreateClient()))
     {
     }
 

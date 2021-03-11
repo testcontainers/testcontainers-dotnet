@@ -1,16 +1,13 @@
 namespace DotNet.Testcontainers.Services
 {
   using System;
-  using static IOperatingSystem;
 
   /// <summary>
   /// Unix operating system.
   /// </summary>
   internal readonly struct Unix : IOperatingSystem
   {
-    private const string DefaultDockerSocketPath = "unix:/var/run/docker.sock";
-
-    private static readonly Uri endpoint = new Uri(Environment.GetEnvironmentVariable(DockerHostEnvName) ?? DefaultDockerSocketPath);
+    private static readonly Uri endpoint = new Uri("unix:/var/run/docker.sock");
 
     /// <inheritdoc />
     public Uri DockerApiEndpoint => endpoint;
