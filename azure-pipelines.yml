@@ -6,7 +6,7 @@ variables:
   MSBUILDDISABLENODEREUSE: true # https://github.com/dotnet/sdk/issues/9452
   DECODE_PERCENTS: true # https://github.com/microsoft/azure-pipelines-agent/pull/3152
   TZ: CET # https://stackoverflow.com/q/53510011
-  dotNetCoreVersion: 5.0.103
+  dotNetCoreVersion: 5.0.201
   cakeVersion: 1.0.0
 
 trigger:

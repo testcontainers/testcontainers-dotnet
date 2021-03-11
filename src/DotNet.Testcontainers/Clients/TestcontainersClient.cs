@@ -31,16 +31,15 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly IDockerSystemOperations system;
 
-    public TestcontainersClient() : this(
-      DockerApiEndpoint.Default)
+    public TestcontainersClient() : this(DockerApiEndpoint.Default, DockerClientAuthConfig.FromEnv())
     {
     }
 
-    public TestcontainersClient(Uri endpoint, Credentials credentials = null) : this(
+    public TestcontainersClient(Uri endpoint, DockerClientAuthConfig clientAuthConfig) : this(
       new TestcontainersRegistryService(),
-      new DockerContainerOperations(endpoint, credentials),
-      new DockerImageOperations(endpoint, credentials),
-      new DockerSystemOperations(endpoint, credentials))
+      new DockerContainerOperations(endpoint, clientAuthConfig.Credentials),
+      new DockerImageOperations(endpoint, clientAuthConfig.Credentials),
+      new DockerSystemOperations(endpoint, clientAuthConfig.Credentials))
     {
     }
 

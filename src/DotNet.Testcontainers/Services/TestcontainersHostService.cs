@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Services
 {
+  using System;
   using System.IO;
   using System.Runtime.InteropServices;
   using Microsoft.Extensions.Configuration;
@@ -66,6 +67,10 @@ namespace DotNet.Testcontainers.Services
         .ConfigureServices((hostContext, config) =>
         {
           var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem) new Windows() : new Unix();
+          if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(DockerHostOperatingSystem.DockerHostEnvName)))
+          {
+            os = new DockerHostOperatingSystem(os);
+          }
           config.AddSingleton(os);
         })
         .Build();

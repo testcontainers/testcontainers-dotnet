@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.WaitStrategies;
+  using Testcontainers.Containers.Configurations;
   using Xunit;
 
   public class WaitUntilMessageIsLogged
@@ -24,7 +25,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
           await streamWriter.FlushAsync();
 
           var wait = Wait.ForUnixContainer().UntilMessageIsLogged(memoryStream, expectedMessage);
-          await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));
+          await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, DockerClientAuthConfig.Anonymous(), string.Empty));
         }
       }
     }

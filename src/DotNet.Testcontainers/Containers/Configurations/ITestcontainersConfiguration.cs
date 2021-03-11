@@ -29,8 +29,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// <summary>
     /// TODO
     /// </summary>
-    [CanBeNull]
-    Credentials EndpointCredentials { get; }
+    public DockerClientAuthConfig DockerClientAuthConfig { get; }
 
     /// <summary>
     /// Gets the Docker registry authentication configuration.

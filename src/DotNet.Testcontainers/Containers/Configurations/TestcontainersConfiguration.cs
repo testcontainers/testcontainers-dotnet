@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -16,7 +15,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     public TestcontainersConfiguration(
       Uri endpoint,
-      Credentials endpointCredentials,
+      DockerClientAuthConfig dockerClientAuthConfig,
       IAuthenticationConfiguration authenticationConfigurations,
       IDockerImage image,
       string name,
@@ -34,23 +33,23 @@ namespace DotNet.Testcontainers.Containers.Configurations
       Func<IDockerContainer, CancellationToken, Task> startupCallback,
       bool cleanUp = true)
     {
-      this.CleanUp  = cleanUp;
-      this.Endpoint  = endpoint;
-      this.EndpointCredentials = endpointCredentials;
+      this.CleanUp = cleanUp;
+      this.Endpoint = endpoint;
+      this.DockerClientAuthConfig = dockerClientAuthConfig;
       this.AuthConfig = authenticationConfigurations;
-      this.Image  = image;
-      this.Name  = name;
+      this.Image = image;
+      this.Name = name;
       this.Hostname = hostname;
-      this.WorkingDirectory  = workingDirectory;
-      this.Entrypoint  = entrypoint;
-      this.Command  = command;
-      this.Environments  = environments;
-      this.Labels  = labels;
-      this.ExposedPorts  = exposedPorts;
-      this.PortBindings  = portBindings;
-      this.Mounts  = mounts;
-      this.OutputConsumer  = outputConsumer;
-      this.WaitStrategies  = waitStrategies;
+      this.WorkingDirectory = workingDirectory;
+      this.Entrypoint = entrypoint;
+      this.Command = command;
+      this.Environments = environments;
+      this.Labels = labels;
+      this.ExposedPorts = exposedPorts;
+      this.PortBindings = portBindings;
+      this.Mounts = mounts;
+      this.OutputConsumer = outputConsumer;
+      this.WaitStrategies = waitStrategies;
       this.StartupCallback = startupCallback;
     }
 
@@ -63,7 +62,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public Uri Endpoint { get; }
 
     /// <inheritdoc />
-    public Credentials EndpointCredentials { get; }
+    public DockerClientAuthConfig DockerClientAuthConfig { get; }
 
     /// <inheritdoc />
     public IAuthenticationConfiguration AuthConfig { get; }

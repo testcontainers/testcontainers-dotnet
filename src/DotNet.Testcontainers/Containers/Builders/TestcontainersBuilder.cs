@@ -7,7 +7,6 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
@@ -43,6 +42,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     public TestcontainersBuilder() : this(
       Apply(
+        dockerClientAuthConfig: DockerClientAuthConfig.FromEnv(),
         authConfig: new AuthenticationConfiguration(),
         labels: new DefaultLabels(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
@@ -111,14 +111,14 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value)
     {
-      var environments = new Dictionary<string, string> { { name, value } };
+      var environments = new Dictionary<string, string> {{name, value}};
       return Build(this, Apply(environments: environments));
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value)
     {
-      var labels = new Dictionary<string, string> { { name, value } };
+      var labels = new Dictionary<string, string> {{name, value}};
       return Build(this, Apply(labels: labels));
     }
 
@@ -131,7 +131,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(string port)
     {
-      var exposedPorts = new Dictionary<string, string> { { port, port } };
+      var exposedPorts = new Dictionary<string, string> {{port, port}};
       return Build(this, Apply(exposedPorts: exposedPorts));
     }
 
@@ -157,14 +157,14 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
-      var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
+      var portBindings = new Dictionary<string, string> {{containerPort, hostPort}};
       return Build(this, Apply(portBindings: portBindings));
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
-      var mounts = new IBind[] { new Mount(source, destination, AccessMode.ReadWrite) };
+      var mounts = new IBind[] {new Mount(source, destination, AccessMode.ReadWrite)};
       return Build(this, Apply(mounts: mounts));
     }
 
@@ -182,9 +182,9 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, Credentials credentials)
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, DockerClientAuthConfig dockerClientAuthConfig)
     {
-      return Build(this, Apply(endpoint: new Uri(endpoint), endpointCredentials: credentials));
+      return Build(this, Apply(endpoint: new Uri(endpoint), dockerClientAuthConfig: dockerClientAuthConfig));
     }
 
     /// <inheritdoc />
@@ -215,7 +215,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     public TDockerContainer Build()
     {
       // Create container instance.
-      var container = (TDockerContainer)Activator.CreateInstance(typeof(TDockerContainer), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.configuration }, null);
+      var container = (TDockerContainer)Activator.CreateInstance(typeof(TDockerContainer), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] {this.configuration}, null);
 
       // Apply specific container configuration.
       this.moduleConfiguration.Invoke(container);
@@ -227,7 +227,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private static ITestcontainersConfiguration Apply(
       Uri endpoint = null,
-      Credentials endpointCredentials = null,
+      DockerClientAuthConfig dockerClientAuthConfig = null,
       IAuthenticationConfiguration authConfig = null,
       IDockerImage image = null,
       string name = null,
@@ -247,7 +247,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     {
       return new TestcontainersConfiguration(
         endpoint ?? DockerApiEndpoint.Default,
-        endpointCredentials ?? DockerApiEndpoint.DefaultCredentials,
+        dockerClientAuthConfig,
         authConfig,
         image,
         name,
@@ -275,7 +275,6 @@ namespace DotNet.Testcontainers.Containers.Builders
     {
       var cleanUp = next.CleanUp && previous.configuration.CleanUp;
       var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Default);
-      var credentials = Merge(next.EndpointCredentials, previous.configuration.EndpointCredentials, DockerApiEndpoint.DefaultCredentials);
       var image = Merge(next.Image, previous.configuration.Image);
       var name = Merge(next.Name, previous.configuration.Name);
       var hostname = Merge(next.Hostname, previous.configuration.Hostname);
@@ -288,10 +287,11 @@ namespace DotNet.Testcontainers.Containers.Builders
       var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
       var mounts = Merge(next.Mounts, previous.configuration.Mounts);
 
-      var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
-      var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
-      var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
-      var startupCallback = new[] { next.StartupCallback, previous.configuration.StartupCallback }.First(config => config != null);
+      var credentials = new[] {next.DockerClientAuthConfig, previous.configuration.DockerClientAuthConfig}.First(config => config != null);
+      var authConfig = new[] {next.AuthConfig, previous.configuration.AuthConfig}.First(config => config != null);
+      var outputConsumer = new[] {next.OutputConsumer, previous.configuration.OutputConsumer}.First(config => config != null);
+      var waitStrategies = new[] {next.WaitStrategies, previous.configuration.WaitStrategies}.First(config => config != null);
+      var startupCallback = new[] {next.StartupCallback, previous.configuration.StartupCallback}.First(config => config != null);
 
       var mergedConfiguration = Apply(
         endpoint,
@@ -372,11 +372,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     private sealed class DefaultLabels : ReadOnlyDictionary<string, string>
     {
-      public DefaultLabels() : base(new Dictionary<string, string>
-      {
-        { TestcontainersClient.TestcontainersLabel, "true" },
-        { TestcontainersClient.TestcontainersCleanUpLabel, "true" }
-      })
+      public DefaultLabels() : base(new Dictionary<string, string> {{TestcontainersClient.TestcontainersLabel, "true"}, {TestcontainersClient.TestcontainersCleanUpLabel, "true"}})
       {
       }
     }

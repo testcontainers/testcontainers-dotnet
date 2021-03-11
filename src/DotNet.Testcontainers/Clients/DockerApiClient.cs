@@ -8,8 +8,7 @@ namespace DotNet.Testcontainers.Clients
   {
     private static readonly ConcurrentDictionary<Uri, IDockerClient> Clients = new ConcurrentDictionary<Uri, IDockerClient>();
 
-    protected DockerApiClient(Uri endpoint, Credentials credentials = null) : this(
-      Clients.GetOrAdd(endpoint, _ => new DockerClientConfiguration(endpoint, credentials).CreateClient()))
+    protected DockerApiClient(Uri endpoint, Credentials credentials = null) : this(Clients.GetOrAdd(endpoint, _ => new DockerClientConfiguration(endpoint, credentials).CreateClient()))
     {
     }
 
