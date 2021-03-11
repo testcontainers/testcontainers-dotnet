@@ -3,9 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.Configurations;
-  using JetBrains.Annotations;
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {

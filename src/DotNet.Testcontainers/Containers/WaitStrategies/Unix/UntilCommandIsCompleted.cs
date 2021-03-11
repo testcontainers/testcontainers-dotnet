@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies.Unix
 {
-  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Clients;

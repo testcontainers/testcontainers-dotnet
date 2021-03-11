@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Images.Builders
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Images.Configurations;
 
   /// <inheritdoc cref="IImageFromDockerfileBuilder" />

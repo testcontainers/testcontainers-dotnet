@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.WaitStrategies;
-  using DotNet.Testcontainers.Containers.Configurations;
   using Xunit;
 
   public class WaitUntilOperationIsSucceeded

@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 {
-  using System;
   using System.IO;
   using System.Text;
   using System.Text.RegularExpressions;
