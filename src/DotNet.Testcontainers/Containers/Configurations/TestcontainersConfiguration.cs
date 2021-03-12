@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using DotNet.Testcontainers.Images;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
-  public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
+  internal readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
   {
 #pragma warning disable S107
 

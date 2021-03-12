@@ -42,8 +42,8 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     public TestcontainersBuilder() : this(
       Apply(
-        clientAuthConfig: new DockerClientAuthenticationConfiguration(),
-        registryAuthConfig: new DockerRegistryAuthenticationConfiguration(),
+        clientAuthConfig: DockerClientAuthenticationConfiguration.Default,
+        registryAuthConfig: DockerRegistryAuthenticationConfiguration.Default,
         labels: new DefaultLabels(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
         waitStrategies: Wait.ForUnixContainer().Build(),
@@ -183,15 +183,17 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, bool tlsEnabled)
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory)
     {
-      throw new NotImplementedException();
+      var clientAuthConfig = new DockerClientEnvironmentAuthenticationConfiguration(new Uri(clientEndpoint), certificatesDirectory, true);
+      return Build(this, Apply(clientAuthConfig: clientAuthConfig));
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
     {
-      return Build(this, Apply(registryAuthConfig: new DockerRegistryAuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
+      var registryAuthConfig = new DockerRegistryAuthenticationConfiguration(new Uri(registryEndpoint), username, password);
+      return Build(this, Apply(registryAuthConfig: registryAuthConfig));
     }
 
     /// <inheritdoc />

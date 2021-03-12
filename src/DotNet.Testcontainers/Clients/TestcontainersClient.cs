@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
 
-    private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+    private readonly string osRootDirectory = Path.GetPathRoot(AppContext.BaseDirectory);
 
     private readonly TestcontainersRegistryService registryService;
 

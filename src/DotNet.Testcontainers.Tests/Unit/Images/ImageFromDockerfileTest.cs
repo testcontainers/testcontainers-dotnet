@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
 
       var actual = new SortedSet<string>();
 
-      var dockerFileArchive = new DockerfileArchive("Assets", "Dockerfile", new DockerImage("Testcontainers", "Test", "1.0.0"));
+      var dockerFileArchive = new DockerfileArchive("assets", "Dockerfile", new DockerImage("Testcontainers", "Test", "1.0.0"));
 
       // When
       using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())
@@ -72,7 +72,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
       // Given
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName("alpine:custom")
-        .WithDockerfileDirectory("Assets")
+        .WithDockerfileDirectory("assets")
         .WithDeleteIfExists(true);
 
       // When

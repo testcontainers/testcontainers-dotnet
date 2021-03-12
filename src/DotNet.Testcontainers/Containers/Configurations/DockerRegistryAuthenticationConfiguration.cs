@@ -22,6 +22,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.Password = password;
     }
 
+    /// <summary>
+    /// Gets the default Docker client auth configuration.
+    /// </summary>
+    public static IDockerRegistryAuthenticationConfiguration Default { get; }
+      = new DockerRegistryAuthenticationConfiguration();
+
     /// <inheritdoc />
     public Uri RegistryEndpoint { get; }
 

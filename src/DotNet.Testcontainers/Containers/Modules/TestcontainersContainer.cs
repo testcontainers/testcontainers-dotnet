@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Containers.Modules
     [NotNull]
     private ContainerListResponse container = new ContainerListResponse();
 
-    protected TestcontainersContainer(ITestcontainersConfiguration configuration)
+    internal TestcontainersContainer(ITestcontainersConfiguration configuration)
     {
       this.semaphoreSlim = new SemaphoreSlim(1, 1);
       this.client = new TestcontainersClient(configuration.DockerClientAuthConfig);

@@ -1,30 +1,17 @@
 namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System;
+  using System.Linq;
   using DotNet.Testcontainers.Clients;
 
   /// <inheritdoc cref="IDockerClientAuthenticationConfiguration" />
   internal sealed class DockerClientAuthenticationConfiguration : IDockerClientAuthenticationConfiguration
   {
-    // TODO: Improve null check; Add other envs variables too (maybe in a different way dunno yet).
-    // Do not forget content of DockerClientAuthConfig.
-    private static readonly Lazy<Uri> todo = new Lazy<Uri>(() =>
-    {
-      try
-      {
-        return new Uri(Environment.GetEnvironmentVariable("DOCKER_HOST"));
-      }
-      catch (Exception)
-      {
-        return DockerApiEndpoint.Local;
-      }
-    });
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerClientAuthenticationConfiguration" /> class.
     /// </summary>
     public DockerClientAuthenticationConfiguration()
-      : this(todo.Value)
+      : this(DockerApiEndpoint.Local)
     {
     }
 
@@ -32,13 +19,28 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// Initializes a new instance of the <see cref="DockerClientAuthenticationConfiguration" /> class.
     /// </summary>
     /// <param name="clientEndpoint">The Docker client endpoint.</param>
-    public DockerClientAuthenticationConfiguration(
-      Uri clientEndpoint)
+    public DockerClientAuthenticationConfiguration(Uri clientEndpoint)
     {
       this.Endpoint = clientEndpoint;
     }
 
+    /// <summary>
+    /// Gets the default Docker client auth configuration.
+    /// </summary>
+    public static IDockerClientAuthenticationConfiguration Default { get; }
+      = new IDockerClientAuthenticationConfiguration[] { new DockerClientEnvironmentAuthenticationConfiguration(), new DockerClientAuthenticationConfiguration() }
+        .First(clientAuthConfig => clientAuthConfig.IsApplicable);
+
     /// <inheritdoc />
     public Uri Endpoint { get; }
+
+    /// <inheritdoc />
+    public bool IsApplicable => !Equals(this.Endpoint, null);
+
+    /// <inheritdoc />
+    public bool IsTlsVerificationEnabled => false;
+
+    /// <inheritdoc />
+    public string CertificatesDirectory => null;
   }
 }
