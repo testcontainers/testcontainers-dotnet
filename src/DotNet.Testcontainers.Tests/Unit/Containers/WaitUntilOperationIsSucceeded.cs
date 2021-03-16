@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers.WaitStrategies;
-  using Testcontainers.Containers.Configurations;
   using Xunit;
 
   public class WaitUntilOperationIsSucceeded
@@ -30,7 +29,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
           return false;
         }, maxCallCount);
 
-        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, DockerClientAuthConfig.Anonymous(), string.Empty));
+        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));
       });
 
       // Then
@@ -53,7 +52,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
 
       // When
       var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
-      await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, DockerClientAuthConfig.Anonymous(), string.Empty));
+      await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty));
 
       // Then
       Assert.Equal(expectedCallsCount, callCounter);

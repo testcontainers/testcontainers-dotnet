@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Services
 {
   using System;
-  using static IOperatingSystem;
 
   /// <summary>
   /// Windows operating system.
@@ -10,8 +9,7 @@ namespace DotNet.Testcontainers.Services
   {
 #pragma warning disable S1075
 
-    private const string DefaultDockerSocketPath = "npipe://./pipe/docker_engine";
-    private static readonly Uri endpoint = new Uri(Environment.GetEnvironmentVariable(DockerHostEnvName) ?? DefaultDockerSocketPath);
+    private static readonly Uri endpoint = new Uri("npipe://./pipe/docker_engine");
 
 #pragma warning restore S1075
 

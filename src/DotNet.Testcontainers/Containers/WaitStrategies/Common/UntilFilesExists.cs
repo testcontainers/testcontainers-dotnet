@@ -1,9 +1,8 @@
 namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
 {
-  using System;
   using System.IO;
   using System.Threading.Tasks;
-  using Configurations;
+  using DotNet.Testcontainers.Containers.Configurations;
 
   internal class UntilFilesExists : IWaitUntil
   {
@@ -14,7 +13,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.file = file;
     }
 
-    public Task<bool> Until(Uri endpoint, DockerClientAuthConfig clientAuthConfig, string id)
+    public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
     {
       return Task.FromResult(File.Exists(this.file));
     }

@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
@@ -21,21 +20,16 @@ namespace DotNet.Testcontainers.Containers.Configurations
     bool CleanUp { get; }
 
     /// <summary>
-    /// Gets the Docker API endpoint.
+    /// Gets the Docker client authentication configuration.
     /// </summary>
     [NotNull]
-    Uri Endpoint { get; }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public DockerClientAuthConfig DockerClientAuthConfig { get; }
+    IDockerClientAuthenticationConfiguration DockerClientAuthConfig { get; }
 
     /// <summary>
     /// Gets the Docker registry authentication configuration.
     /// </summary>
     [NotNull]
-    IAuthenticationConfiguration AuthConfig { get; }
+    IDockerRegistryAuthenticationConfiguration DockerRegistryAuthConfig { get; }
 
     /// <summary>
     /// Gets the Docker image.

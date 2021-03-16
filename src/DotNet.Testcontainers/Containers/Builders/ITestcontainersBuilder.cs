@@ -3,10 +3,9 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System;
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
+  using DotNet.Testcontainers.Containers.WaitStrategies.Common;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -173,20 +172,19 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
-    /// <param name="endpoint">Docker API endpoint.</param>
+    /// <param name="clientEndpoint">Docker API endpoint.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
-
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint);
 
     /// <summary>
-    /// TODO
+    /// Sets the Docker API endpoint.
     /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="dockerClientAuthConfig"></param>
-    /// <returns></returns>
+    /// <param name="clientEndpoint">Docker API endpoint.</param>
+    /// <param name="certificatesDirectory">TLS certificates base directory.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint, DockerClientAuthConfig dockerClientAuthConfig);
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory);
 
     /// <summary>
     /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.
@@ -210,7 +208,7 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <summary>
     /// Sets the wait strategies to complete the Testcontainer asynchronous start task.
     /// </summary>
-    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation is <see cref="DotNet.Testcontainers.Containers.WaitStrategies.Common.UntilContainerIsRunning" />.</param>
+    /// <param name="waitStrategy">Wait strategy to complete the Testcontainer start, default wait strategy implementation is <see cref="UntilContainerIsRunning" />.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     /// <remarks>Multiple wait strategies are executed one after the other.</remarks>
     [PublicAPI]

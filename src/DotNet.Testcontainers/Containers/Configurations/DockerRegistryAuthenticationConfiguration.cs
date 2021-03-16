@@ -2,17 +2,17 @@ namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System;
 
-  /// <inheritdoc cref="IAuthenticationConfiguration" />
+  /// <inheritdoc cref="IDockerRegistryAuthenticationConfiguration" />
   /// <remarks>In the future, we will replace this class. Instead, we will use the local Docker credentials.</remarks>
-  internal readonly struct AuthenticationConfiguration : IAuthenticationConfiguration
+  internal sealed class DockerRegistryAuthenticationConfiguration : IDockerRegistryAuthenticationConfiguration
   {
     /// <summary>
-    /// Creates a <see cref="AuthenticationConfiguration" />.
+    /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationConfiguration" /> class.
     /// </summary>
     /// <param name="registryEndpoint">The Docker registry endpoint.</param>
     /// <param name="username">The username.</param>
     /// <param name="password">The password.</param>
-    public AuthenticationConfiguration(
+    public DockerRegistryAuthenticationConfiguration(
       Uri registryEndpoint = null,
       string username = null,
       string password = null)
@@ -21,6 +21,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.Username = username;
       this.Password = password;
     }
+
+    /// <summary>
+    /// Gets the default Docker client auth configuration.
+    /// </summary>
+    public static IDockerRegistryAuthenticationConfiguration Default { get; }
+      = new DockerRegistryAuthenticationConfiguration();
 
     /// <inheritdoc />
     public Uri RegistryEndpoint { get; }

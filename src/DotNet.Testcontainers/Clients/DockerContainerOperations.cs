@@ -1,12 +1,10 @@
 namespace DotNet.Testcontainers.Clients
 {
-  using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
@@ -18,20 +16,21 @@ namespace DotNet.Testcontainers.Clients
   {
     private static readonly ILogger<DockerContainerOperations> Logger = TestcontainersHostService.GetLogger<DockerContainerOperations>();
 
-    public DockerContainerOperations(Uri endpoint, Credentials credentials) : base(endpoint)
+    public DockerContainerOperations(IDockerClientAuthenticationConfiguration clientAuthConfig)
+      : base(clientAuthConfig)
     {
     }
 
     public async Task<IEnumerable<ContainerListResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters {All = true}, ct)
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }, ct)
         .ConfigureAwait(false)).ToArray();
     }
 
     public async Task<IEnumerable<ContainerListResponse>> GetOrphanedObjects(CancellationToken ct = default)
     {
-      var filters = new FilterByProperty {{"label", $"{TestcontainersClient.TestcontainersCleanUpLabel}=true"}, {"status", "exited"}};
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters {All = true, Filters = filters}, ct)
+      var filters = new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersCleanUpLabel}=true" }, { "status", "exited" } };
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).ToArray();
     }
 
@@ -47,8 +46,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ContainerListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      var filters = new FilterByProperty {{property, value}};
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters {All = true, Filters = filters}, ct)
+      var filters = new FilterByProperty { { property, value } };
+      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).FirstOrDefault();
     }
 
@@ -79,26 +78,26 @@ namespace DotNet.Testcontainers.Clients
     public Task StopAsync(string id, CancellationToken ct = default)
     {
       Logger.LogInformation("Stopping container {id}", id);
-      return this.Docker.Containers.StopContainerAsync(id, new ContainerStopParameters {WaitBeforeKillSeconds = 15}, ct);
+      return this.Docker.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
     }
 
     public Task RemoveAsync(string id, CancellationToken ct = default)
     {
       Logger.LogInformation("Removing container {id}", id);
-      return this.Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters {Force = true, RemoveVolumes = true}, ct);
+      return this.Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
     }
 
     public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
     {
       Logger.LogInformation("Copying tar stream to {path} at container {id}", path, id);
-      return this.Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters {Path = path, AllowOverwriteDirWithFile = false}, tarStream, ct);
+      return this.Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
     }
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       Logger.LogInformation("Attaching {outputConsumer} at container {id}", outputConsumer.GetType(), id);
 
-      var attachParameters = new ContainerAttachParameters {Stdout = true, Stderr = true, Stream = true,};
+      var attachParameters = new ContainerAttachParameters { Stdout = true, Stderr = true, Stream = true };
 
       var stream = await this.Docker.Containers.AttachContainerAsync(id, false, attachParameters, ct)
         .ConfigureAwait(false);
@@ -111,7 +110,7 @@ namespace DotNet.Testcontainers.Clients
     {
       Logger.LogInformation("Executing {command} at container {id}", command, id);
 
-      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, new ContainerExecCreateParameters {Cmd = command}, ct)
+      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, new ContainerExecCreateParameters { Cmd = command }, ct)
         .ConfigureAwait(false);
 
       await this.Docker.Exec.StartContainerExecAsync(created.ID, ct)
@@ -136,8 +135,10 @@ namespace DotNet.Testcontainers.Clients
 
       var hostConfig = new HostConfig
       {
-        // AutoRemove = configuration.CleanUp, TODO: Should we keep this? If the Docker daemon remove containers we're no longer able to call e. g. `CleanUp(true)` + `GetExitCode()`.
-        PortBindings = converter.PortBindings, Mounts = converter.Mounts,
+        // TODO: Should we keep this? If the Docker daemon remove containers we're no longer able to call e. g. `CleanUp(true)` + `GetExitCode()`.
+        // AutoRemove = configuration.CleanUp,
+        PortBindings = converter.PortBindings,
+        Mounts = converter.Mounts
       };
 
       var createParameters = new CreateContainerParameters
@@ -151,7 +152,7 @@ namespace DotNet.Testcontainers.Clients
         Env = converter.Environments,
         Labels = converter.Labels,
         ExposedPorts = converter.ExposedPorts,
-        HostConfig = hostConfig,
+        HostConfig = hostConfig
       };
 
       var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)

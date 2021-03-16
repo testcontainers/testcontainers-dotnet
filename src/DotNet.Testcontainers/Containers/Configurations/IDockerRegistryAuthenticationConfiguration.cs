@@ -4,9 +4,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using JetBrains.Annotations;
 
   /// <summary>
-  /// A authentication configuration to authenticate against private Docker registries.
+  /// An authentication configuration to authenticate against private Docker registries.
   /// </summary>
-  public interface IAuthenticationConfiguration
+  public interface IDockerRegistryAuthenticationConfiguration
   {
     /// <summary>
     /// Gets the Docker registry endpoint.

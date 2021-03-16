@@ -9,23 +9,23 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using Docker.DotNet;
   using Docker.DotNet.X509;
 
-  public sealed class DockerClientAuthConfig
+  public sealed class DockerClientAuthConfigFoo
   {
     private const string DockerTlsVerifyEnvName = "DOCKER_TLS_VERIFY";
     private const string DockerCertPathEnvName = "DOCKER_CERT_PATH";
 
     private static readonly string[] RequiredCertFiles = {"ca.pem", "cert.pem", "key.pem"};
 
-    private DockerClientAuthConfig(Credentials credentials)
+    private DockerClientAuthConfigFoo(Credentials credentials)
     {
       this.Credentials = credentials;
     }
 
     public Credentials Credentials { get; }
 
-    public static DockerClientAuthConfig Anonymous() => new DockerClientAuthConfig(new AnonymousCredentials());
+    public static DockerClientAuthConfigFoo Anonymous() => new DockerClientAuthConfigFoo(new AnonymousCredentials());
 
-    public static DockerClientAuthConfig FromEnv()
+    public static DockerClientAuthConfigFoo FromEnv()
     {
       // check if TLS_VERIFY is set and enabled otherwise don't authenticate at all
       var anonymous = new AnonymousCredentials();
@@ -45,7 +45,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       return FromCertsDirectory(certPath);
     }
 
-    public static DockerClientAuthConfig FromCertsDirectory(string certPath)
+    public static DockerClientAuthConfigFoo FromCertsDirectory(string certPath)
     {
       var allRequireFilesPresent = RequiredCertFiles
         .Select(f => Path.Combine(certPath, f))
@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       {
         ServerCertificateValidationCallback = CallbackForCustomCaCert(caCert)
       };
-      return new DockerClientAuthConfig(credentials);
+      return new DockerClientAuthConfigFoo(credentials);
 
     }
 

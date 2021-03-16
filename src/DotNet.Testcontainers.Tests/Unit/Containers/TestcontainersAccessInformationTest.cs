@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
-  using Testcontainers.Containers.Configurations;
+  using DotNet.Testcontainers.Containers.Configurations;
   using Xunit;
 
   public static class TestcontainersAccessInformationTest
@@ -18,25 +18,25 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       [Fact]
       public async Task QueryNotExistingDockerImageById()
       {
-        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Default, DockerClientAuthConfig.Anonymous().Credentials).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(new DockerClientAuthenticationConfiguration()).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerById()
       {
-        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Default, DockerClientAuthConfig.Anonymous().Credentials).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(new DockerClientAuthenticationConfiguration()).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerImageByName()
       {
-        Assert.False(await new DockerImageOperations(DockerApiEndpoint.Default, DockerClientAuthConfig.Anonymous().Credentials).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(new DockerClientAuthenticationConfiguration()).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerByName()
       {
-        Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Default, DockerClientAuthConfig.Anonymous().Credentials).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(new DockerClientAuthenticationConfiguration()).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]

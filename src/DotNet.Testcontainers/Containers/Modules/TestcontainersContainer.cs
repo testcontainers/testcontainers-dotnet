@@ -24,10 +24,10 @@ namespace DotNet.Testcontainers.Containers.Modules
     [NotNull]
     private ContainerListResponse container = new ContainerListResponse();
 
-    protected TestcontainersContainer(ITestcontainersConfiguration configuration)
+    internal TestcontainersContainer(ITestcontainersConfiguration configuration)
     {
       this.semaphoreSlim = new SemaphoreSlim(1, 1);
-      this.client = new TestcontainersClient(configuration.Endpoint, configuration.DockerClientAuthConfig);
+      this.client = new TestcontainersClient(configuration.DockerClientAuthConfig);
       this.configuration = configuration;
     }
 
@@ -76,26 +76,22 @@ namespace DotNet.Testcontainers.Containers.Modules
     {
       get
       {
-        switch (this.configuration.Endpoint.Scheme)
+        var endpointScheme = this.configuration.DockerClientAuthConfig.Endpoint.Scheme;
+
+        if (new[] { "tcp", "http", "https" }
+          .Any(scheme => scheme.Equals(endpointScheme, StringComparison.OrdinalIgnoreCase)))
         {
-          case "tcp":
-          case "http":
-          case "https":
-            return this.configuration.Endpoint.Host;
-          case "unix":
-          case "npipe":
-            if (this.client.IsRunningInsideDocker)
-            {
-              this.ThrowIfContainerHasNotBeenCreated();
-              return this.container.NetworkSettings.Networks.First().Value.Gateway;
-            }
-            else
-            {
-              return "localhost";
-            }
-          default:
-            return this.IpAddress;
+          return this.configuration.DockerClientAuthConfig.Endpoint.Host;
         }
+
+        if (new[] { "unix", "npipe" }
+          .Any(scheme => scheme.Equals(endpointScheme, StringComparison.OrdinalIgnoreCase)) && this.client.IsRunningInsideDocker)
+        {
+          this.ThrowIfContainerHasNotBeenCreated();
+          return this.container.NetworkSettings.Networks.First().Value.Gateway;
+        }
+
+        return "localhost";
       }
     }
 
@@ -237,7 +233,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, this.configuration.DockerClientAuthConfig, id), TimeSpan.FromSeconds(1).Milliseconds, ct: ct)
+        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.DockerClientAuthConfig, id), TimeSpan.FromSeconds(1).Milliseconds, ct: ct)
           .ConfigureAwait(false);
       }
 
