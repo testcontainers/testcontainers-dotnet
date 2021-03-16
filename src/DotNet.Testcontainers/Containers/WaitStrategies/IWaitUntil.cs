@@ -5,6 +5,6 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
 
   public interface IWaitUntil
   {
-    Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id);
+    Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id);
   }
 }

@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     public TestcontainersBuilder() : this(
       Apply(
-        clientAuthConfig: DockerClientAuthenticationConfiguration.Default,
+        clientAuthConfig: DockerClientConfiguration.Default,
         registryAuthConfig: DockerRegistryAuthenticationConfiguration.Default,
         labels: new DefaultLabels(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
@@ -178,14 +178,14 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint)
     {
-      var clientAuthConfig = new DockerClientAuthenticationConfiguration(new Uri(clientEndpoint));
+      var clientAuthConfig = new DockerClientConfiguration(new Uri(clientEndpoint));
       return Build(this, Apply(clientAuthConfig: clientAuthConfig));
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory)
     {
-      var clientAuthConfig = new DockerClientEnvironmentAuthenticationConfiguration(new Uri(clientEndpoint), certificatesDirectory, true);
+      var clientAuthConfig = new DockerClientEnvironmentConfiguration(new Uri(clientEndpoint), certificatesDirectory, true);
       return Build(this, Apply(clientAuthConfig: clientAuthConfig));
     }
 
@@ -229,7 +229,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 #pragma warning disable S107
 
     private static ITestcontainersConfiguration Apply(
-      IDockerClientAuthenticationConfiguration clientAuthConfig = null,
+      IDockerClientConfiguration clientAuthConfig = null,
       IDockerRegistryAuthenticationConfiguration registryAuthConfig = null,
       IDockerImage image = null,
       string name = null,

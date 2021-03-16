@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.message = message;
     }
 
-    public async Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+    public async Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
 

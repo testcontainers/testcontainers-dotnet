@@ -3,37 +3,39 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System;
   using System.IO;
   using System.Linq;
+  using System.Security.Cryptography.X509Certificates;
+  using Docker.DotNet;
+  using Docker.DotNet.X509;
+  using static DockerClientConstants;
 
-  /// <inheritdoc cref="IDockerClientAuthenticationConfiguration" />
-  internal sealed class DockerClientEnvironmentAuthenticationConfiguration : IDockerClientAuthenticationConfiguration
+  /// <inheritdoc cref="IDockerClientConfiguration" />
+  internal sealed class DockerClientEnvironmentConfiguration : IDockerClientConfiguration
   {
-    private static readonly string[] RequiredCertificateFiles = { "ca.pem", "cert.pem", "key.pem" };
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DockerClientEnvironmentAuthenticationConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="DockerClientEnvironmentConfiguration" /> class.
     /// </summary>
-    public DockerClientEnvironmentAuthenticationConfiguration()
+    public DockerClientEnvironmentConfiguration()
       : this(GetDockerHostEnvVariable(), GetDockerCertPathEnvVariable(), GetDockerTlsVerifyEnvVariable())
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DockerClientEnvironmentAuthenticationConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="DockerClientEnvironmentConfiguration" /> class.
     /// </summary>
     /// <param name="clientEndpoint">The Docker client endpoint.</param>
     /// <param name="certificatesDirectory">The TLS certificates base directory.</param>
     /// <param name="isTlsVerificationEnabled">Is TLS verification enabled.</param>
-    public DockerClientEnvironmentAuthenticationConfiguration(Uri clientEndpoint, string certificatesDirectory, bool isTlsVerificationEnabled)
+    public DockerClientEnvironmentConfiguration(Uri clientEndpoint, string certificatesDirectory, bool isTlsVerificationEnabled)
     {
-      var hasRequiredCertificates = Directory.Exists(certificatesDirectory) && RequiredCertificateFiles.Length.Equals(
-        Directory.EnumerateFiles(certificatesDirectory, "*.*", SearchOption.TopDirectoryOnly)
-          .Select(Path.GetFileName)
-          .Intersect(RequiredCertificateFiles, StringComparer.OrdinalIgnoreCase)
-          .Count());
-
       this.Endpoint = clientEndpoint;
-      this.CertificatesDirectory = certificatesDirectory;
-      this.IsTlsVerificationEnabled = isTlsVerificationEnabled && hasRequiredCertificates;
+
+      var dockerCertDir = new DockerCertDir(certificatesDirectory);
+      if (isTlsVerificationEnabled && !dockerCertDir.ClientAuthPossible)
+      {
+        throw new ArgumentException("TLS verification requested but there is no CA certificate present", nameof(certificatesDirectory));
+      }
+      this.Credentials = new PemCertificateCredentials(dockerCertDir, isTlsVerificationEnabled);
     }
 
     /// <inheritdoc />
@@ -43,10 +45,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public bool IsApplicable => !Equals(this.Endpoint, null);
 
     /// <inheritdoc />
-    public bool IsTlsVerificationEnabled { get; }
-
-    /// <inheritdoc />
-    public string CertificatesDirectory { get; }
+    public Credentials Credentials { get; }
 
     private static Uri GetDockerHostEnvVariable()
     {
@@ -80,7 +79,10 @@ namespace DotNet.Testcontainers.Containers.Configurations
     private static bool GetDockerTlsVerifyEnvVariable()
     {
       var dockerTlsVerify = Environment.GetEnvironmentVariable("DOCKER_TLS_VERIFY");
-      return new[] { "true", "1", string.Empty }.Any(trueString => trueString.Equals(dockerTlsVerify, StringComparison.OrdinalIgnoreCase));
+      return new[]
+      {
+        "true", "1", string.Empty
+      }.Any(trueString => trueString.Equals(dockerTlsVerify, StringComparison.OrdinalIgnoreCase));
     }
   }
 }

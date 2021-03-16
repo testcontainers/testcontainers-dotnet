@@ -5,6 +5,6 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies
 
   public interface IWaitWhile
   {
-    Task<bool> While(IDockerClientAuthenticationConfiguration clientAuthConfig, string id);
+    Task<bool> While(IDockerClientConfiguration clientAuthConfig, string id);
   }
 }

@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+    public Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
     {
       return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
     }

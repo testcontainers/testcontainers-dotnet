@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
 #pragma warning disable S107
 
     public TestcontainersConfiguration(
-      IDockerClientAuthenticationConfiguration clientAuthConfig,
+      IDockerClientConfiguration clientAuthConfig,
       IDockerRegistryAuthenticationConfiguration registryAuthConfig,
       IDockerImage image,
       string name,
@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public bool CleanUp { get; }
 
     /// <inheritdoc />
-    public IDockerClientAuthenticationConfiguration DockerClientAuthConfig { get; }
+    public IDockerClientConfiguration DockerClientAuthConfig { get; }
 
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration DockerRegistryAuthConfig { get; }

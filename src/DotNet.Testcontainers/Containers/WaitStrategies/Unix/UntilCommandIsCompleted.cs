@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Unix
       this.command = command;
     }
 
-    public virtual async Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+    public virtual async Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
     {
       using (var client = new TestcontainersClient(clientAuthConfig))
       {

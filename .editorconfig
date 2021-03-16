@@ -196,6 +196,10 @@ csharp_prefer_static_local_function = true:warning
 csharp_prefer_simple_using_statement = true:suggestion
 dotnet_diagnostic.IDE0063.severity = suggestion
 
+resharper_csharp_space_in_singleline_method = true
+resharper_csharp_space_between_accessors_in_singleline_property = true
+resharper_csharp_space_within_single_line_array_initializer_braces = true
+
 ##########################################
 # .NET Formatting Conventions
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-code-style-settings-reference#formatting-conventions

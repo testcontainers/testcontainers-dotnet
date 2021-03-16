@@ -16,8 +16,8 @@ namespace DotNet.Testcontainers.Clients
   {
     private static readonly ILogger<DockerContainerOperations> Logger = TestcontainersHostService.GetLogger<DockerContainerOperations>();
 
-    public DockerContainerOperations(IDockerClientAuthenticationConfiguration clientAuthConfig)
-      : base(clientAuthConfig)
+    public DockerContainerOperations(IDockerClientConfiguration clientConfig)
+      : base(clientConfig)
     {
     }
 
@@ -137,8 +137,7 @@ namespace DotNet.Testcontainers.Clients
       {
         // TODO: Should we keep this? If the Docker daemon remove containers we're no longer able to call e. g. `CleanUp(true)` + `GetExitCode()`.
         // AutoRemove = configuration.CleanUp,
-        PortBindings = converter.PortBindings,
-        Mounts = converter.Mounts
+        PortBindings = converter.PortBindings, Mounts = converter.Mounts
       };
 
       var createParameters = new CreateContainerParameters

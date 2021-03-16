@@ -22,12 +22,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
         await WaitStrategy.WaitWhile(() => this.While(null, string.Empty));
       }
 
-      public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
       {
         return Task.FromResult(true);
       }
 
-      public Task<bool> While(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> While(IDockerClientConfiguration clientAuthConfig, string id)
       {
         return Task.FromResult(false);
       }
@@ -47,12 +47,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
         await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhile(() => this.While(null, string.Empty), 1000, 1));
       }
 
-      public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
       {
         return Task.FromResult(false);
       }
 
-      public Task<bool> While(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> While(IDockerClientConfiguration clientAuthConfig, string id)
       {
         return Task.FromResult(true);
       }
@@ -72,12 +72,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
         await Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitWhile(() => this.While(null, string.Empty)));
       }
 
-      public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
       {
         throw new NotImplementedException();
       }
 
-      public Task<bool> While(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+      public Task<bool> While(IDockerClientConfiguration clientAuthConfig, string id)
       {
         throw new NotImplementedException();
       }

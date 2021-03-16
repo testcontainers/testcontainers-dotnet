@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
   {
     private static readonly TestcontainersState[] ContainerHasBeenRunningStates = { TestcontainersState.Running, TestcontainersState.Exited };
 
-    public async Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+    public async Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
     {
       using (var client = new TestcontainersClient(clientAuthConfig))
       {

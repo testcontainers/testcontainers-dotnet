@@ -7,8 +7,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {
-    public DockerSystemOperations(IDockerClientAuthenticationConfiguration clientAuthConfig)
-      : base(clientAuthConfig)
+    public DockerSystemOperations(IDockerClientConfiguration clientConfig)
+      : base(clientConfig)
     {
     }
 

@@ -14,8 +14,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
-    public DockerImageOperations(IDockerClientAuthenticationConfiguration clientAuthConfig)
-      : base(clientAuthConfig)
+    public DockerImageOperations(IDockerClientConfiguration clientConfig)
+      : base(clientConfig)
     {
     }
 

@@ -5,6 +5,7 @@ ProjectSection(SolutionItems) = preProject
 	..\CODE_OF_CONDUCT.md = ..\CODE_OF_CONDUCT.md
 	..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 	..\README.md = ..\README.md
+	..\.editorconfig = ..\.editorconfig
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers", "DotNet.Testcontainers\DotNet.Testcontainers.csproj", "{A64895AC-71FF-417C-AC4B-C4C58064656A}"

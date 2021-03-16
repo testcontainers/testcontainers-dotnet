@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Containers.WaitStrategies.Common
       this.maxCallCount = maxCallCount;
     }
 
-    public Task<bool> Until(IDockerClientAuthenticationConfiguration clientAuthConfig, string id)
+    public Task<bool> Until(IDockerClientConfiguration clientAuthConfig, string id)
     {
       if (++this.tryCount > this.maxCallCount)
       {

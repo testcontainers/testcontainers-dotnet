@@ -1,12 +1,13 @@
 namespace DotNet.Testcontainers.Containers.Configurations
 {
   using System;
+  using Docker.DotNet;
   using JetBrains.Annotations;
 
   /// <summary>
   /// An authentication configuration to authenticate against Docker hosts (TLS).
   /// </summary>
-  public interface IDockerClientAuthenticationConfiguration
+  public interface IDockerClientConfiguration
   {
     /// <summary>
     /// Gets the Docker API endpoint.
@@ -20,14 +21,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
     bool IsApplicable { get; }
 
     /// <summary>
-    /// True if TLS verification is enabled, otherwise false.
-    /// </summary>
-    bool IsTlsVerificationEnabled { get; }
-
-    /// <summary>
-    /// Gets the TLS certificates base directory.
+    /// Credentials used to authenticate with the Docker daemon e.g. client certificates
     /// </summary>
     [CanBeNull]
-    string CertificatesDirectory { get; }
+    Credentials Credentials { get; }
   }
 }

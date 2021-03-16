@@ -14,6 +14,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Images.Configurations;
   using DotNet.Testcontainers.Services;
   using ICSharpCode.SharpZipLib.Tar;
+  using DockerClientConfiguration = Containers.Configurations.DockerClientConfiguration;
 
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
@@ -32,11 +33,11 @@ namespace DotNet.Testcontainers.Clients
     private readonly IDockerSystemOperations system;
 
     public TestcontainersClient()
-      : this(new DockerClientAuthenticationConfiguration())
+      : this(new DockerClientConfiguration())
     {
     }
 
-    public TestcontainersClient(IDockerClientAuthenticationConfiguration clientAuthConfig)
+    public TestcontainersClient(IDockerClientConfiguration clientAuthConfig)
       : this(
         new TestcontainersRegistryService(),
         new DockerContainerOperations(clientAuthConfig),

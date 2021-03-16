@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// Gets the Docker client authentication configuration.
     /// </summary>
     [NotNull]
-    IDockerClientAuthenticationConfiguration DockerClientAuthConfig { get; }
+    IDockerClientConfiguration DockerClientAuthConfig { get; }
 
     /// <summary>
     /// Gets the Docker registry authentication configuration.
