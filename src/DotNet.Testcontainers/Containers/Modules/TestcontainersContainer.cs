@@ -237,7 +237,7 @@ namespace DotNet.Testcontainers.Containers.Modules
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), TimeSpan.FromSeconds(1).Milliseconds, ct: ct)
+        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id), (int) TimeSpan.FromSeconds(1).TotalMilliseconds, ct: ct)
           .ConfigureAwait(false);
       }
 
