@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
     public void IsNotIsApplicable()
     {
       Assert.False(new DockerClientConfiguration(null).IsApplicable);
-      Assert.False(new DockerClientEnvironmentConfiguration(null, null, false).IsApplicable);
+      Assert.False(new DockerClientEnvironmentConfiguration(null, "Assets", false).IsApplicable);
     }
   }
 }

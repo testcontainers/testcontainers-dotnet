@@ -173,18 +173,20 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="clientEndpoint">Docker API endpoint.</param>
+    /// <param name="tlsVerify">Enable TLS verification for the Docker API endpoint. Only applies for TLS encrypted connections like HTTPS.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint);
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, bool tlsVerify = true);
 
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="clientEndpoint">Docker API endpoint.</param>
     /// <param name="certificatesDirectory">TLS certificates base directory.</param>
+    /// <param name="tlsVerify">Enable TLS verification for the Docker endpoint</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory);
+    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory, bool tlsVerify = true);
 
     /// <summary>
     /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.

@@ -7,11 +7,13 @@ namespace DotNet.Testcontainers.Containers.Builders
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers.Configurations;
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using DockerClientConfiguration = Configurations.DockerClientConfiguration;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -171,21 +173,25 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      return Build(this, Apply(cleanUp: cleanUp))
-        .WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString().ToLowerInvariant());
+      return Build(this, Apply(cleanUp: cleanUp)).WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString().ToLowerInvariant());
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint)
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, bool tlsVerify = true)
     {
-      var clientAuthConfig = new DockerClientConfiguration(new Uri(clientEndpoint));
+      var endpoint = new Uri(clientEndpoint);
+      var isTls = endpoint.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
+      var clientAuthConfig = new DockerClientConfiguration(endpoint, new TlsCredentials(null, null, isTls, isTls && tlsVerify));
       return Build(this, Apply(clientAuthConfig: clientAuthConfig));
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory)
+    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string clientEndpoint, string certificatesDirectory, bool tlsVerify = true)
     {
-      var clientAuthConfig = new DockerClientEnvironmentConfiguration(new Uri(clientEndpoint), certificatesDirectory, true);
+      var endpoint = new Uri(clientEndpoint);
+      var isTls = endpoint.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
+      var dockerCertificates = new DockerCertificatesDirectory(certificatesDirectory);
+      var clientAuthConfig = new DockerClientConfiguration(endpoint, new TlsCredentials(dockerCertificates.CaCertificate, dockerCertificates.ClientCertificate, isTls, tlsVerify));
       return Build(this, Apply(clientAuthConfig: clientAuthConfig));
     }
 

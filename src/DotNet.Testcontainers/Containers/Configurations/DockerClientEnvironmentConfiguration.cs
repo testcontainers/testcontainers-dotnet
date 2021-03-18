@@ -3,20 +3,15 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using System;
   using System.IO;
   using System.Linq;
-  using System.Security.Cryptography.X509Certificates;
   using Docker.DotNet;
-  using Docker.DotNet.X509;
-  using static DockerClientConstants;
 
   /// <inheritdoc cref="IDockerClientConfiguration" />
   internal sealed class DockerClientEnvironmentConfiguration : IDockerClientConfiguration
   {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerClientEnvironmentConfiguration" /> class.
     /// </summary>
-    public DockerClientEnvironmentConfiguration()
-      : this(GetDockerHostEnvVariable(), GetDockerCertPathEnvVariable(), GetDockerTlsVerifyEnvVariable())
+    public DockerClientEnvironmentConfiguration() : this(GetDockerHostEnvVariable(), GetDockerCertPathEnvVariable(), GetDockerTlsVerifyEnvVariable())
     {
     }
 
@@ -29,13 +24,8 @@ namespace DotNet.Testcontainers.Containers.Configurations
     public DockerClientEnvironmentConfiguration(Uri clientEndpoint, string certificatesDirectory, bool isTlsVerificationEnabled)
     {
       this.Endpoint = clientEndpoint;
-
-      var dockerCertDir = new DockerCertDir(certificatesDirectory);
-      if (isTlsVerificationEnabled && !dockerCertDir.ClientAuthPossible)
-      {
-        throw new ArgumentException("TLS verification requested but there is no CA certificate present", nameof(certificatesDirectory));
-      }
-      this.Credentials = new PemCertificateCredentials(dockerCertDir, isTlsVerificationEnabled);
+      var dockerCertificates = new DockerCertificatesDirectory(certificatesDirectory);
+      this.Credentials = new TlsCredentials(dockerCertificates.CaCertificate, dockerCertificates.ClientCertificate, isTlsVerificationEnabled, isTlsVerificationEnabled);
     }
 
     /// <inheritdoc />
@@ -51,7 +41,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     {
       var dockerHost = Environment.GetEnvironmentVariable("DOCKER_HOST");
 
-      if (dockerHost == null)
+      if (string.IsNullOrEmpty(dockerHost))
       {
         return null;
       }

@@ -9,14 +9,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
     [Fact]
     public void HasRequiredTlsCertificates()
     {
-      var dockerCertDir = new DockerCertDir(Path.Combine("Assets", "tls"));
+      var dockerCertDir = new DockerCertificatesDirectory(Path.Combine("Assets", "tls"));
       Assert.True(dockerCertDir.ClientAuthPossible);
     }
 
     [Fact]
     public void DoesNotHaveRequiredTlsCertificates()
     {
-      var dockerCertDir = new DockerCertDir(Path.Combine("Assets", "tls"));
+      var dockerCertDir = new DockerCertificatesDirectory(Path.Combine("Assets"));
       Assert.False(dockerCertDir.ClientAuthPossible);
     }
   }

@@ -4,13 +4,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using Testcontainers.Containers.Configurations;
   using Xunit;
 
-  public class PemCertificateCredentialsTest
+  public class TlsCredentialsTest
   {
     [Fact]
     public void InitializeCertificateCredentialsWithoutException()
     {
-      var dockerCertDir = new DockerCertDir(Path.Combine("Assets", "tls"));
-      var certificateCredentials = new PemCertificateCredentials(dockerCertDir, true);
+      var dockerCertDir = new DockerCertificatesDirectory(Path.Combine("Assets", "tls"));
+      var certificateCredentials = new TlsCredentials(dockerCertDir.CaCertificate, dockerCertDir.ClientCertificate, false, false);
       Assert.NotNull(certificateCredentials);
     }
   }
