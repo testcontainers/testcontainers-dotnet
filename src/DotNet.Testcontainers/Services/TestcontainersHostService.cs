@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers.Services
           const string JsonConfigurationName = "appsettings";
           config.SetBasePath(Directory.GetCurrentDirectory());
           config.AddJsonFile($"{JsonConfigurationName}.json", true, true);
-          config.AddJsonFile($"{JsonConfigurationName}.{hostContext.HostingEnvironment}.json", true, true);
+          config.AddJsonFile($"{JsonConfigurationName}.{hostContext.HostingEnvironment.EnvironmentName}.json", true, true);
         })
         .ConfigureServices((hostContext, config) =>
         {
