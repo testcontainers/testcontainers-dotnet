@@ -65,5 +65,33 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.MessageBroker
       Assert.NotNull(result);
       Assert.Equal(message.Value, result.Message.Value);
     }
+
+    [Fact]
+    public async Task CreateTopic()
+    {
+      // Given
+      const string topic = "sample";
+
+      var adminConfig = new ReadOnlyDictionary<string, string>(
+        new Dictionary<string, string>
+        {
+          { "bootstrap.servers", this.kafkaFixture.Container.BootstrapServers }
+        });
+
+      List<TopicMetadata> topicMetadatas;
+      // When
+      using (var admin = new AdminClientBuilder(adminConfig)
+        .Build())
+      {
+        topicMetadatas = admin.GetMetadata(TimeSpan.FromMilliseconds(300)).Topics;
+        Assert.Empty(topicMetadatas);
+        await this.kafkaFixture.Container.CreateTopic(topic);
+        topicMetadatas = admin.GetMetadata(TimeSpan.FromMilliseconds(300)).Topics;
+      }
+
+      // Then
+      Assert.NotEmpty(topicMetadatas);
+      Assert.Contains(topicMetadatas, p =>p.Topic== topic);
+    }
   }
 }
