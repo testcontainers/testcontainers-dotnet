@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
-  using System.Diagnostics.CodeAnalysis;
+  using JetBrains.Annotations;
 
   public interface IDockerImage
   {

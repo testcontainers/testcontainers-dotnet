@@ -56,7 +56,8 @@ namespace DotNet.Testcontainers.Images.Archives
         // Prepare exact and partial patterns.
         .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
         {
-          var (key, value) = line;
+          var key = line.Key;
+          var value = line.Value;
 
           lines.AddRange(key
             .Split('/')
@@ -69,7 +70,8 @@ namespace DotNet.Testcontainers.Images.Archives
         // Prepare regular expressions to accept and deny files.
         .Select((ignorePattern, index) =>
         {
-          var (key, value) = ignorePattern;
+          var key = ignorePattern.Key;
+          var value = ignorePattern.Value;
           key = PrepareRegex.Aggregate(key, (current, prepareRegex) => prepareRegex.Replace(current));
           key = 0.Equals(index) ? key : $"([\\\\\\/]?({key}\\b|$))";
           key = $"^{key}";
@@ -78,7 +80,8 @@ namespace DotNet.Testcontainers.Images.Archives
         // Compile and cache regular expression to increase the performance.
         .Select(ignorePattern =>
         {
-          var (key, value) = ignorePattern;
+          var key = ignorePattern.Key;
+          var value = ignorePattern.Value;
           return new KeyValuePair<Regex, bool>(new Regex(key, RegexOptions.Compiled), value);
         })
         .ToArray();
