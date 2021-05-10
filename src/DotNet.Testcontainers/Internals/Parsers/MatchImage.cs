@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Internals.Parsers
 
       var dockerImageParts = image.Split('/');
       return new DockerImage(
-        string.Join('/',
+        string.Join("/",
           dockerImageParts
             .Take(dockerImageParts.Length - 1)
             .ToArray()),

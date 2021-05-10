@@ -161,7 +161,7 @@ namespace DotNet.Testcontainers.Clients
                 Size = fileContent.Length
               }));
 
-          await tarOutputStream.WriteAsync(fileContent, ct)
+          await tarOutputStream.WriteAsync(fileContent, 0, fileContent.Length, ct)
             .ConfigureAwait(false);
 
           tarOutputStream.CloseEntry();
