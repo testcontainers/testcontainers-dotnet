@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: '/'
+    schedule:
+      interval: monthly
+    reviewers:
+      - HofmeisterAn
+    assignees:
+      - HofmeisterAn
+    ignore:
+      - dependency-name: '*'
+        versions:
+          - '>= 0'

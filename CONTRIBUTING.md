@@ -6,7 +6,7 @@ You are thinking about contributing to .NET Testcontainers? Awesome, it’s abso
 
 ### Pull Requests
 
-To build the project just run the provided Cake script, `./build.sh` (Unix) or `.\build.ps1` (Windows).
+To build the project just run the provided Cake script, `dotnet cake --target=Build`.
 
 1. Fork the .NET Testcontainers repository.
 2. Create a branch to work with and use `feature/` or `bugfix/` as a prefix.
@@ -19,7 +19,7 @@ To build the project just run the provided Cake script, `./build.sh` (Unix) or `
 .NET Testcontainers uses a consitent and structured vocabulary for commit messages with the following pattern:
 
 ```
-[ISSUE] #LABEL 'specification'  
+[ISSUE] #LABEL 'specification'
 {Comment}
 ```
 
@@ -51,12 +51,12 @@ To build the project just run the provided Cake script, `./build.sh` (Unix) or `
 ```
 [1] #INIT 'assemblyName: DotNet.Testcontainers; version: 1.0.0'
 
-[2] #IMPLEMENT 'assemblyName: DotNet.Testcontainers; function: TestcontainersClient'  
+[2] #IMPLEMENT 'assemblyName: DotNet.Testcontainers; function: TestcontainersClient'
 {Add Dockerfile support.}
 
-[3] #CHANGE 'assemblyName: DotNet.Testcontainers; function: TestcontainersConfiguration'  
+[3] #CHANGE 'assemblyName: DotNet.Testcontainers; function: TestcontainersConfiguration'
 {Change default wait strategy to WaitUntilContainerIsRunning.}
 
-[4] #EXTEND 'assemblyName: DotNet.Testcontainers; function: TestcontainersConfiguration'  
+[4] #EXTEND 'assemblyName: DotNet.Testcontainers; function: TestcontainersConfiguration'
 {Add new configuration property WaitStrategy.}
 ```

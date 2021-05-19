@@ -17,11 +17,15 @@ internal sealed class BuildInformation
 
   public static BuildInformation Instance(ICakeContext context)
   {
-    var isFork = context.EnvironmentVariable("SYSTEM_PULLREQUEST_ISFORK", "False");
+    var buildSystem = context.BuildSystem();
 
-    var buildReason = context.EnvironmentVariable("BUILD_REASON", string.Empty);
+    var isLocalBuild = buildSystem.IsLocalBuild;
 
-    var buildNumber = context.EnvironmentVariable("BUILD_BUILDNUMBER", string.Empty);
+    var isPullRequest = buildSystem.AzurePipelines.Environment.PullRequest.IsPullRequest;
+
+    var isFork = buildSystem.AzurePipelines.Environment.PullRequest.IsFork;
+
+    var buildId = buildSystem.AzurePipelines.Environment.Build.Id.ToString();
 
     var git = context.GitBranchCurrent(".");
 
@@ -29,41 +33,40 @@ internal sealed class BuildInformation
 
     var sha = git.Tip.Sha;
 
-    var branch = string.Empty;
+    string branch;
+
+    string pullRequestId = "0";
 
     string sourceBranch = null;
 
     string targetBranch = null;
 
-    string pullRequestId = null;
-
-    var isPullRequest = "PullRequest".Equals(buildReason);
-
-    if (isPullRequest)
+    if (isLocalBuild)
     {
-      branch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_SOURCEBRANCH", git.FriendlyName);
-      sourceBranch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_SOURCEBRANCH");
-      targetBranch = context.EnvironmentVariable("SYSTEM_PULLREQUEST_TARGETBRANCH");
-      pullRequestId = context.EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER");
-      sourceBranch = sourceBranch?.Replace("refs/heads/", string.Empty);
-      targetBranch = targetBranch?.Replace("refs/heads/", string.Empty);
+      branch = git.FriendlyName;
     }
     else
     {
-      branch = context.EnvironmentVariable("BUILD_SOURCEBRANCH", git.FriendlyName);
+      branch = buildSystem.AzurePipelines.Environment.Repository.SourceBranch;
+      branch = branch.Replace("refs/heads/", string.Empty);
     }
 
-    branch = branch.Replace("refs/heads/", string.Empty);
+    if (isPullRequest)
+    {
+      pullRequestId = buildSystem.AzurePipelines.Environment.PullRequest.Id.ToString();
+      sourceBranch = buildSystem.AzurePipelines.Environment.PullRequest.SourceBranch;
+      targetBranch = buildSystem.AzurePipelines.Environment.PullRequest.TargetBranch;
+      sourceBranch = sourceBranch.Replace("refs/heads/", string.Empty);
+      targetBranch = targetBranch.Replace("refs/heads/", string.Empty);
+    }
 
     var version = context.XmlPeek("src/Shared.msbuild", "/Project/PropertyGroup[1]/Version/text()");
-
-    var isLocalBuild = context.BuildSystem().IsLocalBuild;
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 
     var shouldPublish = GetShouldPublish(branch);
 
-    if (bool.Parse(isFork) && isPullRequest && shouldPublish)
+    if (isFork && isPullRequest && shouldPublish)
     {
       throw new ArgumentException("Use 'feature/' or 'bugfix/' prefix for pull request branches.");
     }
@@ -73,9 +76,9 @@ internal sealed class BuildInformation
       version = $"{version}-beta";
     }
 
-    if (!isReleaseBuild && !string.IsNullOrEmpty(buildNumber))
+    if (!isReleaseBuild && !string.IsNullOrEmpty(buildId))
     {
-      version = $"{version}.{buildNumber}";
+      version = $"{version}.{buildId}";
     }
 
     return new BuildInformation

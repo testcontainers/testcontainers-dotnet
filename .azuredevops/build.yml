@@ -15,16 +15,16 @@ jobs:
         inputs:
           version: ${{ parameters.dotNetCoreVersion }}
 
-      - powershell: dotnet tool install --tool-path ./cake-tools --version ${{ parameters.cakeVersion }} Cake.Tool
-        displayName: Setup prerequisites
+      - powershell: dotnet tool restore
+        displayName: .NET Tool Restore
 
-      - powershell: ./cake-tools/dotnet-cake --target=Restore-NuGet-Packages
+      - powershell: dotnet cake --target=Restore-NuGet-Packages
         displayName: Prepare
 
-      - powershell: ./cake-tools/dotnet-cake --target=Build
+      - powershell: dotnet cake --target=Build
         displayName: Build
 
-      - powershell: ./cake-tools/dotnet-cake --target=Tests --test-filter='${{ parameters.testFilter }}'
+      - powershell: dotnet cake --target=Tests --test-filter='${{ parameters.testFilter }}'
         displayName: Tests
 
       - powershell: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }

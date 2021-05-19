@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.1.0
+#tool nuget:?package=dotnet-sonarscanner&version=5.2.1
 
 #addin nuget:?package=Cake.Sonar&version=1.1.25
 
@@ -112,7 +112,7 @@ Task("Sonar-Begin")
     PullRequestProvider = "GitHub",
     PullRequestGithubEndpoint = "https://api.github.com/",
     PullRequestGithubRepository = "HofmeisterAn/dotnet-testcontainers",
-    PullRequestKey = System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
+    PullRequestKey = param.IsPullRequest && System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
     PullRequestBranch = param.SourceBranch,
     PullRequestBase = param.TargetBranch,
     VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResults)}/*.trx",
