@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using Networks;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -167,6 +168,16 @@ namespace DotNet.Testcontainers.Containers.Builders
       return Build(this, Apply(mounts: mounts));
     }
 
+    public ITestcontainersBuilder<TDockerContainer> WithNetwork(IStartedNetwork startedNetwork)
+    {
+      return Build(this, Apply(network: new Tuple<string, string>(startedNetwork.Id, startedNetwork.Name)));
+    }
+
+    public ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name)
+    {
+      return Build(this, Apply(network: new Tuple<string, string>(id, name)));
+    }
+
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
@@ -235,6 +246,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IDockerContainer, CancellationToken, Task> startupCallback = null,
+      Tuple<string, string> network = null,
       bool cleanUp = true)
     {
       return new TestcontainersConfiguration(
@@ -254,6 +266,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
+        network,
         cleanUp);
     }
 
@@ -277,6 +290,7 @@ namespace DotNet.Testcontainers.Containers.Builders
       var exposedPorts = Merge(next.ExposedPorts, previous.configuration.ExposedPorts);
       var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
       var mounts = Merge(next.Mounts, previous.configuration.Mounts);
+      var network = Merge(next.Network, previous.configuration.Network);
 
       var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
       var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
@@ -300,6 +314,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
+        network,
         cleanUp);
 
       return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);

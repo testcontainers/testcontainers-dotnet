@@ -144,6 +144,13 @@ namespace DotNet.Testcontainers.Clients
         Mounts = converter.Mounts,
       };
 
+      NetworkingConfig networkingConfig = null;
+      if (configuration.Network != null)
+      {
+        var (networkId, networkName) = configuration.Network;
+         networkingConfig = new NetworkingConfig {EndpointsConfig = new Dictionary<string, EndpointSettings> {[networkName] = new EndpointSettings {NetworkID = networkId, Aliases = new List<string> {networkName}}}};
+      }
+
       var createParameters = new CreateContainerParameters
       {
         Image = configuration.Image.FullName,
@@ -156,6 +163,7 @@ namespace DotNet.Testcontainers.Clients
         Labels = converter.Labels,
         ExposedPorts = converter.ExposedPorts,
         HostConfig = hostConfig,
+        NetworkingConfig = networkingConfig
       };
 
       var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)

@@ -117,5 +117,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </remarks>
     [NotNull]
     public Func<IDockerContainer, CancellationToken, Task> StartupCallback { get; }
+
+    Tuple<string, string> Network { get; }
   }
 }

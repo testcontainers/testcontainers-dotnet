@@ -30,6 +30,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
       Func<IDockerContainer, CancellationToken, Task> startupCallback,
+      Tuple<string, string> network,
       bool cleanUp = true)
     {
       this.CleanUp  = cleanUp;
@@ -49,7 +50,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.OutputConsumer  = outputConsumer;
       this.WaitStrategies  = waitStrategies;
       this.StartupCallback = startupCallback;
+      this.Network = network;
     }
+
 
 #pragma warning restore S107
 
@@ -94,6 +97,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <inheritdoc />
     public IEnumerable<IBind> Mounts { get; }
+
+    /// <inheritdoc />>
+    public Tuple<string, string> Network { get; }
 
     /// <inheritdoc />
     public IOutputConsumer OutputConsumer { get; }

@@ -31,6 +31,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly IDockerSystemOperations system;
 
+    private readonly IDockerNetworkOperations network;
+
     public TestcontainersClient() : this(
       DockerApiEndpoint.Local)
     {
@@ -40,7 +42,8 @@ namespace DotNet.Testcontainers.Clients
       new TestcontainersRegistryService(),
       new DockerContainerOperations(endpoint),
       new DockerImageOperations(endpoint),
-      new DockerSystemOperations(endpoint))
+      new DockerSystemOperations(endpoint),
+      new DockerNetworkOperations(endpoint))
     {
     }
 
@@ -48,12 +51,14 @@ namespace DotNet.Testcontainers.Clients
       TestcontainersRegistryService registryService,
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
-      IDockerSystemOperations systemOperations)
+      IDockerSystemOperations systemOperations,
+      IDockerNetworkOperations networkOperations)
     {
       this.registryService = registryService;
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
+      this.network = networkOperations;
     }
 
     ~TestcontainersClient()
@@ -203,6 +208,16 @@ namespace DotNet.Testcontainers.Clients
     public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
       return this.images.BuildAsync(configuration, ct);
+    }
+
+    public Task<NetworksCreateResponse> CreateNetworkAsync(NetworksCreateParameters createParameters, CancellationToken ct = default)
+    {
+      return this.network.CreateAsync(createParameters, ct);
+    }
+
+    public Task RemoveNetworkAsync(string id, CancellationToken ct = default)
+    {
+      return this.network.RemoveAsync(id, ct);
     }
   }
 }

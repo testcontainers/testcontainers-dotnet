@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
   using System.Net;
@@ -13,6 +14,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using Networks;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -275,6 +277,33 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // Then
         Assert.Equal(dayOfWeek, await File.ReadAllTextAsync($"{TempDir}/{file}"));
+      }
+
+      [Fact]
+      public async Task Networking()
+      {
+        await using var network = await new TestcontainersNetwork(new NetworkParameters("test-network")).StartAsync();
+
+        var alpineBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithNetwork(network)
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+
+        var alpine1Builder = alpineBuilder
+          .WithHostname("alpine1");
+
+        var alpine2Builder = alpineBuilder
+          .WithHostname("alpine2");
+
+        await using var alpine1 = alpine1Builder.Build();
+        await using var alpine2 = alpine2Builder.Build();
+
+        await alpine1.StartAsync();
+        await alpine2.StartAsync();
+
+        var exitCode = await alpine1.ExecAsync(new List<string>{"ping", "-c", "4", "alpine2"});
+
+        Assert.Equal(0, exitCode);
       }
 
       [Fact]
