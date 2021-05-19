@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -159,6 +160,23 @@ namespace DotNet.Testcontainers.Containers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination);
+
+    /// <summary>
+    /// Connects to the specified network.
+    /// </summary>
+    /// <param name="id">Id of the network to connect to.</param>
+    /// <param name="name">Name of the network to connect to.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name);
+
+    /// <summary>
+    /// Connects to the specified network.
+    /// </summary>
+    /// <param name="dockerNetwork">Network to connect container to.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork);
 
     /// <summary>
     /// If true, Testcontainer will remove the Testcontainer on finalize. Otherwise, Testcontainer will keep the Testcontainer.

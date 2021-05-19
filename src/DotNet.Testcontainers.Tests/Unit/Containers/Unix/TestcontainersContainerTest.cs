@@ -320,9 +320,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public async Task OutputConsumer()
       {
+        // Given
         var unixTimeInMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
 
-        // Given
         using (var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream()))
         {
           // When

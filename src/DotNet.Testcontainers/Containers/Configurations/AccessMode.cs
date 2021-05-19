@@ -17,6 +17,10 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </summary>
     public static readonly AccessMode ReadWrite = new AccessMode("rw");
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AccessMode" /> class.
+    /// </summary>
+    /// <param name="value">The volume access mode.</param>
     private AccessMode(string value)
     {
       this.Value = value;

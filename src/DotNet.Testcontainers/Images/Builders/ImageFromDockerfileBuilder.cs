@@ -9,10 +9,17 @@ namespace DotNet.Testcontainers.Images.Builders
   {
     private readonly IImageFromDockerfileConfiguration configuration;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
+    /// </summary>
     public ImageFromDockerfileBuilder() : this(new ImageFromDockerfileConfiguration())
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
+    /// </summary>
+    /// <param name="configuration">The Dockerfile configuration.</param>
     private ImageFromDockerfileBuilder(IImageFromDockerfileConfiguration configuration)
     {
       this.configuration = configuration;

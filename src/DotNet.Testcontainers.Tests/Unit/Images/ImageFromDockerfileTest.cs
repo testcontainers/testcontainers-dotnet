@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Images
       {
         using (var tarIn = TarArchive.CreateInputTarArchive(tarOut, Encoding.UTF8))
         {
-          tarIn.ProgressMessageEvent += (archive, entry, message) => actual.Add(entry.Name);
+          tarIn.ProgressMessageEvent += (_, entry, _) => actual.Add(entry.Name);
           tarIn.ListContents();
         }
       }

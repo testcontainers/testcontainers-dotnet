@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Containers.Builders;
   using DotNet.Testcontainers.Containers.Modules;
+  using DotNet.Testcontainers.Networks.Builders;
   using Xunit;
 
   public static class TestcontainersAccessInformationTest
@@ -27,6 +28,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       }
 
       [Fact]
+      public async Task QueryNotExistingDockerNetworkById()
+      {
+        Assert.False(await new DockerNetworkOperations(DockerApiEndpoint.Local).ExistsWithIdAsync(DoesNotExist));
+      }
+
+      [Fact]
       public async Task QueryNotExistingDockerImageByName()
       {
         Assert.False(await new DockerImageOperations(DockerApiEndpoint.Local).ExistsWithNameAsync(DoesNotExist));
@@ -36,6 +43,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
       public async Task QueryNotExistingDockerContainerByName()
       {
         Assert.False(await new DockerContainerOperations(DockerApiEndpoint.Local).ExistsWithNameAsync(DoesNotExist));
+      }
+
+      [Fact]
+      public async Task QueryNotExistingDockerNetworkByName()
+      {
+        Assert.False(await new DockerNetworkOperations(DockerApiEndpoint.Local).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]
@@ -75,6 +88,20 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers
           Assert.Throws<InvalidOperationException>(() => testcontainer.GetMappedPublicPort(0));
           await Assert.ThrowsAsync<InvalidOperationException>(() => testcontainer.StopAsync());
         }
+      }
+
+      [Fact]
+      public void QueryNetworkInformationOfNotCreatedNetwork()
+      {
+        // Given
+        var networkBuilder = new TestcontainersNetworkBuilder();
+
+        // When
+        var network = networkBuilder.Build();
+
+        // Then
+        Assert.Throws<InvalidOperationException>(() => network.Id);
+        Assert.Throws<InvalidOperationException>(() => network.Name);
       }
     }
   }

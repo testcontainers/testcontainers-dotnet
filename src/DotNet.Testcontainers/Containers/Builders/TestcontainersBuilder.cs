@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Containers.Builders
 {
   using System;
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using System.Linq;
   using System.Reflection;
   using System.Threading;
@@ -12,6 +11,7 @@ namespace DotNet.Testcontainers.Containers.Builders
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -42,6 +42,7 @@ namespace DotNet.Testcontainers.Containers.Builders
 
     public TestcontainersBuilder() : this(
       Apply(
+        endpoint: DockerApiEndpoint.Local,
         authConfig: new AuthenticationConfiguration(),
         labels: new DefaultLabels(),
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
@@ -168,6 +169,19 @@ namespace DotNet.Testcontainers.Containers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name)
+    {
+      return this.WithNetwork(new DockerNetwork(id, name));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork)
+    {
+      var networks = new[] { dockerNetwork };
+      return Build(this, Apply(networks: networks));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
       return Build(this, Apply(cleanUp: cleanUp))
@@ -232,13 +246,14 @@ namespace DotNet.Testcontainers.Containers.Builders
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IEnumerable<IBind> mounts = null,
+      IEnumerable<IDockerNetwork> networks = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IDockerContainer, CancellationToken, Task> startupCallback = null,
       bool cleanUp = true)
     {
       return new TestcontainersConfiguration(
-        endpoint ?? DockerApiEndpoint.Local,
+        endpoint,
         authConfig,
         image,
         name,
@@ -251,6 +266,7 @@ namespace DotNet.Testcontainers.Containers.Builders
         exposedPorts,
         portBindings,
         mounts,
+        networks,
         outputConsumer,
         waitStrategies,
         startupCallback,
@@ -265,18 +281,19 @@ namespace DotNet.Testcontainers.Containers.Builders
       Action<TDockerContainer> moduleConfiguration = null)
     {
       var cleanUp = next.CleanUp && previous.configuration.CleanUp;
-      var endpoint = Merge(next.Endpoint, previous.configuration.Endpoint, DockerApiEndpoint.Local);
-      var image = Merge(next.Image, previous.configuration.Image);
-      var name = Merge(next.Name, previous.configuration.Name);
-      var hostname = Merge(next.Hostname, previous.configuration.Hostname);
-      var workingDirectory = Merge(next.WorkingDirectory, previous.configuration.WorkingDirectory);
-      var entrypoint = Merge(next.Entrypoint, previous.configuration.Entrypoint);
-      var command = Merge(next.Command, previous.configuration.Command);
-      var environments = Merge(next.Environments, previous.configuration.Environments);
-      var labels = Merge(next.Labels, previous.configuration.Labels);
-      var exposedPorts = Merge(next.ExposedPorts, previous.configuration.ExposedPorts);
-      var portBindings = Merge(next.PortBindings, previous.configuration.PortBindings);
-      var mounts = Merge(next.Mounts, previous.configuration.Mounts);
+      var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
+      var image = BuildConfiguration.Combine(next.Image, previous.configuration.Image);
+      var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
+      var hostname = BuildConfiguration.Combine(next.Hostname, previous.configuration.Hostname);
+      var workingDirectory = BuildConfiguration.Combine(next.WorkingDirectory, previous.configuration.WorkingDirectory);
+      var entrypoint = BuildConfiguration.Combine(next.Entrypoint, previous.configuration.Entrypoint);
+      var command = BuildConfiguration.Combine(next.Command, previous.configuration.Command);
+      var environments = BuildConfiguration.Combine(next.Environments, previous.configuration.Environments);
+      var labels = BuildConfiguration.Combine(next.Labels, previous.configuration.Labels);
+      var exposedPorts = BuildConfiguration.Combine(next.ExposedPorts, previous.configuration.ExposedPorts);
+      var portBindings = BuildConfiguration.Combine(next.PortBindings, previous.configuration.PortBindings);
+      var mounts = BuildConfiguration.Combine(next.Mounts, previous.configuration.Mounts);
+      var networks = BuildConfiguration.Combine(next.Networks, previous.configuration.Networks);
 
       var authConfig = new[] { next.AuthConfig, previous.configuration.AuthConfig }.First(config => config != null);
       var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
@@ -297,77 +314,13 @@ namespace DotNet.Testcontainers.Containers.Builders
         exposedPorts,
         portBindings,
         mounts,
+        networks,
         outputConsumer,
         waitStrategies,
         startupCallback,
         cleanUp);
 
       return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);
-    }
-
-    /// <summary>
-    /// Returns the changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object is returned.
-    /// </summary>
-    /// <param name="next">Changed Testcontainer configuration object.</param>
-    /// <param name="previous">Previous Testcontainer configuration object.</param>
-    /// <param name="defaultConfiguration">Default Testcontainer configuration.</param>
-    /// <typeparam name="T">Any class.</typeparam>
-    /// <returns>Changed Testcontainer configuration object. If there is no change, the previous Testcontainer configuration object.</returns>
-    private static T Merge<T>(T next, T previous, T defaultConfiguration = null)
-      where T : class
-    {
-      return next == null || next.Equals(defaultConfiguration) ? previous : next;
-    }
-
-    /// <summary>
-    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
-    /// </summary>
-    /// <param name="next">Changed Testcontainer configuration.</param>
-    /// <param name="previous">Previous Testcontainer configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
-    /// <returns>An updated Testcontainer configuration.</returns>
-    private static IEnumerable<T> Merge<T>(IEnumerable<T> next, IEnumerable<T> previous)
-      where T : class
-    {
-      if (next == null || previous == null)
-      {
-        return next ?? previous;
-      }
-      else
-      {
-        return next.Concat(previous).ToArray();
-      }
-    }
-
-    /// <summary>
-    /// Merges all existing and new Testcontainer configuration changes. If there are no changes, the previous Testcontainer configurations are returned.
-    /// </summary>
-    /// <param name="next">Changed Testcontainer configuration.</param>
-    /// <param name="previous">Previous Testcontainer configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
-    /// <returns>An updated Testcontainer configuration.</returns>
-    private static IReadOnlyDictionary<T, T> Merge<T>(IReadOnlyDictionary<T, T> next, IReadOnlyDictionary<T, T> previous)
-      where T : class
-    {
-      if (next == null || previous == null)
-      {
-        return next ?? previous;
-      }
-      else
-      {
-        return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
-      }
-    }
-
-    private sealed class DefaultLabels : ReadOnlyDictionary<string, string>
-    {
-      public DefaultLabels() : base(new Dictionary<string, string>
-      {
-        { TestcontainersClient.TestcontainersLabel, "true" },
-        { TestcontainersClient.TestcontainersCleanUpLabel, "true" }
-      })
-      {
-      }
     }
   }
 }

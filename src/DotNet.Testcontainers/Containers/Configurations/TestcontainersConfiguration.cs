@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
   public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
@@ -27,6 +28,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings,
       IEnumerable<IBind> mounts,
+      IEnumerable<IDockerNetwork> networks,
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
       Func<IDockerContainer, CancellationToken, Task> startupCallback,
@@ -46,6 +48,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
       this.ExposedPorts  = exposedPorts;
       this.PortBindings  = portBindings;
       this.Mounts  = mounts;
+      this.Networks = networks;
       this.OutputConsumer  = outputConsumer;
       this.WaitStrategies  = waitStrategies;
       this.StartupCallback = startupCallback;
@@ -94,6 +97,9 @@ namespace DotNet.Testcontainers.Containers.Configurations
 
     /// <inheritdoc />
     public IEnumerable<IBind> Mounts { get; }
+
+    /// <inheritdoc />>
+    public IEnumerable<IDockerNetwork> Networks { get; }
 
     /// <inheritdoc />
     public IOutputConsumer OutputConsumer { get; }

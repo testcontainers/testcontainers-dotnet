@@ -1,8 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
-  using DotNet.Testcontainers.Internals;
-  using DotNet.Testcontainers.Internals.Parsers;
 
   /// <inheritdoc cref="IDockerImage" />
   public sealed class DockerImage : IDockerImage

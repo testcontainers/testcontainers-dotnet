@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit.Internals
 {
   using System;
-  using DotNet.Testcontainers.Internals;
   using Xunit;
 
   public static class GuardTest

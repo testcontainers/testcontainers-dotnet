@@ -30,6 +30,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
 - `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
 - `WithMount` mounts a volume into the container e. g. `-v, --volume .:/tmp`.
+- `WithNetwork` assigns a network to a container e. g. `--network="bridge"`.
 - `WithCleanUp` removes a stopped container automatically.
 - `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.
 - `WithRegistryAuthentication` basic authentication against a private Docker registry.

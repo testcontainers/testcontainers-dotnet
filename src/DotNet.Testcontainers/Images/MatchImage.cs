@@ -1,7 +1,6 @@
-namespace DotNet.Testcontainers.Internals.Parsers
+namespace DotNet.Testcontainers.Images
 {
   using System.Linq;
-  using DotNet.Testcontainers.Images;
 
   internal static class MatchImage
   {
@@ -17,16 +16,16 @@ namespace DotNet.Testcontainers.Internals.Parsers
           dockerImageParts
             .Take(dockerImageParts.Length - 1)
             .ToArray()),
-          dockerImageParts
-            .Last()
-            .Split(':')
-            .FirstOrDefault() ?? string.Empty,
-          dockerImageParts
-            .Last()
-            .Split(':')
-            .Skip(1)
-            .FirstOrDefault() ?? string.Empty
-        );
+        dockerImageParts
+          .Last()
+          .Split(':')
+          .FirstOrDefault() ?? string.Empty,
+        dockerImageParts
+          .Last()
+          .Split(':')
+          .Skip(1)
+          .FirstOrDefault() ?? string.Empty
+      );
     }
   }
 }

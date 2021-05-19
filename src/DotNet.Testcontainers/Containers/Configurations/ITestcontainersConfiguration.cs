@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers.Configurations
   using DotNet.Testcontainers.Containers.OutputConsumers;
   using DotNet.Testcontainers.Containers.WaitStrategies;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -96,6 +97,12 @@ namespace DotNet.Testcontainers.Containers.Configurations
     /// </summary>
     [NotNull]
     IEnumerable<IBind> Mounts { get; }
+
+    /// <summary>
+    /// Gets a list of networks.
+    /// </summary>
+    [NotNull]
+    IEnumerable<IDockerNetwork> Networks { get; }
 
     /// <summary>
     /// Gets the output consumer.

@@ -3,6 +3,9 @@ namespace DotNet.Testcontainers.Images.Builders
   using System.Threading.Tasks;
   using JetBrains.Annotations;
 
+  /// <summary>
+  /// A fluent Docker image builder.
+  /// </summary>
   public interface IImageFromDockerfileBuilder
   {
     /// <summary>

@@ -3,11 +3,9 @@ namespace DotNet.Testcontainers.Internals.Mappers
   using System;
   using System.Collections.Generic;
   using System.Linq;
-
   using Docker.DotNet.Models;
-
   using DotNet.Testcontainers.Containers.Configurations;
-
+  using DotNet.Testcontainers.Networks;
   using Mount = Docker.DotNet.Models.Mount;
 
   internal sealed class TestcontainersConfigurationConverter
@@ -27,6 +25,7 @@ namespace DotNet.Testcontainers.Internals.Mappers
       this.ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
       this.PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
       this.Mounts = new ToMounts().Convert(configuration.Mounts)?.ToArray();
+      this.Networks = new ToNetworks().Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
     }
 
     public IList<string> Entrypoint { get; }
@@ -42,6 +41,8 @@ namespace DotNet.Testcontainers.Internals.Mappers
     public IDictionary<string, IList<PortBinding>> PortBindings { get; }
 
     public IList<Mount> Mounts { get; }
+
+    public IDictionary<string, EndpointSettings> Networks { get; }
 
     private sealed class ToCollection : CollectionConverter<string, string>
     {
@@ -60,6 +61,17 @@ namespace DotNet.Testcontainers.Internals.Mappers
       public override IEnumerable<Mount> Convert(IEnumerable<IBind> source)
       {
         return source?.Select(mount => new Mount { Type = "bind", Source = mount.HostPath, Target = mount.ContainerPath, ReadOnly = AccessMode.ReadOnly.Equals(mount.AccessMode) });
+      }
+    }
+
+    private sealed class ToNetworks : CollectionConverter<IDockerNetwork, KeyValuePair<string, EndpointSettings>>
+    {
+      public ToNetworks() : base(nameof(ToNetworks)) { }
+
+      public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert(IEnumerable<IDockerNetwork> source)
+      {
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(
+          network.Name, new EndpointSettings { NetworkID = network.Id }));
       }
     }
 

@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Internals
+namespace DotNet.Testcontainers
 {
   using System;
   using System.Diagnostics;
