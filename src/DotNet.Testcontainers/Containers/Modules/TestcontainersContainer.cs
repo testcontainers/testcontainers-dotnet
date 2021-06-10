@@ -241,6 +241,9 @@ namespace DotNet.Testcontainers.Containers.Modules
           .ConfigureAwait(false);
       }
 
+      this.container = await this.client.GetContainer(id, ct)
+        .ConfigureAwait(false);
+
       return this.container;
     }
 
