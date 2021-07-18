@@ -53,7 +53,7 @@ internal sealed class BuildInformation
 
     if (isPullRequest)
     {
-      pullRequestId = buildSystem.AzurePipelines.Environment.PullRequest.Id.ToString();
+      pullRequestId = buildSystem.AzurePipelines.Environment.PullRequest.Number.ToString();
       sourceBranch = buildSystem.AzurePipelines.Environment.PullRequest.SourceBranch;
       targetBranch = buildSystem.AzurePipelines.Environment.PullRequest.TargetBranch;
       sourceBranch = sourceBranch.Replace("refs/heads/", string.Empty);
