@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.2.1
+#tool nuget:?package=dotnet-sonarscanner&version=5.2.2
 
 #addin nuget:?package=Cake.Sonar&version=1.1.25
 
@@ -6,7 +6,7 @@
 
 #load ".cake-scripts/parameters.cake"
 
-readonly var param = BuildParameters.Instance(Context, "DotNet.Testcontainers");
+readonly var param = BuildParameters.Instance(Context);
 
 Setup(context =>
 {
@@ -14,10 +14,7 @@ Setup(context =>
 
   foreach (var project in param.Projects.All)
   {
-    toClean.Add(project.Path.GetDirectory().Combine("obj"));
-    toClean.Add(project.Path.GetDirectory().Combine("bin"));
-    toClean.Add(project.Path.GetDirectory().Combine("Release"));
-    toClean.Add(project.Path.GetDirectory().Combine("Debug"));
+    toClean.Add("build");
   }
 
   Information("Building version {0} of .NET Testcontainers ({1}@{2})", param.Version, param.Branch, param.Sha);
@@ -89,6 +86,7 @@ Task("Tests")
       Filter = param.TestFilter,
       ResultsDirectory = param.Paths.Directories.TestResults,
       ArgumentCustomization = args => args
+        .Append("/p:Platform=AnyCPU")
         .Append("/p:CollectCoverage=true")
         .Append("/p:CoverletOutputFormat=opencover")
         .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/\"")
@@ -143,8 +141,9 @@ Task("Create-NuGet-Packages")
     IncludeSymbols = true,
     OutputDirectory = param.Paths.Directories.NugetRoot,
     ArgumentCustomization = args => args
-      .Append($"/p:Version={param.Version}")
+      .Append("/p:Platform=AnyCPU")
       .Append("/p:SymbolPackageFormat=snupkg")
+      .Append($"/p:Version={param.Version}")
   });
 });
 

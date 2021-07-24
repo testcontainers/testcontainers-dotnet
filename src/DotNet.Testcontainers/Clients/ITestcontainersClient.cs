@@ -1,24 +1,25 @@
 namespace DotNet.Testcontainers.Clients
 {
-  using System;
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Images.Configurations;
+  using DotNet.Testcontainers.Configurations;
 
-  internal interface ITestcontainersClient : IDisposable
+  /// <summary>
+  /// This class represents a Testcontainers client.
+  /// </summary>
+  internal interface ITestcontainersClient
   {
     /// <summary>
-    /// True if the container is running inside another Docker container, otherwise false.
+    /// Gets a value indicating whether the container is running inside another Docker container or not.
     /// </summary>
     bool IsRunningInsideDocker { get; }
 
     /// <summary>
     /// Returns true if the Docker Windows engine is enabled, otherwise false.
     /// </summary>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that returns true if the Docker Windows engine is enabled, otherwise false.</returns>
     Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
 
@@ -91,7 +92,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="groupId">Group of the file.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the file has been copied.</returns>
-    public Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
+    Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
 
     /// <summary>
     /// Creates a container.

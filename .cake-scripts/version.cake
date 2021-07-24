@@ -15,7 +15,7 @@ internal sealed class BuildInformation
   public bool IsPullRequest { get; private set; }
   public bool ShouldPublish { get; private set; }
 
-  public static BuildInformation Instance(ICakeContext context)
+  public static BuildInformation Instance(ICakeContext context, string propertiesFilePath)
   {
     var buildSystem = context.BuildSystem();
 
@@ -60,7 +60,7 @@ internal sealed class BuildInformation
       targetBranch = targetBranch.Replace("refs/heads/", string.Empty);
     }
 
-    var version = context.XmlPeek("src/Shared.msbuild", "/Project/PropertyGroup[1]/Version/text()");
+    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[1]/Version/text()");
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 

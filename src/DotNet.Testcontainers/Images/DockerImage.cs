@@ -10,30 +10,35 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="image">The docker image.</param>
-    public DockerImage(IDockerImage image) : this(image.Repository, image.Name, image.Tag)
+    /// <param name="image">The Docker image.</param>
+    public DockerImage(IDockerImage image)
+      : this(image.Repository, image.Name, image.Tag)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="image">The docker image.</param>
+    /// <param name="image">The Docker image.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
-    /// <example>fedora/httpd:version1.0</example>
-    public DockerImage(string image) : this(GetDockerImage(image))
+    /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    public DockerImage(string image)
+      : this(GetDockerImage(image))
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="repository">The docker image repository.</param>
-    /// <param name="name">The docker image name.</param>
-    /// <param name="tag">The docker image tag.</param>
+    /// <param name="repository">The Docker image repository.</param>
+    /// <param name="name">The Docker image name.</param>
+    /// <param name="tag">The Docker image tag.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
-    /// <example>fedora/httpd:version1.0 where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
-    public DockerImage(string repository, string name, string tag)
+    /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    public DockerImage(
+      string repository,
+      string name,
+      string tag)
     {
       Guard.Argument(repository, nameof(repository))
         .NotNull();

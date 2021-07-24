@@ -29,13 +29,16 @@ internal sealed class BuildParameters
   public BuildProjects Projects { get; private set; }
   public BuildPaths Paths { get; private set; }
 
-  public static BuildParameters Instance(ICakeContext context, string solution)
+  public static BuildParameters Instance(ICakeContext context)
   {
-    var buildInformation = BuildInformation.Instance(context);
+    const string propertiesFilePath = "DotNet.Testcontainers.props";
+    const string solutionFilePath = "DotNet.Testcontainers.sln";
+
+    var buildInformation = BuildInformation.Instance(context, propertiesFilePath);
 
     return new BuildParameters
     {
-      Solution = context.MakeAbsolute(new DirectoryPath($"src/{solution}.sln")).FullPath,
+      Solution = context.MakeAbsolute(new DirectoryPath(solutionFilePath)).FullPath,
       Target = context.Argument("target", "Default"),
       Configuration = context.Argument("configuration", buildInformation.IsReleaseBuild ? "Release" : "Debug"),
       Sha = buildInformation.Sha,
@@ -52,7 +55,7 @@ internal sealed class BuildParameters
       Verbosity = DotNetCoreVerbosity.Quiet,
       SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
       NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
-      Projects = BuildProjects.Instance(context, solution),
+      Projects = BuildProjects.Instance(context, solutionFilePath),
       Paths = BuildPaths.Instance(context, buildInformation.Version)
     };
   }

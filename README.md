@@ -129,26 +129,7 @@ Wait.ForUnixContainer()
 
 ## Logging
 
-To enable and configure logging, choose your Serilog Sink, like `Serilog.Sinks.File` and add the Sink configuration to the section `Serilog` in your `appsettings.json` file:
-
-```json
-{
-  "Serilog": {
-    "MinimumLevel": "Information",
-    "Using": [
-      "Serilog.Sinks.File"
-    ],
-    "WriteTo": [
-      {
-        "Name": "File",
-        "Args": {
-          "Path": "testcontainers.log"
-        }
-      }
-    ]
-  }
-}
-```
+To enable and configure logging, set the static `TestcontainersSettings.Logger` property before test execution.
 
 ## Note
 

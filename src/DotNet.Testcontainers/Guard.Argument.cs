@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers
     public readonly struct ArgumentInfo<TType>
     {
       /// <summary>
-      /// Initializes a new instance of the <see cref="ArgumentInfo{TType}" /> class.
+      /// Initializes a new instance of the <see cref="ArgumentInfo{TType}" /> struct.
       /// </summary>
       /// <param name="value">Argument value.</param>
       /// <param name="name">Argument name.</param>

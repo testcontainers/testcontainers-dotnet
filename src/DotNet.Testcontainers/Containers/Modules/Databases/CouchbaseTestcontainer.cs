@@ -1,19 +1,32 @@
-namespace DotNet.Testcontainers.Containers.Modules.Databases
+namespace DotNet.Testcontainers.Containers
 {
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.Modules.Abstractions;
+  using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
+  /// <inheritdoc cref="TestcontainerDatabase" />
+  [PublicAPI]
   public sealed class CouchbaseTestcontainer : TestcontainerDatabase
   {
-    private const string couchbaseCli = "/opt/couchbase/bin/couchbase-cli";
+    private const string CouchbaseCli = "/opt/couchbase/bin/couchbase-cli";
 
-    internal CouchbaseTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseTestcontainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The Testcontainers configuration.</param>
+    /// <param name="logger">The logger.</param>
+    internal CouchbaseTestcontainer(ITestcontainersConfiguration configuration, ILogger logger)
+      : base(configuration, logger)
     {
     }
 
-    // TODO: The hostname won't work on Azure, ip address won't work on Windows or macOS?
-    public override string ConnectionString => $"couchbase://{this.IpAddress}";
+    /// <inheritdoc />
+    /// <remarks>
+    /// TODO: The hostname won't work on Azure, ip address won't work on Windows or macOS.
+    /// </remarks>
+    public override string ConnectionString
+      => $"couchbase://{this.IpAddress}";
 
     /// <summary>
     /// Creates a new bucket.
@@ -23,18 +36,18 @@ namespace DotNet.Testcontainers.Containers.Modules.Databases
     /// <returns>A task that returns the couchbase-cli exit code when it is finished.</returns>
     public Task<long> CreateBucket(string bucket, int memory = 128)
     {
-      var createBucketCommand = $"{couchbaseCli} bucket-create -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket} --bucket-type couchbase --bucket-ramsize {memory} --enable-flush 1 --bucket-replica 0 --wait";
+      var createBucketCommand = $"{CouchbaseCli} bucket-create -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket} --bucket-type couchbase --bucket-ramsize {memory} --enable-flush 1 --bucket-replica 0 --wait";
       return this.ExecAsync(new[] { "/bin/sh", "-c", createBucketCommand });
     }
 
     /// <summary>
-    /// Flushes a bucket
+    /// Flushes a bucket.
     /// </summary>
     /// <param name="bucket">The name of the bucket to flush.</param>
     /// <returns>A task that returns the couchbase-cli exit code when it is finished.</returns>
     public Task<long> FlushBucket(string bucket)
     {
-      var flushBucketCommand = $"yes | {couchbaseCli} bucket-flush -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket}";
+      var flushBucketCommand = $"yes | {CouchbaseCli} bucket-flush -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket}";
       return this.ExecAsync(new[] { "/bin/sh", "-c", flushBucketCommand });
     }
   }

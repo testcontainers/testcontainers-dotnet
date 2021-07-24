@@ -6,8 +6,7 @@ variables:
   MSBUILDDISABLENODEREUSE: true # https://github.com/dotnet/sdk/issues/9452
   DECODE_PERCENTS: true # https://github.com/microsoft/azure-pipelines-agent/pull/3152
   TZ: CET # https://stackoverflow.com/q/53510011
-  dotNetCoreVersion: 5.0.103
-  cakeVersion: 1.0.0
+  dotNetCoreVersion: 5.0.202
 
 trigger:
   - master
@@ -27,7 +26,6 @@ jobs:
       displayName: Windows
       vmImage: windows-2019
       dotNetCoreVersion: $(dotNetCoreVersion)
-      cakeVersion: $(cakeVersion)
       testFilter: FullyQualifiedName~DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
   # Run Unix build and tests.
@@ -35,9 +33,8 @@ jobs:
     parameters:
       name: BuildAndTestsOnUnix
       displayName: Unix
-      vmImage: ubuntu-18.04
+      vmImage: ubuntu-20.04
       dotNetCoreVersion: $(dotNetCoreVersion)
-      cakeVersion: $(cakeVersion)
       testFilter: FullyQualifiedName~DotNet.Testcontainers
 
   # Run static code analysis and publish artifact.
@@ -45,6 +42,5 @@ jobs:
     parameters:
       name: Release
       displayName: Release
-      vmImage: ubuntu-18.04
+      vmImage: ubuntu-20.04
       dotNetCoreVersion: $(dotNetCoreVersion)
-      cakeVersion: $(cakeVersion)

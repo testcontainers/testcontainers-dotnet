@@ -7,15 +7,21 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Images.Archives;
-  using DotNet.Testcontainers.Images.Configurations;
+  using Microsoft.Extensions.Logging;
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
-    public DockerImageOperations(Uri endpoint) : base(endpoint)
+    private readonly ILogger logger;
+
+    private readonly TraceProgress traceProgress;
+
+    public DockerImageOperations(Uri endpoint, ILogger logger)
+      : base(endpoint)
     {
+      this.logger = logger;
+      this.traceProgress = new TraceProgress(logger);
     }
 
     public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(CancellationToken ct = default)
@@ -33,7 +39,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id));
+        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.Ordinal));
     }
 
     public Task<ImagesListResponse> ByNameAsync(string name, CancellationToken ct = default)
@@ -60,52 +66,66 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false) != null;
     }
 
-    public Task CreateAsync(IDockerImage image, IAuthenticationConfiguration authConfig, CancellationToken ct = default)
+    public async Task CreateAsync(IDockerImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
     {
-      return this.Docker.Images.CreateImageAsync(
-        new ImagesCreateParameters
-        {
-          FromImage = image.FullName
-        },
-        new AuthConfig
-        {
-          ServerAddress = authConfig.RegistryEndpoint?.AbsoluteUri,
-          Username = authConfig.Username,
-          Password = authConfig.Password
-        },
-        new TraceProgress(), ct);
+      var createParameters = new ImagesCreateParameters
+      {
+        FromImage = image.FullName,
+      };
+
+      var authConfig = new AuthConfig
+      {
+        ServerAddress = dockerRegistryAuthConfig.RegistryEndpoint?.AbsoluteUri,
+        Username = dockerRegistryAuthConfig.Username,
+        Password = dockerRegistryAuthConfig.Password,
+      };
+
+      await this.Docker.Images.CreateImageAsync(createParameters, authConfig, this.traceProgress, ct)
+        .ConfigureAwait(false);
+
+      this.logger.LogInformation("Image {fullName} created", image.FullName);
     }
 
     public Task DeleteAsync(IDockerImage image, CancellationToken ct = default)
     {
+      this.logger.LogInformation("Deleting image {fullName}", image.FullName);
       return this.Docker.Images.DeleteImageAsync(image.FullName, new ImageDeleteParameters { Force = true }, ct);
     }
 
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration config, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      ITarArchive dockerFileArchive = new DockerfileArchive(config.DockerfileDirectory, config.Dockerfile, config.Image);
+      var image = configuration.Image;
 
-      var imageExists = await this.ExistsWithNameAsync(config.Image.FullName, ct)
+      ITarArchive dockerFileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, this.logger);
+
+      var imageExists = await this.ExistsWithNameAsync(image.FullName, ct)
         .ConfigureAwait(false);
 
-      if (imageExists && config.DeleteIfExists)
+      if (imageExists && configuration.DeleteIfExists)
       {
-        await this.DeleteAsync(config.Image, ct)
+        await this.DeleteAsync(image, ct)
           .ConfigureAwait(false);
       }
 
-      using (var stream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
+      var buildParameters = new ImageBuildParameters
       {
-        using (var image = await this.Docker.Images.BuildImageFromDockerfileAsync(stream, new ImageBuildParameters { Dockerfile = config.Dockerfile, Tags = new[] { config.Image.FullName } }, ct)
+        Dockerfile = configuration.Dockerfile,
+        Tags = new[] { image.FullName },
+      };
+
+      using (var dockerFileStream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
+      {
+        using (var dockerImageStream = await this.Docker.Images.BuildImageFromDockerfileAsync(dockerFileStream, buildParameters, ct)
           .ConfigureAwait(false))
         {
           // Read the image stream to the end, to avoid disposing before Docker has done it's job.
-          _ = await new StreamReader(image).ReadToEndAsync()
+          _ = await new StreamReader(dockerImageStream).ReadToEndAsync()
             .ConfigureAwait(false);
         }
       }
 
-      return config.Image.FullName;
+      this.logger.LogInformation("Image {fullName} built", image.FullName);
+      return image.FullName;
     }
   }
 }

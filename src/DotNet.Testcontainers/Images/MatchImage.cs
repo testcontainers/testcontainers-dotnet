@@ -11,21 +11,23 @@ namespace DotNet.Testcontainers.Images
         .NotEmpty();
 
       var dockerImageParts = image.Split('/');
-      return new DockerImage(
-        string.Join("/",
-          dockerImageParts
-            .Take(dockerImageParts.Length - 1)
-            .ToArray()),
-        dockerImageParts
-          .Last()
-          .Split(':')
-          .FirstOrDefault() ?? string.Empty,
-        dockerImageParts
-          .Last()
-          .Split(':')
-          .Skip(1)
-          .FirstOrDefault() ?? string.Empty
-      );
+
+      var repository = string.Join("/", dockerImageParts
+        .Take(dockerImageParts.Length - 1)
+        .ToArray());
+
+      var name = dockerImageParts
+        .Last()
+        .Split(':')
+        .FirstOrDefault() ?? string.Empty;
+
+      var tag = dockerImageParts
+        .Last()
+        .Split(':')
+        .Skip(1)
+        .FirstOrDefault() ?? string.Empty;
+
+      return new DockerImage(repository, name, tag);
     }
   }
 }

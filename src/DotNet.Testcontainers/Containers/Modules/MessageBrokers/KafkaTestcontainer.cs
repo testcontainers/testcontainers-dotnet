@@ -1,14 +1,27 @@
-namespace DotNet.Testcontainers.Containers.Modules.MessageBrokers
+namespace DotNet.Testcontainers.Containers
 {
-  using DotNet.Testcontainers.Containers.Modules.Abstractions;
-  using DotNet.Testcontainers.Containers.Configurations;
+  using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
-  public sealed class KafkaTestcontainer : HostedServiceContainer
+  /// <inheritdoc cref="TestcontainerMessageBroker" />
+  [PublicAPI]
+  public sealed class KafkaTestcontainer : TestcontainerMessageBroker
   {
-    internal KafkaTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaTestcontainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The Testcontainers configuration.</param>
+    /// <param name="logger">The logger.</param>
+    internal KafkaTestcontainer(ITestcontainersConfiguration configuration, ILogger logger)
+      : base(configuration, logger)
     {
     }
 
-    public string BootstrapServers => $"{this.Hostname}:{this.Port}";
+    /// <summary>
+    /// Gets the bootstrap servers.
+    /// </summary>
+    public string BootstrapServers
+      => $"{this.Hostname}:{this.Port}";
   }
 }

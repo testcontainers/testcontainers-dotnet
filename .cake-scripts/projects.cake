@@ -9,9 +9,9 @@ internal sealed class BuildProjects
   public ICollection<SolutionProject> OnlyTests { get; private set; }
   public SolutionProject Testcontainers { get; private set; }
 
-  public static BuildProjects Instance(ICakeContext context, string solution)
+  public static BuildProjects Instance(ICakeContext context, string solutionFilePath)
   {
-    var allProjects = context.ParseSolution($"src/{solution}.sln").Projects.ToList();
+    var allProjects = context.ParseSolution(solutionFilePath).Projects.ToList();
 
     return new BuildProjects
     {

@@ -1,14 +1,28 @@
-namespace DotNet.Testcontainers.Containers.Modules.MessageBrokers
+namespace DotNet.Testcontainers.Containers
 {
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.Modules.Abstractions;
+  using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
+  /// <inheritdoc cref="TestcontainerMessageBroker" />
+  [PublicAPI]
   public sealed class RabbitMqTestcontainer : TestcontainerMessageBroker
   {
-    internal RabbitMqTestcontainer(ITestcontainersConfiguration configuration) : base(configuration)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RabbitMqTestcontainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The Testcontainers configuration.</param>
+    /// <param name="logger">The logger.</param>
+    internal RabbitMqTestcontainer(ITestcontainersConfiguration configuration, ILogger logger)
+      : base(configuration, logger)
     {
     }
 
-    public string ConnectionString => $"amqp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
+    /// <summary>
+    /// Gets the message broker connection string.
+    /// </summary>
+    [PublicAPI]
+    public string ConnectionString
+      => $"amqp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
   }
 }

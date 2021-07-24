@@ -2,25 +2,35 @@ namespace DotNet.Testcontainers.Images
 {
   using JetBrains.Annotations;
 
+  /// <summary>
+  /// This class represents a Docker image.
+  /// </summary>
   public interface IDockerImage
   {
-    /// <summary>Gets the Docker image repository name.</summary>
-    /// <value>Returns the Docker image repository name.</value>
+    /// <summary>
+    /// Gets the Docker image repository name.
+    /// </summary>
     [NotNull]
     string Repository { get; }
 
-    /// <summary>Gets the Docker image name.</summary>
-    /// <value>Returns the Docker image name.</value>
+    /// <summary>
+    /// Gets the Docker image name.
+    /// </summary>
     [NotNull]
     string Name { get; }
 
-    /// <summary>Gets the Docker image tag.</summary>
-    /// <value>Returns the Docker image tag if present or "latest" instead.</value>
+    /// <summary>
+    /// Gets the Docker image tag.
+    /// </summary>
     [NotNull]
     string Tag { get; }
 
-    /// <summary>Gets or sets the full Docker image name. Splits the full Docker image name into its components and sets each properties.</summary>
-    /// <value>Full Docker image name, like "foo/bar:1.0.0" or "bar:latest" based on the components values.</value>
+    /// <summary>
+    /// Gets the full Docker image name.
+    /// </summary>
+    /// <remarks>
+    /// Full Docker image name, like "foo/bar:1.0.0" or "bar:latest" based on the components values.
+    /// </remarks>
     [NotNull]
     string FullName { get; }
   }

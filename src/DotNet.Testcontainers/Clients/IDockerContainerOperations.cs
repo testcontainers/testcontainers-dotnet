@@ -5,8 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.OutputConsumers;
+  using DotNet.Testcontainers.Configurations;
 
   internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse>
   {

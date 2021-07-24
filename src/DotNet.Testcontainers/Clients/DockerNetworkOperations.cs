@@ -6,16 +6,17 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Networks.Configurations;
-  using DotNet.Testcontainers.Services;
+  using DotNet.Testcontainers.Configurations;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerNetworkOperations : DockerApiClient, IDockerNetworkOperations
   {
-    private static readonly ILogger<DockerNetworkOperations> Logger = TestcontainersHostService.GetLogger<DockerNetworkOperations>();
+    private readonly ILogger logger;
 
-    public DockerNetworkOperations(Uri endpoint) : base(endpoint)
+    public DockerNetworkOperations(Uri endpoint, ILogger logger)
+      : base(endpoint)
     {
+      this.logger = logger;
     }
 
     public async Task<IEnumerable<NetworkResponse>> GetAllAsync(CancellationToken ct = default)
@@ -33,7 +34,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id));
+        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.Ordinal));
     }
 
     public Task<NetworkResponse> ByNameAsync(string name, CancellationToken ct = default)
@@ -62,17 +63,23 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> CreateAsync(ITestcontainersNetworkConfiguration configuration, CancellationToken ct = default)
     {
-      var id = (await this.Docker.Networks.CreateNetworkAsync(new NetworksCreateParameters { Name = configuration.Name, Driver = configuration.Driver.Value }, ct)
+      var createParameters = new NetworksCreateParameters
+      {
+        Name = configuration.Name,
+        Driver = configuration.Driver.Value,
+      };
+
+      var id = (await this.Docker.Networks.CreateNetworkAsync(createParameters, ct)
         .ConfigureAwait(false)).ID;
 
-      Logger.LogInformation("Network {id} created", id);
+      this.logger.LogInformation("Network {id} created", id);
 
       return id;
     }
 
     public Task DeleteAsync(string id, CancellationToken ct = default)
     {
-      Logger.LogInformation("Deleting network {id}", id);
+      this.logger.LogInformation("Deleting network {id}", id);
       return this.Docker.Networks.DeleteNetworkAsync(id, ct);
     }
   }

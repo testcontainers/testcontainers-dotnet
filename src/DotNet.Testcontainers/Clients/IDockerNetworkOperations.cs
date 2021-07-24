@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Networks.Configurations;
+  using DotNet.Testcontainers.Configurations;
 
   internal interface IDockerNetworkOperations : IHasListOperations<NetworkResponse>
   {

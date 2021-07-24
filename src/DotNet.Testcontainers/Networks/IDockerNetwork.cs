@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Networks
+namespace DotNet.Testcontainers.Network
 {
   using System.Threading;
   using System.Threading.Tasks;
@@ -9,12 +9,12 @@ namespace DotNet.Testcontainers.Networks
   public interface IDockerNetwork
   {
     /// <summary>
-    /// Gets the id.
+    /// Gets the Docker network id.
     /// </summary>
     string Id { get; }
 
     /// <summary>
-    /// Gets the name.
+    /// Gets the Docker network name.
     /// </summary>
     string Name { get; }
 

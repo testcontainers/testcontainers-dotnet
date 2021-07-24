@@ -9,12 +9,11 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Containers.Configurations;
-  using DotNet.Testcontainers.Containers.OutputConsumers;
-  using DotNet.Testcontainers.Images.Configurations;
-  using DotNet.Testcontainers.Services;
+  using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
+  using Microsoft.Extensions.Logging;
 
+  /// <inheritdoc cref="ITestcontainersClient" />
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
     public const string TestcontainersLabel = "dotnet.testcontainers";
@@ -31,16 +30,27 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly IDockerSystemOperations system;
 
-    public TestcontainersClient() : this(
-      DockerApiEndpoint.Local)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
+    /// </summary>
+    public TestcontainersClient()
+      : this(
+        TestcontainersSettings.OS.DockerApiEndpoint,
+        TestcontainersSettings.Logger)
     {
     }
 
-    public TestcontainersClient(Uri endpoint) : this(
-      new TestcontainersRegistryService(),
-      new DockerContainerOperations(endpoint),
-      new DockerImageOperations(endpoint),
-      new DockerSystemOperations(endpoint))
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
+    /// </summary>
+    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="logger">The logger.</param>
+    public TestcontainersClient(Uri endpoint, ILogger logger)
+      : this(
+        new TestcontainersRegistryService(),
+        new DockerContainerOperations(endpoint, logger),
+        new DockerImageOperations(endpoint, logger),
+        new DockerSystemOperations(endpoint, logger))
     {
     }
 
@@ -56,11 +66,7 @@ namespace DotNet.Testcontainers.Clients
       this.system = systemOperations;
     }
 
-    ~TestcontainersClient()
-    {
-      this.Dispose();
-    }
-
+    /// <inheritdoc />
     public bool IsRunningInsideDocker
     {
       get
@@ -69,26 +75,25 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public void Dispose()
-    {
-      GC.SuppressFinalize(this);
-    }
-
+    /// <inheritdoc />
     public Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
       return this.system.GetIsWindowsEngineEnabled(ct);
     }
 
+    /// <inheritdoc />
     public Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default)
     {
       return this.containers.ByIdAsync(id, ct);
     }
 
+    /// <inheritdoc />
     public Task<long> GetContainerExitCode(string id, CancellationToken ct = default)
     {
       return this.containers.GetExitCode(id, ct);
     }
 
+    /// <inheritdoc />
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
@@ -99,6 +104,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    /// <inheritdoc />
     public async Task StopAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
@@ -109,6 +115,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    /// <inheritdoc />
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
@@ -133,16 +140,19 @@ namespace DotNet.Testcontainers.Clients
       this.registryService.Unregister(id);
     }
 
+    /// <inheritdoc />
     public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       return this.containers.AttachAsync(id, outputConsumer, ct);
     }
 
+    /// <inheritdoc />
     public Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       return this.containers.ExecAsync(id, command, ct);
     }
 
+    /// <inheritdoc />
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
       using (var memStream = new MemoryStream())
@@ -158,11 +168,16 @@ namespace DotNet.Testcontainers.Clients
                 UserId = userId,
                 GroupId = groupId,
                 Mode = accessMode,
-                Size = fileContent.Length
+                Size = fileContent.Length,
               }));
 
+#if NETSTANDARD2_1
+          await tarOutputStream.WriteAsync(fileContent.AsMemory(0, fileContent.Length), ct)
+            .ConfigureAwait(false);
+#else
           await tarOutputStream.WriteAsync(fileContent, 0, fileContent.Length, ct)
             .ConfigureAwait(false);
+#endif
 
           tarOutputStream.CloseEntry();
         }
@@ -174,6 +189,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    /// <inheritdoc />
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
       // Killing or canceling the test process will prevent the cleanup.
@@ -185,7 +201,7 @@ namespace DotNet.Testcontainers.Clients
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
       {
-        await this.images.CreateAsync(configuration.Image, configuration.AuthConfig, ct)
+        await this.images.CreateAsync(configuration.Image, configuration.DockerRegistryAuthConfig, ct)
           .ConfigureAwait(false);
       }
 
@@ -200,6 +216,7 @@ namespace DotNet.Testcontainers.Clients
       return id;
     }
 
+    /// <inheritdoc />
     public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
       return this.images.BuildAsync(configuration, ct);
