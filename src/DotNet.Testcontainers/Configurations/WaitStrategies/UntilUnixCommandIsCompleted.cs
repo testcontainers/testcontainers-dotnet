@@ -23,10 +23,10 @@ namespace DotNet.Testcontainers.Configurations
     {
       var client = new TestcontainersClient(endpoint, logger);
 
-      var exitCode = await client.ExecAsync(id, this.command)
+      var result = await client.ExecAsync(id, this.command)
         .ConfigureAwait(false);
 
-      return 0L.Equals(exitCode);
+      return 0L.Equals(result.ExitCode);
     }
   }
 }

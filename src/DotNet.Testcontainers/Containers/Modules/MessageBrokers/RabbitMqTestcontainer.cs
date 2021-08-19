@@ -21,7 +21,6 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Gets the message broker connection string.
     /// </summary>
-    [PublicAPI]
     public string ConnectionString
       => $"amqp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
   }

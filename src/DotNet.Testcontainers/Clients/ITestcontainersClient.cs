@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
 
   /// <summary>
   /// This class represents a Testcontainers client.
@@ -79,7 +80,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="command">Shell command.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
-    Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
+    Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.

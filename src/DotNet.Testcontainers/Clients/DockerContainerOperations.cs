@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
@@ -110,31 +111,38 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false);
     }
 
-    public async Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
+    public async Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       this.logger.LogInformation("Executing {command} at container {id}", command, id);
 
       var execCreateParameters = new ContainerExecCreateParameters
       {
         Cmd = command,
+        AttachStdout = true,
+        AttachStderr = true,
       };
 
-      var created = await this.Docker.Exec.ExecCreateContainerAsync(id, execCreateParameters, ct)
+      var execCreateResponse = await this.Docker.Exec.ExecCreateContainerAsync(id, execCreateParameters, ct)
         .ConfigureAwait(false);
 
-      await this.Docker.Exec.StartContainerExecAsync(created.ID, ct)
+      var stdOutAndErrStream = await this.Docker.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, ct)
         .ConfigureAwait(false);
 
-      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(created.ID, ct)
+      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(execCreateResponse.ID, ct)
         .ConfigureAwait(false)) != null;)
       {
-        if (!response.Running)
+        if (response.Running)
         {
-          return response.ExitCode;
+          continue;
         }
+
+        var (stdout, stderr) = await stdOutAndErrStream.ReadOutputToEndAsync(ct)
+          .ConfigureAwait(false);
+
+        return new ExecResult(stdout, stderr, response.ExitCode);
       }
 
-      return long.MinValue;
+      return ExecResult.Failure;
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -41,7 +41,7 @@
     [Fact]
     public async Task PingContainer()
     {
-      Assert.Equal(0, await this.testcontainer1.ExecAsync(new[] { "ping", "-c", "4", nameof(this.testcontainer2) }));
+      Assert.Equal(0, (await this.testcontainer1.ExecAsync(new[] { "ping", "-c", "4", nameof(this.testcontainer2) })).ExitCode);
     }
   }
 }

@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
 
   internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse>
   {
@@ -21,7 +22,7 @@ namespace DotNet.Testcontainers.Clients
 
     Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 
-    Task<long> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
+    Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
     Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);
   }
