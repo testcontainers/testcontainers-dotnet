@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Containers
   public interface IDockerContainer : IRunningDockerContainer, IAsyncDisposable
   {
     /// <summary>
-    /// Gets the Testcontainer exit code.
+    /// Gets the Testcontainers exit code.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the Docker container exit code.</returns>
@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that represents the asynchronous start operation of a Testcontainer.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
-    /// <exception cref="TaskCanceledException">Thrown when a Testcontainer task gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
     Task StartAsync(CancellationToken ct = default);
 
@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
-    /// <exception cref="TaskCanceledException">Thrown when a Testcontainer task gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
   }
 
@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Containers
   public interface IRunningDockerContainer
   {
     /// <summary>
-    /// Gets the Testcontainer id.
+    /// Gets the Testcontainers id.
     /// </summary>
     /// <value>
     /// Returns the Docker container id if present or an empty string instead.
@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers.Containers
     string Id { get; }
 
     /// <summary>
-    /// Gets the Testcontainer name.
+    /// Gets the Testcontainers name.
     /// </summary>
     /// <value>
     /// Returns the Docker container name if present or an empty string instead.
@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Containers
     string Name { get; }
 
     /// <summary>
-    /// Gets the Testcontainer ip address.
+    /// Gets the Testcontainers ip address.
     /// </summary>
     /// <value>
     /// Returns the Docker container ip address if present or an empty string instead.
@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Containers
     string IpAddress { get; }
 
     /// <summary>
-    /// Gets the Testcontainer mac address.
+    /// Gets the Testcontainers mac address.
     /// </summary>
     /// <value>
     /// Returns the Docker container mac address if present or an empty string instead.
@@ -87,7 +87,7 @@ namespace DotNet.Testcontainers.Containers
     string MacAddress { get; }
 
     /// <summary>
-    /// Gets the Testcontainer hostname.
+    /// Gets the Testcontainers hostname.
     /// </summary>
     /// <value>
     /// Returns the Docker container hostname if present or an empty string instead.
@@ -95,6 +95,14 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
     [NotNull]
     string Hostname { get; }
+
+    /// <summary>
+    /// Gets the Testcontainers state.
+    /// </summary>
+    /// <value>
+    /// Returns the Docker container state.
+    /// </value>
+    TestcontainersState State { get; }
 
     /// <summary>
     /// Gets the public host port associated with the private container port.

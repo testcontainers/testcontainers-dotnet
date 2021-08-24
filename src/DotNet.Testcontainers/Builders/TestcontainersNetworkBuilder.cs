@@ -20,7 +20,7 @@
       : this(
         Apply(
           endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          labels: new DefaultLabels(),
+          labels: DefaultLabels.Instance,
           driver: NetworkDriver.Bridge))
     {
     }

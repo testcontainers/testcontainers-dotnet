@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
-    private TestcontainersState State
+    public TestcontainersState State
     {
       get
       {
@@ -257,12 +257,12 @@ namespace DotNet.Testcontainers.Containers
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id, this.logger), (int)TimeSpan.FromSeconds(1).TotalMilliseconds, ct: ct)
+        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this, this.logger), (int)TimeSpan.FromSeconds(1).TotalMilliseconds, ct: ct)
+          .ConfigureAwait(false);
+
+        this.container = await this.client.GetContainer(id, ct)
           .ConfigureAwait(false);
       }
-
-      this.container = await this.client.GetContainer(id, ct)
-        .ConfigureAwait(false);
 
       return this.container;
     }

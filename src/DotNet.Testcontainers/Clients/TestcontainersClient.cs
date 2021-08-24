@@ -129,7 +129,7 @@ namespace DotNet.Testcontainers.Clients
         }
         catch (DockerApiException e)
         {
-          // The Docker daemon may already start the progress to removes the container (AutoRemove).
+          // The Docker daemon may already start the progress to removes the container (AutoRemove):
           // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
           if (!e.Message.Contains($"removal of container {id} is already in progress"))
           {

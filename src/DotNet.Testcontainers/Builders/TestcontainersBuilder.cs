@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Builders
         Apply(
           endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
           dockerRegistryAuthConfig: default(DockerRegistryAuthenticationConfiguration),
-          labels: new DefaultLabels(),
+          labels: DefaultLabels.Instance,
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
           startupCallback: (testcontainers, ct) => Task.CompletedTask),
@@ -171,7 +171,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
-      var mounts = new IBindMount[] { new BindMount(source, destination, AccessMode.ReadWrite) };
+      return this.WithMount(source, destination, AccessMode.ReadWrite);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode)
+    {
+      var mounts = new IBindMount[] { new BindMount(source, destination, accessMode) };
       return Build(this, Apply(mounts: mounts));
     }
 
@@ -192,7 +198,7 @@ namespace DotNet.Testcontainers.Builders
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
       return Build(this, Apply(cleanUp: cleanUp))
-        .WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString().ToLowerInvariant());
+        .WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString());
     }
 
     /// <inheritdoc />

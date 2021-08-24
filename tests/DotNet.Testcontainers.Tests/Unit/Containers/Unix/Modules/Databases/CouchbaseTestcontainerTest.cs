@@ -34,7 +34,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // Then
-      var collection = bucket.DefaultCollection();
+      var collection = await bucket.DefaultCollectionAsync()
+        .ConfigureAwait(false);
 
       // Create
       _ = await collection.InsertAsync(id, customer1)
@@ -105,7 +106,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // Then
-      var collection = bucket.DefaultCollection();
+      var collection = await bucket.DefaultCollectionAsync()
+        .ConfigureAwait(false);
 
       // Create
       _ = await collection.InsertAsync(id, new { }, o => o.Timeout(TimeSpan.FromMinutes(1)))

@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Containers
   /// <summary>
   /// Docker container states.
   /// </summary>
-  internal enum TestcontainersState
+  public enum TestcontainersState
   {
     /// <summary>
     /// Docker container was not created.

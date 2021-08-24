@@ -60,7 +60,7 @@ internal sealed class BuildInformation
       targetBranch = targetBranch.Replace("refs/heads/", string.Empty);
     }
 
-    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[1]/Version/text()");
+    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 
