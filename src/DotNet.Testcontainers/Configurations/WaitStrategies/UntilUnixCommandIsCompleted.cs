@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Globalization;
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;
@@ -22,6 +24,15 @@ namespace DotNet.Testcontainers.Configurations
     {
       var execResult = await container.ExecAsync(this.command)
         .ConfigureAwait(false);
+
+      var logMessage = new StringBuilder();
+      logMessage.AppendLine("ExitCode");
+      logMessage.AppendLine(execResult.ExitCode.ToString(CultureInfo.InvariantCulture));
+      logMessage.AppendLine("Stdout");
+      logMessage.AppendLine(execResult.Stdout);
+      logMessage.AppendLine("Stderr");
+      logMessage.AppendLine(execResult.Stderr);
+      logger.LogDebug(logMessage.ToString());
 
       return 0L.Equals(execResult.ExitCode);
     }

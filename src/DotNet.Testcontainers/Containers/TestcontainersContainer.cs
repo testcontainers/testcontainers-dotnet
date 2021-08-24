@@ -24,8 +24,7 @@ namespace DotNet.Testcontainers.Containers
 
     private readonly ILogger logger;
 
-    [NotNull]
-    private ContainerListResponse container = new ContainerListResponse();
+    [NotNull] private ContainerListResponse container = new ContainerListResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersContainer" /> class.
@@ -257,10 +256,17 @@ namespace DotNet.Testcontainers.Containers
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this, this.logger), (int)TimeSpan.FromSeconds(1).TotalMilliseconds, ct: ct)
-          .ConfigureAwait(false);
+        await WaitStrategy.WaitUntil(
+          async () =>
+          {
+              this.container = await this.client.GetContainer(id, ct)
+                .ConfigureAwait(false);
 
-        this.container = await this.client.GetContainer(id, ct)
+              return await waitStrategy.Until(this, this.logger)
+                .ConfigureAwait(false);
+            },
+          (int)TimeSpan.FromSeconds(1).TotalMilliseconds,
+          ct: ct)
           .ConfigureAwait(false);
       }
 
