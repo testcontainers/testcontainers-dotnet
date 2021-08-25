@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.79" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
@@ -11,5 +12,4 @@
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="SharpZipLib" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)DotNet.Testcontainers.props" />
 </Project>

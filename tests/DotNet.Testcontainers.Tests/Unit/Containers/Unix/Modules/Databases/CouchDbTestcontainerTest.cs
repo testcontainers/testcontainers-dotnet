@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
+  [Collection(nameof(Testcontainers))]
   public sealed class CouchDbTestcontainerTest : IClassFixture<CouchDbFixture>
   {
     private readonly CouchDbFixture couchDbFixture;

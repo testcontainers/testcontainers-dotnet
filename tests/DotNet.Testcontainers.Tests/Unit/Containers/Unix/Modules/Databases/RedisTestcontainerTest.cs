@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
+  [Collection(nameof(Testcontainers))]
   public sealed class RedisTestcontainerTest : IClassFixture<RedisFixture>
   {
     private readonly RedisFixture redisFixture;

@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Images;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class IgnoreFileFixture : TheoryData<IgnoreFile, string, bool>
   {
     public IgnoreFileFixture()
@@ -15,7 +14,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var ignoreRecursiveFiles = new IgnoreFile(new[] { "**/*.txt" }, logger);
       var ignoreSingleCharacterFiles = new IgnoreFile(new[] { "temp?" }, logger);
       var ignoreExceptionFiles = new IgnoreFile(new[] { "*.md", "!README*.md", "README-secret.md" }, logger);
-
       this.Add(ignoreNonRecursiveFiles, "lipsum/temp", false);
       this.Add(ignoreNonRecursiveFiles, "lipsum/temp.txt", false);
       this.Add(ignoreNonRecursiveFiles, "lipsum/lorem/temp", true);

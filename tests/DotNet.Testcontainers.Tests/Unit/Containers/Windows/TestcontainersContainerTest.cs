@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       [IgnoreOnLinuxEngine]
       public async Task UntilCommandIsCompleted()
       {
+        // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("mcr.microsoft.com/windows/servercore:1809")
           .WithEntrypoint("PowerShell", "-Command", "Start-Sleep -Seconds 3600")
@@ -38,6 +39,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       [IgnoreOnLinuxEngine]
       public async Task UntilPortIsAvailable()
       {
+        // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("mcr.microsoft.com/windows/servercore:1809")
           .WithEntrypoint("PowerShell", "-Command", "$tcpListener = [System.Net.Sockets.TcpListener]1337; $tcpListener.Start(); Start-Sleep -Seconds 3600")

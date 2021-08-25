@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
-    private TestcontainersState State
+    public TestcontainersState State
     {
       get
       {
@@ -255,14 +255,26 @@ namespace DotNet.Testcontainers.Containers
 
       // Do not use a too small frequency. Especially with a lot of containers,
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
+      var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
+
+      const int timeout = -1;
+
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntil(() => waitStrategy.Until(this.configuration.Endpoint, id, this.logger), (int)TimeSpan.FromSeconds(1).TotalMilliseconds, ct: ct)
+        await WaitStrategy.WaitUntil(
+          async () =>
+          {
+            this.container = await this.client.GetContainer(id, ct)
+              .ConfigureAwait(false);
+
+            return await waitStrategy.Until(this, this.logger)
+              .ConfigureAwait(false);
+          },
+          frequency,
+          timeout,
+          ct)
           .ConfigureAwait(false);
       }
-
-      this.container = await this.client.GetContainer(id, ct)
-        .ConfigureAwait(false);
 
       return this.container;
     }

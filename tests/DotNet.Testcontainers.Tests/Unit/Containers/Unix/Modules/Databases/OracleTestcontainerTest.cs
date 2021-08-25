@@ -7,6 +7,7 @@
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
+  [Collection(nameof(Testcontainers))]
   public sealed class OracleTestcontainerTest : IClassFixture<OracleFixture>
   {
     private readonly OracleFixture oracleFixture;

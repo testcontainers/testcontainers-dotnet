@@ -27,12 +27,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(
           () =>
           {
-            callCounter += 1;
+            ++callCounter;
             return false;
           },
           maxCallCount);
 
-        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty, null));
+        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, null));
       });
 
       // Then
@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() => ++callCounter >= expectedCallsCount, maxCallCount);
-      await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, string.Empty, null));
+      await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, null));
 
       // Then
       Assert.Equal(expectedCallsCount, callCounter);

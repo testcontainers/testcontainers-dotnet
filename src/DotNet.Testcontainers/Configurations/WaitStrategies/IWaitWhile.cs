@@ -1,11 +1,11 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;
 
   public interface IWaitWhile
   {
-    Task<bool> While(Uri endpoint, string id, ILogger logger);
+    Task<bool> While(ITestcontainersContainer container, ILogger logger);
   }
 }

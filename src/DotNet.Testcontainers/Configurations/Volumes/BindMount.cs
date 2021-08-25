@@ -1,7 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System.IO;
-
   /// <inheritdoc cref="IBindMount" />
   internal readonly struct BindMount : IBindMount
   {
@@ -13,7 +11,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public BindMount(string hostPath, string containerPath, AccessMode accessMode)
     {
-      this.HostPath = Path.GetFullPath(hostPath);
+      this.HostPath = hostPath;
       this.ContainerPath = containerPath;
       this.AccessMode = accessMode;
     }

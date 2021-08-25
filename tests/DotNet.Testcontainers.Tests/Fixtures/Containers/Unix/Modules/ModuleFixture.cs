@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public abstract class ModuleFixture<T> : IAsyncLifetime
     where T : TestcontainersContainer
   {

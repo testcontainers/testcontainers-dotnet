@@ -6,7 +6,6 @@
   using DotNet.Testcontainers.Network;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class NetworkFixture : IAsyncLifetime
   {
     public IDockerNetwork Network { get; }

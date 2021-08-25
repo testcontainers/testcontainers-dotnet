@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .First();
 
       // Then
-      var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntil(() => wait.Until(null, string.Empty, null)));
+      var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntil(() => wait.Until(null, null)));
       Assert.Null(exception);
     }
   }

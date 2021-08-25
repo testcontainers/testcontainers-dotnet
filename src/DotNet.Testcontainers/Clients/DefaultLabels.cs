@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DefaultLabels : ReadOnlyDictionary<string, string>
   {
-    public DefaultLabels()
+    private DefaultLabels()
       : base(new Dictionary<string, string>
       {
         { TestcontainersClient.TestcontainersLabel, bool.TrueString },
@@ -13,5 +13,8 @@ namespace DotNet.Testcontainers.Clients
       })
     {
     }
+
+    public static IReadOnlyDictionary<string, string> Instance { get; }
+      = new DefaultLabels();
   }
 }
