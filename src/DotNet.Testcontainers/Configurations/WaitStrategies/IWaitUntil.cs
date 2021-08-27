@@ -6,6 +6,6 @@ namespace DotNet.Testcontainers.Configurations
 
   public interface IWaitUntil
   {
-    Task<bool> Until(ITestcontainersContainer container, ILogger logger);
+    Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger);
   }
 }

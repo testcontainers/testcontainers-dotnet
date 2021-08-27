@@ -25,12 +25,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Null(exception);
       }
 
-      public Task<bool> Until(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
       {
         return Task.FromResult(true);
       }
 
-      public Task<bool> While(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> While(ITestcontainersContainer testcontainers, ILogger logger)
       {
         return Task.FromResult(false);
       }
@@ -50,12 +50,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhile(() => this.While(null, null), 1000, 1));
       }
 
-      public Task<bool> Until(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
       {
         return Task.FromResult(false);
       }
 
-      public Task<bool> While(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> While(ITestcontainersContainer testcontainers, ILogger logger)
       {
         return Task.FromResult(true);
       }
@@ -75,12 +75,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         await Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitWhile(() => this.While(null, null)));
       }
 
-      public Task<bool> Until(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
       {
         throw new NotImplementedException();
       }
 
-      public Task<bool> While(ITestcontainersContainer container, ILogger logger)
+      public Task<bool> While(ITestcontainersContainer testcontainers, ILogger logger)
       {
         throw new NotImplementedException();
       }
