@@ -10,8 +10,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   /// </summary>
   /// <typeparam name="TDockerContainer">Type of <see cref="ITestcontainersContainer" />.</typeparam>
   /// <typeparam name="TDatabaseConnection">Type of database connection.</typeparam>
+#pragma warning disable SA1649
+
   public abstract class DatabaseFixture<TDockerContainer, TDatabaseConnection> : IAsyncLifetime, IDisposable
     where TDockerContainer : ITestcontainersContainer
+
+#pragma warning restore SA1649
   {
     /// <summary>
     /// Gets or sets the Testcontainers.
