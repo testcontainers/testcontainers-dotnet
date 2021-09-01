@@ -7,33 +7,36 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using MySql.Data.MySqlClient;
 
-  public sealed class MySqlFixture : ModuleFixture<MySqlTestcontainer>
+  public sealed class MySqlFixture : DatabaseFixture<MySqlTestcontainer, DbConnection>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new MySqlTestcontainerConfiguration { Database = "db", Username = "mysql", Password = "mysql" };
+
     public MySqlFixture()
-      : base(new TestcontainersBuilder<MySqlTestcontainer>()
-        .WithDatabase(new MySqlTestcontainerConfiguration
-        {
-          Database = "db",
-          Username = "mysql",
-          Password = "mysql",
-        })
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<MySqlTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<DbConnection> GetConnection()
+    public override async Task InitializeAsync()
     {
-      return Task.FromResult<DbConnection>(new MySqlConnection(this.Container.ConnectionString));
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = new MySqlConnection(this.Container.ConnectionString);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

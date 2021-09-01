@@ -6,33 +6,36 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using MyCouch;
 
-  public sealed class CouchDbFixture : ModuleFixture<CouchDbTestcontainer>
+  public sealed class CouchDbFixture : DatabaseFixture<CouchDbTestcontainer, IMyCouchClient>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new CouchDbTestcontainerConfiguration { Database = "db", Username = "couchdb", Password = "couchdb" };
+
     public CouchDbFixture()
-      : base(new TestcontainersBuilder<CouchDbTestcontainer>()
-        .WithDatabase(new CouchDbTestcontainerConfiguration
-        {
-          Database = "db",
-          Username = "couchdb",
-          Password = "couchdb",
-        })
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<CouchDbTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<IMyCouchClient> GetClient()
+    public override async Task InitializeAsync()
     {
-      return Task.FromResult<IMyCouchClient>(new MyCouchClient(this.Container.ConnectionString, this.Container.Database));
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = new MyCouchClient(this.Container.ConnectionString, this.Container.Database);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

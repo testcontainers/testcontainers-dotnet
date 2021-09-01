@@ -21,8 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ConnectionEstablished()
     {
       // Given
-      await using var connection = await this.msSqlFixture.GetConnection()
-        .ConfigureAwait(false);
+      var connection = this.msSqlFixture.Connection;
 
       // When
       await connection.OpenAsync()

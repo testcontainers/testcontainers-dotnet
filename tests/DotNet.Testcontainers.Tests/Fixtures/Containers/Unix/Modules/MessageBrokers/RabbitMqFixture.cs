@@ -7,34 +7,38 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using RabbitMQ.Client;
 
-  public sealed class RabbitMqFixture : ModuleFixture<RabbitMqTestcontainer>
+  public sealed class RabbitMqFixture : DatabaseFixture<RabbitMqTestcontainer, IConnection>
   {
+    private readonly TestcontainerMessageBrokerConfiguration configuration = new RabbitMqTestcontainerConfiguration { Username = "rabbitmq", Password = "rabbitmq" };
+
     public RabbitMqFixture()
-      : base(new TestcontainersBuilder<RabbitMqTestcontainer>()
-        .WithMessageBroker(new RabbitMqTestcontainerConfiguration
-        {
-          Username = "rabbitmq",
-          Password = "rabbitmq",
-        })
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<RabbitMqTestcontainer>()
+        .WithMessageBroker(this.configuration)
+        .Build();
     }
 
-    public Task<IConnection> GetConnection()
+    public override async Task InitializeAsync()
     {
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
       var connectionFactory = new ConnectionFactory();
       connectionFactory.Uri = new Uri(this.Container.ConnectionString);
-      return Task.FromResult(connectionFactory.CreateConnection());
+      this.Connection = connectionFactory.CreateConnection();
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

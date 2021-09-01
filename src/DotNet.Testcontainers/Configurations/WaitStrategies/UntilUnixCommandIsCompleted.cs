@@ -1,7 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System.Globalization;
-  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;

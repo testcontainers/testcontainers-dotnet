@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
@@ -15,12 +14,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task ConnectionEstablished()
+    public void ConnectionEstablished()
     {
-      using var connection = await this.rabbitMqFixture.GetConnection()
-        .ConfigureAwait(false);
-
-      Assert.True(connection.IsOpen);
+      Assert.True(this.rabbitMqFixture.Connection.IsOpen);
     }
   }
 }

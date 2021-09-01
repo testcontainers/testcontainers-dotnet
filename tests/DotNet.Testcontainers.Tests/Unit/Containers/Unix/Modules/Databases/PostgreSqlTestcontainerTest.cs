@@ -19,8 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ConnectionEstablished()
     {
       // Given
-      await using var connection = await this.postgreSqlFixture.GetConnection()
-        .ConfigureAwait(false);
+      var connection = this.postgreSqlFixture.Connection;
 
       // When
       await connection.OpenAsync()

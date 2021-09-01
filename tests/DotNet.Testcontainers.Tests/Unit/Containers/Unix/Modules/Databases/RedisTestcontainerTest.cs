@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -17,12 +16,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task ConnectionEstablished()
+    public void ConnectionEstablished()
     {
-      using var connection = await this.redisFixture.GetConnection()
-        .ConfigureAwait(false);
-
-      Assert.True(connection.IsConnected);
+      Assert.True(this.redisFixture.Connection.IsConnected);
     }
 
     [Fact]

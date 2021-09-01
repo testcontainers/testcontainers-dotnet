@@ -1,27 +1,38 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using Xunit;
 
-  public sealed class KafkaFixture : ModuleFixture<KafkaTestcontainer>
+  public sealed class KafkaFixture : IAsyncLifetime, IDisposable
   {
+    private readonly KafkaTestcontainerConfiguration configuration = new KafkaTestcontainerConfiguration();
+
     public KafkaFixture()
-      : base(new TestcontainersBuilder<KafkaTestcontainer>()
-        .WithKafka(new KafkaTestcontainerConfiguration())
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<KafkaTestcontainer>()
+        .WithKafka(this.configuration)
+        .Build();
     }
 
-    public override Task InitializeAsync()
+    public KafkaTestcontainer Container { get; }
+
+    public Task InitializeAsync()
     {
       return this.Container.StartAsync();
     }
 
-    public override Task DisposeAsync()
+    public Task DisposeAsync()
     {
       return this.Container.DisposeAsync().AsTask();
+    }
+
+    public void Dispose()
+    {
+      this.configuration.Dispose();
     }
   }
 }

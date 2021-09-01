@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="TestcontainerDatabaseConfiguration" />
   [PublicAPI]
-  public sealed class CouchbaseTestcontainerConfiguration : TestcontainerDatabaseConfiguration, IDisposable
+  public sealed class CouchbaseTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     /// <summary>
     /// Couchbase docker needs to setup over web user interface in first use.
@@ -53,17 +53,13 @@ namespace DotNet.Testcontainers.Configurations
 
     private const int BootstrapHttpPort = 8091;
 
-    private readonly MemoryStream stdout = new MemoryStream();
-
-    private readonly MemoryStream stderr = new MemoryStream();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseTestcontainerConfiguration" /> class.
     /// </summary>
     public CouchbaseTestcontainerConfiguration()
       : base(CouchbaseImage, BootstrapHttpPort, BootstrapHttpPort)
     {
-      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(this.stdout, this.stderr);
+      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
       this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, WaitUntilMessageIsLogged);
     }
 
@@ -174,13 +170,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy { get; }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-      this.stdout.Dispose();
-      this.stderr.Dispose();
-    }
 
     private static void ThrowIfMemoryIsLessThanMinimum(string propertyName, string value, int minimumMemoryInMb)
     {

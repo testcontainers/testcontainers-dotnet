@@ -7,33 +7,36 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using Npgsql;
 
-  public sealed class PostgreSqlFixture : ModuleFixture<PostgreSqlTestcontainer>
+  public sealed class PostgreSqlFixture : DatabaseFixture<PostgreSqlTestcontainer, DbConnection>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new PostgreSqlTestcontainerConfiguration { Database = "db", Username = "postgres", Password = "postgres" };
+
     public PostgreSqlFixture()
-      : base(new TestcontainersBuilder<PostgreSqlTestcontainer>()
-        .WithDatabase(new PostgreSqlTestcontainerConfiguration
-        {
-          Database = "db",
-          Username = "postgres",
-          Password = "postgres",
-        })
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<DbConnection> GetConnection()
+    public override async Task InitializeAsync()
     {
-      return Task.FromResult<DbConnection>(new NpgsqlConnection(this.Container.ConnectionString));
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = new NpgsqlConnection(this.Container.ConnectionString);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

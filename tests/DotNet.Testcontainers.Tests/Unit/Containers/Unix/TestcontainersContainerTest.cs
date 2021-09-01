@@ -85,7 +85,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task SpecifiedContainerName()
       {
         // Given
-        const string name = "/alpine";
+        var name = Guid.NewGuid().ToString("N");
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(name, testcontainer.Name);
+          Assert.EndsWith(name, testcontainer.Name);
         }
       }
 
@@ -241,7 +241,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
           .WithMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilFileExists($"{TempDir}/{file}"));
+            .UntilFileExists(Path.Combine(TempDir, file)));
 
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -249,7 +249,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.True(File.Exists($"{TempDir}/{file}"), $"{file} does not exist.");
+        Assert.True(File.Exists(Path.Combine(TempDir, file)), $"{file} does not exist.");
       }
 
       [Fact]
@@ -260,7 +260,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         const string file = "dayOfWeek";
 
-        var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -269,7 +269,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilFileExists($"{TempDir}/{file}"));
+            .UntilFileExists(Path.Combine(TempDir, file)));
 
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -277,7 +277,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.Equal(dayOfWeek, await File.ReadAllTextAsync($"{TempDir}/{file}"));
+        Assert.Equal(dayOfWeek, await File.ReadAllTextAsync(Path.Combine(TempDir, file)));
       }
 
       [Fact]
@@ -325,7 +325,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task OutputConsumer()
       {
         // Given
-        var unixTimeInMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
+        var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
 
         using (var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream()))
         {
@@ -438,7 +438,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         const string dayOfWeekFilePath = "/tmp/dayOfWeek";
 
-        var dayOfWeek = DateTime.Now.DayOfWeek.ToString();
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")

@@ -6,28 +6,36 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using StackExchange.Redis;
 
-  public sealed class RedisFixture : ModuleFixture<RedisTestcontainer>
+  public sealed class RedisFixture : DatabaseFixture<RedisTestcontainer, IConnectionMultiplexer>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new RedisTestcontainerConfiguration();
+
     public RedisFixture()
-      : base(new TestcontainersBuilder<RedisTestcontainer>()
-        .WithDatabase(new RedisTestcontainerConfiguration())
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<RedisTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<ConnectionMultiplexer> GetConnection()
+    public override async Task InitializeAsync()
     {
-      return ConnectionMultiplexer.ConnectAsync(this.Container.ConnectionString);
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = ConnectionMultiplexer.Connect(this.Container.ConnectionString);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

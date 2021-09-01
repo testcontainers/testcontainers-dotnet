@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   internal class UntilWindowsCommandIsCompleted : UntilUnixCommandIsCompleted
   {
     public UntilWindowsCommandIsCompleted(string command)
-      : base("PowerShell", "-Command", command)
+      : this("PowerShell", "-Command", command)
     {
     }
 

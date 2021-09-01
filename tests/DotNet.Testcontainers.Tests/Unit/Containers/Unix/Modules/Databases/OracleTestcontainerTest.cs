@@ -21,8 +21,7 @@
     public async Task ConnectionEstablished()
     {
       // Given
-      await using var connection = await this.oracleFixture.GetConnection()
-        .ConfigureAwait(false);
+      var connection = this.oracleFixture.Connection;
 
       // When
       await connection.OpenAsync()

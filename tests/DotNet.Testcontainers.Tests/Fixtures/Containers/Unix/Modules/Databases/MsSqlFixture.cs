@@ -7,31 +7,36 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
-  public sealed class MsSqlFixture : ModuleFixture<MsSqlTestcontainer>
+  public sealed class MsSqlFixture : DatabaseFixture<MsSqlTestcontainer, DbConnection>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new MsSqlTestcontainerConfiguration { Password = "yourStrong(!)Password" }; // https://hub.docker.com/r/microsoft/mssql-server-linux/.
+
     public MsSqlFixture()
-      : base(new TestcontainersBuilder<MsSqlTestcontainer>()
-        .WithDatabase(new MsSqlTestcontainerConfiguration
-        {
-          Password = "yourStrong(!)Password", // https://hub.docker.com/r/microsoft/mssql-server-linux/
-        })
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<MsSqlTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<DbConnection> GetConnection()
+    public override async Task InitializeAsync()
     {
-      return Task.FromResult<DbConnection>(new SqlConnection(this.Container.ConnectionString));
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = new SqlConnection(this.Container.ConnectionString);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

@@ -21,6 +21,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ConnectToExistingBucketAndRunCrudOperations()
     {
       // Given
+      var cluster = this.couchbaseFixture.Connection;
+
       var id = Guid.NewGuid().ToString();
 
       var customer1 = new Customer("Mustafa", 29);
@@ -28,10 +30,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var customer2 = new Customer("Onur", 30);
 
       // When
-      await using var cluster = await this.couchbaseFixture.GetCluster()
-        .ConfigureAwait(false);
-
-      await using var bucket = await cluster.BucketAsync(CouchbaseFixture.BucketName)
+      await using var bucket = await cluster.BucketAsync("Sample")
         .ConfigureAwait(false);
 
       // Then
@@ -72,13 +71,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateBucket()
     {
       // Given
+      var cluster = this.couchbaseFixture.Connection;
+
       var bucketName = Guid.NewGuid().ToString();
 
       // When
       _ = await this.couchbaseFixture.Container.CreateBucket(bucketName)
-        .ConfigureAwait(false);
-
-      await using var cluster = await this.couchbaseFixture.GetCluster()
         .ConfigureAwait(false);
 
       await using var bucket = await cluster.BucketAsync(bucketName)
@@ -92,6 +90,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task FlushBucket()
     {
       // Given
+      var cluster = this.couchbaseFixture.Connection;
+
       var id = Guid.NewGuid().ToString();
 
       var bucketName = Guid.NewGuid().ToString();
@@ -100,9 +100,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // When
-      await using var cluster = await this.couchbaseFixture.GetCluster()
-        .ConfigureAwait(false);
-
       await using var bucket = await cluster.BucketAsync(bucketName)
         .ConfigureAwait(false);
 

@@ -118,7 +118,7 @@ namespace DotNet.Testcontainers.Builders
     /// Binds the port of the Testcontainer to the same port of the host machine.
     /// </summary>
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
-    /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
+    /// <param name="assignRandomHostPort">True, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false);
@@ -136,7 +136,7 @@ namespace DotNet.Testcontainers.Builders
     /// Binds the port of the Testcontainer to the same port of the host machine.
     /// </summary>
     /// <param name="port">Port to bind between Testcontainer and host machine.</param>
-    /// <param name="assignRandomHostPort">If true, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
+    /// <param name="assignRandomHostPort">True, Testcontainer will bind the port to a random host port, otherwise the host and container ports are the same.</param>
     /// <remarks>Append /tcp|udp|sctp to change the protocol e.g. "53/udp". Default: tcp.</remarks>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]

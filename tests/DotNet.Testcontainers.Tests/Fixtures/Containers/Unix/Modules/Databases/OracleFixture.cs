@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Fixtures
+namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Data.Common;
   using System.Threading.Tasks;
@@ -7,28 +7,36 @@
   using DotNet.Testcontainers.Containers;
   using Oracle.ManagedDataAccess.Client;
 
-  public sealed class OracleFixture : ModuleFixture<OracleTestcontainer>
+  public sealed class OracleFixture : DatabaseFixture<OracleTestcontainer, DbConnection>
   {
+    private readonly TestcontainerDatabaseConfiguration configuration = new OracleTestcontainerConfiguration();
+
     public OracleFixture()
-      : base(new TestcontainersBuilder<OracleTestcontainer>()
-        .WithDatabase(new OracleTestcontainerConfiguration())
-        .Build())
     {
+      this.Container = new TestcontainersBuilder<OracleTestcontainer>()
+        .WithDatabase(this.configuration)
+        .Build();
     }
 
-    public Task<DbConnection> GetConnection()
+    public override async Task InitializeAsync()
     {
-      return Task.FromResult<DbConnection>(new OracleConnection(this.Container.ConnectionString));
+      await this.Container.StartAsync()
+        .ConfigureAwait(false);
+
+      this.Connection = new OracleConnection(this.Container.ConnectionString);
     }
 
-    public override Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-      return this.Container.StartAsync();
+      this.Connection.Dispose();
+
+      await this.Container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
-    public override Task DisposeAsync()
+    public override void Dispose()
     {
-      return this.Container.DisposeAsync().AsTask();
+      this.configuration.Dispose();
     }
   }
 }

@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
@@ -7,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// This class represents an extended Testcontainer configuration for modules. It is convenient for common configurations to provide a module with all necessary properties, without creating a new configuration again and again.
   /// </summary>
-  public abstract class HostedServiceConfiguration
+  public abstract class HostedServiceConfiguration : IDisposable
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="HostedServiceConfiguration" /> class.
@@ -84,5 +85,24 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [PublicAPI]
     public virtual string Password { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+      this.Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases all resources used by the <see cref="HostedServiceConfiguration" />.
+    /// </summary>
+    /// <param name="disposing">True if managed resources should be disposed, otherwise false..</param>
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        this.OutputConsumer.Dispose();
+      }
+    }
   }
 }

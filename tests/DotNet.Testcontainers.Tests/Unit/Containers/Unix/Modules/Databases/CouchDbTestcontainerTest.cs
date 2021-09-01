@@ -18,11 +18,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ConnectionEstablished()
     {
       // Given
-      using var client = await this.couchDbFixture.GetClient()
-        .ConfigureAwait(false);
+      var database = this.couchDbFixture.Connection.Database;
 
       // When
-      var response = await client.Database.PutAsync()
+      var response = await database.PutAsync()
         .ConfigureAwait(false);
 
       // Then
