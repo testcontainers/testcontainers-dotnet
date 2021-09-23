@@ -233,6 +233,25 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal("Couchbase ClusterAnalyticsRamSize ram size can not be less than 1024 MB. (Parameter 'ClusterAnalyticsRamSize')", exception.Message);
     }
 
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      _ = await this.couchbaseFixture.Container.CreateBucket("MyBucket")
+        .ConfigureAwait(false);
+      const string script = @"
+        CREATE PRIMARY INDEX ON `MyBucket`;
+        SELECT * FROM system:indexes;
+        ";
+
+      // When
+      var results = await this.couchbaseFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Contains("MyBucket", results.Stdout);
+    }
+
     private readonly struct Customer
     {
       public Customer(string name, int age)

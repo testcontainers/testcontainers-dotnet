@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -40,6 +41,27 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       var redis = new RedisTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => redis.Password = string.Empty);
+    }
+
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      const string script = @"
+        -- Lua script
+        for i = 1, 5, 1 
+        do 
+           redis.call('incr', 'my-counter') 
+        end
+        local mycounter = redis.call('get', 'my-counter')
+        return mycounter
+        ";
+
+      // When
+      var results = await this.redisFixture.Container.ExecScriptAsync(script);
+
+      // Then
+      Assert.Contains("5", results.Stdout);
     }
   }
 }
