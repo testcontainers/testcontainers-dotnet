@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Data;
@@ -50,6 +50,27 @@
     {
       var oracle = new OracleTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => oracle.Password = string.Empty);
+    }
+
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      const string script = @"
+        CREATE TABLE MyTable (
+        id INT,
+        name VARCHAR(30) NOT NULL
+        );
+        GO
+        INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
+        SELECT * FROM MyTable;
+        ";
+
+      // When
+      var results = await this.oracleFixture.Container.ExecScriptAsync(script);
+
+      // Then
+      Assert.Contains("MyName", results.Stdout);
     }
   }
 }

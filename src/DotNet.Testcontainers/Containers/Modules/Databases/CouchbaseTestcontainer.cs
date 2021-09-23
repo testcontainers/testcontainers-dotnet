@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -49,6 +50,19 @@ namespace DotNet.Testcontainers.Containers
     {
       var flushBucketCommand = $"yes | {CouchbaseCli} bucket-flush -c 127.0.0.1:8091 --username {this.Username} --password {this.Password} --bucket {bucket}";
       return this.ExecAsync(new[] { "/bin/sh", "-c", flushBucketCommand });
+    }
+
+    /// <summary>
+    /// Executes a N1QL script in the database container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the N1QL script to be executed.</param>
+    /// <returns>Task that completes when the script has been executed.</returns>
+    public override async Task<ExecResult> ExecScriptAsync(string scriptContent)
+    {
+      var tempScriptFile = this.GetTempScriptFile();
+      await this.CopyFileAsync(tempScriptFile, Encoding.ASCII.GetBytes(scriptContent));
+      var execScriptCommand = $"cbq -user {this.Username} -password {this.Password} -file={tempScriptFile}";
+      return await this.ExecAsync(new[] { "/bin/sh", "-c", execScriptCommand });
     }
   }
 }

@@ -44,5 +44,44 @@ namespace DotNet.Testcontainers.Tests.Unit
       var mssql = new MsSqlTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => mssql.Username = string.Empty);
     }
+
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      const string script = @"
+        CREATE DATABASE testcontainers;
+        GO
+        USE testcontainers;
+        GO
+        CREATE TABLE MyTable (
+        id INT,
+        name VARCHAR(30) NOT NULL
+        );
+        GO
+        INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
+        SELECT * FROM MyTable;
+        ";
+
+      // When
+      var results = await this.msSqlFixture.Container.ExecScriptAsync(script);
+
+      // Then
+      Assert.Contains("MyName", results.Stdout);
+    }
+
+    [Fact]
+    public async Task ThrowErrorInRunningContainerWithInvalidScript()
+    {
+      // Given
+      const string script = "invalid SQL command";
+
+      // When
+      var results = await this.msSqlFixture.Container.ExecScriptAsync(script);
+
+      // Then
+      Assert.NotEqual(0, results.ExitCode);
+      Assert.NotEqual(string.Empty, results.Stderr);
+    }
   }
 }
