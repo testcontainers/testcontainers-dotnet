@@ -51,6 +51,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Oracle Database (wnameless/oracle-xe-11g-r2)
 - PostgreSQL (postgres:11.5)
 - Redis (redis:5.0.6)
+- MongoDB (mongo:5.0.2)
 - Apache Kafka (confluentinc/cp-kafka:6.0.1)
 - RabbitMQ (rabbitmq:3.7.21)
 

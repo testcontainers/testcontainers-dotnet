@@ -32,5 +32,6 @@
     <PackageReference Update="RabbitMQ.Client" Version="6.2.1" />
     <PackageReference Update="StackExchange.Redis" Version="2.2.62" />
     <PackageReference Update="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Update="MongoDB.Driver" Version="2.13.1" />
   </ItemGroup>
 </Project>
