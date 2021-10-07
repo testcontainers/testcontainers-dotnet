@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 

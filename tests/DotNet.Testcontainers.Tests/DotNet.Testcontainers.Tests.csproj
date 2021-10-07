@@ -21,6 +21,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="Confluent.Kafka" />
     <PackageReference Include="CouchbaseNetClient" />
+    <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
     <PackageReference Include="MySql.Data" />
     <PackageReference Include="Npgsql" />
@@ -28,7 +29,6 @@
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="System.Data.SqlClient" />
-    <PackageReference Include="MongoDB.Driver" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/DotNet.Testcontainers/DotNet.Testcontainers.csproj" />

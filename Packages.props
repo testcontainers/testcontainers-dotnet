@@ -25,6 +25,7 @@
     <!-- 3rd party client dependencies -->
     <PackageReference Update="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Update="CouchbaseNetClient" Version="3.1.7" />
+    <PackageReference Update="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
     <PackageReference Update="MySql.Data" Version="8.0.26" />
     <PackageReference Update="Npgsql" Version="5.0.7" />
@@ -32,6 +33,5 @@
     <PackageReference Update="RabbitMQ.Client" Version="6.2.1" />
     <PackageReference Update="StackExchange.Redis" Version="2.2.62" />
     <PackageReference Update="System.Data.SqlClient" Version="4.8.2" />
-    <PackageReference Update="MongoDB.Driver" Version="2.13.1" />
   </ItemGroup>
 </Project>
