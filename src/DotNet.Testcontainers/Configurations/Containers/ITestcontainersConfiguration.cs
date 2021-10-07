@@ -95,7 +95,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets a list of volumes.
     /// </summary>
     [CanBeNull]
-    IEnumerable<IBindMount> Mounts { get; }
+    IEnumerable<IMount> Mounts { get; }
 
     /// <summary>
     /// Gets a list of networks.

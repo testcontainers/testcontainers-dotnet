@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -182,6 +183,32 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination)
+    {
+      return this.WithMount(source, destination, AccessMode.ReadWrite);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination, AccessMode accessMode)
+    {
+      var mounts = new IVolumeMount[] { new VolumeMount(new DockerVolume(source), destination, accessMode) };
+      return Build(this, Apply(mounts: mounts));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination)
+    {
+      return this.WithVolumeMount(source, destination, AccessMode.ReadWrite);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination, AccessMode accessMode)
+    {
+      var mounts = new IVolumeMount[] { new VolumeMount(source, destination, accessMode) };
+      return Build(this, Apply(mounts: mounts));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name)
     {
       return this.WithNetwork(new DockerNetwork(id, name));
@@ -262,7 +289,7 @@ namespace DotNet.Testcontainers.Builders
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
-      IEnumerable<IBindMount> mounts = null,
+      IEnumerable<IMount> mounts = null,
       IEnumerable<IDockerNetwork> networks = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,

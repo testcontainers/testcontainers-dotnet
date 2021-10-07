@@ -65,16 +65,30 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    private sealed class ToMounts : CollectionConverter<IBindMount, Mount>
+    private sealed class ToMounts : CollectionConverter<IMount, Mount>
     {
       public ToMounts()
         : base(nameof(ToMounts))
       {
       }
 
-      public override IEnumerable<Mount> Convert([CanBeNull] IEnumerable<IBindMount> source)
+      public override IEnumerable<Mount> Convert([CanBeNull] IEnumerable<IMount> source)
       {
-        return source?.Select(mount => new Mount { Type = "bind", Source = mount.HostPath, Target = mount.ContainerPath, ReadOnly = AccessMode.ReadOnly.Equals(mount.AccessMode) });
+        return source?.Select(mount =>
+        {
+          var readOnly = AccessMode.ReadOnly.Equals(mount.AccessMode);
+          if (mount is IBindMount bindMount)
+          {
+            return new Mount { Type = "bind", Source = bindMount.HostPath, Target = mount.ContainerPath, ReadOnly = readOnly };
+          }
+
+          if (mount is IVolumeMount volumeMount)
+          {
+            return new Mount { Type = "volume", Source = volumeMount.Volume.Name, Target = mount.ContainerPath, ReadOnly = readOnly };
+          }
+
+          throw new NotSupportedException("Unsupported mount type.");
+        });
       }
     }
 

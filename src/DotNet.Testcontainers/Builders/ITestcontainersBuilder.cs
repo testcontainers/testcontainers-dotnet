@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -170,6 +171,44 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode);
+
+    /// <summary>
+    /// Mounts the specified managed volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">A docker managed volume name.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination);
+
+    /// <summary>
+    /// Mounts the specified managed volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">A docker managed volume name.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <param name="accessMode">Volume access mode.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination, AccessMode accessMode);
+
+    /// <summary>
+    /// Mounts the specified managed volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">A docker managed volume.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination);
+
+    /// <summary>
+    /// Mounts the specified managed volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">A docker managed volume.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <param name="accessMode">Volume access mode.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination, AccessMode accessMode);
 
     /// <summary>
     /// Connects to the specified network.
