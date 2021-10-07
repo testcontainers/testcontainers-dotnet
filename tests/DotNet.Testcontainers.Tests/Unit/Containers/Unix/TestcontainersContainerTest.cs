@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
   using System.Net;
@@ -239,7 +240,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
-          .WithMount(TempDir, $"/{target}")
+          .WithBindMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
@@ -267,7 +268,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithMount(TempDir, $"/{target}")
+          .WithBindMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
@@ -278,6 +279,110 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // Then
         Assert.Equal(dayOfWeek, await File.ReadAllTextAsync(Path.Combine(TempDir, file)));
+      }
+
+      [Fact]
+      public async Task VolumeMountAndCommand()
+      {
+        // Given
+        const string target = "tmp";
+
+        const string file = "hostname";
+
+        var volume = new TestcontainersVolumeBuilder()
+          .WithName(Guid.NewGuid().ToString())
+          .WithLabel("label", Guid.NewGuid().ToString())
+          .Build();
+        await volume.CreateAsync();
+        try
+        {
+          // When
+          var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+            .WithImage("nginx")
+            .WithEntrypoint("/bin/sh", "-c")
+            .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
+            .WithVolumeMount(volume, $"/{target}")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilCommandIsCompleted("/bin/sh", "-c", $"cat /{target}/{file}"));
+          var otherTestcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+            .WithImage("nginx")
+            .WithVolumeMount(volume, $"/{target}")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilCommandIsCompleted("/bin/sh", "-c", $"cat /{target}/{file}"));
+
+          string hostname;
+          await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+          {
+            await testcontainer.StartAsync();
+            hostname = (await testcontainer.ExecAsync(new List<string> { "/bin/sh", "-c", "hostname" })).Stdout.Trim();
+          }
+
+          string actual;
+          await using (ITestcontainersContainer otherTestcontainer = otherTestcontainersBuilder.Build())
+          {
+            await otherTestcontainer.StartAsync();
+            actual = (await otherTestcontainer.ExecAsync(new List<string> { "/bin/sh", "-c", $"cat /{target}/{file}" })).Stdout.Trim();
+          }
+
+          // Then
+          Assert.Equal(hostname, actual);
+        }
+        finally
+        {
+          await volume.DeleteAsync();
+        }
+      }
+
+      [Fact]
+      public async Task VolumeMountAndEnvironment()
+      {
+        // Given
+        const string target = "tmp";
+
+        const string file = "dayOfWeek";
+
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
+
+        var volume = new TestcontainersVolumeBuilder()
+          .WithName(Guid.NewGuid().ToString())
+          .WithLabel("label", Guid.NewGuid().ToString())
+          .Build();
+        await volume.CreateAsync();
+        try
+        {
+          // When
+          var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+            .WithImage("nginx")
+            .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
+            .WithEnvironment("dayOfWeek", dayOfWeek)
+            .WithVolumeMount(volume, $"/{target}")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilCommandIsCompleted("/bin/sh", "-c", $"cat /{target}/{file}"));
+          var otherTestcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+            .WithImage("nginx")
+            .WithVolumeMount(volume, $"/{target}")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+              .UntilCommandIsCompleted("/bin/sh", "-c", $"cat /{target}/{file}"));
+
+          await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+          {
+            await testcontainer.StartAsync();
+          }
+
+          string actual;
+          await using (ITestcontainersContainer otherTestcontainer = otherTestcontainersBuilder.Build())
+          {
+            await otherTestcontainer.StartAsync();
+            actual = (await otherTestcontainer.ExecAsync(new List<string> { "/bin/sh", "-c", $"cat /{target}/{file}" })).Stdout.Trim();
+          }
+
+          // Then
+          Assert.Equal(dayOfWeek, actual);
+        }
+        finally
+        {
+          await volume.DeleteAsync();
+        }
       }
 
       [Fact]

@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   /// <inheritdoc cref="IBindMount" />
-  internal readonly struct BindMount : IBindMount
+  internal readonly struct BindMount : IMount
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="BindMount" /> struct.
@@ -11,16 +11,19 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public BindMount(string hostPath, string containerPath, AccessMode accessMode)
     {
-      this.HostPath = hostPath;
-      this.ContainerPath = containerPath;
+      this.Type = MountType.Bind;
+      this.Source = hostPath;
+      this.Target = containerPath;
       this.AccessMode = accessMode;
     }
 
-    /// <inheritdoc />
-    public string HostPath { get; }
+    public MountType Type { get; }
 
     /// <inheritdoc />
-    public string ContainerPath { get; }
+    public string Source { get; }
+
+    /// <inheritdoc />
+    public string Target { get; }
 
     /// <inheritdoc />
     public AccessMode AccessMode { get; }

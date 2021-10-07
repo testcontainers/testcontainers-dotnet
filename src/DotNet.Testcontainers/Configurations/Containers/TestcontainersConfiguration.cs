@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> labels,
       IReadOnlyDictionary<string, string> exposedPorts,
       IReadOnlyDictionary<string, string> portBindings,
-      IEnumerable<IBindMount> mounts,
+      IEnumerable<IMount> mounts,
       IEnumerable<IDockerNetwork> networks,
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
@@ -116,7 +116,7 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
-    public IEnumerable<IBindMount> Mounts { get; }
+    public IEnumerable<IMount> Mounts { get; }
 
     /// <inheritdoc />>
     public IEnumerable<IDockerNetwork> Networks { get; }
