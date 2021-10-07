@@ -21,6 +21,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="Confluent.Kafka" />
     <PackageReference Include="CouchbaseNetClient" />
+    <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
     <PackageReference Include="MySql.Data" />
     <PackageReference Include="Npgsql" />

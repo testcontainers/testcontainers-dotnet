@@ -25,6 +25,7 @@
     <!-- 3rd party client dependencies -->
     <PackageReference Update="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Update="CouchbaseNetClient" Version="3.1.7" />
+    <PackageReference Update="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
     <PackageReference Update="MySql.Data" Version="8.0.26" />
     <PackageReference Update="Npgsql" Version="5.0.7" />

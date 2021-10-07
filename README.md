@@ -48,6 +48,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Apache CouchDB (couchdb:2.3.1)
 - Couchbase (couchbase:6.5.1)
 - Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU14-ubuntu)
+- MongoDB (mongo:5.0.2)
 - MySQL (mysql:8.0.18)
 - Oracle Database (wnameless/oracle-xe-11g-r2)
 - PostgreSQL (postgres:11.5)
