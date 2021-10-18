@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Volumes;
 
   /// <inheritdoc cref="IVolumeMount" />
-  internal readonly struct VolumeMount : IVolumeMount
+  internal readonly struct VolumeMount : IMount
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeMount" /> struct.
@@ -13,18 +13,22 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public VolumeMount(IDockerVolume volume, string containerPath, AccessMode accessMode)
     {
-      this.Volume = volume;
-      this.ContainerPath = containerPath;
+      this.Type = MountType.Volume;
+      this.Source = volume.Name;
+      this.Target = containerPath;
       this.AccessMode = accessMode;
     }
 
     /// <inheritdoc />
-    public IDockerVolume Volume { get; }
-
-    /// <inheritdoc />
-    public string ContainerPath { get; }
+    public MountType Type { get; }
 
     /// <inheritdoc />
     public AccessMode AccessMode { get; }
+
+    /// <inheritdoc />
+    public string Source { get; }
+
+    /// <inheritdoc />
+    public string Target { get; }
   }
 }

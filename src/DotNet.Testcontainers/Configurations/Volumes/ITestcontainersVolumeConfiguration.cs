@@ -1,12 +1,13 @@
 namespace DotNet.Testcontainers.Configurations.Volumes
 {
   using System;
+  using System.Collections.Generic;
   using JetBrains.Annotations;
 
   /// <summary>
   /// A Docker volume configuration.
   /// </summary>
-  public interface ITestcontainersVolumeConfiguration
+  internal interface ITestcontainersVolumeConfiguration
   {
     /// <summary>
     /// Gets the Docker API endpoint.
@@ -19,5 +20,11 @@ namespace DotNet.Testcontainers.Configurations.Volumes
     /// </summary>
     [NotNull]
     string Name { get; }
+
+    /// <summary>
+    /// Gets a list of labels.
+    /// </summary>
+    [NotNull]
+    IReadOnlyDictionary<string, string> Labels { get; }
   }
 }

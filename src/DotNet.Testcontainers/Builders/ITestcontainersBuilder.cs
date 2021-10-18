@@ -160,6 +160,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithBindMount(string source, string destination) instead.")]
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination);
 
     /// <summary>
@@ -170,7 +171,27 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="accessMode">Volume access mode.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithBindMount(string source, string destination, AccessMode accessMode) instead.")]
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode);
+
+    /// <summary>
+    /// Binds and mounts the specified host machine volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">An absolute path or a name value within the host machine.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination);
+
+    /// <summary>
+    /// Binds and mounts the specified host machine volume into the Testcontainer.
+    /// </summary>
+    /// <param name="source">An absolute path or a name value within the host machine.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <param name="accessMode">Volume access mode.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination, AccessMode accessMode);
 
     /// <summary>
     /// Mounts the specified managed volume into the Testcontainer.

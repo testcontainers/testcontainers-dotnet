@@ -240,7 +240,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
-          .WithMount(TempDir, $"/{target}")
+          .WithBindMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
@@ -268,7 +268,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithMount(TempDir, $"/{target}")
+          .WithBindMount(TempDir, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
@@ -289,7 +289,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         const string file = "hostname";
 
-        var volume = new TestcontainersVolumeBuilder().WithName(Guid.NewGuid().ToString()).Build();
+        var volume = new TestcontainersVolumeBuilder()
+          .WithName(Guid.NewGuid().ToString())
+          .WithLabel("label", Guid.NewGuid().ToString())
+          .Build();
         await volume.CreateAsync();
         try
         {
@@ -326,7 +329,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
         finally
         {
-          await volume.RemoveAsync();
+          await volume.DeleteAsync();
         }
       }
 
@@ -340,7 +343,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
-        var volume = new TestcontainersVolumeBuilder().WithName(Guid.NewGuid().ToString()).Build();
+        var volume = new TestcontainersVolumeBuilder()
+          .WithName(Guid.NewGuid().ToString())
+          .WithLabel("label", Guid.NewGuid().ToString())
+          .Build();
         await volume.CreateAsync();
         try
         {
@@ -375,7 +381,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
         finally
         {
-          await volume.RemoveAsync();
+          await volume.DeleteAsync();
         }
       }
 

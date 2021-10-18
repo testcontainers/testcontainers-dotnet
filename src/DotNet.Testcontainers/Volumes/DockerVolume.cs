@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Volumes
 {
+  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
 
@@ -9,8 +10,7 @@ namespace DotNet.Testcontainers.Volumes
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerVolume" /> class.
     /// </summary>
-    /// <param name="id">The Docker network id.</param>
-    /// <param name="name">The Docker network name.</param>
+    /// <param name="name">The Docker volume name.</param>
     public DockerVolume(
       string name)
     {
@@ -25,15 +25,24 @@ namespace DotNet.Testcontainers.Volumes
     public string Name { get; }
 
     /// <inheritdoc />
+    public IDictionary<string, string> Labels { get; } = new Dictionary<string, string>();
+
+    /// <inheritdoc />
     public Task CreateAsync(CancellationToken ct = default)
     {
       return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public Task RemoveAsync(bool? force = null, CancellationToken ct = default)
+    public Task DeleteAsync(CancellationToken ct = default)
     {
       return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync()
+    {
+      return default;
     }
   }
 }

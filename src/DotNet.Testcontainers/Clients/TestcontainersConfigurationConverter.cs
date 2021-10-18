@@ -77,17 +77,7 @@ namespace DotNet.Testcontainers.Clients
         return source?.Select(mount =>
         {
           var readOnly = AccessMode.ReadOnly.Equals(mount.AccessMode);
-          if (mount is IBindMount bindMount)
-          {
-            return new Mount { Type = "bind", Source = bindMount.HostPath, Target = mount.ContainerPath, ReadOnly = readOnly };
-          }
-
-          if (mount is IVolumeMount volumeMount)
-          {
-            return new Mount { Type = "volume", Source = volumeMount.Volume.Name, Target = mount.ContainerPath, ReadOnly = readOnly };
-          }
-
-          throw new NotSupportedException("Unsupported mount type.");
+          return new Mount { Type = mount.Type.Type, Source = mount.Source, Target = mount.Target, ReadOnly = readOnly };
         });
       }
     }

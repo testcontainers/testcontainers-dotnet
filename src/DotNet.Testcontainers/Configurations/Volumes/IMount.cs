@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using JetBrains.Annotations;
 
@@ -7,15 +7,20 @@
   /// </summary>
   public interface IMount
   {
-    /// <summary>
-    /// Gets the absolute path of a file or directory to mount in the container.
-    /// </summary>
-    [NotNull]
-    string ContainerPath { get; }
+    MountType Type { get; }
 
     /// <summary>
     /// Gets the Docker mount access mode.
     /// </summary>
     AccessMode AccessMode { get; }
+
+    [NotNull]
+    string Source { get; }
+
+    /// <summary>
+    /// Gets the absolute path of a file or directory to mount in the container.
+    /// </summary>
+    [NotNull]
+    string Target { get; }
   }
 }

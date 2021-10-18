@@ -1,6 +1,7 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Configurations.Volumes;
   using DotNet.Testcontainers.Volumes;
@@ -30,9 +31,22 @@
     }
 
     /// <inheritdoc />
+    public ITestcontainersVolumeBuilder WithDockerEndpoint(string endpoint)
+    {
+      return Build(this, Apply(endpoint: new Uri(endpoint)));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersVolumeBuilder WithName(string name)
     {
       return Build(this, Apply(name: name));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersVolumeBuilder WithLabel(string name, string value)
+    {
+      var labels = new Dictionary<string, string> { { name, value } };
+      return Build(this, Apply(labels: labels));
     }
 
     /// <inheritdoc />
@@ -41,9 +55,12 @@
       return new NonExistingDockerVolume(this.configuration, TestcontainersSettings.Logger);
     }
 
-    private static ITestcontainersVolumeConfiguration Apply(Uri endpoint = null, string name = null)
+    private static ITestcontainersVolumeConfiguration Apply(
+      Uri endpoint = null,
+      string name = null,
+      IReadOnlyDictionary<string, string> labels = null)
     {
-      return new TestcontainersVolumeConfiguration(endpoint, name);
+      return new TestcontainersVolumeConfiguration(endpoint, name, labels);
     }
 
     private static ITestcontainersVolumeBuilder Build(
@@ -52,10 +69,12 @@
     {
       var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
       var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
+      var labels = BuildConfiguration.Combine(next.Labels, previous.configuration.Labels);
 
       var mergedConfiguration = Apply(
         endpoint,
-        name);
+        name,
+        labels);
 
       return new TestcontainersVolumeBuilder(mergedConfiguration);
     }

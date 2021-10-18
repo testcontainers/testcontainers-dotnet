@@ -172,13 +172,25 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
-      return this.WithMount(source, destination, AccessMode.ReadWrite);
+      return this.WithBindMount(source, destination);
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode)
     {
-      var mounts = new IBindMount[] { new BindMount(source, destination, accessMode) };
+      return this.WithBindMount(source, destination, accessMode);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination)
+    {
+      return this.WithBindMount(source, destination, AccessMode.ReadWrite);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination, AccessMode accessMode)
+    {
+      var mounts = new IMount[] { new BindMount(source, destination, accessMode) };
       return Build(this, Apply(mounts: mounts));
     }
 
@@ -191,8 +203,8 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination, AccessMode accessMode)
     {
-      var mounts = new IVolumeMount[] { new VolumeMount(new DockerVolume(source), destination, accessMode) };
-      return Build(this, Apply(mounts: mounts));
+      var volume = new DockerVolume(source);
+      return this.WithVolumeMount(volume, destination, accessMode);
     }
 
     /// <inheritdoc />
@@ -204,7 +216,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination, AccessMode accessMode)
     {
-      var mounts = new IVolumeMount[] { new VolumeMount(source, destination, accessMode) };
+      var mounts = new IMount[] { new VolumeMount(source, destination, accessMode) };
       return Build(this, Apply(mounts: mounts));
     }
 

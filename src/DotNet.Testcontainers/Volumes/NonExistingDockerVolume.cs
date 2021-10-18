@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Volumes
 {
   using System;
+  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -9,14 +10,21 @@ namespace DotNet.Testcontainers.Volumes
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
+  /// <inheritdoc cref="IDockerVolume" />
   internal sealed class NonExistingDockerVolume : IDockerVolume
   {
     private readonly IDockerVolumeOperations client;
+
     private readonly ITestcontainersVolumeConfiguration configuration;
 
     [NotNull]
     private VolumeResponse volume = new VolumeResponse();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NonExistingDockerVolume" /> class.
+    /// </summary>
+    /// <param name="configuration">The Testcontainers configuration.</param>
+    /// <param name="logger">The logger.</param>
     public NonExistingDockerVolume(ITestcontainersVolumeConfiguration configuration, ILogger logger)
     {
       this.client = new DockerVolumeOperations(configuration.Endpoint, logger);
@@ -34,6 +42,16 @@ namespace DotNet.Testcontainers.Volumes
     }
 
     /// <inheritdoc />
+    public IDictionary<string, string> Labels
+    {
+      get
+      {
+        this.ThrowIfVolumeHasNotBeenCreated();
+        return this.volume.Labels;
+      }
+    }
+
+    /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
       this.volume = await this.client.CreateAsync(this.configuration, ct)
@@ -41,11 +59,22 @@ namespace DotNet.Testcontainers.Volumes
     }
 
     /// <inheritdoc />
-    public async Task RemoveAsync(bool? force = null, CancellationToken ct = default)
+    public async Task DeleteAsync(CancellationToken ct = default)
     {
-      await this.client.RemoveAsync(this.Name, force, ct)
+      await this.client.RemoveAsync(this.Name, ct)
         .ConfigureAwait(false);
       this.volume = new VolumeResponse();
+    }
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync()
+    {
+      if (string.IsNullOrEmpty(this.volume.Name))
+      {
+        return default;
+      }
+
+      return new ValueTask(this.DeleteAsync());
     }
 
     private void ThrowIfVolumeHasNotBeenCreated()

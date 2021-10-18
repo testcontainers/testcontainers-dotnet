@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -22,6 +23,7 @@ namespace DotNet.Testcontainers.Clients
       var createParameters = new VolumesCreateParameters
       {
         Name = configuration.Name,
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
       var response = await this.Docker.Volumes.CreateAsync(createParameters, ct)
@@ -32,10 +34,10 @@ namespace DotNet.Testcontainers.Clients
       return response;
     }
 
-    public Task RemoveAsync(string name, bool? force = null, CancellationToken ct = default)
+    public Task RemoveAsync(string name, CancellationToken ct = default)
     {
       this.logger.LogInformation("Deleting volume {Name}", name);
-      return this.Docker.Volumes.RemoveAsync(name, force, ct);
+      return this.Docker.Volumes.RemoveAsync(name, force: null, ct);
     }
   }
 }

@@ -1,12 +1,14 @@
 namespace DotNet.Testcontainers.Volumes
 {
+  using System;
+  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
 
   /// <summary>
   /// A Docker volume.
   /// </summary>
-  public interface IDockerVolume
+  public interface IDockerVolume : IAsyncDisposable
   {
     /// <summary>
     /// Gets the Docker volume name.
@@ -14,18 +16,22 @@ namespace DotNet.Testcontainers.Volumes
     string Name { get; }
 
     /// <summary>
+    /// Gets the docker volume labels.
+    /// </summary>
+    IDictionary<string, string> Labels { get; }
+
+    /// <summary>
     /// Creates the volume.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the network has been created.</returns>
+    /// <returns>Task that completes when the volume has been created.</returns>
     Task CreateAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Removes the volume.
+    /// Delete the volume.
     /// </summary>
-    /// <param name="force">Force the removal of the volume.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the network has been deleted.</returns>
-    Task RemoveAsync(bool? force = null, CancellationToken ct = default);
+    /// <returns>Task that completes when the volume has been deleted.</returns>
+    Task DeleteAsync(CancellationToken ct = default);
   }
 }
