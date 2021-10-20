@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations.Volumes
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;

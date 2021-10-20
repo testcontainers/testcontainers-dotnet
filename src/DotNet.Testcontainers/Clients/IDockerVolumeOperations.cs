@@ -3,12 +3,12 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Configurations.Volumes;
+  using DotNet.Testcontainers.Configurations;
 
-  internal interface IDockerVolumeOperations
+  internal interface IDockerVolumeOperations : IHasListOperations<VolumeResponse>
   {
-    Task<VolumeResponse> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default);
+    Task<string> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default);
 
-    Task RemoveAsync(string name, CancellationToken ct = default);
+    Task DeleteAsync(string name, CancellationToken ct = default);
   }
 }

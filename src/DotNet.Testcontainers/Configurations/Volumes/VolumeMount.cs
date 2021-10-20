@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using DotNet.Testcontainers.Volumes;
 
-  /// <inheritdoc cref="IVolumeMount" />
+  /// <inheritdoc cref="IMount" />
   internal readonly struct VolumeMount : IMount
   {
     /// <summary>

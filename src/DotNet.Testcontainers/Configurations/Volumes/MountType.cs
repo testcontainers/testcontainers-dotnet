@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   /// <summary>
-  /// The mount type.
+  /// Docker mount type.
   /// </summary>
   public readonly struct MountType
   {

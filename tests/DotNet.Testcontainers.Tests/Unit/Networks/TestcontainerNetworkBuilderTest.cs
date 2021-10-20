@@ -5,13 +5,14 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Builders;
   using Xunit;
 
-  public class TestcontainerNetworkBuilderTest
+  public sealed class TestcontainerNetworkBuilderTest
   {
     [Fact]
-    public async Task CreateTest()
+    public async Task ShouldNetworkVolume()
     {
       // Given
       var networkName = Guid.NewGuid().ToString();
+
       var networkLabel = Guid.NewGuid().ToString();
 
       // When
@@ -19,11 +20,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithName(networkName)
         .WithLabel("label", networkLabel)
         .Build();
+
       await network.CreateAsync();
 
+      // Then
       try
       {
-        // Then
         Assert.Equal(networkName, network.Name);
       }
       finally
@@ -33,19 +35,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void NotCreatedTest()
+    public void ShouldThrowInvalidOperationException()
     {
-      // Given
-      var networkName = Guid.NewGuid().ToString();
-      var networkLabel = Guid.NewGuid().ToString();
-
-      // When
-      var network = new TestcontainersNetworkBuilder()
-        .WithName(networkName)
-        .WithLabel("label", networkLabel)
-        .Build();
-
-      Assert.Throws<InvalidOperationException>(() => network.Name);
+      Assert.Throws<InvalidOperationException>(() => new TestcontainersNetworkBuilder()
+        .WithName(Guid.Empty.ToString())
+        .Build()
+        .Name);
     }
   }
 }

@@ -29,8 +29,8 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 - `WithLabel` applies metadata to a container e. g. `-l, --label dotnet.testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e. g. `--expose=80`.
 - `WithPortBinding` publishes a container port to the host e. g. `-p, --publish 80:80`.
-- `WithBindMount` bind mounts a volume into the container e. g. `-v, --volume .:/tmp`.
-- `WithVolumeMount` mounts a managed volume into the container e. g. `--mount type=volume,source=tempvolume,destination=/tmp`.
+- `WithBindMount` binds a path of a file or directory into the container e. g. `-v, --volume .:/tmp`.
+- `WithVolumeMount` mounts a managed volume into the container e. g. `--mount type=volume,source=.,destination=/tmp`.
 - `WithNetwork` assigns a network to a container e. g. `--network="bridge"`.
 - `WithCleanUp` removes a stopped container automatically.
 - `WithDockerEndpoint` sets the Docker API endpoint e. g. `-H tcp://0.0.0.0:2376`.

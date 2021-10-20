@@ -1,24 +1,17 @@
 namespace DotNet.Testcontainers.Volumes
 {
-  using System;
-  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
 
   /// <summary>
   /// A Docker volume.
   /// </summary>
-  public interface IDockerVolume : IAsyncDisposable
+  public interface IDockerVolume
   {
     /// <summary>
     /// Gets the Docker volume name.
     /// </summary>
     string Name { get; }
-
-    /// <summary>
-    /// Gets the docker volume labels.
-    /// </summary>
-    IDictionary<string, string> Labels { get; }
 
     /// <summary>
     /// Creates the volume.

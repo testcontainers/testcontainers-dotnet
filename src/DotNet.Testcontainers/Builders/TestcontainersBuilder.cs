@@ -197,14 +197,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination)
     {
-      return this.WithMount(source, destination, AccessMode.ReadWrite);
+      return this.WithVolumeMount(source, destination, AccessMode.ReadWrite);
     }
 
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination, AccessMode accessMode)
     {
-      var volume = new DockerVolume(source);
-      return this.WithVolumeMount(volume, destination, accessMode);
+      return this.WithVolumeMount(new DockerVolume(source), destination, accessMode);
     }
 
     /// <inheritdoc />

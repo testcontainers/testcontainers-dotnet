@@ -1,6 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  /// <inheritdoc cref="IBindMount" />
+  /// <inheritdoc cref="IMount" />
   internal readonly struct BindMount : IMount
   {
     /// <summary>

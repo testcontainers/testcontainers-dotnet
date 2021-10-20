@@ -1,12 +1,11 @@
 namespace DotNet.Testcontainers.Volumes
 {
   using System;
-  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Configurations.Volumes;
+  using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -42,39 +41,21 @@ namespace DotNet.Testcontainers.Volumes
     }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Labels
-    {
-      get
-      {
-        this.ThrowIfVolumeHasNotBeenCreated();
-        return this.volume.Labels;
-      }
-    }
-
-    /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      this.volume = await this.client.CreateAsync(this.configuration, ct)
+      var name = await this.client.CreateAsync(this.configuration, ct)
+        .ConfigureAwait(false);
+
+      this.volume = await this.client.ByNameAsync(name, ct)
         .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      await this.client.RemoveAsync(this.Name, ct)
+      await this.client.DeleteAsync(this.Name, ct)
         .ConfigureAwait(false);
       this.volume = new VolumeResponse();
-    }
-
-    /// <inheritdoc />
-    public ValueTask DisposeAsync()
-    {
-      if (string.IsNullOrEmpty(this.volume.Name))
-      {
-        return default;
-      }
-
-      return new ValueTask(this.DeleteAsync());
     }
 
     private void ThrowIfVolumeHasNotBeenCreated()

@@ -1,48 +1,46 @@
-namespace DotNet.Testcontainers.Tests.Unit.Volumes
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using System.Linq;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using Xunit;
 
-  public class TestcontainersVolumeBuilderTest
+  public sealed class TestcontainersVolumeBuilderTest
   {
     [Fact]
-    public async Task CreateTest()
+    public async Task ShouldCreateVolume()
     {
       // Given
       var volumeName = Guid.NewGuid().ToString();
+
       var volumeLabel = Guid.NewGuid().ToString();
 
       // When
-      await using var volume = new TestcontainersVolumeBuilder()
+      var volume = new TestcontainersVolumeBuilder()
         .WithName(volumeName)
         .WithLabel("label", volumeLabel)
         .Build();
+
       await volume.CreateAsync();
 
       // Then
-      Assert.Equal(volumeName, volume.Name);
-      Assert.Equal(1, volume.Labels.Count);
-      Assert.Equal(volumeLabel, volume.Labels.First().Value);
+      try
+      {
+        Assert.Equal(volumeName, volume.Name);
+      }
+      finally
+      {
+        await volume.DeleteAsync();
+      }
     }
 
     [Fact]
-    public async Task NotCreatedTest()
+    public void ShouldThrowInvalidOperationException()
     {
-      // Given
-      var volumeName = Guid.NewGuid().ToString();
-      var volumeLabel = Guid.NewGuid().ToString();
-
-      // When
-      await using var volume = new TestcontainersVolumeBuilder()
-        .WithName(volumeName)
-        .WithLabel("label", volumeLabel)
-        .Build();
-
-      Assert.Throws<InvalidOperationException>(() => volume.Name);
-      Assert.Throws<InvalidOperationException>(() => volume.Labels);
+      Assert.Throws<InvalidOperationException>(() => new TestcontainersVolumeBuilder()
+        .WithName(Guid.Empty.ToString())
+        .Build()
+        .Name);
     }
   }
 }

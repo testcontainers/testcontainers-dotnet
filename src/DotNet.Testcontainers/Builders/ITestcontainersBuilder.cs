@@ -196,7 +196,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Mounts the specified managed volume into the Testcontainer.
     /// </summary>
-    /// <param name="source">A docker managed volume name.</param>
+    /// <param name="source">Name of the managed volume.</param>
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
@@ -205,7 +205,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Mounts the specified managed volume into the Testcontainer.
     /// </summary>
-    /// <param name="source">A docker managed volume name.</param>
+    /// <param name="source">Name of the managed volume.</param>
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <param name="accessMode">Volume access mode.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
@@ -215,7 +215,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Mounts the specified managed volume into the Testcontainer.
     /// </summary>
-    /// <param name="source">A docker managed volume.</param>
+    /// <param name="source">Name of the managed volume.</param>
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
@@ -224,7 +224,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Mounts the specified managed volume into the Testcontainer.
     /// </summary>
-    /// <param name="source">A docker managed volume.</param>
+    /// <param name="source">Name of the managed volume.</param>
     /// <param name="destination">An absolute path as destination in the container.</param>
     /// <param name="accessMode">Volume access mode.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>

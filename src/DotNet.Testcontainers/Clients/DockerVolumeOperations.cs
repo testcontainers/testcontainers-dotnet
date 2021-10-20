@@ -1,11 +1,12 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Collections.Generic;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Configurations.Volumes;
+  using DotNet.Testcontainers.Configurations;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerVolumeOperations : DockerApiClient, IDockerVolumeOperations
@@ -18,7 +19,47 @@ namespace DotNet.Testcontainers.Clients
       this.logger = logger;
     }
 
-    public async Task<VolumeResponse> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default)
+    public async Task<IEnumerable<VolumeResponse>> GetAllAsync(CancellationToken ct = default)
+    {
+      return (await this.Docker.Volumes.ListAsync(ct)
+        .ConfigureAwait(false)).Volumes.ToArray();
+    }
+
+    public Task<IEnumerable<VolumeResponse>> GetOrphanedObjects(CancellationToken ct = default)
+    {
+      IEnumerable<VolumeResponse> volumes = Array.Empty<VolumeResponse>();
+      return Task.FromResult(volumes);
+    }
+
+    public Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
+    {
+      throw new NotImplementedException();
+    }
+
+    public async Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)
+    {
+      return (await this.GetAllAsync(ct)
+        .ConfigureAwait(false)).FirstOrDefault(volume => volume.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    {
+      throw new NotImplementedException();
+    }
+
+    public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
+    {
+      return await this.ByIdAsync(id, ct)
+        .ConfigureAwait(false) != null;
+    }
+
+    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
+    {
+      return await this.ByNameAsync(name, ct)
+        .ConfigureAwait(false) != null;
+    }
+
+    public async Task<string> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default)
     {
       var createParameters = new VolumesCreateParameters
       {
@@ -26,18 +67,18 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      var response = await this.Docker.Volumes.CreateAsync(createParameters, ct)
-        .ConfigureAwait(false);
+      var name = (await this.Docker.Volumes.CreateAsync(createParameters, ct)
+        .ConfigureAwait(false)).Name;
 
-      this.logger.LogInformation("Volume {Name} created", response.Name);
+      this.logger.LogInformation("Volume {name} created", name);
 
-      return response;
+      return name;
     }
 
-    public Task RemoveAsync(string name, CancellationToken ct = default)
+    public Task DeleteAsync(string name, CancellationToken ct = default)
     {
-      this.logger.LogInformation("Deleting volume {Name}", name);
-      return this.Docker.Volumes.RemoveAsync(name, force: null, ct);
+      this.logger.LogInformation("Deleting volume {name}", name);
+      return this.Docker.Volumes.RemoveAsync(name, false, ct);
     }
   }
 }

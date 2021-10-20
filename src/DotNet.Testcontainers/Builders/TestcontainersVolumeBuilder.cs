@@ -2,8 +2,8 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Configurations.Volumes;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
@@ -17,7 +17,10 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="TestcontainersVolumeBuilder" /> class.
     /// </summary>
     public TestcontainersVolumeBuilder()
-      : this(Apply(endpoint: TestcontainersSettings.OS.DockerApiEndpoint))
+      : this(
+        Apply(
+          endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
+          labels: DefaultLabels.Instance))
     {
     }
 

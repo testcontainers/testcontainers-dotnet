@@ -7,6 +7,9 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   public interface IMount
   {
+    /// <summary>
+    /// Gets the Docker mount type.
+    /// </summary>
     MountType Type { get; }
 
     /// <summary>
@@ -14,6 +17,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     AccessMode AccessMode { get; }
 
+    /// <summary>
+    /// Gets the absolute path of a file, a directory or volume to mount on the host system.
+    /// </summary>
     [NotNull]
     string Source { get; }
 

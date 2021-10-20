@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using JetBrains.Annotations;
 
   /// <summary>
-  /// Docker volume access modes.
+  /// Docker mount access modes.
   /// </summary>
   public readonly struct AccessMode
   {
