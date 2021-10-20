@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Volumes
 {
-  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
 
@@ -25,9 +24,6 @@ namespace DotNet.Testcontainers.Volumes
     public string Name { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Labels { get; } = new Dictionary<string, string>();
-
-    /// <inheritdoc />
     public Task CreateAsync(CancellationToken ct = default)
     {
       return Task.CompletedTask;
@@ -37,12 +33,6 @@ namespace DotNet.Testcontainers.Volumes
     public Task DeleteAsync(CancellationToken ct = default)
     {
       return Task.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public ValueTask DisposeAsync()
-    {
-      return default;
     }
   }
 }
