@@ -115,13 +115,8 @@ namespace DotNet.Testcontainers.Clients
 
       using (var dockerFileStream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
       {
-        using (var dockerImageStream = await this.Docker.Images.BuildImageFromDockerfileAsync(dockerFileStream, buildParameters, ct)
-          .ConfigureAwait(false))
-        {
-          // Read the image stream to the end, to avoid disposing before Docker has done it's job.
-          _ = await new StreamReader(dockerImageStream).ReadToEndAsync()
-            .ConfigureAwait(false);
-        }
+        await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerFileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
+          .ConfigureAwait(false);
       }
 
       this.logger.LogInformation("Image {fullName} built", image.FullName);
