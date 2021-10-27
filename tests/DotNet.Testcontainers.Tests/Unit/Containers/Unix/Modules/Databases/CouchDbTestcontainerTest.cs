@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
   using System.Net;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
@@ -35,19 +36,26 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       const string script = @"
         #!/bin/bash
-        echo executing
-        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/ 
-        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/""001"" -d '{ "" name "" : "" MyName "" }' 
-        echo executed
-        ";
+        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/
+        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/""001"" -d '{ "" name "" : "" MyName "" }'
+      ";
+
+      var docIdRequestBuilder = new UriBuilder(this.couchDbFixture.Container.ConnectionString);
+      docIdRequestBuilder.Path = "mydatabase/001";
 
       // When
-      var results = await this.couchDbFixture.Container.ExecScriptAsync(script);
+      var result = await this.couchDbFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.Equal(0, results.ExitCode);
-      using var client = new WebClient();
-      var response = client.DownloadString($"{this.couchDbFixture.Container.ConnectionString}/mydatabase/001");
+      string response;
+
+      using (var client = new WebClient())
+      {
+        response = client.DownloadString(docIdRequestBuilder.Uri);
+      }
+
+      Assert.Equal(0, result.ExitCode);
       Assert.Contains("MyName", response);
     }
   }

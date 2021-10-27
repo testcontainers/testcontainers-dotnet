@@ -34,22 +34,21 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       const string script = @"
-
         CREATE TABLE MyTable (
 	        id serial PRIMARY KEY,
-	        name VARCHAR ( 50 ) UNIQUE NOT NULL 
+	        name VARCHAR ( 50 ) UNIQUE NOT NULL
         );
-        GO
         INSERT INTO MyTable (name) VALUES ('MyName');
-        GO
         SELECT * FROM MyTable;
-        ";
+      ";
 
       // When
-      var results = await this.postgreSqlFixture.Container.ExecScriptAsync(script);
+      var result = await this.postgreSqlFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.Contains("MyName", results.Stdout);
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("MyName", result.Stdout);
     }
   }
 }

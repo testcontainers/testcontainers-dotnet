@@ -32,9 +32,12 @@ namespace DotNet.Testcontainers.Containers
     public override async Task<ExecResult> ExecScriptAsync(string scriptContent)
     {
       var tempScriptFile = this.GetTempScriptFile();
-      await this.CopyFileAsync(tempScriptFile, Encoding.ASCII.GetBytes(scriptContent));
-      var execScriptCommand = $"exit | $ORACLE_HOME/bin/sqlplus -S {this.Username}/{this.Password}@{this.Hostname} @{tempScriptFile}";
-      return await this.ExecAsync(new[] { "/bin/sh", "-c", execScriptCommand });
+
+      await this.CopyFileAsync(tempScriptFile, Encoding.UTF8.GetBytes(scriptContent), 493)
+        .ConfigureAwait(false);
+
+      return await this.ExecAsync(new[] { "/bin/sh", "-c", $"exit | $ORACLE_HOME/bin/sqlplus -S {this.Username}/{this.Password}@{this.Hostname} @{tempScriptFile}" })
+        .ConfigureAwait(false);
     }
   }
 }

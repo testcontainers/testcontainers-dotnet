@@ -49,19 +49,20 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       const string script = @"
         -- Lua script
-        for i = 1, 5, 1 
-        do 
-           redis.call('incr', 'my-counter') 
+        for i = 1, 5, 1 do
+          redis.call('incr', 'my-counter')
         end
         local mycounter = redis.call('get', 'my-counter')
         return mycounter
-        ";
+      ";
 
       // When
-      var results = await this.redisFixture.Container.ExecScriptAsync(script);
+      var result = await this.redisFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.Contains("5", results.Stdout);
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("5", result.Stdout);
     }
   }
 }

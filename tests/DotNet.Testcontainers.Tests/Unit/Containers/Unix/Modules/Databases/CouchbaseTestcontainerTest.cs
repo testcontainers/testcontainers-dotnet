@@ -237,19 +237,21 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ExecScriptInRunningContainer()
     {
       // Given
-      _ = await this.couchbaseFixture.Container.CreateBucket("MyBucket")
-        .ConfigureAwait(false);
       const string script = @"
         CREATE PRIMARY INDEX ON `MyBucket`;
         SELECT * FROM system:indexes;
-        ";
+      ";
 
       // When
-      var results = await this.couchbaseFixture.Container.ExecScriptAsync(script)
+      _ = await this.couchbaseFixture.Container.CreateBucket("MyBucket")
+        .ConfigureAwait(false);
+
+      var result = await this.couchbaseFixture.Container.ExecScriptAsync(script)
         .ConfigureAwait(false);
 
       // Then
-      Assert.Contains("MyBucket", results.Stdout);
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("MyBucket", result.Stdout);
     }
 
     private readonly struct Customer

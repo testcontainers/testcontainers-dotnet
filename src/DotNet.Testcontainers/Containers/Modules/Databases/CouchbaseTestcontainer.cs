@@ -60,9 +60,12 @@ namespace DotNet.Testcontainers.Containers
     public override async Task<ExecResult> ExecScriptAsync(string scriptContent)
     {
       var tempScriptFile = this.GetTempScriptFile();
-      await this.CopyFileAsync(tempScriptFile, Encoding.ASCII.GetBytes(scriptContent));
-      var execScriptCommand = $"cbq -user {this.Username} -password {this.Password} -file={tempScriptFile}";
-      return await this.ExecAsync(new[] { "/bin/sh", "-c", execScriptCommand });
+
+      await this.CopyFileAsync(tempScriptFile, Encoding.UTF8.GetBytes(scriptContent), 493)
+        .ConfigureAwait(false);
+
+      return await this.ExecAsync(new[] { "cbq", "-user", this.Username, "-password", this.Password, "-file", tempScriptFile })
+        .ConfigureAwait(false);
     }
   }
 }

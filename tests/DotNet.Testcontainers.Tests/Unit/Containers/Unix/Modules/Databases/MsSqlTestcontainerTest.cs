@@ -50,24 +50,21 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       const string script = @"
-        CREATE DATABASE testcontainers;
-        GO
-        USE testcontainers;
-        GO
         CREATE TABLE MyTable (
-        id INT,
-        name VARCHAR(30) NOT NULL
+          id INT,
+          name VARCHAR(30) NOT NULL
         );
-        GO
         INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
         SELECT * FROM MyTable;
-        ";
+      ";
 
       // When
-      var results = await this.msSqlFixture.Container.ExecScriptAsync(script);
+      var result = await this.msSqlFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.Contains("MyName", results.Stdout);
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("MyName", result.Stdout);
     }
 
     [Fact]
@@ -77,11 +74,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       const string script = "invalid SQL command";
 
       // When
-      var results = await this.msSqlFixture.Container.ExecScriptAsync(script);
+      var result = await this.msSqlFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.NotEqual(0, results.ExitCode);
-      Assert.NotEqual(string.Empty, results.Stderr);
+      Assert.NotEqual(0, result.ExitCode);
+      Assert.NotEqual(string.Empty, result.Stderr);
     }
   }
 }

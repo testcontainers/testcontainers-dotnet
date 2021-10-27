@@ -58,19 +58,20 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       const string script = @"
         CREATE TABLE MyTable (
-        id INT,
-        name VARCHAR(30) NOT NULL
+          id INT,
+          name VARCHAR(30) NOT NULL
         );
-        GO
         INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
         SELECT * FROM MyTable;
-        ";
+      ";
 
       // When
-      var results = await this.oracleFixture.Container.ExecScriptAsync(script);
+      var result = await this.oracleFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
 
       // Then
-      Assert.Contains("MyName", results.Stdout);
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("MyName", result.Stdout);
     }
   }
 }

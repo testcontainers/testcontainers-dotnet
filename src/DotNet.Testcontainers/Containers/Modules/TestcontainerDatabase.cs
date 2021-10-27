@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Containers
 {
   using System;
+  using System.IO;
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
@@ -35,9 +36,13 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public virtual string Database { get; set; }
 
+    /// <summary>
+    /// Creates a path to a temporary script file.
+    /// </summary>
+    /// <returns>A path to a temporary script file.</returns>
     public virtual string GetTempScriptFile()
     {
-      return $"/{Guid.NewGuid():N}.tmp";
+      return $"/tmp/{Guid.NewGuid():N}.tmp";
     }
 
     /// <summary>
@@ -48,9 +53,12 @@ namespace DotNet.Testcontainers.Containers
     public virtual async Task<ExecResult> ExecScriptAsync(string scriptContent)
     {
       var tempScriptFile = this.GetTempScriptFile();
-      await this.CopyFileAsync(tempScriptFile, Encoding.ASCII.GetBytes(scriptContent));
-      await this.ExecAsync(new[] { "/bin/sh", "-c", $"chmod +x {tempScriptFile}" });
-      return await this.ExecAsync(new[] { "/bin/sh", "-c", tempScriptFile });
+
+      await this.CopyFileAsync(tempScriptFile, Encoding.UTF8.GetBytes(scriptContent), 493 /* 755 */)
+        .ConfigureAwait(false);
+
+      return await this.ExecAsync(new[] { "/bin/sh", "-c", tempScriptFile })
+        .ConfigureAwait(false);
     }
   }
 }
