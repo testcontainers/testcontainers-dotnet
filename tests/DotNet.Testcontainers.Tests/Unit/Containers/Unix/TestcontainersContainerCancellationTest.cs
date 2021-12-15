@@ -7,9 +7,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public static class TestcontainersContainerCancellationTest
   {
+    [Collection(nameof(Testcontainers))]
     public sealed class Cancel : IClassFixture<AlpineFixture>
     {
       private readonly AlpineFixture alpineFixture;

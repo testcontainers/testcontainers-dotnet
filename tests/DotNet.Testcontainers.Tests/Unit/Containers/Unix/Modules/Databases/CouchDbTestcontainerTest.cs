@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using System.Net;
+  using System.Net.Http;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       const string script = @"
         #!/bin/bash
         curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/
-        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/""001"" -d '{ "" name "" : "" MyName "" }'
+        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/""001"" -d '{""name"":""MyName""}'
       ";
 
       var docIdRequestBuilder = new UriBuilder(this.couchDbFixture.Container.ConnectionString);
@@ -50,9 +50,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Then
       string response;
 
-      using (var client = new WebClient())
+      using (var client = new HttpClient())
       {
-        response = client.DownloadString(docIdRequestBuilder.Uri);
+        response = await client.GetStringAsync(docIdRequestBuilder.Uri)
+          .ConfigureAwait(false);
       }
 
       Assert.Equal(0, result.ExitCode);

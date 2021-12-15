@@ -172,7 +172,7 @@ namespace DotNet.Testcontainers.Clients
                 Size = fileContent.Length,
               }));
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1_OR_GREATER
           await tarOutputStream.WriteAsync(fileContent.AsMemory(0, fileContent.Length), ct)
             .ConfigureAwait(false);
 #else

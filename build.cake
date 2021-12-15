@@ -1,8 +1,8 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.3.1
+#tool nuget:?package=dotnet-sonarscanner&version=5.4.0
 
-#addin nuget:?package=Cake.Sonar&version=1.1.25
+#addin nuget:?package=Cake.Sonar&version=1.1.29
 
-#addin nuget:?package=Cake.Git&version=1.1.0
+#addin nuget:?package=Cake.Git&version=2.0.0
 
 #load ".cake-scripts/parameters.cake"
 
@@ -43,7 +43,7 @@ Task("Clean")
 Task("Restore-NuGet-Packages")
   .Does(() =>
 {
-  DotNetCoreRestore(param.Solution, new DotNetCoreRestoreSettings
+  DotNetRestore(param.Solution, new DotNetRestoreSettings
   {
     Verbosity = param.Verbosity
   });
@@ -61,7 +61,7 @@ Task("Build-Information")
 Task("Build")
   .Does(() =>
 {
-  DotNetCoreBuild(param.Solution, new DotNetCoreBuildSettings
+  DotNetBuild(param.Solution, new DotNetBuildSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
@@ -76,7 +76,7 @@ Task("Tests")
 {
   foreach(var testProject in param.Projects.OnlyTests)
   {
-    DotNetCoreTest(testProject.Path.FullPath, new DotNetCoreTestSettings
+    DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
     {
       Configuration = param.Configuration,
       Verbosity = param.Verbosity,
@@ -132,7 +132,7 @@ Task("Create-NuGet-Packages")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
-  DotNetCorePack(param.Projects.Testcontainers.Path.FullPath, new DotNetCorePackSettings
+  DotNetPack(param.Projects.Testcontainers.Path.FullPath, new DotNetPackSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
@@ -153,7 +153,7 @@ Task("Publish-NuGet-Packages")
 {
   foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.(nupkg|snupkgs)"))
   {
-    DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings
+    DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
     {
       Source = param.NuGetCredentials.Source,
       ApiKey = param.NuGetCredentials.ApiKey

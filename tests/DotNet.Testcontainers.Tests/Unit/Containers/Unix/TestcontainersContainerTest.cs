@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Globalization;
   using System.IO;
   using System.Net;
+  using System.Net.Http;
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -177,33 +178,30 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
       }
 
-      [Fact]
-      public async Task PortBindingsHttpAndHttps()
+      [Theory]
+      [InlineData(80, 80)]
+      [InlineData(443, 80)]
+      public async Task PortBindingsHttpAndHttps(int hostPort, int containerPort)
       {
         // Given
-        var http = new { From = 80, To = 80 };
-
-        var https = new { From = 443, To = 80 };
-
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("nginx");
+          .WithImage("nginx")
+          .WithPortBinding(hostPort, containerPort)
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilPortIsAvailable(containerPort));
 
         // When
         // Then
-        foreach (var port in new[] { http, https })
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
-          await using (ITestcontainersContainer testcontainer = testcontainersBuilder
-            .WithPortBinding(port.From, port.To)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-              .UntilPortIsAvailable(port.To))
-            .Build())
+          await testcontainer.StartAsync();
+
+          using (var httpClient = new HttpClient())
           {
-            await testcontainer.StartAsync();
-
-            var request = WebRequest.Create($"http://localhost:{port.From}");
-            var response = (HttpWebResponse)await request.GetResponseAsync();
-
-            Assert.True(HttpStatusCode.OK.Equals(response.StatusCode), $"nginx port {port.From} is not available.");
+            using (var response = await httpClient.GetAsync($"http://localhost:{hostPort}"))
+            {
+              Assert.True(HttpStatusCode.OK.Equals(response.StatusCode), $"nginx port {hostPort} is not available.");
+            }
           }
         }
       }

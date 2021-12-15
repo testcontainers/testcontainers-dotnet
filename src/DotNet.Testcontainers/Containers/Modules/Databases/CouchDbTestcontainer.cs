@@ -19,7 +19,16 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Do not use clear-text protocol in production, override it.
+    /// </remarks>
+
+    // https://github.com/SonarSource/sonar-dotnet/issues/4724
+#pragma warning disable S5332
+
     public override string ConnectionString
       => $"http://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
+
+#pragma warning restore S5332
   }
 }

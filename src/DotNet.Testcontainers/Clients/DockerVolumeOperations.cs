@@ -70,14 +70,14 @@ namespace DotNet.Testcontainers.Clients
       var name = (await this.Docker.Volumes.CreateAsync(createParameters, ct)
         .ConfigureAwait(false)).Name;
 
-      this.logger.LogInformation("Volume {name} created", name);
+      this.logger.DockerVolumeCreated(name);
 
       return name;
     }
 
     public Task DeleteAsync(string name, CancellationToken ct = default)
     {
-      this.logger.LogInformation("Deleting volume {name}", name);
+      this.logger.DeleteDockerVolume(name);
       return this.Docker.Volumes.RemoveAsync(name, false, ct);
     }
   }

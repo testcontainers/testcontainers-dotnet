@@ -83,12 +83,12 @@ namespace DotNet.Testcontainers.Clients
       await this.Docker.Images.CreateImageAsync(createParameters, authConfig, this.traceProgress, ct)
         .ConfigureAwait(false);
 
-      this.logger.LogInformation("Image {fullName} created", image.FullName);
+      this.logger.DockerImageCreated(image);
     }
 
     public Task DeleteAsync(IDockerImage image, CancellationToken ct = default)
     {
-      this.logger.LogInformation("Deleting image {fullName}", image.FullName);
+      this.logger.DeleteDockerImage(image);
       return this.Docker.Images.DeleteImageAsync(image.FullName, new ImageDeleteParameters { Force = true }, ct);
     }
 
@@ -119,7 +119,7 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      this.logger.LogInformation("Image {fullName} built", image.FullName);
+      this.logger.DockerImageBuilt(image);
       return image.FullName;
     }
   }

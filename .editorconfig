@@ -1,5 +1,5 @@
-# Version: 2.1.0 (Using https://semver.org/)
-# Updated: 2021-03-03
+# Version: 4.0.0 (Using https://semver.org/)
+# Updated: 2021-10-12
 # See https://github.com/RehanSaeed/EditorConfig/releases for release notes.
 # See https://github.com/RehanSaeed/EditorConfig for updates to this file.
 # See http://EditorConfig.org for more information about .editorconfig files.
@@ -48,7 +48,7 @@ indent_size = 2
 trim_trailing_whitespace = false
 
 # Web Files
-[*.{htm,html,js,jsm,ts,tsx,css,sass,scss,less,pcss,svg,vue}]
+[*.{htm,html,js,jsm,ts,tsx,cjs,cts,ctsx,mjs,mts,mtsx,css,sass,scss,less,pcss,svg,vue}]
 indent_size = 2
 
 # Batch Files
@@ -97,7 +97,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:warning
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
 dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
-dotnet_style_parentheses_in_other_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 # Expression-level preferences
 dotnet_style_object_initializer = true:warning
 dotnet_style_collection_initializer = true:warning
@@ -121,7 +121,10 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 # If you use StyleCop, you'll need to disable SA1636: File header copyright text should match.
 # dotnet_diagnostic.SA1636.severity = none
 # Undocumented
-dotnet_style_operator_placement_when_wrapping = end_of_line
+dotnet_style_operator_placement_when_wrapping = end_of_line:warning
+csharp_style_prefer_null_check_over_type_check = true:warning
+dotnet_style_namespace_match_folder = true:suggestion
+dotnet_diagnostic.IDE0130.severity = suggestion
 
 # C# Style Rules
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules#c-style-rules
@@ -164,6 +167,8 @@ dotnet_diagnostic.IDE0063.severity = suggestion
 csharp_using_directive_placement = inside_namespace:warning
 # Modifier preferences
 csharp_prefer_static_local_function = true:warning
+# Undocumented
+csharp_style_namespace_declarations = file_scoped:warning
 
 ##########################################
 # Unnecessary Code Rules

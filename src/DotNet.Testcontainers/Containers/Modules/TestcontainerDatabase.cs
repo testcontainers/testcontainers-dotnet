@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Containers
 {
-  using System;
   using System.IO;
   using System.Text;
   using System.Threading.Tasks;
@@ -42,7 +41,7 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A path to a temporary script file.</returns>
     public virtual string GetTempScriptFile()
     {
-      return $"/tmp/{Guid.NewGuid():N}.tmp";
+      return Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     }
 
     /// <summary>

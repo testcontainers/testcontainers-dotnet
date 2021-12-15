@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Clients
 
     public void Report(JSONMessage value)
     {
-      this.logger.LogTrace(value.ToString());
+      this.logger.Progress(value.ProgressMessage);
     }
   }
 }

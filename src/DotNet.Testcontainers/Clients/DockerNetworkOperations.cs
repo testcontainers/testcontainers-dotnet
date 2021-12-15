@@ -73,14 +73,13 @@ namespace DotNet.Testcontainers.Clients
       var id = (await this.Docker.Networks.CreateNetworkAsync(createParameters, ct)
         .ConfigureAwait(false)).ID;
 
-      this.logger.LogInformation("Network {id} created", id);
-
+      this.logger.DockerNetworkCreated(id);
       return id;
     }
 
     public Task DeleteAsync(string id, CancellationToken ct = default)
     {
-      this.logger.LogInformation("Deleting network {id}", id);
+      this.logger.DeleteDockerNetwork(id);
       return this.Docker.Networks.DeleteNetworkAsync(id, ct);
     }
   }
