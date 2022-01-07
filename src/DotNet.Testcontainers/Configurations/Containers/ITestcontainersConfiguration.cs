@@ -15,6 +15,11 @@ namespace DotNet.Testcontainers.Configurations
   public interface ITestcontainersConfiguration
   {
     /// <summary>
+    /// Gets a value indicating whether the Testcontainer is in privileged mode or not.
+    /// </summary>
+    bool Privileged { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the Testcontainer is removed on finalize or not.
     /// </summary>
     bool CleanUp { get; }

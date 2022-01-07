@@ -34,6 +34,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
     /// <param name="cleanUp">A value indicating whether the Testcontainer is removed on finalize or not.</param>
+    /// <param name="privileged">A value indicating whether the Testcontainer is running in privileged mode.</param>
     public TestcontainersConfiguration(
       Uri endpoint,
       IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations,
@@ -52,8 +53,10 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback,
-      bool cleanUp = true)
+      bool cleanUp = true,
+      bool privileged = false)
     {
+      this.Privileged = privileged;
       this.CleanUp = cleanUp;
       this.Endpoint = endpoint;
       this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfigurations;
@@ -74,7 +77,11 @@ namespace DotNet.Testcontainers.Configurations
       this.StartupCallback = startupCallback;
     }
 
+
 #pragma warning restore S107
+
+    /// <inheritdoc />
+    public bool Privileged { get; }
 
     /// <inheritdoc />
     public bool CleanUp { get; }

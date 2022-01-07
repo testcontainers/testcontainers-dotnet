@@ -50,6 +50,14 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithName(string name);
 
     /// <summary>
+    /// If true, Testcontainer will run in privileged mode.
+    /// </summary>
+    /// <param name="privileged">True, Testcontainer will run in privileged mode. Otherwise, Testcontainer will run in standard unprivileged mode.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged);
+
+    /// <summary>
     /// Sets the hostname of the Testcontainer.
     /// </summary>
     /// <param name="hostname">Testcontainers hostname.</param>

@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Configurations
 
   public class Db2TestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string Db2Image = "remote-docker-hub.artifactory.danskenet.net/ibmcom/db2:11.5.7.0";
+    private const string Db2Image = "ibmcom/db2:11.5.7.0";
 
     private const int Db2Port = 50000;
     private const string WaitUntilMessageIsLogged = "Setup has completed.";
@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="Db2TestcontainerConfiguration" /> class.
     /// </summary>
     public Db2TestcontainerConfiguration()
-        : this(Db2Image)
+      : this(Db2Image)
     {
     }
 

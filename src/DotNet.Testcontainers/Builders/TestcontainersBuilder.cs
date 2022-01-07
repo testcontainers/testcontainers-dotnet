@@ -93,6 +93,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged)
+    {
+      return Build(this, Apply(privileged: privileged));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname)
     {
       return Build(this, Apply(hostname: hostname));
@@ -305,7 +311,8 @@ namespace DotNet.Testcontainers.Builders
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
-      bool cleanUp = true)
+      bool cleanUp = true,
+      bool privileged = false)
     {
       return new TestcontainersConfiguration(
         endpoint,
@@ -325,7 +332,8 @@ namespace DotNet.Testcontainers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
-        cleanUp);
+        cleanUp,
+        privileged);
     }
 
 #pragma warning restore S107
@@ -336,6 +344,7 @@ namespace DotNet.Testcontainers.Builders
       Action<TDockerContainer> moduleConfiguration = null)
     {
       var cleanUp = next.CleanUp && previous.configuration.CleanUp;
+      var privileged = next.Privileged || previous.configuration.Privileged;
       var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
       var image = BuildConfiguration.Combine(next.Image, previous.configuration.Image);
       var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
@@ -373,7 +382,8 @@ namespace DotNet.Testcontainers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
-        cleanUp);
+        cleanUp,
+        privileged);
 
       return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);
     }

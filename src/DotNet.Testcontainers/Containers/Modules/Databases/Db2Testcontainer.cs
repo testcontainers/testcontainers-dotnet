@@ -15,7 +15,9 @@ namespace DotNet.Testcontainers.Containers
       : base(configuration, logger)
     {
     }
+
     /// <inheritdoc />
-    public override string ConnectionString => $"Server={Hostname}:{Port};Database={Database};User ID={Username};Password={Password};";
+    public override string ConnectionString
+      => $"Server={Hostname}:{Port};Database={Database};User ID={Username};Password={Password};";
   }
 }

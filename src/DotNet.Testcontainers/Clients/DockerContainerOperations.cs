@@ -153,6 +153,7 @@ namespace DotNet.Testcontainers.Clients
       {
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
+        Privileged = configuration.Privileged,
       };
 
       var networkingConfig = new NetworkingConfig
