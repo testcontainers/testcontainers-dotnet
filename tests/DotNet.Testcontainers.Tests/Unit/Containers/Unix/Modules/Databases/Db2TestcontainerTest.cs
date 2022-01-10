@@ -30,5 +30,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Then
       Assert.Equal(ConnectionState.Open, connection.State);
     }
+
+    [Fact]
+    public void CannotSetUsername()
+    {
+      var db2 = new Db2TestcontainerConfiguration();
+      Assert.Throws<NotImplementedException>(() => db2.Username = string.Empty);
+    }
   }
 }

@@ -1,19 +1,20 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Data.Common;
-  using System.Data.SqlClient;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using IBM.Data.DB2.Core;
 
-  public sealed class Db2Fixture : DatabaseFixture<MsSqlTestcontainer, DbConnection>
+
+  public sealed class Db2Fixture : DatabaseFixture<Db2Testcontainer, DbConnection>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new Db2TestcontainerConfiguration { Database = "TestDb", Password = "yourStrong(!)Password" }; // https://hub.docker.com/r/ibmcom/db2.
 
     public Db2Fixture()
     {
-      this.Container = new TestcontainersBuilder<MsSqlTestcontainer>()
+      this.Container = new TestcontainersBuilder<Db2Testcontainer>()
         .WithDatabase(this.configuration)
         .WithPrivileged(true)
         .Build();
@@ -24,7 +25,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       await this.Container.StartAsync()
         .ConfigureAwait(false);
 
-      this.Connection = new SqlConnection(this.Container.ConnectionString);
+      this.Connection = new DB2Connection(this.Container.ConnectionString);
     }
 
     public override async Task DisposeAsync()

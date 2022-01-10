@@ -29,6 +29,9 @@
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="System.Data.SqlClient" />
+    <PackageReference Include="IBM.Data.DB2.Core" Condition="'$(OS)'== 'Windows_NT'"/>
+    <PackageReference Include="IBM.Data.DB2.Core-lnx" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' "/>
+    <PackageReference Include="IBM.Data.DB2.Core-osx" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' "/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/DotNet.Testcontainers/DotNet.Testcontainers.csproj" />
