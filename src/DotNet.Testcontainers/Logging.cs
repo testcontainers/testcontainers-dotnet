@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers
+namespace DotNet.Testcontainers
 {
   using System;
   using System.Collections.Generic;
@@ -90,6 +90,10 @@
     }
 
     public static void ExtractArchiveToDockerContainer(this ILogger logger, string id, string path)
+    {
+      _ExtractArchiveToDockerContainer(logger, path, id, null);
+    }
+    public static void GetArchiveFromContainer(this ILogger logger, string id, string path)
     {
       _ExtractArchiveToDockerContainer(logger, path, id, null);
     }

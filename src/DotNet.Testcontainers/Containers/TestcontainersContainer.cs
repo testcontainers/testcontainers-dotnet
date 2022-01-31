@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -181,6 +182,15 @@ namespace DotNet.Testcontainers.Containers
       return this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct);
     }
 
+    public Task ExportFilesFromContainerAsync(string containerPath, Stream outStream)
+    {
+      if (string.IsNullOrWhiteSpace(containerPath))
+      {
+        throw new ArgumentException("Value cannot be null or whitespace.", nameof(containerPath));
+      }
+
+      return this.client.ExportFilesFromContainerAsync(this.Id, containerPath, outStream);
+    }
     /// <inheritdoc />
     public Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default)
     {

@@ -222,5 +222,10 @@ namespace DotNet.Testcontainers.Clients
     {
       return this.images.BuildAsync(configuration, ct);
     }
+
+    public Task ExportFilesFromContainerAsync(string id, string containerPath, Stream outStream, CancellationToken ct = default)
+    {
+      return this.containers.GetArchiveFromContainerAsync(id, containerPath, outStream, ct);
+    }
   }
 }

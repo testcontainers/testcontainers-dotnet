@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -94,6 +95,18 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the file has been copied.</returns>
     Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Copy file from container
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="containerPath">Path to the file in the container</param>
+    /// <param name="outStream">Output stream</param>
+    /// <returns>Task that completes when the file has been copied.</returns>
+    ///
+
+    Task ExportFilesFromContainerAsync(string id, string containerPath, Stream outStream, CancellationToken ct = default);
+
 
     /// <summary>
     /// Creates a container.

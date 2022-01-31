@@ -92,6 +92,12 @@ namespace DotNet.Testcontainers.Clients
       this.logger.ExtractArchiveToDockerContainer(id, path);
       return this.Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
     }
+    public async Task GetArchiveFromContainerAsync(string id, string path, Stream outStream, CancellationToken ct = default)
+    {
+      this.logger.GetArchiveFromContainer(id, path);
+      var result = await this.Docker.Containers.GetArchiveFromContainerAsync(id, new GetArchiveFromContainerParameters { Path = path }, true, ct);
+      await result.Stream.CopyToAsync(outStream);
+    }
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
