@@ -59,33 +59,33 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       this.cts.Dispose();
     }
 
-    private void OnStateChanged(object sender, ResourceReaperState e)
+    private void OnStateChanged(object sender, ResourceReaperStateEventArgs e)
     {
-      if (this.IsTest((ResourceReaper)sender))
+      if (this.IsTest(e.Instance))
       {
-        this.stateChanges.Add(e);
+        this.stateChanges.Add(e.State);
       }
     }
 
-    private void CancelOnCreated(object sender, ResourceReaperState e)
+    private void CancelOnCreated(object sender, ResourceReaperStateEventArgs e)
     {
-      if (this.IsTest((ResourceReaper)sender) && ResourceReaperState.Created.Equals(e))
+      if (this.IsTest(e.Instance) && ResourceReaperState.Created.Equals(e.State))
       {
         this.cts.Cancel();
       }
     }
 
-    private void CancelOnInitializingConnection(object sender, ResourceReaperState e)
+    private void CancelOnInitializingConnection(object sender, ResourceReaperStateEventArgs e)
     {
-      if (this.IsTest((ResourceReaper)sender) && ResourceReaperState.InitializingConnection.Equals(e))
+      if (this.IsTest(e.Instance) && ResourceReaperState.InitializingConnection.Equals(e.State))
       {
         this.cts.CancelAfter(TimeSpan.FromSeconds(1));
       }
     }
 
-    private void CancelOnMaintainingConnection(object sender, ResourceReaperState e)
+    private void CancelOnMaintainingConnection(object sender, ResourceReaperStateEventArgs e)
     {
-      if (this.IsTest((ResourceReaper)sender) && ResourceReaperState.MaintainingConnection.Equals(e))
+      if (this.IsTest(e.Instance) && ResourceReaperState.MaintainingConnection.Equals(e.State))
       {
         this.cts.CancelAfter(TimeSpan.FromSeconds(1));
       }
@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
     private bool IsTest(ResourceReaper resourceReaper)
     {
-      return resourceReaper != null && resourceReaper.SessionId.Equals(this.sessionId);
+      return resourceReaper.SessionId.Equals(this.sessionId);
     }
   }
 }

@@ -99,7 +99,7 @@
     {
       // Given
       var resourceReaperState = ResourceReaperState.Created;
-      ResourceReaper.StateChanged += (_, e) => resourceReaperState = e;
+      ResourceReaper.StateChanged += (_, e) => resourceReaperState = e.State;
 
       // When
       await this.resourceReaper.DisposeAsync()
@@ -111,13 +111,13 @@
 
     public async Task InitializeAsync()
     {
-      this.resourceReaper = await ResourceReaper.GetAndStartNewAsync(Guid.NewGuid())
+      this.resourceReaper = await ResourceReaper.GetAndStartNewAsync()
         .ConfigureAwait(false);
     }
 
     public Task DisposeAsync()
     {
-      return this.resourceReaper == null ? Task.CompletedTask : this.resourceReaper.DisposeAsync().AsTask();
+      return this.resourceReaper.DisposeAsync().AsTask();
     }
   }
 }

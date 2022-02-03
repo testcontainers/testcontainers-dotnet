@@ -61,12 +61,14 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
         .WithAutoRemove(true)
         .WithResourceReaperSessionId(Guid.NewGuid());
 
+      // When
       await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
       {
         await testcontainer.StartAsync()
           .ConfigureAwait(false);
       }
 
+      // Then
       Assert.False(Docker.Exists(DockerResource.Container, DefaultRyukContainerName));
     }
 

@@ -41,7 +41,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithStartupCallback` sets the startup callback to invoke after the container start.
 - `WithPrivileged` sets the `--privileged` flag.
 - `WithAutoRemove` will remove the stopped container automatically like `--rm`.
-- `WithCleanUp` will remove the container automatically after all tests have been run (see [Resource Reaper](#Resource Reaper)).
+- `WithCleanUp` will remove the container automatically after all tests have been run (see [Resource Reaper](#resource-reaper)).
 - `WithResourceReaperSessionId` assigns a Resource Reaper session id to the container.
 
 Use the additional builder for image (`ImageFromDockerfileBuilder`), network (`TestcontainersNetworkBuilder`) and volume (`TestcontainersVolumeBuilder`) to set up your individual test environment.
