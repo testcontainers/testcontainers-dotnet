@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A path to a temporary script file.</returns>
     public virtual string GetTempScriptFile()
     {
-      return Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+      return Path.Combine("/tmp/", Path.GetRandomFileName());
     }
 
     /// <summary>
