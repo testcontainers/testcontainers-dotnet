@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class RabbitMqTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
   {
-    private const string RabbitMqImage = "rabbitmq:3.7.21";
+    private const string RabbitMqImage = "rabbitmq:3.7.28";
 
     private const int RabbitMqPort = 5672;
 

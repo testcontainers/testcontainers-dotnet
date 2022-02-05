@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System.IO;
   using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -47,15 +48,16 @@ namespace DotNet.Testcontainers.Containers
     /// Executes a bash script in the database container.
     /// </summary>
     /// <param name="scriptContent">The content of the bash script to be executed.</param>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the script has been executed.</returns>
-    public virtual async Task<ExecResult> ExecScriptAsync(string scriptContent)
+    public virtual async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
     {
       var tempScriptFile = this.GetTempScriptFile();
 
-      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493 /* 755 */)
+      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493 /* 755 */, 0, 0, ct)
         .ConfigureAwait(false);
 
-      return await this.ExecAsync(new[] { "/bin/sh", "-c", tempScriptFile })
+      return await this.ExecAsync(new[] { "/bin/sh", "-c", tempScriptFile }, ct)
         .ConfigureAwait(false);
     }
   }

@@ -83,22 +83,20 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        var endpointScheme = this.configuration.Endpoint.Scheme;
+        var dockerHostUri = this.configuration.Endpoint;
 
-        if (new[] { "tcp", "http", "https" }
-          .Any(scheme => scheme.Equals(endpointScheme, StringComparison.OrdinalIgnoreCase)))
+        switch (dockerHostUri.Scheme)
         {
-          return this.configuration.Endpoint.Host;
+          case "http":
+          case "https":
+          case "tcp":
+            return dockerHostUri.Host;
+          case "npipe":
+          case "unix":
+            return this.GetContainerGateway() ?? "localhost";
+          default:
+            throw new InvalidOperationException($"Docker endpoint {dockerHostUri} is not supported.");
         }
-
-        if (new[] { "unix", "npipe" }
-          .Any(scheme => scheme.Equals(endpointScheme, StringComparison.OrdinalIgnoreCase)) && this.client.IsRunningInsideDocker)
-        {
-          this.ThrowIfContainerHasNotBeenCreated();
-          return this.container.NetworkSettings.Networks.First().Value.Gateway;
-        }
-
-        return "localhost";
       }
     }
 
@@ -134,8 +132,17 @@ namespace DotNet.Testcontainers.Containers
     public ushort GetMappedPublicPort(string privatePort)
     {
       this.ThrowIfContainerHasNotBeenCreated();
+
       var mappedPort = this.container.Ports.FirstOrDefault(port => Convert.ToString(port.PrivatePort, CultureInfo.InvariantCulture).Equals(privatePort, StringComparison.Ordinal));
-      return mappedPort?.PublicPort ?? ushort.MinValue;
+
+      if (mappedPort != null)
+      {
+        return mappedPort.PublicPort;
+      }
+      else
+      {
+        throw new InvalidOperationException($"Exposed port {privatePort} is not mapped.");
+      }
     }
 
     /// <inheritdoc />
@@ -319,6 +326,19 @@ namespace DotNet.Testcontainers.Containers
       {
         throw new InvalidOperationException("Testcontainer has not been created.");
       }
+    }
+
+    private string GetContainerGateway()
+    {
+      if (!this.client.IsRunningInsideDocker || !ContainerHasBeenCreatedStates.Contains(this.State))
+      {
+        return null;
+      }
+
+      return this.container.NetworkSettings.Networks
+        .Select(network => network.Value)
+        .Select(network => network.Gateway)
+        .FirstOrDefault();
     }
   }
 }

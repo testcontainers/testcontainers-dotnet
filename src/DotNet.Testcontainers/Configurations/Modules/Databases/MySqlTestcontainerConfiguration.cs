@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class MySqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string MySqlImage = "mysql:8.0.18";
+    private const string MySqlImage = "mysql:8.0.28";
 
     private const int MySqlPort = 3306;
 
@@ -52,6 +52,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted($"mysql --host='localhost' --port='{this.DefaultPort}' --user='{this.Username}' --password='{this.Password}' --protocol=TCP --execute 'SHOW DATABASES;'");
+      .UntilCommandIsCompleted("mysql", "--host=localhost", $"--port={this.DefaultPort}", $"--user={this.Username}", $"--password={this.Password}", "--protocol=TCP", "--execute=SHOW DATABASES");
   }
 }

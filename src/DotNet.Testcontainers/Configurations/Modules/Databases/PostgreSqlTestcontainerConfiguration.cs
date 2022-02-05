@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class PostgreSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string PostgreSqlImage = "postgres:11.5";
+    private const string PostgreSqlImage = "postgres:11.14";
 
     private const int PostgreSqlPort = 5432;
 
@@ -51,6 +51,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted($"pg_isready -h 'localhost' -p '{this.DefaultPort}'");
+      .UntilCommandIsCompleted("pg_isready", "--host", "localhost", "--port", $"{this.DefaultPort}");
   }
 }

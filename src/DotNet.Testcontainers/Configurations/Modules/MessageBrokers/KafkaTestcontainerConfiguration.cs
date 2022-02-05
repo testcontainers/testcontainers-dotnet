@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class KafkaTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
   {
-    private const string KafkaImage = "confluentinc/cp-kafka:6.0.1";
+    private const string KafkaImage = "confluentinc/cp-kafka:6.0.5";
 
     private const string StartupScriptPath = "/testcontainers_start.sh";
 
@@ -63,16 +63,25 @@ namespace DotNet.Testcontainers.Configurations
     public virtual Func<IRunningDockerContainer, CancellationToken, Task> StartupCallback
       => (container, ct) =>
       {
+        const char lf = '\n';
         var startupScript = new StringBuilder();
-        startupScript.AppendLine("#!/bin/sh");
-        startupScript.AppendLine($"echo 'clientPort={ZookeeperPort}' > zookeeper.properties");
-        startupScript.AppendLine("echo 'dataDir=/var/lib/zookeeper/data' >> zookeeper.properties");
-        startupScript.AppendLine("echo 'dataLogDir=/var/lib/zookeeper/log' >> zookeeper.properties");
-        startupScript.AppendLine("zookeeper-server-start zookeeper.properties &");
-        startupScript.AppendLine($"export KAFKA_ADVERTISED_LISTENERS='PLAINTEXT://{container.Hostname}:{container.GetMappedPublicPort(this.DefaultPort)},BROKER://localhost:{BrokerPort}'");
-        startupScript.AppendLine(". /etc/confluent/docker/bash-config");
-        startupScript.AppendLine("/etc/confluent/docker/configure");
-        startupScript.AppendLine("/etc/confluent/docker/launch");
+        startupScript.Append("#!/bin/sh");
+        startupScript.Append(lf);
+        startupScript.Append($"echo 'clientPort={ZookeeperPort}' > zookeeper.properties");
+        startupScript.Append(lf);
+        startupScript.Append("echo 'dataDir=/var/lib/zookeeper/data' >> zookeeper.properties");
+        startupScript.Append(lf);
+        startupScript.Append("echo 'dataLogDir=/var/lib/zookeeper/log' >> zookeeper.properties");
+        startupScript.Append(lf);
+        startupScript.Append("zookeeper-server-start zookeeper.properties &");
+        startupScript.Append(lf);
+        startupScript.Append($"export KAFKA_ADVERTISED_LISTENERS='PLAINTEXT://{container.Hostname}:{container.GetMappedPublicPort(this.DefaultPort)},BROKER://localhost:{BrokerPort}'");
+        startupScript.Append(lf);
+        startupScript.Append(". /etc/confluent/docker/bash-config");
+        startupScript.Append(lf);
+        startupScript.Append("/etc/confluent/docker/configure");
+        startupScript.Append(lf);
+        startupScript.Append("/etc/confluent/docker/launch");
         return container.CopyFileAsync(StartupScriptPath, Encoding.Default.GetBytes(startupScript.ToString()), 0x1ff, ct: ct);
       };
 

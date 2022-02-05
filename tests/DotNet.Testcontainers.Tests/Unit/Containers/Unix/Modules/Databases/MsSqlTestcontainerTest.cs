@@ -79,7 +79,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.NotEqual(0, result.ExitCode);
-      Assert.NotEqual(string.Empty, result.Stderr);
+      Assert.Contains("Msg 102, Level 15, State 1", result.Stderr);
     }
   }
 }

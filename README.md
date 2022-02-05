@@ -56,14 +56,14 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 
 - Apache CouchDB (couchdb:2.3.1)
 - Couchbase (couchbase:6.5.1)
-- Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU14-ubuntu)
-- MongoDB (mongo:5.0.2)
-- MySQL (mysql:8.0.18)
+- Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04)
+- MongoDB (mongo:5.0.6)
+- MySQL (mysql:8.0.28)
 - Oracle Database (wnameless/oracle-xe-11g-r2)
-- PostgreSQL (postgres:11.5)
-- Redis (redis:5.0.6)
-- Apache Kafka (confluentinc/cp-kafka:6.0.1)
-- RabbitMQ (rabbitmq:3.7.21)
+- PostgreSQL (postgres:11.14)
+- Redis (redis:5.0.14)
+- Apache Kafka (confluentinc/cp-kafka:6.0.5)
+- RabbitMQ (rabbitmq:3.7.28)
 
 ## Examples
 
@@ -79,7 +79,7 @@ var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
 await using (var testcontainers = testcontainersBuilder.Build())
 {
   await testcontainers.StartAsync();
-  var request = WebRequest.Create("http://localhost:80");
+  _ = WebRequest.Create("http://localhost:80");
 }
 ```
 
@@ -105,14 +105,14 @@ Here is an example of a pre-configured container. In the example,  Testcontainer
 ```csharp
 public sealed class PostgreSqlTest : IAsyncLifetime
 {
-  private readonly TestcontainerDatabase container = new TestcontainersBuilder<TestcontainerDatabase>()
+  private readonly TestcontainerDatabase testcontainers = new TestcontainersBuilder<TestcontainerDatabase>()
     .WithDatabase(new PostgreSqlTestcontainerConfiguration())
     .Build();
 
   [Fact]
   public void ExecuteCommand()
   {
-    using (var connection = new NpgsqlConnection(this.container.ConnectionString))
+    using (var connection = new NpgsqlConnection(this.testcontainers.ConnectionString))
     {
       using (var command = new NpgsqlCommand())
       {
@@ -174,4 +174,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
 [3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
 [moby-ryuk]: https://github.com/testcontainers/moby-ryuk
-[xunit]: https://xunit.net/
+[xunit]: https://xunit.net

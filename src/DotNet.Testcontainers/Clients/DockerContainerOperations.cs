@@ -118,24 +118,17 @@ namespace DotNet.Testcontainers.Clients
       var execCreateResponse = await this.Docker.Exec.ExecCreateContainerAsync(id, execCreateParameters, ct)
         .ConfigureAwait(false);
 
-      var stdOutAndErrStream = await this.Docker.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, ct)
-        .ConfigureAwait(false);
-
-      for (ContainerExecInspectResponse response; (response = await this.Docker.Exec.InspectContainerExecAsync(execCreateResponse.ID, ct)
-        .ConfigureAwait(false)) != null;)
+      using (var stdOutAndErrStream = await this.Docker.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, ct)
+        .ConfigureAwait(false))
       {
-        if (response.Running)
-        {
-          continue;
-        }
-
         var (stdout, stderr) = await stdOutAndErrStream.ReadOutputToEndAsync(ct)
           .ConfigureAwait(false);
 
-        return new ExecResult(stdout, stderr, response.ExitCode);
-      }
+        var execInspectResponse = await this.Docker.Exec.InspectContainerExecAsync(execCreateResponse.ID, ct)
+          .ConfigureAwait(false);
 
-      return ExecResult.Failure;
+        return new ExecResult(stdout, stderr, execInspectResponse.ExitCode);
+      }
     }
 
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)

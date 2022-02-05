@@ -21,12 +21,6 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Gets the failure exec result.
-    /// </summary>
-    public static ExecResult Failure { get; }
-      = new ExecResult(string.Empty, string.Empty, long.MinValue);
-
-    /// <summary>
     /// Gets the stdout output.
     /// </summary>
     [PublicAPI]

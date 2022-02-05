@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.NotEqual(0, result.ExitCode);
-      Assert.NotEqual(string.Empty, result.Stderr);
+      Assert.Contains("ERROR 1064 (42000)", result.Stderr);
     }
   }
 }

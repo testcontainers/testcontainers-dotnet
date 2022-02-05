@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class RedisTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string RedisImage = "redis:5.0.6";
+    private const string RedisImage = "redis:5.0.14";
 
     private const int RedisPort = 6379;
 
@@ -52,6 +52,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted("redis-cli ping");
+      .UntilCommandIsCompleted("redis-cli", "ping");
   }
 }

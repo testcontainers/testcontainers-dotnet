@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Containers
 {
   using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -28,15 +29,16 @@ namespace DotNet.Testcontainers.Containers
     /// Executes a SQL script in the database container.
     /// </summary>
     /// <param name="scriptContent">The content of the SQL script to be executed.</param>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the script has been executed.</returns>
-    public override async Task<ExecResult> ExecScriptAsync(string scriptContent)
+    public override async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
     {
       var tempScriptFile = this.GetTempScriptFile();
 
-      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493)
+      await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
         .ConfigureAwait(false);
 
-      return await this.ExecAsync(new[] { "psql", "-U", this.Username, "-d", this.Database, "-a", "-f", tempScriptFile })
+      return await this.ExecAsync(new[] { "psql", "--username", this.Username, "--dbname", this.Database, "--file", tempScriptFile }, ct)
         .ConfigureAwait(false);
     }
   }

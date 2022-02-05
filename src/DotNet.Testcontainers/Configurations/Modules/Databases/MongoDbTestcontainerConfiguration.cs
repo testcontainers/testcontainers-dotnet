@@ -7,7 +7,7 @@
   [PublicAPI]
   public class MongoDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string MongoDbImage = "mongo:5.0.2";
+    private const string MongoDbImage = "mongo:5.0.6";
 
     private const int MongoDbPort = 27017;
 
@@ -51,6 +51,6 @@
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted($"mongo --eval 'db.runCommand(\"ping\").ok' localhost:{this.DefaultPort} --quiet");
+      .UntilCommandIsCompleted("mongo", $"localhost:{this.DefaultPort}", "--eval", "db.runCommand(\"ping\").ok", "--quiet");
   }
 }

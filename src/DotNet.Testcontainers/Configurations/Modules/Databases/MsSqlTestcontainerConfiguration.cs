@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2017-CU14-ubuntu";
+    private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04";
 
     private const int MsSqlPort = 1433;
 
@@ -53,6 +53,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilCommandIsCompleted($"/opt/mssql-tools/bin/sqlcmd -S 'localhost,{this.DefaultPort}' -U '{this.Username}' -P '{this.Password}'");
+      .UntilCommandIsCompleted("/opt/mssql-tools/bin/sqlcmd", "-S", $"localhost,{this.DefaultPort}", "-U", this.Username, "-P", this.Password);
   }
 }
