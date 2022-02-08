@@ -12,6 +12,9 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
 
+  /// <summary>
+  /// https://hub.docker.com/r/testcontainers/ryuk.
+  /// </summary>
   public sealed class ResourceReaper : IAsyncDisposable
   {
     public const string ResourceReaperSessionLabel = TestcontainersClient.TestcontainersLabel + ".resource-reaper-session";
@@ -60,7 +63,7 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(string, TimeSpan, CancellationToken)" />
+    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(CancellationToken)" />
     /// or if a <see cref="ITestcontainersContainer" /> is configured with <see cref="ITestcontainersBuilder{TDockerContainer}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
@@ -76,15 +79,10 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Starts and returns the default <see cref="ResourceReaper" /> instance.
     /// </summary>
-    /// <param name="ryukImage">The Ryuk image.</param>
-    /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: 10 seconds).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
-    /// <remarks>
-    /// https://hub.docker.com/r/testcontainers/ryuk.
-    /// </remarks>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartDefaultAsync(CancellationToken ct = default)
     {
       if (defaultInstance != null && !defaultInstance.disposed)
       {
@@ -101,8 +99,9 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, ryukImage, initTimeout, ct)
+        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, RyukImage, default, ct)
           .ConfigureAwait(false);
+
         return defaultInstance;
       }
       finally
@@ -135,20 +134,33 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
+      var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
+
       var resourceReaper = new ResourceReaper(sessionId, ryukImage);
+
+      initTimeout = Equals(default(TimeSpan), initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
 
       try
       {
-        // TODO: initTimeoutCts should start after the container is up and running (this includes Docker pull).
-        using (var initTimeoutCts = new CancellationTokenSource(initTimeout.Equals(default) ? TimeSpan.FromSeconds(10) : initTimeout))
+        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.Created));
+
+        await resourceReaper.resourceReaperContainer.StartAsync(ct)
+          .ConfigureAwait(false);
+
+        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.InitializingConnection));
+
+        using (var initTimeoutCts = new CancellationTokenSource(initTimeout))
         {
-          using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, initTimeoutCts.Token))
+          using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(initTimeoutCts.Token, ct))
           {
-            await resourceReaper.StartAsync(linkedCts.Token)
+            resourceReaper.maintainConnectionTask = resourceReaper.MaintainRyukConnection(ryukInitializedTaskSource, linkedCts.Token);
+
+            await ryukInitializedTaskSource.Task
               .ConfigureAwait(false);
-            return resourceReaper;
           }
         }
+
+        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.MaintainingConnection));
       }
       catch (Exception)
       {
@@ -156,6 +168,8 @@ namespace DotNet.Testcontainers.Containers
           .ConfigureAwait(false);
         throw;
       }
+
+      return resourceReaper;
     }
 
     /// <inheritdoc />
@@ -189,27 +203,6 @@ namespace DotNet.Testcontainers.Containers
         await this.resourceReaperContainer.DisposeAsync()
           .ConfigureAwait(false);
       }
-    }
-
-    private async Task StartAsync(CancellationToken ct)
-    {
-      var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
-
-      StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(this, ResourceReaperState.Created));
-
-      await this.resourceReaperContainer.StartAsync(ct)
-        .ConfigureAwait(false);
-
-      StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(this, ResourceReaperState.InitializingConnection));
-
-      // Connect to Ryuk and keep the connection open.
-      this.maintainConnectionTask = this.MaintainRyukConnection(ryukInitializedTaskSource, ct);
-
-      // This task will complete as soon as the Ryuk connection is established.
-      await ryukInitializedTaskSource.Task
-        .ConfigureAwait(false);
-
-      StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(this, ResourceReaperState.MaintainingConnection));
     }
 
     /// <summary>
