@@ -94,21 +94,6 @@
       Assert.False(Docker.Exists(DockerResource.Volume, volumeName));
     }
 
-    [Fact]
-    public async Task DisposeAsyncShouldAwaitConnectionTerminatedState()
-    {
-      // Given
-      var resourceReaperState = ResourceReaperState.Created;
-      ResourceReaper.StateChanged += (_, e) => resourceReaperState = e.State;
-
-      // When
-      await this.resourceReaper.DisposeAsync()
-        .ConfigureAwait(false);
-
-      // Then
-      Assert.Equal(ResourceReaperState.ConnectionTerminated, resourceReaperState);
-    }
-
     public async Task InitializeAsync()
     {
       this.resourceReaper = await ResourceReaper.GetAndStartNewAsync()

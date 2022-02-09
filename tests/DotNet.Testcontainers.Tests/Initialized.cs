@@ -16,6 +16,7 @@
       {
         serviceCollection.AddSingleton<ILoggerFactory, CustomSerilogLoggerFactory>();
         serviceCollection.AddSingleton<ILogger>(serviceProvider => serviceProvider.GetRequiredService<ILogger<Initialized>>());
+        serviceCollection.AddSingleton<FactAttribute, SkipOnLinuxEngineAttribute>();
         serviceCollection.AddHostedService<Initialization>();
       })
       .Build();

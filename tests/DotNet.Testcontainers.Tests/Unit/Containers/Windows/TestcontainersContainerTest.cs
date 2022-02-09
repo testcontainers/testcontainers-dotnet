@@ -11,14 +11,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
     [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
     {
-      [IgnoreOnLinuxEngine]
+      [SkipOnLinuxEngine]
       public async Task IsWindowsEngineEnabled()
       {
         var client = new TestcontainersClient();
         Assert.True(await client.GetIsWindowsEngineEnabled());
       }
 
-      [IgnoreOnLinuxEngine]
+      [SkipOnLinuxEngine]
       public async Task UntilCommandIsCompleted()
       {
         // Given
@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
         }
       }
 
-      [IgnoreOnLinuxEngine]
+      [SkipOnLinuxEngine]
       public async Task UntilPortIsAvailable()
       {
         // Given

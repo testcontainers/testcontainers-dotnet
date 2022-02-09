@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
@@ -20,6 +21,21 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     public ResourceReaperCancellableTest()
     {
       ResourceReaper.StateChanged += this.OnStateChanged;
+    }
+
+    [Fact]
+    public async Task DisposeAsyncShouldAwaitConnectionTerminatedState()
+    {
+      // Given
+      var resourceReaper = await ResourceReaper.GetAndStartNewAsync(this.sessionId)
+        .ConfigureAwait(false);
+
+      // When
+      await resourceReaper.DisposeAsync()
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(Enum.GetValues(typeof(ResourceReaperState)).Cast<ResourceReaperState>(), this.stateChanges);
     }
 
     [Fact]

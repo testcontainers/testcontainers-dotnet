@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System.Runtime.InteropServices;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Logging.Abstractions;
@@ -10,6 +11,12 @@
   /// </summary>
   public static class TestcontainersSettings
   {
+    /// <summary>
+    /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
+    /// </summary>
+    public static bool ResourceReaperEnabled { get; set; }
+      = true;
+
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>

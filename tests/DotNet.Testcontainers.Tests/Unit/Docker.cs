@@ -19,14 +19,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         return false;
       }
-      else
-      {
-        _ = dockerProcess.StandardOutput.ReadToEnd();
-        _ = dockerProcess.StandardError.ReadToEnd();
 
-        dockerProcess.WaitForExit();
-        return 0.Equals(dockerProcess.ExitCode);
-      }
+      _ = dockerProcess.StandardOutput.ReadToEnd();
+      _ = dockerProcess.StandardError.ReadToEnd();
+
+      dockerProcess.WaitForExit();
+      return 0.Equals(dockerProcess.ExitCode);
     }
   }
 }
