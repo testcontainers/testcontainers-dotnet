@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.4.0
+#tool nuget:?package=dotnet-sonarscanner&version=5.5.2
 
 #addin nuget:?package=Cake.Sonar&version=1.1.29
 
@@ -72,7 +72,6 @@ Task("Build")
 });
 
 Task("Tests")
-  .IsDependentOn("Pull-Docker-Images")
   .Does(() =>
 {
   foreach(var testProject in param.Projects.OnlyTests)
@@ -161,20 +160,6 @@ Task("Publish-NuGet-Packages")
       ApiKey = param.NuGetCredentials.ApiKey
     });
   }
-});
-
-Task("Pull-Docker-Images")
-  .WithCriteria(() => PlatformFamily.Linux.Equals(Context.Environment.Platform.Family))
-  .Does(() =>
-{
-  StartProcess("docker", new ProcessSettings
-  {
-    RedirectStandardOutput = true,
-    RedirectStandardError = true,
-    Arguments = new ProcessArgumentBuilder()
-      .Append("pull")
-      .Append("ghcr.io/psanetra/ryuk:2021.12.20")
-  });
 });
 
 Task("Default")
