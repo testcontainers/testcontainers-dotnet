@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Tests
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Hosting;
   using Microsoft.Extensions.Logging;
   using Xunit;
@@ -21,12 +20,9 @@ namespace DotNet.Testcontainers.Tests
       return Task.CompletedTask;
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(cancellationToken)
-        .ConfigureAwait(false);
-      await resourceReaper.DisposeAsync()
-        .ConfigureAwait(false);
+      return Task.CompletedTask;
     }
   }
 }

@@ -138,11 +138,6 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, ryukImage);
 
-      if (!TestcontainersSettings.ResourceReaperEnabled)
-      {
-        return resourceReaper;
-      }
-
       initTimeout = Equals(default(TimeSpan), initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
 
       try

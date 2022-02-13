@@ -237,7 +237,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      return this.WithResourceReaperSessionId(cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
+      return this.WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
     }
 
     /// <inheritdoc />
