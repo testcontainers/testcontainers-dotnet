@@ -105,8 +105,13 @@ Here is an example of a pre-configured container. In the example,  Testcontainer
 ```csharp
 public sealed class PostgreSqlTest : IAsyncLifetime
 {
-  private readonly TestcontainerDatabase testcontainers = new TestcontainersBuilder<TestcontainerDatabase>()
-    .WithDatabase(new PostgreSqlTestcontainerConfiguration())
+  private readonly TestcontainerDatabase testcontainers = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+    .WithDatabase(new PostgreSqlTestcontainerConfiguration
+    {
+      Database = "db",
+      Username = "postgres",
+      Password = "postgres",
+    })
     .Build();
 
   [Fact]
@@ -126,12 +131,12 @@ public sealed class PostgreSqlTest : IAsyncLifetime
 
   public Task InitializeAsync()
   {
-    return this.container.StartAsync();
+    return this.testcontainers.StartAsync();
   }
 
   public Task DisposeAsync()
   {
-    return this.container.DisposeAsync().AsTask();
+    return this.testcontainers.DisposeAsync().AsTask();
   }
 }
 ```

@@ -138,7 +138,7 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, ryukImage);
 
-      initTimeout = Equals(default(TimeSpan), initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
+      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
 
       try
       {
@@ -149,11 +149,12 @@ namespace DotNet.Testcontainers.Containers
 
         StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.InitializingConnection));
 
-        using (var initTimeoutCts = new CancellationTokenSource(initTimeout))
+        using (var initTimeoutCts = new CancellationTokenSource())
         {
           using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(initTimeoutCts.Token, ct))
           {
             resourceReaper.maintainConnectionTask = resourceReaper.MaintainRyukConnection(ryukInitializedTaskSource, linkedCts.Token);
+            initTimeoutCts.CancelAfter(initTimeout);
 
             await ryukInitializedTaskSource.Task
               .ConfigureAwait(false);
