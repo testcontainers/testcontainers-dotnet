@@ -223,15 +223,13 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
     private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
     {
-      var endpoint = new IPEndPoint(IPAddress.Loopback, this.resourceReaperContainer.GetMappedPublicPort(RyukPort));
-
       while (!this.maintainConnectionCts.IsCancellationRequested && (!ct.IsCancellationRequested || ryukInitializedTaskSource.Task.IsCompleted))
       {
         using (var tcpClient = new TcpClient())
         {
           try
           {
-            tcpClient.Connect(endpoint);
+            tcpClient.Connect(this.resourceReaperContainer.Hostname, this.resourceReaperContainer.GetMappedPublicPort(RyukPort));
 
             var stream = tcpClient.GetStream();
 
@@ -307,11 +305,11 @@ namespace DotNet.Testcontainers.Containers
           }
           catch (SocketException e)
           {
-            this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(endpoint, e);
+            this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(e);
           }
           catch (Exception e)
           {
-            this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(endpoint, e);
+            this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(e);
           }
           finally
           {

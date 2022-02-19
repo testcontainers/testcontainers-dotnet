@@ -60,11 +60,11 @@
     private static readonly Action<ILogger, string, Exception> _DeleteDockerVolume
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
 
-    private static readonly Action<ILogger, EndPoint, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define<EndPoint>(LogLevel.Error, default, "Can not connect to resource reaper at {ResourceReaper}");
+    private static readonly Action<ILogger, Exception> _CanNotConnectToResourceReaper
+      = LoggerMessage.Define(LogLevel.Error, default, "Can not connect to resource reaper");
 
-    private static readonly Action<ILogger, EndPoint, Exception> _LostConnectionToResourceReaper
-      = LoggerMessage.Define<EndPoint>(LogLevel.Error, default, "Lost connection to resource reaper at {ResourceReaper}");
+    private static readonly Action<ILogger, Exception> _LostConnectionToResourceReaper
+      = LoggerMessage.Define(LogLevel.Error, default, "Lost connection to resource reaper");
 
     public static void Progress(this ILogger logger, string message)
     {
@@ -146,14 +146,14 @@
       _DeleteDockerVolume(logger, name, null);
     }
 
-    public static void CanNotConnectToResourceReaper(this ILogger logger, EndPoint resourceReaper, Exception exception)
+    public static void CanNotConnectToResourceReaper(this ILogger logger, Exception exception)
     {
-      _CanNotConnectToResourceReaper(logger, resourceReaper, null);
+      _CanNotConnectToResourceReaper(logger, exception);
     }
 
-    public static void LostConnectionToResourceReaper(this ILogger logger, EndPoint resourceReaper, Exception exception)
+    public static void LostConnectionToResourceReaper(this ILogger logger, Exception exception)
     {
-      _LostConnectionToResourceReaper(logger, resourceReaper, null);
+      _LostConnectionToResourceReaper(logger, exception);
     }
   }
 }
