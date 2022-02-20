@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
+  using System.Net.NetworkInformation;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -93,7 +94,7 @@ namespace DotNet.Testcontainers.Containers
             return dockerHostUri.Host;
           case "npipe":
           case "unix":
-            return this.GetContainerGateway() ?? "localhost";
+            return this.GetContainerGateway();
           default:
             throw new InvalidOperationException($"Docker endpoint {dockerHostUri} is not supported.");
         }
@@ -332,13 +333,19 @@ namespace DotNet.Testcontainers.Containers
     {
       if (!this.client.IsRunningInsideDocker || !ContainerHasBeenCreatedStates.Contains(this.State))
       {
-        return null;
+        return "localhost";
       }
 
-      return this.container.NetworkSettings.Networks
-        .Select(network => network.Value)
-        .Select(network => network.Gateway)
-        .FirstOrDefault();
+      var host = new[] { "host.docker.internal", "gateway.docker.internal" }
+        .FirstOrDefault(hostName =>
+        {
+          using (var ping = new Ping())
+          {
+            return IPStatus.Success.Equals(ping.Send(hostName)?.Status);
+          }
+        });
+
+      return host ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
     }
   }
 }

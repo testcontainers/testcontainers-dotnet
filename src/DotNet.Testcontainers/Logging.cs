@@ -3,7 +3,6 @@
   using System;
   using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
-  using System.Net;
   using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
@@ -60,11 +59,11 @@
     private static readonly Action<ILogger, string, Exception> _DeleteDockerVolume
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
 
-    private static readonly Action<ILogger, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define(LogLevel.Error, default, "Can not connect to resource reaper");
+    private static readonly Action<ILogger, string, ushort, Exception> _CanNotConnectToResourceReaper
+      = LoggerMessage.Define<string, ushort>(LogLevel.Error, default, "Can not connect to resource reaper at {Host}:{Port}");
 
-    private static readonly Action<ILogger, Exception> _LostConnectionToResourceReaper
-      = LoggerMessage.Define(LogLevel.Error, default, "Lost connection to resource reaper");
+    private static readonly Action<ILogger, string, ushort, Exception> _LostConnectionToResourceReaper
+      = LoggerMessage.Define<string, ushort>(LogLevel.Error, default, "Lost connection to resource reaper at {Host}:{Port}");
 
     public static void Progress(this ILogger logger, string message)
     {
@@ -146,14 +145,14 @@
       _DeleteDockerVolume(logger, name, null);
     }
 
-    public static void CanNotConnectToResourceReaper(this ILogger logger, Exception exception)
+    public static void CanNotConnectToResourceReaper(this ILogger logger, string host, ushort port)
     {
-      _CanNotConnectToResourceReaper(logger, exception);
+      _CanNotConnectToResourceReaper(logger, host, port, null);
     }
 
-    public static void LostConnectionToResourceReaper(this ILogger logger, Exception exception)
+    public static void LostConnectionToResourceReaper(this ILogger logger, string host, ushort port)
     {
-      _LostConnectionToResourceReaper(logger, exception);
+      _LostConnectionToResourceReaper(logger, host, port, null);
     }
   }
 }
