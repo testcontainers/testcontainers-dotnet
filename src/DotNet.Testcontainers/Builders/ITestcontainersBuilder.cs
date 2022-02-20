@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
@@ -88,6 +89,14 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value);
+
+    /// <summary>
+    /// Adds the values in the dictionary  as environment variables to the Testcontainer.
+    /// </summary>
+    /// <param name="values">A dictionary containing the environment variables.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithEnvironment(Dictionary<string, string> values);
 
     /// <summary>
     /// Adds user-defined metadata to the Testcontainer.

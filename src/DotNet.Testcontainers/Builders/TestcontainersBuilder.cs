@@ -126,6 +126,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithEnvironment(Dictionary<string, string> values)
+    {
+      return Build(this, Apply(environments: values));
+    }
+
+    /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value)
     {
       var labels = new Dictionary<string, string> { { name, value } };
