@@ -126,9 +126,9 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithEnvironment(Dictionary<string, string> values)
+    public ITestcontainersBuilder<TDockerContainer> WithEnvironment(IReadOnlyDictionary<string, string> environments)
     {
-      return Build(this, Apply(environments: values));
+      return Build(this, Apply(environments: environments));
     }
 
     /// <inheritdoc />

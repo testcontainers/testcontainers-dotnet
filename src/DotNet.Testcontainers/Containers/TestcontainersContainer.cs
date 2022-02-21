@@ -341,7 +341,14 @@ namespace DotNet.Testcontainers.Containers
         {
           using (var ping = new Ping())
           {
-            return IPStatus.Success.Equals(ping.Send(hostName)?.Status);
+            try
+            {
+              return IPStatus.Success.Equals(ping.Send(hostName)?.Status);
+            }
+            catch (Exception)
+            {
+              return false;
+            }
           }
         });
 

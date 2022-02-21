@@ -91,12 +91,12 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value);
 
     /// <summary>
-    /// Adds the values in the dictionary  as environment variables to the Testcontainer.
+    /// Exports the environment variables in the Testcontainer.
     /// </summary>
-    /// <param name="values">A dictionary containing the environment variables.</param>
+    /// <param name="environments">Dictionary of environment variables.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithEnvironment(Dictionary<string, string> values);
+    ITestcontainersBuilder<TDockerContainer> WithEnvironment(IReadOnlyDictionary<string, string> environments);
 
     /// <summary>
     /// Adds user-defined metadata to the Testcontainer.
