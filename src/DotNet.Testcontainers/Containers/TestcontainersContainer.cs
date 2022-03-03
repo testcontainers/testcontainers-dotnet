@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
-  using System.Net.NetworkInformation;
+  using System.Net;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -17,6 +17,8 @@ namespace DotNet.Testcontainers.Containers
   public class TestcontainersContainer : ITestcontainersContainer
   {
     private static readonly TestcontainersState[] ContainerHasBeenCreatedStates = { TestcontainersState.Created, TestcontainersState.Running, TestcontainersState.Exited };
+
+    private static readonly string[] DockerDesktopGateways = { "host.docker.internal", "gateway.docker.internal" };
 
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
@@ -336,21 +338,26 @@ namespace DotNet.Testcontainers.Containers
         return "localhost";
       }
 
-      var host = new[] { "host.docker.internal", "gateway.docker.internal" }
-        .FirstOrDefault(hostName =>
+      string GetDockerDesktopGateway(string hostName)
+      {
+        try
         {
-          using (var ping = new Ping())
-          {
-            try
-            {
-              return IPStatus.Success.Equals(ping.Send(hostName)?.Status);
-            }
-            catch (Exception)
-            {
-              return false;
-            }
-          }
-        });
+          // Unfortunately, the method incl. `cancellationToken` is not available at .NET Standard 2.0, 2.1.
+          _ = Dns.GetHostEntry(hostName);
+          return hostName;
+        }
+        catch
+        {
+          return null;
+        }
+      }
+
+      var host = DockerDesktopGateways
+        .AsParallel()
+        .Select(hostName => Task.Run(() => GetDockerDesktopGateway(hostName)))
+        .Where(task => task.Wait(TimeSpan.FromSeconds(1)))
+        .Select(task => task.GetAwaiter().GetResult())
+        .FirstOrDefault(hostName => hostName != null);
 
       return host ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
     }

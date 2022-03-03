@@ -30,6 +30,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Fact]
+      public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
+      {
+        Assert.Throws<ArgumentNullException>(() => _ = new TestcontainersBuilder<TestcontainersContainer>().Build());
+      }
+
+      [Fact]
       public async Task GeneratedContainerName()
       {
         // Given
@@ -270,6 +276,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
           .WithDockerEndpoint(endpoint);
 
         // When
@@ -456,15 +463,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // Then
         Assert.False(Docker.Exists(DockerResource.Container, testcontainerId));
-      }
-
-      [Fact]
-      public async Task ShouldThrowArgumentNullExceptionWhenBuildContainerWithoutImage()
-      {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-        {
-          await using var testContainer = new TestcontainersBuilder<TestcontainersContainer>().Build();
-        });
       }
     }
   }
