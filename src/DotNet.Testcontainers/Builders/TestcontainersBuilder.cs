@@ -297,6 +297,11 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TDockerContainer Build()
     {
+      if (this.configuration.Image is null)
+      {
+        throw new ArgumentNullException(nameof(this.configuration.Image));
+      }
+
 #pragma warning disable S3011
 
       // Create container instance.
