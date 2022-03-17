@@ -9,24 +9,23 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class VolumeFixture : IAsyncLifetime
   {
+    private readonly Guid sessionId = Guid.NewGuid();
+
     private readonly IDockerVolume volume;
 
     public VolumeFixture()
     {
-      var sessionId = Guid.NewGuid();
-      var name = $"testcontainers-volume-{sessionId:D}";
       this.volume = new TestcontainersVolumeBuilder()
-        .WithName(name)
-        .WithResourceReaperSessionId(sessionId)
+        .WithName(this.SessionId.ToString("D"))
+        .WithResourceReaperSessionId(this.SessionId)
         .Build();
-
-      this.SessionId = sessionId;
-      this.Name = name;
     }
 
-    public Guid SessionId { get; }
+    public Guid SessionId
+      => this.sessionId;
 
-    public string Name { get; }
+    public string Name
+      => this.volume.Name;
 
     public Task InitializeAsync()
     {
@@ -35,8 +34,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public Task DisposeAsync()
     {
-      // The ResourceReaper will take care of the remaining resources.
-      return Task.CompletedTask;
+      return this.volume.DeleteAsync();
     }
   }
 }

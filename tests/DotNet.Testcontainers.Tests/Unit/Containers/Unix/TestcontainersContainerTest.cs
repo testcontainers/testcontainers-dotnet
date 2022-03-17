@@ -430,6 +430,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithAutoRemove(false)
+          .WithCleanUp(false)
           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When
@@ -452,6 +453,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithAutoRemove(true)
+          .WithCleanUp(false)
           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 
         // When

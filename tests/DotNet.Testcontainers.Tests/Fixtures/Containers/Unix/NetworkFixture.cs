@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
@@ -11,7 +12,7 @@
     public IDockerNetwork Network { get; }
       = new TestcontainersNetworkBuilder()
         .WithDriver(NetworkDriver.Bridge)
-        .WithName("test-network")
+        .WithName(Guid.NewGuid().ToString("D"))
         .Build();
 
     public Task InitializeAsync()

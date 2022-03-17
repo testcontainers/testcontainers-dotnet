@@ -232,11 +232,8 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      // TODO: Workaround until we have a Windows Docker image of Ryuk
-      var isWindowsEngineEnabled = await this.client.GetIsWindowsEngineEnabled()
-        .ConfigureAwait(false);
-
-      if (isWindowsEngineEnabled && !Guid.Empty.ToString("D").Equals(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
+      // If someone calls `DisposeAsync`, we can immediately remove the container. We don't need to wait for the Resource Reaper.
+      if (!Guid.Empty.ToString("D").Equals(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
       {
         await this.CleanUpAsync()
           .ConfigureAwait(false);
@@ -342,7 +339,7 @@ namespace DotNet.Testcontainers.Containers
       {
         try
         {
-          // Unfortunately, the method incl. `cancellationToken` is not available at .NET Standard 2.0, 2.1.
+          // Unfortunately, the method incl. `cancellationToken` is not available in .NET Standard 2.0 and 2.1.
           _ = Dns.GetHostEntry(hostName);
           return hostName;
         }
