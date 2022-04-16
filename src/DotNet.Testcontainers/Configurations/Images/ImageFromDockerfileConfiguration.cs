@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Configurations
       IDockerImage image = null,
       string dockerfile = null,
       string dockerfileDirectory = null,
-      bool deleteIfExists = false,
+      bool deleteIfExists = true,
       IReadOnlyDictionary<string, string> labels = null)
       : base(endpoint, labels)
     {
