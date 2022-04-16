@@ -1,35 +1,18 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
-  using System;
-  using System.Collections.Generic;
-  using JetBrains.Annotations;
-
   /// <summary>
   /// A Docker network configuration.
   /// </summary>
-  internal interface ITestcontainersNetworkConfiguration
+  public interface ITestcontainersNetworkConfiguration : IDockerResourceConfiguration
   {
     /// <summary>
-    /// Gets the Docker API endpoint.
+    /// Gets the name.
     /// </summary>
-    [NotNull]
-    Uri Endpoint { get; }
+    string Name { get; }
 
     /// <summary>
     /// Gets the driver.
     /// </summary>
     NetworkDriver Driver { get; }
-
-    /// <summary>
-    /// Gets the name.
-    /// </summary>
-    [NotNull]
-    string Name { get; }
-
-    /// <summary>
-    /// Gets a list of labels.
-    /// </summary>
-    [NotNull]
-    IReadOnlyDictionary<string, string> Labels { get; }
   }
 }

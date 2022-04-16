@@ -1,92 +1,60 @@
 namespace DotNet.Testcontainers.Builders
 {
-  using System;
-  using System.Collections.Generic;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Volumes;
-  using JetBrains.Annotations;
 
   /// <inheritdoc cref="ITestcontainersVolumeBuilder" />
-  [PublicAPI]
-  public sealed class TestcontainersVolumeBuilder : ITestcontainersVolumeBuilder
+  public class TestcontainersVolumeBuilder : AbstractBuilder<ITestcontainersVolumeBuilder, ITestcontainersVolumeConfiguration>, ITestcontainersVolumeBuilder
   {
-    private readonly ITestcontainersVolumeConfiguration configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersVolumeBuilder" /> class.
     /// </summary>
     public TestcontainersVolumeBuilder()
-      : this(
-        Apply(
-          endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          labels: DefaultLabels.Instance))
+      : this(new TestcontainersVolumeConfiguration(
+        endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
+        labels: DefaultLabels.Instance))
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersVolumeBuilder" /> class.
     /// </summary>
-    /// <param name="configuration">The Docker volume configuration.</param>
-    private TestcontainersVolumeBuilder(ITestcontainersVolumeConfiguration configuration)
+    /// <param name="dockerResourceConfiguration">The Docker volume configuration.</param>
+    private TestcontainersVolumeBuilder(ITestcontainersVolumeConfiguration dockerResourceConfiguration)
+      : base(dockerResourceConfiguration)
     {
-      this.configuration = configuration;
-    }
-
-    /// <inheritdoc />
-    public ITestcontainersVolumeBuilder WithDockerEndpoint(string endpoint)
-    {
-      return Build(this, Apply(endpoint: new Uri(endpoint)));
     }
 
     /// <inheritdoc />
     public ITestcontainersVolumeBuilder WithName(string name)
     {
-      return Build(this, Apply(name: name));
-    }
-
-    /// <inheritdoc />
-    public ITestcontainersVolumeBuilder WithLabel(string name, string value)
-    {
-      var labels = new Dictionary<string, string> { { name, value } };
-      return Build(this, Apply(labels: labels));
-    }
-
-    /// <inheritdoc />
-    public ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
-    {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
+      return this.MergeNewConfiguration(new TestcontainersVolumeConfiguration(name: name));
     }
 
     /// <inheritdoc />
     public IDockerVolume Build()
     {
-      return new NonExistingDockerVolume(this.configuration, TestcontainersSettings.Logger);
+      return new NonExistingDockerVolume(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    private static ITestcontainersVolumeConfiguration Apply(
-      Uri endpoint = null,
-      string name = null,
-      IReadOnlyDictionary<string, string> labels = null)
+    /// <inheritdoc />
+    protected override ITestcontainersVolumeBuilder MergeNewConfiguration(IDockerResourceConfiguration dockerResourceConfiguration)
     {
-      return new TestcontainersVolumeConfiguration(endpoint, name, labels);
+      return this.MergeNewConfiguration(new TestcontainersVolumeConfiguration(dockerResourceConfiguration));
     }
 
-    private static ITestcontainersVolumeBuilder Build(
-      TestcontainersVolumeBuilder previous,
-      ITestcontainersVolumeConfiguration next)
+    /// <summary>
+    /// Merges the current with the new Docker resource configuration.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The new Docker resource configuration.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersVolumeBuilder" />.</returns>
+    protected virtual ITestcontainersVolumeBuilder MergeNewConfiguration(ITestcontainersVolumeConfiguration dockerResourceConfiguration)
     {
-      var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
-      var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
-      var labels = BuildConfiguration.Combine(next.Labels, previous.configuration.Labels);
-
-      var mergedConfiguration = Apply(
-        endpoint,
-        name,
-        labels);
-
-      return new TestcontainersVolumeBuilder(mergedConfiguration);
+      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
+      var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
+      var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
+      return new TestcontainersVolumeBuilder(new TestcontainersVolumeConfiguration(endpoint, name, labels));
     }
   }
 }

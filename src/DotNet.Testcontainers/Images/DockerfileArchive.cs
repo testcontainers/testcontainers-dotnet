@@ -14,7 +14,7 @@
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly IOperatingSystem OS = default(Unix);
+    private static readonly IOperatingSystem OS = new Unix();
 
     private readonly DirectoryInfo dockerfileDirectory;
 

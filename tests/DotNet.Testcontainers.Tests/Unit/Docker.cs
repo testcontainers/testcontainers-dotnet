@@ -13,18 +13,19 @@ namespace DotNet.Testcontainers.Tests.Unit
       dockerProcessStartInfo.RedirectStandardError = true;
       dockerProcessStartInfo.UseShellExecute = false;
 
-      var dockerProcess = Process.Start(dockerProcessStartInfo);
-
-      if (dockerProcess == null)
+      using (var dockerProcess = Process.Start(dockerProcessStartInfo))
       {
-        return false;
+        if (dockerProcess == null)
+        {
+          return false;
+        }
+
+        _ = dockerProcess.StandardOutput.ReadToEnd();
+        _ = dockerProcess.StandardError.ReadToEnd();
+
+        dockerProcess.WaitForExit();
+        return 0.Equals(dockerProcess.ExitCode);
       }
-
-      _ = dockerProcess.StandardOutput.ReadToEnd();
-      _ = dockerProcess.StandardError.ReadToEnd();
-
-      dockerProcess.WaitForExit();
-      return 0.Equals(dockerProcess.ExitCode);
     }
   }
 }

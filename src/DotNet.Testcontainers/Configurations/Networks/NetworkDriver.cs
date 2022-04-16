@@ -10,11 +10,13 @@
     /// <summary>
     /// Gets network driver bridge.
     /// </summary>
+    [PublicAPI]
     public static readonly NetworkDriver Bridge = new NetworkDriver("bridge");
 
     /// <summary>
     /// Gets network driver host.
     /// </summary>
+    [PublicAPI]
     public static readonly NetworkDriver Host = new NetworkDriver("host");
 
     /// <summary>

@@ -6,9 +6,11 @@ namespace DotNet.Testcontainers.Tests
 
   public sealed class SkipOnLinuxEngineAttribute : FactAttribute
   {
+    private static readonly bool IsLinuxEngineEnabled = GetIsLinuxEngineEnabled();
+
     public SkipOnLinuxEngineAttribute()
     {
-      if (GetIsLinuxEngineEnabled())
+      if (IsLinuxEngineEnabled)
       {
         this.Skip = "Windows Docker engine is not available.";
       }
@@ -22,15 +24,16 @@ namespace DotNet.Testcontainers.Tests
       dockerProcessStartInfo.RedirectStandardOutput = true;
       dockerProcessStartInfo.UseShellExecute = false;
 
-      var dockerProcess = Process.Start(dockerProcessStartInfo);
-
-      if (dockerProcess == null)
+      using (var dockerProcess = Process.Start(dockerProcessStartInfo))
       {
-        throw new InvalidOperationException("Docker not found.");
-      }
+        if (dockerProcess == null)
+        {
+          throw new InvalidOperationException("Docker not found.");
+        }
 
-      var stdout = dockerProcess.StandardOutput.ReadToEnd();
-      return stdout.Contains("linux", StringComparison.OrdinalIgnoreCase);
+        var stdout = dockerProcess.StandardOutput.ReadToEnd();
+        return stdout.Contains("linux", StringComparison.OrdinalIgnoreCase);
+      }
     }
   }
 }

@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using JetBrains.Annotations;
+
   /// <summary>
   /// Docker mount type.
   /// </summary>
@@ -8,11 +10,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// The 'bind' mount type.
     /// </summary>
+    [PublicAPI]
     public static readonly MountType Bind = new MountType("bind");
 
     /// <summary>
     /// The 'volume' mount type.
     /// </summary>
+    [PublicAPI]
     public static readonly MountType Volume = new MountType("volume");
 
     /// <summary>

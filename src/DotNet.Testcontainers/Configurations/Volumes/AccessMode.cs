@@ -10,11 +10,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets access modes ReadOnly.
     /// </summary>
+    [PublicAPI]
     public static readonly AccessMode ReadOnly = new AccessMode("ro");
 
     /// <summary>
     /// Gets access modes ReadWrite.
     /// </summary>
+    [PublicAPI]
     public static readonly AccessMode ReadWrite = new AccessMode("rw");
 
     /// <summary>

@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Networks;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 

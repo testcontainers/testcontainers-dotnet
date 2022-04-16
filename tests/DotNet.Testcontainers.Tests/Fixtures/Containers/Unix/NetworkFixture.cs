@@ -4,7 +4,7 @@
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Networks;
   using Xunit;
 
   public sealed class NetworkFixture : IAsyncLifetime

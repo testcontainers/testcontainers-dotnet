@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public void NormalizePath()
       {
-        IOperatingSystem os = default(Unix);
+        IOperatingSystem os = new Unix();
         Assert.Equal("/foo/bar", os.NormalizePath("\\foo\\bar"));
       }
     }
@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public void NormalizePath()
       {
-        IOperatingSystem os = default(Windows);
+        IOperatingSystem os = new Windows();
         Assert.Equal("\\foo\\bar", os.NormalizePath("/foo/bar"));
       }
     }

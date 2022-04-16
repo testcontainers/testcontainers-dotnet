@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Networks;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
   public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration

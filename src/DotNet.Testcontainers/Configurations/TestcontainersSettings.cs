@@ -29,6 +29,6 @@
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)default(Windows) : default(Unix);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows() : new Unix();
   }
 }

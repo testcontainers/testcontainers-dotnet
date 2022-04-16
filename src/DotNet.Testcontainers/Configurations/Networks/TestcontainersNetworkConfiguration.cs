@@ -4,8 +4,17 @@
   using System.Collections.Generic;
 
   /// <inheritdoc cref="ITestcontainersNetworkConfiguration" />
-  internal sealed class TestcontainersNetworkConfiguration : ITestcontainersNetworkConfiguration
+  internal sealed class TestcontainersNetworkConfiguration : DockerResourceConfiguration, ITestcontainersNetworkConfiguration
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersNetworkConfiguration" /> class.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
+    public TestcontainersNetworkConfiguration(IDockerResourceConfiguration dockerResourceConfiguration)
+      : base(dockerResourceConfiguration)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersNetworkConfiguration" /> class.
     /// </summary>
@@ -14,27 +23,20 @@
     /// <param name="driver">The driver.</param>
     /// <param name="labels">A list of labels.</param>
     public TestcontainersNetworkConfiguration(
-      Uri endpoint,
-      NetworkDriver driver,
-      string name,
-      IReadOnlyDictionary<string, string> labels)
+      Uri endpoint = null,
+      string name = null,
+      NetworkDriver driver = default,
+      IReadOnlyDictionary<string, string> labels = null)
+      : base(endpoint, labels)
     {
-      this.Endpoint = endpoint;
       this.Name = name;
       this.Driver = driver;
-      this.Labels = labels;
     }
-
-    /// <inheritdoc />
-    public Uri Endpoint { get; }
-
-    /// <inheritdoc />
-    public NetworkDriver Driver { get; }
 
     /// <inheritdoc />
     public string Name { get; }
 
     /// <inheritdoc />
-    public IReadOnlyDictionary<string, string> Labels { get; }
+    public NetworkDriver Driver { get; }
   }
 }

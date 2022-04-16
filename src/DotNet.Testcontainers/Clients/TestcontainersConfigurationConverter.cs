@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Network;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
 
   internal sealed class TestcontainersConfigurationConverter
