@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Containers
 
     private const string RyukImage = "ghcr.io/psanetra/ryuk:2021.12.20";
 
-    private const int RyukPort = 8080;
+    private const ushort RyukPort = 8080;
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -205,6 +205,23 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    private bool TryGetEndpoint(out string host, out ushort port)
+    {
+      try
+      {
+        host = this.resourceReaperContainer.Hostname;
+        port = this.resourceReaperContainer.GetMappedPublicPort(RyukPort);
+        return true;
+      }
+      catch (Exception e)
+      {
+        this.resourceReaperContainer.Logger.CanNotGetResourceReaperEndpoint(this.SessionId, e);
+        host = null;
+        port = 0;
+        return false;
+      }
+    }
+
     /// <summary>
     /// Establishes and maintains the connection to the running Ryuk container.
     ///
@@ -222,12 +239,16 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
     private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
     {
-      var host = this.resourceReaperContainer.Hostname;
-
-      var port = this.resourceReaperContainer.GetMappedPublicPort(RyukPort);
-
       while (!this.maintainConnectionCts.IsCancellationRequested && (!ct.IsCancellationRequested || ryukInitializedTaskSource.Task.IsCompleted))
       {
+        if (!this.TryGetEndpoint(out var host, out var port))
+        {
+          await Task.Delay(TimeSpan.FromSeconds(1), default)
+            .ConfigureAwait(false);
+
+          continue;
+        }
+
         using (var tcpClient = new TcpClient())
         {
           try
@@ -307,16 +328,17 @@ namespace DotNet.Testcontainers.Containers
           {
             // Ignore cancellation.
           }
-          catch (SocketException)
+          catch (SocketException e)
           {
-            this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(host, port);
+            this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(this.SessionId, host, port, e);
+
+            await Task.Delay(TimeSpan.FromSeconds(1), default)
+              .ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
-            this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(host, port);
-          }
-          finally
-          {
+            this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(this.SessionId, host, port, e);
+
             await Task.Delay(TimeSpan.FromSeconds(1), default)
               .ConfigureAwait(false);
           }

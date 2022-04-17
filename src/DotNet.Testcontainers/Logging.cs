@@ -59,11 +59,14 @@
     private static readonly Action<ILogger, string, Exception> _DeleteDockerVolume
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
 
-    private static readonly Action<ILogger, string, ushort, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define<string, ushort>(LogLevel.Error, default, "Can not connect to resource reaper at {Host}:{Port}");
+    private static readonly Action<ILogger, Guid, Exception> _CanNotGetResourceReaperEndpoint
+      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Can not get resource reaper {Id} endpoint.");
 
-    private static readonly Action<ILogger, string, ushort, Exception> _LostConnectionToResourceReaper
-      = LoggerMessage.Define<string, ushort>(LogLevel.Error, default, "Lost connection to resource reaper at {Host}:{Port}");
+    private static readonly Action<ILogger, Guid, string, Exception> _CanNotConnectToResourceReaper
+      = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Can not connect to resource reaper {Id} at {Endpoint}");
+
+    private static readonly Action<ILogger, Guid, string, Exception> _LostConnectionToResourceReaper
+      = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Lost connection to resource reaper {Id} at {Endpoint}");
 
     public static void Progress(this ILogger logger, string message)
     {
@@ -145,14 +148,21 @@
       _DeleteDockerVolume(logger, name, null);
     }
 
-    public static void CanNotConnectToResourceReaper(this ILogger logger, string host, ushort port)
+    public static void CanNotGetResourceReaperEndpoint(this ILogger logger, Guid id, Exception e)
     {
-      _CanNotConnectToResourceReaper(logger, host, port, null);
+      _CanNotGetResourceReaperEndpoint(logger, id, logger.IsEnabled(LogLevel.Debug) ? e : null);
     }
 
-    public static void LostConnectionToResourceReaper(this ILogger logger, string host, ushort port)
+    public static void CanNotConnectToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
     {
-      _LostConnectionToResourceReaper(logger, host, port, null);
+      var endpoint = $"{host}:{port}";
+      _CanNotConnectToResourceReaper(logger, id, endpoint, logger.IsEnabled(LogLevel.Debug) ? e : null);
+    }
+
+    public static void LostConnectionToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
+    {
+      var endpoint = $"{host}:{port}";
+      _LostConnectionToResourceReaper(logger, id, endpoint, logger.IsEnabled(LogLevel.Debug) ? e : null);
     }
   }
 }
