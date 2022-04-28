@@ -9,12 +9,21 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Networks;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
-  public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
+  internal sealed class TestcontainersConfiguration : DockerResourceConfiguration, ITestcontainersConfiguration
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersConfiguration" /> class.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The Docker container configuration.</param>
+    public TestcontainersConfiguration(IDockerResourceConfiguration dockerResourceConfiguration)
+      : base(dockerResourceConfiguration)
+    {
+    }
+
 #pragma warning disable S107
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestcontainersConfiguration" /> struct.
+    /// Initializes a new instance of the <see cref="TestcontainersConfiguration" /> class.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
     /// <param name="dockerRegistryAuthenticationConfigurations">The Docker registry authentication configuration.</param>
@@ -34,31 +43,31 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
     /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
-    /// <param name="privileged">A value indicating whether the Testcontainer has extended  privilegesor not.</param>
+    /// <param name="privileged">A value indicating whether the Testcontainer has extended privileges or not.</param>
     public TestcontainersConfiguration(
-      Uri endpoint,
-      IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations,
-      IDockerImage image,
-      string name,
-      string hostname,
-      string workingDirectory,
-      IEnumerable<string> entrypoint,
-      IEnumerable<string> command,
-      IReadOnlyDictionary<string, string> environments,
-      IReadOnlyDictionary<string, string> labels,
-      IReadOnlyDictionary<string, string> exposedPorts,
-      IReadOnlyDictionary<string, string> portBindings,
-      IEnumerable<IMount> mounts,
-      IEnumerable<IDockerNetwork> networks,
-      IOutputConsumer outputConsumer,
-      IEnumerable<IWaitUntil> waitStrategies,
-      Func<ITestcontainersContainer, CancellationToken, Task> startupCallback,
-      bool? autoRemove,
-      bool? privileged)
+      Uri endpoint = null,
+      IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations = null,
+      IDockerImage image = null,
+      string name = null,
+      string hostname = null,
+      string workingDirectory = null,
+      IEnumerable<string> entrypoint = null,
+      IEnumerable<string> command = null,
+      IReadOnlyDictionary<string, string> environments = null,
+      IReadOnlyDictionary<string, string> labels = null,
+      IReadOnlyDictionary<string, string> exposedPorts = null,
+      IReadOnlyDictionary<string, string> portBindings = null,
+      IEnumerable<IMount> mounts = null,
+      IEnumerable<IDockerNetwork> networks = null,
+      IOutputConsumer outputConsumer = null,
+      IEnumerable<IWaitUntil> waitStrategies = null,
+      Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
+      bool? autoRemove = null,
+      bool? privileged = null)
+      : base(endpoint, labels)
     {
       this.AutoRemove = autoRemove;
       this.Privileged = privileged;
-      this.Endpoint = endpoint;
       this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfigurations;
       this.Image = image;
       this.Name = name;
@@ -67,7 +76,6 @@ namespace DotNet.Testcontainers.Configurations
       this.Entrypoint = entrypoint;
       this.Command = command;
       this.Environments = environments;
-      this.Labels = labels;
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
       this.Mounts = mounts;
@@ -84,9 +92,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public bool? Privileged { get; }
-
-    /// <inheritdoc />
-    public Uri Endpoint { get; }
 
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration DockerRegistryAuthConfig { get; }
@@ -111,9 +116,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> Environments { get; }
-
-    /// <inheritdoc />
-    public IReadOnlyDictionary<string, string> Labels { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> ExposedPorts { get; }

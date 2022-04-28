@@ -12,7 +12,6 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
   using DotNet.Testcontainers.Volumes;
-  using JetBrains.Annotations;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -36,22 +35,19 @@ namespace DotNet.Testcontainers.Builders
   /// </code>
   /// </example>
   /// <typeparam name="TDockerContainer">Type of <see cref="ITestcontainersContainer" />.</typeparam>
-  [PublicAPI]
-  public sealed class TestcontainersBuilder<TDockerContainer> : ITestcontainersBuilder<TDockerContainer>
+  public class TestcontainersBuilder<TDockerContainer> : AbstractBuilder<ITestcontainersBuilder<TDockerContainer>, ITestcontainersConfiguration>, ITestcontainersBuilder<TDockerContainer>
     where TDockerContainer : ITestcontainersContainer
   {
-    private readonly ITestcontainersConfiguration configuration;
-
-    private readonly Action<TDockerContainer> moduleConfiguration;
+    private readonly Action<TDockerContainer> mergeModuleConfiguration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersBuilder{TDockerContainer}" /> class.
     /// </summary>
     public TestcontainersBuilder()
       : this(
-        Apply(
+        new TestcontainersConfiguration(
           endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          dockerRegistryAuthConfig: default(DockerRegistryAuthenticationConfiguration),
+          dockerRegistryAuthenticationConfigurations: default(DockerRegistryAuthenticationConfiguration),
           labels: DefaultLabels.Instance,
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
@@ -62,352 +58,277 @@ namespace DotNet.Testcontainers.Builders
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersBuilder{TDockerContainer}" /> class.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The Docker container configuration.</param>
+    /// <param name="moduleConfiguration">The module configuration.</param>
     private TestcontainersBuilder(
-      ITestcontainersConfiguration configuration,
+      ITestcontainersConfiguration dockerResourceConfiguration,
       Action<TDockerContainer> moduleConfiguration)
+      : base(dockerResourceConfiguration)
     {
-      this.configuration = configuration;
-      this.moduleConfiguration = moduleConfiguration;
+      this.mergeModuleConfiguration = moduleConfiguration;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration)
     {
-      return Build(this, Apply(), moduleConfiguration);
+      return this.MergeNewConfiguration(this.DockerResourceConfiguration, moduleConfiguration);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithImage(string image)
     {
       return this.WithImage(new DockerImage(image));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
-      return Build(this, Apply(image: image));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(image: image));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithName(string name)
     {
-      return Build(this, Apply(name: name));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(name: name));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname)
     {
-      return Build(this, Apply(hostname: hostname));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(hostname: hostname));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory)
     {
-      return Build(this, Apply(workingDirectory: workingDirectory));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(workingDirectory: workingDirectory));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithEntrypoint(params string[] entrypoint)
     {
-      return Build(this, Apply(entrypoint: entrypoint));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(entrypoint: entrypoint));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithCommand(params string[] command)
     {
-      return Build(this, Apply(command: command));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(command: command));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithEnvironment(string name, string value)
     {
       var environments = new Dictionary<string, string> { { name, value } };
-      return Build(this, Apply(environments: environments));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(environments: environments));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithEnvironment(IReadOnlyDictionary<string, string> environments)
     {
-      return Build(this, Apply(environments: environments));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(environments: environments));
     }
 
-    /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value)
-    {
-      var labels = new Dictionary<string, string> { { name, value } };
-      return Build(this, Apply(labels: labels));
-    }
-
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(int port)
     {
       return this.WithExposedPort($"{port}");
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(string port)
     {
       var exposedPorts = new Dictionary<string, string> { { port, port } };
-      return Build(this, Apply(exposedPorts: exposedPorts));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(exposedPorts: exposedPorts));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
       return this.WithPortBinding($"{port}", assignRandomHostPort);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int hostPort, int containerPort)
     {
       return this.WithPortBinding($"{hostPort}", $"{containerPort}");
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
       var hostPort = assignRandomHostPort ? null : port;
       return this.WithPortBinding(hostPort, port);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
-      return Build(this, Apply(portBindings: portBindings));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(portBindings: portBindings));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination)
     {
       return this.WithBindMount(source, destination);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode)
     {
       return this.WithBindMount(source, destination, accessMode);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination)
     {
       return this.WithBindMount(source, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithBindMount(string source, string destination, AccessMode accessMode)
     {
       var mounts = new IMount[] { new BindMount(source, destination, accessMode) };
-      return Build(this, Apply(mounts: mounts));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(mounts: mounts));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination)
     {
       return this.WithVolumeMount(source, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(string source, string destination, AccessMode accessMode)
     {
       return this.WithVolumeMount(new DockerVolume(source), destination, accessMode);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination)
     {
       return this.WithVolumeMount(source, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination, AccessMode accessMode)
     {
       var mounts = new IMount[] { new VolumeMount(source, destination, accessMode) };
-      return Build(this, Apply(mounts: mounts));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(mounts: mounts));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name)
     {
       return this.WithNetwork(new DockerNetwork(id, name));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork)
     {
       var networks = new[] { dockerNetwork };
-      return Build(this, Apply(networks: networks));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(networks: networks));
     }
 
-    /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
-    {
-      return this.WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
-    }
-
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithAutoRemove(bool autoRemove)
     {
-      return Build(this, Apply(autoRemove: autoRemove));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(autoRemove: autoRemove));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged)
     {
-      return Build(this, Apply(privileged: privileged));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(privileged: privileged));
     }
 
-    /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint)
-    {
-      return Build(this, Apply(endpoint: new Uri(endpoint)));
-    }
-
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
     {
-      return Build(this, Apply(dockerRegistryAuthConfig: new DockerRegistryAuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerRegistryAuthenticationConfigurations: new DockerRegistryAuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithOutputConsumer(IOutputConsumer outputConsumer)
     {
-      return Build(this, Apply(outputConsumer: outputConsumer));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(outputConsumer: outputConsumer));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy)
     {
-      return Build(this, Apply(waitStrategies: waitStrategy.Build()));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(waitStrategies: waitStrategy.Build()));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback)
     {
-      return Build(this, Apply(startupCallback: startupCallback));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(startupCallback: startupCallback));
     }
 
-    /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid resourceReaperSessionId)
-    {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
-    }
-
-    /// <inheritdoc />
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public TDockerContainer Build()
     {
-      Guard.Argument(this.configuration.Image, nameof(ITestcontainersConfiguration.Image))
+      Guard.Argument(this.DockerResourceConfiguration.Image, nameof(ITestcontainersConfiguration.Image))
         .NotNull();
 
 #pragma warning disable S3011
 
       // Create container instance.
-      var container = (TDockerContainer)Activator.CreateInstance(typeof(TDockerContainer), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.configuration, TestcontainersSettings.Logger }, null);
+      var container = (TDockerContainer)Activator.CreateInstance(typeof(TDockerContainer), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.DockerResourceConfiguration, TestcontainersSettings.Logger }, null);
 
 #pragma warning restore S3011
 
       // Apply specific container configuration.
-      this.moduleConfiguration.Invoke(container);
+      this.mergeModuleConfiguration.Invoke(container);
 
       return container;
     }
 
 #pragma warning disable S107
 
-    private static ITestcontainersConfiguration Apply(
-      Uri endpoint = null,
-      IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig = null,
-      IDockerImage image = null,
-      string name = null,
-      string hostname = null,
-      string workingDirectory = null,
-      IEnumerable<string> entrypoint = null,
-      IEnumerable<string> command = null,
-      IReadOnlyDictionary<string, string> environments = null,
-      IReadOnlyDictionary<string, string> labels = null,
-      IReadOnlyDictionary<string, string> exposedPorts = null,
-      IReadOnlyDictionary<string, string> portBindings = null,
-      IEnumerable<IMount> mounts = null,
-      IEnumerable<IDockerNetwork> networks = null,
-      IOutputConsumer outputConsumer = null,
-      IEnumerable<IWaitUntil> waitStrategies = null,
-      Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
-      bool? autoRemove = null,
-      bool? privileged = null)
+    /// <inheritdoc />
+    protected override ITestcontainersBuilder<TDockerContainer> MergeNewConfiguration(IDockerResourceConfiguration dockerResourceConfiguration)
     {
-      return new TestcontainersConfiguration(
-        endpoint,
-        dockerRegistryAuthConfig,
-        image,
-        name,
-        hostname,
-        workingDirectory,
-        entrypoint,
-        command,
-        environments,
-        labels,
-        exposedPorts,
-        portBindings,
-        mounts,
-        networks,
-        outputConsumer,
-        waitStrategies,
-        startupCallback,
-        autoRemove,
-        privileged);
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerResourceConfiguration));
     }
 
-#pragma warning restore S107
-
-    private static ITestcontainersBuilder<TDockerContainer> Build(
-      TestcontainersBuilder<TDockerContainer> previous,
-      ITestcontainersConfiguration next,
-      Action<TDockerContainer> moduleConfiguration = null)
+    /// <summary>
+    /// Merges the current with the new Docker resource configuration.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The new Docker resource configuration.</param>
+    /// <param name="moduleConfiguration">The module configuration.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    protected virtual ITestcontainersBuilder<TDockerContainer> MergeNewConfiguration(ITestcontainersConfiguration dockerResourceConfiguration, Action<TDockerContainer> moduleConfiguration = null)
     {
-      var autoRemove = next.AutoRemove ?? previous.configuration.AutoRemove;
-      var privileged = next.Privileged ?? previous.configuration.Privileged;
-      var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
-      var image = BuildConfiguration.Combine(next.Image, previous.configuration.Image);
-      var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
-      var hostname = BuildConfiguration.Combine(next.Hostname, previous.configuration.Hostname);
-      var workingDirectory = BuildConfiguration.Combine(next.WorkingDirectory, previous.configuration.WorkingDirectory);
-      var entrypoint = BuildConfiguration.Combine(next.Entrypoint, previous.configuration.Entrypoint);
-      var command = BuildConfiguration.Combine(next.Command, previous.configuration.Command);
-      var environments = BuildConfiguration.Combine(next.Environments, previous.configuration.Environments);
-      var labels = BuildConfiguration.Combine(next.Labels, previous.configuration.Labels);
-      var exposedPorts = BuildConfiguration.Combine(next.ExposedPorts, previous.configuration.ExposedPorts);
-      var portBindings = BuildConfiguration.Combine(next.PortBindings, previous.configuration.PortBindings);
-      var mounts = BuildConfiguration.Combine(next.Mounts, previous.configuration.Mounts);
-      var networks = BuildConfiguration.Combine(next.Networks, previous.configuration.Networks);
+      var autoRemove = BuildConfiguration.Combine(dockerResourceConfiguration.AutoRemove, this.DockerResourceConfiguration.AutoRemove);
+      var privileged = BuildConfiguration.Combine(dockerResourceConfiguration.Privileged, this.DockerResourceConfiguration.Privileged);
 
-      var authConfig = new[] { next.DockerRegistryAuthConfig, previous.configuration.DockerRegistryAuthConfig }.First(config => config != null);
-      var outputConsumer = new[] { next.OutputConsumer, previous.configuration.OutputConsumer }.First(config => config != null);
-      var waitStrategies = new[] { next.WaitStrategies, previous.configuration.WaitStrategies }.First(config => config != null);
-      var startupCallback = new[] { next.StartupCallback, previous.configuration.StartupCallback }.First(config => config != null);
+      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
+      var image = BuildConfiguration.Combine(dockerResourceConfiguration.Image, this.DockerResourceConfiguration.Image);
+      var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
+      var hostname = BuildConfiguration.Combine(dockerResourceConfiguration.Hostname, this.DockerResourceConfiguration.Hostname);
+      var workingDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.WorkingDirectory, this.DockerResourceConfiguration.WorkingDirectory);
+      var entrypoint = BuildConfiguration.Combine(dockerResourceConfiguration.Entrypoint, this.DockerResourceConfiguration.Entrypoint);
+      var command = BuildConfiguration.Combine(dockerResourceConfiguration.Command, this.DockerResourceConfiguration.Command);
+      var environments = BuildConfiguration.Combine(dockerResourceConfiguration.Environments, this.DockerResourceConfiguration.Environments);
+      var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
+      var exposedPorts = BuildConfiguration.Combine(dockerResourceConfiguration.ExposedPorts, this.DockerResourceConfiguration.ExposedPorts);
+      var portBindings = BuildConfiguration.Combine(dockerResourceConfiguration.PortBindings, this.DockerResourceConfiguration.PortBindings);
+      var mounts = BuildConfiguration.Combine(dockerResourceConfiguration.Mounts, this.DockerResourceConfiguration.Mounts);
+      var networks = BuildConfiguration.Combine(dockerResourceConfiguration.Networks, this.DockerResourceConfiguration.Networks);
 
-      var mergedConfiguration = Apply(
-        endpoint,
-        authConfig,
-        image,
-        name,
-        hostname,
-        workingDirectory,
-        entrypoint,
-        command,
-        environments,
-        labels,
-        exposedPorts,
-        portBindings,
-        mounts,
-        networks,
-        outputConsumer,
-        waitStrategies,
-        startupCallback,
-        autoRemove,
-        privileged);
+      var dockerRegistryAuthConfig = new[] { dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig }.First(config => config != null);
+      var outputConsumer = new[] { dockerResourceConfiguration.OutputConsumer, this.DockerResourceConfiguration.OutputConsumer }.First(config => config != null);
+      var waitStrategies = new[] { dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies }.First(config => config != null);
+      var startupCallback = new[] { dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback }.First(config => config != null);
 
-      return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(endpoint, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
+      return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
   }
 }

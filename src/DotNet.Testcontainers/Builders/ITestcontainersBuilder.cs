@@ -15,7 +15,8 @@ namespace DotNet.Testcontainers.Builders
   /// A fluent Testcontainer builder.
   /// </summary>
   /// <typeparam name="TDockerContainer">Type of <see cref="ITestcontainersContainer" />.</typeparam>
-  public interface ITestcontainersBuilder<out TDockerContainer>
+  [PublicAPI]
+  public interface ITestcontainersBuilder<out TDockerContainer> : IAbstractBuilder<ITestcontainersBuilder<TDockerContainer>>
     where TDockerContainer : ITestcontainersContainer
   {
     /// <summary>
@@ -97,15 +98,6 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithEnvironment(IReadOnlyDictionary<string, string> environments);
-
-    /// <summary>
-    /// Adds user-defined metadata to the Testcontainer.
-    /// </summary>
-    /// <param name="name">Label name.</param>
-    /// <param name="value">Label value.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithLabel(string name, string value);
 
     /// <summary>
     /// Sets the port of the Testcontainer to expose, without publishing the port to the host system’s interfaces.
@@ -258,14 +250,6 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork);
 
     /// <summary>
-    /// If true, the <see cref="ResourceReaper" /> will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.
-    /// </summary>
-    /// <param name="cleanUp">True, the <see cref="ResourceReaper" /> will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp);
-
-    /// <summary>
     /// If true, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.
     /// </summary>
     /// <param name="autoRemove">True, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.</param>
@@ -280,14 +264,6 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged);
-
-    /// <summary>
-    /// Sets the Docker API endpoint.
-    /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithDockerEndpoint(string endpoint);
 
     /// <summary>
     /// Sets the Docker registry authentication configuration to authenticate against private Docker registries.
@@ -325,15 +301,6 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>Is invoked once after the Testcontainer is started and before the wait strategies are executed.</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback);
-
-    /// <summary>
-    /// Sets the resource reaper session id.
-    /// </summary>
-    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
-    [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="ITestcontainersContainer" /> with the given configuration.
