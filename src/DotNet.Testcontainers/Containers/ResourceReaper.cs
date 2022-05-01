@@ -30,6 +30,8 @@ namespace DotNet.Testcontainers.Containers
 
     private readonly TestcontainersContainer resourceReaperContainer;
 
+    private readonly ResourceReaperDiagnostics diagnostics = new ResourceReaperDiagnostics();
+
     private Task maintainConnectionTask = Task.CompletedTask;
 
     private bool disposed;
@@ -146,6 +148,8 @@ namespace DotNet.Testcontainers.Containers
         await resourceReaper.resourceReaperContainer.StartAsync(ct)
           .ConfigureAwait(false);
 
+        resourceReaper.diagnostics.ContainerInspection = await resourceReaper.resourceReaperContainer.InspectAsync(ct);
+
         StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.InitializingConnection));
 
         using (var initTimeoutCts = new CancellationTokenSource())
@@ -249,10 +253,15 @@ namespace DotNet.Testcontainers.Containers
           continue;
         }
 
+        this.diagnostics.ExpectedHost = host;
+        this.diagnostics.ExpectedPort = port;
+
         using (var tcpClient = new TcpClient())
         {
           try
           {
+            this.diagnostics.IncrementConnectionAttempts();
+
             await tcpClient.ConnectAsync(host, port)
               .ConfigureAwait(false);
 
@@ -353,11 +362,11 @@ namespace DotNet.Testcontainers.Containers
 
       if (ct.IsCancellationRequested)
       {
-        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization has been cancelled."));
+        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization has been cancelled.", this.diagnostics));
       }
       else
       {
-        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization failed."));
+        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization failed.", this.diagnostics));
       }
     }
   }
