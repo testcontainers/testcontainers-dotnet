@@ -170,5 +170,10 @@ namespace DotNet.Testcontainers.Clients
 
       return id;
     }
+
+    public Task<ContainerInspectResponse> InspectAsync(string id, CancellationToken ct = default)
+    {
+      return this.Docker.Containers.InspectContainerAsync(id, ct);
+    }
   }
 }

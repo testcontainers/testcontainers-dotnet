@@ -249,6 +249,11 @@ namespace DotNet.Testcontainers.Containers
       GC.SuppressFinalize(this);
     }
 
+    internal Task<ContainerInspectResponse> InspectContainer(CancellationToken ct = default)
+    {
+      return this.client.InspectContainer(this.Id, ct);
+    }
+
     private async Task<ContainerListResponse> Create(CancellationToken ct = default)
     {
       if (ContainerHasBeenCreatedStates.Contains(this.State))

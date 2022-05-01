@@ -1,8 +1,11 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System;
   using System.Collections.Generic;
+  using System.Net.Http;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -39,6 +42,18 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that gets the Testcontainer.</returns>
     Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the Testcontainer inspect information.
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that gets the Testcontainer inspect information.</returns>
+    /// <exception cref="ArgumentNullException">One or more of the inputs was <see langword="null" />.</exception>
+    /// <exception cref="DockerApiException">The daemon experienced an error.</exception>
+    /// <exception cref="DockerContainerNotFoundException">No such container was found.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    Task<ContainerInspectResponse> InspectContainer(string id, CancellationToken ct = default);
 
     /// <summary>
     /// Starts a container.

@@ -7,9 +7,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="SharpZipLib" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 </Project>
