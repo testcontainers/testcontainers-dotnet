@@ -80,6 +80,11 @@ namespace DotNet.Testcontainers.Clients
       return this.containers.ByIdAsync(id, ct);
     }
 
+    public Task<ContainerInspectResponse> Inspect(string id, CancellationToken ct = default)
+    {
+      return this.containers.InspectAsync(id, ct);
+    }
+
     /// <inheritdoc />
     public Task<long> GetContainerExitCode(string id, CancellationToken ct = default)
     {

@@ -2,8 +2,11 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.Net.Http;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
+  using Docker.DotNet.Models;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -147,5 +150,15 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
+
+    /// <summary>
+    /// Queries inspect information for the Testcontainer.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task with the <see cref="ContainerInspectResponse"/>.</returns>
+    /// <exception cref="DockerContainerNotFoundException">No such container was found.</exception>
+    /// <exception cref="DockerApiException">the daemon experienced an error.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    Task<ContainerInspectResponse> InspectAsync(CancellationToken ct = default);
   }
 }

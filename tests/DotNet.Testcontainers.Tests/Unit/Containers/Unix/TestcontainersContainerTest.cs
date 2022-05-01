@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using global::Docker.DotNet.Models;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -465,6 +466,29 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // Then
         Assert.False(Docker.Exists(DockerResource.Container, testcontainerId));
+      }
+
+      [Fact]
+      public async Task InspectAsyncShouldReturnContainerInspectResponse()
+      {
+        // Given
+        string testcontainerId;
+        ContainerInspectResponse containerInspectResponse;
+
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+
+        // When
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          testcontainerId = testcontainer.Id;
+          containerInspectResponse = await testcontainer.InspectAsync();
+        }
+
+        // Then
+        Assert.Equal(testcontainerId, containerInspectResponse.ID);
       }
     }
   }

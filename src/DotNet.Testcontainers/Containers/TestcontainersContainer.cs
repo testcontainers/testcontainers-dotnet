@@ -203,6 +203,12 @@ namespace DotNet.Testcontainers.Containers
       return this.client.ExecAsync(this.Id, command, ct);
     }
 
+    /// <inheritdoc />
+    public Task<ContainerInspectResponse> InspectAsync(CancellationToken ct = default)
+    {
+      return this.client.Inspect(this.Id, ct);
+    }
+
     /// <summary>
     /// Removes the Testcontainer.
     /// </summary>
