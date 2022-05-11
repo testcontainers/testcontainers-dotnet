@@ -37,6 +37,13 @@
       Assert.Equal(hostname, image.GetHostname());
     }
 
+    [Fact]
+    public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
+    {
+      IAuthenticationProvider authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", TestcontainersSettings.Logger);
+      Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig(DockerRegistry));
+    }
+
     public sealed class Base64ProviderTest
     {
       [Theory]

@@ -33,7 +33,7 @@
     /// </summary>
     /// <param name="dockerConfigFile">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
-    private DockerRegistryAuthenticationProvider(string dockerConfigFile, ILogger logger)
+    public DockerRegistryAuthenticationProvider(string dockerConfigFile, ILogger logger)
       : this(new FileInfo(dockerConfigFile), logger)
     {
     }
@@ -43,7 +43,7 @@
     /// </summary>
     /// <param name="dockerConfigFile">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
-    private DockerRegistryAuthenticationProvider(FileInfo dockerConfigFile, ILogger logger)
+    public DockerRegistryAuthenticationProvider(FileInfo dockerConfigFile, ILogger logger)
     {
       this.dockerConfigFile = dockerConfigFile;
       this.logger = logger;
