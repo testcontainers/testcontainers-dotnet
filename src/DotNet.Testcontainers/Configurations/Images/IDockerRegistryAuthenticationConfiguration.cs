@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -12,7 +11,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the Docker registry endpoint.
     /// </summary>
     [CanBeNull]
-    Uri RegistryEndpoint { get; }
+    string RegistryEndpoint { get; }
 
     /// <summary>
     /// Gets the username.

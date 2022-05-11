@@ -60,13 +60,25 @@
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
 
     private static readonly Action<ILogger, Guid, Exception> _CanNotGetResourceReaperEndpoint
-      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Can not get resource reaper {Id} endpoint.");
+      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Can not get resource reaper {Id} endpoint");
 
     private static readonly Action<ILogger, Guid, string, Exception> _CanNotConnectToResourceReaper
       = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Can not connect to resource reaper {Id} at {Endpoint}");
 
     private static readonly Action<ILogger, Guid, string, Exception> _LostConnectionToResourceReaper
       = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Lost connection to resource reaper {Id} at {Endpoint}");
+
+    private static readonly Action<ILogger, string, Exception> _DockerConfigFileNotFound
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker config {DockerConfigFilePath} not found");
+
+    private static readonly Action<ILogger, string, Exception> _SearchingDockerRegistryCredential
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Searching Docker registry credential in {CredentialStore}");
+
+    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialNotFound
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} not found");
+
+    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
 
     public static void Progress(this ILogger logger, string message)
     {
@@ -163,6 +175,26 @@
     {
       var endpoint = $"{host}:{port}";
       _LostConnectionToResourceReaper(logger, id, endpoint, logger.IsEnabled(LogLevel.Debug) ? e : null);
+    }
+
+    public static void DockerConfigFileNotFound(this ILogger logger, string dockerConfigFilePath)
+    {
+      _DockerConfigFileNotFound(logger, dockerConfigFilePath, null);
+    }
+
+    public static void SearchingDockerRegistryCredential(this ILogger logger, string credentialStore)
+    {
+      _SearchingDockerRegistryCredential(logger, credentialStore, null);
+    }
+
+    public static void DockerRegistryCredentialNotFound(this ILogger logger, string dockerRegistry)
+    {
+      _DockerRegistryCredentialNotFound(logger, dockerRegistry, null);
+    }
+
+    public static void DockerRegistryCredentialFound(this ILogger logger, string dockerRegistry)
+    {
+      _DockerRegistryCredentialFound(logger, dockerRegistry, null);
     }
   }
 }

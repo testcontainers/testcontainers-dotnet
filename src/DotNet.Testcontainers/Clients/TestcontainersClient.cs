@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using ICSharpCode.SharpZipLib.Tar;
@@ -25,6 +26,8 @@ namespace DotNet.Testcontainers.Clients
     private readonly IDockerImageOperations images;
 
     private readonly IDockerSystemOperations system;
+
+    private readonly DockerRegistryAuthenticationProvider registryAuthenticationProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
@@ -45,18 +48,21 @@ namespace DotNet.Testcontainers.Clients
       : this(
         new DockerContainerOperations(endpoint, logger),
         new DockerImageOperations(endpoint, logger),
-        new DockerSystemOperations(endpoint, logger))
+        new DockerSystemOperations(endpoint, logger),
+        new DockerRegistryAuthenticationProvider(logger))
     {
     }
 
     private TestcontainersClient(
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
-      IDockerSystemOperations systemOperations)
+      IDockerSystemOperations systemOperations,
+      DockerRegistryAuthenticationProvider registryAuthenticationProvider)
     {
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
+      this.registryAuthenticationProvider = registryAuthenticationProvider;
     }
 
     /// <inheritdoc />
@@ -202,7 +208,10 @@ namespace DotNet.Testcontainers.Clients
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
       {
-        await this.images.CreateAsync(configuration.Image, configuration.DockerRegistryAuthConfig, ct)
+        var authConfig = !default(DockerRegistryAuthenticationConfiguration).Equals(configuration.DockerRegistryAuthConfig)
+          ? configuration.DockerRegistryAuthConfig : this.registryAuthenticationProvider.GetAuthConfig(configuration.Image.GetHostname());
+
+        await this.images.CreateAsync(configuration.Image, authConfig, ct)
           .ConfigureAwait(false);
       }
 

@@ -33,5 +33,12 @@ namespace DotNet.Testcontainers.Images
     /// </remarks>
     [NotNull]
     string FullName { get; }
+
+    /// <summary>
+    /// Gets the Docker registry hostname.
+    /// </summary>
+    /// <returns>The Docker registry hostname.</returns>
+    [CanBeNull]
+    string GetHostname();
   }
 }

@@ -24,11 +24,8 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    /// <remarks>
-    /// TODO: The hostname won't work on Azure, ip address won't work on Windows or macOS.
-    /// </remarks>
     public override string ConnectionString
-      => $"couchbase://{this.IpAddress}";
+      => $"couchbase://{this.Hostname}";
 
     /// <summary>
     /// Creates a new bucket.

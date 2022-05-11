@@ -12,6 +12,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       = new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
         .WithCommand(KeepTestcontainersUpAndRunning.Command)
+        .WithCleanUp(false)
+        .WithAutoRemove(true)
         .WithStartupCallback((_, ct) => Task.Delay(TimeSpan.FromMinutes(1), ct))
         .Build();
 

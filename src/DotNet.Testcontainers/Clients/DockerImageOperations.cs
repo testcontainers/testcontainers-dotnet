@@ -69,7 +69,7 @@ namespace DotNet.Testcontainers.Clients
 
       var authConfig = new AuthConfig
       {
-        ServerAddress = dockerRegistryAuthConfig.RegistryEndpoint?.AbsoluteUri,
+        ServerAddress = dockerRegistryAuthConfig.RegistryEndpoint,
         Username = dockerRegistryAuthConfig.Username,
         Password = dockerRegistryAuthConfig.Password,
       };

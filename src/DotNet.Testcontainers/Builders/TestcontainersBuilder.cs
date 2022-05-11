@@ -249,7 +249,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
     {
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerRegistryAuthenticationConfigurations: new DockerRegistryAuthenticationConfiguration(new Uri(registryEndpoint), username, password)));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerRegistryAuthenticationConfigurations: new DockerRegistryAuthenticationConfiguration(registryEndpoint, username, password)));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />

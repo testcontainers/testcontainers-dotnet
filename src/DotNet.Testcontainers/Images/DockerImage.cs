@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
+  using System.Linq;
 
   /// <inheritdoc cref="IDockerImage" />
   public sealed class DockerImage : IDockerImage
@@ -71,5 +72,12 @@ namespace DotNet.Testcontainers.Images
 
     /// <inheritdoc />
     public string FullName => this.Repository.Length == 0 ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
+
+    /// <inheritdoc />
+    public string GetHostname()
+    {
+      var firstSegmentOfRepository = this.Repository.Split('/').First();
+      return firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRepository : null;
+    }
   }
 }
