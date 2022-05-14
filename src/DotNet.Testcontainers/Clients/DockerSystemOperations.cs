@@ -3,12 +3,13 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {
-    public DockerSystemOperations(Uri endpoint, ILogger logger)
-      : base(endpoint)
+    public DockerSystemOperations(Uri endpoint, Credentials credentials, ILogger logger)
+      : base(endpoint, credentials)
     {
     }
 

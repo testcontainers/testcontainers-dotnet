@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Networks
+namespace DotNet.Testcontainers.Networks
 {
   using System;
   using System.Threading;
@@ -26,7 +26,7 @@
     /// <param name="logger">The logger.</param>
     public NonExistingDockerNetwork(ITestcontainersNetworkConfiguration configuration, ILogger logger)
     {
-      this.client = new DockerNetworkOperations(configuration.Endpoint, logger);
+      this.client = new DockerNetworkOperations(configuration.Endpoint, configuration.Credentials, logger);
       this.configuration = configuration;
     }
 

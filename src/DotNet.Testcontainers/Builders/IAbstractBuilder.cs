@@ -1,6 +1,7 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
@@ -18,6 +19,16 @@
     /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerEndpoint(string endpoint);
+
+    /// <summary>
+    /// Sets the Docker API endpoint and credentials.
+    /// </summary>
+    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="credentials">The Docker API credentials.</param>
+    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithDockerEndpoint(string endpoint, Credentials credentials);
+
 
     /// <summary>
     /// If true, the <see cref="ResourceReaper" /> will remove the Docker resource automatically. Otherwise, the Docker resource will be kept.

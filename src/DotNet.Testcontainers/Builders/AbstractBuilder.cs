@@ -1,7 +1,8 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
@@ -32,6 +33,12 @@
     public TBuilderEntity WithDockerEndpoint(string endpoint)
     {
       return this.MergeNewConfiguration(new DockerResourceConfiguration(endpoint: new Uri(endpoint)));
+    }
+
+    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />
+    public TBuilderEntity WithDockerEndpoint(string endpoint, Credentials credentials)
+    {
+      return this.MergeNewConfiguration(new DockerResourceConfiguration(endpoint: new Uri(endpoint), credentials: credentials));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />

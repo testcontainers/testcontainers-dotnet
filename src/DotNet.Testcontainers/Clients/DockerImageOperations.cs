@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -17,8 +18,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly TraceProgress traceProgress;
 
-    public DockerImageOperations(Uri endpoint, ILogger logger)
-      : base(endpoint)
+    public DockerImageOperations(Uri endpoint, Credentials credentials, ILogger logger)
+      : base(endpoint, credentials)
     {
       this.logger = logger;
       this.traceProgress = new TraceProgress(logger);

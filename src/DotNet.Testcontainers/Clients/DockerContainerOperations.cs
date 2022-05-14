@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -15,8 +16,8 @@ namespace DotNet.Testcontainers.Clients
   {
     private readonly ILogger logger;
 
-    public DockerContainerOperations(Uri endpoint, ILogger logger)
-      : base(endpoint)
+    public DockerContainerOperations(Uri endpoint, Credentials credentials, ILogger logger)
+      : base(endpoint, credentials)
     {
       this.logger = logger;
     }

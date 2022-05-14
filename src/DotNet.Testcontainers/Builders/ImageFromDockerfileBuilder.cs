@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public Task<string> Build()
     {
-      ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.Endpoint, TestcontainersSettings.Logger);
+      ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Credentials, TestcontainersSettings.Logger);
       return client.BuildAsync(this.DockerResourceConfiguration);
     }
 

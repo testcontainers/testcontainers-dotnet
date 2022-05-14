@@ -35,6 +35,7 @@ namespace DotNet.Testcontainers.Clients
     public TestcontainersClient()
       : this(
         TestcontainersSettings.OS.DockerApiEndpoint,
+        null,
         TestcontainersSettings.Logger)
     {
     }
@@ -43,12 +44,13 @@ namespace DotNet.Testcontainers.Clients
     /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="credentials">The Docker API credentials.</param>
     /// <param name="logger">The logger.</param>
-    public TestcontainersClient(Uri endpoint, ILogger logger)
+    public TestcontainersClient(Uri endpoint, Credentials credentials, ILogger logger)
       : this(
-        new DockerContainerOperations(endpoint, logger),
-        new DockerImageOperations(endpoint, logger),
-        new DockerSystemOperations(endpoint, logger),
+        new DockerContainerOperations(endpoint, credentials, logger),
+        new DockerImageOperations(endpoint, credentials, logger),
+        new DockerSystemOperations(endpoint, credentials, logger),
         new DockerRegistryAuthenticationProvider(logger))
     {
     }

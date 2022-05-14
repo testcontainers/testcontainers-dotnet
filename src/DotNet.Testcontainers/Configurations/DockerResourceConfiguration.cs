@@ -1,7 +1,8 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using Docker.DotNet;
 
   /// <inheritdoc cref="IDockerResourceConfiguration" />
   public class DockerResourceConfiguration : IDockerResourceConfiguration
@@ -20,10 +21,12 @@
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
     /// <param name="labels">A list of labels.</param>
-    public DockerResourceConfiguration(Uri endpoint = null, IReadOnlyDictionary<string, string> labels = null)
+    /// <param name="credentials">The Docker API credentials.</param>
+    public DockerResourceConfiguration(Uri endpoint = null, IReadOnlyDictionary<string, string> labels = null, Credentials credentials = null)
     {
       this.Endpoint = endpoint;
       this.Labels = labels;
+      this.Credentials = credentials;
     }
 
     /// <inheritdoc />
@@ -31,5 +34,7 @@
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> Labels { get; }
+
+    public Credentials Credentials { get; }
   }
 }
