@@ -95,6 +95,7 @@ namespace DotNet.Testcontainers.Containers
 
       if (defaultInstance != null && !defaultInstance.disposed)
       {
+        DefaultLock.Release();
         return defaultInstance;
       }
 
