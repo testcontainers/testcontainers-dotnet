@@ -140,6 +140,8 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
 
+    Task<byte[]> CopyFileFromContainerAsync(string filePath, CancellationToken ct = default);
+
     /// <summary>
     /// Executes a command in the running Testcontainer.
     /// </summary>

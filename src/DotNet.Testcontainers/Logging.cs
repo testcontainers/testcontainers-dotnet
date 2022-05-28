@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers
+namespace DotNet.Testcontainers
 {
   using System;
   using System.Collections.Generic;
@@ -31,6 +31,9 @@
 
     private static readonly Action<ILogger, string, string, Exception> _ExtractArchiveToDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to {Path} at Docker container {Id}");
+
+    private static readonly Action<ILogger, string, string, Exception> _GetArchiveFromDockerContainer
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive containing {Path} from Docker container {Id}");
 
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
       = LoggerMessage.Define<Type, string>(LogLevel.Information, default, "Attach {OutputConsumer} at Docker container {Id}");
@@ -113,6 +116,11 @@
     public static void ExtractArchiveToDockerContainer(this ILogger logger, string id, string path)
     {
       _ExtractArchiveToDockerContainer(logger, path, id, null);
+    }
+
+    public static void GetArchiveFromDockerContainer(this ILogger logger, string id, string path)
+    {
+      _GetArchiveFromDockerContainer(logger, path, id, null);
     }
 
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
