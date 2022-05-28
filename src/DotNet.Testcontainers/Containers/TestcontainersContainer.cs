@@ -198,6 +198,12 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public Task<byte[]> CopyFileFromContainerAsync(string filePath, CancellationToken ct = default)
+    {
+      return this.client.CopyFileFromContainerAsync(this.Id, filePath, ct);
+    }
+
+    /// <inheritdoc />
     public Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
       return this.client.ExecAsync(this.Id, command, ct);
