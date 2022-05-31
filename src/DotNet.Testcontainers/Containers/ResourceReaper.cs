@@ -65,17 +65,6 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static event EventHandler<ResourceReaperStateEventArgs> StateChanged;
 
-    /// <inheritdoc cref="TestcontainersContainer.Hostname" />
-    [NotNull]
-    [PublicAPI]
-    public string Hostname
-    {
-      get
-      {
-        return this.resourceReaperContainer.Hostname;
-      }
-    }
-
     /// <summary>
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
@@ -86,6 +75,17 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
       = Guid.NewGuid();
+
+    /// <inheritdoc cref="TestcontainersContainer.Hostname" />
+    [NotNull]
+    [PublicAPI]
+    public string Hostname
+    {
+      get
+      {
+        return this.resourceReaperContainer.Hostname;
+      }
+    }
 
     /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
