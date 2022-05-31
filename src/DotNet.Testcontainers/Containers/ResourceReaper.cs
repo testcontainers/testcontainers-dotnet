@@ -36,18 +36,23 @@ namespace DotNet.Testcontainers.Containers
 
     private bool disposed;
 
-    private ResourceReaper(Guid sessionId, string ryukImage)
+    private ResourceReaper(Guid sessionId, string ryukImage, string dockerEndpoint)
     {
-      this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
+      var builder = new TestcontainersBuilder<TestcontainersContainer>()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithImage(ryukImage)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithExposedPort(RyukPort)
         .WithPortBinding(RyukPort, true)
-        .WithBindMount("/var/run/docker.sock", "/var/run/docker.sock", AccessMode.ReadOnly)
-        .Build();
+        .WithBindMount("/var/run/docker.sock", "/var/run/docker.sock", AccessMode.ReadOnly);
 
+      if (dockerEndpoint != null)
+      {
+        builder = builder.WithDockerEndpoint(dockerEndpoint);
+      }
+
+      this.resourceReaperContainer = builder.Build();
       this.SessionId = sessionId;
     }
 
@@ -59,6 +64,17 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     [PublicAPI]
     public static event EventHandler<ResourceReaperStateEventArgs> StateChanged;
+
+    /// <inheritdoc cref="TestcontainersContainer.Hostname" />
+    [NotNull]
+    [PublicAPI]
+    public string Hostname
+    {
+      get
+      {
+        return this.resourceReaperContainer.Hostname;
+      }
+    }
 
     /// <summary>
     /// Gets the default <see cref="ResourceReaper" /> session id.
@@ -80,10 +96,11 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Starts and returns the default <see cref="ResourceReaper" /> instance.
     /// </summary>
+    /// <param name="dockerEndpoint">The Docker API endpoint.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartDefaultAsync(string dockerEndpoint = null, CancellationToken ct = default)
     {
       if (defaultInstance != null && !defaultInstance.disposed)
       {
@@ -101,7 +118,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, RyukImage, default, ct)
+        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, RyukImage, default, dockerEndpoint, ct)
           .ConfigureAwait(false);
 
         return defaultInstance;
@@ -117,12 +134,13 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="ryukImage">The Ryuk image.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: 10 seconds).</param>
+    /// <param name="dockerEndpoint">The Docker API endpoint.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static Task<ResourceReaper> GetAndStartNewAsync(string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static Task<ResourceReaper> GetAndStartNewAsync(string ryukImage = RyukImage, TimeSpan initTimeout = default, string dockerEndpoint = null, CancellationToken ct = default)
     {
-      return GetAndStartNewAsync(Guid.NewGuid(), ryukImage, initTimeout, ct);
+      return GetAndStartNewAsync(Guid.NewGuid(), ryukImage, initTimeout, dockerEndpoint, ct);
     }
 
     /// <summary>
@@ -131,14 +149,15 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="sessionId">The session id.</param>
     /// <param name="ryukImage">The Ryuk image.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: 10 seconds).</param>
+    /// <param name="dockerEndpoint">The Docker API endpoint.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, string ryukImage = RyukImage, TimeSpan initTimeout = default, string dockerEndpoint = null, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
-      var resourceReaper = new ResourceReaper(sessionId, ryukImage);
+      var resourceReaper = new ResourceReaper(sessionId, ryukImage, dockerEndpoint);
 
       initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
 
