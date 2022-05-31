@@ -201,7 +201,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.ToString("D").Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
       {
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.Endpoint?.ToString(), ct)
+        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.Endpoint, ct)
           .ConfigureAwait(false);
       }
 
