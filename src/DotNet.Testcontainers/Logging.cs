@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to {Path} at Docker container {Id}");
 
     private static readonly Action<ILogger, string, string, Exception> _GetArchiveFromDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive containing {Path} from Docker container {Id}");
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read {Path} from Docker container {Id}");
 
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
       = LoggerMessage.Define<Type, string>(LogLevel.Information, default, "Attach {OutputConsumer} at Docker container {Id}");

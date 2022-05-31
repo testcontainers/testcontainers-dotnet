@@ -422,65 +422,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Fact]
-      public async Task CopyFileFromRunningContainer()
-      {
-        // Given
-        const string dayOfWeekFilePath = "/tmp/dayOfWeek";
-
-        var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
-
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
-
-        await using ITestcontainersContainer testcontainer = testcontainersBuilder.Build();
-
-        // When
-        await testcontainer.StartAsync();
-        _ = await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" });
-        var fileContent = await testcontainer.CopyFileFromContainerAsync(dayOfWeekFilePath);
-
-        // Then
-        Assert.Equal(dayOfWeek, Encoding.Default.GetString(fileContent).Trim());
-      }
-
-      [Fact]
-      public async Task CopyDirectoryAttemptFromRunningContainer()
-      {
-        // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
-
-        await using ITestcontainersContainer testcontainer = testcontainersBuilder.Build();
-
-        // When
-        await testcontainer.StartAsync();
-        var exception = await Record.ExceptionAsync(() => testcontainer.CopyFileFromContainerAsync("/tmp"));
-
-        // Then
-        _ = Assert.IsType<InvalidOperationException>(exception);
-      }
-
-      [Fact]
-      public async Task CopyMissingFileAttemptFromRunningContainer()
-      {
-        // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
-
-        await using ITestcontainersContainer testcontainer = testcontainersBuilder.Build();
-
-        // When
-        await testcontainer.StartAsync();
-        var exception = await Record.ExceptionAsync(() => testcontainer.CopyFileFromContainerAsync("/tmp/doesNotExist"));
-
-        // Then
-        _ = Assert.IsType<InvalidOperationException>(exception);
-      }
-
-      [Fact]
       public async Task AutoRemoveFalseShouldNotRemoveContainer()
       {
         // Given

@@ -198,9 +198,9 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task<byte[]> CopyFileFromContainerAsync(string filePath, CancellationToken ct = default)
+    public Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default)
     {
-      return this.client.CopyFileFromContainerAsync(this.Id, filePath, ct);
+      return this.client.ReadFileAsync(this.Id, filePath, ct);
     }
 
     /// <inheritdoc />

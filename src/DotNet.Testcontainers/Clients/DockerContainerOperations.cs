@@ -89,10 +89,11 @@ namespace DotNet.Testcontainers.Clients
     public async Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default)
     {
       this.logger.GetArchiveFromDockerContainer(id, path);
-      var parameters = new GetArchiveFromContainerParameters { Path = path };
-      var response = await this.Docker.Containers.GetArchiveFromContainerAsync(id, parameters, statOnly: false, ct)
+
+      var tarResponse = await this.Docker.Containers.GetArchiveFromContainerAsync(id, new GetArchiveFromContainerParameters { Path = path }, false, ct)
         .ConfigureAwait(false);
-      return response.Stream;
+
+      return tarResponse.Stream;
     }
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)

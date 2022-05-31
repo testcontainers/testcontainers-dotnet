@@ -193,39 +193,35 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<byte[]> CopyFileFromContainerAsync(string id, string filePath, CancellationToken ct = default)
+    public async Task<byte[]> ReadFileAsync(string id, string filePath, CancellationToken ct = default)
     {
-      Stream archive;
+      Stream tarStream;
+
       try
       {
-        archive = await this.containers.GetArchiveFromContainerAsync(id, filePath, ct)
+        tarStream = await this.containers.GetArchiveFromContainerAsync(id, filePath, ct)
           .ConfigureAwait(false);
       }
-      catch (DockerContainerNotFoundException ex)
+      catch (DockerContainerNotFoundException e)
       {
-        throw new InvalidOperationException(
-          $"Not possible to get archive with file {filePath} from container: {ex.ResponseBody}",
-          ex);
+        throw new FileNotFoundException(null, Path.GetFileName(filePath), e);
       }
 
-      using (var tarInputStream = new TarInputStream(archive, Encoding.Default))
+      using (var tarInputStream = new TarInputStream(tarStream, Encoding.Default))
       {
         tarInputStream.IsStreamOwner = true;
+
         var entry = tarInputStream.GetNextEntry();
-        if (entry == null || entry.IsDirectory || entry.Name != Path.GetFileName(filePath))
+
+        if (entry.IsDirectory)
         {
-          throw new InvalidOperationException($"File {filePath} has not been received in archive from container.");
+          throw new InvalidOperationException("Can not read from a directory. Use a file instead.");
         }
 
-        // Calling tarInputStream.ReadAsync will not work reliably because of some internal buffering in
-        // SharpZipLib. This might very well change in future versions of SharpZipLib.
         var content = new byte[entry.Size];
-        using (ct.Register(() => tarInputStream.Close()))
-        {
-          _ = await Task.Run(() => tarInputStream.Read(content, 0, content.Length), ct)
-            .ConfigureAwait(false);
-        }
 
+        // Calling ReadAsync will not work reliably because of some internal buffering in SharpZipLib. This might very well change in future versions of SharpZipLib.
+        _ = tarInputStream.Read(content, 0, content.Length);
         return content;
       }
     }

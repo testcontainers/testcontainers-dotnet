@@ -111,13 +111,13 @@ namespace DotNet.Testcontainers.Clients
     Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
 
     /// <summary>
-    /// Copies a file from the container.
+    /// Reads a file from the container.
     /// </summary>
     /// <param name="id">Docker container id.</param>
     /// <param name="filePath">Path to the file in the container.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the file has been copied, containing the file's content as result.</returns>
-    Task<byte[]> CopyFileFromContainerAsync(string id, string filePath, CancellationToken ct = default);
+    /// <returns>Task that completes when the file has been read.</returns>
+    Task<byte[]> ReadFileAsync(string id, string filePath, CancellationToken ct = default);
 
     /// <summary>
     /// Creates a container.
