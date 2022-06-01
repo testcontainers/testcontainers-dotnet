@@ -86,7 +86,8 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(image: image));
+      var modifiedImage = MaybePrependPrefixToImageName(image);
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(image: modifiedImage));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -329,6 +330,23 @@ namespace DotNet.Testcontainers.Builders
 
       var updatedDockerResourceConfiguration = new TestcontainersConfiguration(endpoint, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
+    }
+
+    private static IDockerImage MaybePrependPrefixToImageName(IDockerImage originalImage)
+    {
+      var shouldPrependPrefix = !string.IsNullOrWhiteSpace(TestcontainersSettings.DockerHubImagePrefix);
+      if (!shouldPrependPrefix)
+      {
+        return originalImage;
+      }
+
+      var hostedOnDockerHub = string.IsNullOrWhiteSpace(originalImage.GetHostname());
+      if (!hostedOnDockerHub)
+      {
+        return originalImage;
+      }
+
+      return new DockerImage(originalImage.Repository.Length == 0 ? TestcontainersSettings.DockerHubImagePrefix : $"{TestcontainersSettings.DockerHubImagePrefix}/{originalImage.Repository}", originalImage.Name, originalImage.Tag);
     }
   }
 }
