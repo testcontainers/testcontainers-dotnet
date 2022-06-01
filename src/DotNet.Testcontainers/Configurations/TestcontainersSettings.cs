@@ -18,6 +18,11 @@
       = true;
 
     /// <summary>
+    /// Gets or sets a prefix to prepend to image names for images hosted on DockerHub.
+    /// </summary>
+    public static string DockerHubImagePrefix { get; set; }
+
+    /// <summary>
     /// Gets or sets the logger.
     /// </summary>
     [NotNull]

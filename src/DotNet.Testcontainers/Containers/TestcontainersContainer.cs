@@ -104,6 +104,15 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public string ImageName
+    {
+      get
+      {
+        return this.configuration.Image.FullName;
+      }
+    }
+
+    /// <inheritdoc />
     public TestcontainersState State
     {
       get

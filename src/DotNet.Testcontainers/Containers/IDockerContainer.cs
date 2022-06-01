@@ -97,6 +97,15 @@ namespace DotNet.Testcontainers.Containers
     string Hostname { get; }
 
     /// <summary>
+    /// Gets the Testcontainers image name.
+    /// </summary>
+    /// <value>
+    /// Returns the name of the image this container has been created from.
+    /// </value>
+    [NotNull]
+    string ImageName { get; }
+
+    /// <summary>
     /// Gets the Testcontainers state.
     /// </summary>
     /// <value>
