@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
+  using System;
   using System.Linq;
 
   internal static class MatchImage
@@ -10,7 +11,7 @@ namespace DotNet.Testcontainers.Images
         .NotNull()
         .NotEmpty();
 
-      var dockerImageParts = image.Split('/');
+      var dockerImageParts = image.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
       var repository = string.Join("/", dockerImageParts
         .Take(dockerImageParts.Length - 1)

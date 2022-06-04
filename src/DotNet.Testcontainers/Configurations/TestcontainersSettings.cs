@@ -18,9 +18,13 @@
       = true;
 
     /// <summary>
-    /// Gets or sets a prefix to prepend to image names for images hosted on DockerHub.
+    /// Gets or sets a prefix that applies to every image that is pulled from Docker Hub.
     /// </summary>
-    public static string DockerHubImagePrefix { get; set; }
+    /// <remarks>
+    /// Please verify that all required images exist in your registry.
+    /// </remarks>
+    public static string HubImageNamePrefix { get; set; }
+      = string.Empty;
 
     /// <summary>
     /// Gets or sets the logger.

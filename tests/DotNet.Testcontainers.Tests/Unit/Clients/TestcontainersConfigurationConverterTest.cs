@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private const string Port = "7878";
 
-    public sealed class ForExposedPorts
+    public sealed class ExposedPorts
     {
       [Fact]
       public void ShouldAddTcpPortSuffix()

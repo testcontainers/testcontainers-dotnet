@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Containers
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -104,11 +105,11 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public string ImageName
+    public IDockerImage Image
     {
       get
       {
-        return this.configuration.Image.FullName;
+        return this.configuration.Image;
       }
     }
 

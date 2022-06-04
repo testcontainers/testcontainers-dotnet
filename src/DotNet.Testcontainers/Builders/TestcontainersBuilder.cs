@@ -86,8 +86,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
-      var modifiedImage = MaybePrependPrefixToImageName(image);
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(image: modifiedImage));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(image: PrependHubImageNamePrefix(image)));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -332,21 +331,19 @@ namespace DotNet.Testcontainers.Builders
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
 
-    private static IDockerImage MaybePrependPrefixToImageName(IDockerImage originalImage)
+    private static IDockerImage PrependHubImageNamePrefix(IDockerImage image)
     {
-      var shouldPrependPrefix = !string.IsNullOrWhiteSpace(TestcontainersSettings.DockerHubImagePrefix);
-      if (!shouldPrependPrefix)
+      if (string.IsNullOrEmpty(TestcontainersSettings.HubImageNamePrefix))
       {
-        return originalImage;
+        return image;
       }
 
-      var hostedOnDockerHub = string.IsNullOrWhiteSpace(originalImage.GetHostname());
-      if (!hostedOnDockerHub)
+      if (!string.IsNullOrEmpty(image.GetHostname()))
       {
-        return originalImage;
+        return image;
       }
 
-      return new DockerImage(originalImage.Repository.Length == 0 ? TestcontainersSettings.DockerHubImagePrefix : $"{TestcontainersSettings.DockerHubImagePrefix}/{originalImage.Repository}", originalImage.Name, originalImage.Tag);
+      return new DockerImage(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix);
     }
   }
 }

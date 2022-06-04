@@ -8,6 +8,8 @@ namespace DotNet.Testcontainers.Images
   {
     private static readonly Func<string, IDockerImage> GetDockerImage = MatchImage.Match;
 
+    private readonly string hubImageNamePrefix;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
@@ -34,12 +36,14 @@ namespace DotNet.Testcontainers.Images
     /// <param name="repository">The Docker image repository.</param>
     /// <param name="name">The Docker image name.</param>
     /// <param name="tag">The Docker image tag.</param>
+    /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
     /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
     public DockerImage(
       string repository,
       string name,
-      string tag)
+      string tag,
+      string hubImageNamePrefix = null)
     {
       Guard.Argument(repository, nameof(repository))
         .NotNull();
@@ -50,6 +54,8 @@ namespace DotNet.Testcontainers.Images
 
       Guard.Argument(tag, nameof(tag))
         .NotNull();
+
+      this.hubImageNamePrefix = hubImageNamePrefix;
 
       this.Repository = repository;
       this.Name = name;
@@ -71,7 +77,16 @@ namespace DotNet.Testcontainers.Images
     public string Tag { get; }
 
     /// <inheritdoc />
-    public string FullName => this.Repository.Length == 0 ? $"{this.Name}:{this.Tag}" : $"{this.Repository}/{this.Name}:{this.Tag}";
+    public string FullName
+    {
+      get
+      {
+        var dockerImageParts = new[] { this.hubImageNamePrefix, this.Repository, this.Name }
+          .Select(dockerImagePart => dockerImagePart?.Trim('/', ':'))
+          .Where(dockerImagePart => !string.IsNullOrEmpty(dockerImagePart));
+        return $"{string.Join("/", dockerImageParts)}:{this.Tag}";
+      }
+    }
 
     /// <inheritdoc />
     public string GetHostname()

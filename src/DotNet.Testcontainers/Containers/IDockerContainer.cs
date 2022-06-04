@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -100,10 +101,10 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the Testcontainers image name.
     /// </summary>
     /// <value>
-    /// Returns the name of the image this container has been created from.
+    /// Returns the Docker image.
     /// </value>
     [NotNull]
-    string ImageName { get; }
+    IDockerImage Image { get; }
 
     /// <summary>
     /// Gets the Testcontainers state.
