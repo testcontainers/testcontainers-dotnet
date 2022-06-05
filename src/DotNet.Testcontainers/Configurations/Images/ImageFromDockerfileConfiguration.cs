@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
 
@@ -19,20 +18,20 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="image">The Docker image.</param>
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="deleteIfExists">A value indicating whether an existing image is removed or not.</param>
     /// <param name="labels">A list of labels.</param>
     public ImageFromDockerfileConfiguration(
-      Uri endpoint = null,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IDockerImage image = null,
       string dockerfile = null,
       string dockerfileDirectory = null,
       bool deleteIfExists = true,
       IReadOnlyDictionary<string, string> labels = null)
-      : base(endpoint, labels)
+      : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.Image = image;
       this.Dockerfile = dockerfile;

@@ -5,6 +5,7 @@
   using System.Text;
   using System.Text.Json;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IAuthenticationProvider" />
@@ -19,6 +20,7 @@
     /// </summary>
     /// <param name="jsonDocument">The JSON document that holds the Docker config auths node.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public Base64Provider(JsonDocument jsonDocument, ILogger logger)
       : this(jsonDocument.RootElement, logger)
     {
@@ -29,6 +31,7 @@
     /// </summary>
     /// <param name="jsonElement">The JSON element that holds the Docker config auths node.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public Base64Provider(JsonElement jsonElement, ILogger logger)
     {
       this.rootElement = jsonElement.TryGetProperty("auths", out var auths) ? auths : default;

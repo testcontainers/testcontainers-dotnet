@@ -22,7 +22,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       await this.Container.StartAsync()
         .ConfigureAwait(false);
 
-      this.Connection = ConnectionMultiplexer.Connect(this.Container.ConnectionString);
+      this.Connection = await ConnectionMultiplexer.ConnectAsync(this.Container.ConnectionString)
+        .ConfigureAwait(false);
     }
 
     public override async Task DisposeAsync()

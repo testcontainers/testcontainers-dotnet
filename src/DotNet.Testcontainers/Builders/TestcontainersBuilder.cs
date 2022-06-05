@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
   using DotNet.Testcontainers.Volumes;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// This class represents the fluent Testcontainer builder. Each change creates a new instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.
@@ -35,6 +36,7 @@ namespace DotNet.Testcontainers.Builders
   /// </code>
   /// </example>
   /// <typeparam name="TDockerContainer">Type of <see cref="ITestcontainersContainer" />.</typeparam>
+  [PublicAPI]
   public class TestcontainersBuilder<TDockerContainer> : AbstractBuilder<ITestcontainersBuilder<TDockerContainer>, ITestcontainersConfiguration>, ITestcontainersBuilder<TDockerContainer>
     where TDockerContainer : ITestcontainersContainer
   {
@@ -46,8 +48,8 @@ namespace DotNet.Testcontainers.Builders
     public TestcontainersBuilder()
       : this(
         new TestcontainersConfiguration(
-          endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          dockerRegistryAuthenticationConfigurations: default(DockerRegistryAuthenticationConfiguration),
+          dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
+          dockerRegistryAuthenticationConfiguration: default(DockerRegistryAuthenticationConfiguration),
           labels: DefaultLabels.Instance,
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
@@ -249,7 +251,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password)
     {
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerRegistryAuthenticationConfigurations: new DockerRegistryAuthenticationConfiguration(registryEndpoint, username, password)));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(dockerRegistryAuthenticationConfiguration: new DockerRegistryAuthenticationConfiguration(registryEndpoint, username, password)));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -308,7 +310,6 @@ namespace DotNet.Testcontainers.Builders
       var autoRemove = BuildConfiguration.Combine(dockerResourceConfiguration.AutoRemove, this.DockerResourceConfiguration.AutoRemove);
       var privileged = BuildConfiguration.Combine(dockerResourceConfiguration.Privileged, this.DockerResourceConfiguration.Privileged);
 
-      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
       var image = BuildConfiguration.Combine(dockerResourceConfiguration.Image, this.DockerResourceConfiguration.Image);
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var hostname = BuildConfiguration.Combine(dockerResourceConfiguration.Hostname, this.DockerResourceConfiguration.Hostname);
@@ -322,12 +323,13 @@ namespace DotNet.Testcontainers.Builders
       var mounts = BuildConfiguration.Combine(dockerResourceConfiguration.Mounts, this.DockerResourceConfiguration.Mounts);
       var networks = BuildConfiguration.Combine(dockerResourceConfiguration.Networks, this.DockerResourceConfiguration.Networks);
 
+      var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
       var dockerRegistryAuthConfig = new[] { dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig }.First(config => config != null);
       var outputConsumer = new[] { dockerResourceConfiguration.OutputConsumer, this.DockerResourceConfiguration.OutputConsumer }.First(config => config != null);
       var waitStrategies = new[] { dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies }.First(config => config != null);
       var startupCallback = new[] { dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback }.First(config => config != null);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(endpoint, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
 

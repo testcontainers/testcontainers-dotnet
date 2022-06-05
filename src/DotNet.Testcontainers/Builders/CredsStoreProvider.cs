@@ -4,6 +4,7 @@
   using System.Text.Json;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IAuthenticationProvider" />
@@ -25,6 +26,7 @@
     /// </summary>
     /// <param name="jsonDocument">The JSON document that holds the Docker config credsStore node.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public CredsStoreProvider(JsonDocument jsonDocument, ILogger logger)
       : this(jsonDocument.RootElement, logger)
     {
@@ -35,6 +37,7 @@
     /// </summary>
     /// <param name="jsonElement">The JSON element that holds the Docker config credsStore node.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public CredsStoreProvider(JsonElement jsonElement, ILogger logger)
     {
       this.rootElement = jsonElement.TryGetProperty("credsStore", out var credsStore) ? credsStore : default;

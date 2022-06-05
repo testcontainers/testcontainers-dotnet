@@ -250,7 +250,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithDockerEndpoint(TestcontainersSettings.OS.DockerApiEndpoint.ToString())
+          .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .WithImage("alpine")
           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
 

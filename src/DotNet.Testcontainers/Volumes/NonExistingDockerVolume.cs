@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Volumes
     /// <param name="logger">The logger.</param>
     public NonExistingDockerVolume(ITestcontainersVolumeConfiguration configuration, ILogger logger)
     {
-      this.client = new DockerVolumeOperations(configuration.Endpoint, logger);
+      this.client = new DockerVolumeOperations(configuration.DockerEndpointAuthConfig, logger);
       this.configuration = configuration;
     }
 

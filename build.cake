@@ -89,7 +89,7 @@ Task("Tests")
         .Append("/p:Platform=AnyCPU")
         .Append("/p:CollectCoverage=true")
         .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
-        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.net6.0.json\"")
+        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.json\"")
         .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/\"")
     });
   }

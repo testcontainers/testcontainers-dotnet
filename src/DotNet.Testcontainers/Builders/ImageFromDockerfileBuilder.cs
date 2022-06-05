@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="IImageFromDockerfileBuilder" />
+  [PublicAPI]
   public class ImageFromDockerfileBuilder : AbstractBuilder<IImageFromDockerfileBuilder, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder
   {
     /// <summary>
@@ -14,7 +16,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     public ImageFromDockerfileBuilder()
       : this(new ImageFromDockerfileConfiguration(
-        endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
+        dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
         image: new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"),
         dockerfile: "Dockerfile",
         dockerfileDirectory: ".",
@@ -64,7 +66,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public Task<string> Build()
     {
-      ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.Endpoint, TestcontainersSettings.Logger);
+      ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.DockerEndpointAuthConfig, TestcontainersSettings.Logger);
       return client.BuildAsync(this.DockerResourceConfiguration);
     }
 
@@ -81,13 +83,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
     protected virtual IImageFromDockerfileBuilder MergeNewConfiguration(IImageFromDockerfileConfiguration dockerResourceConfiguration)
     {
-      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
+      var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
       var image = BuildConfiguration.Combine(dockerResourceConfiguration.Image, this.DockerResourceConfiguration.Image);
       var dockerfile = BuildConfiguration.Combine(dockerResourceConfiguration.Dockerfile, this.DockerResourceConfiguration.Dockerfile);
       var dockerfileDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.DockerfileDirectory, this.DockerResourceConfiguration.DockerfileDirectory);
       var deleteIfExists = dockerResourceConfiguration.DeleteIfExists && this.DockerResourceConfiguration.DeleteIfExists;
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
-      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(endpoint, image, dockerfile, dockerfileDirectory, deleteIfExists, labels));
+      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(dockerEndpointAuthConfig, image, dockerfile, dockerfileDirectory, deleteIfExists, labels));
     }
   }
 }

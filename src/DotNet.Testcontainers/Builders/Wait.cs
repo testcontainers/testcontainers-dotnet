@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Builders
   /// <summary>
   /// Container platform specific wait strategies.
   /// </summary>
+  [PublicAPI]
   public static class Wait
   {
     /// <summary>

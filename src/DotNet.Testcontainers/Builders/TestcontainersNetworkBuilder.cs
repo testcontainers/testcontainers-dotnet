@@ -3,8 +3,10 @@
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="ITestcontainersNetworkBuilder" />
+  [PublicAPI]
   public class TestcontainersNetworkBuilder : AbstractBuilder<ITestcontainersNetworkBuilder, ITestcontainersNetworkConfiguration>, ITestcontainersNetworkBuilder
   {
     /// <summary>
@@ -12,7 +14,7 @@
     /// </summary>
     public TestcontainersNetworkBuilder()
       : this(new TestcontainersNetworkConfiguration(
-        endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
+        dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
         labels: DefaultLabels.Instance))
     {
     }
@@ -57,11 +59,11 @@
     /// <returns>A configured instance of <see cref="ITestcontainersNetworkBuilder" />.</returns>
     protected virtual ITestcontainersNetworkBuilder MergeNewConfiguration(ITestcontainersNetworkConfiguration dockerResourceConfiguration)
     {
-      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
+      var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var driver = BuildConfiguration.Combine(dockerResourceConfiguration.Driver, this.DockerResourceConfiguration.Driver);
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
-      return new TestcontainersNetworkBuilder(new TestcontainersNetworkConfiguration(endpoint, name, driver, labels));
+      return new TestcontainersNetworkBuilder(new TestcontainersNetworkConfiguration(dockerEndpointAuthConfig, name, driver, labels));
     }
   }
 }

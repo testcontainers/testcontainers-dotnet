@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="logger">The logger.</param>
     protected TestcontainersContainer(ITestcontainersConfiguration configuration, ILogger logger)
     {
-      this.client = new TestcontainersClient(configuration.Endpoint, logger);
+      this.client = new TestcontainersClient(configuration.DockerEndpointAuthConfig, logger);
       this.configuration = configuration;
       this.Logger = logger;
     }
@@ -87,7 +87,7 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        var dockerHostUri = this.configuration.Endpoint;
+        var dockerHostUri = this.configuration.DockerEndpointAuthConfig.Endpoint;
 
         switch (dockerHostUri.Scheme)
         {

@@ -25,8 +25,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersConfiguration" /> class.
     /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <param name="dockerRegistryAuthenticationConfigurations">The Docker registry authentication configuration.</param>
+    /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
+    /// <param name="dockerRegistryAuthenticationConfiguration">The Docker registry authentication configuration.</param>
     /// <param name="image">The Docker image.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
@@ -45,8 +45,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
     /// <param name="privileged">A value indicating whether the Testcontainer has extended privileges or not.</param>
     public TestcontainersConfiguration(
-      Uri endpoint = null,
-      IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations = null,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
+      IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfiguration = null,
       IDockerImage image = null,
       string name = null,
       string hostname = null,
@@ -64,11 +64,11 @@ namespace DotNet.Testcontainers.Configurations
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
       bool? privileged = null)
-      : base(endpoint, labels)
+      : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.AutoRemove = autoRemove;
       this.Privileged = privileged;
-      this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfigurations;
+      this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfiguration;
       this.Image = image;
       this.Name = name;
       this.Hostname = hostname;

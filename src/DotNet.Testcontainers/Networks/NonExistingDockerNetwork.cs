@@ -26,7 +26,7 @@
     /// <param name="logger">The logger.</param>
     public NonExistingDockerNetwork(ITestcontainersNetworkConfiguration configuration, ILogger logger)
     {
-      this.client = new DockerNetworkOperations(configuration.Endpoint, logger);
+      this.client = new DockerNetworkOperations(configuration.DockerEndpointAuthConfig, logger);
       this.configuration = configuration;
     }
 

@@ -56,6 +56,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="hostname">Testcontainers hostname.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithHostname(string hostname);
 
     /// <summary>

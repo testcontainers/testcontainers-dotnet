@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Builders
   /// <summary>
   /// Collection of pre-configured output consumers.
   /// </summary>
+  [PublicAPI]
   public static class Consume
   {
     /// <summary>

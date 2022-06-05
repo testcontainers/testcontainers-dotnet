@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Collections.Generic;
 
   /// <inheritdoc cref="ITestcontainersNetworkConfiguration" />
@@ -18,16 +17,16 @@
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersNetworkConfiguration" /> class.
     /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="name">The name.</param>
     /// <param name="driver">The driver.</param>
     /// <param name="labels">A list of labels.</param>
     public TestcontainersNetworkConfiguration(
-      Uri endpoint = null,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       string name = null,
       NetworkDriver driver = default,
       IReadOnlyDictionary<string, string> labels = null)
-      : base(endpoint, labels)
+      : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.Name = name;
       this.Driver = driver;

@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// Windows operating system.
   /// </summary>
+  [PublicAPI]
   public sealed class Windows : IOperatingSystem
   {
 #pragma warning disable S1075
@@ -26,25 +27,25 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
     /// </summary>
-    /// <param name="dockerApiEndpoint">The Docker API endpoint.</param>
+    /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
-    public Windows(string dockerApiEndpoint)
-      : this(new Uri(dockerApiEndpoint))
+    public Windows(string endpoint)
+      : this(new Uri(endpoint))
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
     /// </summary>
-    /// <param name="dockerApiEndpoint">The Docker API endpoint.</param>
+    /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
-    public Windows(Uri dockerApiEndpoint)
+    public Windows(Uri endpoint)
     {
-      this.DockerApiEndpoint = dockerApiEndpoint;
+      this.DockerEndpointAuthConfig = new DockerEndpointAuthenticationConfiguration(endpoint);
     }
 
     /// <inheritdoc />
-    public Uri DockerApiEndpoint { get; }
+    public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
     /// <inheritdoc />
     public string NormalizePath(string path)

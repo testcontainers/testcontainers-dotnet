@@ -6,6 +6,7 @@
   using System.Linq;
   using System.Text.Json;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
   /// <inheritdoc />
@@ -23,6 +24,7 @@
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
       : this(GetDefaultDockerConfigFile(), logger)
     {
@@ -33,6 +35,7 @@
     /// </summary>
     /// <param name="dockerConfigFile">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public DockerRegistryAuthenticationProvider(string dockerConfigFile, ILogger logger)
       : this(new FileInfo(dockerConfigFile), logger)
     {
@@ -43,6 +46,7 @@
     /// </summary>
     /// <param name="dockerConfigFile">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
+    [PublicAPI]
     public DockerRegistryAuthenticationProvider(FileInfo dockerConfigFile, ILogger logger)
     {
       this.dockerConfigFile = dockerConfigFile;
@@ -77,7 +81,7 @@
         {
           using (var dockerConfigDocument = JsonDocument.Parse(dockerConfigFileStream))
           {
-            authConfig = new IAuthenticationProvider[] { new CredsHelperProvider(), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger), }
+            authConfig = new IAuthenticationProvider[] { new CredsHelperProvider(), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger) }
               .AsParallel()
               .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
               .FirstOrDefault(authenticationProvider => authenticationProvider != null);

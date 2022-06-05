@@ -31,7 +31,19 @@
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />
     public TBuilderEntity WithDockerEndpoint(string endpoint)
     {
-      return this.MergeNewConfiguration(new DockerResourceConfiguration(endpoint: new Uri(endpoint)));
+      return this.WithDockerEndpoint(new Uri(endpoint));
+    }
+
+    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />
+    public TBuilderEntity WithDockerEndpoint(Uri endpoint)
+    {
+      return this.WithDockerEndpoint(new DockerEndpointAuthenticationConfiguration(endpoint));
+    }
+
+    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />
+    public TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    {
+      return this.MergeNewConfiguration(new DockerResourceConfiguration(dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity}" />

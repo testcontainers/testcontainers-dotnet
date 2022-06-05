@@ -17,8 +17,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly TraceProgress traceProgress;
 
-    public DockerImageOperations(Uri endpoint, ILogger logger)
-      : base(endpoint)
+    public DockerImageOperations(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
+      : base(dockerEndpointAuthConfig)
     {
       this.logger = logger;
       this.traceProgress = new TraceProgress(logger);

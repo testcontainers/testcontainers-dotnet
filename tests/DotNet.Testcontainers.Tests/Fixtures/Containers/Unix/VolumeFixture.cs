@@ -9,8 +9,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class VolumeFixture : IAsyncLifetime
   {
-    private readonly Guid sessionId = Guid.NewGuid();
-
     private readonly IDockerVolume volume;
 
     public VolumeFixture()
@@ -21,8 +19,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         .Build();
     }
 
-    public Guid SessionId
-      => this.sessionId;
+    public Guid SessionId { get; }
+      = Guid.NewGuid();
 
     public string Name
       => this.volume.Name;

@@ -3,8 +3,10 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Volumes;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="ITestcontainersVolumeBuilder" />
+  [PublicAPI]
   public class TestcontainersVolumeBuilder : AbstractBuilder<ITestcontainersVolumeBuilder, ITestcontainersVolumeConfiguration>, ITestcontainersVolumeBuilder
   {
     /// <summary>
@@ -12,7 +14,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     public TestcontainersVolumeBuilder()
       : this(new TestcontainersVolumeConfiguration(
-        endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
+        dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
         labels: DefaultLabels.Instance))
     {
     }
@@ -51,10 +53,10 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <see cref="ITestcontainersVolumeBuilder" />.</returns>
     protected virtual ITestcontainersVolumeBuilder MergeNewConfiguration(ITestcontainersVolumeConfiguration dockerResourceConfiguration)
     {
-      var endpoint = BuildConfiguration.Combine(dockerResourceConfiguration.Endpoint, this.DockerResourceConfiguration.Endpoint);
+      var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
-      return new TestcontainersVolumeBuilder(new TestcontainersVolumeConfiguration(endpoint, name, labels));
+      return new TestcontainersVolumeBuilder(new TestcontainersVolumeConfiguration(dockerEndpointAuthConfig, name, labels));
     }
   }
 }

@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Containers
     private ResourceReaper(Guid sessionId, Uri endpoint, string ryukImage)
     {
       this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithDockerEndpoint((endpoint ?? TestcontainersSettings.OS.DockerApiEndpoint).ToString())
+        .WithDockerEndpoint(endpoint ?? TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint)
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithImage(ryukImage)
         .WithAutoRemove(true)

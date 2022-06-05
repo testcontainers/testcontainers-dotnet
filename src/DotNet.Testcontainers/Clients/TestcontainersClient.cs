@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Clients
     /// </summary>
     public TestcontainersClient()
       : this(
-        TestcontainersSettings.OS.DockerApiEndpoint,
+        TestcontainersSettings.OS.DockerEndpointAuthConfig,
         TestcontainersSettings.Logger)
     {
     }
@@ -42,13 +42,13 @@ namespace DotNet.Testcontainers.Clients
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
     /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
-    public TestcontainersClient(Uri endpoint, ILogger logger)
+    public TestcontainersClient(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : this(
-        new DockerContainerOperations(endpoint, logger),
-        new DockerImageOperations(endpoint, logger),
-        new DockerSystemOperations(endpoint, logger),
+        new DockerContainerOperations(dockerEndpointAuthConfig, logger),
+        new DockerImageOperations(dockerEndpointAuthConfig, logger),
+        new DockerSystemOperations(dockerEndpointAuthConfig, logger),
         new DockerRegistryAuthenticationProvider(logger))
     {
     }
@@ -235,7 +235,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.ToString("D").Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
       {
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.Endpoint, ct)
+        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig.Endpoint, ct)
           .ConfigureAwait(false);
       }
 

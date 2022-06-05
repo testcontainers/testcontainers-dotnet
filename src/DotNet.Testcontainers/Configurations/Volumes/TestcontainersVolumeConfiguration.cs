@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Collections.Generic;
 
   /// <inheritdoc cref="ITestcontainersVolumeConfiguration" />
@@ -18,14 +17,14 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersVolumeConfiguration" /> class.
     /// </summary>
-    /// <param name="endpoint">The Docker API endpoint.</param>
+    /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="name">The name.</param>
     /// <param name="labels">A list of labels.</param>
     public TestcontainersVolumeConfiguration(
-      Uri endpoint = null,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       string name = null,
       IReadOnlyDictionary<string, string> labels = null)
-      : base(endpoint, labels)
+      : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.Name = name;
     }

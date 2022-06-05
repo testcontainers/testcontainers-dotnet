@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Collections.Generic;
 
   /// <summary>
@@ -9,9 +8,9 @@
   public interface IDockerResourceConfiguration
   {
     /// <summary>
-    /// Gets the Docker API endpoint.
+    /// Gets the Docker endpoint authentication configuration.
     /// </summary>
-    Uri Endpoint { get; }
+    IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
     /// <summary>
     /// Gets a list of labels.
