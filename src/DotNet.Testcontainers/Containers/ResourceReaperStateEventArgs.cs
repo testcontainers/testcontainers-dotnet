@@ -6,6 +6,7 @@
   /// <summary>
   /// Provides data for the <see cref="ResourceReaper.StateChanged" /> event.
   /// </summary>
+  [PublicAPI]
   public sealed class ResourceReaperStateEventArgs : EventArgs
   {
     /// <summary>

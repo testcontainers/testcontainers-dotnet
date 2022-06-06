@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Containers
   /// <summary>
   /// A command exec result.
   /// </summary>
+  [PublicAPI]
   public readonly struct ExecResult
   {
     /// <summary>

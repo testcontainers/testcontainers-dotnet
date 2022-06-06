@@ -5,6 +5,7 @@
   /// <summary>
   /// Docker network driver.
   /// </summary>
+  [PublicAPI]
   public readonly struct NetworkDriver
   {
     /// <summary>
@@ -31,6 +32,7 @@
     /// <summary>
     /// Gets the string representation of the Docker network driver.
     /// </summary>
+    [PublicAPI]
     [NotNull]
     public string Value { get; }
   }

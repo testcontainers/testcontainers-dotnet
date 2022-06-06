@@ -9,11 +9,13 @@
   /// <summary>
   /// This class represents the Testcontainers settings.
   /// </summary>
+  [PublicAPI]
   public static class TestcontainersSettings
   {
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
+    [PublicAPI]
     public static bool ResourceReaperEnabled { get; set; }
       = true;
 
@@ -23,12 +25,15 @@
     /// <remarks>
     /// Please verify that all required images exist in your registry.
     /// </remarks>
+    [PublicAPI]
+    [CanBeNull]
     public static string HubImageNamePrefix { get; set; }
       = string.Empty;
 
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
+    [PublicAPI]
     [NotNull]
     public static ILogger Logger { get; set; }
       = NullLogger.Instance;
@@ -36,6 +41,7 @@
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
+    [PublicAPI]
     [NotNull]
     public static IOperatingSystem OS { get; set; }
       = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows() : new Unix();

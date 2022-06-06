@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// Docker mount access modes.
   /// </summary>
+  [PublicAPI]
   public readonly struct AccessMode
   {
     /// <summary>
@@ -31,6 +32,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the string representation of the Docker volume access mode.
     /// </summary>
+    [PublicAPI]
     [NotNull]
     public string Value { get; }
   }

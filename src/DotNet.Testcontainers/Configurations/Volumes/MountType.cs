@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// Docker mount type.
   /// </summary>
+  [PublicAPI]
   public readonly struct MountType
   {
     /// <summary>
@@ -31,6 +32,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the mount type.
     /// </summary>
+    [PublicAPI]
+    [NotNull]
     public string Type { get; }
   }
 }

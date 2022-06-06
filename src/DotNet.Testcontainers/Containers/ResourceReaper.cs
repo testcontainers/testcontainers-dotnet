@@ -14,6 +14,7 @@ namespace DotNet.Testcontainers.Containers
   /// <summary>
   /// https://hub.docker.com/r/testcontainers/ryuk.
   /// </summary>
+  [PublicAPI]
   public sealed class ResourceReaper : IAsyncDisposable
   {
     public const string ResourceReaperSessionLabel = TestcontainersClient.TestcontainersLabel + ".resource-reaper-session";
