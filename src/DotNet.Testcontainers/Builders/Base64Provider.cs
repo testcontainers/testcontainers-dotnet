@@ -8,8 +8,8 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc cref="IAuthenticationProvider" />
-  internal sealed class Base64Provider : IAuthenticationProvider
+  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
+  internal sealed class Base64Provider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
   {
     private readonly JsonElement rootElement;
 

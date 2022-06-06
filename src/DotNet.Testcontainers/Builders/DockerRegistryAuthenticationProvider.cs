@@ -9,8 +9,8 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc />
-  internal sealed class DockerRegistryAuthenticationProvider : IAuthenticationProvider
+  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
+  internal sealed class DockerRegistryAuthenticationProvider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
   {
     private const string DockerHub = "index.docker.io";
 
@@ -81,7 +81,7 @@
         {
           using (var dockerConfigDocument = JsonDocument.Parse(dockerConfigFileStream))
           {
-            authConfig = new IAuthenticationProvider[] { new CredsHelperProvider(), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger) }
+            authConfig = new IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>[] { new CredsHelperProvider(), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger) }
               .AsParallel()
               .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
               .FirstOrDefault(authenticationProvider => authenticationProvider != null);

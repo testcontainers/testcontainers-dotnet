@@ -7,8 +7,8 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc cref="IAuthenticationProvider" />
-  internal sealed class CredsStoreProvider : IAuthenticationProvider
+  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
+  internal sealed class CredsStoreProvider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
   {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions();
 

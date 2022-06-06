@@ -2,8 +2,8 @@
 {
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc cref="IAuthenticationProvider" />
-  internal sealed class CredsHelperProvider : IAuthenticationProvider
+  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
+  internal sealed class CredsHelperProvider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
   {
     /// <inheritdoc />
     public bool IsApplicable()

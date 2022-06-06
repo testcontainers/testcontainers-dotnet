@@ -1,13 +1,13 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
 
   /// <summary>
-  /// A Docker registry authentication provider.
+  /// A Docker authentication provider.
   /// </summary>
+  /// <typeparam name="TAuthenticationConfiguration">Type of the authentication configuration.</typeparam>
   [PublicAPI]
-  internal interface IAuthenticationProvider
+  internal interface IAuthenticationProvider<out TAuthenticationConfiguration>
   {
     /// <summary>
     /// Is true when the authentication provider contains any credentials, otherwise false.
@@ -17,12 +17,12 @@
     bool IsApplicable();
 
     /// <summary>
-    /// Gets the Docker registry authentication configuration.
+    /// Gets the Docker authentication configuration.
     /// </summary>
-    /// <param name="hostname">The Docker registry hostname.</param>
-    /// <returns>The Docker registry authentication configuration or null if no configuration matches the hostname.</returns>
+    /// <param name="hostname">The Docker hostname.</param>
+    /// <returns>The Docker authentication configuration or null if no configuration matches the hostname.</returns>
     [PublicAPI]
     [CanBeNull]
-    IDockerRegistryAuthenticationConfiguration GetAuthConfig(string hostname);
+    TAuthenticationConfiguration GetAuthConfig(string hostname);
   }
 }
