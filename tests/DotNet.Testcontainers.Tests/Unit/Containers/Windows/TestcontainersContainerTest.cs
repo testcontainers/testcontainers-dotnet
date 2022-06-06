@@ -12,6 +12,21 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
     public sealed class WithConfiguration
     {
       [SkipOnLinuxEngine]
+      public void GetAuthConfig()
+      {
+        // Given
+        var expected = new NpipeEndpointAuthenticationProvider().GetAuthConfig(null);
+
+        // When
+        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig(null);
+
+        // Then
+        Assert.NotNull(expected);
+        Assert.NotNull(actual);
+        Assert.Equal(expected.Endpoint, actual.Endpoint);
+      }
+
+      [SkipOnLinuxEngine]
       public async Task IsWindowsEngineEnabled()
       {
         var client = new TestcontainersClient();

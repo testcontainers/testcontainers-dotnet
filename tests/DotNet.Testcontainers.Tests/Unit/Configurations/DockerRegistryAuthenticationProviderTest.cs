@@ -40,7 +40,7 @@
     [Fact]
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
-      IAuthenticationProvider authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", TestcontainersSettings.Logger);
+      var authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", TestcontainersSettings.Logger);
       Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig(DockerRegistry));
     }
 
@@ -60,7 +60,7 @@
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
-        IAuthenticationProvider authenticationProvider = new Base64Provider(jsonElement, TestcontainersSettings.Logger);
+        var authenticationProvider = new Base64Provider(jsonElement, TestcontainersSettings.Logger);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
@@ -76,7 +76,7 @@
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
-        IAuthenticationProvider authenticationProvider = new Base64Provider(jsonElement, TestcontainersSettings.Logger);
+        var authenticationProvider = new Base64Provider(jsonElement, TestcontainersSettings.Logger);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
@@ -100,7 +100,7 @@
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
-        IAuthenticationProvider authenticationProvider = new CredsStoreProvider(jsonElement, TestcontainersSettings.Logger);
+        var authenticationProvider = new CredsStoreProvider(jsonElement, TestcontainersSettings.Logger);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
@@ -120,7 +120,7 @@
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
-        IAuthenticationProvider authenticationProvider = new CredsStoreProvider(jsonElement, TestcontainersSettings.Logger);
+        var authenticationProvider = new CredsStoreProvider(jsonElement, TestcontainersSettings.Logger);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then

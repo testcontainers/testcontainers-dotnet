@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -9,14 +10,13 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public sealed class Unix : IOperatingSystem
   {
-    private static readonly Uri DockerEngine = new Uri("unix:/var/run/docker.sock");
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Unix" /> class.
     /// </summary>
     [PublicAPI]
     public Unix()
-      : this(DockerEngine)
+      : this(new DockerEndpointAuthenticationProvider()
+        .GetAuthConfig(null))
     {
     }
 
@@ -36,8 +36,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
     public Unix(Uri endpoint)
+      : this(new DockerEndpointAuthenticationConfiguration(endpoint))
     {
-      this.DockerEndpointAuthConfig = new DockerEndpointAuthenticationConfiguration(endpoint);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Unix" /> class.
+    /// </summary>
+    /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
+    [PublicAPI]
+    public Unix(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    {
+      this.DockerEndpointAuthConfig = dockerEndpointAuthConfig;
     }
 
     /// <inheritdoc />

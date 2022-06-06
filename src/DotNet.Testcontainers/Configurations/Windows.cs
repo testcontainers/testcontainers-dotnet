@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -9,18 +10,13 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public sealed class Windows : IOperatingSystem
   {
-#pragma warning disable S1075
-
-    private static readonly Uri DockerEngine = new Uri("npipe://./pipe/docker_engine");
-
-#pragma warning restore S1075
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
     /// </summary>
     [PublicAPI]
     public Windows()
-      : this(DockerEngine)
+      : this(new DockerEndpointAuthenticationProvider()
+        .GetAuthConfig(null))
     {
     }
 
@@ -40,8 +36,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
     public Windows(Uri endpoint)
+      : this(new DockerEndpointAuthenticationConfiguration(endpoint))
     {
-      this.DockerEndpointAuthConfig = new DockerEndpointAuthenticationConfiguration(endpoint);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Windows" /> class.
+    /// </summary>
+    /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
+    [PublicAPI]
+    public Windows(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    {
+      this.DockerEndpointAuthConfig = dockerEndpointAuthConfig;
     }
 
     /// <inheritdoc />
