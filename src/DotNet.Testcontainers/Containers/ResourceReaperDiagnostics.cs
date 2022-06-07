@@ -14,9 +14,13 @@ namespace DotNet.Testcontainers.Containers
     public int ConnectionAttempts
       => this.connectionAttempts;
 
+#pragma warning disable CA1822
+
     public IReadOnlyDictionary<string, IEnumerable<string>> LocalNetworkInterfaces
       => NetworkInterface.GetAllNetworkInterfaces()
         .ToDictionary(networkInterface => networkInterface.Id, networkInterface => networkInterface.GetIPProperties().UnicastAddresses.Select(unicastAddress => unicastAddress.Address.ToString()));
+
+#pragma warning restore CA1822
 
     public string ExpectedHost { get; set; }
 
