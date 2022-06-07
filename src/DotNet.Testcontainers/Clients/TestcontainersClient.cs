@@ -235,7 +235,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.ToString("D").Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
       {
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig.Endpoint, ct)
+        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, ct)
           .ConfigureAwait(false);
       }
 
