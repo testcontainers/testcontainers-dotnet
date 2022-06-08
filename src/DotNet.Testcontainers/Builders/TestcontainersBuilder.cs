@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
@@ -324,10 +323,10 @@ namespace DotNet.Testcontainers.Builders
       var networks = BuildConfiguration.Combine(dockerResourceConfiguration.Networks, this.DockerResourceConfiguration.Networks);
 
       var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
-      var dockerRegistryAuthConfig = new[] { dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig }.First(config => config != null);
-      var outputConsumer = new[] { dockerResourceConfiguration.OutputConsumer, this.DockerResourceConfiguration.OutputConsumer }.First(config => config != null);
-      var waitStrategies = new[] { dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies }.First(config => config != null);
-      var startupCallback = new[] { dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback }.First(config => config != null);
+      var dockerRegistryAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig);
+      var outputConsumer = BuildConfiguration.Combine(dockerResourceConfiguration.OutputConsumer, this.DockerResourceConfiguration.OutputConsumer);
+      var waitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies);
+      var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
       var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
