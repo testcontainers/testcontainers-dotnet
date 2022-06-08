@@ -37,6 +37,17 @@
       Assert.Equal(hostname, image.GetHostname());
     }
 
+    [Theory]
+    [InlineData("", "docker", "stable")]
+    [InlineData("fedora", "httpd", "1.0")]
+    [InlineData("foo/bar", "baz", "1.0.0")]
+    public void GetHostnameFromHubImageNamePrefix(string repository, string name, string tag)
+    {
+      const string hubImageNamePrefix = "myregistry.azurecr.io";
+      IDockerImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
+      Assert.Equal(hubImageNamePrefix, image.GetHostname());
+    }
+
     [Fact]
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
