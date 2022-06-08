@@ -33,8 +33,19 @@
     [InlineData("myregistry.azurecr.io/baz:foo/bar:1.0.0", "myregistry.azurecr.io")]
     public void GetHostnameFromDockerImage(string dockerImageName, string hostname)
     {
-      IDockerImage image = new DockerImage(dockerImageName);
+      var image = new DockerImage(dockerImageName);
       Assert.Equal(hostname, image.GetHostname());
+    }
+
+    [Theory]
+    [InlineData("", "docker",  "stable")]
+    [InlineData("fedora", "httpd",  "1.0")]
+    [InlineData("foo/bar", "baz",  "1.0.0")]
+    public void GetsHostnameOfPrefixWhenPrefixIsConfigured(string repository, string name, string tag)
+    {
+      var prefix = "myregistry.azurecr.io";
+      var image = new DockerImage(repository, name, tag, prefix);
+      Assert.Equal(prefix, image.GetHostname());
     }
 
     [Fact]

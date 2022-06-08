@@ -91,7 +91,7 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     public string GetHostname()
     {
-      var firstSegmentOfRepository = this.Repository.Split('/').First();
+      var firstSegmentOfRepository = (this.hubImageNamePrefix ?? this.Repository).Split('/').First();
       return firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRepository : null;
     }
   }
