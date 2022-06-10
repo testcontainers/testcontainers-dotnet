@@ -19,13 +19,15 @@ internal sealed class BuildInformation
   {
     var buildSystem = context.BuildSystem();
 
+    var environment = buildSystem.GitHubActions.Environment;
+
     var isLocalBuild = buildSystem.IsLocalBuild;
 
-    var isPullRequest = buildSystem.AzurePipelines.Environment.PullRequest.IsPullRequest;
+    var isPullRequest = environment.PullRequest.IsPullRequest;
 
-    var isFork = buildSystem.AzurePipelines.Environment.PullRequest.IsFork;
+    var isFork = "fork".Equals(environment.Workflow.EventName, StringComparison.OrdinalIgnoreCase);
 
-    var buildId = buildSystem.AzurePipelines.Environment.Build.Id.ToString();
+    var buildId = environment.Workflow.RunId;
 
     var git = context.GitBranchCurrent(".");
 
@@ -47,17 +49,14 @@ internal sealed class BuildInformation
     }
     else
     {
-      branch = buildSystem.AzurePipelines.Environment.Repository.SourceBranch;
-      branch = branch.Replace("refs/heads/", string.Empty);
+      branch = environment.Workflow.RefName;
     }
 
     if (isPullRequest)
     {
-      pullRequestId = buildSystem.AzurePipelines.Environment.PullRequest.Number.ToString();
-      sourceBranch = buildSystem.AzurePipelines.Environment.PullRequest.SourceBranch;
-      targetBranch = buildSystem.AzurePipelines.Environment.PullRequest.TargetBranch;
-      sourceBranch = sourceBranch.Replace("refs/heads/", string.Empty);
-      targetBranch = targetBranch.Replace("refs/heads/", string.Empty);
+      pullRequestId = new string(environment.Workflow.Ref.Where(char.IsDigit).ToArray());
+      sourceBranch = environment.Workflow.HeadRef;
+      targetBranch = environment.Workflow.BaseRef;
     }
 
     var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
