@@ -15,11 +15,13 @@ namespace DotNet.Testcontainers.Configurations
     public DockerRegistryAuthenticationConfiguration(
       string registryEndpoint = null,
       string username = null,
-      string password = null)
+      string password = null,
+      string identityToken = null)
     {
       this.RegistryEndpoint = registryEndpoint;
       this.Username = username;
       this.Password = password;
+      this.IdentityToken = identityToken;
     }
 
     /// <inheritdoc />
@@ -30,5 +32,8 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public string Password { get; }
+
+    /// <inheritdoc />
+    public string IdentityToken { get; }
   }
 }

@@ -15,10 +15,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       public void GetAuthConfig()
       {
         // Given
-        var expected = new NpipeEndpointAuthenticationProvider().GetAuthConfig(null);
+        var expected = new NpipeEndpointAuthenticationProvider().GetAuthConfig();
 
         // When
-        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig(null);
+        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig();
 
         // Then
         Assert.NotNull(expected);

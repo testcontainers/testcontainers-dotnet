@@ -24,5 +24,11 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [CanBeNull]
     string Password { get; }
+
+    /// <summary>
+    /// Gets the identity token.
+    /// </summary>
+    [CanBeNull]
+    string IdentityToken { get; }
   }
 }

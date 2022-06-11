@@ -72,6 +72,7 @@ namespace DotNet.Testcontainers.Clients
         ServerAddress = dockerRegistryAuthConfig.RegistryEndpoint,
         Username = dockerRegistryAuthConfig.Username,
         Password = dockerRegistryAuthConfig.Password,
+        IdentityToken = dockerRegistryAuthConfig.IdentityToken,
       };
 
       await this.Docker.Images.CreateImageAsync(createParameters, authConfig, this.traceProgress, ct)
