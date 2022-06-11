@@ -16,7 +16,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     public Windows()
       : this(new DockerEndpointAuthenticationProvider()
-        .GetAuthConfig(null))
+        .GetAuthConfig())
     {
     }
 

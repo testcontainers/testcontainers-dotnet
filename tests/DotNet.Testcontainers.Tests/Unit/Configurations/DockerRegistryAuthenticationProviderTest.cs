@@ -1,5 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
+  using System.IO;
+  using System.Runtime.InteropServices;
   using System.Text.Json;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
@@ -75,7 +78,7 @@
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
-        Assert.Equal(isApplicable, authenticationProvider.IsApplicable());
+        Assert.Equal(isApplicable, authenticationProvider.IsApplicable(DockerRegistry));
         Assert.Null(authConfig);
       }
 
@@ -91,7 +94,7 @@
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
-        Assert.True(authenticationProvider.IsApplicable());
+        Assert.True(authenticationProvider.IsApplicable(DockerRegistry));
         Assert.NotNull(authConfig);
         Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
         Assert.Equal("username", authConfig.Username);
@@ -115,14 +118,13 @@
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
-        Assert.Equal(isApplicable, authenticationProvider.IsApplicable());
+        Assert.Equal(isApplicable, authenticationProvider.IsApplicable(DockerRegistry));
         Assert.Null(authConfig);
       }
 
 #pragma warning disable xUnit1004
 
       [Fact(Skip = "The pipeline has no configured credential store (maybe we can use the Windows tests in the future).")]
-
 #pragma warning restore xUnit1004
       public void ShouldGetAuthConfig()
       {
@@ -135,11 +137,62 @@
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
-        Assert.True(authenticationProvider.IsApplicable());
+        Assert.True(authenticationProvider.IsApplicable(DockerRegistry));
         Assert.NotNull(authConfig);
         Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
         Assert.Equal("username", authConfig.Username);
         Assert.Equal("password", authConfig.Password);
+      }
+    }
+
+    public sealed class CredsHelperProviderTest
+    {
+      [Theory]
+      [InlineData("{}", false)]
+      [InlineData("{\"credHelpers\":null}", false)]
+      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":null}}", false)]
+      [InlineData("{\"credHelpers\":{\"registry2\":\"script.bat\"}}", false)]
+      public void ShouldGetNull(string jsonDocument, bool isApplicable)
+      {
+        // Given
+        var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
+
+        // When
+        var authenticationProvider = new CredsHelperProvider(jsonElement, TestcontainersSettings.Logger);
+        var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
+
+        // Then
+        Assert.Equal(isApplicable, authenticationProvider.IsApplicable(DockerRegistry));
+        Assert.Null(authConfig);
+      }
+
+      [Theory]
+      [InlineData("password", "username", "password", null)]
+      [InlineData("token", null, null, "identitytoken")]
+      public void ShouldGetAuthConfig(string credHelperName, string expectedUsername, string expectedPassword, string expectedIdentityToken)
+      {
+        var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+        var pathSeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ";" : ":";
+        var credHelpersPath = Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers");
+        Environment.SetEnvironmentVariable("PATH", string.Join(pathSeparator, credHelpersPath, path));
+        var extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".bat" : ".sh";
+        var credHelperScriptSuffix = $"{credHelperName}{extension}";
+
+        // Given
+        var jsonDocument = "{\"credHelpers\":{\"" + DockerRegistry + "\":\"" + credHelperScriptSuffix + "\"}}";
+        var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
+
+        // When
+        var authenticationProvider = new CredsHelperProvider(jsonElement, TestcontainersSettings.Logger);
+        var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
+
+        // Then
+        Assert.True(authenticationProvider.IsApplicable(DockerRegistry));
+        Assert.NotNull(authConfig);
+        Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
+        Assert.Equal(expectedUsername, authConfig.Username);
+        Assert.Equal(expectedPassword, authConfig.Password);
+        Assert.Equal(expectedIdentityToken, authConfig.IdentityToken);
       }
     }
   }

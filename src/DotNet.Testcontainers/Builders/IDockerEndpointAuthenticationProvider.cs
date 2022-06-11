@@ -1,13 +1,13 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
 
   /// <summary>
-  /// A Docker authentication provider.
+  /// A Docker endpoint authentication provider.
   /// </summary>
-  /// <typeparam name="TAuthenticationConfiguration">Type of the authentication configuration.</typeparam>
   [PublicAPI]
-  internal interface IAuthenticationProvider<out TAuthenticationConfiguration>
+  internal interface IDockerEndpointAuthenticationProvider
   {
     /// <summary>
     /// Is true when the authentication provider contains any credentials, otherwise false.
@@ -19,10 +19,9 @@
     /// <summary>
     /// Gets the Docker authentication configuration.
     /// </summary>
-    /// <param name="hostname">The Docker hostname.</param>
     /// <returns>The Docker authentication configuration or null if no configuration matches the hostname.</returns>
     [PublicAPI]
     [CanBeNull]
-    TAuthenticationConfiguration GetAuthConfig(string hostname);
+    IDockerEndpointAuthenticationConfiguration GetAuthConfig();
   }
 }

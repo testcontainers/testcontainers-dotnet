@@ -26,10 +26,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public void GetAuthConfig()
       {
         // Given
-        var expected = new UnixEndpointAuthenticationProvider().GetAuthConfig(null);
+        var expected = new UnixEndpointAuthenticationProvider().GetAuthConfig();
 
         // When
-        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig(null);
+        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig();
 
         // Then
         Assert.NotNull(expected);

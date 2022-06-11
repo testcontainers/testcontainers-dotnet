@@ -8,8 +8,8 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
-  internal sealed class Base64Provider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
+  /// <inheritdoc />
+  internal sealed class Base64Provider : IDockerRegistryAuthenticationProvider
   {
     private readonly JsonElement rootElement;
 
@@ -39,7 +39,7 @@
     }
 
     /// <inheritdoc />
-    public bool IsApplicable()
+    public bool IsApplicable(string hostname)
     {
       return !default(JsonElement).Equals(this.rootElement) && this.rootElement.EnumerateObject().Any();
     }
@@ -49,7 +49,7 @@
     {
       this.logger.SearchingDockerRegistryCredential("Auths");
 
-      if (!this.IsApplicable())
+      if (!this.IsApplicable(hostname))
       {
         return null;
       }

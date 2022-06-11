@@ -1,14 +1,13 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using System.Diagnostics;
   using System.Text.Json;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
-  internal sealed class CredsStoreProvider : IAuthenticationProvider<IDockerRegistryAuthenticationConfiguration>
+  /// <inheritdoc />
+  internal sealed class CredsStoreProvider : IDockerRegistryAuthenticationProvider
   {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions();
 
@@ -45,7 +44,7 @@
     }
 
     /// <inheritdoc />
-    public bool IsApplicable()
+    public bool IsApplicable(string hostname)
     {
       return !default(JsonElement).Equals(this.rootElement) && !string.IsNullOrEmpty(this.rootElement.GetString());
     }
@@ -55,43 +54,30 @@
     {
       this.logger.SearchingDockerRegistryCredential("CredsStore");
 
-      if (!this.IsApplicable())
+      if (!this.IsApplicable(hostname))
       {
         return null;
       }
 
-      var dockerCredentialStartInfo = new ProcessStartInfo();
-      dockerCredentialStartInfo.FileName = "docker-credential-" + this.rootElement.GetString();
-      dockerCredentialStartInfo.Arguments = "get";
-      dockerCredentialStartInfo.RedirectStandardInput = true;
-      dockerCredentialStartInfo.RedirectStandardOutput = true;
-      dockerCredentialStartInfo.UseShellExecute = false;
-
-      using (var dockerCredentialProcess = Process.Start(dockerCredentialStartInfo))
+      var credentialProviderOutput = ExternalProcessCredentialProvider.GetCredentialProviderOutput(this.rootElement.GetString(), hostname);
+      if (credentialProviderOutput == null)
       {
-        if (dockerCredentialProcess == null)
-        {
-          return null;
-        }
-
-        dockerCredentialProcess.StandardInput.WriteLine(hostname);
-        dockerCredentialProcess.StandardInput.Close();
-
-        var stdOut = dockerCredentialProcess.StandardOutput.ReadToEnd();
-        AuthConfig authConfig;
-
-        try
-        {
-          authConfig = JsonSerializer.Deserialize<AuthConfig>(JsonDocument.Parse(stdOut).RootElement.GetRawText(), JsonSerializerOptions);
-        }
-        catch (JsonException)
-        {
-          return null;
-        }
-
-        this.logger.DockerRegistryCredentialFound(hostname);
-        return new DockerRegistryAuthenticationConfiguration(authConfig.ServerAddress, authConfig.Username, authConfig.Password);
+        return null;
       }
+
+      AuthConfig authConfig;
+
+      try
+      {
+        authConfig = JsonSerializer.Deserialize<AuthConfig>(JsonDocument.Parse(credentialProviderOutput).RootElement.GetRawText(), JsonSerializerOptions);
+      }
+      catch (JsonException)
+      {
+        return null;
+      }
+
+      this.logger.DockerRegistryCredentialFound(hostname);
+      return new DockerRegistryAuthenticationConfiguration(authConfig.ServerAddress, authConfig.Username, authConfig.Password);
     }
   }
 }

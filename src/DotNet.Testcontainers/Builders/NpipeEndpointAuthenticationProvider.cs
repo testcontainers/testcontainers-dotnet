@@ -4,8 +4,8 @@
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
-  internal sealed class NpipeEndpointAuthenticationProvider : IAuthenticationProvider<IDockerEndpointAuthenticationConfiguration>
+  /// <inheritdoc />
+  internal sealed class NpipeEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
 #pragma warning disable S1075
 
@@ -20,7 +20,7 @@
     }
 
     /// <inheritdoc />
-    public IDockerEndpointAuthenticationConfiguration GetAuthConfig(string hostname)
+    public IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
       return new DockerEndpointAuthenticationConfiguration(DockerEngine);
     }

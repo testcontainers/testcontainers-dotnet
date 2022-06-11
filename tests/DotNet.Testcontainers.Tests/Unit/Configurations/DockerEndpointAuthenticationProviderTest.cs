@@ -20,7 +20,7 @@
       [Fact]
       public void GetAuthConfig()
       {
-        using (var clientConfiguration = new DockerEndpointAuthenticationProvider().GetAuthConfig(null)!.GetDockerClientConfiguration())
+        using (var clientConfiguration = new DockerEndpointAuthenticationProvider().GetAuthConfig()!.GetDockerClientConfiguration())
         {
           Assert.Equal(DockerHost, clientConfiguration.EndpointBaseUri.ToString());
         }

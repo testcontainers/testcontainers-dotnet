@@ -4,8 +4,8 @@
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
-  internal sealed class UnixEndpointAuthenticationProvider : IAuthenticationProvider<IDockerEndpointAuthenticationConfiguration>
+  /// <inheritdoc />
+  internal sealed class UnixEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     private static readonly Uri DockerEngine = new Uri("unix:/var/run/docker.sock");
 
@@ -16,7 +16,7 @@
     }
 
     /// <inheritdoc />
-    public IDockerEndpointAuthenticationConfiguration GetAuthConfig(string hostname)
+    public IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
       return new DockerEndpointAuthenticationConfiguration(DockerEngine);
     }

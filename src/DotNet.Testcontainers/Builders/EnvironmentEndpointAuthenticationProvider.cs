@@ -3,8 +3,8 @@
   using System;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc cref="IAuthenticationProvider{TAuthenticationConfiguration}" />
-  internal sealed class EnvironmentEndpointAuthenticationProvider : IAuthenticationProvider<IDockerEndpointAuthenticationConfiguration>
+  /// <inheritdoc />
+  internal sealed class EnvironmentEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     private readonly Uri dockerEngine;
 
@@ -20,7 +20,7 @@
     }
 
     /// <inheritdoc />
-    public IDockerEndpointAuthenticationConfiguration GetAuthConfig(string hostname)
+    public IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
       return new DockerEndpointAuthenticationConfiguration(this.dockerEngine);
     }
