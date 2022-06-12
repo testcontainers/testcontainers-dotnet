@@ -59,10 +59,62 @@ jobs:
         run: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage', '${{ matrix.os }}'.ToLower() }
         shell: pwsh
 
-      - name: Publish Test And Coverage Results
+      - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}
           path: |
-            test-results
             test-coverage
+            test-results
+
+  publish:
+    needs: build
+
+    runs-on: ubuntu-20.04
+
+    environment: production
+
+    env:
+      SONARCLOUD_ORGANIZATION: hofmeisteran-github
+      SONARCLOUD_URL: https://sonarcloud.io
+      SONARCLOUD_KEY: dotnet-testcontainers
+      SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          clean: true
+          lfs: true
+          fetch-depth: 0
+
+      - name: Download Test And Coverage Results (ubuntu-20.04)
+        uses: actions/download-artifact@v3
+        with:
+          name: ubuntu-20.04
+
+      - name: Download Test And Coverage Results (windows-2019)
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-2019
+
+      - name: Fix Absolute Code Coverage Paths
+        run: |
+          Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+src', '${{ github.workspace }}/src' | Set-Content $_ }
+          Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+tests', '${{ github.workspace }}/tests' | Set-Content $_ }
+        shell: pwsh
+
+      - name: Restore .NET Tools
+        run: dotnet tool restore
+
+      - name: Restore NuGet Packages
+        run: dotnet cake --target=Restore-NuGet-Packages
+
+      - name: Run Sonar Analysis
+        run: dotnet cake --target=Sonar-Begin
+
+      - name: Run Build
+        run: dotnet cake --target=Build
+
+      - name: Upload Sonar Results
+        run: dotnet cake --target=Sonar-End
