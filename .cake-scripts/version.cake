@@ -91,7 +91,7 @@ internal sealed class BuildInformation
       IsLocalBuild = isLocalBuild,
       IsReleaseBuild = isReleaseBuild,
       IsPullRequest = isPullRequest,
-      ShouldPublish = shouldPublish
+      ShouldPublish = shouldPublish && false
     };
   }
 
