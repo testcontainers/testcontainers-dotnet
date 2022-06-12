@@ -20,11 +20,6 @@ jobs:
       matrix:
         os: [ubuntu-20.04, windows-2019]
 
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -70,13 +65,15 @@ jobs:
   publish:
     needs: build
 
+    environment: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) && 'production' || 'development' }}
+
     runs-on: ubuntu-20.04
 
-    environment: production
-
     env:
-      SONARCLOUD_ORGANIZATION: hofmeisteran-github
+      FEED_SOURCE: https://api.nuget.org/v3/index.json
+      FEED_APIKEY: ${{ secrets.FEED_APIKEY }}
       SONARCLOUD_URL: https://sonarcloud.io
+      SONARCLOUD_ORGANIZATION: hofmeisteran-github
       SONARCLOUD_KEY: dotnet-testcontainers
       SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
 
@@ -118,3 +115,6 @@ jobs:
 
       - name: Upload Sonar Results
         run: dotnet cake --target=Sonar-End
+
+      - name: Publish NuGet Package
+        run: dotnet cake --target=Publish
