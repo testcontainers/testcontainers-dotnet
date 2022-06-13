@@ -4,21 +4,19 @@ on:
   push:
     branches: [ develop, master ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, master ]
 
 jobs:
   analyze:
-    name: Analyze
-    runs-on: ubuntu-20.04
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     strategy:
       fail-fast: false
       matrix:
         language: [ csharp ]
+
+    permissions:
+      security-events: write
+
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Repository

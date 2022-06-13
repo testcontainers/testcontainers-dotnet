@@ -20,8 +20,8 @@
     <Company>Andre Hofmeister</Company>
     <Description>A lightweight library to run tests with throwaway instances of Docker containers.</Description>
     <Summary>.NET Testcontainers makes it easy to run tests with Docker containers. Create reliable and fast environments within seconds and throw them away if not needed anymore.</Summary>
-    <PackageIcon>DotNet.Testcontainers.png</PackageIcon>
-    <PackageIconUrl>https://github.com/HofmeisterAn/dotnet-testcontainers/raw/develop/docs/DotNet.Testcontainers.png</PackageIconUrl>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageIconUrl>https://github.com/HofmeisterAn/dotnet-testcontainers/raw/develop/docs/Logo.png</PackageIconUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/HofmeisterAn/dotnet-testcontainers</PackageProjectUrl>
     <PackageTags>.NET;Docker;Container;Test</PackageTags>
@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)LICENSE" Visible="false" Pack="true" PackagePath="" />
-    <None Include="$(SolutionDir)docs/DotNet.Testcontainers.png" Visible="false" Pack="true" PackagePath="" />
+    <None Include="$(SolutionDir)docs/Logo.png" Visible="false" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

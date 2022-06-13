@@ -1,6 +1,6 @@
 [![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
 [![NuGet](https://img.shields.io/nuget/vpre/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
-[![Build Status](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_apis/build/status/Build?branchName=refs/heads/develop)](https://dev.azure.com/HofmeisterAn/GitHub-Testcontainers/_build/latest?definitionId=15&branchName=refs/heads/develop)
+[![Continuous Integration](https://github.com/HofmeisterAn/dotnet-testcontainers/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/HofmeisterAn/dotnet-testcontainers/actions/workflows/cicd.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
 
