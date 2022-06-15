@@ -11,11 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-769
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers", "src\DotNet.Testcontainers\DotNet.Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers.Tests", "tests\DotNet.Testcontainers.Tests\DotNet.Testcontainers.Tests.csproj", "{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{3AA620E4-7EDE-4C2F-AA33-52E286AC518E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Testcontainers.ResourceReaper.Tests", "tests\DotNet.Testcontainers.ResourceReaper.Tests\DotNet.Testcontainers.ResourceReaper.Tests.csproj", "{9A944653-5D94-4A98-9265-A5F621A14D06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ResourceReaper.Tests", "tests\Testcontainers.ResourceReaper.Tests\Testcontainers.ResourceReaper.Tests.csproj", "{9A944653-5D94-4A98-9265-A5F621A14D06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

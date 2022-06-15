@@ -6,6 +6,7 @@
     <IsPublishable>false</IsPublishable>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
+    <RootNamespace>DotNet.Testcontainers.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -31,7 +32,7 @@
     <PackageReference Include="System.Data.SqlClient" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/DotNet.Testcontainers/DotNet.Testcontainers.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers\Testcontainers.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
