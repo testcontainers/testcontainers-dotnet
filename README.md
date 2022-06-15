@@ -1,18 +1,18 @@
 [![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
 [![NuGet](https://img.shields.io/nuget/vpre/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
-[![Continuous Integration](https://github.com/HofmeisterAn/dotnet-testcontainers/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/HofmeisterAn/dotnet-testcontainers/actions/workflows/cicd.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
+[![Continuous Integration](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-dotnet&metric=alert_status)](https://sonarcloud.io/dashboard?id=testcontainers-dotnet)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-dotnet&metric=coverage)](https://sonarcloud.io/dashboard?id=testcontainers-dotnet)
 
-# .NET Testcontainers
+# Testcontainers
 
-.NET Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+Testcontainers is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immediately afterward.
 
 ## Supported operating systems
 
-.NET Testcontainers supports Windows, Linux, and macOS as host systems. Linux Docker containers are supported on all three operating systems.
+Testcontainers supports Windows, Linux, and macOS as host systems. Linux Docker containers are supported on all three operating systems.
 
 Native Windows Docker containers are only supported on Windows. Windows requires the host operating system version to match the container operating system version. You'll find further information about Windows container version compatibility [here](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility).
 
@@ -156,10 +156,6 @@ Wait.ForUnixContainer()
 
 To enable and configure logging, set the static `TestcontainersSettings.Logger` property before test execution.
 
-## Note
-
-Please keep in mind this is not the official repository. Unfortunately, my requirements are not supported by the official implementation yet. Although we try to add new features and refactor the current version of [testcontainers/testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet), the progress is slow. As long as the official implementation does not cover all my requirements, I will work on both projects.
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -170,14 +166,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Thanks
 
-Many thanks to [JetBrains](https://www.jetbrains.com/?from=dotnet-testcontainers) who provide an [Open Source License](https://www.jetbrains.com/community/opensource/) for this project :heart:.
+Many thanks to [JetBrains](https://www.jetbrains.com/?from=testcontainers-dotnet) who provide an [Open Source License](https://www.jetbrains.com/community/opensource/) for this project :heart:.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[1]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
-[2]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
-[3]: https://github.com/HofmeisterAn/dotnet-testcontainers/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
+[1]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
+[2]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
+[3]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
 [moby-ryuk]: https://github.com/testcontainers/moby-ryuk
 [xunit]: https://xunit.net

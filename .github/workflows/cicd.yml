@@ -73,8 +73,8 @@ jobs:
       FEED_SOURCE: https://api.nuget.org/v3/index.json
       FEED_APIKEY: ${{ secrets.FEED_APIKEY }}
       SONARCLOUD_URL: https://sonarcloud.io
-      SONARCLOUD_ORGANIZATION: hofmeisteran-github
-      SONARCLOUD_KEY: dotnet-testcontainers
+      SONARCLOUD_ORGANIZATION: testcontainers
+      SONARCLOUD_KEY: testcontainers_testcontainers-dotnet
       SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
 
     steps:
