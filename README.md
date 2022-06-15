@@ -29,7 +29,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithName` sets the container name e.g. `--name nginx`.
 - `WithHostname` sets the container hostname e.g. `--hostname my-nginx`.
 - `WithEnvironment` sets an environment variable in the container e.g. `-e, --env "test=containers"`.
-- `WithLabel` applies metadata to the container e.g. `-l, --label dotnet.testcontainers=awesome`.
+- `WithLabel` applies metadata to the container e.g. `-l, --label testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e.g. `--expose=80`.
 - `WithPortBinding` publishes the container port to the host e.g. `-p, --publish 80:80`.
 - `WithBindMount` binds a path of a file or directory into the container e.g. `-v, --volume .:/tmp`.
@@ -172,8 +172,8 @@ Many thanks to [JetBrains](https://www.jetbrains.com/?from=testcontainers-dotnet
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[1]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
-[2]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
-[3]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/DotNet.Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
+[1]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
+[2]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
+[3]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
 [moby-ryuk]: https://github.com/testcontainers/moby-ryuk
 [xunit]: https://xunit.net

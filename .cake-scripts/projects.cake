@@ -18,7 +18,7 @@ internal sealed class BuildProjects
       All = allProjects,
       NoneTests = allProjects.Where(project => !project.Name.EndsWith("Tests")).ToList(),
       OnlyTests = allProjects.Where(project => project.Name.EndsWith("Tests")).ToList(),
-      Testcontainers = allProjects.Single(project => "DotNet.Testcontainers".Equals(project.Name))
+      Testcontainers = allProjects.Single(project => "Testcontainers".Equals(project.Name))
     };
   }
 }

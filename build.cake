@@ -17,7 +17,7 @@ Setup(context =>
     toClean.Add("build");
   }
 
-  Information("Building version {0} of .NET Testcontainers ({1}@{2})", param.Version, param.Branch, param.Sha);
+  Information("Building version {0} of Testcontainers ({1}@{2})", param.Version, param.Branch, param.Sha);
 });
 
 Teardown(context =>
@@ -110,7 +110,7 @@ Task("Sonar-Begin")
     Version = param.Version.Substring(0, 5),
     PullRequestProvider = "GitHub",
     PullRequestGithubEndpoint = "https://api.github.com/",
-    PullRequestGithubRepository = "HofmeisterAn/dotnet-testcontainers",
+    PullRequestGithubRepository = "testcontainers/testcontainers-dotnet",
     PullRequestKey = param.IsPullRequest && System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
     PullRequestBranch = param.SourceBranch,
     PullRequestBase = param.TargetBranch,

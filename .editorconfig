@@ -467,8 +467,8 @@ resharper_arrange_object_creation_when_type_evident_highlighting = do_not_show
 resharper_convert_to_using_declaration_highlighting = do_not_show
 
 ##########################################
-# DotNet.Testcontainers.Tests
+# Testcontainers.Tests
 ##########################################
 
-[tests/DotNet.Testcontainers.Tests/**/*.cs]
+[tests/Testcontainers.Tests/**/*.cs]
 dotnet_code_quality.CA1711.allowed_suffixes = Exception
