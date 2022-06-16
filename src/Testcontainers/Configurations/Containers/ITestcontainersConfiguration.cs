@@ -84,6 +84,11 @@ namespace DotNet.Testcontainers.Configurations
     IEnumerable<IDockerNetwork> Networks { get; }
 
     /// <summary>
+    /// Gets a list of container network aliases.
+    /// </summary>
+    IEnumerable<string> NetworkAliases { get; }
+
+    /// <summary>
     /// Gets the output consumer.
     /// </summary>
     IOutputConsumer OutputConsumer { get; }

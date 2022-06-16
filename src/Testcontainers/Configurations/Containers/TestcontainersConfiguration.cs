@@ -39,6 +39,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="portBindings">The port bindings.</param>
     /// <param name="mounts">The volumes.</param>
     /// <param name="networks">The networks.</param>
+    /// <param name="networkAliases">The container network aliases.</param>
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
@@ -59,6 +60,7 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> portBindings = null,
       IEnumerable<IMount> mounts = null,
       IEnumerable<IDockerNetwork> networks = null,
+      IEnumerable<string> networkAliases = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
@@ -80,6 +82,7 @@ namespace DotNet.Testcontainers.Configurations
       this.PortBindings = portBindings;
       this.Mounts = mounts;
       this.Networks = networks;
+      this.NetworkAliases = networkAliases;
       this.OutputConsumer = outputConsumer;
       this.WaitStrategies = waitStrategies;
       this.StartupCallback = startupCallback;
@@ -128,6 +131,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />>
     public IEnumerable<IDockerNetwork> Networks { get; }
+
+    /// <inheritdoc />>
+    public IEnumerable<string> NetworkAliases { get; }
 
     /// <inheritdoc />
     public IOutputConsumer OutputConsumer { get; }

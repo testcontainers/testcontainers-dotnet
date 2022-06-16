@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
@@ -236,6 +237,18 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(params string[] networkAliases)
+    {
+      return this.WithNetworkAliases(networkAliases.AsEnumerable());
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(IEnumerable<string> networkAliases)
+    {
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(networkAliases: networkAliases));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithAutoRemove(bool autoRemove)
     {
       return this.MergeNewConfiguration(new TestcontainersConfiguration(autoRemove: autoRemove));
@@ -321,6 +334,7 @@ namespace DotNet.Testcontainers.Builders
       var portBindings = BuildConfiguration.Combine(dockerResourceConfiguration.PortBindings, this.DockerResourceConfiguration.PortBindings);
       var mounts = BuildConfiguration.Combine(dockerResourceConfiguration.Mounts, this.DockerResourceConfiguration.Mounts);
       var networks = BuildConfiguration.Combine(dockerResourceConfiguration.Networks, this.DockerResourceConfiguration.Networks);
+      var networkAliases = BuildConfiguration.Combine(dockerResourceConfiguration.NetworkAliases, this.DockerResourceConfiguration.NetworkAliases);
 
       var dockerEndpointAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerEndpointAuthConfig, this.DockerResourceConfiguration.DockerEndpointAuthConfig);
       var dockerRegistryAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig);
@@ -328,7 +342,7 @@ namespace DotNet.Testcontainers.Builders
       var waitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
 

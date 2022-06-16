@@ -251,6 +251,22 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork);
 
     /// <summary>
+    /// Assign specified network aliases to container.
+    /// </summary>
+    /// <param name="networkAliases">Set of network aliases.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(params string[] networkAliases);
+
+    /// <summary>
+    /// Assign specified network aliases to container.
+    /// </summary>
+    /// <param name="networkAliases">Set of network aliases.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(IEnumerable<string> networkAliases);
+
+    /// <summary>
     /// If true, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.
     /// </summary>
     /// <param name="autoRemove">True, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.</param>

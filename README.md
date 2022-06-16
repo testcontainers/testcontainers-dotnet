@@ -35,6 +35,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithBindMount` binds a path of a file or directory into the container e.g. `-v, --volume .:/tmp`.
 - `WithVolumeMount` mounts a managed volume into the container e.g. `--mount type=volume,source=.,destination=/tmp`.
 - `WithNetwork` assigns a network to the container e.g. `--network="bridge"`.
+- `WithNetworkAliases` assigns a network scoped aliases  to the container e.g. `--network-alias alias`
 - `WithDockerEndpoint` sets the Docker API endpoint e.g. `-H tcp://0.0.0.0:2376`.
 - `WithRegistryAuthentication` basic authentication against a private Docker registry.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the container output.

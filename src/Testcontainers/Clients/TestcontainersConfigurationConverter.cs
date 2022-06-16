@@ -25,7 +25,13 @@ namespace DotNet.Testcontainers.Clients
       this.ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
       this.PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
       this.Mounts = new ToMounts().Convert(configuration.Mounts)?.ToList();
-      this.Networks = new ToNetworks().Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
+      this.Networks = new ToNetworks().Convert(configuration.Networks)?.ToDictionary(
+        network => network.Key,
+        network =>
+        {
+          network.Value.Aliases = configuration.NetworkAliases?.ToArray();
+          return network.Value;
+        });
     }
 
     public IList<string> Entrypoint { get; }
