@@ -2,6 +2,7 @@
 {
   using System;
   using System.IO;
+  using System.Linq;
   using System.Runtime.InteropServices;
   using System.Text.Json;
   using DotNet.Testcontainers.Builders;
@@ -62,8 +63,9 @@
     {
       [Theory]
       [InlineData("{}", false)]
+      [InlineData("{\"auths\":null}", false)]
       [InlineData("{\"auths\":{}}", false)]
-      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", true)]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true)]
@@ -125,6 +127,7 @@
 #pragma warning disable xUnit1004
 
       [Fact(Skip = "The pipeline has no configured credential store (maybe we can use the Windows tests in the future).")]
+
 #pragma warning restore xUnit1004
       public void ShouldGetAuthConfig()
       {
@@ -147,11 +150,23 @@
 
     public sealed class CredsHelperProviderTest
     {
+      static CredsHelperProviderTest()
+      {
+        Environment.SetEnvironmentVariable("PATH", string.Join(Path.PathSeparator, (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+          .Split(Path.PathSeparator)
+          .Prepend(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "credHelpers"))
+          .Distinct()));
+      }
+
       [Theory]
       [InlineData("{}", false)]
       [InlineData("{\"credHelpers\":null}", false)]
-      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":null}}", false)]
-      [InlineData("{\"credHelpers\":{\"registry2\":\"script.bat\"}}", false)]
+      [InlineData("{\"credHelpers\":{}}", false)]
+      [InlineData("{\"credHelpers\":{\"ghcr.io\":{}}}", false)]
+      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":{}}}", true)]
+      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":null}}", true)]
+      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":\"\"}}", true)]
+      [InlineData("{\"credHelpers\":{\"" + DockerRegistry + "\":\"script.sh\"}}", true)]
       public void ShouldGetNull(string jsonDocument, bool isApplicable)
       {
         // Given
@@ -171,15 +186,9 @@
       [InlineData("token", null, null, "identitytoken")]
       public void ShouldGetAuthConfig(string credHelperName, string expectedUsername, string expectedPassword, string expectedIdentityToken)
       {
-        var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        var pathSeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ";" : ":";
-        var credHelpersPath = Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers");
-        Environment.SetEnvironmentVariable("PATH", string.Join(pathSeparator, credHelpersPath, path));
-        var extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".bat" : ".sh";
-        var credHelperScriptSuffix = $"{credHelperName}{extension}";
-
         // Given
-        var jsonDocument = "{\"credHelpers\":{\"" + DockerRegistry + "\":\"" + credHelperScriptSuffix + "\"}}";
+        var credHelpersScriptName = Path.ChangeExtension(credHelperName, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
+        var jsonDocument = "{\"credHelpers\":{\"" + DockerRegistry + "\":\"" + credHelpersScriptName + "\"}}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When

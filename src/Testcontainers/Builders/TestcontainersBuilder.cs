@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   /// <example>
   /// <code>
-  ///   var builder = new builder&lt;TestcontainersContainer&gt;()
+  ///   var builder = new TestcontainersBuilder&lt;TestcontainersContainer&gt;()
   ///     .WithName(&quot;nginx&quot;)
   ///     .WithImage(&quot;nginx&quot;)
   ///     .WithEntrypoint(&quot;...&quot;)
@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Builders
           labels: DefaultLabels.Instance,
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
-          startupCallback: (testcontainers, ct) => Task.CompletedTask,
+          startupCallback: (_, ct) => Task.CompletedTask,
           autoRemove: false,
           privileged: false),
         _ => { })

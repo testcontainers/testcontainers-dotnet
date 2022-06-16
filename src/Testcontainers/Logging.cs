@@ -66,10 +66,10 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Can not get resource reaper {Id} endpoint");
 
     private static readonly Action<ILogger, Guid, string, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Can not connect to resource reaper {Id} at {Endpoint}");
+      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Can not connect to resource reaper {Id} at {Endpoint}");
 
     private static readonly Action<ILogger, Guid, string, Exception> _LostConnectionToResourceReaper
-      = LoggerMessage.Define<Guid, string>(LogLevel.Error, default, "Lost connection to resource reaper {Id} at {Endpoint}");
+      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Lost connection to resource reaper {Id} at {Endpoint}");
 
     private static readonly Action<ILogger, string, Exception> _DockerConfigFileNotFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker config {DockerConfigFilePath} not found");
@@ -176,13 +176,13 @@ namespace DotNet.Testcontainers
     public static void CanNotConnectToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
     {
       var endpoint = $"{host}:{port}";
-      _CanNotConnectToResourceReaper(logger, id, endpoint, logger.IsEnabled(LogLevel.Debug) ? e : null);
+      _CanNotConnectToResourceReaper(logger, id, endpoint, e);
     }
 
     public static void LostConnectionToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
     {
       var endpoint = $"{host}:{port}";
-      _LostConnectionToResourceReaper(logger, id, endpoint, logger.IsEnabled(LogLevel.Debug) ? e : null);
+      _LostConnectionToResourceReaper(logger, id, endpoint, e);
     }
 
     public static void DockerConfigFileNotFound(this ILogger logger, string dockerConfigFilePath)

@@ -4,7 +4,7 @@
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   internal sealed class NpipeEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
 #pragma warning disable S1075

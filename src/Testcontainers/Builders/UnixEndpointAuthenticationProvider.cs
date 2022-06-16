@@ -4,7 +4,7 @@
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   internal sealed class UnixEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     private static readonly Uri DockerEngine = new Uri("unix:/var/run/docker.sock");

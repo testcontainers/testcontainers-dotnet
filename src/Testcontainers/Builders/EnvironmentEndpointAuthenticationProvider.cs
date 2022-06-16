@@ -3,7 +3,7 @@
   using System;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   internal sealed class EnvironmentEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     private readonly Uri dockerEngine;

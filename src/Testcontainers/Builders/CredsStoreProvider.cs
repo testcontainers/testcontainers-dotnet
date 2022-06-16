@@ -6,7 +6,7 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class CredsStoreProvider : IDockerRegistryAuthenticationProvider
   {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions();
@@ -59,8 +59,8 @@
         return null;
       }
 
-      var credentialProviderOutput = ExternalProcessCredentialProvider.GetCredentialProviderOutput(this.rootElement.GetString(), hostname);
-      if (credentialProviderOutput == null)
+      var credentialProviderOutput = DockerCredentialProcess.Get(this.rootElement.GetString(), hostname);
+      if (string.IsNullOrEmpty(credentialProviderOutput))
       {
         return null;
       }

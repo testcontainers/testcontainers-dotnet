@@ -8,7 +8,7 @@
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class Base64Provider : IDockerRegistryAuthenticationProvider
   {
     private readonly JsonElement rootElement;
@@ -41,7 +41,11 @@
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(this.rootElement) && this.rootElement.EnumerateObject().Any();
+#if NETSTANDARD2_1_OR_GREATER
+      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => property.Name.Contains(hostname, StringComparison.OrdinalIgnoreCase));
+#else
+      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => property.Name.IndexOf(hostname, StringComparison.OrdinalIgnoreCase) >= 0);
+#endif
     }
 
     /// <inheritdoc />

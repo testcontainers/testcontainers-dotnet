@@ -3,7 +3,7 @@
   using System.Linq;
   using DotNet.Testcontainers.Configurations;
 
-  /// <inheritdoc />
+  /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     /// <inheritdoc />

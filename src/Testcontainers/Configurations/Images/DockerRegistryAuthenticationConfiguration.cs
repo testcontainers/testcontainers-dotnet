@@ -1,9 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
   /// <inheritdoc cref="IDockerRegistryAuthenticationConfiguration" />
-  /// <remarks>
-  /// In the future, we will replace this class. Instead, we will use the local Docker credentials.
-  /// </remarks>
   internal readonly struct DockerRegistryAuthenticationConfiguration : IDockerRegistryAuthenticationConfiguration
   {
     /// <summary>
@@ -12,6 +9,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="registryEndpoint">The Docker registry endpoint.</param>
     /// <param name="username">The username.</param>
     /// <param name="password">The password.</param>
+    /// <param name="identityToken">The identity token.</param>
     public DockerRegistryAuthenticationConfiguration(
       string registryEndpoint = null,
       string username = null,

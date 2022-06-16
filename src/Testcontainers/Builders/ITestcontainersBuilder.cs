@@ -274,7 +274,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="password">Password to authenticate.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
-    [Obsolete("Be aware we will replace this method in the future. Instead, we will use the local Docker credential store. Then, no additional configurations are necessary.")]
+    [Obsolete("Use the local Docker credential store.")]
     ITestcontainersBuilder<TDockerContainer> WithRegistryAuthentication(string registryEndpoint, string username, string password);
 
     /// <summary>
