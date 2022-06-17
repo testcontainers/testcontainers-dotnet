@@ -1,0 +1,63 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ develop, master, bugfix/*, feature/* ]
+  pull_request:
+    branches: [ develop, master ]
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_VERSION: 6.0.x
+  TZ: CET # https://stackoverflow.com/q/53510011
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, windows-2019]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          clean: true
+          lfs: true
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore .NET Tools
+        run: dotnet tool restore
+
+      - name: Restore NuGet Packages
+        run: dotnet cake --target=Restore-NuGet-Packages
+
+      - name: Run Build
+        run: dotnet cake --target=Build
+
+      - name: Run Tests
+        run: dotnet cake --target=Tests --test-filter=FullyQualifiedName~${{ startsWith(matrix.os, 'ubuntu') && 'DotNet.Testcontainers' || 'DotNet.Testcontainers.Tests.Unit.Containers.Windows' }}
+
+      - name: Get Logs
+        run: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
+        shell: pwsh
+
+      - name: Rename Test And Coverage Results
+        run: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage', '${{ matrix.os }}'.ToLower() }
+        shell: pwsh
+
+      - name: Upload Test And Coverage Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: |
+            test-coverage
+            test-results
