@@ -24,15 +24,24 @@ namespace DotNet.Testcontainers.Tests
       dockerProcessStartInfo.RedirectStandardOutput = true;
       dockerProcessStartInfo.UseShellExecute = false;
 
-      using (var dockerProcess = Process.Start(dockerProcessStartInfo))
+      var dockerProcess = new Process();
+      dockerProcess.StartInfo = dockerProcessStartInfo;
+
+      try
       {
-        if (dockerProcess == null)
+        if (dockerProcess.Start())
+        {
+          var stdout = dockerProcess.StandardOutput.ReadToEnd();
+          return stdout.Contains("linux", StringComparison.OrdinalIgnoreCase);
+        }
+        else
         {
           throw new InvalidOperationException("Docker not found.");
         }
-
-        var stdout = dockerProcess.StandardOutput.ReadToEnd();
-        return stdout.Contains("linux", StringComparison.OrdinalIgnoreCase);
+      }
+      finally
+      {
+        dockerProcess.Dispose();
       }
     }
   }

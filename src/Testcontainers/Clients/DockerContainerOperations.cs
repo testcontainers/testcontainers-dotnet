@@ -97,6 +97,11 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
+      if (!outputConsumer.Enabled)
+      {
+        return;
+      }
+
       this.logger.AttachToDockerContainer(id, outputConsumer.GetType());
 
       var attachParameters = new ContainerAttachParameters

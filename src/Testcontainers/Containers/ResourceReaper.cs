@@ -197,10 +197,10 @@ namespace DotNet.Testcontainers.Containers
 
       this.disposed = true;
 
-      this.maintainConnectionCts.Cancel();
-
       try
       {
+        this.maintainConnectionCts.Cancel();
+
         // Close connection before disposing ResourceReaper.
         await this.maintainConnectionTask
           .ConfigureAwait(false);
@@ -209,8 +209,10 @@ namespace DotNet.Testcontainers.Containers
       {
         // Ignore
       }
-
-      this.maintainConnectionCts.Dispose();
+      finally
+      {
+        this.maintainConnectionCts.Dispose();
+      }
 
       if (this.resourceReaperContainer != null)
       {

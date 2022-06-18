@@ -19,14 +19,16 @@ namespace DotNet.Testcontainers.Builders
 
       try
       {
-        if (!dockerCredentialProcess.Start())
+        if (dockerCredentialProcess.Start())
         {
-          return null;
+          dockerCredentialProcess.StandardInput.WriteLine(hostname);
+          dockerCredentialProcess.StandardInput.Close();
+          return dockerCredentialProcess.StandardOutput.ReadToEnd().Trim();
         }
-
-        dockerCredentialProcess.StandardInput.WriteLine(hostname);
-        dockerCredentialProcess.StandardInput.Close();
-        return dockerCredentialProcess.StandardOutput.ReadToEnd().Trim();
+        else
+        {
+          throw new InvalidOperationException("Docker not found.");
+        }
       }
       catch (Exception)
       {

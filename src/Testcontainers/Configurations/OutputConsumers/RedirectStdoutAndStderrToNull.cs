@@ -10,9 +10,13 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public RedirectStdoutAndStderrToNull()
     {
+      this.Enabled = false;
       this.Stdout = Stream.Null;
       this.Stderr = Stream.Null;
     }
+
+    /// <inheritdoc />
+    public bool Enabled { get; }
 
     /// <inheritdoc />
     public Stream Stdout { get; }

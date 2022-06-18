@@ -9,6 +9,11 @@ namespace DotNet.Testcontainers.Configurations
   public interface IOutputConsumer : IDisposable
   {
     /// <summary>
+    /// Gets a value indicating whether the <see cref="IOutputConsumer" /> is enabled or not.
+    /// </summary>
+    bool Enabled { get; }
+
+    /// <summary>
     /// Gets the stream that receives stdout.
     /// </summary>
     Stream Stdout { get; }

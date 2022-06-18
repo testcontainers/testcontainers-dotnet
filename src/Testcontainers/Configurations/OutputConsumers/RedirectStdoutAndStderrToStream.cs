@@ -25,9 +25,15 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="stderr">The stderr stream.</param>
     public RedirectStdoutAndStderrToStream(Stream stdout, Stream stderr)
     {
-      this.stdout = new StreamWriter(stdout) { AutoFlush = true };
-      this.stderr = new StreamWriter(stderr) { AutoFlush = true };
+      this.Enabled = stdout.CanWrite || stderr.CanWrite;
+      this.stdout = new StreamWriter(stdout);
+      this.stdout.AutoFlush = true;
+      this.stderr = new StreamWriter(stderr);
+      this.stderr.AutoFlush = true;
     }
+
+    /// <inheritdoc />
+    public bool Enabled { get; }
 
     /// <inheritdoc />
     public Stream Stdout

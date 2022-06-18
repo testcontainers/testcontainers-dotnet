@@ -63,9 +63,11 @@ jobs:
             test-results
 
   publish:
+    if: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) }}
+
     needs: build
 
-    environment: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) && 'production' || 'development' }}
+    environment: production
 
     runs-on: ubuntu-20.04
 

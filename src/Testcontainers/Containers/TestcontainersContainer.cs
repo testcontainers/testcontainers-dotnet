@@ -286,11 +286,10 @@ namespace DotNet.Testcontainers.Containers
 
     private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
     {
-      var attachTask = this.client.AttachAsync(id, this.configuration.OutputConsumer, ct);
+      await this.client.AttachAsync(id, this.configuration.OutputConsumer, ct)
+        .ConfigureAwait(false);
 
-      var startTask = this.client.StartAsync(id, ct);
-
-      await Task.WhenAll(attachTask, startTask)
+      await this.client.StartAsync(id, ct)
         .ConfigureAwait(false);
 
       this.container = await this.client.GetContainer(id, ct)
