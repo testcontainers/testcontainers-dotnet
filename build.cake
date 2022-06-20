@@ -149,7 +149,7 @@ Task("Create-NuGet-Packages")
 });
 
 Task("Publish-NuGet-Packages")
-  .WithCriteria(() => param.ShouldPublish && false)
+  .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
   foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.(nupkg|snupkgs)"))

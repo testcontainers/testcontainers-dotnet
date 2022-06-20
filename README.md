@@ -1,8 +1,8 @@
 [![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
-[![NuGet](https://img.shields.io/nuget/vpre/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
+[![NuGet](https://img.shields.io/nuget/vpre/Testcontainers.svg)](https://www.nuget.org/packages/Testcontainers)
 [![Continuous Integration](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dotnet-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=dotnet-testcontainers)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
 
 # Testcontainers
 
