@@ -1,7 +1,8 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Logging.Abstractions;
@@ -18,6 +19,13 @@
     [PublicAPI]
     public static bool ResourceReaperEnabled { get; set; }
       = true;
+
+    /// <summary>
+    /// Gets or sets a docker image for <see cref="ResourceReaper" /> container.
+    /// </summary>
+    [PublicAPI]
+    public static IDockerImage ResourceReaperImage { get; set; }
+      = new DockerImage("ghcr.io/psanetra/ryuk:2021.12.20");
 
     /// <summary>
     /// Gets or sets a prefix that applies to every image that is pulled from Docker Hub.
