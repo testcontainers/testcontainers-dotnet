@@ -19,8 +19,6 @@ namespace DotNet.Testcontainers.Containers
   {
     public const string ResourceReaperSessionLabel = TestcontainersClient.TestcontainersLabel + ".resource-reaper-session";
 
-    private const string RyukImage = "ghcr.io/psanetra/ryuk:2021.12.20";
-
     private const ushort RyukPort = 8080;
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
@@ -42,7 +40,7 @@ namespace DotNet.Testcontainers.Containers
       this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
         .WithDockerEndpoint(dockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig)
         .WithName($"testcontainers-ryuk-{sessionId:D}")
-        .WithImage(ryukImage)
+        .WithImage(ryukImage ?? TestcontainersSettings.ResourceReaperImage.FullName)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithExposedPort(RyukPort)
@@ -105,7 +103,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, RyukImage, default, ct)
+        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, ct: ct)
           .ConfigureAwait(false);
 
         return defaultInstance;
@@ -126,7 +124,7 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
     [PublicAPI]
-    public static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, ryukImage, initTimeout, ct);
     }
@@ -142,7 +140,7 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = RyukImage, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
