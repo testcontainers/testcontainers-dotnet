@@ -25,13 +25,7 @@ namespace DotNet.Testcontainers.Clients
       this.ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
       this.PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
       this.Mounts = new ToMounts().Convert(configuration.Mounts)?.ToList();
-      this.Networks = new ToNetworks().Convert(configuration.Networks)?.ToDictionary(
-        network => network.Key,
-        network =>
-        {
-          network.Value.Aliases = configuration.NetworkAliases?.ToArray();
-          return network.Value;
-        });
+      this.Networks = new ToNetworks(configuration).Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
     }
 
     public IList<string> Entrypoint { get; }
@@ -90,14 +84,17 @@ namespace DotNet.Testcontainers.Clients
 
     private sealed class ToNetworks : CollectionConverter<IDockerNetwork, KeyValuePair<string, EndpointSettings>>
     {
-      public ToNetworks()
+      private readonly ITestcontainersConfiguration configuration;
+
+      public ToNetworks(ITestcontainersConfiguration configuration)
         : base(nameof(ToNetworks))
       {
+        this.configuration = configuration;
       }
 
       public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert([CanBeNull] IEnumerable<IDockerNetwork> source)
       {
-        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { NetworkID = network.Id }));
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { NetworkID = network.Id, Aliases = this.configuration.NetworkAliases.ToArray() }));
       }
     }
 

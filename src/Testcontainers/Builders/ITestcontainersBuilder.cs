@@ -251,17 +251,17 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork);
 
     /// <summary>
-    /// Assign specified network aliases to container.
+    /// Assigns the specified network-scoped aliases to the container.
     /// </summary>
-    /// <param name="networkAliases">Set of network aliases.</param>
+    /// <param name="networkAliases">Network-scoped aliases.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(params string[] networkAliases);
 
     /// <summary>
-    /// Assign specified network aliases to container.
+    /// Assigns the specified network-scoped aliases to the container.
     /// </summary>
-    /// <param name="networkAliases">Set of network aliases.</param>
+    /// <param name="networkAliases">Network-scoped aliases.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithNetworkAliases(IEnumerable<string> networkAliases);

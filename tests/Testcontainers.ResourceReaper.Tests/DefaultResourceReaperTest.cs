@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
     {
       // Given
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("alpine")
+        .WithImage("nginx")
         .WithAutoRemove(true)
         .WithCleanUp(false);
 
@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
     {
       // Given
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("alpine")
+        .WithImage("nginx")
         .WithCleanUp(true);
 
       // When
@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
     {
       // Given
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("alpine")
+        .WithImage("nginx")
         .WithAutoRemove(true)
         .WithResourceReaperSessionId(Guid.NewGuid());
 

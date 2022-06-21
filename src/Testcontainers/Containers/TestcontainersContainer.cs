@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Net;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -28,7 +29,7 @@ namespace DotNet.Testcontainers.Containers
     private readonly ITestcontainersConfiguration configuration;
 
     [NotNull]
-    private ContainerListResponse container = new ContainerListResponse();
+    private ContainerInspectResponse container = new ContainerInspectResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersContainer" /> class.
@@ -58,7 +59,7 @@ namespace DotNet.Testcontainers.Containers
       get
       {
         this.ThrowIfContainerHasNotBeenCreated();
-        return this.container.Names.First();
+        return this.container.Name;
       }
     }
 
@@ -120,7 +121,7 @@ namespace DotNet.Testcontainers.Containers
       {
         try
         {
-          return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State, true);
+          return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State.Status, true);
         }
         catch (Exception)
         {
@@ -146,11 +147,9 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfContainerHasNotBeenCreated();
 
-      var mappedPort = this.container.Ports.FirstOrDefault(port => Convert.ToString(port.PrivatePort, CultureInfo.InvariantCulture).Equals(privatePort, StringComparison.Ordinal));
-
-      if (mappedPort != null)
+      if (this.container.NetworkSettings.Ports.TryGetValue($"{privatePort}/tcp", out var portMap) && ushort.TryParse(portMap.First().HostPort, out var publicPort))
       {
-        return mappedPort.PublicPort;
+        return publicPort;
       }
       else
       {
@@ -194,6 +193,10 @@ namespace DotNet.Testcontainers.Containers
       {
         this.container = await this.Stop(this.Id, ct)
           .ConfigureAwait(false);
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        this.container = new ContainerInspectResponse();
       }
       finally
       {
@@ -270,7 +273,7 @@ namespace DotNet.Testcontainers.Containers
       return this.client.InspectContainer(this.Id, ct);
     }
 
-    private async Task<ContainerListResponse> Create(CancellationToken ct = default)
+    private async Task<ContainerInspectResponse> Create(CancellationToken ct = default)
     {
       if (ContainerHasBeenCreatedStates.Contains(this.State))
       {
@@ -280,11 +283,11 @@ namespace DotNet.Testcontainers.Containers
       var id = await this.client.RunAsync(this.configuration, ct)
         .ConfigureAwait(false);
 
-      return await this.client.GetContainer(id, ct)
+      return await this.client.InspectContainer(id, ct)
         .ConfigureAwait(false);
     }
 
-    private async Task<ContainerListResponse> Start(string id, CancellationToken ct = default)
+    private async Task<ContainerInspectResponse> Start(string id, CancellationToken ct = default)
     {
       await this.client.AttachAsync(id, this.configuration.OutputConsumer, ct)
         .ConfigureAwait(false);
@@ -292,7 +295,7 @@ namespace DotNet.Testcontainers.Containers
       await this.client.StartAsync(id, ct)
         .ConfigureAwait(false);
 
-      this.container = await this.client.GetContainer(id, ct)
+      this.container = await this.client.InspectContainer(id, ct)
         .ConfigureAwait(false);
 
       await this.configuration.StartupCallback(this, ct)
@@ -309,7 +312,7 @@ namespace DotNet.Testcontainers.Containers
         await WaitStrategy.WaitUntil(
             async () =>
             {
-              this.container = await this.client.GetContainer(id, ct)
+              this.container = await this.client.InspectContainer(id, ct)
                 .ConfigureAwait(false);
 
               return await waitStrategy.Until(this, this.Logger)
@@ -324,20 +327,20 @@ namespace DotNet.Testcontainers.Containers
       return this.container;
     }
 
-    private async Task<ContainerListResponse> Stop(string id, CancellationToken ct = default)
+    private async Task<ContainerInspectResponse> Stop(string id, CancellationToken ct = default)
     {
       await this.client.StopAsync(id, ct)
         .ConfigureAwait(false);
 
-      return await this.client.GetContainer(id, ct)
+      return await this.client.InspectContainer(id, ct)
         .ConfigureAwait(false);
     }
 
-    private async Task<ContainerListResponse> CleanUp(string id, CancellationToken ct = default)
+    private async Task<ContainerInspectResponse> CleanUp(string id, CancellationToken ct = default)
     {
       await this.client.RemoveAsync(id, ct)
         .ConfigureAwait(false);
-      return new ContainerListResponse();
+      return new ContainerInspectResponse();
     }
 
     private void ThrowIfContainerHasNotBeenCreated()

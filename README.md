@@ -1,4 +1,4 @@
-[![NuGet](https://img.shields.io/nuget/v/DotNet.Testcontainers.svg)](https://www.nuget.org/packages/DotNet.Testcontainers)
+[![NuGet](https://img.shields.io/nuget/v/Testcontainers.svg)](https://www.nuget.org/packages/Testcontainers)
 [![NuGet](https://img.shields.io/nuget/vpre/Testcontainers.svg)](https://www.nuget.org/packages/Testcontainers)
 [![Continuous Integration](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
@@ -35,7 +35,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithBindMount` binds a path of a file or directory into the container e.g. `-v, --volume .:/tmp`.
 - `WithVolumeMount` mounts a managed volume into the container e.g. `--mount type=volume,source=.,destination=/tmp`.
 - `WithNetwork` assigns a network to the container e.g. `--network="bridge"`.
-- `WithNetworkAliases` assigns a network scoped aliases  to the container e.g. `--network-alias alias`
+- `WithNetworkAliases` assigns a network-scoped aliases to the container e.g. `--network-alias alias`
 - `WithDockerEndpoint` sets the Docker API endpoint e.g. `-H tcp://0.0.0.0:2376`.
 - `WithRegistryAuthentication` basic authentication against a private Docker registry.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the container output.
