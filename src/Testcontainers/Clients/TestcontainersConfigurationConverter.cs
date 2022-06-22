@@ -94,7 +94,7 @@ namespace DotNet.Testcontainers.Clients
 
       public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert([CanBeNull] IEnumerable<IDockerNetwork> source)
       {
-        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { NetworkID = network.Id, Aliases = this.configuration.NetworkAliases.ToArray() }));
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { NetworkID = network.Id, Aliases = this.configuration.NetworkAliases?.ToArray() }));
       }
     }
 
