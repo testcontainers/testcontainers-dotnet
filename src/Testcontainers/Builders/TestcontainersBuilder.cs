@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.Linq;
   using System.Reflection;
   using System.Threading;
@@ -137,7 +138,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithExposedPort(int port)
     {
-      return this.WithExposedPort($"{port}");
+      return this.WithExposedPort(port.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -150,19 +151,19 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int port, bool assignRandomHostPort = false)
     {
-      return this.WithPortBinding($"{port}", assignRandomHostPort);
+      return this.WithPortBinding(port.ToString(CultureInfo.InvariantCulture), assignRandomHostPort);
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(int hostPort, int containerPort)
     {
-      return this.WithPortBinding($"{hostPort}", $"{containerPort}");
+      return this.WithPortBinding(hostPort.ToString(CultureInfo.InvariantCulture), containerPort.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string port, bool assignRandomHostPort = false)
     {
-      var hostPort = assignRandomHostPort ? null : port;
+      var hostPort = assignRandomHostPort ? "0" : port;
       return this.WithPortBinding(hostPort, port);
     }
 
