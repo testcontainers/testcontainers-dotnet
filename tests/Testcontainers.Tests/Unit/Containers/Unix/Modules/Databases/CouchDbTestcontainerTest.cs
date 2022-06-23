@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Net.Http;
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -34,17 +35,19 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ExecScriptInRunningContainer()
     {
       // Given
-      const string script = @"
-        #!/bin/bash
-        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/
-        curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/""001"" -d '{""name"":""MyName""}'
-      ";
+      const char lf = '\n';
+      var script = new StringBuilder();
+      script.Append("#!/bin/sh");
+      script.Append(lf);
+      script.Append("curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/");
+      script.Append(lf);
+      script.Append("curl -v -X PUT http://couchdb:couchdb@127.0.0.1:5984/mydatabase/\"001\" -d '{\"name\":\"MyName\"}'");
 
       var docIdRequestBuilder = new UriBuilder(this.couchDbFixture.Container.ConnectionString);
       docIdRequestBuilder.Path = "mydatabase/001";
 
       // When
-      var result = await this.couchDbFixture.Container.ExecScriptAsync(script)
+      var result = await this.couchDbFixture.Container.ExecScriptAsync(script.ToString())
         .ConfigureAwait(false);
 
       // Then

@@ -22,18 +22,19 @@ namespace DotNet.Testcontainers.Tests.Unit
       var callCounter = 0;
 
       // When
-      await Assert.ThrowsAsync<TimeoutException>(async () =>
-      {
-        var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(
-          () =>
-          {
-            ++callCounter;
-            return false;
-          },
-          maxCallCount);
+      await Assert.ThrowsAsync<TimeoutException>(
+        async () =>
+        {
+          var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(
+            () =>
+            {
+              ++callCounter;
+              return false;
+            },
+            maxCallCount);
 
-        await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, null));
-      });
+          await WaitStrategy.WaitUntil(() => wait.Build().Skip(1).First().Until(null, null));
+        });
 
       // Then
       Assert.Equal(expectedCallsCount, callCounter);

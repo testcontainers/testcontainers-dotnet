@@ -5,6 +5,12 @@ on:
     branches: [ develop, master, bugfix/*, feature/* ]
   pull_request:
     branches: [ develop, master ]
+  workflow_dispatch:
+    inputs:
+      publish_nuget_package:
+        description: Publish a new NuGet package?
+        required: false
+        type: boolean
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -120,3 +126,5 @@ jobs:
 
       - name: Publish NuGet Package
         run: dotnet cake --target=Publish
+        env:
+          PUBLISH_NUGET_PACKAGE: ${{ inputs.publish_nuget_package }}

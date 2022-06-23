@@ -63,7 +63,7 @@ internal sealed class BuildInformation
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 
-    var shouldPublish = GetShouldPublish(branch);
+    var shouldPublish = GetShouldPublish(branch) && "true".Equals(context.EnvironmentVariable("PUBLISH_NUGET_PACKAGE"), StringComparison.OrdinalIgnoreCase);
 
     if (isFork && isPullRequest && shouldPublish)
     {
