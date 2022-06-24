@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Configurations
       = true;
 
     /// <summary>
-    /// Gets or sets a docker image for <see cref="ResourceReaper" /> container.
+    /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [PublicAPI]
     public static IDockerImage ResourceReaperImage { get; set; }

@@ -23,21 +23,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     public sealed class WithConfiguration
     {
       [Fact]
-      public void GetAuthConfig()
-      {
-        // Given
-        var expected = new UnixEndpointAuthenticationProvider().GetAuthConfig();
-
-        // When
-        var actual = new DockerEndpointAuthenticationProvider().GetAuthConfig();
-
-        // Then
-        Assert.NotNull(expected);
-        Assert.NotNull(actual);
-        Assert.Equal(expected.Endpoint, actual.Endpoint);
-      }
-
-      [Fact]
       public async Task IsLinuxEngineEnabled()
       {
         var client = new TestcontainersClient();
