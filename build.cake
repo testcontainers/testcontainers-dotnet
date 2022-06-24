@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.6.0
+#tool nuget:?package=dotnet-sonarscanner&version=5.7.1
 
 #addin nuget:?package=Cake.Sonar&version=1.1.29
 
@@ -84,13 +84,13 @@ Task("Tests")
       NoBuild = true,
       Loggers = new[] { "trx" },
       Filter = param.TestFilter,
-      ResultsDirectory = param.Paths.Directories.TestResults,
+      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
       ArgumentCustomization = args => args
         .Append("/p:Platform=AnyCPU")
         .Append("/p:CollectCoverage=true")
         .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
-        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/coverage.json\"")
-        .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/\"")
+        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/coverage.json\"")
+        .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/\"")
     });
   }
 });
@@ -114,8 +114,8 @@ Task("Sonar-Begin")
     PullRequestKey = param.IsPullRequest && System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
     PullRequestBranch = param.SourceBranch,
     PullRequestBase = param.TargetBranch,
-    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResults)}/*.trx",
-    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverage)}/*.opencover.xml"
+    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/*.trx",
+    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/*.opencover.xml"
   });
 });
 
@@ -140,7 +140,7 @@ Task("Create-NuGet-Packages")
     NoRestore = true,
     NoBuild = true,
     IncludeSymbols = true,
-    OutputDirectory = param.Paths.Directories.NugetRoot,
+    OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
     ArgumentCustomization = args => args
       .Append("/p:Platform=AnyCPU")
       .Append("/p:SymbolPackageFormat=snupkg")
@@ -148,11 +148,27 @@ Task("Create-NuGet-Packages")
   });
 });
 
+Task("Sign-NuGet-Packages")
+  .WithCriteria(() => param.ShouldPublish)
+  .Does(() =>
+{
+  StartProcess("dotnet", new ProcessSettings
+  {
+    Arguments = new ProcessArgumentBuilder()
+      .Append("nuget")
+      .Append("sign")
+      .AppendSwitchQuoted("--certificate-path", param.Paths.Files.CodeSigningCertificateFilePath.FullPath)
+      .AppendSwitchQuoted("--certificate-password", param.CodeSigningCertificateCredentials.Password)
+      .AppendSwitchQuoted("--timestamper", "http://ts.quovadisglobal.com/eu")
+      .Append($"{MakeAbsolute(param.Paths.Directories.NuGetDirectoryPath)}/**/*.nupkg")
+  });
+});
+
 Task("Publish-NuGet-Packages")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
-  foreach(var package in GetFiles($"{param.Paths.Directories.NugetRoot}/*.(nupkg|snupkgs)"))
+  foreach(var package in GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.(nupkg|snupkgs)"))
   {
     DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
     {

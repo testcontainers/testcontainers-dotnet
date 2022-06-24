@@ -1,4 +1,4 @@
-internal class BuildCredentials
+internal sealed class BuildCredentials
 {
   public string Username { get; private set; }
   public string Password { get; private set; }
@@ -7,6 +7,15 @@ internal class BuildCredentials
   {
     Username = username;
     Password = password;
+  }
+
+  public static BuildCredentials GetCodeSigningCertificateCredentials(ICakeContext context)
+  {
+    return new BuildCredentials
+    (
+      null,
+      context.EnvironmentVariable("CODE_SIGNING_CERTIFICATE_PASSWORD")
+    );
   }
 }
 

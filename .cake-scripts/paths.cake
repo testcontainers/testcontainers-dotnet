@@ -16,7 +16,7 @@ internal sealed class BuildPaths
 
     var artifactsDir = baseDir.Combine("artifacts");
     var artifactsVersionDir = artifactsDir.Combine(version);
-    var nugetRoot = artifactsVersionDir.Combine("nuget");
+    var nugetDir = artifactsVersionDir.Combine("nuget");
 
     return new BuildPaths
     {
@@ -24,7 +24,7 @@ internal sealed class BuildPaths
       Directories = new BuildDirectories(
         testResultsDir,
         testCoverageDir,
-        nugetRoot,
+        nugetDir,
         artifactsDir
       )
     };
@@ -33,34 +33,38 @@ internal sealed class BuildPaths
 
 internal sealed class BuildFiles
 {
+  public FilePath CodeSigningCertificateFilePath { get; }
+
   public BuildFiles()
   {
+    CodeSigningCertificateFilePath = new FilePath("code-signing-certificate.pfx");
   }
 }
 
 internal sealed class BuildDirectories
 {
-  public DirectoryPath TestResults { get; }
-  public DirectoryPath TestCoverage { get; }
-  public DirectoryPath NugetRoot { get; }
-  public DirectoryPath ArtifactsBinDir { get; }
+  public DirectoryPath TestResultsDirectoryPath { get; }
+  public DirectoryPath TestCoverageDirectoryPath { get; }
+  public DirectoryPath NuGetDirectoryPath { get; }
+  public DirectoryPath ArtifactsDirectoryPath { get; }
   public ICollection<DirectoryPath> ToClean { get; }
 
   public BuildDirectories(
     DirectoryPath testResultsDir,
     DirectoryPath testCoverageDir,
-    DirectoryPath nugetRoot,
-    DirectoryPath artifactsBinDir)
+    DirectoryPath nugetDir,
+    DirectoryPath artifactsDir)
   {
-    TestResults = testResultsDir;
-    TestCoverage = testCoverageDir;
-    NugetRoot = nugetRoot;
-    ArtifactsBinDir = artifactsBinDir;
+    TestResultsDirectoryPath = testResultsDir;
+    TestCoverageDirectoryPath = testCoverageDir;
+    NuGetDirectoryPath = nugetDir;
+    ArtifactsDirectoryPath = artifactsDir;
     ToClean = new List<DirectoryPath>()
     {
       testResultsDir,
       testCoverageDir,
-      artifactsBinDir,
+      nugetDir,
+      artifactsDir,
       new DirectoryPath(".sonarqube")
     };
   }
