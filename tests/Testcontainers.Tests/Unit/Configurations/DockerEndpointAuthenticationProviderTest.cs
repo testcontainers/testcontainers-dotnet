@@ -21,7 +21,6 @@
       }
     }
 
-
     private sealed class AuthConfigTestData : List<object[]>
     {
       public AuthConfigTestData()

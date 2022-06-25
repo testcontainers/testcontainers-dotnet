@@ -37,14 +37,16 @@ namespace DotNet.Testcontainers.Containers
 
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, string ryukImage)
     {
+      dockerEndpointAuthConfig = dockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig;
+      ryukImage = ryukImage ?? TestcontainersSettings.ResourceReaperImage.FullName;
       this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
-        .WithDockerEndpoint(dockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig)
-        .WithImage(ryukImage ?? TestcontainersSettings.ResourceReaperImage.FullName)
+        .WithDockerEndpoint(dockerEndpointAuthConfig)
+        .WithImage(ryukImage)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithExposedPort(RyukPort)
-        .WithPortBinding(RyukPort, true)
+        .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
         .WithBindMount("/var/run/docker.sock", "/var/run/docker.sock", AccessMode.ReadOnly)
         .Build();
 
