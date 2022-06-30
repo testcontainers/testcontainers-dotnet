@@ -268,11 +268,6 @@ namespace DotNet.Testcontainers.Containers
       GC.SuppressFinalize(this);
     }
 
-    internal Task<ContainerInspectResponse> InspectContainer(CancellationToken ct = default)
-    {
-      return this.client.InspectContainer(this.Id, ct);
-    }
-
     private async Task<ContainerInspectResponse> Create(CancellationToken ct = default)
     {
       if (ContainerHasBeenCreatedStates.Contains(this.State))
@@ -358,28 +353,28 @@ namespace DotNet.Testcontainers.Containers
         return "localhost";
       }
 
-      string GetDockerDesktopGateway(string hostName)
+      Task<string> GetDockerDesktopGateway(string dockerDesktopGateway)
       {
         try
         {
           // Unfortunately, the method incl. `cancellationToken` is not available in .NET Standard 2.0 and 2.1.
-          _ = Dns.GetHostEntry(hostName);
-          return hostName;
+          _ = Dns.GetHostEntry(dockerDesktopGateway);
+          return Task.FromResult(dockerDesktopGateway);
         }
         catch
         {
-          return null;
+          return Task.FromResult<string>(null);
         }
       }
 
-      var host = DockerDesktopGateways
+      var hostname = DockerDesktopGateways
         .AsParallel()
-        .Select(hostName => Task.Run(() => GetDockerDesktopGateway(hostName)))
+        .Select(GetDockerDesktopGateway)
         .Where(task => task.Wait(TimeSpan.FromSeconds(1)))
         .Select(task => task.GetAwaiter().GetResult())
-        .FirstOrDefault(hostName => hostName != null);
+        .FirstOrDefault(dockerDesktopGateway => dockerDesktopGateway != null);
 
-      return host ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
+      return hostname ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
     }
   }
 }

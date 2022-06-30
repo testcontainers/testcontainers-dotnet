@@ -15,6 +15,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="name">Name of the converter.</param>
     protected BaseConverter(string name)
     {
+      _ = name;
     }
 
     /// <summary>

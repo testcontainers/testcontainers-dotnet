@@ -6,8 +6,8 @@ namespace DotNet.Testcontainers.Containers
   [Serializable]
   public sealed class ResourceReaperException : Exception
   {
-    public ResourceReaperException(string message, object diagnostics)
-      : base(message + Environment.NewLine + diagnostics)
+    public ResourceReaperException(string message)
+      : base(message)
     {
     }
 

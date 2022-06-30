@@ -36,9 +36,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <remarks>
     /// The <see cref="ResourceReaper" /> might not be able to connect to Ryuk on Docker Desktop for Windows.
-    /// Assigning a random port might run into the excluded port range. The container starts, but we can not establish a TCP connection.
-    /// https://github.com/docker/for-win/issues/3171
-    /// https://github.com/docker/for-win/issues/11584
+    /// Assigning a random port might run into the excluded port range. The container starts, but we can not establish a TCP connection:
+    /// - https://github.com/docker/for-win/issues/3171.
+    /// - https://github.com/docker/for-win/issues/11584.
     /// </remarks>
     [PublicAPI]
     public static Func<IDockerEndpointAuthenticationConfiguration, ushort> ResourceReaperPublicHostPort { get; set; }
