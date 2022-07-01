@@ -104,12 +104,13 @@
       }
     }
 
-    public sealed class CredsStoreProviderTest
+    public sealed class CredsStoreProviderTest : SetEnvVarPath
     {
       [Theory]
       [InlineData("{}", false)]
       [InlineData("{\"credsStore\":null}", false)]
       [InlineData("{\"credsStore\":\"\"}", false)]
+      [InlineData("{\"credsStore\":\"script.sh\"}", true)]
       public void ShouldGetNull(string jsonDocument, bool isApplicable)
       {
         // Given
@@ -124,15 +125,12 @@
         Assert.Null(authConfig);
       }
 
-#pragma warning disable xUnit1004
-
-      [Fact(Skip = "The pipeline has no configured credential store (maybe we can use the Windows tests in the future).")]
-
-#pragma warning restore xUnit1004
+      [Fact]
       public void ShouldGetAuthConfig()
       {
         // Given
-        const string jsonDocument = "{\"credsStore\":\"desktop\"}";
+        var credsStoreScriptName = Path.ChangeExtension("desktop", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
+        var jsonDocument = "{\"credsStore\":\"" + credsStoreScriptName + "\"}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
@@ -148,16 +146,8 @@
       }
     }
 
-    public sealed class CredsHelperProviderTest
+    public sealed class CredsHelperProviderTest : SetEnvVarPath
     {
-      static CredsHelperProviderTest()
-      {
-        Environment.SetEnvironmentVariable("PATH", string.Join(Path.PathSeparator, (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
-          .Split(Path.PathSeparator)
-          .Prepend(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "credHelpers"))
-          .Distinct()));
-      }
-
       [Theory]
       [InlineData("{}", false)]
       [InlineData("{\"credHelpers\":null}", false)]
@@ -202,6 +192,18 @@
         Assert.Equal(expectedUsername, authConfig.Username);
         Assert.Equal(expectedPassword, authConfig.Password);
         Assert.Equal(expectedIdentityToken, authConfig.IdentityToken);
+      }
+    }
+
+    public abstract class SetEnvVarPath
+    {
+      static SetEnvVarPath()
+      {
+        Environment.SetEnvironmentVariable("PATH", string.Join(Path.PathSeparator, (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+          .Split(Path.PathSeparator)
+          .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers"))
+          .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credsStore"))
+          .Distinct()));
       }
     }
   }
