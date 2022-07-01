@@ -14,6 +14,9 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _Progress
       = LoggerMessage.Define<string>(LogLevel.Trace, default, "{Message}");
 
+    private static readonly Action<ILogger, string, Exception> _Error
+      = LoggerMessage.Define<string>(LogLevel.Error, default, "{Message}");
+
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
 
@@ -86,6 +89,11 @@ namespace DotNet.Testcontainers
     public static void Progress(this ILogger logger, string message)
     {
       _Progress(logger, message, null);
+    }
+
+    public static void Error(this ILogger logger, string message)
+    {
+      _Error(logger, message, null);
     }
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
