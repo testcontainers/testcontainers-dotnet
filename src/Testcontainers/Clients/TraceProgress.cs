@@ -15,7 +15,23 @@ namespace DotNet.Testcontainers.Clients
 
     public void Report(JSONMessage value)
     {
-      this.logger.Progress(value.ProgressMessage);
+      this.LogProgressIfNotNullOrWhiteSpace(value.Stream);
+      this.LogProgressIfNotNullOrWhiteSpace(value.ProgressMessage);
+      this.LogProgressIfNotNullOrWhiteSpace(value.Status);
+
+      if (value.Error != null)
+      {
+        this.logger.LogError(value.Error.Message.Trim());
+      }
     }
+
+    private void LogProgressIfNotNullOrWhiteSpace(string message)
+    {
+      if (!string.IsNullOrWhiteSpace(message))
+      {
+        this.logger.Progress(message.Trim());
+      }
+    }
+
   }
 }
