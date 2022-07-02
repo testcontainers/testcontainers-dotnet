@@ -10,7 +10,9 @@
 
     public EnvironmentEndpointAuthenticationProvider()
     {
-      this.dockerEngine = Uri.TryCreate(Environment.GetEnvironmentVariable("DOCKER_HOST"), UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+      ICustomConfiguration propertiesFileConfiguration = new PropertiesFileConfiguration();
+      ICustomConfiguration environmentConfiguration = new EnvironmentConfiguration();
+      this.dockerEngine = propertiesFileConfiguration.GetDockerHost() ?? environmentConfiguration.GetDockerHost();
     }
 
     /// <inheritdoc />

@@ -17,19 +17,25 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
+    private static readonly IDockerImage RyukContainerImage = new DockerImage("ghcr.io/psanetra/ryuk:2021.12.20");
+
+    private static readonly ICustomConfiguration PropertiesFileConfiguration = new PropertiesFileConfiguration();
+
+    private static readonly ICustomConfiguration EnvironmentConfiguration = new EnvironmentConfiguration();
+
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
     [PublicAPI]
     public static bool ResourceReaperEnabled { get; set; }
-      = true;
+      = !PropertiesFileConfiguration.GetRyukDisabled() && !EnvironmentConfiguration.GetRyukDisabled();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [PublicAPI]
     public static IDockerImage ResourceReaperImage { get; set; }
-      = new DockerImage("ghcr.io/psanetra/ryuk:2021.12.20");
+      = PropertiesFileConfiguration.GetRyukContainerImage() ?? EnvironmentConfiguration.GetRyukContainerImage() ?? RyukContainerImage;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> public host port.
@@ -53,7 +59,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     [CanBeNull]
     public static string HubImageNamePrefix { get; set; }
-      = string.Empty;
+      = PropertiesFileConfiguration.GetHubImageNamePrefix() ?? EnvironmentConfiguration.GetHubImageNamePrefix();
 
     /// <summary>
     /// Gets or sets the logger.
