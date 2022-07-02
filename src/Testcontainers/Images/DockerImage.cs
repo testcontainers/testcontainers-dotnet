@@ -82,9 +82,10 @@ namespace DotNet.Testcontainers.Images
       get
       {
         var dockerImageParts = new[] { this.hubImageNamePrefix, this.Repository, this.Name }
-          .Select(dockerImagePart => dockerImagePart?.Trim('/', ':'))
+          .Where(dockerImagePart => !string.IsNullOrEmpty(dockerImagePart))
+          .Select(dockerImagePart => dockerImagePart.Trim('/', ':'))
           .Where(dockerImagePart => !string.IsNullOrEmpty(dockerImagePart));
-        return $"{string.Join("/", dockerImageParts)}:{this.Tag}";
+        return string.Join("/", dockerImageParts) + ":" + this.Tag;
       }
     }
 
