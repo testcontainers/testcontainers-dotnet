@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
@@ -42,6 +43,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="networkAliases">The container network aliases.</param>
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
+    /// <param name="parameterModifiers">The modifier callbacks for <see cref="CreateContainerParameters"/>.</param>
     /// <param name="startupCallback">The startup callback.</param>
     /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
     /// <param name="privileged">A value indicating whether the Testcontainer has extended privileges or not.</param>
@@ -63,6 +65,7 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<string> networkAliases = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
+      IReadOnlyList<Action<CreateContainerParameters>> parameterModifiers = null,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
       bool? privileged = null)
@@ -85,6 +88,7 @@ namespace DotNet.Testcontainers.Configurations
       this.NetworkAliases = networkAliases;
       this.OutputConsumer = outputConsumer;
       this.WaitStrategies = waitStrategies;
+      this.ParameterModifiers = parameterModifiers;
       this.StartupCallback = startupCallback;
     }
 
@@ -140,6 +144,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IEnumerable<IWaitUntil> WaitStrategies { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyList<Action<CreateContainerParameters>> ParameterModifiers { get; }
 
     /// <inheritdoc />
     public Func<ITestcontainersContainer, CancellationToken, Task> StartupCallback { get; }

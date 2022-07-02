@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="next">Changed configuration.</param>
     /// <param name="previous">Previous configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
+    /// <typeparam name="T">Type of <see cref="IEnumerable{T}" />.</typeparam>
     /// <returns>An updated configuration.</returns>
     public static IEnumerable<T> Combine<T>(IEnumerable<T> next, IEnumerable<T> previous)
       where T : class
@@ -35,6 +35,25 @@ namespace DotNet.Testcontainers.Builders
       {
         return next.Concat(previous).ToArray();
       }
+    }
+
+    /// <summary>
+    /// Combines all existing and new configuration changes while preserving the original order of insertion.
+    /// If there are no changes, the previous configurations are returned.
+    /// </summary>
+    /// <param name="next">Changed configuration.</param>
+    /// <param name="previous">Previous configuration.</param>
+    /// <typeparam name="T">Type of <see cref="IReadOnlyList{T}" />.</typeparam>
+    /// <returns>An updated configuration.</returns>
+    public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> next, IReadOnlyList<T> previous)
+      where T : class
+    {
+      if (next == null || previous == null)
+      {
+        return next ?? previous;
+      }
+
+      return previous.Concat(next).ToArray();
     }
 
     /// <summary>

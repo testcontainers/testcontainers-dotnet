@@ -466,6 +466,34 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Then
         Assert.False(Docker.Exists(DockerResource.Container, testcontainerId));
       }
+
+      [Fact]
+      public async Task ParameterModifiers()
+      {
+        // Given
+        var expectedContainerName = Guid.NewGuid().ToString("D");
+
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithCreateContainerParametersModifier(parameters =>
+          {
+            parameters.Name = "placeholder";
+          })
+          .WithCreateContainerParametersModifier(parameters =>
+          {
+            parameters.Name = expectedContainerName;
+          });
+
+        // When
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+
+          // Then
+          Assert.EndsWith(expectedContainerName, testcontainer.Name);
+        }
+      }
     }
   }
 }

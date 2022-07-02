@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Reflection;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -280,6 +281,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier)
+    {
+      var parameterModifiers = new[] { parameterModifier };
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(parameterModifiers: parameterModifiers));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback)
     {
       return this.MergeNewConfiguration(new TestcontainersConfiguration(startupCallback: startupCallback));
@@ -341,9 +349,10 @@ namespace DotNet.Testcontainers.Builders
       var dockerRegistryAuthConfig = BuildConfiguration.Combine(dockerResourceConfiguration.DockerRegistryAuthConfig, this.DockerResourceConfiguration.DockerRegistryAuthConfig);
       var outputConsumer = BuildConfiguration.Combine(dockerResourceConfiguration.OutputConsumer, this.DockerResourceConfiguration.OutputConsumer);
       var waitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(dockerResourceConfiguration.WaitStrategies, this.DockerResourceConfiguration.WaitStrategies);
+      var parameterModifiers = BuildConfiguration.Combine(dockerResourceConfiguration.ParameterModifiers, this.DockerResourceConfiguration.ParameterModifiers);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
 
