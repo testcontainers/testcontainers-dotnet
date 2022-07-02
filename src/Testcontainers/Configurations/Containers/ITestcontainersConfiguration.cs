@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
@@ -97,6 +98,15 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the wait strategies.
     /// </summary>
     IEnumerable<IWaitUntil> WaitStrategies { get; }
+
+    /// <summary>
+    /// Gets the modifier callbacks for <see cref="CreateContainerParameters"/>.
+    /// </summary>
+    /// <remarks>
+    /// These actions will be executed after the remaining Testcontainer configuration has been applied on the Docker
+    /// client, but just before creating the container.
+    /// </remarks>
+    IReadOnlyList<Action<CreateContainerParameters>> ParameterModifiers { get; }
 
     /// <summary>
     /// Gets the startup callback.

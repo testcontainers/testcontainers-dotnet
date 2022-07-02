@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
@@ -309,6 +310,16 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>Multiple wait strategies are executed one after the other.</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy);
+
+    /// <summary>
+    /// Allow low level modifications of <see cref="CreateContainerParameters"/> after the Testcontainer configuration has been applied.
+    /// When adding multiple modifiers, they will be executed in order of insertion.
+    /// </summary>
+    /// <param name="parameterModifier">The action that is invoked for modifying the <see cref="CreateContainerParameters"/> instance.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    /// <remarks>Warning: This exposes the underlying Docker.DotNet API so it might change outside of our control.</remarks>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
 
     /// <summary>
     /// Sets the startup callback to invoke after the Testcontainer start.

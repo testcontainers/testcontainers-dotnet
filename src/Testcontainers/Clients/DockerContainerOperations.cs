@@ -177,6 +177,14 @@ namespace DotNet.Testcontainers.Clients
         NetworkingConfig = networkingConfig,
       };
 
+      if (configuration.ParameterModifiers != null)
+      {
+        foreach (var parameterModifier in configuration.ParameterModifiers)
+        {
+          parameterModifier(createParameters);
+        }
+      }
+
       var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)
         .ConfigureAwait(false)).ID;
 
