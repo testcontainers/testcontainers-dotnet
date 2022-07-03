@@ -6,6 +6,7 @@
 
 - 483 Support custom resource reaper image via `TestcontainersSettings.ResourceReaperImage` (@vlaskal)
 - 495 Add CHANGELOG.md
+- 496 Support `~/.testcontainers.properties` custom configuration
 
 ### Removed
 

@@ -37,7 +37,7 @@
         .Where(line => !line.StartsWith("!", StringComparison.Ordinal))
         .Select(line => line.Split(new[] { '=', ':', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries))
         .Where(property => 2.Equals(property.Length))
-        .ToDictionary(property => property[0], keyValuePair => keyValuePair[1]))
+        .ToDictionary(property => property[0], property => property[1]))
     {
     }
 
