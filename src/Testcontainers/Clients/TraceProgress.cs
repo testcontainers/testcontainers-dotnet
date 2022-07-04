@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Clients
       this.LogProgressIfNotNullOrWhiteSpace(value.Stream);
       this.LogProgressIfNotNullOrWhiteSpace(value.ProgressMessage);
       this.LogProgressIfNotNullOrWhiteSpace(value.Status);
-      this.LogErrorIfNotNullOrWhiteSpace(value.Error.Message);
+      this.LogErrorIfNotNullOrWhiteSpace(value.ErrorMessage);
     }
 
     private void LogProgressIfNotNullOrWhiteSpace(string message)
