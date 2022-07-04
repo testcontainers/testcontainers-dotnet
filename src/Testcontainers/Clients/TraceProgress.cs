@@ -18,11 +18,7 @@ namespace DotNet.Testcontainers.Clients
       this.LogProgressIfNotNullOrWhiteSpace(value.Stream);
       this.LogProgressIfNotNullOrWhiteSpace(value.ProgressMessage);
       this.LogProgressIfNotNullOrWhiteSpace(value.Status);
-
-      if (value.Error != null)
-      {
-        this.logger.LogError(value.Error.Message.Trim());
-      }
+      this.LogErrorIfNotNullOrWhiteSpace(value.Error.Message);
     }
 
     private void LogProgressIfNotNullOrWhiteSpace(string message)
@@ -30,6 +26,14 @@ namespace DotNet.Testcontainers.Clients
       if (!string.IsNullOrWhiteSpace(message))
       {
         this.logger.Progress(message.Trim());
+      }
+    }
+
+    private void LogErrorIfNotNullOrWhiteSpace(string message)
+    {
+      if (!string.IsNullOrWhiteSpace(message))
+      {
+        this.logger.Error(message.Trim());
       }
     }
 
