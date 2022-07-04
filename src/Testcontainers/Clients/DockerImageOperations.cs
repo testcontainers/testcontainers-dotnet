@@ -114,10 +114,10 @@ namespace DotNet.Testcontainers.Clients
         await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerFileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
           .ConfigureAwait(false);
 
-        bool isImageCreated = await this.ExistsWithNameAsync(image.FullName, ct).ConfigureAwait(false);
-        if (!isImageCreated)
+        var imageHasBeenCreated = await this.ExistsWithNameAsync(image.FullName, ct).ConfigureAwait(false);
+        if (!imageHasBeenCreated)
         {
-          throw new Exception($"Failed to create image {image.FullName}");
+          throw new InvalidOperationException($"Docker image {image.FullName} has not been created.");
         }
       }
 
