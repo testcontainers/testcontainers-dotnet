@@ -312,12 +312,12 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithWaitStrategy(IWaitForContainerOS waitStrategy);
 
     /// <summary>
-    /// Allow low level modifications of <see cref="CreateContainerParameters"/> after the Testcontainer configuration has been applied.
-    /// When adding multiple modifiers, they will be executed in order of insertion.
+    /// Allows low level modifications of <see cref="CreateContainerParameters" /> after the builder configuration has been applied.
+    /// Multiple modifiers will be executed in order of insertion.
     /// </summary>
-    /// <param name="parameterModifier">The action that is invoked for modifying the <see cref="CreateContainerParameters"/> instance.</param>
+    /// <param name="parameterModifier">The action that invokes modifying the <see cref="CreateContainerParameters" /> instance.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    /// <remarks>Warning: This exposes the underlying Docker.DotNet API so it might change outside of our control.</remarks>
+    /// <remarks>This exposes the underlying Docker.DotNet API, it might change. Scope is outside this project.</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
 

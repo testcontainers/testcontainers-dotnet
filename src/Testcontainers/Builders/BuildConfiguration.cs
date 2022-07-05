@@ -31,14 +31,12 @@ namespace DotNet.Testcontainers.Builders
       {
         return next ?? previous;
       }
-      else
-      {
-        return next.Concat(previous).ToArray();
-      }
+
+      return previous.Concat(next).ToArray();
     }
 
     /// <summary>
-    /// Combines all existing and new configuration changes while preserving the original order of insertion.
+    /// Combines all existing and new configuration changes while preserving the order of insertion.
     /// If there are no changes, the previous configurations are returned.
     /// </summary>
     /// <param name="next">Changed configuration.</param>
@@ -70,10 +68,8 @@ namespace DotNet.Testcontainers.Builders
       {
         return next ?? previous;
       }
-      else
-      {
-        return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
-      }
+
+      return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
     }
   }
 }

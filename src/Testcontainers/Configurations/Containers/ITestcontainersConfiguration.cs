@@ -100,11 +100,10 @@ namespace DotNet.Testcontainers.Configurations
     IEnumerable<IWaitUntil> WaitStrategies { get; }
 
     /// <summary>
-    /// Gets the modifier callbacks for <see cref="CreateContainerParameters"/>.
+    /// Gets a list of actions that modifies the <see cref="CreateContainerParameters" /> configuration.
     /// </summary>
     /// <remarks>
-    /// These actions will be executed after the remaining Testcontainer configuration has been applied on the Docker
-    /// client, but just before creating the container.
+    /// The actions modify the <see cref="CreateContainerParameters" /> configuration after the builder configuration has been applied, but before the container starts.
     /// </remarks>
     IReadOnlyList<Action<CreateContainerParameters>> ParameterModifiers { get; }
 

@@ -471,27 +471,20 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task ParameterModifiers()
       {
         // Given
-        var expectedContainerName = Guid.NewGuid().ToString("D");
+        var name = Guid.NewGuid().ToString("D");
 
+        // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
-          .WithCreateContainerParametersModifier(parameters =>
-          {
-            parameters.Name = "placeholder";
-          })
-          .WithCreateContainerParametersModifier(parameters =>
-          {
-            parameters.Name = expectedContainerName;
-          });
+          .WithCreateContainerParametersModifier(parameters => parameters.Name = "placeholder")
+          .WithCreateContainerParametersModifier(parameters => parameters.Name = name);
 
-        // When
+        // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-
-          // Then
-          Assert.EndsWith(expectedContainerName, testcontainer.Name);
+          Assert.EndsWith(name, testcontainer.Name);
         }
       }
     }

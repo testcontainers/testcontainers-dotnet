@@ -43,7 +43,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="networkAliases">The container network aliases.</param>
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
-    /// <param name="parameterModifiers">The modifier callbacks for <see cref="CreateContainerParameters"/>.</param>
+    /// <param name="parameterModifiers">The actions that modifies the <see cref="CreateContainerParameters" /> configuration.</param>
     /// <param name="startupCallback">The startup callback.</param>
     /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
     /// <param name="privileged">A value indicating whether the Testcontainer has extended privileges or not.</param>
