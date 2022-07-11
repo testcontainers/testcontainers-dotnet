@@ -10,6 +10,7 @@
 - 496 Support `~/.testcontainers.properties` custom configuration
 - 500 Add trace output while building or pulling a Docker image (@michal-korniak)
 - 501 Throw an exception when Docker image has not been built (@michal-korniak)
+- 510 Add `IImageFromDockerfileBuilder.WithBuildArgument` (@michal-korniak)
 
 ### Removed
 

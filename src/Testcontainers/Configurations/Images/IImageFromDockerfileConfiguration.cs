@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
 
   /// <summary>
@@ -26,5 +27,10 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the Docker image.
     /// </summary>
     IDockerImage Image { get; }
+
+    /// <summary>
+    /// Gets a list of Docker build arguments.
+    /// </summary>
+    IReadOnlyDictionary<string, string> BuildArguments { get; }
   }
 }

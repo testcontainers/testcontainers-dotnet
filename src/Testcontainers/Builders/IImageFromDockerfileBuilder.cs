@@ -51,6 +51,15 @@ namespace DotNet.Testcontainers.Builders
     IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
     /// <summary>
+    /// Adds a Docker build argument.
+    /// </summary>
+    /// <param name="name">Build argument name.</param>
+    /// <param name="value">Build argument value.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
+    IImageFromDockerfileBuilder WithBuildArgument(string name, string value);
+
+    /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.
     /// </summary>
     /// <returns>FullName of the created image.</returns>

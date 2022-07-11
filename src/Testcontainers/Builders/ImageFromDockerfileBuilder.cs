@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using System.Collections.Generic;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -20,7 +21,8 @@ namespace DotNet.Testcontainers.Builders
         image: new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"),
         dockerfile: "Dockerfile",
         dockerfileDirectory: ".",
-        labels: DefaultLabels.Instance))
+        labels: DefaultLabels.Instance,
+        buildArguments: new Dictionary<string, string>()))
     {
     }
 
@@ -64,6 +66,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public IImageFromDockerfileBuilder WithBuildArgument(string name, string value)
+    {
+      var buildArgs = new Dictionary<string, string> { { name, value } };
+      return this.MergeNewConfiguration(new ImageFromDockerfileConfiguration(buildArguments: buildArgs));
+    }
+
+    /// <inheritdoc />
     public Task<string> Build()
     {
       ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.DockerEndpointAuthConfig, TestcontainersSettings.Logger);
@@ -89,7 +98,8 @@ namespace DotNet.Testcontainers.Builders
       var dockerfileDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.DockerfileDirectory, this.DockerResourceConfiguration.DockerfileDirectory);
       var deleteIfExists = dockerResourceConfiguration.DeleteIfExists && this.DockerResourceConfiguration.DeleteIfExists;
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
-      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(dockerEndpointAuthConfig, image, dockerfile, dockerfileDirectory, deleteIfExists, labels));
+      var buildArgs = BuildConfiguration.Combine(dockerResourceConfiguration.BuildArguments, this.DockerResourceConfiguration.BuildArguments);
+      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(dockerEndpointAuthConfig, image, dockerfile, dockerfileDirectory, deleteIfExists, labels, buildArgs));
     }
   }
 }
