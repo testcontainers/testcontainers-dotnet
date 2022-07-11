@@ -24,19 +24,22 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="deleteIfExists">A value indicating whether an existing image is removed or not.</param>
     /// <param name="labels">A list of labels.</param>
+    /// <param name="buildArguments">A list of build arguments.</param>
     public ImageFromDockerfileConfiguration(
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IDockerImage image = null,
       string dockerfile = null,
       string dockerfileDirectory = null,
       bool deleteIfExists = true,
-      IReadOnlyDictionary<string, string> labels = null)
+      IReadOnlyDictionary<string, string> labels = null,
+      IReadOnlyDictionary<string, string> buildArguments = null)
       : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.Image = image;
       this.Dockerfile = dockerfile;
       this.DockerfileDirectory = dockerfileDirectory;
       this.DeleteIfExists = deleteIfExists;
+      this.BuildArguments = buildArguments;
     }
 
     /// <inheritdoc />
@@ -50,5 +53,8 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IDockerImage Image { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, string> BuildArguments { get; }
   }
 }

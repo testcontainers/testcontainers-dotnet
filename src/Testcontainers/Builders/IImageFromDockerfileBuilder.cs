@@ -50,6 +50,16 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
+
+    /// <summary>
+    /// Adds build-time variable.
+    /// </summary>
+    /// <param name="name">Build argument name.</param>
+    /// <param name="value">Build argument value.</param>
+    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    IImageFromDockerfileBuilder WithBuildArgument(string name, string value);
+
     /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.
     /// </summary>
