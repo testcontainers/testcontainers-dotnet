@@ -21,7 +21,8 @@ namespace DotNet.Testcontainers.Builders
         image: new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"),
         dockerfile: "Dockerfile",
         dockerfileDirectory: ".",
-        labels: DefaultLabels.Instance))
+        labels: DefaultLabels.Instance,
+        buildArguments: new Dictionary<string, string>()))
     {
     }
 
