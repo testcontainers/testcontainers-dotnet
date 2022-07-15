@@ -39,5 +39,19 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected.Tag, dockerImage.Tag);
       Assert.Equal(expected.FullName, dockerImage.FullName);
     }
+
+    [Fact]
+    public void ShouldThrowArgumentExceptionIfImageNameHasUpperCaseCharacters()
+    {
+      Assert.Throws<ArgumentException>(() => new DockerImage("Abc"));
+      Assert.Throws<ArgumentException>(() => new DockerImage("Abc:def"));
+    }
+
+    [Fact]
+    public void ShouldNotThrowArgumentExceptionIfTagNameHasUpperCaseCharacters()
+    {
+      var exception = Record.Exception(() => new DockerImage("abc:DEF"));
+      Assert.Null(exception);
+    }
   }
 }
