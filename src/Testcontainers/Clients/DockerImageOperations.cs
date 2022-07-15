@@ -89,6 +89,11 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
+      if (configuration.Image.Name.Any(x => char.IsUpper(x)))
+      {
+        throw new ArgumentException("Repository name must be lowercase");
+      }
+
       var image = configuration.Image;
 
       ITarArchive dockerFileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, this.logger);
