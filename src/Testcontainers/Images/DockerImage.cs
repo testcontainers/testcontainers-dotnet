@@ -50,7 +50,8 @@ namespace DotNet.Testcontainers.Images
 
       Guard.Argument(name, nameof(name))
         .NotNull()
-        .NotEmpty();
+        .NotEmpty()
+        .NotUpperCase();
 
       Guard.Argument(tag, nameof(tag))
         .NotNull();
