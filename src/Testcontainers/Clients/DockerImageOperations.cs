@@ -110,15 +110,26 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      using (var dockerFileStream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))
+      var tarFile = dockerFileArchive.Tar();
+      try
       {
-        await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerFileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
-          .ConfigureAwait(false);
-
-        var imageHasBeenCreated = await this.ExistsWithNameAsync(image.FullName, ct).ConfigureAwait(false);
-        if (!imageHasBeenCreated)
+        using (var dockerFileStream = new FileStream(tarFile, FileMode.Open))
         {
-          throw new InvalidOperationException($"Docker image {image.FullName} has not been created.");
+          await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerFileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
+            .ConfigureAwait(false);
+
+          var imageHasBeenCreated = await this.ExistsWithNameAsync(image.FullName, ct).ConfigureAwait(false);
+          if (!imageHasBeenCreated)
+          {
+            throw new InvalidOperationException($"Docker image {image.FullName} has not been created.");
+          }
+        }
+      }
+      finally
+      {
+        if (File.Exists(tarFile))
+        {
+          File.Delete(tarFile);
         }
       }
 
