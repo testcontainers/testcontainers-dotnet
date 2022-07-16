@@ -91,7 +91,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var image = configuration.Image;
 
-      ITarArchive dockerFileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, this.logger);
+      ITarArchive dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, this.logger);
 
       var imageExists = await this.ExistsWithNameAsync(image.FullName, ct)
         .ConfigureAwait(false);
@@ -110,12 +110,13 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      var tarFile = dockerFileArchive.Tar();
+      var dockerfileArchiveFilePath = dockerfileArchive.Tar();
+
       try
       {
-        using (var dockerFileStream = new FileStream(tarFile, FileMode.Open))
+        using (var dockerfileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
         {
-          await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerFileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
+          await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
             .ConfigureAwait(false);
 
           var imageHasBeenCreated = await this.ExistsWithNameAsync(image.FullName, ct).ConfigureAwait(false);
@@ -127,9 +128,9 @@ namespace DotNet.Testcontainers.Clients
       }
       finally
       {
-        if (File.Exists(tarFile))
+        if (File.Exists(dockerfileArchiveFilePath))
         {
-          File.Delete(tarFile);
+          File.Delete(dockerfileArchiveFilePath);
         }
       }
 

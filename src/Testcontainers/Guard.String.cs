@@ -44,17 +44,17 @@ namespace DotNet.Testcontainers
     }
 
     /// <summary>
-    /// Ensures that an argument value doesn't have upper case characters.
+    /// Ensures that an argument string value does not have uppercase characters.
     /// </summary>
     /// <param name="argument">String argument to validate.</param>
     /// <returns>Reference to the Guard object that validates the argument preconditions.</returns>
-    /// <exception cref="ArgumentException">Thrown when argument has upper case characters.</exception>
+    /// <exception cref="ArgumentException">Thrown when argument has uppercase characters.</exception>
     [DebuggerStepThrough]
-    public static ref readonly ArgumentInfo<string> NotUpperCase(in this ArgumentInfo<string> argument)
+    public static ref readonly ArgumentInfo<string> NotUppercase(in this ArgumentInfo<string> argument)
     {
-      if (argument.Value.Any(x => char.IsUpper(x)))
+      if (argument.Value.Any(char.IsUpper))
       {
-        throw new ArgumentException(argument.Name, $"{argument.Name} can not have upper case characters.");
+        throw new ArgumentException(argument.Name, $"{argument.Name} can not have uppercase characters.");
       }
 
       return ref argument;

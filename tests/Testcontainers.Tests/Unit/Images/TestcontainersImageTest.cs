@@ -24,6 +24,27 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
+    [InlineData("Bar")]
+    [InlineData("Bar:latest")]
+    [InlineData("Foo/Bar")]
+    [InlineData("Foo/Bar:latest")]
+    [InlineData("Foo/bar")]
+    [InlineData("Foo/bar:latest")]
+    public void ShouldThrowArgumentExceptionIfImageNameHasUppercaseCharacters(string image)
+    {
+      Assert.Throws<ArgumentException>(() => new DockerImage(image));
+    }
+
+    [Theory]
+    [InlineData("bar:LATEST")]
+    [InlineData("foo/bar:LATEST")]
+    public void ShouldNotThrowArgumentExceptionIfImageTagHasUppercaseCharacters(string image)
+    {
+      var exception = Record.Exception(() => new DockerImage(image));
+      Assert.Null(exception);
+    }
+
+    [Theory]
     [ClassData(typeof(DockerImageFixture))]
     public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string fullName)
     {
@@ -38,20 +59,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected.Name, dockerImage.Name);
       Assert.Equal(expected.Tag, dockerImage.Tag);
       Assert.Equal(expected.FullName, dockerImage.FullName);
-    }
-
-    [Fact]
-    public void ShouldThrowArgumentExceptionIfImageNameHasUpperCaseCharacters()
-    {
-      Assert.Throws<ArgumentException>(() => new DockerImage("Abc"));
-      Assert.Throws<ArgumentException>(() => new DockerImage("Abc:def"));
-    }
-
-    [Fact]
-    public void ShouldNotThrowArgumentExceptionIfTagNameHasUpperCaseCharacters()
-    {
-      var exception = Record.Exception(() => new DockerImage("abc:DEF"));
-      Assert.Null(exception);
     }
   }
 }

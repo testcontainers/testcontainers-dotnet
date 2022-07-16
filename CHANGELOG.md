@@ -11,6 +11,8 @@
 - 500 Add trace output while building or pulling a Docker image (@michal-korniak)
 - 501 Throw an exception when Docker image has not been built (@michal-korniak)
 - 510 Add `IImageFromDockerfileBuilder.WithBuildArgument` (@michal-korniak)
+- 511 Remove temp Dockerfile archive after Docker build (@michal-korniak)
+- 512 Throw ArgumentException if Docker image name contains uppercase characters (@michal-korniak)
 
 ### Removed
 

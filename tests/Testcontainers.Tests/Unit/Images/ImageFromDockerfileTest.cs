@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void DockerfileArchiveTar()
     {
       // Given
-      var image = new DockerImage("Testcontainers", "Test", "1.0.0");
+      var image = new DockerImage("testcontainers", "test", "1.0.0");
 
       var expected = new SortedSet<string> { "Dockerfile", "setup/setup.sh" };
 
