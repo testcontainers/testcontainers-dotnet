@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Linq;
   using System.Net;
   using System.Net.Sockets;
   using System.Runtime.InteropServices;
@@ -22,6 +23,14 @@ namespace DotNet.Testcontainers.Configurations
     private static readonly ICustomConfiguration PropertiesFileConfiguration = new PropertiesFileConfiguration();
 
     private static readonly ICustomConfiguration EnvironmentConfiguration = new EnvironmentConfiguration();
+
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
+      new IDockerEndpointAuthenticationProvider[] { new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider() }
+        .AsParallel()
+        .Where(authProvider => authProvider.IsApplicable())
+        .Where(authProvider => authProvider.IsAvailable())
+        .Select(authProvider => authProvider.GetAuthConfig())
+        .First();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -75,7 +84,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows() : new Unix();
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     private static ushort GetResourceReaperPublicHostPort(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {

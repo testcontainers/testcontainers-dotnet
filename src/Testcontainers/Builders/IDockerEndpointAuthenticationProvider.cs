@@ -10,11 +10,18 @@
   internal interface IDockerEndpointAuthenticationProvider
   {
     /// <summary>
-    /// Is true when the authentication provider contains any Docker endpoint credentials, otherwise false.
+    /// Is true when the authentication provider contains Docker endpoint credentials, otherwise false.
     /// </summary>
-    /// <returns>True when the authentication provider contains any Docker endpoint credentials, otherwise false.</returns>
+    /// <returns>True when the authentication provider contains Docker endpoint credentials, otherwise false.</returns>
     [PublicAPI]
     bool IsApplicable();
+
+    /// <summary>
+    /// Is true when a connection to the Docker endpoint can be established, otherwise false.
+    /// </summary>
+    /// <returns>True when a connection to the Docker endpoint can be established, otherwise false.</returns>
+    [PublicAPI]
+    bool IsAvailable();
 
     /// <summary>
     /// Gets the Docker endpoint authentication configuration.

@@ -119,6 +119,11 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
+        if (this.container.State == null)
+        {
+          return TestcontainersState.Undefined;
+        }
+
         try
         {
           return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State.Status, true);

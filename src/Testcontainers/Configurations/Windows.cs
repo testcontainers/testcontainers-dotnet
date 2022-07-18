@@ -15,8 +15,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [PublicAPI]
     public Windows()
-      : this(new DockerEndpointAuthenticationProvider()
-        .GetAuthConfig())
+      : this(NpipeEndpointAuthenticationProvider.DockerEngine)
     {
     }
 

@@ -1,23 +1,48 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using System.Linq;
+  using System;
   using DotNet.Testcontainers.Configurations;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
-  internal sealed class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
+  internal class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     /// <inheritdoc />
-    public bool IsApplicable()
+    public virtual bool IsApplicable()
     {
-      return true;
+      return false;
     }
 
     /// <inheritdoc />
-    public IDockerEndpointAuthenticationConfiguration GetAuthConfig()
+    public virtual bool IsAvailable()
     {
-      return new IDockerEndpointAuthenticationProvider[] { new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider() }
-        .First(authenticationProvider => authenticationProvider.IsApplicable())
-        .GetAuthConfig();
+      var authConfig = this.GetAuthConfig();
+
+      if (authConfig == null)
+      {
+        return false;
+      }
+
+      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration())
+      {
+        using (var dockerClient = dockerClientConfiguration.CreateClient())
+        {
+          try
+          {
+            dockerClient.System.PingAsync().GetAwaiter().GetResult();
+            return true;
+          }
+          catch (Exception)
+          {
+            return false;
+          }
+        }
+      }
+    }
+
+    /// <inheritdoc />
+    public virtual IDockerEndpointAuthenticationConfiguration GetAuthConfig()
+    {
+      return null;
     }
   }
 }

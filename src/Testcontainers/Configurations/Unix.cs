@@ -15,8 +15,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [PublicAPI]
     public Unix()
-      : this(new DockerEndpointAuthenticationProvider()
-        .GetAuthConfig())
+      : this(UnixEndpointAuthenticationProvider.DockerEngine)
     {
     }
 

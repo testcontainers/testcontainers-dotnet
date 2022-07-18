@@ -6,7 +6,7 @@
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
-  internal sealed class UnixEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
+  internal sealed class UnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
     /// <summary>
     /// Gets the Unix socket Docker Engine endpoint.
@@ -16,13 +16,13 @@
       = new Uri("unix:/var/run/docker.sock");
 
     /// <inheritdoc />
-    public bool IsApplicable()
+    public override bool IsApplicable()
     {
       return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     }
 
     /// <inheritdoc />
-    public IDockerEndpointAuthenticationConfiguration GetAuthConfig()
+    public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
       return new DockerEndpointAuthenticationConfiguration(DockerEngine);
     }
