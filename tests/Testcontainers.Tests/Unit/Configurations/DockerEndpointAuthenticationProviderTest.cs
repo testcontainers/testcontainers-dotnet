@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   public sealed class DockerEndpointAuthenticationProviderTest
   {
     private const string DockerHost = "tcp://127.0.0.1:2375";
+    private const string DockerTlsHost = "tcp://127.0.0.1:2376";
 
     [Theory]
     [ClassData(typeof(AuthProviderTestData))]
@@ -35,7 +36,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var defaultConfiguration = new PropertiesFileConfiguration(Array.Empty<string>());
-        var dockerHostConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=" + DockerHost });
+        var dockerHostConfiguration = new PropertiesFileConfiguration(new[] { $"docker.host={DockerHost}" });
+        var dockerTlsConfiguration = new PropertiesFileConfiguration(new[] { "docker.tls=true" });
+        this.Add(new object[] { new TlsEndpointAuthenticationProvider(defaultConfiguration), false });
+        this.Add(new object[] { new TlsEndpointAuthenticationProvider(dockerTlsConfiguration), true });
+        this.Add(new object[] { new TlsEndpointAuthenticationProvider(Array.Empty<ICustomConfiguration>()), false });
+        this.Add(new object[] { new TlsEndpointAuthenticationProvider(defaultConfiguration, dockerTlsConfiguration), true });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(defaultConfiguration), false });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(dockerHostConfiguration), true });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(Array.Empty<ICustomConfiguration>()), false });
@@ -49,7 +55,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       public AuthConfigTestData()
       {
-        var dockerHostConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=" + DockerHost });
+        var dockerHostConfiguration = new PropertiesFileConfiguration(new[] { $"docker.host={DockerHost}" });
+        var dockerTlsHostConfiguration = new PropertiesFileConfiguration(new[] { $"docker.host={DockerTlsHost}" });
+        this.Add(new object[] { new TlsEndpointAuthenticationProvider(dockerTlsHostConfiguration).GetAuthConfig(), new Uri(DockerTlsHost) });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(dockerHostConfiguration).GetAuthConfig(), new Uri(DockerHost) });
         this.Add(new object[] { new NpipeEndpointAuthenticationProvider().GetAuthConfig(), new Uri("npipe://./pipe/docker_engine") });
         this.Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:/var/run/docker.sock") });

@@ -16,6 +16,12 @@
     Uri Endpoint { get; }
 
     /// <summary>
+    /// Gets the Docker API authentication credentials.
+    /// </summary>
+    [CanBeNull]
+    Docker.DotNet.Credentials Credentials { get; }
+
+    /// <summary>
     /// Gets the Docker client configuration.
     /// </summary>
     /// <param name="sessionId">The session id.</param>
