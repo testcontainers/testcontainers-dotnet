@@ -12,10 +12,15 @@
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
-    public DockerEndpointAuthenticationConfiguration(Uri endpoint)
+    /// <param name="credentials">The Docker API authentication credentials.</param>
+    public DockerEndpointAuthenticationConfiguration(Uri endpoint, Credentials credentials = null)
     {
+      this.Credentials = credentials;
       this.Endpoint = endpoint;
     }
+
+    /// <inheritdoc />
+    public Credentials Credentials { get; }
 
     /// <inheritdoc />
     public Uri Endpoint { get; }
@@ -24,7 +29,7 @@
     public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
     {
       var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "x-tc-sid", sessionId.ToString("D") } });
-      return new DockerClientConfiguration(this.Endpoint, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
+      return new DockerClientConfiguration(this.Endpoint, this.Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }
 }

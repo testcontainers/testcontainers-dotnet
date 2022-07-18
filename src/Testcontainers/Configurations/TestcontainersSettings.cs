@@ -21,7 +21,14 @@ namespace DotNet.Testcontainers.Configurations
     private static readonly IDockerImage RyukContainerImage = new DockerImage("testcontainers/ryuk:0.3.4");
 
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
-      new IDockerEndpointAuthenticationProvider[] { new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider() }
+      new IDockerEndpointAuthenticationProvider[]
+        {
+          new MTlsEndpointAuthenticationProvider(),
+          new TlsEndpointAuthenticationProvider(),
+          new EnvironmentEndpointAuthenticationProvider(),
+          new NpipeEndpointAuthenticationProvider(),
+          new UnixEndpointAuthenticationProvider(),
+        }
         .AsParallel()
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())

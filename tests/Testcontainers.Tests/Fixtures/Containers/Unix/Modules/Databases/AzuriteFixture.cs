@@ -11,9 +11,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public static class AzuriteFixture
   {
-    // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory();
-
     [UsedImplicitly]
     public class AzuriteDefaultFixture : IAsyncLifetime
     {
@@ -92,7 +89,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       public AzuriteWithCustomWorkspaceFixture()
         : base(new AzuriteTestcontainerConfiguration
         {
-          Location = Path.Combine(TempDir, Guid.NewGuid().ToString("N")),
+          Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D")),
         })
       {
         if (this.Configuration.Location != null)

@@ -6,8 +6,10 @@
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" />
     <PackageReference Update="JetBrains.Annotations" Version="2022.1.0" PrivateAssets="all" />
     <PackageReference Update="Docker.DotNet" Version="3.125.12" />
+    <PackageReference Update="Docker.DotNet.X509" Version="3.125.12" />
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="3.1.26" />
+    <PackageReference Update="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Update="SharpZipLib" Version="1.4.0" />
     <PackageReference Update="System.Text.Json" Version="4.7.2" />
     <!-- Unit and integration test dependencies: -->

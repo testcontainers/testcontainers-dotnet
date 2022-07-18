@@ -4,6 +4,7 @@
 
 ### Added
 
+- 370 Add protected Docker daemon socket support (@vlaskal)
 - 421 Add Azurite module (@vlaskal)
 - 421 Add Cosmos DB Linux Emulator (@Yeseh, @ktjn)
 - 504 Add Elasticsearch module (@chertby)
