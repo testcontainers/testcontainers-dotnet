@@ -78,7 +78,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> ConfigureContainer(Action<TDockerContainer> moduleConfiguration)
     {
-      return this.MergeNewConfiguration(this.DockerResourceConfiguration, moduleConfiguration);
+      return new TestcontainersBuilder<TDockerContainer>(this.DockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -324,9 +324,8 @@ namespace DotNet.Testcontainers.Builders
     /// Merges the current with the new Docker resource configuration.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The new Docker resource configuration.</param>
-    /// <param name="moduleConfiguration">The module configuration.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    protected virtual ITestcontainersBuilder<TDockerContainer> MergeNewConfiguration(ITestcontainersConfiguration dockerResourceConfiguration, Action<TDockerContainer> moduleConfiguration = null)
+    protected virtual ITestcontainersBuilder<TDockerContainer> MergeNewConfiguration(ITestcontainersConfiguration dockerResourceConfiguration)
     {
       var autoRemove = BuildConfiguration.Combine(dockerResourceConfiguration.AutoRemove, this.DockerResourceConfiguration.AutoRemove);
       var privileged = BuildConfiguration.Combine(dockerResourceConfiguration.Privileged, this.DockerResourceConfiguration.Privileged);
@@ -353,7 +352,7 @@ namespace DotNet.Testcontainers.Builders
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
       var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
-      return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, moduleConfiguration ?? this.mergeModuleConfiguration);
+      return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, this.mergeModuleConfiguration);
     }
 
     private static IDockerImage PrependHubImageNamePrefix(IDockerImage image)

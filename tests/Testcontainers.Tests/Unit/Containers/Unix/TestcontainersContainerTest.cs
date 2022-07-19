@@ -230,9 +230,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
+          .WithNetworkAliases("Foo")
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithBindMount(TempDir, $"/{target}")
+          .ConfigureContainer(c => { })
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
