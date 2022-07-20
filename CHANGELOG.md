@@ -24,3 +24,4 @@
 - 431 Fix `System.InvalidOperationException : cannot hijack chunked or content length stream` (update `Docker.DotNet` dependency)
 - 449 Fix wrong mapped public host port
 - 484 Fix unit tests that fail on Windows hosts (@vlaskal)
+- 507 Fix `ITestcontainersConfiguration` duplication, such as `DockerApiException : [...] Duplicate mount point [...]` (@alesandrino)

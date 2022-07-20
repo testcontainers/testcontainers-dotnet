@@ -234,7 +234,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithBindMount(TempDir, $"/{target}")
-          .ConfigureContainer(c => { })
+          .ConfigureContainer(_ => { }) // https://github.com/testcontainers/testcontainers-dotnet/issues/507.
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempDir, file)));
 
