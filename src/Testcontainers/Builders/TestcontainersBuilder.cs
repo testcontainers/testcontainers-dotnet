@@ -226,6 +226,20 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithTmpfsMount(string destination)
+    {
+      var mounts = new IMount[] { new TmpfsMount(destination, AccessMode.ReadWrite) };
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(mounts: mounts));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithTmpfsMount(string destination, AccessMode accessMode)
+    {
+      var mounts = new IMount[] { new TmpfsMount(destination, accessMode) };
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(mounts: mounts));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithNetwork(string id, string name)
     {
       return this.WithNetwork(new DockerNetwork(id, name));

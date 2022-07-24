@@ -235,6 +235,23 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithVolumeMount(IDockerVolume source, string destination, AccessMode accessMode);
 
     /// <summary>
+    /// Mounts the specified tmpfs (temporary file system) volume into the Testcontainer.
+    /// </summary>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithTmpfsMount(string destination);
+
+    /// <summary>
+    /// Mounts the specified tmpfs (temporary file system) volume into the Testcontainer.
+    /// </summary>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <param name="accessMode">Volume access mode.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithTmpfsMount(string destination, AccessMode accessMode);
+
+    /// <summary>
     /// Connects to the specified network.
     /// </summary>
     /// <param name="id">Id of the network to connect to.</param>
