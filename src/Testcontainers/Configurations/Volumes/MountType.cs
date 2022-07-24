@@ -21,6 +21,12 @@ namespace DotNet.Testcontainers.Configurations
     public static readonly MountType Volume = new MountType("volume");
 
     /// <summary>
+    /// The 'tmpfs' mount type.
+    /// </summary>
+    [PublicAPI]
+    public static readonly MountType Tmpfs = new MountType("tmpfs");
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MountType" /> struct.
     /// </summary>
     /// <param name="type">The mount type.</param>

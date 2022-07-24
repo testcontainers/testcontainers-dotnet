@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   public sealed class TestcontainersVolumeTest : IClassFixture<VolumeFixture>, IAsyncLifetime
   {
     private const string Destination = "/tmp/";
+    private const string TmpfsDestination = "/dev/shm";
 
     private readonly ITestcontainersContainer testcontainer1;
 
@@ -23,7 +24,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("touch /tmp/$(uname -n) && tail -f /dev/null")
         .WithResourceReaperSessionId(volumeFixture.SessionId)
-        .WithVolumeMount(volumeFixture.Name, Destination);
+        .WithVolumeMount(volumeFixture.Name, Destination)
+        .WithTmpfsMount(TmpfsDestination);
 
       this.testcontainer1 = testcontainersBuilder
         .WithHostname(nameof(this.testcontainer1))
@@ -49,6 +51,13 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       Assert.Equal(0, (await this.testcontainer1.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(this.testcontainer2)) })).ExitCode);
       Assert.Equal(0, (await this.testcontainer2.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(this.testcontainer1)) })).ExitCode);
+    }
+
+    [Fact]
+    public async Task WithTmpfsVolumeMount()
+    {
+      Assert.Equal(0, (await this.testcontainer1.ExecAsync(new[] { "test", "-d", TmpfsDestination })).ExitCode);
+      Assert.Equal(0, (await this.testcontainer2.ExecAsync(new[] { "test", "-d", TmpfsDestination })).ExitCode);
     }
   }
 }
