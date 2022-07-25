@@ -228,8 +228,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithTmpfsMount(string destination)
     {
-      var mounts = new IMount[] { new TmpfsMount(destination, AccessMode.ReadWrite) };
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(mounts: mounts));
+      return this.WithTmpfsMount(destination, AccessMode.ReadWrite);
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
