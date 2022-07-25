@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Containers
     private HttpClient HttpClient;
 
     internal CosmosDbTestcontainer(ITestcontainersConfiguration configuration, ILogger logger)
-    : base(configuration, logger)
+        : base(configuration, logger)
     {
         CosmosUrl = $"https://{this.Username}.documents.azure.com/dbs/{this.Database}";
     }
@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Containers
         client.DefaultRequestHeaders.Add("x-ms-date", System.DateTime.UtcNow.ToLongTimeString());
         client.DefaultRequestHeaders.Add("authorization", authHeaderValue);
         client.DefaultRequestHeaders.Add("Content-Type", "application/query+json");
-        client.DefaultRequestHeaders.Add("Content-Type", "application/query+json");
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
 
         return HttpClient;
     }
