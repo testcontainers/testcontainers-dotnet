@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Containers
         => $"AccountEndpoint=https://{this.Username}:{this.Port}.documents.azure.com:443/;AccountKey={this.Password}";
 
     public async Task<HttpResponseMessage> QueryAsync(
-        string queryString, IEnumerable<KeyValuePair<string, string>> parameters)
+        string queryString, IEnumerable<KeyValuePair<string, string>> parameters = default)
     {
         var client = GetHttpClient();
         var parJsonStr = JsonSerializer.Serialize(parameters);
@@ -35,7 +35,14 @@ namespace DotNet.Testcontainers.Containers
 
         return response;
     }
-        
+
+    public async Task<HttpResponseMessage> CreateDatabaseAsync()
+    {
+        var client = GetHttpClient();
+        var response = await HttpClient.PostAsync(CosmosUrl, null);
+
+        return response;
+    }        
     // Setup HttpClient following:
     // https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api#how-do-i-query-a-resource-by-using-rest
     private HttpClient GetHttpClient() 
