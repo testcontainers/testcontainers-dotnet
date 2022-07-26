@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="coverlet.msbuild" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
     <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
@@ -24,7 +25,6 @@
     <PackageReference Include="CouchbaseNetClient" />
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
-    <PackageReference Include="MySql.Data" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" />
     <PackageReference Include="RabbitMQ.Client" />
