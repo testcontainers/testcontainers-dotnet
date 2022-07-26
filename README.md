@@ -66,6 +66,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Redis (redis:5.0.14)
 - Apache Kafka (confluentinc/cp-kafka:6.0.5)
 - RabbitMQ (rabbitmq:3.7.28)
+- Elasticsearch (elasticsearch:8.3.2)
 
 ## Examples
 

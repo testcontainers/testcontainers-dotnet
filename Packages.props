@@ -24,6 +24,7 @@
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <!-- 3rd party client dependencies -->
+    <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.2" />
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.8" />
     <PackageReference Update="MongoDB.Driver" Version="2.15.0" />
