@@ -7,13 +7,13 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using MySqlConnector;
 
-  public sealed class MySqlFixture : DatabaseFixture<MySqlTestcontainer, DbConnection>
+  public sealed class MariaDbFixture : DatabaseFixture<MariaDbTestcontainer, DbConnection>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new MySqlTestcontainerConfiguration { Database = "db", Username = "mysql", Password = "mysql" };
+    private readonly TestcontainerDatabaseConfiguration configuration = new MariaDbTestcontainerConfiguration { Database = "db", Username = "mysql", Password = "mysql" };
 
-    public MySqlFixture()
+    public MariaDbFixture()
     {
-      this.Container = new TestcontainersBuilder<MySqlTestcontainer>()
+      this.Container = new TestcontainersBuilder<MariaDbTestcontainer>()
         .WithDatabase(this.configuration)
         .Build();
     }
