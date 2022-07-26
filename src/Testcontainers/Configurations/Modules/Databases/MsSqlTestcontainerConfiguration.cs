@@ -33,22 +33,22 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override string Database
     {
-      get => "master";
-      set => throw new NotImplementedException();
+      get => this.Environments["MSSQL_DATABASE"];
+      set => this.Environments["MSSQL_DATABASE"] = value;
     }
 
     /// <inheritdoc />
     public override string Username
     {
-      get => "sa";
-      set => throw new NotImplementedException();
+      get => this.Environments["MSSQL_USER"];
+      set => this.Environments["MSSQL_USER"] = value;
     }
 
     /// <inheritdoc />
     public override string Password
     {
-      get => this.Environments["SA_PASSWORD"];
-      set => this.Environments["SA_PASSWORD"] = value;
+      get => this.Environments["MSSQL_PASSWORD"];
+      set => this.Environments["MSSQL_PASSWORD"] = value;
     }
 
     /// <inheritdoc />

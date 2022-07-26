@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class MsSqlFixture : DatabaseFixture<MsSqlTestcontainer, DbConnection>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new MsSqlTestcontainerConfiguration { Password = "yourStrong(!)Password" }; // https://hub.docker.com/r/microsoft/mssql-server-linux/.
+    private readonly TestcontainerDatabaseConfiguration configuration = new MsSqlTestcontainerConfiguration { Password = "yourStrong(!)Password", Database = "master", Username = "sa" }; // https://hub.docker.com/r/microsoft/mssql-server-linux/.
 
     public MsSqlFixture()
     {
