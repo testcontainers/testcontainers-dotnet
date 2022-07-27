@@ -4,7 +4,9 @@
 
 ### Added
 
+- 504 Add Elasticsearch module (@chertby)
 - 516 Add `ITestcontainersBuilder<TDockerContainer>.WithTmpfsMount` (@chrisbbe)
+- 520 Add MariaDB module (@renemadsen)
 
 ## [2.1.0]
 

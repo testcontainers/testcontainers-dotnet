@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix.Modules.Databases
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;

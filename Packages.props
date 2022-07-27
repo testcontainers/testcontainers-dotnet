@@ -24,14 +24,14 @@
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <!-- 3rd party client dependencies -->
-    <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.2" />
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.8" />
+    <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.2" />
     <PackageReference Update="MongoDB.Driver" Version="2.15.0" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
-    <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Update="Npgsql" Version="6.0.3" />
     <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="3.21.50" />
+    <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Update="RabbitMQ.Client" Version="6.2.4" />
     <PackageReference Update="StackExchange.Redis" Version="2.5.43" />
     <PackageReference Update="System.Data.SqlClient" Version="4.8.3" />

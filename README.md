@@ -58,6 +58,8 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 
 - Apache CouchDB (couchdb:2.3.1)
 - Couchbase (couchbase:6.5.1)
+- Elasticsearch (elasticsearch:8.3.2)
+- MariaDB (mariadb:10.8)
 - Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04)
 - MongoDB (mongo:5.0.6)
 - MySQL (mysql:8.0.28)
@@ -66,7 +68,6 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Redis (redis:5.0.14)
 - Apache Kafka (confluentinc/cp-kafka:6.0.5)
 - RabbitMQ (rabbitmq:3.7.28)
-- Elasticsearch (elasticsearch:8.3.2)
 
 ## Examples
 

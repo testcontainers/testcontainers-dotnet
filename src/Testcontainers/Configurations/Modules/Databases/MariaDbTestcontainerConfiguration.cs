@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Gets or sets this specifies the password that will be set for the MariaDB root superuser account.
+    /// Gets or sets the MariaDB root superuser account password.
     /// </summary>
     public string RootPassword
     {
