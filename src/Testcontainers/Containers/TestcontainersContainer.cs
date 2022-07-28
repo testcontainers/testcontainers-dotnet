@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="logger">The logger.</param>
     protected TestcontainersContainer(ITestcontainersConfiguration configuration, ILogger logger)
     {
-      this.client = new TestcontainersClient(configuration.DockerEndpointAuthConfig, logger);
+      this.client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       this.configuration = configuration;
       this.Logger = logger;
     }
@@ -257,7 +257,7 @@ namespace DotNet.Testcontainers.Containers
       }
 
       // If someone calls `DisposeAsync`, we can immediately remove the container. We don't need to wait for the Resource Reaper.
-      if (!Guid.Empty.ToString("D").Equals(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
+      if (!Guid.Empty.Equals(this.configuration.SessionId))
       {
         await this.CleanUpAsync()
           .ConfigureAwait(false);

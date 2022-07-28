@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private static readonly IDockerImage RyukContainerImage = new DockerImage("ghcr.io/psanetra/ryuk:2021.12.20");
+    private static readonly IDockerImage RyukContainerImage = new DockerImage("testcontainers/ryuk:0.3.4");
 
     private static readonly ICustomConfiguration PropertiesFileConfiguration = new PropertiesFileConfiguration();
 

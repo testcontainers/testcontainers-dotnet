@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
@@ -14,8 +15,8 @@ namespace DotNet.Testcontainers.Clients
   {
     private readonly ILogger logger;
 
-    public DockerContainerOperations(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(dockerEndpointAuthConfig)
+    public DockerContainerOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
+      : base(sessionId, dockerEndpointAuthConfig)
     {
       this.logger = logger;
     }

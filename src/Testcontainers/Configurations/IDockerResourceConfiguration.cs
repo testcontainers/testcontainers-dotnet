@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Collections.Generic;
 
   /// <summary>
@@ -7,6 +8,11 @@
   /// </summary>
   public interface IDockerResourceConfiguration
   {
+    /// <summary>
+    /// Gets the session id.
+    /// </summary>
+    Guid SessionId { get; }
+
     /// <summary>
     /// Gets the Docker endpoint authentication configuration.
     /// </summary>
