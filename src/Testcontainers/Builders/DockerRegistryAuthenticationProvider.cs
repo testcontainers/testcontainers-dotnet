@@ -14,7 +14,7 @@
   {
     private const string DockerHub = "index.docker.io";
 
-    private static readonly ConcurrentDictionary<string, IDockerRegistryAuthenticationConfiguration> Credentials = new ConcurrentDictionary<string, IDockerRegistryAuthenticationConfiguration>();
+    private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 
     private readonly FileInfo dockerConfigFile;
 
@@ -62,7 +62,8 @@
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration GetAuthConfig(string hostname)
     {
-      return Credentials.GetOrAdd(hostname ?? DockerHub, this.GetUncachedAuthConfig);
+      var lazyAuthConfig = Credentials.GetOrAdd(hostname ?? DockerHub, key => new Lazy<IDockerRegistryAuthenticationConfiguration>(() => this.GetUncachedAuthConfig(key)));
+      return lazyAuthConfig.Value;
     }
 
     private static string GetDefaultDockerConfigFile()
