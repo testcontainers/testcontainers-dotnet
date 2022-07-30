@@ -8,6 +8,10 @@
 - 516 Add `ITestcontainersBuilder<TDockerContainer>.WithTmpfsMount` (@chrisbbe)
 - 520 Add MariaDB module (@renemadsen)
 
+### Fixed
+
+- 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
+
 ## [2.1.0]
 
 ### Added

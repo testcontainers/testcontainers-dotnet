@@ -55,6 +55,7 @@ jobs:
       - name: Get Logs
         run: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
         shell: pwsh
+        if: always()
 
       - name: Rename Test And Coverage Results
         run: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage', '${{ matrix.os }}'.ToLower() }

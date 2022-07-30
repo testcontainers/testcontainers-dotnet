@@ -68,12 +68,8 @@
         return null;
       }
 
-      var username = credential.TryGetProperty("Username", out var usernameProperty) ? usernameProperty.GetString() : null;
-
-      var password = credential.TryGetProperty("Secret", out var passwordProperty) ? passwordProperty.GetString() : null;
-
       this.logger.DockerRegistryCredentialFound(hostname);
-      return new DockerRegistryAuthenticationConfiguration(hostname, username, password);
+      return new DockerRegistryAuthenticationConfiguration(hostname, credential);
     }
   }
 }
