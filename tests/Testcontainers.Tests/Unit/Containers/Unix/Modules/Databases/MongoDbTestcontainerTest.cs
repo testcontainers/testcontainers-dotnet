@@ -22,7 +22,7 @@
       var connection = this.mongoDbFixture.Connection;
 
       // When
-      var result = await connection.RunCommandAsync<BsonDocument>(@"{ ping: 1 }")
+      var result = await connection.RunCommandAsync<BsonDocument>("{ ping: 1 }")
         .ConfigureAwait(false);
 
       // Then

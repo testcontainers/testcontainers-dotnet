@@ -16,11 +16,9 @@ namespace DotNet.Testcontainers.Clients
       var lazyDockerClient = Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ =>
         new Lazy<IDockerClient>(() =>
         {
+          using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
           {
-            using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
-            {
-              return dockerClientConfiguration.CreateClient();
-            }
+            return dockerClientConfiguration.CreateClient();
           }
         }));
 

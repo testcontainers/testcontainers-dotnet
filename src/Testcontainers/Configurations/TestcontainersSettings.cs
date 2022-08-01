@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Configurations
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())
         .Select(authProvider => authProvider.GetAuthConfig())
-        .First();
+        .FirstOrDefault();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.

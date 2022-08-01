@@ -75,6 +75,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public Task<string> Build()
     {
+      _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
+        .NotNull();
+
       ITestcontainersClient client = new TestcontainersClient(this.DockerResourceConfiguration.SessionId, this.DockerResourceConfiguration.DockerEndpointAuthConfig, TestcontainersSettings.Logger);
       return client.BuildAsync(this.DockerResourceConfiguration);
     }

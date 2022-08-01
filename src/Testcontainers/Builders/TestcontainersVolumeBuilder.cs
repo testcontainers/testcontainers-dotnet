@@ -37,6 +37,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public IDockerVolume Build()
     {
+      _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
+        .NotNull();
+
       return new NonExistingDockerVolume(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 

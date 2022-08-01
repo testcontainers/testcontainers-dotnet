@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Configurations
       string registryEndpoint,
       JsonElement credential)
     {
-      var username = credential.TryGetProperty("Username", out var usernameProperty) ? usernameProperty.GetString() : null;
+      var username = credential.TryGetProperty(nameof(this.Username), out var usernameProperty) ? usernameProperty.GetString() : null;
 
       var password = credential.TryGetProperty("Secret", out var passwordProperty) ? passwordProperty.GetString() : null;
 
