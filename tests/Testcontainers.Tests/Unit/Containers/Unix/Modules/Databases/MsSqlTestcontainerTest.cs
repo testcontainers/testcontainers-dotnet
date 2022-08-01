@@ -32,13 +32,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void CannotSetDatabase()
-    {
-      var mssql = new MsSqlTestcontainerConfiguration();
-      Assert.Throws<NotImplementedException>(() => mssql.Database = string.Empty);
-    }
-
-    [Fact]
     public void CannotSetUsername()
     {
       var mssql = new MsSqlTestcontainerConfiguration();

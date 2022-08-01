@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using System;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -40,6 +41,23 @@ namespace DotNet.Testcontainers.Containers
 
       return await this.ExecAsync(new[] { "/opt/mssql-tools/bin/sqlcmd", "-b", "-r", "1", "-S", $"{this.Hostname},{this.ContainerPort}", "-U", this.Username, "-P", this.Password, "-i", tempScriptFile }, ct)
         .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public override async Task StartAsync(CancellationToken ct = default)
+    {
+        await base.StartAsync(ct);
+
+        // create database if needed
+        if (!string.Equals(MsSqlTestcontainerConfiguration.DefaultDatabase, this.Database, StringComparison.Ordinal))
+        {
+          await this.ExecScriptAsync(
+            $@"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '{this.Database}')
+              BEGIN
+                CREATE DATABASE [{this.Database}];
+              END;",
+            ct);
+        }
     }
   }
 }
