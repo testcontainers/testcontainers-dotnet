@@ -39,6 +39,10 @@ namespace DotNet.Testcontainers.Containers
 
     private bool disposed;
 
+    static ResourceReaper()
+    {
+    }
+
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, string ryukImage)
     {
       dockerEndpointAuthConfig = dockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig;

@@ -16,7 +16,9 @@
 
     private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 
-    private readonly FileInfo dockerConfigFile;
+    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
+
+    private readonly FileInfo dockerConfigFilePath;
 
     private readonly ILogger logger;
 
@@ -26,30 +28,30 @@
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
-      : this(GetDefaultDockerConfigFile(), logger)
+      : this(GetDefaultDockerConfigFilePath(), logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
     /// </summary>
-    /// <param name="dockerConfigFile">The Docker config file path.</param>
+    /// <param name="dockerConfigFilePath">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
     [PublicAPI]
-    public DockerRegistryAuthenticationProvider(string dockerConfigFile, ILogger logger)
-      : this(new FileInfo(dockerConfigFile), logger)
+    public DockerRegistryAuthenticationProvider(string dockerConfigFilePath, ILogger logger)
+      : this(new FileInfo(dockerConfigFilePath), logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
     /// </summary>
-    /// <param name="dockerConfigFile">The Docker config file path.</param>
+    /// <param name="dockerConfigFilePath">The Docker config file path.</param>
     /// <param name="logger">The logger.</param>
     [PublicAPI]
-    public DockerRegistryAuthenticationProvider(FileInfo dockerConfigFile, ILogger logger)
+    public DockerRegistryAuthenticationProvider(FileInfo dockerConfigFilePath, ILogger logger)
     {
-      this.dockerConfigFile = dockerConfigFile;
+      this.dockerConfigFilePath = dockerConfigFilePath;
       this.logger = logger;
     }
 
@@ -66,45 +68,57 @@
       return lazyAuthConfig.Value;
     }
 
-    private static string GetDefaultDockerConfigFile()
+    private static string GetDefaultDockerConfigFilePath()
     {
-      var dockerConfigDirectory = Environment.GetEnvironmentVariable("DOCKER_CONFIG");
-      return dockerConfigDirectory == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "config.json") : Path.Combine(dockerConfigDirectory, "config.json");
+      var dockerConfigDirectoryPath = PropertiesFileConfiguration.Instance.GetDockerConfig() ?? EnvironmentConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
+      return Path.Combine(dockerConfigDirectoryPath, "config.json");
+    }
+
+    private static JsonDocument GetDefaultDockerAuthConfig()
+    {
+      return PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? EnvironmentConfiguration.Instance.GetDockerAuthConfig() ?? JsonDocument.Parse("{}");
     }
 
     private IDockerRegistryAuthenticationConfiguration GetUncachedAuthConfig(string hostname)
     {
-      IDockerRegistryAuthenticationConfiguration authConfig;
-
-      if (this.dockerConfigFile.Exists)
+      using (var dockerAuthConfigJsonDocument = GetDefaultDockerAuthConfig())
       {
-        using (var dockerConfigFileStream = new FileStream(this.dockerConfigFile.FullName, FileMode.Open, FileAccess.Read))
+        IDockerRegistryAuthenticationConfiguration authConfig;
+
+        if (this.dockerConfigFilePath.Exists)
         {
-          using (var dockerConfigDocument = JsonDocument.Parse(dockerConfigFileStream))
+          using (var dockerConfigFileStream = new FileStream(this.dockerConfigFilePath.FullName, FileMode.Open, FileAccess.Read))
           {
-            authConfig = new IDockerRegistryAuthenticationProvider[]
-              {
-                new CredsHelperProvider(dockerConfigDocument, this.logger), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger),
-              }
-              .AsParallel()
-              .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
-              .FirstOrDefault(authenticationProvider => authenticationProvider != null);
+            using (var dockerConfigJsonDocument = JsonDocument.Parse(dockerConfigFileStream))
+            {
+              authConfig = new IDockerRegistryAuthenticationProvider[]
+                {
+                  new CredsHelperProvider(dockerConfigJsonDocument, this.logger),
+                  new CredsStoreProvider(dockerConfigJsonDocument, this.logger),
+                  new Base64Provider(dockerConfigJsonDocument, this.logger),
+                  new Base64Provider(dockerAuthConfigJsonDocument, this.logger),
+                }
+                .AsParallel()
+                .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
+                .FirstOrDefault(authenticationProvider => authenticationProvider != null);
+            }
           }
         }
-      }
-      else
-      {
-        this.logger.DockerConfigFileNotFound(this.dockerConfigFile.FullName);
-        return default(DockerRegistryAuthenticationConfiguration);
-      }
+        else
+        {
+          this.logger.DockerConfigFileNotFound(this.dockerConfigFilePath.FullName);
+          IDockerRegistryAuthenticationProvider authConfigProvider = new Base64Provider(dockerAuthConfigJsonDocument, this.logger);
+          authConfig = authConfigProvider.GetAuthConfig(hostname);
+        }
 
-      if (authConfig == null)
-      {
-        this.logger.DockerRegistryCredentialNotFound(hostname);
-        return default(DockerRegistryAuthenticationConfiguration);
-      }
+        if (authConfig == null)
+        {
+          this.logger.DockerRegistryCredentialNotFound(hostname);
+          return default(DockerRegistryAuthenticationConfiguration);
+        }
 
-      return authConfig;
+        return authConfig;
+      }
     }
   }
 }

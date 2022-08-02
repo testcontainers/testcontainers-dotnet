@@ -3,6 +3,7 @@
   using System;
   using System.IO;
   using System.Linq;
+  using System.Text.Json;
   using DotNet.Testcontainers.Images;
 
   /// <summary>
@@ -10,6 +11,10 @@
   /// </summary>
   internal sealed class PropertiesFileConfiguration : CustomConfiguration, ICustomConfiguration
   {
+    static PropertiesFileConfiguration()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertiesFileConfiguration" /> class.
     /// </summary>
@@ -29,6 +34,10 @@
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertiesFileConfiguration" /> class.
+    /// </summary>
+    /// <param name="lines">A list of Java properties file lines.</param>
     public PropertiesFileConfiguration(params string[] lines)
       : base(lines
         .Select(line => line.Trim())
@@ -41,11 +50,31 @@
     {
     }
 
+    /// <summary>
+    /// Gets the <see cref="ICustomConfiguration" /> instance.
+    /// </summary>
+    public static ICustomConfiguration Instance { get; }
+      = new PropertiesFileConfiguration();
+
+    /// <inheritdoc />
+    public string GetDockerConfig()
+    {
+      const string propertyName = "docker.config";
+      return this.GetDockerConfig(propertyName);
+    }
+
     /// <inheritdoc />
     public Uri GetDockerHost()
     {
       const string propertyName = "docker.host";
       return this.GetDockerHost(propertyName);
+    }
+
+    /// <inheritdoc />
+    public JsonDocument GetDockerAuthConfig()
+    {
+      const string propertyName = "docker.auth.config";
+      return this.GetDockerAuthConfig(propertyName);
     }
 
     /// <inheritdoc />

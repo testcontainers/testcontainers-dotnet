@@ -8,11 +8,12 @@
   {
     private readonly Uri dockerEngine;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnvironmentEndpointAuthenticationProvider" /> class.
+    /// </summary>
     public EnvironmentEndpointAuthenticationProvider()
     {
-      ICustomConfiguration propertiesFileConfiguration = new PropertiesFileConfiguration();
-      ICustomConfiguration environmentConfiguration = new EnvironmentConfiguration();
-      this.dockerEngine = propertiesFileConfiguration.GetDockerHost() ?? environmentConfiguration.GetDockerHost();
+      this.dockerEngine = PropertiesFileConfiguration.Instance.GetDockerHost() ?? EnvironmentConfiguration.Instance.GetDockerHost();
     }
 
     /// <inheritdoc />
