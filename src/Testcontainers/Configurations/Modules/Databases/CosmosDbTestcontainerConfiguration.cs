@@ -21,7 +21,10 @@ namespace DotNet.Testcontainers.Configurations
             : this(CosmosDbImage) { }
 
         public CosmosDbTestcontainerConfiguration(string image)
-            : base(image, CosmosDbPort) { }
+            : base(image, CosmosDbPort, CosmosDbPort)
+        {
+          this.Environments.Add("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+        }
 
         public override string Username
         {
@@ -58,6 +61,7 @@ namespace DotNet.Testcontainers.Configurations
         }
 
         public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-            .UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started");
+            .UntilCommandIsCompleted("ls");
+            //.UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started");
     }
 }

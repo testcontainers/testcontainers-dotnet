@@ -1,6 +1,7 @@
-namespace DotNet.Testcontainers.Tests.Fixtures 
+namespace DotNet.Testcontainers.Tests.Fixtures
 {
-    using System.Data.Common;
+  using System;
+  using System.Data.Common;
     using System.Threading.Tasks;
     using DotNet.Testcontainers.Builders;
     using DotNet.Testcontainers.Configurations;
@@ -9,18 +10,21 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public sealed class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
     {
-        private readonly TestcontainerDatabaseConfiguration configuration = 
-            new CosmosDbTestcontainerConfiguration{ Database = "testdb" };
+        private readonly TestcontainerDatabaseConfiguration configuration = new CosmosDbTestcontainerConfiguration
+        {
+            Database = "testdb"
+        };
 
         public CosmosDbFixture()
         {
             this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-                .WithDatabase(this.configuration)
+                .WithDatabase(this.configuration) 
                 .Build();
         }
 
         public override async Task InitializeAsync()
         {
+            Console.WriteLine("Initializing CosmosDB container");
             await this.Container.StartAsync()
                 .ConfigureAwait(false);
 
@@ -35,10 +39,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
         public override async Task DisposeAsync()
         {
+          if (Connection != null && Connection.State != System.Data.ConnectionState.Closed)
+          {
             this.Connection.Dispose();
 
-            await this.Container.DisposeAsync()
-                .ConfigureAwait(false);
+          }
+
+          await this.Container.DisposeAsync()
+              .ConfigureAwait(false);
         }
 
         public override void Dispose()

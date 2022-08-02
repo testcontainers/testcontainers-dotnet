@@ -10,16 +10,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
        public CosmosDbTestcontainerTest(CosmosDbFixture cosmosDbFixture)
        {
-        this.cosmosDbFixture = cosmosDbFixture;
+          this.cosmosDbFixture = cosmosDbFixture;
        }
 
        [Fact]
-       public async Task DatabaseCreated() 
+       public async Task DatabaseCreated()
        {
             var dbResponse = await this.cosmosDbFixture.Container.CreateDatabaseAsync()
                 .ConfigureAwait(false);
 
-            Assert.Equal(dbResponse.StatusCode, System.Net.HttpStatusCode.Created);
+          Assert.Equal(System.Net.HttpStatusCode.Created, dbResponse.StatusCode);
        }
     }
 }
