@@ -16,6 +16,8 @@
 
     private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 
+    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
+
     private readonly FileInfo dockerConfigFile;
 
     private readonly ILogger logger;
@@ -26,7 +28,7 @@
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
-      : this(GetDefaultDockerConfigFile(), logger)
+      : this(GetDefaultDockerConfigFilePath(), logger)
     {
     }
 
@@ -66,10 +68,16 @@
       return lazyAuthConfig.Value;
     }
 
-    private static string GetDefaultDockerConfigFile()
+    private static string GetDefaultDockerConfigFilePath()
     {
-      var dockerConfigDirectory = Environment.GetEnvironmentVariable("DOCKER_CONFIG");
-      return dockerConfigDirectory == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "config.json") : Path.Combine(dockerConfigDirectory, "config.json");
+      var dockerConfigDirectoryPath = PropertiesFileConfiguration.Instance.GetDockerConfig() ?? EnvironmentConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
+      return Path.Combine(dockerConfigDirectoryPath, "config.json");
+    }
+
+    [CanBeNull]
+    private static JsonDocument GetDefaultDockerAuthConfig()
+    {
+      return PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? EnvironmentConfiguration.Instance.GetDockerAuthConfig();
     }
 
     private IDockerRegistryAuthenticationConfiguration GetUncachedAuthConfig(string hostname)
@@ -84,12 +92,22 @@
           {
             authConfig = new IDockerRegistryAuthenticationProvider[]
               {
-                new CredsHelperProvider(dockerConfigDocument, this.logger), new CredsStoreProvider(dockerConfigDocument, this.logger), new Base64Provider(dockerConfigDocument, this.logger),
+                new CredsHelperProvider(dockerConfigDocument, this.logger),
+                new CredsStoreProvider(dockerConfigDocument, this.logger),
+                new Base64Provider(dockerConfigDocument, this.logger),
+                new Base64Provider(GetDefaultDockerAuthConfig() ?? JsonDocument.Parse("{}"), this.logger),
               }
               .AsParallel()
               .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
               .FirstOrDefault(authenticationProvider => authenticationProvider != null);
           }
+        }
+      }
+      else if (GetDefaultDockerAuthConfig() is JsonDocument defaultDockerConfigDocument)
+      {
+        using (defaultDockerConfigDocument)
+        {
+          authConfig = new Base64Provider(defaultDockerConfigDocument, this.logger).GetAuthConfig(hostname);
         }
       }
       else
