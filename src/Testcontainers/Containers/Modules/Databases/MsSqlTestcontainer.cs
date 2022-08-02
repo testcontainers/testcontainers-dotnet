@@ -46,18 +46,25 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public override async Task StartAsync(CancellationToken ct = default)
     {
-        await base.StartAsync(ct);
+      await base.StartAsync(ct)
+        .ConfigureAwait(false);
 
-        // create database if needed
-        if (!string.Equals(MsSqlTestcontainerConfiguration.DefaultDatabase, this.Database, StringComparison.Ordinal))
-        {
-          await this.ExecScriptAsync(
-            $@"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '{this.Database}')
-              BEGIN
-                CREATE DATABASE [{this.Database}];
-              END;",
-            ct);
-        }
+      // MSSQL contains the master database by default. It's not necessary to create it.
+      if (MsSqlTestcontainerConfiguration.MasterDatabase.Equals(this.Database, StringComparison.OrdinalIgnoreCase))
+      {
+        return;
+      }
+
+      // Replace this with proper SQL args, soon as we moved to dedicated modules.
+      var createDatabaseScript = $@"
+        IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '{this.Database}')
+          BEGIN
+            CREATE DATABASE [{this.Database}];
+          END;
+      ";
+
+      await this.ExecScriptAsync(createDatabaseScript, ct)
+        .ConfigureAwait(false);
     }
   }
 }

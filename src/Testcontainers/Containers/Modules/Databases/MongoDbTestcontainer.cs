@@ -20,10 +20,8 @@
 
     /// <inheritdoc />
     public override string ConnectionString
-      => $"mongodb://{this.ConnectionStringAuthSegment}{this.Hostname}:{this.Port}";
-
-    internal string ConnectionStringAuthSegment => this.Username == null && this.Password == null
-      ? string.Empty
-      : $"{this.Username}:{this.Password}@";
+      => string.IsNullOrEmpty(this.Username) && string.IsNullOrEmpty(this.Password)
+        ? $"mongodb://{this.Hostname}:{this.Port}"
+        : $"mongodb://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
   }
 }

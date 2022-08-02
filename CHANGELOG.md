@@ -8,6 +8,8 @@
 - 516 Add `ITestcontainersBuilder<TDockerContainer>.WithTmpfsMount` (@chrisbbe)
 - 520 Add MariaDB module (@renemadsen)
 - 528 Do not require the Docker host configuration (`DockerEndpointAuthConfig`) on `TestcontainersSettings` initialization
+- 538 Support optional username and password in MongoDB connection string (@the-avid-engineer)
+- 541 Allow MsSqlTestcontainerConfiguration custom database names (@enginexon)
 
 ### Fixed
 

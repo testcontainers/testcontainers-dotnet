@@ -6,13 +6,16 @@
   using Xunit;
 
   [Collection(nameof(Testcontainers))]
-  public sealed class MongoDbTestcontainerTest : IClassFixture<MongoDbFixture>
+  public sealed class MongoDbTestcontainerTest : IClassFixture<MongoDbFixture>, IClassFixture<MongoDbNoAuthFixture>
   {
     private readonly MongoDbFixture mongoDbFixture;
 
-    public MongoDbTestcontainerTest(MongoDbFixture mongoDbFixture)
+    private readonly MongoDbNoAuthFixture mongoDbNoAuthFixture;
+
+    public MongoDbTestcontainerTest(MongoDbFixture mongoDbFixture, MongoDbNoAuthFixture mongoDbNoAuthFixture)
     {
       this.mongoDbFixture = mongoDbFixture;
+      this.mongoDbNoAuthFixture = mongoDbNoAuthFixture;
     }
 
     [Fact]
@@ -27,6 +30,18 @@
 
       // Then
       Assert.Equal(1.0, result["ok"].AsDouble);
+    }
+
+    [Fact]
+    public void ConnectionStringShouldContainAuthInformation()
+    {
+      Assert.Matches("mongodb:\\/\\/\\w+:\\w+@\\w+:\\d+", this.mongoDbFixture.Container.ConnectionString);
+    }
+
+    [Fact]
+    public void ConnectionStringShouldNotContainAuthInformation()
+    {
+      Assert.Matches("mongodb:\\/\\/\\w+:\\d+", this.mongoDbNoAuthFixture.Container.ConnectionString);
     }
   }
 }

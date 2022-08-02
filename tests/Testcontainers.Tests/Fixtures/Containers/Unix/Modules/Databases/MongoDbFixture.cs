@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class MongoDbFixture : DatabaseFixture<MongoDbTestcontainer, IMongoDatabase>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new MongoDbTestcontainerConfiguration { Username = "mongoadmin", Password = "secret", Database = "admin" }; // https://hub.docker.com/_/mongo
+    private readonly TestcontainerDatabaseConfiguration configuration = new MongoDbTestcontainerConfiguration { Database = "db", Username = "mongo", Password = "mongo" };
 
     public MongoDbFixture()
     {
