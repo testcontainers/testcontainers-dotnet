@@ -21,7 +21,13 @@ namespace DotNet.Testcontainers.Containers
 
     private const ushort RyukPort = 8080;
 
+    private const int ConnectionTimeoutInSeconds = 60;
+
+    private const int RetryTimeoutInSeconds = 2;
+
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
+
+    private static readonly LingerOption DiscardAllPendingData = new LingerOption(true, 0);
 
     private static ResourceReaper defaultInstance;
 
@@ -146,7 +152,7 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, ryukImage);
 
-      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(10) : initTimeout;
+      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
       try
       {
@@ -250,11 +256,11 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
     private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
     {
-      while (!this.maintainConnectionCts.IsCancellationRequested && (!ct.IsCancellationRequested || ryukInitializedTaskSource.Task.IsCompleted))
+      connect_to_ryuk: while (!this.maintainConnectionCts.IsCancellationRequested && !ct.IsCancellationRequested && !ryukInitializedTaskSource.Task.IsCompleted)
       {
         if (!this.TryGetEndpoint(out var host, out var port))
         {
-          await Task.Delay(TimeSpan.FromSeconds(1), default)
+          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
             .ConfigureAwait(false);
 
           continue;
@@ -262,6 +268,8 @@ namespace DotNet.Testcontainers.Containers
 
         using (var tcpClient = new TcpClient())
         {
+          tcpClient.LingerState = DiscardAllPendingData;
+
           try
           {
             await tcpClient.ConnectAsync(host, port)
@@ -301,6 +309,16 @@ namespace DotNet.Testcontainers.Containers
                   var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
                     .ConfigureAwait(false);
 #endif
+
+                  if (numberOfBytes == 0)
+                  {
+                    // Even if there is no listening socket behind the bound port, the TcpClient establishes a connection.
+                    // If we do not receive any data, the socket is not ready yet.
+                    await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), ct)
+                      .ConfigureAwait(false);
+
+                    goto connect_to_ryuk;
+                  }
 
                   var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n');
 
@@ -343,14 +361,14 @@ namespace DotNet.Testcontainers.Containers
           {
             this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(this.SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(1), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
               .ConfigureAwait(false);
           }
           catch (Exception e)
           {
             this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(this.SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(1), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
               .ConfigureAwait(false);
           }
         }
