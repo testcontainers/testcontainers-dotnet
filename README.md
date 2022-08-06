@@ -34,16 +34,18 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithPortBinding` publishes the container port to the host e.g. `-p, --publish 80:80`.
 - `WithBindMount` binds a path of a file or directory into the container e.g. `-v, --volume .:/tmp`.
 - `WithVolumeMount` mounts a managed volume into the container e.g. `--mount type=volume,source=.,destination=/tmp`.
+- `WithTmpfsMount` mounts a temporary volume into the container e.g. `--mount type=tmpfs,destination=/tmp`.
 - `WithNetwork` assigns a network to the container e.g. `--network="bridge"`.
 - `WithNetworkAliases` assigns a network-scoped aliases to the container e.g. `--network-alias alias`
+- `WithAutoRemove` will remove the stopped container automatically like `--rm`.
+- `WithCleanUp` will remove the container automatically after all tests have been run (see [Resource Reaper](#resource-reaper)).
+- `WithPrivileged` sets the `--privileged` flag.
 - `WithDockerEndpoint` sets the Docker API endpoint e.g. `-H tcp://0.0.0.0:2376`.
 - `WithRegistryAuthentication` basic authentication against a private Docker registry.
 - `WithOutputConsumer` redirects `stdout` and `stderr` to capture the container output.
 - `WithWaitStrategy` sets the wait strategy to complete the container start and indicates when it is ready.
+- `WithCreateContainerParametersModifier` allows low level modifications of the Docker container create parameter.
 - `WithStartupCallback` sets the startup callback to invoke after the container start.
-- `WithPrivileged` sets the `--privileged` flag.
-- `WithAutoRemove` will remove the stopped container automatically like `--rm`.
-- `WithCleanUp` will remove the container automatically after all tests have been run (see [Resource Reaper](#resource-reaper)).
 - `WithResourceReaperSessionId` assigns a Resource Reaper session id to the container.
 
 Use the additional builder for image (`ImageFromDockerfileBuilder`), network (`TestcontainersNetworkBuilder`) and volume (`TestcontainersVolumeBuilder`) to set up your individual test environment.

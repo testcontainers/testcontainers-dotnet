@@ -256,7 +256,11 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
     private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
     {
+#pragma warning disable S907
+
       connect_to_ryuk: while (!this.maintainConnectionCts.IsCancellationRequested && !ct.IsCancellationRequested && !ryukInitializedTaskSource.Task.IsCompleted)
+
+#pragma warning restore S907
       {
         if (!this.TryGetEndpoint(out var host, out var port))
         {

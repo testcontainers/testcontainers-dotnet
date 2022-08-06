@@ -310,7 +310,7 @@ namespace DotNet.Testcontainers.Builders
     public TDockerContainer Build()
     {
       _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
-        .NotNull();
+        .DockerEndpointAuthConfigIsSet();
 
       _ = Guard.Argument(this.DockerResourceConfiguration.Image, nameof(ITestcontainersConfiguration.Image))
         .NotNull();

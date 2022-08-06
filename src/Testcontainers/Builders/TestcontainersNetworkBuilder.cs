@@ -44,7 +44,7 @@
     public IDockerNetwork Build()
     {
       _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
-        .NotNull();
+        .DockerEndpointAuthConfigIsSet();
 
       return new NonExistingDockerNetwork(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
