@@ -9,6 +9,7 @@
     <RootNamespace>DotNet.Testcontainers.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="coverlet.msbuild" />
