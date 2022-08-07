@@ -13,20 +13,49 @@ namespace DotNet.Testcontainers.Builders
   {
     public static ITestcontainersBuilder<AzuriteTestcontainer> WithAzurite(this ITestcontainersBuilder<AzuriteTestcontainer> builder, AzuriteTestcontainerConfiguration configuration)
     {
-      return builder
+      builder = builder
         .WithImage(configuration.Image)
         .WithEnvironment(new ReadOnlyDictionary<string, string>(configuration.Environments))
-        .WithPortBinding(configuration.BlobPort, AzuriteTestcontainerConfiguration.DefaultBlobPort)
-        .WithPortBinding(configuration.QueuePort, AzuriteTestcontainerConfiguration.DefaultQueuePort)
-        .WithPortBinding(configuration.TablePort, AzuriteTestcontainerConfiguration.DefaultTablePort)
         .WithOutputConsumer(configuration.OutputConsumer)
         .WithWaitStrategy(configuration.WaitStrategy)
         .ConfigureContainer(container =>
         {
-          container.ContainerBlobPort = AzuriteTestcontainerConfiguration.DefaultBlobPort;
-          container.ContainerQueuePort = AzuriteTestcontainerConfiguration.DefaultQueuePort;
-          container.ContainerTablePort = AzuriteTestcontainerConfiguration.DefaultTablePort;
+          container.ContainerBlobPort = configuration.RunBlobOnly || configuration.RunAllServices ? AzuriteTestcontainerConfiguration.DefaultBlobPort : 0;
+          container.ContainerQueuePort = configuration.RunQueueOnly || configuration.RunAllServices ? AzuriteTestcontainerConfiguration.DefaultQueuePort : 0;
+          container.ContainerTablePort = configuration.RunTableOnly || configuration.RunAllServices ? AzuriteTestcontainerConfiguration.DefaultTablePort : 0;
         });
+
+      if (configuration.RunBlobOnly || configuration.RunAllServices)
+      {
+        builder = builder.WithPortBinding(configuration.BlobPort, AzuriteTestcontainerConfiguration.DefaultBlobPort);
+      }
+
+      if (configuration.RunQueueOnly || configuration.RunAllServices)
+      {
+        builder = builder.WithPortBinding(configuration.QueuePort, AzuriteTestcontainerConfiguration.DefaultQueuePort);
+      }
+
+      if (configuration.RunTableOnly || configuration.RunAllServices)
+      {
+        builder = builder.WithPortBinding(configuration.TablePort, AzuriteTestcontainerConfiguration.DefaultTablePort);
+      }
+
+      if (configuration.RunBlobOnly)
+      {
+        builder = builder.WithCommand("azurite-blob", "--blobHost", AzuriteTestcontainerConfiguration.DefaultBlobEndpoint);
+      }
+
+      if (configuration.RunQueueOnly)
+      {
+        builder = builder.WithCommand("azurite-queue", "--queueHost", AzuriteTestcontainerConfiguration.DefaultQueueEndpoint);
+      }
+
+      if (configuration.RunTableOnly)
+      {
+        builder = builder.WithCommand("azurite-table", "--tableHost", AzuriteTestcontainerConfiguration.DefaultTableEndpoint);
+      }
+
+      return builder;
     }
   }
 }

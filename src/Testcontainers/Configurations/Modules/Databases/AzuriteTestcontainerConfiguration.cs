@@ -8,11 +8,6 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
   public class AzuriteTestcontainerConfiguration : IDisposable
   {
     /// <summary>
-    /// Default Azurite docker image.
-    /// </summary>
-    public const string DefaultAzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.18.0";
-
-    /// <summary>
     /// Default Blob service listening port. Default is 10000.
     /// </summary>
     public const int DefaultBlobPort = 10000;
@@ -26,6 +21,16 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Default Table service listening port. Default 10002.
     /// </summary>
     public const int DefaultTablePort = 10002;
+
+    internal const string DefaultBlobEndpoint = "0.0.0.0";
+    internal const string DefaultQueueEndpoint = "0.0.0.0";
+    internal const string DefaultTableEndpoint = "0.0.0.0";
+
+    private const string DefaultAzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.18.0";
+
+    private bool runBlobOnly;
+    private bool runQueueOnly;
+    private bool runTableOnly;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class with default Azurite image.
@@ -63,6 +68,26 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     public int BlobPort { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether Blob service should run standalone.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [PublicAPI]
+    public bool RunBlobOnly
+    {
+      get => this.runBlobOnly;
+      set
+      {
+        this.runBlobOnly = value;
+        if (value)
+        {
+          this.RunQueueOnly = this.RunTableOnly = false;
+        }
+      }
+    }
+
+    /// <summary>
     /// Gets or sets the host Queue port.
     /// </summary>
     /// <remarks>
@@ -72,6 +97,26 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     public int QueuePort { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether Queue service should run standalone.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [PublicAPI]
+    public bool RunQueueOnly
+    {
+      get => this.runQueueOnly;
+      set
+      {
+        this.runQueueOnly = value;
+        if (value)
+        {
+          this.RunBlobOnly = this.RunTableOnly = false;
+        }
+      }
+    }
+
+    /// <summary>
     /// Gets or sets the host Table port.
     /// </summary>
     /// <remarks>
@@ -79,6 +124,32 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// </remarks>
     [PublicAPI]
     public int TablePort { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Table service should run standalone.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [PublicAPI]
+    public bool RunTableOnly
+    {
+      get => this.runTableOnly;
+      set
+      {
+        this.runTableOnly = value;
+        if (value)
+        {
+          this.RunBlobOnly = this.RunQueueOnly = false;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether all Azurite service will run.
+    /// </summary>
+    [PublicAPI]
+    public bool RunAllServices => !this.RunBlobOnly && !this.RunQueueOnly && !this.RunTableOnly;
 
     /// <summary>
     /// Gets the environment configuration.
@@ -103,10 +174,17 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Uses <see cref="Wait.ForUnixContainer" /> and waits for Azurite ports.
     /// </remarks>
     [PublicAPI]
-    public IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilPortIsAvailable(DefaultBlobPort)
-      .UntilPortIsAvailable(DefaultQueuePort)
-      .UntilPortIsAvailable(DefaultTablePort);
+    public IWaitForContainerOS WaitStrategy
+    {
+      get
+      {
+        var waitStrategy = Wait.ForUnixContainer();
+        waitStrategy = this.RunBlobOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultBlobPort) : waitStrategy;
+        waitStrategy = this.RunQueueOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultQueuePort) : waitStrategy;
+        waitStrategy = this.RunTableOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultTablePort) : waitStrategy;
+        return waitStrategy;
+      }
+    }
 
     /// <inheritdoc />
     public void Dispose()

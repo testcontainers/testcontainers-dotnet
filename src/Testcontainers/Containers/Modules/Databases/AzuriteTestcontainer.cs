@@ -56,8 +56,8 @@ namespace DotNet.Testcontainers.Containers
       $"DefaultEndpointsProtocol=http;" +
       $"AccountName=devstoreaccount1;" +
       $"AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;" +
-      $"BlobEndpoint=http://{this.Hostname}:{this.BlobPort}/devstoreaccount1;" +
-      $"QueueEndpoint=http://{this.Hostname}:{this.QueuePort}/devstoreaccount1;" +
-      $"TableEndpoint=http://{this.Hostname}:{this.TablePort}/devstoreaccount1;";
+      (ContainerBlobPort != 0 ? $"BlobEndpoint=http://{this.Hostname}:{this.BlobPort}/devstoreaccount1;" : string.Empty) +
+      (ContainerQueuePort != 0 ? $"QueueEndpoint=http://{this.Hostname}:{this.QueuePort}/devstoreaccount1;" : string.Empty) +
+      (ContainerTablePort != 0 ? $"TableEndpoint=http://{this.Hostname}:{this.TablePort}/devstoreaccount1;" : string.Empty);
   }
 }
