@@ -10,17 +10,26 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// <summary>
     /// Default Blob service listening port. Default is 10000.
     /// </summary>
+    [PublicAPI]
     public const int DefaultBlobPort = 10000;
 
     /// <summary>
     /// Default Queue service listening port. Default is 10001.
     /// </summary>
+    [PublicAPI]
     public const int DefaultQueuePort = 10001;
 
     /// <summary>
-    /// Default Table service listening port. Default 10002.
+    /// Default Table service listening port. Default is 10002.
     /// </summary>
+    [PublicAPI]
     public const int DefaultTablePort = 10002;
+
+    /// <summary>
+    /// Default Workspace location folder path. Default is /data.
+    /// </summary>
+    [PublicAPI]
+    public const string DefaultLocation = "/data";
 
     internal const string DefaultBlobEndpoint = "0.0.0.0";
     internal const string DefaultQueueEndpoint = "0.0.0.0";
@@ -31,6 +40,7 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     private bool runBlobOnly;
     private bool runQueueOnly;
     private bool runTableOnly;
+    private string location;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class with default Azurite image.
@@ -150,6 +160,25 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// </summary>
     [PublicAPI]
     public bool RunAllServices => !this.RunBlobOnly && !this.RunQueueOnly && !this.RunTableOnly;
+
+    /// <summary>
+    /// Gets or sets workspace location path.
+    /// </summary>
+    /// <remarks>
+    /// Corresponds to the default workspace location of the hosted service.
+    /// </remarks>
+    [PublicAPI]
+    public string Location
+    {
+      get => this.location;
+      set
+      {
+        Guard.Argument(value, nameof(this.Location))
+          .NotNull()
+          .NotEmpty();
+        this.location = value;
+      }
+    }
 
     /// <summary>
     /// Gets the environment configuration.

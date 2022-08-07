@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using DotNet.Testcontainers.Configurations.Modules.Databases;
   using DotNet.Testcontainers.Containers;
@@ -40,22 +41,67 @@ namespace DotNet.Testcontainers.Builders
         builder = builder.WithPortBinding(configuration.TablePort, AzuriteTestcontainerConfiguration.DefaultTablePort);
       }
 
+      if (!string.IsNullOrWhiteSpace(configuration.Location))
+      {
+        builder = builder.WithBindMount(configuration.Location, AzuriteTestcontainerConfiguration.DefaultLocation);
+      }
+
+      builder = builder
+        .WithCommand(GetMainCommand(configuration))
+        .WithCommand(GetServiceEndpointArgs(configuration))
+        .WithCommand(GetWorkspaceLocation());
+
+      return builder;
+    }
+
+    private static string[] GetWorkspaceLocation()
+    {
+      return new[] { "--location", AzuriteTestcontainerConfiguration.DefaultLocation };
+    }
+
+    private static string[] GetServiceEndpointArgs(AzuriteTestcontainerConfiguration configuration)
+    {
+      var args = new List<string>();
+
+      if (configuration.RunBlobOnly || configuration.RunAllServices)
+      {
+        args.Add("--blobHost");
+        args.Add(AzuriteTestcontainerConfiguration.DefaultBlobEndpoint);
+      }
+
+      if (configuration.RunQueueOnly || configuration.RunAllServices)
+      {
+        args.Add("--queueHost");
+        args.Add(AzuriteTestcontainerConfiguration.DefaultQueueEndpoint);
+      }
+
+      if (configuration.RunTableOnly || configuration.RunAllServices)
+      {
+        args.Add("--tableHost");
+        args.Add(AzuriteTestcontainerConfiguration.DefaultTableEndpoint);
+      }
+
+      return args.Count > 0 ? args.ToArray() : null;
+    }
+
+    private static string GetMainCommand(AzuriteTestcontainerConfiguration configuration)
+    {
       if (configuration.RunBlobOnly)
       {
-        builder = builder.WithCommand("azurite-blob", "--blobHost", AzuriteTestcontainerConfiguration.DefaultBlobEndpoint);
+        return "azurite-blob";
       }
 
       if (configuration.RunQueueOnly)
       {
-        builder = builder.WithCommand("azurite-queue", "--queueHost", AzuriteTestcontainerConfiguration.DefaultQueueEndpoint);
+        return "azurite-queue";
       }
 
       if (configuration.RunTableOnly)
       {
-        builder = builder.WithCommand("azurite-table", "--tableHost", AzuriteTestcontainerConfiguration.DefaultTableEndpoint);
+        return "azurite-table";
       }
 
-      return builder;
+      return "azurite";
     }
   }
 }
