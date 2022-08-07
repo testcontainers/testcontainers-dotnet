@@ -7,6 +7,13 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
 
   public class AzuriteTestcontainerConfiguration : IDisposable
   {
+    // TODO: Add support for these options based on request
+    // azurite.cert Path to a PEM or PFX cert file.Required by HTTPS mode.
+    // azurite.key Path to a PEM key file. Required when azurite.cert points to a PEM file.
+    // azurite.pwd PFX cert password. Required when azurite.cert points to a PFX file.
+    // azurite.oauth OAuth authentication level. Candidate level values: basic.
+    // AZURITE_ACCOUNTS environment variable to set account names and keys.
+
     /// <summary>
     /// Default Blob service listening port. Default is 10000.
     /// </summary>
@@ -179,6 +186,40 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
         this.location = value;
       }
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether disable access log in console. By default false.
+    /// </summary>
+    [PublicAPI]
+    public bool Silent { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether loose mode should be enabled.
+    /// Enable loose mode which ignores unsupported headers and parameters.
+    /// By default false.
+    /// </summary>
+    [PublicAPI]
+    public bool LooseMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether skip the request API version check. By default false.
+    /// </summary>
+    [PublicAPI]
+    public bool SkipApiVersionCheck { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether force parsing storage account name from request Uri path, instead of from request Uri host. By default false.
+    /// </summary>
+    [PublicAPI]
+    public bool DisableProductStyleUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether debug log should be enabled.
+    /// Logs are stored in debug.log file in workspace location, by default /data/debug.log.
+    /// By default false.
+    /// </summary>
+    [PublicAPI]
+    public bool Debug { get; set; }
 
     /// <summary>
     /// Gets the environment configuration.

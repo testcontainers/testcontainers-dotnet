@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
+  using System.IO;
   using DotNet.Testcontainers.Configurations.Modules.Databases;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
@@ -49,9 +50,40 @@ namespace DotNet.Testcontainers.Builders
       builder = builder
         .WithCommand(GetMainCommand(configuration))
         .WithCommand(GetServiceEndpointArgs(configuration))
-        .WithCommand(GetWorkspaceLocation());
+        .WithCommand(GetWorkspaceLocation())
+        .WithCommand(GetSilentMode(configuration))
+        .WithCommand(GetLooseMode(configuration))
+        .WithCommand(GetSkipApiVersionCheck(configuration))
+        .WithCommand(GetDisableProductStyleUrl(configuration))
+        .WithCommand(GetDebugLog(configuration));
 
       return builder;
+    }
+
+    private static string[] GetDebugLog(AzuriteTestcontainerConfiguration configuration)
+    {
+      var debugLogFilePath = Path.Combine(AzuriteTestcontainerConfiguration.DefaultLocation, "debug.log");
+      return configuration.DisableProductStyleUrl ? new[] { "--debug", debugLogFilePath } : null;
+    }
+
+    private static string GetDisableProductStyleUrl(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.DisableProductStyleUrl ? "--disableProductStyleUrl" : null;
+    }
+
+    private static string GetSkipApiVersionCheck(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.SkipApiVersionCheck ? "--skipApiVersionCheck" : null;
+    }
+
+    private static string GetLooseMode(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.LooseMode ? "--loose" : null;
+    }
+
+    private static string GetSilentMode(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.Silent ? "--silent" : null;
     }
 
     private static string[] GetWorkspaceLocation()
