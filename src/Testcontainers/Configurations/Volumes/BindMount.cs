@@ -1,3 +1,4 @@
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Configurations
 {
   /// <inheritdoc cref="IMount" />

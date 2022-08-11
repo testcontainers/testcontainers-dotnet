@@ -1,4 +1,5 @@
-﻿namespace DotNet.Testcontainers.Configurations
+﻿// ReSharper disable once CheckNamespace to avoid introducing breaking changes
+namespace DotNet.Testcontainers.Configurations
 {
   /// <inheritdoc cref="IMount" />
   internal readonly struct TmpfsMount : IMount

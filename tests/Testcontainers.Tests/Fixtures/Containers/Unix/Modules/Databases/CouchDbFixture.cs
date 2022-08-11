@@ -1,3 +1,4 @@
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Threading.Tasks;

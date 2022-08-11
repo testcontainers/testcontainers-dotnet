@@ -1,7 +1,9 @@
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.IO;
   using JetBrains.Annotations;
 
@@ -10,6 +12,7 @@ namespace DotNet.Testcontainers.Configurations
   /// Waits until all wait strategies are completed.
   /// </summary>
   [PublicAPI]
+  [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
   public interface IWaitForContainerOS
   {
     /// <summary>

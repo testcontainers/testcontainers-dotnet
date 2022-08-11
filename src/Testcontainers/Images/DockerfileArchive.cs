@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.IO;
   using System.Linq;
   using System.Text.RegularExpressions;
@@ -14,6 +15,7 @@
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
     private static readonly IOperatingSystem OS = new Unix();
 
     private readonly DirectoryInfo dockerfileDirectory;

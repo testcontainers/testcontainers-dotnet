@@ -1,10 +1,13 @@
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.IO;
 
   /// <inheritdoc cref="IWaitForContainerOS" />
+  [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
   internal abstract class WaitForContainerOS : IWaitForContainerOS
   {
     private readonly ICollection<IWaitUntil> waitStrategies = new List<IWaitUntil>();

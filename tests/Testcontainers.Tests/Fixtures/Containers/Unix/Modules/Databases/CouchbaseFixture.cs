@@ -1,11 +1,15 @@
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
+// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System.Diagnostics.CodeAnalysis;
   using System.Threading.Tasks;
   using Couchbase;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
+  [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
   public sealed class CouchbaseFixture : DatabaseFixture<CouchbaseTestcontainer, ICluster>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new CouchbaseTestcontainerConfiguration

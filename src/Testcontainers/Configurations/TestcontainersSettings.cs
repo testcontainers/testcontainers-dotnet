@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using System.Net;
   using System.Net.Sockets;
@@ -69,16 +70,19 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
+    // ReSharper disable once RedundantNameQualifier
     [PublicAPI]
-    [NotNull]
+    [JetBrains.Annotations.NotNull]
     public static ILogger Logger { get; set; }
       = NullLogger.Instance;
 
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
+    // ReSharper disable once RedundantNameQualifier
     [PublicAPI]
-    [NotNull]
+    [JetBrains.Annotations.NotNull]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
     public static IOperatingSystem OS { get; set; }
       = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
