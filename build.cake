@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.7.1
+#tool nuget:?package=dotnet-sonarscanner&version=5.7.2
 
 #addin nuget:?package=Cake.Sonar&version=1.1.29
 
