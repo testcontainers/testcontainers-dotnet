@@ -87,5 +87,18 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.NotEmpty(imageFromDockerfile2);
       Assert.Equal(imageFromDockerfile1, imageFromDockerfile2);
     }
+
+    [Fact]
+    public void TryDockerDirectory()
+    {
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithName("alpine:custom")
+        .WithDockerfileDirectory("Assets")
+        .WithDeleteIfExists(true)
+        .Build();
+
+      var commonDir = CommonDirectoryPath.ProjectRoot.DirectoryPath;
+
+    }
   }
 }
