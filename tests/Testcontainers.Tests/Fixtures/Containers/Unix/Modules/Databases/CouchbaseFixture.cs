@@ -1,5 +1,3 @@
-// ReSharper disable once CheckNamespace to avoid introducing breaking changes
-// ReSharper disable once CheckNamespace to avoid introducing breaking changes
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Diagnostics.CodeAnalysis;

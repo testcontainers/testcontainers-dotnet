@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace to avoid introducing breaking changes
-namespace DotNet.Testcontainers.Configurations
+﻿namespace DotNet.Testcontainers.Configurations
 {
   using JetBrains.Annotations;
 

@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace to avoid introducing breaking changes
-namespace DotNet.Testcontainers.Tests.Unit
+﻿namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.IO;

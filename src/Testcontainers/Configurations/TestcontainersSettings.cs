@@ -70,7 +70,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
-    // ReSharper disable once RedundantNameQualifier
     [PublicAPI]
     [JetBrains.Annotations.NotNull]
     public static ILogger Logger { get; set; }
@@ -79,7 +78,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
-    // ReSharper disable once RedundantNameQualifier
     [PublicAPI]
     [JetBrains.Annotations.NotNull]
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Avoid introducing breaking changes.")]
