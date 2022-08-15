@@ -10,6 +10,8 @@ Testcontainers is a library to support tests with throwaway instances of Docker 
 
 Choose from existing pre-configured configurations and start containers within a second, to support and run your tests. Or create your own containers with Dockerfiles and run your tests immediately afterward.
 
+Get in touch with the Testcontainers team and others, and join our [Slack workspace][slack-workspace].
+
 ## Supported operating systems
 
 Testcontainers supports Windows, Linux, and macOS as host systems. Linux Docker containers are supported on all three operating systems.
@@ -180,5 +182,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [1]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
 [2]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
 [3]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
+[slack-workspace]: https://slack.testcontainers.org/
 [moby-ryuk]: https://github.com/testcontainers/moby-ryuk
 [xunit]: https://xunit.net
