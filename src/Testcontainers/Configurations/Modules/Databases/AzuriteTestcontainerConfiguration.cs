@@ -1,11 +1,10 @@
-namespace DotNet.Testcontainers.Configurations.Modules.Databases
+namespace DotNet.Testcontainers.Configurations
 {
-  using System;
-  using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
-  public class AzuriteTestcontainerConfiguration : IDisposable
+  [PublicAPI]
+  public class AzuriteTestcontainerConfiguration
   {
     // TODO: Add support for these options based on request
     // azurite.cert Path to a PEM or PFX cert file.Required by HTTPS mode.
@@ -13,24 +12,6 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     // azurite.pwd PFX cert password. Required when azurite.cert points to a PFX file.
     // azurite.oauth OAuth authentication level. Candidate level values: basic.
     // AZURITE_ACCOUNTS environment variable to set account names and keys.
-
-    /// <summary>
-    /// Default Blob service listening port. Default is 10000.
-    /// </summary>
-    [PublicAPI]
-    public const int DefaultBlobPort = 10000;
-
-    /// <summary>
-    /// Default Queue service listening port. Default is 10001.
-    /// </summary>
-    [PublicAPI]
-    public const int DefaultQueuePort = 10001;
-
-    /// <summary>
-    /// Default Table service listening port. Default is 10002.
-    /// </summary>
-    [PublicAPI]
-    public const int DefaultTablePort = 10002;
 
     /// <summary>
     /// Default Workspace location folder path. Default is /data.
@@ -42,12 +23,14 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     internal const string DefaultQueueEndpoint = "0.0.0.0";
     internal const string DefaultTableEndpoint = "0.0.0.0";
 
+    private const int DefaultBlobPort = 10000;
+    private const int DefaultQueuePort = 10001;
+    private const int DefaultTablePort = 10002;
     private const string DefaultAzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.18.0";
 
-    private bool runBlobOnly;
-    private bool runQueueOnly;
-    private bool runTableOnly;
-    private string location;
+    private bool blobServiceOnlyEnabled;
+    private bool queueServiceOnlyEnabled;
+    private bool tableServiceOnlyEnabled;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class with default Azurite image.
@@ -62,11 +45,9 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class.
     /// </summary>
     /// <param name="image">The Docker image.</param>
-    protected AzuriteTestcontainerConfiguration(string image)
+    public AzuriteTestcontainerConfiguration(string image)
     {
       this.Image = image;
-      this.Environments = new Dictionary<string, string>();
-      this.OutputConsumer = Consume.DoNotConsumeStdoutAndStderr();
     }
 
     /// <summary>
@@ -79,10 +60,16 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Gets or sets the host Blob port.
     /// </summary>
     /// <remarks>
-    /// Corresponds to the default port of the hosted service.
+    /// Corresponds to the container blob port of the hosted service.
     /// </remarks>
     [PublicAPI]
     public int BlobPort { get; set; }
+
+    /// <summary>
+    /// Gets or sets the container Blob port.
+    /// </summary>
+    [PublicAPI]
+    public int BlobContainerPort { get; set; } = DefaultBlobPort;
 
     /// <summary>
     /// Gets or sets a value indicating whether Blob service should run standalone.
@@ -91,15 +78,15 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Default value is false.
     /// </remarks>
     [PublicAPI]
-    public bool RunBlobOnly
+    public bool BlobServiceOnlyEnabled
     {
-      get => this.runBlobOnly;
+      get => this.blobServiceOnlyEnabled;
       set
       {
-        this.runBlobOnly = value;
+        this.blobServiceOnlyEnabled = value;
         if (value)
         {
-          this.RunQueueOnly = this.RunTableOnly = false;
+          this.QueueServiceOnlyEnabled = this.TableServiceOnlyEnabled = false;
         }
       }
     }
@@ -114,21 +101,27 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     public int QueuePort { get; set; }
 
     /// <summary>
+    /// Gets or sets the container Queue port.
+    /// </summary>
+    [PublicAPI]
+    public int QueueContainerPort { get; set; } = DefaultQueuePort;
+
+    /// <summary>
     /// Gets or sets a value indicating whether Queue service should run standalone.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [PublicAPI]
-    public bool RunQueueOnly
+    public bool QueueServiceOnlyEnabled
     {
-      get => this.runQueueOnly;
+      get => this.queueServiceOnlyEnabled;
       set
       {
-        this.runQueueOnly = value;
+        this.queueServiceOnlyEnabled = value;
         if (value)
         {
-          this.RunBlobOnly = this.RunTableOnly = false;
+          this.BlobServiceOnlyEnabled = this.TableServiceOnlyEnabled = false;
         }
       }
     }
@@ -143,21 +136,27 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     public int TablePort { get; set; }
 
     /// <summary>
+    /// Gets or sets the container Table port.
+    /// </summary>
+    [PublicAPI]
+    public int TableContainerPort { get; set; } = DefaultTablePort;
+
+    /// <summary>
     /// Gets or sets a value indicating whether Table service should run standalone.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [PublicAPI]
-    public bool RunTableOnly
+    public bool TableServiceOnlyEnabled
     {
-      get => this.runTableOnly;
+      get => this.tableServiceOnlyEnabled;
       set
       {
-        this.runTableOnly = value;
+        this.tableServiceOnlyEnabled = value;
         if (value)
         {
-          this.RunBlobOnly = this.RunQueueOnly = false;
+          this.BlobServiceOnlyEnabled = this.QueueServiceOnlyEnabled = false;
         }
       }
     }
@@ -166,7 +165,7 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Gets a value indicating whether all Azurite service will run.
     /// </summary>
     [PublicAPI]
-    public bool RunAllServices => !this.RunBlobOnly && !this.RunQueueOnly && !this.RunTableOnly;
+    public bool AllServicesEnabled => !this.BlobServiceOnlyEnabled && !this.QueueServiceOnlyEnabled && !this.TableServiceOnlyEnabled;
 
     /// <summary>
     /// Gets or sets workspace location path.
@@ -175,23 +174,14 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// Corresponds to the default workspace location of the hosted service.
     /// </remarks>
     [PublicAPI]
-    public string Location
-    {
-      get => this.location;
-      set
-      {
-        Guard.Argument(value, nameof(this.Location))
-          .NotNull()
-          .NotEmpty();
-        this.location = value;
-      }
-    }
+    [CanBeNull]
+    public string Location { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether disable access log in console. By default false.
     /// </summary>
     [PublicAPI]
-    public bool Silent { get; set; }
+    public bool SilentModeEnabled { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether loose mode should be enabled.
@@ -199,19 +189,19 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// By default false.
     /// </summary>
     [PublicAPI]
-    public bool LooseMode { get; set; }
+    public bool LooseModeEnabled { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether skip the request API version check. By default false.
     /// </summary>
     [PublicAPI]
-    public bool SkipApiVersionCheck { get; set; }
+    public bool SkipApiVersionCheckEnabled { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether force parsing storage account name from request Uri path, instead of from request Uri host. By default false.
     /// </summary>
     [PublicAPI]
-    public bool DisableProductStyleUrl { get; set; }
+    public bool ProductStyleUrlDisabled { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether debug log should be enabled.
@@ -219,23 +209,7 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
     /// By default false.
     /// </summary>
     [PublicAPI]
-    public bool Debug { get; set; }
-
-    /// <summary>
-    /// Gets the environment configuration.
-    /// </summary>
-    [PublicAPI]
-    public IDictionary<string, string> Environments { get; }
-
-    /// <summary>
-    /// Gets or sets the output consumer.
-    /// </summary>
-    /// <remarks>
-    /// Uses <see cref="Consume.DoNotConsumeStdoutAndStderr" /> as default value.
-    /// </remarks>
-    [PublicAPI]
-    [CanBeNull]
-    public IOutputConsumer OutputConsumer { get; set; }
+    public bool DebugEnabled { get; set; }
 
     /// <summary>
     /// Gets the wait strategy.
@@ -249,30 +223,10 @@ namespace DotNet.Testcontainers.Configurations.Modules.Databases
       get
       {
         var waitStrategy = Wait.ForUnixContainer();
-        waitStrategy = this.RunBlobOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultBlobPort) : waitStrategy;
-        waitStrategy = this.RunQueueOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultQueuePort) : waitStrategy;
-        waitStrategy = this.RunTableOnly || this.RunAllServices ? waitStrategy.UntilPortIsAvailable(DefaultTablePort) : waitStrategy;
+        waitStrategy = this.BlobServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.BlobContainerPort) : waitStrategy;
+        waitStrategy = this.QueueServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.QueueContainerPort) : waitStrategy;
+        waitStrategy = this.TableServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.TableContainerPort) : waitStrategy;
         return waitStrategy;
-      }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-      this.Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Releases all resources used by the <see cref="HostedServiceConfiguration" />.
-    /// </summary>
-    /// <param name="disposing">True if managed resources should be disposed, otherwise false..</param>
-    [PublicAPI]
-    protected virtual void Dispose(bool disposing)
-    {
-      if (disposing)
-      {
-        this.OutputConsumer?.Dispose();
       }
     }
   }
