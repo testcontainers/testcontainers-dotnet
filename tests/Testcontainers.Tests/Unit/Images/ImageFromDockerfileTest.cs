@@ -97,8 +97,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithDeleteIfExists(true)
         .Build();
 
-      var commonDir = CommonDirectoryPath.ProjectRoot.DirectoryPath;
-
+      var projectRoot = CommonDirectoryPath.ProjectRoot.DirectoryPath;
+      var solutionRoot = CommonDirectoryPath.SolutionRoot.DirectoryPath;
     }
   }
 }
