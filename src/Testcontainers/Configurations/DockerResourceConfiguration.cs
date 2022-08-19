@@ -5,7 +5,7 @@
   using DotNet.Testcontainers.Containers;
 
   /// <inheritdoc cref="IDockerResourceConfiguration" />
-  public class DockerResourceConfiguration : IDockerResourceConfiguration
+  internal class DockerResourceConfiguration : IDockerResourceConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerResourceConfiguration" /> class.

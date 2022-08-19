@@ -111,13 +111,13 @@
           authConfig = authConfigProvider.GetAuthConfig(hostname);
         }
 
-        if (authConfig == null)
+        if (authConfig != null)
         {
-          this.logger.DockerRegistryCredentialNotFound(hostname);
-          return default(DockerRegistryAuthenticationConfiguration);
+          return authConfig;
         }
 
-        return authConfig;
+        this.logger.DockerRegistryCredentialNotFound(hostname);
+        return default(DockerRegistryAuthenticationConfiguration);
       }
     }
   }
