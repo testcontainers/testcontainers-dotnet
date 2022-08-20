@@ -1,41 +1,26 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
   [PublicAPI]
   public class AzuriteTestcontainerConfiguration
   {
-    // TODO: Add support for these options based on request
-    // azurite.cert Path to a PEM or PFX cert file.Required by HTTPS mode.
-    // azurite.key Path to a PEM key file. Required when azurite.cert points to a PEM file.
-    // azurite.pwd PFX cert password. Required when azurite.cert points to a PFX file.
-    // azurite.oauth OAuth authentication level. Candidate level values: basic.
-    // AZURITE_ACCOUNTS environment variable to set account names and keys.
-
     /// <summary>
     /// Default Workspace location folder path. Default is /data.
     /// </summary>
     [PublicAPI]
     public const string DefaultLocation = "/data";
 
-    internal const string DefaultBlobEndpoint = "0.0.0.0";
-    internal const string DefaultQueueEndpoint = "0.0.0.0";
-    internal const string DefaultTableEndpoint = "0.0.0.0";
-
     private const int DefaultBlobPort = 10000;
     private const int DefaultQueuePort = 10001;
     private const int DefaultTablePort = 10002;
     private const string DefaultAzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.18.0";
 
-    private bool blobServiceOnlyEnabled;
-    private bool queueServiceOnlyEnabled;
-    private bool tableServiceOnlyEnabled;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class with default Azurite image.
     /// </summary>
-    /// <param name="image">The Docker image.</param>
     public AzuriteTestcontainerConfiguration()
       : this(DefaultAzuriteImage)
     {
@@ -48,6 +33,16 @@ namespace DotNet.Testcontainers.Configurations
     public AzuriteTestcontainerConfiguration(string image)
     {
       this.Image = image;
+    }
+
+    [Flags]
+    internal enum AzuriteServices
+    {
+      None = 0,
+      Blob = 1,
+      Queue = 2,
+      Table = 4,
+      All = 7,
     }
 
     /// <summary>
@@ -80,15 +75,8 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     public bool BlobServiceOnlyEnabled
     {
-      get => this.blobServiceOnlyEnabled;
-      set
-      {
-        this.blobServiceOnlyEnabled = value;
-        if (value)
-        {
-          this.QueueServiceOnlyEnabled = this.TableServiceOnlyEnabled = false;
-        }
-      }
+      get { return AzuriteServices.Blob.Equals(this.EnabledServices); }
+      set { this.EnabledServices = value ? AzuriteServices.Blob : AzuriteServices.All; }
     }
 
     /// <summary>
@@ -115,15 +103,8 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     public bool QueueServiceOnlyEnabled
     {
-      get => this.queueServiceOnlyEnabled;
-      set
-      {
-        this.queueServiceOnlyEnabled = value;
-        if (value)
-        {
-          this.BlobServiceOnlyEnabled = this.TableServiceOnlyEnabled = false;
-        }
-      }
+      get { return AzuriteServices.Queue.Equals(this.EnabledServices); }
+      set { this.EnabledServices = value ? AzuriteServices.Queue : AzuriteServices.All; }
     }
 
     /// <summary>
@@ -150,22 +131,21 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     public bool TableServiceOnlyEnabled
     {
-      get => this.tableServiceOnlyEnabled;
-      set
-      {
-        this.tableServiceOnlyEnabled = value;
-        if (value)
-        {
-          this.BlobServiceOnlyEnabled = this.QueueServiceOnlyEnabled = false;
-        }
-      }
+      get { return AzuriteServices.Table.Equals(this.EnabledServices); }
+      set { this.EnabledServices = value ? AzuriteServices.Table : AzuriteServices.All; }
     }
 
     /// <summary>
     /// Gets a value indicating whether all Azurite service will run.
     /// </summary>
     [PublicAPI]
-    public bool AllServicesEnabled => !this.BlobServiceOnlyEnabled && !this.QueueServiceOnlyEnabled && !this.TableServiceOnlyEnabled;
+    public bool AllServicesEnabled
+    {
+      get
+      {
+        return this.EnabledServices.HasFlag(AzuriteServices.All);
+      }
+    }
 
     /// <summary>
     /// Gets or sets workspace location path.
@@ -223,11 +203,13 @@ namespace DotNet.Testcontainers.Configurations
       get
       {
         var waitStrategy = Wait.ForUnixContainer();
-        waitStrategy = this.BlobServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.BlobContainerPort) : waitStrategy;
-        waitStrategy = this.QueueServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.QueueContainerPort) : waitStrategy;
-        waitStrategy = this.TableServiceOnlyEnabled || this.AllServicesEnabled ? waitStrategy.UntilPortIsAvailable(this.TableContainerPort) : waitStrategy;
+        waitStrategy = this.EnabledServices.HasFlag(AzuriteServices.Blob) ? waitStrategy.UntilPortIsAvailable(this.BlobContainerPort) : waitStrategy;
+        waitStrategy = this.EnabledServices.HasFlag(AzuriteServices.Queue) ? waitStrategy.UntilPortIsAvailable(this.QueueContainerPort) : waitStrategy;
+        waitStrategy = this.EnabledServices.HasFlag(AzuriteServices.Table) ? waitStrategy.UntilPortIsAvailable(this.TableContainerPort) : waitStrategy;
         return waitStrategy;
       }
     }
+
+    internal AzuriteServices EnabledServices { get; private set; } = AzuriteServices.All;
   }
 }

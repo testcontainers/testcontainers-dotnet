@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -52,12 +53,39 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the Storage connection string.
     /// </summary>
     [PublicAPI]
-    public string ConnectionString =>
-      $"DefaultEndpointsProtocol=http;" +
-      $"AccountName=devstoreaccount1;" +
-      $"AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;" +
-      (ContainerBlobPort != 0 ? $"BlobEndpoint=http://{this.Hostname}:{this.BlobPort}/devstoreaccount1;" : string.Empty) +
-      (ContainerQueuePort != 0 ? $"QueueEndpoint=http://{this.Hostname}:{this.QueuePort}/devstoreaccount1;" : string.Empty) +
-      (ContainerTablePort != 0 ? $"TableEndpoint=http://{this.Hostname}:{this.TablePort}/devstoreaccount1;" : string.Empty);
+    public string ConnectionString
+    {
+      get
+      {
+        var connectionStringParts = new List<string>()
+        {
+          "DefaultEndpointsProtocol=http",
+          "AccountName=devstoreaccount1",
+          "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+        };
+
+        if (this.ContainerBlobPort != 0)
+        {
+          connectionStringParts.Add(this.GetServiceEndpoint("Blob", this.BlobPort));
+        }
+
+        if (this.ContainerQueuePort != 0)
+        {
+          connectionStringParts.Add(this.GetServiceEndpoint("Queue", this.QueuePort));
+        }
+
+        if (this.ContainerTablePort != 0)
+        {
+          connectionStringParts.Add(this.GetServiceEndpoint("Table", this.TablePort));
+        }
+
+        return string.Join(";", connectionStringParts);
+      }
+    }
+
+    private string GetServiceEndpoint(string service, int port)
+    {
+      return $"{service}Endpoint=http://{this.Hostname}:{port}/devstoreaccount1";
+    }
   }
 }

@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Builders
 {
   using System.Collections.Generic;
+  using System.Globalization;
   using System.IO;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -14,39 +15,48 @@ namespace DotNet.Testcontainers.Builders
   {
     public static ITestcontainersBuilder<AzuriteTestcontainer> WithAzurite(this ITestcontainersBuilder<AzuriteTestcontainer> builder, AzuriteTestcontainerConfiguration configuration)
     {
+      var blobServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Blob);
+      var queueServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Queue);
+      var tableServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Table);
+
       builder = builder
         .WithImage(configuration.Image)
         .WithWaitStrategy(configuration.WaitStrategy)
         .ConfigureContainer(container =>
         {
-          container.ContainerBlobPort = configuration.BlobServiceOnlyEnabled || configuration.AllServicesEnabled ? configuration.BlobContainerPort : 0;
-          container.ContainerQueuePort = configuration.QueueServiceOnlyEnabled || configuration.AllServicesEnabled ? configuration.QueueContainerPort : 0;
-          container.ContainerTablePort = configuration.TableServiceOnlyEnabled || configuration.AllServicesEnabled ? configuration.TableContainerPort : 0;
+          container.ContainerBlobPort = blobServiceEnabled ? configuration.BlobContainerPort : 0;
+          container.ContainerQueuePort = queueServiceEnabled ? configuration.QueueContainerPort : 0;
+          container.ContainerTablePort = tableServiceEnabled ? configuration.TableContainerPort : 0;
         });
 
-      if (configuration.BlobServiceOnlyEnabled || configuration.AllServicesEnabled)
+      if (blobServiceEnabled)
       {
         builder = builder
           .WithExposedPort(configuration.BlobContainerPort)
           .WithPortBinding(configuration.BlobPort, configuration.BlobContainerPort);
       }
 
-      if (configuration.QueueServiceOnlyEnabled || configuration.AllServicesEnabled)
+      if (queueServiceEnabled)
       {
         builder = builder
           .WithExposedPort(configuration.QueueContainerPort)
           .WithPortBinding(configuration.QueuePort, configuration.QueueContainerPort);
       }
 
-      if (configuration.TableServiceOnlyEnabled || configuration.AllServicesEnabled)
+      if (tableServiceEnabled)
       {
         builder = builder
           .WithExposedPort(configuration.TableContainerPort)
           .WithPortBinding(configuration.TablePort, configuration.TableContainerPort);
       }
 
-      if (!string.IsNullOrWhiteSpace(configuration.Location))
+      if (configuration.Location != null)
       {
+        if (!Directory.Exists(configuration.Location))
+        {
+          throw new DirectoryNotFoundException($"Directory not found '{configuration.Location}'.");
+        }
+
         builder = builder.WithBindMount(configuration.Location, AzuriteTestcontainerConfiguration.DefaultLocation);
       }
 
@@ -94,30 +104,32 @@ namespace DotNet.Testcontainers.Builders
 
     private static string[] GetServiceEndpointArgs(AzuriteTestcontainerConfiguration configuration)
     {
+      const string defaultRemoteEndpoint = "0.0.0.0";
+
       var args = new List<string>();
 
       if (configuration.BlobServiceOnlyEnabled || configuration.AllServicesEnabled)
       {
         args.Add("--blobHost");
-        args.Add(AzuriteTestcontainerConfiguration.DefaultBlobEndpoint);
+        args.Add(defaultRemoteEndpoint);
         args.Add("--blobPort");
-        args.Add(configuration.BlobContainerPort.ToString());
+        args.Add(configuration.BlobContainerPort.ToString(CultureInfo.InvariantCulture));
       }
 
       if (configuration.QueueServiceOnlyEnabled || configuration.AllServicesEnabled)
       {
         args.Add("--queueHost");
-        args.Add(AzuriteTestcontainerConfiguration.DefaultQueueEndpoint);
+        args.Add(defaultRemoteEndpoint);
         args.Add("--queuePort");
-        args.Add(configuration.QueueContainerPort.ToString());
+        args.Add(configuration.QueueContainerPort.ToString(CultureInfo.InvariantCulture));
       }
 
       if (configuration.TableServiceOnlyEnabled || configuration.AllServicesEnabled)
       {
         args.Add("--tableHost");
-        args.Add(AzuriteTestcontainerConfiguration.DefaultTableEndpoint);
+        args.Add(defaultRemoteEndpoint);
         args.Add("--tablePort");
-        args.Add(configuration.TableContainerPort.ToString());
+        args.Add(configuration.TableContainerPort.ToString(CultureInfo.InvariantCulture));
       }
 
       return args.ToArray();
