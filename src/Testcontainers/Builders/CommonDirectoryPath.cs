@@ -1,15 +1,14 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using System;
   using System.IO;
-  using System.Linq;
   using System.Text.RegularExpressions;
 
   public readonly struct CommonDirectoryPath
   {
-    public static readonly CommonDirectoryPath SolutionRoot = new CommonDirectoryPath(GetDirectoryPathWithFileExtension(".csproj"));
-
-    public static readonly CommonDirectoryPath ProjectRoot = new CommonDirectoryPath(GetDirectoryPathWithFileExtension(".sln"));
+    /// <summary>
+    /// Sets the DirectoryPath to the parent directory path of the bin directory.
+    /// </summary>
+    public static readonly CommonDirectoryPath BuildRoot = new CommonDirectoryPath(GetParentBinPath());
 
     private CommonDirectoryPath(string directoryPath)
     {
@@ -17,24 +16,6 @@
     }
 
     public string DirectoryPath { get; }
-
-    public static string GetDirectoryPathWithFileExtension(string fileExtension)
-    {
-      var currentDirPath = GetParentBinPath();
-      while (currentDirPath != null)
-      {
-        var fileInCurrentDir = Directory.GetFiles(currentDirPath);
-        var filePath = fileInCurrentDir.SingleOrDefault(f => f.EndsWith(fileExtension, StringComparison.InvariantCultureIgnoreCase));
-        if (filePath != null)
-        {
-          return currentDirPath;
-        }
-
-        currentDirPath = Directory.GetParent(currentDirPath)?.FullName;
-      }
-
-      throw new FileNotFoundException("Cannot find solution file path");
-    }
 
     private static string GetParentBinPath()
     {

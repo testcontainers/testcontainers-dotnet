@@ -60,6 +60,14 @@ namespace DotNet.Testcontainers.Builders
     IImageFromDockerfileBuilder WithBuildArgument(string name, string value);
 
     /// <summary>
+    /// Sets the directory path to the project root. This is the directory that contains the .csproj file.
+    /// </summary>
+    /// <param name="commonDirectoryPath">Pass an instance of common directory path.</param>
+    /// <param name="dockerfileDirectory">Pass in the dockerfile directory name.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    IImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
+
+    /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.
     /// </summary>
     /// <returns>FullName of the created image.</returns>

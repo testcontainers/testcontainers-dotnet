@@ -89,16 +89,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void TryDockerDirectory()
+    public async Task BuildDockerFileImageUsingCommmonDirectoryPathBuildRoot()
     {
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName("alpine:custom")
-        .WithDockerfileDirectory("Assets")
-        .WithDeleteIfExists(true)
-        .Build();
+        .WithDockerfileDirectory(CommonDirectoryPath.BuildRoot, "Assets");
 
-      var projectRoot = CommonDirectoryPath.ProjectRoot.DirectoryPath;
-      var solutionRoot = CommonDirectoryPath.SolutionRoot.DirectoryPath;
+      var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build();
+
+      Assert.NotEmpty(imageFromDockerfile1);
+
+      await imageFromDockerfileBuilder.Build();
     }
   }
 }
