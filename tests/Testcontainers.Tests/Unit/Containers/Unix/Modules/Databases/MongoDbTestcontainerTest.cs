@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
@@ -52,6 +52,29 @@
     public void ConnectionStringShouldNotContainAuthInformation()
     {
       Assert.Matches("mongodb:\\/\\/\\w+:\\d+", this.mongoDbNoAuthFixture.Container.ConnectionString);
+    }
+
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      const string script = @"
+        db = new Mongo().getDB(""myDB"");
+
+        db.createCollection('myCollection', { capped: false });
+
+        db.myCollection.insertOne({ _id: 1, name: ""MyName"" });
+
+        print(db.myCollection.find( {} ));
+      ";
+
+      // When
+      var result = await this.mongoDbNoAuthFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains("MyName", result.Stdout);
     }
   }
 }
