@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using JetBrains.Annotations;
 
   internal static class WaitStrategy
   {
@@ -15,6 +16,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="ct">Propagates notification that operations should be canceled.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
+    [PublicAPI]
     public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
     {
       var waitTask = Task.Run(
@@ -48,6 +50,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="ct">Propagates notification that operations should be canceled.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
+    [PublicAPI]
     public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
     {
       var waitTask = Task.Run(

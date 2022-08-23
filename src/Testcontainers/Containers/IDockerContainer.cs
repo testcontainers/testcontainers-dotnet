@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Containers
   /// <summary>
   /// This class represents a Docker container.
   /// </summary>
+  [PublicAPI]
   public interface IDockerContainer : IRunningDockerContainer, IAsyncDisposable
   {
     /// <summary>
@@ -17,6 +18,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the Docker container exit code.</returns>
+    [PublicAPI]
     Task<long> GetExitCode(CancellationToken ct = default);
 
     /// <summary>
@@ -30,6 +32,7 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
+    [PublicAPI]
     Task StartAsync(CancellationToken ct = default);
 
     /// <summary>
@@ -39,12 +42,14 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A task that represents the asynchronous stop operation of a Testcontainer.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
+    [PublicAPI]
     Task StopAsync(CancellationToken ct = default);
   }
 
   /// <summary>
   /// This class represents a running Docker container.
   /// </summary>
+  [PublicAPI]
   public interface IRunningDockerContainer
   {
     /// <summary>
@@ -54,6 +59,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container id if present or an empty string instead.
     /// </value>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     [NotNull]
     string Id { get; }
 
@@ -64,6 +70,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container name if present or an empty string instead.
     /// </value>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     [NotNull]
     string Name { get; }
 
@@ -74,6 +81,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container ip address if present or an empty string instead.
     /// </value>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     [NotNull]
     string IpAddress { get; }
 
@@ -84,6 +92,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container mac address if present or an empty string instead.
     /// </value>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     [NotNull]
     string MacAddress { get; }
 
@@ -94,6 +103,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container hostname if present or an empty string instead.
     /// </value>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     [NotNull]
     string Hostname { get; }
 
@@ -103,6 +113,7 @@ namespace DotNet.Testcontainers.Containers
     /// <value>
     /// Returns the Docker image.
     /// </value>
+    [PublicAPI]
     [NotNull]
     IDockerImage Image { get; }
 
@@ -112,6 +123,7 @@ namespace DotNet.Testcontainers.Containers
     /// <value>
     /// Returns the Docker container state.
     /// </value>
+    [PublicAPI]
     TestcontainersState State { get; }
 
     /// <summary>
@@ -120,6 +132,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="privatePort">Private container port.</param>
     /// <returns>Returns the public host port associated with the private container port.</returns>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     ushort GetMappedPublicPort(int privatePort);
 
     /// <summary>
@@ -128,6 +141,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="privatePort">Private container port.</param>
     /// <returns>Returns the public host port associated with the private container port.</returns>
     /// <exception cref="InvalidOperationException">If container was not created.</exception>
+    [PublicAPI]
     ushort GetMappedPublicPort(string privatePort);
 
     /// <summary>
@@ -148,6 +162,7 @@ namespace DotNet.Testcontainers.Containers
     ///   <li>644 octal 🠒 110_100_100 binary 🠒 420 decimal</li>
     /// </ul>
     /// </remarks>
+    [PublicAPI]
     Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
 
     /// <summary>
@@ -156,6 +171,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="filePath">Path to the file in the container.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the file has been read.</returns>
+    [PublicAPI]
     Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
 
     /// <summary>
@@ -164,6 +180,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="command">Shell command.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
+    [PublicAPI]
     Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }

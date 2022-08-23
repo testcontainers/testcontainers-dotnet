@@ -57,7 +57,7 @@
         this.Add(new object[] { null, null, null });
         this.Add(new object[] { null, new Dictionary<string, string> { { "A", "A" } }, new Dictionary<string, string> { { "A", "A" } } });
         this.Add(new object[] { new Dictionary<string, string> { { "B", "B" } }, null, new Dictionary<string, string> { { "B", "B" } } });
-        this.Add(new object[] { new Dictionary<string, string> { ["A"] = "new" }, new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }, new Dictionary<string, string> { ["A"] = "new", ["B"] = "B" }, });
+        this.Add(new object[] { new Dictionary<string, string> { ["A"] = "new" }, new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }, new Dictionary<string, string> { ["A"] = "new", ["B"] = "B" } });
       }
     }
   }

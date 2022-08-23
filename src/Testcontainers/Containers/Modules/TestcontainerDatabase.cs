@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Containers
   /// <summary>
   /// This class represents an extended configured Testcontainer for databases.
   /// </summary>
+  [PublicAPI]
   public abstract class TestcontainerDatabase : HostedServiceContainer, IDatabaseScript
   {
     /// <summary>
@@ -39,6 +40,7 @@ namespace DotNet.Testcontainers.Containers
     /// Creates a path to a temporary script file.
     /// </summary>
     /// <returns>A path to a temporary script file.</returns>
+    [PublicAPI]
     public virtual string GetTempScriptFile()
     {
       return Path.Combine("/tmp/", Path.GetRandomFileName());

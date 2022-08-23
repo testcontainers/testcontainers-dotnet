@@ -18,6 +18,16 @@
       this.mongoDbNoAuthFixture = mongoDbNoAuthFixture;
     }
 
+    private MongoDbTestcontainerTest(MongoDbFixture mongoDbFixture)
+    {
+      _ = mongoDbFixture;
+    }
+
+    private MongoDbTestcontainerTest(MongoDbNoAuthFixture mongoDbNoAuthFixture)
+    {
+      _ = mongoDbNoAuthFixture;
+    }
+
     [Fact]
     public async Task ConnectionEstablished()
     {
