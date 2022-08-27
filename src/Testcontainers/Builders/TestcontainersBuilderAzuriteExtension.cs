@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
+  using System.Linq;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
@@ -15,9 +16,9 @@ namespace DotNet.Testcontainers.Builders
   {
     public static ITestcontainersBuilder<AzuriteTestcontainer> WithAzurite(this ITestcontainersBuilder<AzuriteTestcontainer> builder, AzuriteTestcontainerConfiguration configuration)
     {
-      var blobServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Blob);
-      var queueServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Queue);
-      var tableServiceEnabled = configuration.EnabledServices.HasFlag(AzuriteTestcontainerConfiguration.AzuriteServices.Table);
+      var blobServiceEnabled = configuration.AllServicesEnabled || configuration.BlobServiceOnlyEnabled;
+      var queueServiceEnabled = configuration.AllServicesEnabled || configuration.QueueServiceOnlyEnabled;
+      var tableServiceEnabled = configuration.AllServicesEnabled || configuration.TableServiceOnlyEnabled;
 
       builder = builder
         .WithImage(configuration.Image)
@@ -52,90 +53,22 @@ namespace DotNet.Testcontainers.Builders
 
       if (configuration.Location != null)
       {
-        if (!Directory.Exists(configuration.Location))
-        {
-          throw new DirectoryNotFoundException($"Directory not found '{configuration.Location}'.");
-        }
-
-        builder = builder.WithBindMount(configuration.Location, AzuriteTestcontainerConfiguration.DefaultLocation);
+        builder = builder
+          .WithBindMount(configuration.Location, AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath);
       }
 
       return builder
-        .WithCommand(GetMainCommand(configuration))
-        .WithCommand(GetServiceEndpointArgs(configuration))
-        .WithCommand(GetWorkspaceLocation())
-        .WithCommand(GetSilentMode(configuration))
-        .WithCommand(GetLooseMode(configuration))
-        .WithCommand(GetSkipApiVersionCheck(configuration))
-        .WithCommand(GetDisableProductStyleUrl(configuration))
-        .WithCommand(GetDebugLog(configuration));
+        .WithCommand(GetExecutable(configuration))
+        .WithCommand(GetEnabledServices(configuration))
+        .WithCommand(GetWorkspaceDirectoryPath())
+        .WithCommand(GetDebugModeEnabled(configuration))
+        .WithCommand(GetSilentModeEnabled(configuration))
+        .WithCommand(GetLooseModeEnabled(configuration))
+        .WithCommand(GetSkipApiVersionCheckEnabled(configuration))
+        .WithCommand(GetProductStyleUrlDisabled(configuration));
     }
 
-    private static string[] GetDebugLog(AzuriteTestcontainerConfiguration configuration)
-    {
-      var debugLogFilePath = Path.Combine(AzuriteTestcontainerConfiguration.DefaultLocation, "debug.log");
-      return configuration.DebugEnabled ? new[] { "--debug", debugLogFilePath } : null;
-    }
-
-    private static string GetDisableProductStyleUrl(AzuriteTestcontainerConfiguration configuration)
-    {
-      return configuration.ProductStyleUrlDisabled ? "--disableProductStyleUrl" : null;
-    }
-
-    private static string GetSkipApiVersionCheck(AzuriteTestcontainerConfiguration configuration)
-    {
-      return configuration.SkipApiVersionCheckEnabled ? "--skipApiVersionCheck" : null;
-    }
-
-    private static string GetLooseMode(AzuriteTestcontainerConfiguration configuration)
-    {
-      return configuration.LooseModeEnabled ? "--loose" : null;
-    }
-
-    private static string GetSilentMode(AzuriteTestcontainerConfiguration configuration)
-    {
-      return configuration.SilentModeEnabled ? "--silent" : null;
-    }
-
-    private static string[] GetWorkspaceLocation()
-    {
-      return new[] { "--location", AzuriteTestcontainerConfiguration.DefaultLocation };
-    }
-
-    private static string[] GetServiceEndpointArgs(AzuriteTestcontainerConfiguration configuration)
-    {
-      const string defaultRemoteEndpoint = "0.0.0.0";
-
-      var args = new List<string>();
-
-      if (configuration.BlobServiceOnlyEnabled || configuration.AllServicesEnabled)
-      {
-        args.Add("--blobHost");
-        args.Add(defaultRemoteEndpoint);
-        args.Add("--blobPort");
-        args.Add(configuration.BlobContainerPort.ToString(CultureInfo.InvariantCulture));
-      }
-
-      if (configuration.QueueServiceOnlyEnabled || configuration.AllServicesEnabled)
-      {
-        args.Add("--queueHost");
-        args.Add(defaultRemoteEndpoint);
-        args.Add("--queuePort");
-        args.Add(configuration.QueueContainerPort.ToString(CultureInfo.InvariantCulture));
-      }
-
-      if (configuration.TableServiceOnlyEnabled || configuration.AllServicesEnabled)
-      {
-        args.Add("--tableHost");
-        args.Add(defaultRemoteEndpoint);
-        args.Add("--tablePort");
-        args.Add(configuration.TableContainerPort.ToString(CultureInfo.InvariantCulture));
-      }
-
-      return args.ToArray();
-    }
-
-    private static string GetMainCommand(AzuriteTestcontainerConfiguration configuration)
+    private static string GetExecutable(AzuriteTestcontainerConfiguration configuration)
     {
       if (configuration.BlobServiceOnlyEnabled)
       {
@@ -153,6 +86,70 @@ namespace DotNet.Testcontainers.Builders
       }
 
       return "azurite";
+    }
+
+    private static string[] GetEnabledServices(AzuriteTestcontainerConfiguration configuration)
+    {
+      const string defaultRemoteEndpoint = "0.0.0.0";
+
+      IList<string> args = new List<string>();
+
+      if (configuration.AllServicesEnabled || configuration.BlobServiceOnlyEnabled)
+      {
+        args.Add("--blobHost");
+        args.Add(defaultRemoteEndpoint);
+        args.Add("--blobPort");
+        args.Add(configuration.BlobContainerPort.ToString(CultureInfo.InvariantCulture));
+      }
+
+      if (configuration.AllServicesEnabled || configuration.QueueServiceOnlyEnabled)
+      {
+        args.Add("--queueHost");
+        args.Add(defaultRemoteEndpoint);
+        args.Add("--queuePort");
+        args.Add(configuration.QueueContainerPort.ToString(CultureInfo.InvariantCulture));
+      }
+
+      if (configuration.AllServicesEnabled || configuration.TableServiceOnlyEnabled)
+      {
+        args.Add("--tableHost");
+        args.Add(defaultRemoteEndpoint);
+        args.Add("--tablePort");
+        args.Add(configuration.TableContainerPort.ToString(CultureInfo.InvariantCulture));
+      }
+
+      return args.ToArray();
+    }
+
+    private static string[] GetWorkspaceDirectoryPath()
+    {
+      return new[] { "--location", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath };
+    }
+
+    private static string[] GetDebugModeEnabled(AzuriteTestcontainerConfiguration configuration)
+    {
+      var debugLogFilePath = Path.Combine(AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath, "debug.log");
+      return configuration.DebugModeEnabled ? new[] { "--debug", debugLogFilePath } : null;
+    }
+
+    private static string GetSilentModeEnabled(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.SilentModeEnabled ? "--silent" : null;
+    }
+
+    private static string GetLooseModeEnabled(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.LooseModeEnabled ? "--loose" : null;
+    }
+
+    private static string GetSkipApiVersionCheckEnabled(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.SkipApiVersionCheckEnabled ? "--skipApiVersionCheck" : null;
+    }
+
+    private static string GetProductStyleUrlDisabled(AzuriteTestcontainerConfiguration configuration)
+    {
+      return configuration.ProductStyleUrlDisabled ? "--disableProductStyleUrl" : null;
     }
   }
 }

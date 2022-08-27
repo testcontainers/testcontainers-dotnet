@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Volumes;
+  using JetBrains.Annotations;
   using Xunit;
 
+  [UsedImplicitly]
   public sealed class VolumeFixture : IAsyncLifetime
   {
     private readonly IDockerVolume volume;

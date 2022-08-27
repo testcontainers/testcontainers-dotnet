@@ -7,7 +7,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Containers;
   using Elastic.Clients.Elasticsearch;
   using Elastic.Transport;
+  using JetBrains.Annotations;
 
+  [UsedImplicitly]
   public sealed class ElasticsearchFixture : DatabaseFixture<ElasticsearchTestcontainer, ElasticsearchClient>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new ElasticsearchTestcontainerConfiguration { Password = "secret" };

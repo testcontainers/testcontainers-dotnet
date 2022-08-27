@@ -5,7 +5,7 @@
   using DotNet.Testcontainers.Configurations;
   using Xunit;
 
-  public sealed class CustomConfigurationTest
+  public static class CustomConfigurationTest
   {
     [CollectionDefinition(nameof(EnvironmentConfigurationTest), DisableParallelization = true)]
     [Collection(nameof(EnvironmentConfigurationTest))]

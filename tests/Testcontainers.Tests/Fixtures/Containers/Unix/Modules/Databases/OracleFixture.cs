@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using Oracle.ManagedDataAccess.Client;
 
+  [UsedImplicitly]
   public sealed class OracleFixture : DatabaseFixture<OracleTestcontainer, DbConnection>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new OracleTestcontainerConfiguration();

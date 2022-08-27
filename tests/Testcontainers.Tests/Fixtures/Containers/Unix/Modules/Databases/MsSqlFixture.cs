@@ -6,7 +6,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
 
+  [UsedImplicitly]
   public sealed class MsSqlFixture : DatabaseFixture<MsSqlTestcontainer, DbConnection>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new MsSqlTestcontainerConfiguration { Database = "db", Password = "yourStrong(!)Password" }; // https://hub.docker.com/r/microsoft/mssql-server-linux/.

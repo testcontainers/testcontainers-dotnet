@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using Xunit;
 
   public static class AzuriteFixture
@@ -13,99 +14,99 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
     private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory();
 
+    [UsedImplicitly]
     public class AzuriteDefaultFixture : IAsyncLifetime
     {
-      public AzuriteTestcontainer Container { get; private set; }
-
-      public virtual Task InitializeAsync()
+      public AzuriteDefaultFixture()
+        : this(new AzuriteTestcontainerConfiguration())
       {
-        this.Container = new TestcontainersBuilder<AzuriteTestcontainer>()
-          .WithAzurite(this.GetConfiguration())
-          .Build();
+      }
 
+      protected AzuriteDefaultFixture(AzuriteTestcontainerConfiguration configuration)
+      {
+        this.Configuration = configuration;
+        this.Container = new TestcontainersBuilder<AzuriteTestcontainer>()
+          .WithAzurite(configuration)
+          .Build();
+      }
+
+      public AzuriteTestcontainerConfiguration Configuration { get; }
+
+      public AzuriteTestcontainer Container { get; }
+
+      public Task InitializeAsync()
+      {
         return this.Container.StartAsync();
       }
 
       public Task DisposeAsync()
       {
-        if (this.Container == null)
-        {
-          return Task.CompletedTask;
-        }
-
         return this.Container.DisposeAsync().AsTask();
       }
-
-      protected virtual AzuriteTestcontainerConfiguration GetConfiguration()
-      {
-        return new AzuriteTestcontainerConfiguration();
-      }
     }
 
+    [UsedImplicitly]
     public sealed class AzuriteWithBlobOnlyFixture : AzuriteDefaultFixture
     {
-      protected override AzuriteTestcontainerConfiguration GetConfiguration()
+      public AzuriteWithBlobOnlyFixture()
+        : base(new AzuriteTestcontainerConfiguration { BlobServiceOnlyEnabled = true })
       {
-        return new AzuriteTestcontainerConfiguration() { BlobServiceOnlyEnabled = true };
       }
     }
 
+    [UsedImplicitly]
     public sealed class AzuriteWithQueueOnlyFixture : AzuriteDefaultFixture
     {
-      protected override AzuriteTestcontainerConfiguration GetConfiguration()
+      public AzuriteWithQueueOnlyFixture()
+        : base(new AzuriteTestcontainerConfiguration { QueueServiceOnlyEnabled = true })
       {
-        return new AzuriteTestcontainerConfiguration() { QueueServiceOnlyEnabled = true };
       }
     }
 
+    [UsedImplicitly]
     public sealed class AzuriteWithTableOnlyFixture : AzuriteDefaultFixture
     {
-      protected override AzuriteTestcontainerConfiguration GetConfiguration()
+      public AzuriteWithTableOnlyFixture()
+        : base(new AzuriteTestcontainerConfiguration { TableServiceOnlyEnabled = true })
       {
-        return new AzuriteTestcontainerConfiguration() { TableServiceOnlyEnabled = true };
       }
     }
 
+    [UsedImplicitly]
     public sealed class AzuriteWithCustomContainerPortsFixture : AzuriteDefaultFixture
     {
-      public int CustomBlobContainerPort { get; } = 7777;
-
-      public int CustomQueueContainerPort { get; } = 8888;
-
-      public int CustomTableContainerPort { get; } = 9999;
-
-      protected override AzuriteTestcontainerConfiguration GetConfiguration()
-      {
-        return new AzuriteTestcontainerConfiguration()
+      public AzuriteWithCustomContainerPortsFixture()
+        : base(new AzuriteTestcontainerConfiguration
         {
-          BlobContainerPort = this.CustomBlobContainerPort,
-          QueueContainerPort = this.CustomQueueContainerPort,
-          TableContainerPort = this.CustomTableContainerPort,
-        };
+          BlobContainerPort = 65501,
+          QueueContainerPort = 65502,
+          TableContainerPort = 65503,
+        })
+      {
       }
     }
 
-    public sealed class AzuriteWithBoundLocationPathFixture : AzuriteDefaultFixture, IDisposable
+    [UsedImplicitly]
+    public sealed class AzuriteWithCustomWorkspaceFixture : AzuriteDefaultFixture, IDisposable
     {
-      public DirectoryInfo DataDirectoryPath { get; } = new DirectoryInfo(Path.Combine(TempDir, Guid.NewGuid().ToString("N")));
-
-      public override Task InitializeAsync()
+      public AzuriteWithCustomWorkspaceFixture()
+        : base(new AzuriteTestcontainerConfiguration
+        {
+          Location = Path.Combine(TempDir, Guid.NewGuid().ToString("N")),
+        })
       {
-        this.DataDirectoryPath.Create();
-        return base.InitializeAsync();
+        if (this.Configuration.Location != null)
+        {
+          Directory.CreateDirectory(this.Configuration.Location);
+        }
       }
 
       public void Dispose()
       {
-        this.DataDirectoryPath.Delete(true);
-      }
-
-      protected override AzuriteTestcontainerConfiguration GetConfiguration()
-      {
-        return new AzuriteTestcontainerConfiguration()
+        if (Directory.Exists(this.Configuration.Location))
         {
-          Location = this.DataDirectoryPath.FullName,
-        };
+          Directory.Delete(this.Configuration.Location, true);
+        }
       }
     }
   }

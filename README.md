@@ -61,6 +61,7 @@ Testcontainers assigns each Docker resource a Resource Reaper session id. After 
 The pre-configured Testcontainers below are supported. Further examples can be found in [TestcontainersContainerTest][1] as well as in [database][2] or [message broker][3] tests.
 
 - Apache CouchDB (couchdb:2.3.1)
+- Azurite (mcr.microsoft.com/azure-storage/azurite:3.18.0)
 - Couchbase (couchbase:6.5.1)
 - Elasticsearch (elasticsearch:8.3.2)
 - MariaDB (mariadb:10.8)

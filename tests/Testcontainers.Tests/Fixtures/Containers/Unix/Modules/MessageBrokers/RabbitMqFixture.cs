@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using RabbitMQ.Client;
 
+  [UsedImplicitly]
   public sealed class RabbitMqFixture : DatabaseFixture<RabbitMqTestcontainer, IConnection>
   {
     private readonly TestcontainerMessageBrokerConfiguration configuration = new RabbitMqTestcontainerConfiguration { Username = "rabbitmq", Password = "rabbitmq" };

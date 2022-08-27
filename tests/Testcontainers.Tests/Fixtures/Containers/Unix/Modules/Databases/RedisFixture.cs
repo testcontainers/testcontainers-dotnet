@@ -4,8 +4,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using StackExchange.Redis;
 
+  [UsedImplicitly]
   public sealed class RedisFixture : DatabaseFixture<RedisTestcontainer, IConnectionMultiplexer>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new RedisTestcontainerConfiguration();

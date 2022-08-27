@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using Npgsql;
 
+  [UsedImplicitly]
   public sealed class PostgreSqlFixture : DatabaseFixture<PostgreSqlTestcontainer, DbConnection>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new PostgreSqlTestcontainerConfiguration { Database = "db", Username = "postgres", Password = "postgres" };

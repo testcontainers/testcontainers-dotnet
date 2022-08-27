@@ -5,8 +5,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using MySqlConnector;
 
+  [UsedImplicitly]
   public sealed class MySqlFixture : DatabaseFixture<MySqlTestcontainer, DbConnection>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new MySqlTestcontainerConfiguration { Database = "db", Username = "mysql", Password = "mysql" };

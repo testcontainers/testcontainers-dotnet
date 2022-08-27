@@ -4,8 +4,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using MongoDB.Driver;
 
+  [UsedImplicitly]
   public sealed class MongoDbNoAuthFixture : DatabaseFixture<MongoDbTestcontainer, IMongoDatabase>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new MongoDbTestcontainerConfiguration { Database = "db", Username = null, Password = null };

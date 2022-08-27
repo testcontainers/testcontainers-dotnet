@@ -4,8 +4,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using MyCouch;
 
+  [UsedImplicitly]
   public sealed class CouchDbFixture : DatabaseFixture<CouchDbTestcontainer, IMyCouchClient>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new CouchDbTestcontainerConfiguration { Database = "db", Username = "couchdb", Password = "couchdb" };
