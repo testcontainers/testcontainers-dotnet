@@ -1,57 +1,60 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
-  using System;
-  using System.Data.Common;
-    using System.Threading.Tasks;
+    using System;
+    using System.Data.Common;
+  using System.IO;
+  using System.Threading.Tasks;
     using DotNet.Testcontainers.Builders;
     using DotNet.Testcontainers.Configurations;
     using DotNet.Testcontainers.Containers;
+    using JetBrains.Annotations;
     using Npgsql;
 
-    public sealed class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
+    public static class CosmosDbFixture
     {
-        private readonly TestcontainerDatabaseConfiguration configuration = new CosmosDbTestcontainerConfiguration
+        [UsedImplicitly]
+        public class CosmosDbDefaultFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
         {
-            Database = "testdb"
-        };
+            public CosmosDbTestcontainerConfiguration Configuration { get; set; }
 
-        public CosmosDbFixture()
-        {
-            this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-                .WithDatabase(this.configuration) 
-                .Build();
-        }
+            public CosmosDbDefaultFixture() 
+                : this(new CosmosDbTestcontainerConfiguration())
+            {
+            }
+            
+            protected CosmosDbDefaultFixture(CosmosDbTestcontainerConfiguration configuration) 
+            {
+                this.Configuration = configuration;
+                this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
+                    .WithHostname("localhost")
+                    .WithImage(configuration.Image)
+                    .WithPortBinding(configuration.DefaultPort)
+                    .WithExposedPort(configuration.DefaultPort)
+                    .WithWaitStrategy(configuration.WaitStrategy)
+                    .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1")
+                    .Build();
+            }
 
-        public override async Task InitializeAsync()
-        {
-            Console.WriteLine("Initializing CosmosDB container");
-            await this.Container.StartAsync()
-                .ConfigureAwait(false);
+            public override Task InitializeAsync()
+            {
+                return this.Container.StartAsync();
+            }
 
-            // var dbResponse = await this.Container.CreateDatabaseAsync()
-            //     .ConfigureAwait(false);
+            public override async Task DisposeAsync()
+            {
+                if (Connection != null && Connection.State != System.Data.ConnectionState.Closed)
+                {
+                    this.Connection.Dispose();
+                }
 
-            // if (dbResponse.StatusCode != System.Net.HttpStatusCode.Created)
-            // {
-            //     throw new System.Exception("Failed to create database");
-            // }
-        }
+                await this.Container.DisposeAsync()
+                    .ConfigureAwait(false);
+            }
 
-        public override async Task DisposeAsync()
-        {
-          if (Connection != null && Connection.State != System.Data.ConnectionState.Closed)
-          {
-            this.Connection.Dispose();
-
-          }
-
-          await this.Container.DisposeAsync()
-              .ConfigureAwait(false);
-        }
-
-        public override void Dispose()
-        {
-            this.configuration.Dispose();
+            public override void Dispose()
+            {
+                this.Configuration.Dispose();
+            }
         }
     }
 }
