@@ -455,17 +455,6 @@ dotnet_naming_rule.parameters_rule.severity             = warning
 
 max_line_length = 240
 
-dotnet_diagnostic.SA0001.severity = none
-dotnet_diagnostic.SA1600.severity = none
-dotnet_diagnostic.SA1633.severity = none
-
-##########################################
-# JetBrains Rider
-##########################################
-
-resharper_arrange_object_creation_when_type_evident_highlighting = do_not_show
-resharper_convert_to_using_declaration_highlighting = do_not_show
-
 ##########################################
 # Testcontainers.Tests
 ##########################################

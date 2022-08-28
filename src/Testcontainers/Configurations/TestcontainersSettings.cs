@@ -18,11 +18,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private static readonly IDockerImage RyukContainerImage = new DockerImage("ghcr.io/psanetra/ryuk:2021.12.20");
-
-    private static readonly ICustomConfiguration PropertiesFileConfiguration = new PropertiesFileConfiguration();
-
-    private static readonly ICustomConfiguration EnvironmentConfiguration = new EnvironmentConfiguration();
+    private static readonly IDockerImage RyukContainerImage = new DockerImage("testcontainers/ryuk:0.3.4");
 
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
       new IDockerEndpointAuthenticationProvider[] { new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider() }
@@ -30,21 +26,21 @@ namespace DotNet.Testcontainers.Configurations
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())
         .Select(authProvider => authProvider.GetAuthConfig())
-        .First();
+        .FirstOrDefault();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
     [PublicAPI]
     public static bool ResourceReaperEnabled { get; set; }
-      = !PropertiesFileConfiguration.GetRyukDisabled() && !EnvironmentConfiguration.GetRyukDisabled();
+      = !PropertiesFileConfiguration.Instance.GetRyukDisabled() && !EnvironmentConfiguration.Instance.GetRyukDisabled();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [PublicAPI]
     public static IDockerImage ResourceReaperImage { get; set; }
-      = PropertiesFileConfiguration.GetRyukContainerImage() ?? EnvironmentConfiguration.GetRyukContainerImage() ?? RyukContainerImage;
+      = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage() ?? RyukContainerImage;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> public host port.
@@ -68,7 +64,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     [CanBeNull]
     public static string HubImageNamePrefix { get; set; }
-      = PropertiesFileConfiguration.GetHubImageNamePrefix() ?? EnvironmentConfiguration.GetHubImageNamePrefix();
+      = PropertiesFileConfiguration.Instance.GetHubImageNamePrefix() ?? EnvironmentConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
     /// Gets or sets the logger.

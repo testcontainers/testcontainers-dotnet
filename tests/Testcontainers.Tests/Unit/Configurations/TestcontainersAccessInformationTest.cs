@@ -18,37 +18,37 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public async Task QueryNotExistingDockerImageById()
       {
-        Assert.False(await new DockerImageOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerById()
       {
-        Assert.False(await new DockerContainerOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerNetworkById()
       {
-        Assert.False(await new DockerNetworkOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
+        Assert.False(await new DockerNetworkOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithIdAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerImageByName()
       {
-        Assert.False(await new DockerImageOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerImageOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerContainerByName()
       {
-        Assert.False(await new DockerContainerOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerContainerOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]
       public async Task QueryNotExistingDockerNetworkByName()
       {
-        Assert.False(await new DockerNetworkOperations(TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
+        Assert.False(await new DockerNetworkOperations(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, TestcontainersSettings.Logger).ExistsWithNameAsync(DoesNotExist));
       }
 
       [Fact]

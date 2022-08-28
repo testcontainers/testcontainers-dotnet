@@ -34,6 +34,7 @@ namespace DotNet.Testcontainers.Clients
     /// </summary>
     public TestcontainersClient()
       : this(
+        Guid.Empty,
         TestcontainersSettings.OS.DockerEndpointAuthConfig,
         TestcontainersSettings.Logger)
     {
@@ -42,13 +43,14 @@ namespace DotNet.Testcontainers.Clients
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
     /// </summary>
+    /// <param name="sessionId">The session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
-    public TestcontainersClient(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
+    public TestcontainersClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : this(
-        new DockerContainerOperations(dockerEndpointAuthConfig, logger),
-        new DockerImageOperations(dockerEndpointAuthConfig, logger),
-        new DockerSystemOperations(dockerEndpointAuthConfig, logger),
+        new DockerContainerOperations(sessionId, dockerEndpointAuthConfig, logger),
+        new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger),
+        new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerRegistryAuthenticationProvider(logger))
     {
     }
@@ -233,7 +235,7 @@ namespace DotNet.Testcontainers.Clients
       var isWindowsEngineEnabled = await this.GetIsWindowsEngineEnabled(ct)
         .ConfigureAwait(false);
 
-      if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.ToString("D").Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
+      if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, ct)
           .ConfigureAwait(false);

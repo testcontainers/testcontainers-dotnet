@@ -15,7 +15,7 @@
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
-    <Copyright>Copyright (c) 2019 - 2021 Andre Hofmeister and other authors</Copyright>
+    <Copyright>Copyright (c) 2019 - 2022 Andre Hofmeister and other authors</Copyright>
     <Authors>Andre Hofmeister and contributors</Authors>
     <Company>Andre Hofmeister</Company>
     <Description>A lightweight library to run tests with throwaway instances of Docker containers.</Description>

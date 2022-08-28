@@ -5,7 +5,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
 
+  [UsedImplicitly]
   public sealed class CouchbaseFixture : DatabaseFixture<CouchbaseTestcontainer, ICluster>
   {
     private readonly TestcontainerDatabaseConfiguration configuration = new CouchbaseTestcontainerConfiguration

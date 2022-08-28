@@ -25,9 +25,9 @@
     {
       public AuthConfigTestData()
       {
-        const string DockerHost = "tcp://127.0.0.1:2375";
-        Environment.SetEnvironmentVariable("DOCKER_HOST", DockerHost);
-        this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider().GetAuthConfig(), new Uri(DockerHost) });
+        const string dockerHost = "tcp://127.0.0.1:2375";
+        Environment.SetEnvironmentVariable("DOCKER_HOST", dockerHost);
+        this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider().GetAuthConfig(), new Uri(dockerHost) });
         this.Add(new object[] { new NpipeEndpointAuthenticationProvider().GetAuthConfig(), new Uri("npipe://./pipe/docker_engine") });
         this.Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:/var/run/docker.sock") });
         Environment.SetEnvironmentVariable("DOCKER_HOST", null);

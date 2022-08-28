@@ -1,7 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
   using System.Text.Json;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -9,16 +8,9 @@
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class CredsStoreProvider : IDockerRegistryAuthenticationProvider
   {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions();
-
     private readonly JsonElement rootElement;
 
     private readonly ILogger logger;
-
-    static CredsStoreProvider()
-    {
-      JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CredsStoreProvider" /> class.
@@ -65,11 +57,11 @@
         return null;
       }
 
-      AuthConfig authConfig;
+      JsonElement credential;
 
       try
       {
-        authConfig = JsonSerializer.Deserialize<AuthConfig>(JsonDocument.Parse(credentialProviderOutput).RootElement.GetRawText(), JsonSerializerOptions);
+        credential = JsonDocument.Parse(credentialProviderOutput).RootElement;
       }
       catch (JsonException)
       {
@@ -77,7 +69,7 @@
       }
 
       this.logger.DockerRegistryCredentialFound(hostname);
-      return new DockerRegistryAuthenticationConfiguration(authConfig.ServerAddress, authConfig.Username, authConfig.Password);
+      return new DockerRegistryAuthenticationConfiguration(hostname, credential);
     }
   }
 }

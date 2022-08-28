@@ -2,8 +2,10 @@ namespace DotNet.Testcontainers.Images
 {
   using System;
   using System.Linq;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerImage" />
+  [PublicAPI]
   public sealed class DockerImage : IDockerImage
   {
     private static readonly Func<string, IDockerImage> GetDockerImage = MatchImage.Match;
@@ -14,6 +16,7 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="image">The Docker image.</param>
+    [PublicAPI]
     public DockerImage(IDockerImage image)
       : this(image.Repository, image.Name, image.Tag)
     {
@@ -25,6 +28,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="image">The Docker image.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
     /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    [PublicAPI]
     public DockerImage(string image)
       : this(GetDockerImage(image))
     {
@@ -39,6 +43,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
     /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    [PublicAPI]
     public DockerImage(
       string repository,
       string name,

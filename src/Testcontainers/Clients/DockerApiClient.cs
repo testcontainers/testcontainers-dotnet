@@ -7,17 +7,22 @@ namespace DotNet.Testcontainers.Clients
 
   internal abstract class DockerApiClient
   {
-    private static readonly ConcurrentDictionary<Uri, IDockerClient> Clients = new ConcurrentDictionary<Uri, IDockerClient>();
+    private static readonly ConcurrentDictionary<Uri, Lazy<IDockerClient>> Clients = new ConcurrentDictionary<Uri, Lazy<IDockerClient>>();
 
-    protected DockerApiClient(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    protected DockerApiClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      this.Docker = Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ =>
-      {
-        using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
+      _ = sessionId;
+
+      var lazyDockerClient = Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ =>
+        new Lazy<IDockerClient>(() =>
         {
-          return dockerClientConfiguration.CreateClient();
-        }
-      });
+          using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
+          {
+            return dockerClientConfiguration.CreateClient();
+          }
+        }));
+
+      this.Docker = lazyDockerClient.Value;
     }
 
     protected IDockerClient Docker { get; }

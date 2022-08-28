@@ -5,7 +5,7 @@
   using DotNet.Testcontainers.Configurations;
   using Xunit;
 
-  public sealed class CustomConfigurationTest
+  public static class CustomConfigurationTest
   {
     [CollectionDefinition(nameof(EnvironmentConfigurationTest), DisableParallelization = true)]
     [Collection(nameof(EnvironmentConfigurationTest))]
@@ -15,10 +15,23 @@
 
       static EnvironmentConfigurationTest()
       {
+        EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
+        EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_DISABLED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_CONFIG", "", null)]
+      [InlineData("DOCKER_CONFIG", "~/.docker/", "~/.docker/")]
+      public void GetDockerConfigCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerConfig());
       }
 
       [Theory]
@@ -30,6 +43,21 @@
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_AUTH_CONFIG", "", null)]
+      [InlineData("DOCKER_AUTH_CONFIG", "{jsonReaderException}", null)]
+      [InlineData("DOCKER_AUTH_CONFIG", "{}", "{}")]
+      [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":null}", "{\"auths\":null}")]
+      [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":{}}", "{\"auths\":{}}")]
+      [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":{\"ghcr.io\":{}}}", "{\"auths\":{\"ghcr.io\":{}}}")]
+      public void GetDockerAuthConfigCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerAuthConfig()?.RootElement.ToString());
       }
 
       [Theory]
@@ -87,12 +115,36 @@
     {
       [Theory]
       [InlineData("", null)]
+      [InlineData("docker.config=", null)]
+      [InlineData("docker.config=~/.docker/", "~/.docker/")]
+      public void GetDockerConfigCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerConfig());
+      }
+
+      [Theory]
+      [InlineData("", null)]
       [InlineData("docker.host=", null)]
       [InlineData("docker.host=tcp://127.0.0.1:2375/", "tcp://127.0.0.1:2375/")]
       public void GetDockerHostCustomConfiguration(string configuration, string expected)
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("docker.auth.config=", null)]
+      [InlineData("docker.auth.config={jsonReaderException}", null)]
+      [InlineData("docker.auth.config={}", "{}")]
+      [InlineData("docker.auth.config={\"auths\":null}", "{\"auths\":null}")]
+      [InlineData("docker.auth.config={\"auths\":{}}", "{\"auths\":{}}")]
+      [InlineData("docker.auth.config={\"auths\":{\"ghcr.io\":{}}}", "{\"auths\":{\"ghcr.io\":{}}}")]
+      public void GetDockerAuthConfigCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerAuthConfig()?.RootElement.ToString());
       }
 
       [Theory]

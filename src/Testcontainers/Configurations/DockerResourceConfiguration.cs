@@ -1,9 +1,11 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Collections.Generic;
+  using DotNet.Testcontainers.Containers;
 
   /// <inheritdoc cref="IDockerResourceConfiguration" />
-  public class DockerResourceConfiguration : IDockerResourceConfiguration
+  internal class DockerResourceConfiguration : IDockerResourceConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerResourceConfiguration" /> class.
@@ -25,7 +27,11 @@
     {
       this.DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
       this.Labels = labels;
+      this.SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
     }
+
+    /// <inheritdoc />
+    public Guid SessionId { get; }
 
     /// <inheritdoc />
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }

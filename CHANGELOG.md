@@ -4,7 +4,18 @@
 
 ### Added
 
+- 421 Add Azurite module (@vlaskal)
+- 504 Add Elasticsearch module (@chertby)
 - 516 Add `ITestcontainersBuilder<TDockerContainer>.WithTmpfsMount` (@chrisbbe)
+- 520 Add MariaDB module (@renemadsen)
+- 528 Do not require the Docker host configuration (`DockerEndpointAuthConfig`) on `TestcontainersSettings` initialization
+- 538 Support optional username and password in MongoDB connection string (@the-avid-engineer)
+- 540 Add Docker registry authentication provider for `DOCKER_AUTH_CONFIG` environment variable (@vova-lantsov-dev)
+- 541 Allow MsSqlTestcontainerConfiguration custom database names (@enginexon)
+
+### Fixed
+
+- 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
 
 ## [2.1.0]
 

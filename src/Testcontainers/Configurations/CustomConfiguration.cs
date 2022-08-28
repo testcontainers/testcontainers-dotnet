@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Text.Json;
   using DotNet.Testcontainers.Images;
 
   internal abstract class CustomConfiguration
@@ -13,9 +14,34 @@
       this.properties = properties;
     }
 
+    protected string GetDockerConfig(string propertyName)
+    {
+      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+      return propertyValue;
+    }
+
     protected Uri GetDockerHost(string propertyName)
     {
       return this.properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+    }
+
+    protected JsonDocument GetDockerAuthConfig(string propertyName)
+    {
+      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+
+      if (string.IsNullOrEmpty(propertyValue))
+      {
+        return null;
+      }
+
+      try
+      {
+        return JsonDocument.Parse(propertyValue);
+      }
+      catch (Exception)
+      {
+        return null;
+      }
     }
 
     protected bool GetRyukDisabled(string propertyName)

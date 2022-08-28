@@ -1,3 +1,3 @@
 #!/bin/bash
 read
-echo '{"ServerAddress":"https://index.docker.io/v1/","Username":"username","Password":"password"}'
+echo '{"ServerURL":"https://index.docker.io/v1/","Username":"username","Secret":"password"}'

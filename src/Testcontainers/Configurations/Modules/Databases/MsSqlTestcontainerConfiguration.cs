@@ -8,6 +8,8 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class MsSqlTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
+    public const string MasterDatabase = "master";
+
     private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04";
 
     private const int MsSqlPort = 1433;
@@ -31,11 +33,8 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public override string Database
-    {
-      get => "master";
-      set => throw new NotImplementedException();
-    }
+    public override string Database { get; set; }
+      = MasterDatabase;
 
     /// <inheritdoc />
     public override string Username

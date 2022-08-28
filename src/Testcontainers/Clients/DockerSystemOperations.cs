@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
@@ -7,8 +8,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {
-    public DockerSystemOperations(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(dockerEndpointAuthConfig)
+    public DockerSystemOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
+      : base(sessionId, dockerEndpointAuthConfig)
     {
       _ = logger;
     }

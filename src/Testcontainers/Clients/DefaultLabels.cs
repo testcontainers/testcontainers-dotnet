@@ -8,6 +8,10 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DefaultLabels : ReadOnlyDictionary<string, string>
   {
+    static DefaultLabels()
+    {
+    }
+
     private DefaultLabels(Guid resourceReaperSessionId)
       : base(new Dictionary<string, string>
       {

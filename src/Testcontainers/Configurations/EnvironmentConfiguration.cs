@@ -2,6 +2,7 @@
 {
   using System;
   using System.Linq;
+  using System.Text.Json;
   using DotNet.Testcontainers.Images;
 
   /// <summary>
@@ -13,25 +14,49 @@
 
     private const string DockerHost = "DOCKER_HOST";
 
+    private const string DockerAuthConfig = "DOCKER_AUTH_CONFIG";
+
     private const string RyukDisabled = "TESTCONTAINERS_RYUK_DISABLED";
 
     private const string RyukContainerImage = "TESTCONTAINERS_RYUK_CONTAINER_IMAGE";
 
     private const string HubImageNamePrefix = "TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX";
 
+    static EnvironmentConfiguration()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EnvironmentConfiguration" /> class.
     /// </summary>
     public EnvironmentConfiguration()
-      : base(new[] { DockerConfig, DockerHost, RyukDisabled, RyukContainerImage, HubImageNamePrefix }
+      : base(new[] { DockerConfig, DockerHost, DockerAuthConfig, RyukDisabled, RyukContainerImage, HubImageNamePrefix }
         .ToDictionary(key => key, Environment.GetEnvironmentVariable))
     {
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ICustomConfiguration" /> instance.
+    /// </summary>
+    public static ICustomConfiguration Instance { get; }
+      = new EnvironmentConfiguration();
+
+    /// <inheritdoc />
+    public string GetDockerConfig()
+    {
+      return this.GetDockerConfig(DockerConfig);
     }
 
     /// <inheritdoc />
     public Uri GetDockerHost()
     {
       return this.GetDockerHost(DockerHost);
+    }
+
+    /// <inheritdoc />
+    public JsonDocument GetDockerAuthConfig()
+    {
+      return this.GetDockerAuthConfig(DockerAuthConfig);
     }
 
     /// <inheritdoc />

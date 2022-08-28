@@ -309,7 +309,10 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public TDockerContainer Build()
     {
-      Guard.Argument(this.DockerResourceConfiguration.Image, nameof(ITestcontainersConfiguration.Image))
+      _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
+        .DockerEndpointAuthConfigIsSet();
+
+      _ = Guard.Argument(this.DockerResourceConfiguration.Image, nameof(ITestcontainersConfiguration.Image))
         .NotNull();
 
 #pragma warning disable S3011

@@ -20,6 +20,8 @@
 
     /// <inheritdoc />
     public override string ConnectionString
-      => $"mongodb://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
+      => string.IsNullOrEmpty(this.Username) && string.IsNullOrEmpty(this.Password)
+        ? $"mongodb://{this.Hostname}:{this.Port}"
+        : $"mongodb://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
   }
 }
