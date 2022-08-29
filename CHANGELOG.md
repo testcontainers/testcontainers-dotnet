@@ -13,6 +13,10 @@
 - 540 Add Docker registry authentication provider for `DOCKER_AUTH_CONFIG` environment variable (@vova-lantsov-dev)
 - 541 Allow MsSqlTestcontainerConfiguration custom database names (@enginexon)
 
+### Changed
+
+- 571 Update `wnameless/oracle-xe-11g-r2` to `gvenzl/oracle-xe:21-slim`
+
 ### Fixed
 
 - 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images

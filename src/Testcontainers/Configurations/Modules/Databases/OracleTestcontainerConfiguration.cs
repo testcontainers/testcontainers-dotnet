@@ -8,7 +8,7 @@
   [PublicAPI]
   public class OracleTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string OracleImage = "wnameless/oracle-xe-11g-r2";
+    private const string OracleImage = "gvenzl/oracle-xe:21-slim";
 
     private const int OraclePort = 1521;
 
@@ -27,8 +27,6 @@
     public OracleTestcontainerConfiguration(string image)
       : base(image, OraclePort)
     {
-      // The Dockerfile author did not export $ORACLE_HOME/bin to the global paths. We will use $ORACLE_HOME/bin/sqlplus instead.
-      this.Environments["ORACLE_HOME"] = "/u01/app/oracle/product/11.2.0/xe";
     }
 
     /// <inheritdoc />
@@ -48,8 +46,8 @@
     /// <inheritdoc />
     public override string Password
     {
-      get => "oracle";
-      set => throw new NotImplementedException();
+      get => this.Environments["ORACLE_PASSWORD"];
+      set => this.Environments["ORACLE_PASSWORD"] = value;
     }
 
     /// <inheritdoc />

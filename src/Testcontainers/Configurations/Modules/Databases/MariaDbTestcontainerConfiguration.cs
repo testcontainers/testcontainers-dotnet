@@ -55,8 +55,8 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public string RootPassword
     {
-      get => this.Environments["MARIADB_ROOT_PASSWORD"];
-      set => this.Environments["MARIADB_ROOT_PASSWORD"] = value;
+      get => this.Environments["MYSQL_ROOT_PASSWORD"];
+      set => this.Environments["MYSQL_ROOT_PASSWORD"] = value;
     }
 
     /// <inheritdoc />
