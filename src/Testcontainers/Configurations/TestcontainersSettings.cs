@@ -28,6 +28,10 @@ namespace DotNet.Testcontainers.Configurations
         .Select(authProvider => authProvider.GetAuthConfig())
         .FirstOrDefault();
 
+    static TestcontainersSettings()
+    {
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
