@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.IO;
@@ -75,6 +75,27 @@
     {
       const string propertyName = "docker.auth.config";
       return this.GetDockerAuthConfig(propertyName);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerCertPath()
+    {
+      const string propertyName = "docker.cert.path";
+      return this.GetDockerCertPath(propertyName);
+    }
+
+    /// <inheritdoc />
+    public bool GetDockerTls()
+    {
+      const string propertyName = "docker.tls";
+      return this.GetDockerTls(propertyName);
+    }
+
+    /// <inheritdoc />
+    public bool GetDockerTlsVerify()
+    {
+      const string propertyName = "docker.tls.verify";
+      return this.GetDockerTlsVerify(propertyName);
     }
 
     /// <inheritdoc />

@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit
 {
-  using System;
   using System.Collections.Generic;
   using System.IO;
   using DotNet.Testcontainers.Builders;

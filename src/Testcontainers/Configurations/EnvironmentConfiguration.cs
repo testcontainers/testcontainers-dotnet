@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Linq;
@@ -16,6 +16,12 @@
 
     private const string DockerAuthConfig = "DOCKER_AUTH_CONFIG";
 
+    private const string DockerCertPath = "DOCKER_CERT_PATH";
+
+    private const string DockerTls = "DOCKER_TLS";
+
+    private const string DockerTlsVerify = "DOCKER_TLS_VERIFY";
+
     private const string RyukDisabled = "TESTCONTAINERS_RYUK_DISABLED";
 
     private const string RyukContainerImage = "TESTCONTAINERS_RYUK_CONTAINER_IMAGE";
@@ -30,7 +36,18 @@
     /// Initializes a new instance of the <see cref="EnvironmentConfiguration" /> class.
     /// </summary>
     public EnvironmentConfiguration()
-      : base(new[] { DockerConfig, DockerHost, DockerAuthConfig, RyukDisabled, RyukContainerImage, HubImageNamePrefix }
+      : base(new[]
+        {
+          DockerAuthConfig,
+          DockerCertPath,
+          DockerConfig,
+          DockerHost,
+          DockerTls,
+          DockerTlsVerify,
+          RyukDisabled,
+          RyukContainerImage,
+          HubImageNamePrefix,
+        }
         .ToDictionary(key => key, Environment.GetEnvironmentVariable))
     {
     }
@@ -57,6 +74,24 @@
     public JsonDocument GetDockerAuthConfig()
     {
       return this.GetDockerAuthConfig(DockerAuthConfig);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerCertPath()
+    {
+      return this.GetDockerCertPath(DockerCertPath);
+    }
+
+    /// <inheritdoc />
+    public bool GetDockerTls()
+    {
+      return this.GetDockerTls(DockerTls);
+    }
+
+    /// <inheritdoc />
+    public bool GetDockerTlsVerify()
+    {
+      return this.GetDockerTlsVerify(DockerTlsVerify);
     }
 
     /// <inheritdoc />
