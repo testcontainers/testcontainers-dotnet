@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Collections.Generic;
@@ -18,6 +18,9 @@
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
         EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
+        EnvironmentVariables.Add("DOCKER_CERT_PATH");
+        EnvironmentVariables.Add("DOCKER_TLS");
+        EnvironmentVariables.Add("DOCKER_TLS_VERIFY");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_DISABLED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
@@ -58,6 +61,49 @@
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetDockerAuthConfig()?.RootElement.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", false)]
+      [InlineData("DOCKER_TLS", "", false)]
+      [InlineData("DOCKER_TLS", "0", false)]
+      [InlineData("DOCKER_TLS", "false", false)]
+      [InlineData("DOCKER_TLS", "FALSE", false)]
+      [InlineData("DOCKER_TLS", "1", true)]
+      [InlineData("DOCKER_TLS", "TRUE", true)]
+      [InlineData("DOCKER_TLS", "true", true)]
+      public void GetDockerTlsCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerTls());
+      }
+
+      [Theory]
+      [InlineData("", "", false)]
+      [InlineData("DOCKER_TLS_VERIFY", "", false)]
+      [InlineData("DOCKER_TLS_VERIFY", "0", false)]
+      [InlineData("DOCKER_TLS_VERIFY", "false", false)]
+      [InlineData("DOCKER_TLS_VERIFY", "FALSE", false)]
+      [InlineData("DOCKER_TLS_VERIFY", "1", true)]
+      [InlineData("DOCKER_TLS_VERIFY", "TRUE", true)]
+      [InlineData("DOCKER_TLS_VERIFY", "true", true)]
+      public void GetDockerTlsVerifyCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerTlsVerify());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_CERT_PATH", "", null)]
+      [InlineData("DOCKER_CERT_PATH", "/home/docker/.docker/certs", "/home/docker/.docker/certs")]
+      public void GetDockerCertPathCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerCertPath());
       }
 
       [Theory]
@@ -145,6 +191,46 @@
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetDockerAuthConfig()?.RootElement.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("docker.cert.path=", null)]
+      [InlineData("docker.cert.path=/home/docker/.docker/certs", "/home/docker/.docker/certs")]
+      public void GetDockerCertPathCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerCertPath());
+      }
+
+      [Theory]
+      [InlineData("", false)]
+      [InlineData("docker.tls=", false)]
+      [InlineData("docker.tls=0", false)]
+      [InlineData("docker.tls=false", false)]
+      [InlineData("docker.tls=FALSE", false)]
+      [InlineData("docker.tls=1", true)]
+      [InlineData("docker.tls=TRUE", true)]
+      [InlineData("docker.tls=true", true)]
+      public void GetDockerTlsCustomConfiguration(string configuration, bool expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerTls());
+      }
+
+      [Theory]
+      [InlineData("", false)]
+      [InlineData("docker.tls.verify=", false)]
+      [InlineData("docker.tls.verify=0", false)]
+      [InlineData("docker.tls.verify=false", false)]
+      [InlineData("docker.tls.verify=FALSE", false)]
+      [InlineData("docker.tls.verify=1", true)]
+      [InlineData("docker.tls.verify=TRUE", true)]
+      [InlineData("docker.tls.verify=true", true)]
+      public void GetDockerTlsVerifyCustomConfiguration(string configuration, bool expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerTlsVerify());
       }
 
       [Theory]

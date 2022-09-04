@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
@@ -42,6 +42,24 @@
       {
         return null;
       }
+    }
+
+    protected string GetDockerCertPath(string propertyName)
+    {
+      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+      return propertyValue;
+    }
+
+    protected bool GetDockerTls(string propertyName)
+    {
+      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+      return "1".Equals(propertyValue, StringComparison.OrdinalIgnoreCase) || (bool.TryParse(propertyValue, out var tlsEnabled) && tlsEnabled);
+    }
+
+    protected bool GetDockerTlsVerify(string propertyName)
+    {
+      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+      return "1".Equals(propertyValue, StringComparison.OrdinalIgnoreCase) || (bool.TryParse(propertyValue, out var tlsVerifyEnabled) && tlsVerifyEnabled);
     }
 
     protected bool GetRyukDisabled(string propertyName)
