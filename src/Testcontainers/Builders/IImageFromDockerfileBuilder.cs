@@ -43,6 +43,15 @@ namespace DotNet.Testcontainers.Builders
     IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory);
 
     /// <summary>
+    /// Sets the base directory of the Dockerfile.
+    /// </summary>
+    /// <param name="commonDirectoryPath">Common directory path that contains the Dockerfile base directory.</param>
+    /// <param name="dockerfileDirectory">Dockerfile base directory.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
+    IImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
+
+    /// <summary>
     /// If true, Testcontainer will remove the existing Docker image. Otherwise, Testcontainer will keep the Docker image.
     /// </summary>
     /// <param name="deleteIfExists">True, Testcontainer will remove the Docker image. Otherwise, Testcontainer will keep it.</param>

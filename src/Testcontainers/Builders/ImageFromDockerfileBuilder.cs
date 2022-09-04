@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -57,6 +58,13 @@ namespace DotNet.Testcontainers.Builders
     public IImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
       return this.MergeNewConfiguration(new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory));
+    }
+
+    /// <inheritdoc />
+    public IImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory)
+    {
+      var baseDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
+      return this.WithDockerfileDirectory(baseDirectoryPath);
     }
 
     /// <inheritdoc />
