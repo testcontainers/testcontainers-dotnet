@@ -1,12 +1,11 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using Microsoft.Azure.Cosmos;
-  using DotNet.Testcontainers.Tests.Fixtures;
-  using System.Threading.Tasks;
-  using Xunit;
   using System.Net.Http;
-  using System.Data.Common;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Tests.Fixtures;
+  using Microsoft.Azure.Cosmos;
+  using Xunit;
 
   public static class CosmosDbTestcontainerTest
   {

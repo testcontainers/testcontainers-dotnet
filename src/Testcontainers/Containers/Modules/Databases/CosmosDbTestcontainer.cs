@@ -2,8 +2,8 @@ namespace DotNet.Testcontainers.Containers
 {
   using System.Net.Http;
   using DotNet.Testcontainers.Configurations;
-  using Microsoft.Extensions.Logging;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   public sealed class CosmosDbTestcontainer : TestcontainerDatabase
   {
@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
-    public override string ConnectionString => 
+    public override string ConnectionString =>
       $"AccountEndpoint=https://{this.Hostname}:{this.SqlApiPort};AccountKey={this.Password}";
   }
 }

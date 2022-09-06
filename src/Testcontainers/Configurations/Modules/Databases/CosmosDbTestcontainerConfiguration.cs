@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
     using System;
+    using System.IO;
     using DotNet.Testcontainers.Builders;
     using JetBrains.Annotations;
 
@@ -8,44 +9,44 @@ namespace DotNet.Testcontainers.Configurations
     public class CosmosDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
     {
         // TODO: WithMongoAPI extension?
-        public const string DefaultCosmosDbSqlApiImage = 
+        public const string DefaultCosmosDbSqlApiImage =
             "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator";
 
-        public const string DefaultCosmosDbMongoDbApiImage = 
+        public const string DefaultCosmosDbMongoDbApiImage =
             "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongo";
 
         private const int DefaultSqlApiPort = 8081;
-        
+
         private const int DefaultMongoDbApiPort = 10250;
 
         public CosmosDbTestcontainerConfiguration()
-            : this(DefaultCosmosDbSqlApiImage) 
+            : this(DefaultCosmosDbSqlApiImage)
         {
+          this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
         }
 
-        public CosmosDbTestcontainerConfiguration(string image) 
-            : base(image, DefaultSqlApiPort) 
+        public CosmosDbTestcontainerConfiguration(string image)
+            : base(image, DefaultSqlApiPort, DefaultSqlApiPort)
         {
             this.Environments.Add("AZURE_COSMOS_EMULATOR_MONGO_DB_ENDPOINT", "");
             this.Environments.Add("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
         }
 
+        public override IOutputConsumer OutputConsumer { get; }
+
         public int MongoDbApiPort { get; set; }
 
         public int MongoDbApiContainerPort { get; set; }
 
-        public int SqlApiPort { get; set; }
+        public int SqlApiPort { get; set; } = DefaultSqlApiPort;
 
-        public int SqlApiContainerPort { get; set; }
+        public int SqlApiContainerPort { get; set; } = DefaultSqlApiPort;
 
-        public override IWaitForContainerOS WaitStrategy 
+        public override IWaitForContainerOS WaitStrategy
         {
             get
             {
                 var waitStrategy = Wait.ForUnixContainer();
-                // waitStrategy = string.IsNullOrWhiteSpace(this.MongoDbEndpoint) 
-                //     ? waitStrategy.UntilPortIsAvailable(SqlApiContainerPort)
-                //     : waitStrategy.UntilPortIsAvailable(MongoDbApiContainerPort);
                 waitStrategy = waitStrategy.UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started");
 
                 return waitStrategy;
@@ -82,12 +83,12 @@ namespace DotNet.Testcontainers.Configurations
         {
             get => this.Environments["AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE"];
             set => this.Environments["AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE"] = value;
-        } 
+        }
 
         public string MongoDbEndpoint
         {
             get => this.Environments["AZURE_COSMOS_EMULATOR_MONGO_DB_ENDPOINT"];
             set => this.Environments["AZURE_COSMOS_EMULATOR_MONGO_DB_ENDPOINT"] = value;
-        } 
+        }
     }
 }

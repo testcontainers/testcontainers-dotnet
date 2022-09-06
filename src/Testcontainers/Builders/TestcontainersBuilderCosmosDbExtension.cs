@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Builders
               .WithExposedPort(configuration.SqlApiContainerPort)
               .WithPortBinding(configuration.SqlApiPort);
 
-            return builder;
+          return builder;
         }
     }
 }
