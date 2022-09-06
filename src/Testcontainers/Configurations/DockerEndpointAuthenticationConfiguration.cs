@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using Docker.DotNet;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationConfiguration" />
@@ -19,9 +21,10 @@
     public Uri Endpoint { get; }
 
     /// <inheritdoc />
-    public DockerClientConfiguration GetDockerClientConfiguration()
+    public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
     {
-      return new DockerClientConfiguration(this.Endpoint);
+      var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "x-tc-sid", sessionId.ToString("D") } });
+      return new DockerClientConfiguration(this.Endpoint, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }
 }

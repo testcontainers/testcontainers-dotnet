@@ -18,8 +18,9 @@
     /// <summary>
     /// Gets the Docker client configuration.
     /// </summary>
+    /// <param name="sessionId">The session id.</param>
     /// <returns>The Docker client configuration.</returns>
     [NotNull]
-    DockerClientConfiguration GetDockerClientConfiguration();
+    DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default);
   }
 }

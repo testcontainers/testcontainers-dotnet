@@ -68,7 +68,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04)
 - MongoDB (mongo:5.0.6)
 - MySQL (mysql:8.0.28)
-- Oracle Database (wnameless/oracle-xe-11g-r2)
+- Oracle Database (gvenzl/oracle-xe:21-slim)
 - PostgreSQL (postgres:11.14)
 - Redis (redis:5.0.14)
 - Apache Kafka (confluentinc/cp-kafka:6.0.5)

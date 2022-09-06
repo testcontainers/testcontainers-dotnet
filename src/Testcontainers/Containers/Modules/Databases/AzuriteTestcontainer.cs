@@ -28,39 +28,39 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     [PublicAPI]
     public int BlobPort
-      => this.GetMappedPublicPort(this.ContainerBlobPort);
+      => this.GetMappedPublicPort(this.BlobContainerPort);
 
     /// <summary>
     /// Gets the host queue port.
     /// </summary>
     [PublicAPI]
     public int QueuePort
-      => this.GetMappedPublicPort(this.ContainerQueuePort);
+      => this.GetMappedPublicPort(this.QueueContainerPort);
 
     /// <summary>
     /// Gets the host table port.
     /// </summary>
     [PublicAPI]
     public int TablePort
-      => this.GetMappedPublicPort(this.ContainerTablePort);
+      => this.GetMappedPublicPort(this.TableContainerPort);
 
     /// <summary>
-    /// Gets or sets the container blob port.
+    /// Gets or sets the blob container port.
     /// </summary>
     [PublicAPI]
-    public int ContainerBlobPort { get; set; }
+    public int BlobContainerPort { get; set; }
 
     /// <summary>
-    /// Gets or sets the container queue port.
+    /// Gets or sets the queue container port.
     /// </summary>
     [PublicAPI]
-    public int ContainerQueuePort { get; set; }
+    public int QueueContainerPort { get; set; }
 
     /// <summary>
-    /// Gets or sets the container table port.
+    /// Gets or sets the table container port.
     /// </summary>
     [PublicAPI]
-    public int ContainerTablePort { get; set; }
+    public int TableContainerPort { get; set; }
 
     /// <summary>
     /// Gets the Storage connection string.
@@ -82,19 +82,19 @@ namespace DotNet.Testcontainers.Containers
         connectionString.Add("AccountName", accountName);
         connectionString.Add("AccountKey", accountKey);
 
-        if (this.ContainerBlobPort > 0)
+        if (this.BlobContainerPort > 0)
         {
           endpointBuilder.Port = this.BlobPort;
           connectionString.Add("BlobEndpoint", endpointBuilder.ToString());
         }
 
-        if (this.ContainerQueuePort > 0)
+        if (this.QueueContainerPort > 0)
         {
           endpointBuilder.Port = this.QueuePort;
           connectionString.Add("QueueEndpoint", endpointBuilder.ToString());
         }
 
-        if (this.ContainerTablePort > 0)
+        if (this.TableContainerPort > 0)
         {
           endpointBuilder.Port = this.TablePort;
           connectionString.Add("TableEndpoint", endpointBuilder.ToString());

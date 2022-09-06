@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Tests
   {
     public Initialization(ILogger logger, FactAttribute skipOnLinuxEngine)
     {
-      TestcontainersSettings.ResourceReaperEnabled = skipOnLinuxEngine.Skip != null;
+      TestcontainersSettings.ResourceReaperEnabled = skipOnLinuxEngine.Skip == null;
       TestcontainersSettings.Logger = logger;
     }
 

@@ -25,9 +25,9 @@ namespace DotNet.Testcontainers.Builders
         .WithWaitStrategy(configuration.WaitStrategy)
         .ConfigureContainer(container =>
         {
-          container.ContainerBlobPort = blobServiceEnabled ? configuration.BlobContainerPort : 0;
-          container.ContainerQueuePort = queueServiceEnabled ? configuration.QueueContainerPort : 0;
-          container.ContainerTablePort = tableServiceEnabled ? configuration.TableContainerPort : 0;
+          container.BlobContainerPort = blobServiceEnabled ? configuration.BlobContainerPort : 0;
+          container.QueueContainerPort = queueServiceEnabled ? configuration.QueueContainerPort : 0;
+          container.TableContainerPort = tableServiceEnabled ? configuration.TableContainerPort : 0;
         });
 
       if (blobServiceEnabled)

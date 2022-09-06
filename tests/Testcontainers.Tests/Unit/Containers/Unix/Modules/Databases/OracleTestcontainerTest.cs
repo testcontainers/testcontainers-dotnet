@@ -46,13 +46,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void CannotSetPassword()
-    {
-      var oracle = new OracleTestcontainerConfiguration();
-      Assert.Throws<NotImplementedException>(() => oracle.Password = string.Empty);
-    }
-
-    [Fact]
     public async Task ExecScriptInRunningContainer()
     {
       // Given
