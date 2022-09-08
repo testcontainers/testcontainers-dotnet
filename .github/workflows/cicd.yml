@@ -2,9 +2,9 @@ name: Continuous Integration & Delivery
 
 on:
   push:
-    branches: [ develop, master, bugfix/*, feature/* ]
+    branches: [develop, master, bugfix/*, feature/*]
   pull_request:
-    branches: [ develop, master ]
+    branches: [develop, master]
   workflow_dispatch:
     inputs:
       publish_nuget_package:
@@ -26,6 +26,7 @@ jobs:
         os: [ubuntu-20.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Repository
