@@ -22,15 +22,14 @@ namespace DotNet.Testcontainers.Configurations
     public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
-      logger.LogWarning("Start read");
       using (var streamReader = new StreamReader(this.stream, Encoding.UTF8, false, 4096, true))
       {
-        logger.LogWarning("Read to end");
         var output = await streamReader.ReadToEndAsync()
           .ConfigureAwait(false);
-        logger.LogWarning($"got: {output}");
-
-        return Regex.IsMatch(output, this.message);
+        var isMatch = Regex.IsMatch(output, this.message);
+        // TODO temporary logging
+        logger?.LogInformation("Wating for message, data read: {Data}, is match {Match}", output, isMatch);
+        return isMatch;
       }
     }
   }

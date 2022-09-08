@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public async Task ShouldEstablishConnection()
       {
-         var exception = await Record.ExceptionAsync(() => Task.WhenAll(EstablishConnection(commonContainerPorts)));
+         var exception = await Record.ExceptionAsync(() => EstablishConnection(this.commonContainerPorts));
          Assert.Null(exception);
       }
 
