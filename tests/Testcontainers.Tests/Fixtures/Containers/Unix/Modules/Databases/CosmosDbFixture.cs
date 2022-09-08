@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System.Collections.Generic;
   using System.Data.Common;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -40,7 +41,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
       public override Task InitializeAsync()
       {
-        return this.Container.StartAsync();
+        // wait for 5 min
+        return Task.WhenAny(this.Container.StartAsync(), Task.Delay(5 * 60 * 1000));
       }
 
       public override async Task DisposeAsync()
