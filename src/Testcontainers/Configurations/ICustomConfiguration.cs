@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Text.Json;
@@ -33,6 +33,28 @@
     /// <remarks>https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#access-an-image-from-a-private-container-registry.</remarks>
     [CanBeNull]
     JsonDocument GetDockerAuthConfig();
+
+    /// <summary>
+    /// Gets the Docker certificates path custom configuration.
+    /// </summary>
+    /// <returns>The Docker certificates path custom configuration.</returns>
+    /// <remarks>https://www.testcontainers.org/features/configuration/#customizing-docker-host-detection.</remarks>
+    [CanBeNull]
+    string GetDockerCertPath();
+
+    /// <summary>
+    /// Gets the Docker TLS custom configuration.
+    /// </summary>
+    /// <returns>The Docker TLS custom configuration.</returns>
+    /// <remarks>https://www.testcontainers.org/features/configuration/#customizing-docker-host-detection.</remarks>
+    bool GetDockerTls();
+
+    /// <summary>
+    /// Gets the Docker TLS verify custom configuration.
+    /// </summary>
+    /// <returns>The Docker TLS verify custom configuration.</returns>
+    /// <remarks>https://www.testcontainers.org/features/configuration/#customizing-docker-host-detection.</remarks>
+    bool GetDockerTlsVerify();
 
     /// <summary>
     /// Gets the Ryuk disabled custom configuration.

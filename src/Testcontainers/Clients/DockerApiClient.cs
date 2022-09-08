@@ -11,12 +11,10 @@ namespace DotNet.Testcontainers.Clients
 
     protected DockerApiClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      _ = sessionId;
-
       var lazyDockerClient = Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ =>
         new Lazy<IDockerClient>(() =>
         {
-          using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
+          using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
           {
             return dockerClientConfiguration.CreateClient();
           }

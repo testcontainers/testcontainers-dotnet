@@ -11,7 +11,12 @@
 - 528 Do not require the Docker host configuration (`DockerEndpointAuthConfig`) on `TestcontainersSettings` initialization
 - 538 Support optional username and password in MongoDB connection string (@the-avid-engineer)
 - 540 Add Docker registry authentication provider for `DOCKER_AUTH_CONFIG` environment variable (@vova-lantsov-dev)
-- 541 Allow MsSqlTestcontainerConfiguration custom database names (@enginexon)
+- 541 Allow `MsSqlTestcontainerConfiguration` custom database names (@enginexon)
+- 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`.
+
+### Changed
+
+- 571 Update `wnameless/oracle-xe-11g-r2` to `gvenzl/oracle-xe:21-slim`
 
 ### Fixed
 

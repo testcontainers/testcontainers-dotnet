@@ -19,6 +19,7 @@ namespace DotNet.Testcontainers.Builders
 
       return builder
         .WithImage(configuration.Image)
+        .WithExposedPort(configuration.DefaultPort)
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
         .WithOutputConsumer(configuration.OutputConsumer)
         .WithWaitStrategy(configuration.WaitStrategy)

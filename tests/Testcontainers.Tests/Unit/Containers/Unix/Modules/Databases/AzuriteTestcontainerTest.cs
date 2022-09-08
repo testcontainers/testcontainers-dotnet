@@ -34,6 +34,24 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
+    public sealed class DisabledService
+    {
+      public static IEnumerable<object[]> DisabledServices { get; }
+        = new[]
+        {
+          new[] { new AzuriteTestcontainerConfiguration { BlobServiceOnlyEnabled = false } },
+          new[] { new AzuriteTestcontainerConfiguration { QueueServiceOnlyEnabled = false } },
+          new[] { new AzuriteTestcontainerConfiguration { TableServiceOnlyEnabled = false } },
+        };
+
+      [Theory]
+      [MemberData(nameof(DisabledServices))]
+      public void ShouldEnableAllServices(AzuriteTestcontainerConfiguration configuration)
+      {
+        Assert.True(configuration.AllServicesEnabled);
+      }
+    }
+
     [Collection(nameof(Testcontainers))]
     public sealed class AllServicesEnabled : IClassFixture<AzuriteFixture.AzuriteDefaultFixture>, IClassFixture<AzuriteFixture.AzuriteWithCustomContainerPortsFixture>
     {
@@ -93,9 +111,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.False(HasError(queueProperties));
         Assert.False(HasError(tableProperties));
         Assert.Equal(0, execResult.ExitCode);
-        Assert.Equal(azurite.Configuration.BlobContainerPort, azurite.Container.ContainerBlobPort);
-        Assert.Equal(azurite.Configuration.QueueContainerPort, azurite.Container.ContainerQueuePort);
-        Assert.Equal(azurite.Configuration.TableContainerPort, azurite.Container.ContainerTablePort);
+        Assert.Equal(azurite.Configuration.BlobContainerPort, azurite.Container.BlobContainerPort);
+        Assert.Equal(azurite.Configuration.QueueContainerPort, azurite.Container.QueueContainerPort);
+        Assert.Equal(azurite.Configuration.TableContainerPort, azurite.Container.TableContainerPort);
         Assert.Contains(BlobServiceDataFileName, execResult.Stdout);
         Assert.Contains(QueueServiceDataFileName, execResult.Stdout);
         Assert.Contains(TableServiceDataFileName, execResult.Stdout);

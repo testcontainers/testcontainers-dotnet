@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class OracleFixture : DatabaseFixture<OracleTestcontainer, DbConnection>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new OracleTestcontainerConfiguration();
+    private readonly TestcontainerDatabaseConfiguration configuration = new OracleTestcontainerConfiguration { Password = "oracle" };
 
     public OracleFixture()
     {
