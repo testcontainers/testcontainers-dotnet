@@ -29,16 +29,7 @@ namespace DotNet.Testcontainers.Configurations
 
     public override IOutputConsumer OutputConsumer { get; }
 
-    public override IWaitForContainerOS WaitStrategy
-    {
-      get
-      {
-        var waitStrategy = Wait.ForUnixContainer();
-        waitStrategy = waitStrategy.UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started|Shutting");
-
-        return waitStrategy;
-      }
-    }
+    public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started|Shutting");
 
     public override string Password
     {

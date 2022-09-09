@@ -27,7 +27,6 @@ namespace DotNet.Testcontainers.Configurations
         var output = await streamReader.ReadToEndAsync()
           .ConfigureAwait(false);
         var isMatch = Regex.IsMatch(output, this.message);
-        // TODO temporary logging
         logger?.LogInformation("Wating for message, data read: {Data}, is match {Match}", output, isMatch);
         return isMatch;
       }
