@@ -23,8 +23,8 @@ namespace DotNet.Testcontainers.Configurations
     public CosmosDbTestcontainerConfiguration(string image)
       : base(image, DefaultCosmosPort)
     {
-      this.Environments.Add("AZURE_COSMOS_EMULATOR_MONGO_DB_ENDPOINT", string.Empty);
-      this.Environments.Add("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+      this.PartitionCount = 1;
+      this.IpAddressOverride = "127.0.0.1";
     }
 
     public override IOutputConsumer OutputConsumer { get; }
