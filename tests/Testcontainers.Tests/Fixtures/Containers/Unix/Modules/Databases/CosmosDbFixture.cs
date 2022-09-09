@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 
   public class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
   {
@@ -19,13 +18,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       this.Configuration = configuration;
       this.Rebuild(configuration);
-    }
-
-    private void Rebuild(CosmosDbTestcontainerConfiguration configuration)
-    {
-      this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-        .WithCosmosDb(configuration)
-        .Build();
     }
 
     public CosmosDbTestcontainerConfiguration Configuration { get; set; }
@@ -51,13 +43,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       }
     }
 
-    private string ReadOutputMessage()
-    {
-      var stdout = this.Configuration.OutputConsumer.Stdout;
-      stdout.Position = 0;
-      return new StreamReader(stdout).ReadToEnd();
-    }
-
     public override async Task DisposeAsync()
     {
       if (this.Connection != null && this.Connection.State != System.Data.ConnectionState.Closed)
@@ -72,6 +57,20 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public override void Dispose()
     {
       this.Configuration.Dispose();
+    }
+
+    private void Rebuild(CosmosDbTestcontainerConfiguration configuration)
+    {
+      this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
+        .WithCosmosDb(configuration)
+        .Build();
+    }
+
+    private string ReadOutputMessage()
+    {
+      var stdout = this.Configuration.OutputConsumer.Stdout;
+      stdout.Position = 0;
+      return new StreamReader(stdout).ReadToEnd();
     }
   }
 }
