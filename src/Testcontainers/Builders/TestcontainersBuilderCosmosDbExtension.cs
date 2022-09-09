@@ -15,6 +15,7 @@ namespace DotNet.Testcontainers.Builders
             .WithExposedPort(configuration.DefaultPort)
             .WithWaitStrategy(configuration.WaitStrategy)
             .WithOutputConsumer(configuration.OutputConsumer)
+            .WithEnvironment("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false")
             .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1")
             .ConfigureContainer(testcontainer =>
             {

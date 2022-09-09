@@ -1,6 +1,9 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
+  using System.Net;
   using System.Net.Http;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Microsoft.Azure.Cosmos;
@@ -8,45 +11,40 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public static class CosmosDbTestcontainerTest
   {
-   [Collection(nameof(Testcontainers))]
-   public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>
-   {
-      private static readonly CosmosClientOptions SkipSslValidationOptions = new CosmosClientOptions()
+    [Collection(nameof(Testcontainers))]
+    public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>
+    {
+      private readonly CosmosDbFixture fixture;
+
+      public ConnectionTests(CosmosDbFixture fixture)
       {
-         HttpClientFactory = () =>
-         {
-            HttpMessageHandler httpMessageHandler = new HttpClientHandler()
-            {
-               ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-            };
-
-            return new HttpClient(httpMessageHandler);
-         },
-
-         ConnectionMode = ConnectionMode.Gateway,
-      };
-
-      private readonly CosmosDbFixture commonContainerPorts;
-
-      public ConnectionTests(CosmosDbFixture commonContainerPorts)
-      {
-         this.commonContainerPorts = commonContainerPorts;
+        this.fixture = fixture;
       }
+
+      private CosmosClientOptions Options => new CosmosClientOptions
+      {
+        HttpClientFactory = () => this.fixture.Container.HttpClient,
+        ConnectionMode = ConnectionMode.Gateway,
+      };
 
       [Fact]
       public async Task ShouldEstablishConnection()
       {
-         var exception = await Record.ExceptionAsync(() => EstablishConnection(this.commonContainerPorts));
-         Assert.Null(exception);
+        var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
+
+        var accountProperties = await client.ReadAccountAsync();
+        Assert.Equal("localhost", accountProperties.Id);
       }
 
-      private static async Task EstablishConnection(CosmosDbFixture cosmosDb)
+      [Fact]
+      public async Task CreateDatabaseTest()
       {
-         var client = new CosmosClient(cosmosDb.Container.ConnectionString, SkipSslValidationOptions);
+        var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
 
-         var properties = await client.ReadAccountAsync()
-            .ConfigureAwait(false);
+        var db = await client.CreateDatabaseIfNotExistsAsync("test-db");
+        Assert.Equal(HttpStatusCode.Created, db.StatusCode);
       }
     }
   }
 }
+
