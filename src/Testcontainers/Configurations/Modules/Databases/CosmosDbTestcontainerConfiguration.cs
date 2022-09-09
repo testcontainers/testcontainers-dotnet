@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Configurations
       get
       {
         var waitStrategy = Wait.ForUnixContainer();
-        waitStrategy = waitStrategy.UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started");
+        waitStrategy = waitStrategy.UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started|Shutting");
 
         return waitStrategy;
       }
