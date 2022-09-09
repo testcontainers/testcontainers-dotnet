@@ -1,10 +1,12 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Data.Common;
+  using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 
   public class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
   {
@@ -16,6 +18,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     private CosmosDbFixture(CosmosDbTestcontainerConfiguration configuration)
     {
       this.Configuration = configuration;
+      this.Rebuild(configuration);
+    }
+
+    private void Rebuild(CosmosDbTestcontainerConfiguration configuration)
+    {
       this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
         .WithCosmosDb(configuration)
         .Build();
@@ -23,10 +30,32 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public CosmosDbTestcontainerConfiguration Configuration { get; set; }
 
-    public override Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
-      // wait for 5 min
-      return Task.WhenAny(this.Container.StartAsync(), Task.Delay(5 * 60 * 1000));
+      const int maxRetries = 5;
+      async Task Restart()
+      {
+        await this.Container.StartAsync();
+        await Task.WhenAny(this.Container.StartAsync(), Task.Delay(5 * 60 * 1000));
+      }
+
+      await Restart();
+      var outputMessage = this.ReadOutputMessage();
+      var retries = 0;
+      while (!outputMessage.Contains("Started") && retries++ < maxRetries)
+      {
+        await this.DisposeAsync();
+        this.Rebuild(this.Configuration);
+        await Restart();
+        outputMessage = this.ReadOutputMessage();
+      }
+    }
+
+    private string ReadOutputMessage()
+    {
+      var stdout = this.Configuration.OutputConsumer.Stdout;
+      stdout.Position = 0;
+      return new StreamReader(stdout).ReadToEnd();
     }
 
     public override async Task DisposeAsync()
