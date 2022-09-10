@@ -36,6 +36,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var retries = 0;
       while (!outputMessage.Contains("Started") && retries++ < maxRetries)
       {
+        await this.Container.StopAsync();
         await this.DisposeAsync();
         this.Rebuild(this.Configuration);
         await Restart();
