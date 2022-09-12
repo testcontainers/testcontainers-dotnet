@@ -16,8 +16,7 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetDockerConfig(string propertyName)
     {
-      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
-      return propertyValue;
+      return this.GetPropertyValue(propertyName);
     }
 
     protected Uri GetDockerHost(string propertyName)
@@ -46,8 +45,7 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetDockerCertPath(string propertyName)
     {
-      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
-      return propertyValue;
+      return this.GetPropertyValue(propertyName);
     }
 
     protected bool GetDockerTls(string propertyName)
@@ -87,6 +85,11 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     protected string GetHubImageNamePrefix(string propertyName)
+    {
+      return this.GetPropertyValue(propertyName);
+    }
+
+    private string GetPropertyValue(string propertyName)
     {
       _ = this.properties.TryGetValue(propertyName, out var propertyValue);
       return propertyValue;

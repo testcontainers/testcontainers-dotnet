@@ -2,6 +2,7 @@
 {
   using System;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
@@ -22,7 +23,7 @@
         return false;
       }
 
-      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration())
+      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
       {
         using (var dockerClient = dockerClientConfiguration.CreateClient())
         {
