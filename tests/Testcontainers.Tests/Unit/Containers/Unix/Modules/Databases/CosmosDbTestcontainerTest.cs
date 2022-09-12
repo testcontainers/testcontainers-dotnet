@@ -18,11 +18,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         this.fixture = fixture;
       }
 
-      private CosmosClientOptions Options => new CosmosClientOptions
-      {
-        HttpClientFactory = () => this.fixture.Container.HttpClient,
-        ConnectionMode = ConnectionMode.Gateway,
-      };
+      private CosmosClientOptions Options => new CosmosClientOptions { HttpClientFactory = () => this.fixture.Container.HttpClient, ConnectionMode = ConnectionMode.Gateway, };
 
       [SkipOnLinuxOS]
       public async Task ShouldEstablishConnection()
