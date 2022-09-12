@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         ConnectionMode = ConnectionMode.Gateway,
       };
 
-      [Fact]
+      [SkipOnLinuxOS]
       public async Task ShouldEstablishConnection()
       {
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal("localhost", accountProperties.Id);
       }
 
-      [Fact]
+      [SkipOnLinuxOS]
       public async Task CreateDatabaseTest()
       {
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
