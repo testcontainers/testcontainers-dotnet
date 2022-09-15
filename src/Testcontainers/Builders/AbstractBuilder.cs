@@ -69,7 +69,7 @@
     /// Merges the current with the new Docker resource configuration.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The new Docker resource configuration.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected abstract TBuilderEntity MergeNewConfiguration(IDockerResourceConfiguration dockerResourceConfiguration);
   }
 }
