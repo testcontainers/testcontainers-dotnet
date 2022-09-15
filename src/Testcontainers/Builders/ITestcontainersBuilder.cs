@@ -151,7 +151,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="hostPort">Port of the host machine.</param>
     /// <param name="containerPort">Port of the Testcontainer.</param>
-    /// <remarks>Append /tcp|udp|sctp to <see cref="containerPort" /> to change the protocol e.g. "53/udp". Default: tcp.</remarks>
+    /// <remarks>Append /tcp|udp|sctp to <paramre name="containerPort" /> to change the protocol e.g. "53/udp". Default: tcp.</remarks>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort);

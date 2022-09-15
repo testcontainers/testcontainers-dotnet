@@ -75,7 +75,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <remarks>
     /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, CancellationToken)" />
-    /// or if a <see cref="ITestcontainersContainer" /> is configured with <see cref="ITestcontainersBuilder{TDockerContainer}.WithCleanUp" />.
+    /// or if a <see cref="ITestcontainersContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
@@ -250,7 +250,7 @@ namespace DotNet.Testcontainers.Containers
     ///
     /// 1) Initialization
     /// Tries to establish a connection to Ryuk. After establishment, sends a Docker resource filter to Ryuk. Ryuk will acknowledge the reception of the filter.
-    /// On termination, Ryuk will delete all Docker resources matching the filter. You can cancel the initialization with <see cref="ct" />.
+    /// On termination, Ryuk will delete all Docker resources matching the filter. You can cancel the initialization with <paramref name="ct" />.
     ///
     /// 2) Maintenance
     /// After initialization, we need to keep the connection to Ryuk open. If we lose the connection for any reason, Ryuk allows reconnecting within 10 seconds.

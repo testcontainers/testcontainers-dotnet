@@ -16,7 +16,7 @@
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerEndpoint(string endpoint);
 
@@ -24,7 +24,7 @@
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerEndpoint(Uri endpoint);
 
@@ -32,7 +32,7 @@
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig);
 
@@ -40,7 +40,7 @@
     /// If true, the <see cref="ResourceReaper" /> will remove the Docker resource automatically. Otherwise, the Docker resource will be kept.
     /// </summary>
     /// <param name="cleanUp">True, the <see cref="ResourceReaper" /> will remove the Docker resource automatically. Otherwise, the Docker resource will be kept.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithCleanUp(bool cleanUp);
 
@@ -49,7 +49,7 @@
     /// </summary>
     /// <param name="name">Label name.</param>
     /// <param name="value">Label value.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithLabel(string name, string value);
 
@@ -57,7 +57,7 @@
     /// Sets the Resource Reaper session id.
     /// </summary>
     /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
-    /// <returns>A configured instance of <see cref="TBuilderEntity" />.</returns>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     /// <remarks>The <see cref="ResourceReaper" /> will delete the Docker resource after the tests has been finished.</remarks>
     [PublicAPI]
     TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId);

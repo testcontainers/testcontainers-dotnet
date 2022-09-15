@@ -1,5 +1,8 @@
 namespace DotNet.Testcontainers.Containers
 {
+  /// <summary>
+  /// Resource Reaper states.
+  /// </summary>
   public enum ResourceReaperState
   {
     /// <summary>
