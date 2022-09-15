@@ -32,6 +32,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
     /// <param name="workingDirectory">The working directory.</param>
+    /// <param name="maxWaitTime">Max time to wait until container is ready</param>
     /// <param name="entrypoint">The entrypoint.</param>
     /// <param name="command">The command.</param>
     /// <param name="environments">The environment variables.</param>
@@ -54,6 +55,7 @@ namespace DotNet.Testcontainers.Configurations
       string name = null,
       string hostname = null,
       string workingDirectory = null,
+      int maxWaitTime = -1,
       IEnumerable<string> entrypoint = null,
       IEnumerable<string> command = null,
       IReadOnlyDictionary<string, string> environments = null,
@@ -78,6 +80,7 @@ namespace DotNet.Testcontainers.Configurations
       this.Name = name;
       this.Hostname = hostname;
       this.WorkingDirectory = workingDirectory;
+      this.MaxWaitTime = maxWaitTime;
       this.Entrypoint = entrypoint;
       this.Command = command;
       this.Environments = environments;
@@ -114,6 +117,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public string WorkingDirectory { get; }
+
+    /// <inheritdoc />
+    public int MaxWaitTime { get; }
 
     /// <inheritdoc />
     public IEnumerable<string> Entrypoint { get; }

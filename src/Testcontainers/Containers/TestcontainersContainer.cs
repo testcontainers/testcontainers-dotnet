@@ -305,7 +305,7 @@ namespace DotNet.Testcontainers.Containers
       // we send many operations to the Docker endpoint. The endpoint may cancel operations.
       var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
 
-      const int timeout = -1;
+      var timeout = this.configuration.MaxWaitTime;
 
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {

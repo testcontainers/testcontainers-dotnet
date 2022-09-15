@@ -24,6 +24,18 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    public override async Task StartAsync(CancellationToken ct = default)
+    {
+      try
+      {
+        await base.StartAsync(ct);
+      }
+      catch (Exception e)
+      {
+        this.Logger.LogWarning("Failed to start container", e);
+      }
+    }
+
     public override string ConnectionString =>
       $"AccountEndpoint=https://{this.Hostname}:{this.Port};AccountKey={this.Password}";
 

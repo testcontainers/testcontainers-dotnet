@@ -112,6 +112,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithMaxWaitTime(int maxWaitTime)
+    {
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(maxWaitTime: maxWaitTime));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithEntrypoint(params string[] entrypoint)
     {
       return this.MergeNewConfiguration(new TestcontainersConfiguration(entrypoint: entrypoint));
@@ -350,6 +356,7 @@ namespace DotNet.Testcontainers.Builders
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var hostname = BuildConfiguration.Combine(dockerResourceConfiguration.Hostname, this.DockerResourceConfiguration.Hostname);
       var workingDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.WorkingDirectory, this.DockerResourceConfiguration.WorkingDirectory);
+      var maxWaitTime = dockerResourceConfiguration.MaxWaitTime > 0 ? dockerResourceConfiguration.MaxWaitTime : this.DockerResourceConfiguration.MaxWaitTime;
       var entrypoint = BuildConfiguration.Combine(dockerResourceConfiguration.Entrypoint, this.DockerResourceConfiguration.Entrypoint);
       var command = BuildConfiguration.Combine(dockerResourceConfiguration.Command, this.DockerResourceConfiguration.Command);
       var environments = BuildConfiguration.Combine(dockerResourceConfiguration.Environments, this.DockerResourceConfiguration.Environments);
@@ -367,7 +374,7 @@ namespace DotNet.Testcontainers.Builders
       var parameterModifiers = BuildConfiguration.Combine(dockerResourceConfiguration.ParameterModifiers, this.DockerResourceConfiguration.ParameterModifiers);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, maxWaitTime, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, this.mergeModuleConfiguration);
     }
 
