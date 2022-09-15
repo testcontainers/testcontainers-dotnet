@@ -24,6 +24,9 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    public override string ConnectionString =>
+      $"AccountEndpoint=https://{this.Hostname}:{this.Port};AccountKey={this.Password}";
+
     public override async Task StartAsync(CancellationToken ct = default)
     {
       try
@@ -35,9 +38,6 @@ namespace DotNet.Testcontainers.Containers
         this.Logger.LogWarning("Failed to start container", e);
       }
     }
-
-    public override string ConnectionString =>
-      $"AccountEndpoint=https://{this.Hostname}:{this.Port};AccountKey={this.Password}";
 
     private class UrlRewriter : DelegatingHandler
     {
