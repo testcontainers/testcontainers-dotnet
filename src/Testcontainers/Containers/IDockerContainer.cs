@@ -155,7 +155,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the file has been copied.</returns>
     /// <remarks>
-    /// <see cref="accessMode" /> is a decimal value. Covert chmod (octal) to decimal.
+    /// <paramref name="accessMode" /> is a decimal value. Covert chmod (octal) to decimal.
     /// <ul>
     ///   <li>777 octal 🠒 111_111_111 binary 🠒 511 decimal</li>
     ///   <li>755 octal 🠒 111_101_101 binary 🠒 493 decimal</li>

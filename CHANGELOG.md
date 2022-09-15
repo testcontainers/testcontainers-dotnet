@@ -13,6 +13,7 @@
 - 540 Add Docker registry authentication provider for `DOCKER_AUTH_CONFIG` environment variable (@vova-lantsov-dev)
 - 541 Allow `MsSqlTestcontainerConfiguration` custom database names (@enginexon)
 - 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`.
+- 583 Add XML documentation to NuGet
 
 ### Changed
 
