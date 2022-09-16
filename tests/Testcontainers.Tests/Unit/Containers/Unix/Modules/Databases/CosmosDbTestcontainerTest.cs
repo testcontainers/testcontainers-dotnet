@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       private CosmosClientOptions Options => new CosmosClientOptions { HttpClientFactory = () => this.fixture.Container.HttpClient, ConnectionMode = ConnectionMode.Gateway, };
 
-      [Fact]
+      [Fact(Skip = "Waiting for a working cosmosdb emulator")]
       public async Task ShouldEstablishConnection()
       {
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal("localhost", accountProperties.Id);
       }
 
-      [Fact]
+      [Fact(Skip = "Waiting for a working cosmosdb emulator")]
       public async Task CreateDatabaseTest()
       {
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
@@ -40,4 +40,3 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
   }
 }
-

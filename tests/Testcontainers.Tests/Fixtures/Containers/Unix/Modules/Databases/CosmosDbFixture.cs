@@ -1,7 +1,9 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System;
   using System.Data.Common;
   using System.IO;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
@@ -17,30 +19,23 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     private CosmosDbFixture(CosmosDbTestcontainerConfiguration configuration)
     {
       this.Configuration = configuration;
-      this.Rebuild(configuration);
+      this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
+        .WithCosmosDb(configuration)
+        .Build();
     }
 
     public CosmosDbTestcontainerConfiguration Configuration { get; set; }
 
     public override async Task InitializeAsync()
     {
-      const int maxRetries = 5;
-      async Task Restart()
+      // workaround for broken cosmosdb emulator
+      var maxWait = TimeSpan.FromSeconds(5);
+      var cancellationTokenSource = new CancellationTokenSource();
+      var containerTask = this.Container.StartAsync(cancellationTokenSource.Token);
+      var task = await Task.WhenAny(new[] { containerTask, Task.Delay(maxWait) });
+      if (task != containerTask)
       {
-        await this.Container.StartAsync();
-        await Task.WhenAny(this.Container.StartAsync(), Task.Delay(5 * 60 * 1000));
-      }
-
-      await Restart();
-      var outputMessage = this.ReadOutputMessage();
-      var retries = 0;
-      while (!outputMessage.Contains("Started") && retries++ < maxRetries)
-      {
-        await this.Container.StopAsync();
-        await this.DisposeAsync();
-        this.Rebuild(this.Configuration);
-        await Restart();
-        outputMessage = this.ReadOutputMessage();
+        cancellationTokenSource.Cancel();
       }
     }
 
@@ -58,20 +53,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public override void Dispose()
     {
       this.Configuration.Dispose();
-    }
-
-    private void Rebuild(CosmosDbTestcontainerConfiguration configuration)
-    {
-      this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-        .WithCosmosDb(configuration)
-        .Build();
-    }
-
-    private string ReadOutputMessage()
-    {
-      var stdout = this.Configuration.OutputConsumer.Stdout;
-      stdout.Position = 0;
-      return new StreamReader(stdout).ReadToEnd();
     }
   }
 }
