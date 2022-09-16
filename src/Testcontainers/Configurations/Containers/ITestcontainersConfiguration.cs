@@ -50,11 +50,6 @@ namespace DotNet.Testcontainers.Configurations
     string WorkingDirectory { get; }
 
     /// <summary>
-    /// Gets the max time to wait for container is ready
-    /// </summary>
-    int MaxWaitTime { get; }
-
-    /// <summary>
     /// Gets the entrypoint.
     /// </summary>
     IEnumerable<string> Entrypoint { get; }

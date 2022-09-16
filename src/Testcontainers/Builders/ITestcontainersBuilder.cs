@@ -69,14 +69,6 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory);
 
     /// <summary>
-    /// Sets the max time for the container to be ready
-    /// </summary>
-    /// <param name="maxWaitTime">Max wait time in milliseconds</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
-    [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithMaxWaitTime(int maxWaitTime);
-
-    /// <summary>
     /// Overrides the entrypoint of the Testcontainer to configure an executable.
     /// </summary>
     /// <param name="entrypoint">Entrypoint executable.</param>

@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Net;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Microsoft.Azure.Cosmos;
   using Xunit;
@@ -24,11 +23,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public async Task ShouldEstablishConnection()
       {
-        if (this.fixture.Container.State != TestcontainersState.Running)
-        {
-          return;
-        }
-
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
 
         var accountProperties = await client.ReadAccountAsync();
@@ -38,11 +32,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public async Task CreateDatabaseTest()
       {
-        if (this.fixture.Container.State != TestcontainersState.Running)
-        {
-          return;
-        }
-
         var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
 
         var db = await client.CreateDatabaseIfNotExistsAsync("test-db");
@@ -51,3 +40,4 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
   }
 }
+

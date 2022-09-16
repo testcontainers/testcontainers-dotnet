@@ -26,7 +26,9 @@ namespace DotNet.Testcontainers.Configurations
       {
         var output = await streamReader.ReadToEndAsync()
           .ConfigureAwait(false);
-        return Regex.IsMatch(output, this.message);
+        var isMatch = Regex.IsMatch(output, this.message);
+        logger?.LogInformation("Wating for message, data read: {Data}, is match {Match}", output, isMatch);
+        return isMatch;
       }
     }
   }
