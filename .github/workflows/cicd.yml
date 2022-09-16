@@ -26,7 +26,6 @@ jobs:
         os: [ubuntu-20.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
 
     steps:
       - name: Checkout Repository
