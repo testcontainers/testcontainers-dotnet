@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       this.Configuration = configuration;
       this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-        .WithMaxWaitTime((int)TimeSpan.FromMinutes(5).TotalMilliseconds)
+        .WithMaxWaitTime((int)TimeSpan.FromSeconds(5).TotalMilliseconds)
         .WithCosmosDb(configuration)
         .Build();
     }
