@@ -36,6 +36,7 @@
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="System.Data.SqlClient" />
+    <PackageReference Include="Neo4j.Driver" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />

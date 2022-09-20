@@ -39,5 +39,6 @@
     <PackageReference Update="RabbitMQ.Client" Version="6.2.4" />
     <PackageReference Update="StackExchange.Redis" Version="2.6.48" />
     <PackageReference Update="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Update="Neo4j.Driver" Version="4.4.0" />
   </ItemGroup>
 </Project>
