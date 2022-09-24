@@ -53,5 +53,25 @@
     {
       Assert.Matches("mongodb:\\/\\/\\w+:\\d+", this.mongoDbNoAuthFixture.Container.ConnectionString);
     }
+
+    [Fact]
+    public async Task ExecScriptInRunningContainer()
+    {
+      // Given
+      var script = @$"
+        db = db.getSiblingDB('{this.mongoDbFixture.Container.Database}')
+        db.collection.insertOne({{x:1}});
+        print(db.collection.find({{}}));
+        print(db.adminCommand('listDatabases'));
+      ";
+
+      // When
+      var result = await this.mongoDbFixture.Container.ExecScriptAsync(script)
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(0, result.ExitCode);
+      Assert.Contains(this.mongoDbFixture.Container.Database, result.Stdout);
+    }
   }
 }
