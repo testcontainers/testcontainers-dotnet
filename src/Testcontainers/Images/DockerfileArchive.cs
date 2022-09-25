@@ -76,7 +76,8 @@
 
           foreach (var file in GetFiles(this.dockerfileDirectory.FullName))
           {
-            var relativePath = file.Substring(tarArchive.RootPath.Length + 1);
+            // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
+            var relativePath = file.Substring(this.dockerfileDirectory.FullName.Length + 1);
 
             if (dockerIgnoreFile.Denies(relativePath))
             {
