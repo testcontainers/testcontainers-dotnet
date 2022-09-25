@@ -1,7 +1,10 @@
 namespace DotNet.Testcontainers.Containers
 {
   using System;
+  using System.Linq;
+  using System.Net;
   using System.Net.Http;
+  using System.Net.Sockets;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
@@ -14,13 +17,13 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
+    public HttpClientHandler HttpClientHandler => new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true, };
+
     public HttpClient HttpClient
     {
       get
       {
-        var httpMessageHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true, };
-
-        return new HttpClient(new UrlRewriter(this.Hostname, this.Port, httpMessageHandler));
+        return new HttpClient(new UrlRewriter(this.Hostname, this.Port, HttpClientHandler));
       }
     }
 

@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public override async Task InitializeAsync()
     {
       // workaround for broken cosmosdb emulator
-      var maxWait = TimeSpan.FromSeconds(5);
+      var maxWait = TimeSpan.FromSeconds(5 * 1000);
       var cancellationTokenSource = new CancellationTokenSource();
       var containerTask = this.Container.StartAsync(cancellationTokenSource.Token);
       var task = await Task.WhenAny(new[] { containerTask, Task.Delay(maxWait) });
