@@ -17,13 +17,13 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
-    public HttpClientHandler HttpClientHandler => new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true, };
+    public HttpMessageHandler HttpMessageHandler => new UrlRewriter(this.Hostname, this.Port, new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true, });
 
     public HttpClient HttpClient
     {
       get
       {
-        return new HttpClient(new UrlRewriter(this.Hostname, this.Port, HttpClientHandler));
+        return new HttpClient(this.HttpMessageHandler);
       }
     }
 
