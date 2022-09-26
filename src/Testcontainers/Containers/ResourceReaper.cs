@@ -21,6 +21,9 @@ namespace DotNet.Testcontainers.Containers
 
     private const ushort RyukPort = 8080;
 
+    /// <summary>
+    /// 60 seconds timeout.
+    /// </summary>
     private const int ConnectionTimeoutInSeconds = 60;
 
     private const int RetryTimeoutInSeconds = 2;
@@ -129,7 +132,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="ryukImage">The Ryuk image.</param>
-    /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: 10 seconds).</param>
+    /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
@@ -145,7 +148,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="sessionId">The session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="ryukImage">The Ryuk image.</param>
-    /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: 10 seconds).</param>
+    /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
