@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="customConfigurations">A list of custom configurations.</param>
     public EnvironmentEndpointAuthenticationProvider(params ICustomConfiguration[] customConfigurations)
     {
-      this.dockerEngine = customConfigurations?
+      this.dockerEngine = customConfigurations
         .Select(customConfiguration => customConfiguration.GetDockerHost())
         .FirstOrDefault(dockerHost => dockerHost != null);
     }
