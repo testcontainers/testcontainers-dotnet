@@ -23,6 +23,7 @@
 ### Fixed
 
 - 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
+- 595 Implement `TestcontainersContainer.DisposeAsync` thread safe
 
 ## [2.1.0]
 
