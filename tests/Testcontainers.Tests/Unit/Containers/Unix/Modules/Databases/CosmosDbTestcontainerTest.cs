@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
   using System.Net;
+  using System.Net.Http;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Microsoft.Azure.Cosmos;
@@ -9,33 +11,46 @@ namespace DotNet.Testcontainers.Tests.Unit
   public static class CosmosDbTestcontainerTest
   {
     [Collection(nameof(Testcontainers))]
-    public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>
+    public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>, IDisposable
     {
-      private readonly CosmosDbFixture fixture;
+      private readonly HttpClient httpClient;
 
-      public ConnectionTests(CosmosDbFixture fixture)
+      private readonly CosmosClient cosmosClient;
+
+      public ConnectionTests(CosmosDbFixture cosmosDbFixture)
+        : this(cosmosDbFixture.Container.HttpClient, cosmosDbFixture.Container.ConnectionString)
       {
-        this.fixture = fixture;
       }
 
-      private CosmosClientOptions Options => new CosmosClientOptions { HttpClientFactory = () => this.fixture.Container.HttpClient, ConnectionMode = ConnectionMode.Gateway, };
+      private ConnectionTests(HttpClient httpClient, string connectionString)
+      {
+        var cosmosClientOptions = new CosmosClientOptions { ConnectionMode = ConnectionMode.Gateway, HttpClientFactory = () => httpClient };
+        this.httpClient = httpClient;
+        this.cosmosClient = new CosmosClient(connectionString, cosmosClientOptions);
+      }
 
       [Fact(Skip = "Waiting for a working cosmosdb emulator")]
       public async Task ShouldEstablishConnection()
       {
-        var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
+        var accountProperties = await this.cosmosClient.ReadAccountAsync()
+          .ConfigureAwait(false);
 
-        var accountProperties = await client.ReadAccountAsync();
         Assert.Equal("localhost", accountProperties.Id);
       }
 
       [Fact(Skip = "Waiting for a working cosmosdb emulator")]
       public async Task CreateDatabaseTest()
       {
-        var client = new CosmosClient(this.fixture.Container.ConnectionString, this.Options);
+        var databaseResponse = await this.cosmosClient.CreateDatabaseIfNotExistsAsync("db")
+          .ConfigureAwait(false);
 
-        var db = await client.CreateDatabaseIfNotExistsAsync("test-db");
-        Assert.Equal(HttpStatusCode.Created, db.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, databaseResponse.StatusCode);
+      }
+
+      public void Dispose()
+      {
+        this.cosmosClient.Dispose();
+        this.httpClient.Dispose();
       }
     }
   }

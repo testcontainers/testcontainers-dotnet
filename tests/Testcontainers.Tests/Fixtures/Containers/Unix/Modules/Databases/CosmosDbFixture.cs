@@ -2,57 +2,41 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System;
   using System.Data.Common;
-  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
+  using Microsoft.Azure.Cosmos;
 
-  public class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, DbConnection>
+  [UsedImplicitly]
+  public sealed class CosmosDbFixture : DatabaseFixture<CosmosDbTestcontainer, CosmosClient>
   {
-    public CosmosDbFixture()
-      : this(new CosmosDbTestcontainerConfiguration())
-    {
-    }
+    private readonly CosmosDbTestcontainerConfiguration configuration = new CosmosDbTestcontainerConfiguration();
 
-    private CosmosDbFixture(CosmosDbTestcontainerConfiguration configuration)
+    private readonly CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+
+    public CosmosDbFixture()
     {
-      this.Configuration = configuration;
       this.Container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-        .WithCosmosDb(configuration)
+        .WithDatabase(this.configuration)
         .Build();
     }
 
-    public CosmosDbTestcontainerConfiguration Configuration { get; set; }
-
-    public override async Task InitializeAsync()
+    public override Task InitializeAsync()
     {
-      // workaround for broken cosmosdb emulator
-      var maxWait = TimeSpan.FromSeconds(5 * 1000);
-      var cancellationTokenSource = new CancellationTokenSource();
-      var containerTask = this.Container.StartAsync(cancellationTokenSource.Token);
-      var task = await Task.WhenAny(new[] { containerTask, Task.Delay(maxWait) });
-      if (task != containerTask)
-      {
-        cancellationTokenSource.Cancel();
-      }
+      return this.Container.StartAsync(this.cts.Token);
     }
 
-    public override async Task DisposeAsync()
+    public override Task DisposeAsync()
     {
-      if (this.Connection != null && this.Connection.State != System.Data.ConnectionState.Closed)
-      {
-        this.Connection.Dispose();
-      }
-
-      await this.Container.DisposeAsync()
-        .ConfigureAwait(false);
+      return this.Container.DisposeAsync().AsTask();
     }
 
     public override void Dispose()
     {
-      this.Configuration.Dispose();
+      this.configuration.Dispose();
     }
   }
 }

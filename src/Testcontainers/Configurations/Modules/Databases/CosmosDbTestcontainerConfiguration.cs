@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   using JetBrains.Annotations;
 
   [PublicAPI]
-  public class CosmosDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public sealed class CosmosDbTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     public const string DefaultCosmosDbApiImage =
       "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator";
@@ -17,14 +17,15 @@ namespace DotNet.Testcontainers.Configurations
     public CosmosDbTestcontainerConfiguration()
       : this(DefaultCosmosDbApiImage)
     {
-      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
     }
 
     public CosmosDbTestcontainerConfiguration(string image)
       : base(image, DefaultCosmosPort)
     {
-      this.PartitionCount = 1;
+      this.PartitionCount = 2;
       this.IpAddressOverride = "127.0.0.1";
+      this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
+      this.Database = "default";
     }
 
     public override IOutputConsumer OutputConsumer { get; }
@@ -47,14 +48,14 @@ namespace DotNet.Testcontainers.Configurations
 
     public int PartitionCount
     {
-      get => int.Parse(this.Environments["AZURE_COSMOS_EMULATOR_PARTITION_COUNT"], CultureInfo.InvariantCulture);
+      get => int.TryParse(this.Environments["AZURE_COSMOS_EMULATOR_PARTITION_COUNT"], NumberStyles.Integer, CultureInfo.InvariantCulture, out var partitionCount) ? partitionCount : 1;
       set => this.Environments["AZURE_COSMOS_EMULATOR_PARTITION_COUNT"] = value.ToString(CultureInfo.InvariantCulture);
     }
 
     public bool EnableDataPersistence
     {
-      get => this.Environments["AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE"] == "true";
-      set => this.Environments["AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE"] = value.ToString().ToLower(CultureInfo.InvariantCulture);
+      get => bool.TryParse(this.Environments["AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE"], out var enableDataPersistence) && enableDataPersistence;
+      set => this.Environments["AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE"] = value.ToString().ToLowerInvariant();
     }
 
     public string IpAddressOverride
