@@ -26,11 +26,12 @@ namespace DotNet.Testcontainers.Configurations
       this.IpAddressOverride = "127.0.0.1";
       this.OutputConsumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
       this.Database = "default";
+      this.WaitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started|Shutting");
     }
 
     public override IOutputConsumer OutputConsumer { get; }
 
-    public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer().UntilMessageIsLogged(this.OutputConsumer.Stdout, "Started|Shutting");
+    public override IWaitForContainerOS WaitStrategy { get; }
 
     public override string Password
     {
