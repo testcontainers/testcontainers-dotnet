@@ -18,13 +18,7 @@ namespace DotNet.Testcontainers.Containers
 
     public HttpMessageHandler HttpMessageHandler => new UriRewriter(this.Hostname, this.Port);
 
-    public HttpClient HttpClient
-    {
-      get
-      {
-        return new HttpClient(new UriRewriter(this.Hostname, this.Port));
-      }
-    }
+    public HttpClient HttpClient => new HttpClient(this.HttpMessageHandler);
 
     public override string ConnectionString =>
       $"AccountEndpoint=https://{this.Hostname}:{this.Port};AccountKey={this.Password}";
