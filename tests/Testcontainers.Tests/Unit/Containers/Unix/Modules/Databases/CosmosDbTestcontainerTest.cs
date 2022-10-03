@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         this.cosmosClient = new CosmosClient(connectionString, cosmosClientOptions);
       }
 
-      [Fact(Skip = "Waiting for a working cosmosdb emulator")]
+      [Fact(Skip = "Waiting for a working cosmosdb emulator, https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45")]
       public async Task ShouldEstablishConnection()
       {
         var accountProperties = await this.cosmosClient.ReadAccountAsync()
@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal("localhost", accountProperties.Id);
       }
 
-      [Fact(Skip = "Waiting for a working cosmosdb emulator")]
+      [Fact(Skip = "Waiting for a working cosmosdb emulator, see https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45")]
       public async Task CreateDatabaseTest()
       {
         var databaseResponse = await this.cosmosClient.CreateDatabaseIfNotExistsAsync("db")
