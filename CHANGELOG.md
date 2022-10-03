@@ -16,6 +16,7 @@
 - 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`.
 - 565 Add `ExecScriptAsync` (MongoDB Shell) to MongoDB module
 - 583 Add XML documentation to NuGet
+- 594 Add `IDockerContainer.GetLogs`
 
 ### Changed
 
@@ -24,7 +25,7 @@
 ### Fixed
 
 - 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
-- 595 Implement `TestcontainersContainer.DisposeAsync` thread safe
+- 595 Implement `TestcontainersContainer.DisposeAsync` thread safe (rename `TestcontainersState` to `TestcontainersStates`)
 
 ## [2.1.0]
 

@@ -22,6 +22,16 @@ namespace DotNet.Testcontainers.Containers
     Task<long> GetExitCode(CancellationToken ct = default);
 
     /// <summary>
+    /// Gets the Testcontainers logs.
+    /// </summary>
+    /// <param name="since">Only logs since this time.</param>
+    /// <param name="until">Only logs until this time.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Returns the Docker container logs.</returns>
+    [PublicAPI]
+    Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+
+    /// <summary>
     /// Starts the Testcontainer.
     /// </summary>
     /// <remarks>
@@ -124,7 +134,7 @@ namespace DotNet.Testcontainers.Containers
     /// Returns the Docker container state.
     /// </value>
     [PublicAPI]
-    TestcontainersState State { get; }
+    TestcontainersStates State { get; }
 
     /// <summary>
     /// Gets the public host port associated with the private container port.

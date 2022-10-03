@@ -28,27 +28,37 @@ namespace DotNet.Testcontainers.Clients
     Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
 
     /// <summary>
-    /// Gets the Testcontainer exit code.
+    /// Gets the Testcontainers exit code.
     /// </summary>
     /// <param name="id">Docker container id.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that gets the Testcontainer exit code.</returns>
+    /// <returns>Task that gets the Testcontainers exit code.</returns>
     Task<long> GetContainerExitCode(string id, CancellationToken ct = default);
 
     /// <summary>
-    /// Gets the Testcontainer.
+    /// Gets the Testcontainers logs.
+    /// </summary>
+    /// <param name="id">Docker container id.</param>
+    /// <param name="since">Only logs since this time.</param>
+    /// <param name="until">Only logs until this time.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that gets the Testcontainers logs.</returns>
+    Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the Testcontainers.
     /// </summary>
     /// <param name="id">Docker container id.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that gets the Testcontainer.</returns>
+    /// <returns>Task that gets the Testcontainers.</returns>
     Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default);
 
     /// <summary>
-    /// Gets the Testcontainer inspect information.
+    /// Gets the Testcontainers inspect information.
     /// </summary>
     /// <param name="id">Docker container id.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that gets the Testcontainer inspect information.</returns>
+    /// <returns>Task that gets the Testcontainers inspect information.</returns>
     /// <exception cref="ArgumentNullException">One or more of the inputs was <see langword="null" />.</exception>
     /// <exception cref="DockerApiException">The daemon experienced an error.</exception>
     /// <exception cref="DockerContainerNotFoundException">No such container was found.</exception>
@@ -122,7 +132,7 @@ namespace DotNet.Testcontainers.Clients
     /// <summary>
     /// Creates a container.
     /// </summary>
-    /// <param name="configuration">Testcontainer configuration.</param>
+    /// <param name="configuration">Testcontainers configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker container has been created.</returns>
     Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);

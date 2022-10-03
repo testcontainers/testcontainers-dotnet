@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Containers
   /// </summary>
   [PublicAPI]
   [Flags]
-  public enum TestcontainersState
+  public enum TestcontainersStates
   {
     /// <summary>
     /// Docker container has not been created.
