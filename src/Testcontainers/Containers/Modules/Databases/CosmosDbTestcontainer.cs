@@ -42,12 +42,16 @@ namespace DotNet.Testcontainers.Containers
 
       private readonly int port;
 
+#pragma warning disable S4830
+
       public UriRewriter(string hostname, int port)
-        : base(new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true })
+        : base(new HttpClientHandler { ServerCertificateCustomValidationCallback = (sender, certificate, chain, errors) => true })
       {
         this.hostname = hostname;
         this.port = port;
       }
+
+#pragma warning restore S4830
 
       protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {

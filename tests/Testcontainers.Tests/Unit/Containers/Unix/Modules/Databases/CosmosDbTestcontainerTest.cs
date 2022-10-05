@@ -34,6 +34,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         this.cosmosClient = new CosmosClient(connectionString, cosmosClientOptions);
       }
 
+#pragma warning disable xUnit1004
+
       [Fact(Skip = SkipReason)]
       public async Task ShouldEstablishConnection()
       {
@@ -51,6 +53,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         Assert.Equal(HttpStatusCode.Created, databaseResponse.StatusCode);
       }
+
+#pragma warning restore xUnit1004
 
       public void Dispose()
       {
