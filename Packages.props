@@ -27,10 +27,10 @@
     <PackageReference Update="Azure.Data.Tables" Version="12.6.1" />
     <PackageReference Update="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Update="Azure.Storage.Queues" Version="12.11.0" />
-    <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
     <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.3" />
+    <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
     <PackageReference Update="MongoDB.Driver" Version="2.17.1" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
     <PackageReference Update="Npgsql" Version="6.0.6" />

@@ -24,10 +24,10 @@
     <PackageReference Include="Azure.Data.Tables" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Queues" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" />
     <PackageReference Include="Confluent.Kafka" />
     <PackageReference Include="CouchbaseNetClient" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" />
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
     <PackageReference Include="Npgsql" />

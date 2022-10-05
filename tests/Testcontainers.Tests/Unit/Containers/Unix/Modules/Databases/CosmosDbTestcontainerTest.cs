@@ -13,6 +13,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Collection(nameof(Testcontainers))]
     public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>, IDisposable
     {
+      private const string SkipReason = "The Cosmos DB Linux Emulator Docker image does not run on every CI environment."; // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
+
       private readonly HttpClient httpClient;
 
       private readonly CosmosClient cosmosClient;
@@ -24,12 +26,15 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       private ConnectionTests(HttpClient httpClient, string connectionString)
       {
-        var cosmosClientOptions = new CosmosClientOptions { ConnectionMode = ConnectionMode.Gateway, HttpClientFactory = () => httpClient };
+        var cosmosClientOptions = new CosmosClientOptions();
+        cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+        cosmosClientOptions.HttpClientFactory = () => httpClient;
+
         this.httpClient = httpClient;
         this.cosmosClient = new CosmosClient(connectionString, cosmosClientOptions);
       }
 
-      [Fact(Skip = "Waiting for a working cosmosdb emulator, https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45")]
+      [Fact(Skip = SkipReason)]
       public async Task ShouldEstablishConnection()
       {
         var accountProperties = await this.cosmosClient.ReadAccountAsync()
@@ -38,7 +43,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal("localhost", accountProperties.Id);
       }
 
-      [Fact(Skip = "Waiting for a working cosmosdb emulator, see https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45")]
+      [Fact(Skip = SkipReason)]
       public async Task CreateDatabaseTest()
       {
         var databaseResponse = await this.cosmosClient.CreateDatabaseIfNotExistsAsync("db")

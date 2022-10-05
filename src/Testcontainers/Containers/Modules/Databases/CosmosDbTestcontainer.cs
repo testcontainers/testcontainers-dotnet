@@ -8,20 +8,33 @@ namespace DotNet.Testcontainers.Containers
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
+  /// <inheritdoc cref="TestcontainerDatabase" />
   [PublicAPI]
   public sealed class CosmosDbTestcontainer : TestcontainerDatabase
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbTestcontainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The Testcontainers configuration.</param>
+    /// <param name="logger">The logger.</param>
     internal CosmosDbTestcontainer(ITestcontainersConfiguration configuration, ILogger logger)
       : base(configuration, logger)
     {
     }
 
-    public HttpMessageHandler HttpMessageHandler => new UriRewriter(this.Hostname, this.Port);
-
-    public HttpClient HttpClient => new HttpClient(this.HttpMessageHandler);
-
+    /// <inheritdoc />
     public override string ConnectionString =>
       $"AccountEndpoint=https://{this.Hostname}:{this.Port};AccountKey={this.Password}";
+
+    /// <summary>
+    /// Gets a configured HTTP message handler.
+    /// </summary>
+    public HttpMessageHandler HttpMessageHandler => new UriRewriter(this.Hostname, this.Port);
+
+    /// <summary>
+    /// Gets a configured HTTP client.
+    /// </summary>
+    public HttpClient HttpClient => new HttpClient(this.HttpMessageHandler);
 
     private sealed class UriRewriter : DelegatingHandler
     {

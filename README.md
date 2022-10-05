@@ -62,6 +62,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 
 - Apache CouchDB (couchdb:2.3.1)
 - Azurite (mcr.microsoft.com/azure-storage/azurite:3.18.0)
+- Cosmos DB Linux Emulator (mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest)
 - Couchbase (couchbase:6.5.1)
 - Elasticsearch (elasticsearch:8.3.2)
 - MariaDB (mariadb:10.8)
