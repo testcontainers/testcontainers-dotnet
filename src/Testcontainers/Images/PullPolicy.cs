@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Images
     {
       get
       {
-        return cachedImage => cachedImage != null;
+        return cachedImage => cachedImage == null;
       }
     }
 
