@@ -57,7 +57,8 @@ namespace DotNet.Testcontainers.Builders
           waitStrategies: Wait.ForUnixContainer().Build(),
           startupCallback: (_, ct) => Task.CompletedTask,
           autoRemove: false,
-          privileged: false),
+          privileged: false,
+          imagePullPolicy: PullPolicy.Missing),
         _ => { })
     {
     }
@@ -91,6 +92,12 @@ namespace DotNet.Testcontainers.Builders
     public ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image)
     {
       return this.MergeNewConfiguration(new TestcontainersConfiguration(image: PrependHubImageNamePrefix(image)));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy)
+    {
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(imagePullPolicy: imagePullPolicy));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -348,6 +355,7 @@ namespace DotNet.Testcontainers.Builders
 
       var image = BuildConfiguration.Combine(dockerResourceConfiguration.Image, this.DockerResourceConfiguration.Image);
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
+      var imagePullPolicy = BuildConfiguration.Combine(dockerResourceConfiguration.ImagePullPolicy, this.DockerResourceConfiguration.ImagePullPolicy);
       var hostname = BuildConfiguration.Combine(dockerResourceConfiguration.Hostname, this.DockerResourceConfiguration.Hostname);
       var workingDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.WorkingDirectory, this.DockerResourceConfiguration.WorkingDirectory);
       var entrypoint = BuildConfiguration.Combine(dockerResourceConfiguration.Entrypoint, this.DockerResourceConfiguration.Entrypoint);
@@ -367,7 +375,7 @@ namespace DotNet.Testcontainers.Builders
       var parameterModifiers = BuildConfiguration.Combine(dockerResourceConfiguration.ParameterModifiers, this.DockerResourceConfiguration.ParameterModifiers);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, imagePullPolicy, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, this.mergeModuleConfiguration);
     }
 

@@ -259,8 +259,10 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
-        .ConfigureAwait(false))
+      var cachedImage = await this.images.ByNameAsync(configuration.Image.FullName, ct)
+        .ConfigureAwait(false);
+
+      if (configuration.ImagePullPolicy(cachedImage))
       {
         var authConfig = default(DockerRegistryAuthenticationConfiguration).Equals(configuration.DockerRegistryAuthConfig)
           ? this.registryAuthenticationProvider.GetAuthConfig(configuration.Image.GetHostname()) : configuration.DockerRegistryAuthConfig;
