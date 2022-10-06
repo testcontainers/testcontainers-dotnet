@@ -25,6 +25,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 To configure a container, use the `TestcontainersBuilder<TestcontainersContainer>` builder, that provides:
 
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
+- `WithImagePullPolicy` specifies an image pull policy used to determine if the image should be pulled when starting the container e. g. `--pull "always"|"missing"|"never"`.
 - `WithWorkingDirectory` specifies and overrides the `WORKDIR` for the instruction sets.
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
@@ -110,7 +111,7 @@ await using (var testcontainers = testcontainersBuilder.Build())
 }
 ```
 
-Here is an example of a pre-configured container. In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query.
+Here is an example of a pre-configured container. In the example,  Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query.
 
 ```csharp
 public sealed class PostgreSqlTest : IAsyncLifetime
@@ -171,7 +172,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Authors
 
-- **Andre Hofmeister** - _Initial work_ - [HofmeisterAn](https://github.com/HofmeisterAn/)
+* **Andre Hofmeister** - *Initial work* - [HofmeisterAn](https://github.com/HofmeisterAn/)
 
 ## Thanks
 
