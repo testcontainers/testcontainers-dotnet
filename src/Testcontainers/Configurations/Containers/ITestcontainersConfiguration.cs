@@ -35,6 +35,14 @@ namespace DotNet.Testcontainers.Configurations
     IDockerImage Image { get; }
 
     /// <summary>
+    /// Gets the policy determining if an image should be pulled when creating the container.
+    /// </summary>
+    /// <remarks>
+    /// Allows the user to decide based on the cached image (if it's possible to retrieve one).
+    /// </remarks>
+    Func<ImagesListResponse, bool> ImagePullPolicy { get; }
+
+    /// <summary>
     /// Gets the name.
     /// </summary>
     string Name { get; }

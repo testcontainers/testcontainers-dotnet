@@ -110,7 +110,7 @@ await using (var testcontainers = testcontainersBuilder.Build())
 }
 ```
 
-Here is an example of a pre-configured container. In the example,  Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query.
+Here is an example of a pre-configured container. In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query.
 
 ```csharp
 public sealed class PostgreSqlTest : IAsyncLifetime
@@ -171,7 +171,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Authors
 
-* **Andre Hofmeister** - *Initial work* - [HofmeisterAn](https://github.com/HofmeisterAn/)
+- **Andre Hofmeister** - _Initial work_ - [HofmeisterAn](https://github.com/HofmeisterAn/)
 
 ## Thanks
 
