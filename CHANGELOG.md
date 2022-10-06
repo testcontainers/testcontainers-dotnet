@@ -5,7 +5,7 @@
 ### Added
 
 - 421 Add Azurite module (@vlaskal)
-- 421 Add Cosmos DB Linux Emulator
+- 421 Add Cosmos DB Linux Emulator (@Yeseh, @ktjn)
 - 504 Add Elasticsearch module (@chertby)
 - 516 Add `ITestcontainersBuilder<TDockerContainer>.WithTmpfsMount` (@chrisbbe)
 - 520 Add MariaDB module (@renemadsen)
@@ -13,7 +13,7 @@
 - 538 Support optional username and password in MongoDB connection string (@the-avid-engineer)
 - 540 Add Docker registry authentication provider for `DOCKER_AUTH_CONFIG` environment variable (@vova-lantsov-dev)
 - 541 Allow `MsSqlTestcontainerConfiguration` custom database names (@enginexon)
-- 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`.
+- 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`
 - 565 Add `ExecScriptAsync` (MongoDB Shell) to MongoDB module
 - 583 Add XML documentation to NuGet
 - 594 Add `IDockerContainer.GetLogs`
@@ -26,6 +26,7 @@
 
 - 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
 - 595 Implement `TestcontainersContainer.DisposeAsync` thread safe (rename `TestcontainersState` to `TestcontainersStates`)
+- 604 Do not deny all files in the Docker image tarball when a `.dockerignore` entry ends with `/`
 
 ## [2.1.0]
 

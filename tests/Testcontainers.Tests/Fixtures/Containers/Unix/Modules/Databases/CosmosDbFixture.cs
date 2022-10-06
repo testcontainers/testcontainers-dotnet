@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System;
-  using System.Data.Common;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;

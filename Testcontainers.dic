@@ -12,6 +12,7 @@ isready
 lipsum
 ltsc
 memopt
+mongosh
 mycounter
 mydatabase
 myregistry
