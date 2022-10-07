@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Net.Http;
   using System.Text;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -487,6 +488,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         {
           await testcontainer.StartAsync();
           Assert.EndsWith(name, testcontainer.Name);
+        }
+      }
+
+      [Fact]
+      public async Task PullPolicyNever()
+      {
+        // Given
+        // An image that actually exists but was not used/pulled previously
+        // If this image is cached/pulled before, this test will fail
+        var previouslyUnusedImage = "alpine:edge";
+
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage(previouslyUnusedImage)
+          .WithImagePullPolicy(PullPolicy.Never);
+
+        // Then
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          Assert.ThrowsAsync<DockerImageNotFoundException>(() => testcontainer.StartAsync());
         }
       }
     }
