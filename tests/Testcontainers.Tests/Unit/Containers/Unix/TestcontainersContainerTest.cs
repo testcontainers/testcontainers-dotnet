@@ -13,7 +13,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Tests.Fixtures;
-  using global::Docker.DotNet;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -508,7 +507,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
-          await Assert.ThrowsAsync<DockerImageNotFoundException>(() => testcontainer.StartAsync());
+          await Assert.ThrowsAnyAsync<Exception>(() => testcontainer.StartAsync());
         }
       }
     }
