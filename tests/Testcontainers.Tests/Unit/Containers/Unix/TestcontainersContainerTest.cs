@@ -7,12 +7,13 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Net.Http;
   using System.Text;
   using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using global::Docker.DotNet;
   using Xunit;
 
   public static class TestcontainersContainerTest
@@ -497,17 +498,17 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         // An image that actually exists but was not used/pulled previously
         // If this image is cached/pulled before, this test will fail
-        var previouslyUnusedImage = "alpine:edge";
+        var uncachedImage = "alpine:edge";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage(previouslyUnusedImage)
+          .WithImage(uncachedImage)
           .WithImagePullPolicy(PullPolicy.Never);
 
         // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
-          Assert.ThrowsAsync<DockerImageNotFoundException>(() => testcontainer.StartAsync());
+          await Assert.ThrowsAsync<DockerImageNotFoundException>(() => testcontainer.StartAsync());
         }
       }
     }
