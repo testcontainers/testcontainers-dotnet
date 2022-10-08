@@ -497,7 +497,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         // An image that actually exists but was not used/pulled previously
         // If this image is cached/pulled before, this test will fail
-        var uncachedImage = "alpine:edge";
+        const string uncachedImage = "alpine:edge";
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
