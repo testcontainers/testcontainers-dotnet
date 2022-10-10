@@ -3,10 +3,13 @@ namespace DotNet.Testcontainers.Images
   using System;
   using Docker.DotNet.Models;
 
+  /// <summary>
+  /// Pre-configured image pull policies.
+  /// </summary>
   public static class PullPolicy
   {
     /// <summary>
-    /// Gets the policy of never pulling the image.
+    /// Gets the policy that never pulls images.
     /// </summary>
     public static Func<ImagesListResponse, bool> Never
     {
@@ -17,11 +20,8 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <summary>
-    /// Gets the policy of pulling the image if it's not cached.
+    /// Gets the policy that pulls missing images (not cached).
     /// </summary>
-    /// <remarks>
-    /// This is the default behavior.
-    /// </remarks>
     public static Func<ImagesListResponse, bool> Missing
     {
       get
@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <summary>
-    /// Gets the policy of always pulling the image.
+    /// Gets the policy that always pulls images.
     /// </summary>
     public static Func<ImagesListResponse, bool> Always
     {

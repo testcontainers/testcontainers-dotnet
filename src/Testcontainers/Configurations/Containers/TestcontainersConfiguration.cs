@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="dockerRegistryAuthenticationConfiguration">The Docker registry authentication configuration.</param>
     /// <param name="image">The Docker image.</param>
-    /// <param name="imagePullPolicy">The Docker image pull policy.</param>
+    /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
     /// <param name="workingDirectory">The working directory.</param>

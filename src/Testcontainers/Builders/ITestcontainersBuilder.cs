@@ -45,9 +45,10 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image);
 
     /// <summary>
-    /// Sets the image pull policy, which is used to determine if the image should be pulled before starting the container.
+    /// Sets the image pull policy of the Testcontainer.
     /// </summary>
-    /// <param name="imagePullPolicy">The image pull policy that determines if the image should be pulled.</param>
+    /// <param name="imagePullPolicy">The image pull policy.</param>
+    /// <remarks><see cref="PullPolicy" /> has pre-configured policies. Default: <see cref="PullPolicy.Missing" />.</remarks>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy);

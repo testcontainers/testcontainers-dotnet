@@ -17,6 +17,7 @@
 - 565 Add `ExecScriptAsync` (MongoDB Shell) to MongoDB module
 - 583 Add XML documentation to NuGet
 - 594 Add `IDockerContainer.GetLogs`
+- 601 Add `ITestcontainersBuilder<TDockerContainer>.WithImagePullPolicy` (@BenasB)
 
 ### Changed
 
