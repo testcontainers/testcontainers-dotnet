@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Gets the message broker connection string.
+    /// Gets the LocalStack endpoint.
     /// </summary>
     public string ConnectionString => $"https://localhost:{this.Port}";
   }

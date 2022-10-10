@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class LocalStackTestcontainerConfiguration : TestcontainerMessageBrokerConfiguration
   {
-    private const string LocalStackImage = "localstack/localstack:latest";
+    private const string LocalStackImage = "localstack/localstack:1.2.0";
 
     private const int LocalStackPort = 4566;
 
