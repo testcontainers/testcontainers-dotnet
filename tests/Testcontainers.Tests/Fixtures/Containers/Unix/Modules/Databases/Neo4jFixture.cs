@@ -10,7 +10,7 @@
   [UsedImplicitly]
   public sealed class Neo4jFixture : DatabaseFixture<Neo4jTestcontainer, IDriver>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new Neo4jTestcontainerConfiguration { Username = "username", Password = "password" };
+    private readonly TestcontainerDatabaseConfiguration configuration = new Neo4jTestcontainerConfiguration { Password = "password" };
 
     public Neo4jFixture()
     {
@@ -37,6 +37,7 @@
 
     public override void Dispose()
     {
+      this.Connection.Dispose();
       this.configuration.Dispose();
     }
   }

@@ -17,13 +17,10 @@
     [Fact]
     public async Task ConnectionEstablished()
     {
-      // Given
-      var connection = this.neo4jFixture.Connection;
+      var exception = await Record.ExceptionAsync(() => this.neo4jFixture.Connection.VerifyConnectivityAsync())
+        .ConfigureAwait(false);
 
-      // When
-      await connection.VerifyConnectivityAsync();
-
-      // Then you don't throw an exception.
+      Assert.Null(exception);
     }
   }
 }

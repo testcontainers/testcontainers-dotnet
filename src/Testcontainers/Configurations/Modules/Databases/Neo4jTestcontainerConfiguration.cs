@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Linq;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
@@ -8,27 +9,15 @@
   [PublicAPI]
   public class Neo4jTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private string password = DefaultPassword;
-
     private const string Neo4jImage = "neo4j:latest";
 
     private const int BoltPort = 7687;
-
-    private const string DefaultDatabase = "neo4j";
-
-    private const string DefaultUsername = "neo4j";
-
-    private const string DefaultPassword = "connect";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jTestcontainerConfiguration" /> class.
     /// </summary>
     public Neo4jTestcontainerConfiguration()
-      : this(Neo4jImage)
-    {
-      this.Environments["NEO4JLABS_PLUGINS"] = "[\"apoc\"]";
-      this.Environments["NEO4J_ACCEPT_LICENSE_AGREEMENT"] = "yes";
-    }
+      : this(Neo4jImage) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jTestcontainerConfiguration" /> class.
@@ -37,25 +26,30 @@
     public Neo4jTestcontainerConfiguration(string image)
       : base(image, BoltPort)
     {
+      this.Environments["NEO4JLABS_PLUGINS"] = "[\"apoc\"]";
+      this.Environments["NEO4J_ACCEPT_LICENSE_AGREEMENT"] = "yes";
+      this.Password = "connect";
     }
 
     /// <inheritdoc />
-    public override string Database => DefaultDatabase;
+    public override string Database
+    {
+      get => "neo4j";
+      set => throw new NotImplementedException();
+    }
 
     /// <inheritdoc />
-    public override string Username => DefaultUsername;
+    public override string Username
+    {
+      get => "neo4j";
+      set => throw new NotImplementedException();
+    }
 
     /// <inheritdoc />
     public override string Password
     {
-      get => this.password;
-
-      set
-      {
-        this.password = value ?? DefaultPassword;
-
-        this.Environments["NEO4J_AUTH"] = $"{this.Username}/{this.password}";
-      }
+      get => this.Environments["NEO4J_AUTH"].Split(new[] { '/' }, 2, StringSplitOptions.RemoveEmptyEntries).Last();
+      set => this.Environments["NEO4J_AUTH"] = string.Join("/", this.Username, value);
     }
 
     /// <inheritdoc />
