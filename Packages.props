@@ -11,7 +11,7 @@
     <PackageReference Update="SharpZipLib" Version="1.4.0" />
     <PackageReference Update="System.Text.Json" Version="4.7.2" />
     <!-- Unit and integration test dependencies: -->
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Update="Microsoft.Extensions.Hosting" Version="3.1.23" />
     <PackageReference Update="coverlet.msbuild" Version="3.1.2" />
     <PackageReference Update="FluentAssertions" Version="5.10.3" />

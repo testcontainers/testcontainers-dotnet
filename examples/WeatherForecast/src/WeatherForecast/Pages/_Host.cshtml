@@ -1,0 +1,10 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using WeatherForecast
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+  Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered"/>
