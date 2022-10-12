@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Gets the LocalStack endpoint.
     /// </summary>
-    public string ConnectionString => $"https://localhost:{this.Port}";
+    public string ConnectionString
+      => $"https://{this.Hostname}:{this.Port}";
   }
 }

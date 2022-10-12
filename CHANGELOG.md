@@ -16,6 +16,7 @@
 - 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`
 - 565 Add `ExecScriptAsync` (MongoDB Shell) to MongoDB module
 - 583 Add XML documentation to NuGet
+- 592 Add LocalStack module (@bgener)
 - 594 Add `IDockerContainer.GetLogs`
 - 601 Add `ITestcontainersBuilder<TDockerContainer>.WithImagePullPolicy` (@BenasB)
 
