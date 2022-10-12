@@ -11,7 +11,7 @@
     <PackageReference Update="SharpZipLib" Version="1.4.0" />
     <PackageReference Update="System.Text.Json" Version="4.7.2" />
     <!-- Unit and integration test dependencies: -->
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Update="Microsoft.Extensions.Hosting" Version="3.1.23" />
     <PackageReference Update="coverlet.msbuild" Version="3.1.2" />
     <PackageReference Update="FluentAssertions" Version="5.10.3" />
@@ -30,6 +30,7 @@
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
     <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.3" />
+    <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
     <PackageReference Update="MongoDB.Driver" Version="2.17.1" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
     <PackageReference Update="Npgsql" Version="6.0.6" />

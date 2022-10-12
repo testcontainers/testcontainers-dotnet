@@ -101,6 +101,24 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    {
+      var unixEpoch = new DateTime(1970, 1, 1);
+
+      if (default(DateTime).Equals(since))
+      {
+        since = DateTime.MinValue;
+      }
+
+      if (default(DateTime).Equals(until))
+      {
+        until = DateTime.MaxValue;
+      }
+
+      return this.containers.GetLogs(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), ct);
+    }
+
+    /// <inheritdoc />
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
@@ -241,8 +259,10 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
-        .ConfigureAwait(false))
+      var cachedImage = await this.images.ByNameAsync(configuration.Image.FullName, ct)
+        .ConfigureAwait(false);
+
+      if (configuration.ImagePullPolicy(cachedImage))
       {
         var authConfig = default(DockerRegistryAuthenticationConfiguration).Equals(configuration.DockerRegistryAuthConfig)
           ? this.registryAuthenticationProvider.GetAuthConfig(configuration.Image.GetHostname()) : configuration.DockerRegistryAuthConfig;

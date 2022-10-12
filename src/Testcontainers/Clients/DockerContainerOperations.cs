@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.IO;
   using System.Linq;
   using System.Threading;
@@ -60,6 +61,25 @@ namespace DotNet.Testcontainers.Clients
     {
       return (await this.Docker.Containers.WaitContainerAsync(id, ct)
         .ConfigureAwait(false)).StatusCode;
+    }
+
+    public async Task<(string Stdout, string Stderr)> GetLogs(string id, TimeSpan since, TimeSpan until, CancellationToken ct = default)
+    {
+      var logsParameters = new ContainerLogsParameters
+      {
+        ShowStdout = true,
+        ShowStderr = true,
+        Since = since.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
+        Until = until.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
+        Timestamps = true,
+      };
+
+      using (var stdOutAndErrStream = await this.Docker.Containers.GetContainerLogsAsync(id, false, logsParameters, ct)
+        .ConfigureAwait(false))
+      {
+        return await stdOutAndErrStream.ReadOutputToEndAsync(ct)
+          .ConfigureAwait(false);
+      }
     }
 
     public Task StartAsync(string id, CancellationToken ct = default)

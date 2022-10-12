@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using DotNet.Testcontainers.Tests.Fixtures;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
   [Collection(nameof(Testcontainers))]
@@ -17,10 +17,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task ExecSqsCommandInRunningContainer()
     {
-      var execResult = await this.localStackFixture.Container.ExecAsync(new[] {
-        "awslocal",
-        "sqs", "create-queue", "--queue-name", "sample-queue"
-      });
+      var execResult = await this.localStackFixture.Container.ExecAsync(new[] { "awslocal", "sqs", "create-queue", "--queue-name", "sample-queue" })
+        .ConfigureAwait(false);
       Assert.Contains("http://localhost:4566/000000000000/sample-queue", execResult.Stdout);
     }
   }

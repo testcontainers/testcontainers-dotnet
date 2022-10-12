@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Containers
   /// <inheritdoc cref="ITestcontainersContainer" />
   public class TestcontainersContainer : ITestcontainersContainer
   {
-    private const TestcontainersState ContainerHasBeenCreatedStates = TestcontainersState.Created | TestcontainersState.Running | TestcontainersState.Exited;
+    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
 
     private static readonly string[] DockerDesktopGateways = { "host.docker.internal", "gateway.docker.internal" };
 
@@ -117,22 +117,22 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public TestcontainersState State
+    public TestcontainersStates State
     {
       get
       {
         if (this.container.State == null)
         {
-          return TestcontainersState.Undefined;
+          return TestcontainersStates.Undefined;
         }
 
         try
         {
-          return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State.Status, true);
+          return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), this.container.State.Status, true);
         }
         catch (Exception)
         {
-          return TestcontainersState.Undefined;
+          return TestcontainersStates.Undefined;
         }
       }
     }
@@ -168,6 +168,12 @@ namespace DotNet.Testcontainers.Containers
     public Task<long> GetExitCode(CancellationToken ct = default)
     {
       return this.client.GetContainerExitCode(this.Id, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    {
+      return this.client.GetContainerLogs(this.Id, since, until, ct);
     }
 
     /// <inheritdoc />
@@ -378,25 +384,22 @@ namespace DotNet.Testcontainers.Containers
         return "localhost";
       }
 
-      Task<string> GetDockerDesktopGateway(string dockerDesktopGateway)
+      string GetDockerDesktopGateway(string dockerDesktopGateway)
       {
         try
         {
-          // Unfortunately, the method incl. `cancellationToken` is not available in .NET Standard 2.0 and 2.1.
           _ = Dns.GetHostEntry(dockerDesktopGateway);
-          return Task.FromResult(dockerDesktopGateway);
+          return dockerDesktopGateway;
         }
         catch
         {
-          return Task.FromResult<string>(null);
+          return null;
         }
       }
 
       var hostname = DockerDesktopGateways
         .AsParallel()
         .Select(GetDockerDesktopGateway)
-        .Where(task => task.Wait(TimeSpan.FromSeconds(1)))
-        .Select(task => task.GetAwaiter().GetResult())
         .FirstOrDefault(dockerDesktopGateway => dockerDesktopGateway != null);
 
       return hostname ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
