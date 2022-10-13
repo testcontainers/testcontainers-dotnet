@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Threading;
@@ -11,6 +12,8 @@ namespace DotNet.Testcontainers.Clients
   internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse>
   {
     Task<long> GetExitCode(string id, CancellationToken ct = default);
+
+    Task<(string Stdout, string Stderr)> GetLogs(string id, TimeSpan since, TimeSpan until, CancellationToken ct = default);
 
     Task StartAsync(string id, CancellationToken ct = default);
 

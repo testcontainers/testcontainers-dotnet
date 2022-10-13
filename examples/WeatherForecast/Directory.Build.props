@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), WeatherForecast.sln))/</SolutionDir>
+    <BuildDir>$(SolutionDir)build/</BuildDir>
+    <BaseIntermediateOutputPath>$(BuildDir)obj/$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <OutputPath>$(BuildDir)bin/$(Platform)/$(Configuration)/$(TargetFramework)</OutputPath>
+    <OutDir>$(OutputPath)/</OutDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <PackageId>$(AssemblyName)</PackageId>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Authors>Andre Hofmeister</Authors>
+    <Company></Company>
+    <Description></Description>
+    <Summary></Summary>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageTags></PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet-sample</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>

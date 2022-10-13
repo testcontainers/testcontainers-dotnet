@@ -1,0 +1,2 @@
+* text=auto
+*.crt filter=lfs diff=lfs merge=lfs -text

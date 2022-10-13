@@ -1,0 +1,68 @@
+﻿@using WeatherForecast.Entities
+@using WeatherForecast.Interactors
+@using WeatherForecast.Interactors.SearchCityOrZipCode
+@using System.Globalization
+@implements IDisposable
+
+@inject ISearchCityOrZipCode SearchCityOrZipCode
+
+<FluentCard>
+  <div style="padding: 0 10px 10px">
+    <h1>Weather Forecast</h1>
+    <FluentDataGrid RowsData="@_weatherData.ToList()" ColumnDefinitions="@_weatherDataColumnDefinitions">
+      <RowItemTemplate>
+        <FluentDataGridRow>
+          <FluentDataGridCell GridColumn="1">
+            @context.Date.ToShortDateString()
+          </FluentDataGridCell>
+          <FluentDataGridCell GridColumn="2">
+            @context.Temperatures.Average(temperature => temperature.Value).ToString("0")
+          </FluentDataGridCell>
+        </FluentDataGridRow>
+      </RowItemTemplate>
+    </FluentDataGrid>
+
+    @{
+      if (_weatherData.Any())
+      {
+        <p>The weather forecast shows the next <span>@_weatherData.Count()</span> days.</p>
+      }
+      else
+      {
+        <br/>
+      }
+    }
+
+    <FluentButton @onclick="_ => SearchCityOrZipCode.ExecuteAsync(string.Empty)">Get weather forecast</FluentButton>
+  </div>
+</FluentCard>
+
+@code
+{
+  private IEnumerable<ColumnDefinition<WeatherData>> _weatherDataColumnDefinitions = new[]
+  {
+    new ColumnDefinition<WeatherData>("Date", _ => _),
+    new ColumnDefinition<WeatherData>("Avg °C", _ => _)
+  };
+
+  private IEnumerable<WeatherData> _weatherData = Array.Empty<WeatherData>();
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    SearchCityOrZipCode.Published += SearchCityOrZipCodeResultPublished;
+  }
+
+  public void Dispose()
+  {
+    SearchCityOrZipCode.Published -= SearchCityOrZipCodeResultPublished;
+  }
+
+  private void SearchCityOrZipCodeResultPublished(object? sender, ResultInfo<IEnumerable<WeatherData>> result)
+  {
+    if (result.IsSuccessful)
+    {
+      _weatherData = result.Value;
+    }
+  }
+}

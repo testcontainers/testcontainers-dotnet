@@ -1,0 +1,4 @@
+﻿body {
+  --body-font: Segoe UI, sans-serif;
+  font-family: var(--body-font);
+}

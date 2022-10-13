@@ -25,6 +25,7 @@ Keep in mind to enable the correct Docker engine on Windows host systems to matc
 To configure a container, use the `TestcontainersBuilder<TestcontainersContainer>` builder, that provides:
 
 - `WithImage` specifies an `IMAGE[:TAG]` to derive the container from.
+- `WithImagePullPolicy` specifies an image pull policy to determine when an image is pulled e.g. `--pull "always"|"missing"|"never"`.
 - `WithWorkingDirectory` specifies and overrides the `WORKDIR` for the instruction sets.
 - `WithEntrypoint` specifies and overrides the `ENTRYPOINT` that will run as an executable.
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
@@ -62,6 +63,7 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 
 - Apache CouchDB (couchdb:2.3.1)
 - Azurite (mcr.microsoft.com/azure-storage/azurite:3.18.0)
+- Cosmos DB Linux Emulator (mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest)
 - Couchbase (couchbase:6.5.1)
 - Elasticsearch (elasticsearch:8.3.2)
 - MariaDB (mariadb:10.8)

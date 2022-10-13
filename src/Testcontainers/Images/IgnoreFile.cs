@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Images
           var value = line.Value;
 
           lines.AddRange(key
-            .Split('/')
+            .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
             .Skip(1)
             .Prepend(key)
             .Select(ignorePattern => new KeyValuePair<string, bool>(ignorePattern, value)));

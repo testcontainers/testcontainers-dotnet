@@ -45,6 +45,15 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithImage(IDockerImage image);
 
     /// <summary>
+    /// Sets the image pull policy of the Testcontainer.
+    /// </summary>
+    /// <param name="imagePullPolicy">The image pull policy.</param>
+    /// <remarks><see cref="PullPolicy" /> has pre-configured policies. Default: <see cref="PullPolicy.Missing" />.</remarks>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy);
+
+    /// <summary>
     /// Sets the name of the Testcontainer.
     /// </summary>
     /// <param name="name">Testcontainers name.</param>

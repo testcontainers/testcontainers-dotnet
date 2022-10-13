@@ -1,53 +1,55 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using System;
   using JetBrains.Annotations;
 
   /// <summary>
   /// Docker container states.
   /// </summary>
   [PublicAPI]
-  public enum TestcontainersState
+  [Flags]
+  public enum TestcontainersStates
   {
     /// <summary>
-    /// Docker container was not created.
+    /// Docker container has not been created.
     /// </summary>
     [PublicAPI]
-    Undefined,
+    Undefined = 0x1,
 
     /// <summary>
     /// Docker container is created.
     /// </summary>
     [PublicAPI]
-    Created,
+    Created = 0x2,
 
     /// <summary>
     /// Docker container is restarting.
     /// </summary>
     [PublicAPI]
-    Restarting,
+    Restarting = 0x4,
 
     /// <summary>
     /// Docker container is running.
     /// </summary>
     [PublicAPI]
-    Running,
+    Running = 0x8,
 
     /// <summary>
     /// Docker container is paused.
     /// </summary>
     [PublicAPI]
-    Paused,
+    Paused = 0x10,
 
     /// <summary>
     /// Docker container is exited.
     /// </summary>
     [PublicAPI]
-    Exited,
+    Exited = 0x20,
 
     /// <summary>
     /// Docker container is dead.
     /// </summary>
     [PublicAPI]
-    Dead,
+    Dead = 0x40,
   }
 }

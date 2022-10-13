@@ -29,6 +29,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="dockerRegistryAuthenticationConfiguration">The Docker registry authentication configuration.</param>
     /// <param name="image">The Docker image.</param>
+    /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
     /// <param name="workingDirectory">The working directory.</param>
@@ -51,6 +52,7 @@ namespace DotNet.Testcontainers.Configurations
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfiguration = null,
       IDockerImage image = null,
+      Func<ImagesListResponse, bool> imagePullPolicy = null,
       string name = null,
       string hostname = null,
       string workingDirectory = null,
@@ -75,6 +77,7 @@ namespace DotNet.Testcontainers.Configurations
       this.Privileged = privileged;
       this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfiguration;
       this.Image = image;
+      this.ImagePullPolicy = imagePullPolicy;
       this.Name = name;
       this.Hostname = hostname;
       this.WorkingDirectory = workingDirectory;
@@ -105,6 +108,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IDockerImage Image { get; }
+
+    /// <inheritdoc />
+    public Func<ImagesListResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
     public string Name { get; }

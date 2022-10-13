@@ -35,6 +35,11 @@ namespace DotNet.Testcontainers.Configurations
     IDockerImage Image { get; }
 
     /// <summary>
+    /// Gets the image pull policy.
+    /// </summary>
+    Func<ImagesListResponse, bool> ImagePullPolicy { get; }
+
+    /// <summary>
     /// Gets the name.
     /// </summary>
     string Name { get; }

@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Containers
   /// <inheritdoc cref="ITestcontainersContainer" />
   public class TestcontainersContainer : ITestcontainersContainer
   {
-    private static readonly TestcontainersState[] ContainerHasBeenCreatedStates = { TestcontainersState.Created, TestcontainersState.Running, TestcontainersState.Exited };
+    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
 
     private static readonly string[] DockerDesktopGateways = { "host.docker.internal", "gateway.docker.internal" };
 
@@ -27,6 +27,8 @@ namespace DotNet.Testcontainers.Containers
     private readonly ITestcontainersClient client;
 
     private readonly ITestcontainersConfiguration configuration;
+
+    private int disposed;
 
     [NotNull]
     private ContainerInspectResponse container = new ContainerInspectResponse();
@@ -115,22 +117,22 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public TestcontainersState State
+    public TestcontainersStates State
     {
       get
       {
         if (this.container.State == null)
         {
-          return TestcontainersState.Undefined;
+          return TestcontainersStates.Undefined;
         }
 
         try
         {
-          return (TestcontainersState)Enum.Parse(typeof(TestcontainersState), this.container.State.Status, true);
+          return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), this.container.State.Status, true);
         }
         catch (Exception)
         {
-          return TestcontainersState.Undefined;
+          return TestcontainersStates.Undefined;
         }
       }
     }
@@ -166,6 +168,12 @@ namespace DotNet.Testcontainers.Containers
     public Task<long> GetExitCode(CancellationToken ct = default)
     {
       return this.client.GetContainerExitCode(this.Id, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    {
+      return this.client.GetContainerLogs(this.Id, since, until, ct);
     }
 
     /// <inheritdoc />
@@ -228,10 +236,10 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Removes the Testcontainer.
+    /// Removes the Testcontainers.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that represents the asynchronous clean up operation of a Testcontainer.</returns>
+    /// <returns>A task that represents the asynchronous clean up operation of a Testcontainers.</returns>
     public async Task CleanUpAsync(CancellationToken ct = default)
     {
       await this.semaphoreSlim.WaitAsync(ct)
@@ -251,31 +259,46 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-      if (!ContainerHasBeenCreatedStates.Contains(this.State))
-      {
-        return;
-      }
-
-      // If someone calls `DisposeAsync`, we can immediately remove the container. We don't need to wait for the Resource Reaper.
-      if (!Guid.Empty.Equals(this.configuration.SessionId))
-      {
-        await this.CleanUpAsync()
-          .ConfigureAwait(false);
-      }
-      else
-      {
-        await this.StopAsync()
-          .ConfigureAwait(false);
-      }
-
-      this.semaphoreSlim.Dispose();
+      await this.DisposeAsyncCore()
+        .ConfigureAwait(false);
 
       GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases any resources associated with the instance of <see cref="TestcontainersContainer" />.
+    /// </summary>
+    /// <returns>Value task that completes when any resources associated with the instance have been released.</returns>
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+      if (1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0)))
+      {
+        return;
+      }
+
+      if (!ContainerHasBeenCreatedStates.HasFlag(this.State))
+      {
+        return;
+      }
+
+      // If someone calls `DisposeAsync`, we can immediately remove the container. We do not need to wait for the Resource Reaper.
+      if (Guid.Empty.Equals(this.configuration.SessionId))
+      {
+        await this.StopAsync()
+          .ConfigureAwait(false);
+      }
+      else
+      {
+        await this.CleanUpAsync()
+          .ConfigureAwait(false);
+      }
+
+      this.semaphoreSlim.Dispose();
+    }
+
     private async Task<ContainerInspectResponse> Create(CancellationToken ct = default)
     {
-      if (ContainerHasBeenCreatedStates.Contains(this.State))
+      if (ContainerHasBeenCreatedStates.HasFlag(this.State))
       {
         return this.container;
       }
@@ -340,43 +363,43 @@ namespace DotNet.Testcontainers.Containers
     {
       await this.client.RemoveAsync(id, ct)
         .ConfigureAwait(false);
+
       return new ContainerInspectResponse();
     }
 
     private void ThrowIfContainerHasNotBeenCreated()
     {
-      if (!ContainerHasBeenCreatedStates.Contains(this.State))
+      if (ContainerHasBeenCreatedStates.HasFlag(this.State))
       {
-        throw new InvalidOperationException("Testcontainer has not been created.");
+        return;
       }
+
+      throw new InvalidOperationException("Testcontainers has not been created.");
     }
 
     private string GetContainerGateway()
     {
-      if (!this.client.IsRunningInsideDocker || !ContainerHasBeenCreatedStates.Contains(this.State))
+      if (!this.client.IsRunningInsideDocker || !ContainerHasBeenCreatedStates.HasFlag(this.State))
       {
         return "localhost";
       }
 
-      Task<string> GetDockerDesktopGateway(string dockerDesktopGateway)
+      string GetDockerDesktopGateway(string dockerDesktopGateway)
       {
         try
         {
-          // Unfortunately, the method incl. `cancellationToken` is not available in .NET Standard 2.0 and 2.1.
           _ = Dns.GetHostEntry(dockerDesktopGateway);
-          return Task.FromResult(dockerDesktopGateway);
+          return dockerDesktopGateway;
         }
         catch
         {
-          return Task.FromResult<string>(null);
+          return null;
         }
       }
 
       var hostname = DockerDesktopGateways
         .AsParallel()
         .Select(GetDockerDesktopGateway)
-        .Where(task => task.Wait(TimeSpan.FromSeconds(1)))
-        .Select(task => task.GetAwaiter().GetResult())
         .FirstOrDefault(dockerDesktopGateway => dockerDesktopGateway != null);
 
       return hostname ?? this.container.NetworkSettings.Networks.First().Value.Gateway;

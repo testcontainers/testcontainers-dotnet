@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
@@ -487,6 +488,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         {
           await testcontainer.StartAsync();
           Assert.EndsWith(name, testcontainer.Name);
+        }
+      }
+
+      [Fact]
+      public async Task PullPolicyNever()
+      {
+        // Given
+        // An image that actually exists but was not used/pulled previously
+        // If this image is cached/pulled before, this test will fail
+        const string uncachedImage = "alpine:edge";
+
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage(uncachedImage)
+          .WithImagePullPolicy(PullPolicy.Never);
+
+        // Then
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await Assert.ThrowsAnyAsync<Exception>(() => testcontainer.StartAsync());
         }
       }
     }
