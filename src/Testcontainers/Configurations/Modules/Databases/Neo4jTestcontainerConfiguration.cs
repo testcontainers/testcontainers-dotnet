@@ -9,7 +9,7 @@
   [PublicAPI]
   public class Neo4jTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string Neo4jImage = "neo4j:latest";
+    private const string Neo4jImage = "neo4j:4.4.11";
 
     private const int BoltPort = 7687;
 
