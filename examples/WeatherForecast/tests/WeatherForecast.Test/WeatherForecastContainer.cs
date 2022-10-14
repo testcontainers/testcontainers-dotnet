@@ -3,7 +3,9 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
 using JetBrains.Annotations;
 using Xunit;
 
@@ -16,7 +18,11 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   private static readonly WeatherForecastImage Image = new();
 
-  private readonly IDockerContainer _container;
+  private readonly IDockerNetwork _weatherForecastNetwork;
+
+  private readonly IDockerContainer _mssqlContainer;
+
+  private readonly IDockerContainer _weatherForecastContainer;
 
   public WeatherForecastContainer()
     : base(new HttpClientHandler
@@ -24,13 +30,33 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
       ServerCertificateCustomValidationCallback = (_, certificate, _, _) => Certificate.Equals(certificate)
     })
   {
-    _container = new TestcontainersBuilder<TestcontainersContainer>()
+    const string weatherForecastStorage = "weatherForecastStorage";
+
+    var mssqlConfiguration = new MsSqlTestcontainerConfiguration();
+    mssqlConfiguration.Password = Guid.NewGuid().ToString("D");
+    mssqlConfiguration.Database = Guid.NewGuid().ToString("D");
+
+    var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
+
+    _weatherForecastNetwork = new TestcontainersNetworkBuilder()
+      .WithName(Guid.NewGuid().ToString("D"))
+      .Build();
+
+    _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
+      .WithDatabase(mssqlConfiguration)
+      .WithNetwork(_weatherForecastNetwork)
+      .WithNetworkAliases(weatherForecastStorage)
+      .Build();
+
+    _weatherForecastContainer = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage(Image)
-      .WithStartupCallback((_, ct) => Task.Delay(TimeSpan.FromSeconds(1), ct)) // For demonstration only, use a wait strategy instead.
+      .WithNetwork(_weatherForecastNetwork)
       .WithPortBinding(WeatherForecastImage.HttpsPort, true)
       .WithEnvironment("ASPNETCORE_URLS", "https://+")
       .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", WeatherForecastImage.CertificateFilePath)
       .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", WeatherForecastImage.CertificatePassword)
+      .WithEnvironment("ConnectionStrings__DefaultConnection", connectionString)
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WeatherForecastImage.HttpsPort))
       .Build();
   }
 
@@ -39,7 +65,13 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await Image.InitializeAsync()
       .ConfigureAwait(false);
 
-    await _container.StartAsync()
+    await _weatherForecastNetwork.CreateAsync()
+      .ConfigureAwait(false);
+
+    await _mssqlContainer.StartAsync()
+      .ConfigureAwait(false);
+
+    await _weatherForecastContainer.StartAsync()
       .ConfigureAwait(false);
   }
 
@@ -48,7 +80,13 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await Image.DisposeAsync()
       .ConfigureAwait(false);
 
-    await _container.DisposeAsync()
+    await _weatherForecastContainer.DisposeAsync()
+      .ConfigureAwait(false);
+
+    await _mssqlContainer.DisposeAsync()
+      .ConfigureAwait(false);
+
+    await _weatherForecastNetwork.DeleteAsync()
       .ConfigureAwait(false);
   }
 
@@ -56,7 +94,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     try
     {
-      var uriBuilder = new UriBuilder("https", _container.Hostname, _container.GetMappedPublicPort(WeatherForecastImage.HttpsPort));
+      var uriBuilder = new UriBuilder("https", _weatherForecastContainer.Hostname, _weatherForecastContainer.GetMappedPublicPort(WeatherForecastImage.HttpsPort));
       BaseAddress = uriBuilder.Uri;
     }
     catch

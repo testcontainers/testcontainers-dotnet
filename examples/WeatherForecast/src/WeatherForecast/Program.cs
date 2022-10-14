@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Fast.Components.FluentUI;
+using WeatherForecast.Contexts;
 using WeatherForecast.Interactors.SearchCityOrZipCode;
 using WeatherForecast.Repositories;
 
@@ -9,9 +12,22 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddFluentUIComponents();
-builder.Services.AddSingleton<IWeatherDataReadOnlyRepository, WeatherDataReadOnlyRepository>();
-builder.Services.AddSingleton<IWeatherDataWriteOnlyRepository, WeatherDataWriteOnlyRepository>();
-builder.Services.AddSingleton<ISearchCityOrZipCode, SearchCityOrZipCode>();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+  builder.Services.AddSingleton<IWeatherDataReadOnlyRepository, WeatherDataReadOnlyRepository>();
+  builder.Services.AddSingleton<IWeatherDataWriteOnlyRepository, WeatherDataWriteOnlyRepository>();
+  builder.Services.AddSingleton<ISearchCityOrZipCode, SearchCityOrZipCode>();
+}
+else
+{
+  builder.Services.AddDbContext<WeatherDataContext>(options => options.UseSqlServer(connectionString));
+  builder.Services.AddScoped<IWeatherDataReadOnlyRepository, WeatherDataReadOnlyContext>();
+  builder.Services.AddScoped<IWeatherDataWriteOnlyRepository, WeatherDataWriteOnlyContext>();
+  builder.Services.AddScoped<ISearchCityOrZipCode, SearchCityOrZipCode>();
+}
 
 var app = builder.Build();
 app.UseExceptionHandler("/Error");

@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
 namespace WeatherForecast.Entities;
 
 [PublicAPI]
-public readonly struct WeatherData
+public sealed class WeatherData : HasId
 {
-  public WeatherData(DateTime date, IEnumerable<Temperature> measurements)
+  public WeatherData(Guid id, DateTime date) : this(id, date, new List<Temperature>())
   {
-    IReadOnlyCollection<Temperature> temperatures = measurements.ToList();
+    // Entity Framework constructor.
+  }
+
+  [JsonConstructor]
+  public WeatherData(Guid id, DateTime date, IList<Temperature> temperatures) : base(id)
+  {
     Date = date;
-    Minimum = temperatures.OrderBy(temperature => temperature.Value).FirstOrDefault();
-    Maximum = temperatures.OrderBy(temperature => temperature.Value).LastOrDefault();
+    Minimum = temperatures.OrderBy(temperature => temperature.Value).DefaultIfEmpty(Temperature.AbsoluteZero).First();
+    Maximum = temperatures.OrderBy(temperature => temperature.Value).DefaultIfEmpty(Temperature.AbsoluteZero).Last();
     Temperatures = temperatures;
   }
 
+  [JsonPropertyName("date")]
   public DateTime Date { get; }
 
+  [JsonIgnore]
   public Temperature Minimum { get; }
 
+  [JsonIgnore]
   public Temperature Maximum { get; }
 
-  public IEnumerable<Temperature> Temperatures { get; }
+  [JsonPropertyName("temperatures")]
+  public IList<Temperature> Temperatures { get; }
 }

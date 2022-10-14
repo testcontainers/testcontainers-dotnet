@@ -12,7 +12,7 @@
     <PackageReference Include="xunit"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../../../src/Testcontainers/Testcontainers.csproj" />
+    <ProjectReference Include="../../../../src/Testcontainers/Testcontainers.csproj"/>
     <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Entities/WeatherForecast.Entities.csproj"/>
   </ItemGroup>
 </Project>

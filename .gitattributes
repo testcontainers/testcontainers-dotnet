@@ -1,8 +1,9 @@
 # Autodetect text files
 * text=auto
-# Definitively text files 
+# Definitively text files
 *.cs text
 *.cake text
 
 # Git lfs
+*.crt filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text

@@ -5,9 +5,11 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
     <PackageReference Include="Microsoft.Fast.Components.FluentUI"/>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
     <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Interactors/WeatherForecast.Interactors.csproj"/>
     <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
   </ItemGroup>

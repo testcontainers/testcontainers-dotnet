@@ -20,7 +20,7 @@ public sealed class WeatherDataReadOnlyRepository : IWeatherDataReadOnlyReposito
 
   public Task<IEnumerable<WeatherData>> GetAllAsync(string latitude, string longitude, DateTime from, DateTime to)
   {
-    return Task.FromResult(Enumerable.Range(0, to.Subtract(from).Days).Select(day => DateTime.Today.AddDays(day)).Select(day => new WeatherData(day, Enumerable.Range(0, 12).Select(hour => Temperature.Celsius(Random.Value.Next(-10, 30), DateTime.Today.AddHours(hour))))));
+    return Task.FromResult(Enumerable.Range(0, to.Subtract(from).Days).Select(_ => Guid.NewGuid()).Select((id, day) => new WeatherData(id, DateTime.Today.AddDays(day), Enumerable.Range(0, 23).Select(hour => Temperature.Celsius(id, Random.Value.Next(-10, 30), DateTime.Today.AddDays(day).AddHours(hour))).ToList())));
   }
 
   public Task<WeatherData> GetAsync(Guid id)
