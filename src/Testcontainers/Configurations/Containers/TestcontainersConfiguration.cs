@@ -32,7 +32,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
-    /// <param name="macaddress">The mac address.</param>
+    /// <param name="macAddress">The MAC address.</param>
     /// <param name="workingDirectory">The working directory.</param>
     /// <param name="entrypoint">The entrypoint.</param>
     /// <param name="command">The command.</param>
