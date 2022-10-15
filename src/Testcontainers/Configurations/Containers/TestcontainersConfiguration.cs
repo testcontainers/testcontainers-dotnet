@@ -121,6 +121,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public string Hostname { get; }
 
+    /// <inheritdoc />
     public string MacAddress { get; }
 
     /// <inheritdoc />
