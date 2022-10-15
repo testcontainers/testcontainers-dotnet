@@ -115,7 +115,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithMacAddress(string macAddress)
     {
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(macaddress: macaddress));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(macAddress: macAddress));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
