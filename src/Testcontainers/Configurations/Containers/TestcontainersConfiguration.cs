@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers.Configurations
       Func<ImagesListResponse, bool> imagePullPolicy = null,
       string name = null,
       string hostname = null,
-      string macaddress = null,
+      string macAddress = null,
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
       IEnumerable<string> command = null,
