@@ -82,7 +82,7 @@ namespace DotNet.Testcontainers.Configurations
       this.ImagePullPolicy = imagePullPolicy;
       this.Name = name;
       this.Hostname = hostname;
-      this.MacAddress = macaddress;
+      this.MacAddress = macAddress;
       this.WorkingDirectory = workingDirectory;
       this.Entrypoint = entrypoint;
       this.Command = command;
