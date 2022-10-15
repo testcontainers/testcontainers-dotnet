@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Configurations
     string Hostname { get; }
 
     /// <summary>
-    /// GEts the mac address.
+    /// Gets the MAC address.
     /// </summary>
     string MacAddress { get; }
 
