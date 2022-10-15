@@ -72,7 +72,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Sets the MAC address of the Testcontainer.
     /// </summary>
-    /// <param name="macaddress">Testcontainers mac address.</param>
+    /// <param name="macAddress">Testcontainers MAC address.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithMacAddress(string macaddress);
