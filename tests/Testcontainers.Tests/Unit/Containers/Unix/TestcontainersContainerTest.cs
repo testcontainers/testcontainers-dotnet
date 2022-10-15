@@ -94,6 +94,26 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Fact]
+      public async Task MacAddress()
+      {
+        // Given
+        const string macAddress = "92:95:5e:30:fe:6d";
+
+        // When
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+           .WithImage("alpine")
+           .WithMacAddress(macAddress)
+           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+
+        // Then
+        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          Assert.Equal(macAddress, testcontainer.MacAddress);
+        }
+      }
+
+      [Fact]
       public async Task WorkingDirectory()
       {
         // Given

@@ -32,6 +32,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
+    /// <param name="macAddress">The MAC address.</param>
     /// <param name="workingDirectory">The working directory.</param>
     /// <param name="entrypoint">The entrypoint.</param>
     /// <param name="command">The command.</param>
@@ -55,6 +56,7 @@ namespace DotNet.Testcontainers.Configurations
       Func<ImagesListResponse, bool> imagePullPolicy = null,
       string name = null,
       string hostname = null,
+      string macAddress = null,
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
       IEnumerable<string> command = null,
@@ -80,6 +82,7 @@ namespace DotNet.Testcontainers.Configurations
       this.ImagePullPolicy = imagePullPolicy;
       this.Name = name;
       this.Hostname = hostname;
+      this.MacAddress = macAddress;
       this.WorkingDirectory = workingDirectory;
       this.Entrypoint = entrypoint;
       this.Command = command;
@@ -117,6 +120,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public string Hostname { get; }
+
+    /// <inheritdoc />
+    public string MacAddress { get; }
 
     /// <inheritdoc />
     public string WorkingDirectory { get; }

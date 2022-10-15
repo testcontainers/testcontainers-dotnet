@@ -50,6 +50,11 @@ namespace DotNet.Testcontainers.Configurations
     string Hostname { get; }
 
     /// <summary>
+    /// Gets the MAC address.
+    /// </summary>
+    string MacAddress { get; }
+
+    /// <summary>
     /// Gets the working directory.
     /// </summary>
     string WorkingDirectory { get; }

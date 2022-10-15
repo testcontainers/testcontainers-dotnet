@@ -113,6 +113,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithMacAddress(string macAddress)
+    {
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(macAddress: macAddress));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithWorkingDirectory(string workingDirectory)
     {
       return this.MergeNewConfiguration(new TestcontainersConfiguration(workingDirectory: workingDirectory));
@@ -357,6 +363,7 @@ namespace DotNet.Testcontainers.Builders
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var imagePullPolicy = BuildConfiguration.Combine(dockerResourceConfiguration.ImagePullPolicy, this.DockerResourceConfiguration.ImagePullPolicy);
       var hostname = BuildConfiguration.Combine(dockerResourceConfiguration.Hostname, this.DockerResourceConfiguration.Hostname);
+      var macAddress = BuildConfiguration.Combine(dockerResourceConfiguration.MacAddress, this.DockerResourceConfiguration.MacAddress);
       var workingDirectory = BuildConfiguration.Combine(dockerResourceConfiguration.WorkingDirectory, this.DockerResourceConfiguration.WorkingDirectory);
       var entrypoint = BuildConfiguration.Combine(dockerResourceConfiguration.Entrypoint, this.DockerResourceConfiguration.Entrypoint);
       var command = BuildConfiguration.Combine(dockerResourceConfiguration.Command, this.DockerResourceConfiguration.Command);
@@ -375,7 +382,7 @@ namespace DotNet.Testcontainers.Builders
       var parameterModifiers = BuildConfiguration.Combine(dockerResourceConfiguration.ParameterModifiers, this.DockerResourceConfiguration.ParameterModifiers);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, imagePullPolicy, name, hostname, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, imagePullPolicy, name, hostname, macAddress, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, this.mergeModuleConfiguration);
     }
 
