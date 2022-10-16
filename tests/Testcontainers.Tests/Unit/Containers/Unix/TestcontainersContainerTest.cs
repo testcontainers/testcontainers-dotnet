@@ -101,9 +101,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-           .WithImage("alpine")
-           .WithMacAddress(macAddress)
-           .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithImage("alpine")
+          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithMacAddress(macAddress);
 
         // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())

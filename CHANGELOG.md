@@ -20,6 +20,7 @@
 - 592 Add LocalStack module (@bgener)
 - 594 Add `IDockerContainer.GetLogs`
 - 601 Add `ITestcontainersBuilder<TDockerContainer>.WithImagePullPolicy` (@BenasB)
+- 616 Add `ITestcontainersBuilder<TDockerContainer>.WithMacAddress` (@seb1992)
 
 ### Changed
 

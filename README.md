@@ -31,6 +31,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
 - `WithName` sets the container name e.g. `--name nginx`.
 - `WithHostname` sets the container hostname e.g. `--hostname my-nginx`.
+- `WithMacAddress` sets the container MAC address e.g. `--mac-address "00:80:41:ae:fd:7e"`.
 - `WithEnvironment` sets an environment variable in the container e.g. `-e, --env "test=containers"`.
 - `WithLabel` applies metadata to the container e.g. `-l, --label testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e.g. `--expose=80`.
