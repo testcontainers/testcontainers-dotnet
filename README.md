@@ -31,6 +31,7 @@ To configure a container, use the `TestcontainersBuilder<TestcontainersContainer
 - `WithCommand` specifies and overrides the `COMMAND` instruction provided from the Dockerfile.
 - `WithName` sets the container name e.g. `--name nginx`.
 - `WithHostname` sets the container hostname e.g. `--hostname my-nginx`.
+- `WithMacAddress` sets the container MAC address e.g. `--mac-address "00:80:41:ae:fd:7e"`.
 - `WithEnvironment` sets an environment variable in the container e.g. `-e, --env "test=containers"`.
 - `WithLabel` applies metadata to the container e.g. `-l, --label testcontainers=awesome`.
 - `WithExposedPort` exposes a port inside the container e.g. `--expose=80`.
@@ -66,10 +67,12 @@ The pre-configured Testcontainers below are supported. Further examples can be f
 - Cosmos DB Linux Emulator (mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest)
 - Couchbase (couchbase:6.5.1)
 - Elasticsearch (elasticsearch:8.3.2)
+- LocalStack (localstack/localstack:1.2.0)
 - MariaDB (mariadb:10.8)
 - Microsoft SQL Server (mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04)
 - MongoDB (mongo:5.0.6)
 - MySQL (mysql:8.0.28)
+- Neo4j (neo4j:4.4.11)
 - Oracle Database (gvenzl/oracle-xe:21-slim)
 - PostgreSQL (postgres:11.14)
 - Redis (redis:5.0.14)
