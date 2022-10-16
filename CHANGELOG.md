@@ -15,6 +15,7 @@
 - 541 Allow `MsSqlTestcontainerConfiguration` custom database names (@enginexon)
 - 558 Support relative base directories other than the working directory with `WithDockerfileDirectory`
 - 565 Add `ExecScriptAsync` (MongoDB Shell) to MongoDB module
+- 579 Add Neo4j module (@kaiserbergin)
 - 583 Add XML documentation to NuGet
 - 592 Add LocalStack module (@bgener)
 - 594 Add `IDockerContainer.GetLogs`

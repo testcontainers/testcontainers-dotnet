@@ -7,7 +7,7 @@
 
   /// <inheritdoc cref="TestcontainerDatabaseConfiguration" />
   [PublicAPI]
-  public class Neo4jTestcontainerConfiguration : TestcontainerDatabaseConfiguration
+  public sealed class Neo4jTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
     private const string Neo4jImage = "neo4j:4.4.11";
 
@@ -17,7 +17,9 @@
     /// Initializes a new instance of the <see cref="Neo4jTestcontainerConfiguration" /> class.
     /// </summary>
     public Neo4jTestcontainerConfiguration()
-      : this(Neo4jImage) { }
+      : this(Neo4jImage)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jTestcontainerConfiguration" /> class.
@@ -28,7 +30,7 @@
     {
       this.Environments["NEO4JLABS_PLUGINS"] = "[\"apoc\"]";
       this.Environments["NEO4J_ACCEPT_LICENSE_AGREEMENT"] = "yes";
-      this.Password = "connect";
+      this.Password = Guid.NewGuid().ToString("D");
     }
 
     /// <inheritdoc />

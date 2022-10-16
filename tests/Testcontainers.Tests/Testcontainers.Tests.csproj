@@ -30,13 +30,13 @@
     <PackageReference Include="Microsoft.Azure.Cosmos" />
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
+    <PackageReference Include="Neo4j.Driver" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="System.Data.SqlClient" />
-    <PackageReference Include="Neo4j.Driver" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />

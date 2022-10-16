@@ -5,7 +5,7 @@
   using Xunit;
 
   [Collection(nameof(Testcontainers))]
-  public class Neo4jTestcontainerTest : IClassFixture<Neo4jFixture>
+  public sealed class Neo4jTestcontainerTest : IClassFixture<Neo4jFixture>
   {
     private readonly Neo4jFixture neo4jFixture;
 

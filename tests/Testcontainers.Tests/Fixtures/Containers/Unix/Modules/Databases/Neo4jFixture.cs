@@ -10,7 +10,7 @@
   [UsedImplicitly]
   public sealed class Neo4jFixture : DatabaseFixture<Neo4jTestcontainer, IDriver>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new Neo4jTestcontainerConfiguration { Password = "password" };
+    private readonly TestcontainerDatabaseConfiguration configuration = new Neo4jTestcontainerConfiguration();
 
     public Neo4jFixture()
     {
@@ -24,20 +24,19 @@
       await this.Container.StartAsync()
         .ConfigureAwait(false);
 
-      this.Connection = GraphDatabase.Driver(
-        this.Container.ConnectionString,
-        AuthTokens.Basic(this.Container.Username, this.Container.Password));
+      this.Connection = GraphDatabase.Driver(this.Container.ConnectionString, AuthTokens.Basic(this.Container.Username, this.Container.Password));
     }
 
     public override async Task DisposeAsync()
     {
+      this.Connection.Dispose();
+
       await this.Container.DisposeAsync()
         .ConfigureAwait(false);
     }
 
     public override void Dispose()
     {
-      this.Connection.Dispose();
       this.configuration.Dispose();
     }
   }
