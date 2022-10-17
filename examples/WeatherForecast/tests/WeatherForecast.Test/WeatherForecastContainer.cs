@@ -27,6 +27,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   public WeatherForecastContainer()
     : base(new HttpClientHandler
     {
+      // Trust the development certificate.
       ServerCertificateCustomValidationCallback = (_, certificate, _, _) => Certificate.Equals(certificate)
     })
   {
@@ -62,6 +63,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   public async Task InitializeAsync()
   {
+    // It is not necessary to clean up resources immediately (still good practice). The Resource Reaper will take care of orphaned resources.
     await Image.InitializeAsync()
       .ConfigureAwait(false);
 

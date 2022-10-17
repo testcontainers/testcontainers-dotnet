@@ -40,3 +40,7 @@ app.UseEndpoints(endpoint => endpoint.MapRazorPages());
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.Run();
+
+public sealed partial class Program
+{
+}

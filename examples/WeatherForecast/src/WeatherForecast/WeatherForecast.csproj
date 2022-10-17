@@ -14,6 +14,10 @@
     <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <!-- https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory-1 -->
+    <InternalsVisibleTo Include="WeatherForecast.InProcess.Test" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="certificate.crt" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

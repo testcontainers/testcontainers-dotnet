@@ -17,7 +17,7 @@ public sealed class Temperature : HasId
     Measured = measured;
   }
 
-  public static Temperature AbsoluteZero { get; } = Temperature.Kelvin(Guid.Empty, 0, DateTime.MinValue);
+  public static Temperature AbsoluteZero { get; } = Kelvin(Guid.Empty, 0, DateTime.MinValue);
 
   [JsonPropertyName("belongsTo")]
   public Guid BelongsTo { get; }
