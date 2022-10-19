@@ -23,19 +23,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-2019]
+        os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           clean: true
           lfs: true
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
 
       - name: Restore .NET Tools
         run: dotnet tool restore
@@ -73,7 +73,7 @@ jobs:
 
     environment: production
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       FEED_SOURCE: https://api.nuget.org/v3/index.json
@@ -85,21 +85,21 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           clean: true
           lfs: true
           fetch-depth: 0
 
-      - name: Download Test And Coverage Results (ubuntu-20.04)
+      - name: Download Test And Coverage Results (ubuntu-22.04)
         uses: actions/download-artifact@v3
         with:
-          name: ubuntu-20.04
+          name: ubuntu-22.04
 
-      - name: Download Test And Coverage Results (windows-2019)
+      - name: Download Test And Coverage Results (windows-2022)
         uses: actions/download-artifact@v3
         with:
-          name: windows-2019
+          name: windows-2022
 
       - name: Fix Absolute Code Coverage Paths
         run: |
@@ -108,7 +108,7 @@ jobs:
         shell: pwsh
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
 
       - name: Restore .NET Tools
         run: dotnet tool restore

@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("mcr.microsoft.com/windows/servercore:ltsc2019")
+          .WithImage("mcr.microsoft.com/windows/servercore:ltsc2022")
           .WithEntrypoint("PowerShell", "-NoLogo", "-Command", "ping -t localhost | Out-Null")
           .WithWaitStrategy(Wait.ForWindowsContainer()
             .UntilCommandIsCompleted("Exit !(Test-Path -Path 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe')"));
@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
       {
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("mcr.microsoft.com/windows/servercore:ltsc2019")
+          .WithImage("mcr.microsoft.com/windows/servercore:ltsc2022")
           .WithEntrypoint("PowerShell", "-NoLogo", "-Command", "$tcpListener = [System.Net.Sockets.TcpListener]1337; $tcpListener.Start(); ping -t localhost | Out-Null")
           .WithWaitStrategy(Wait.ForWindowsContainer()
             .UntilPortIsAvailable(1337));
