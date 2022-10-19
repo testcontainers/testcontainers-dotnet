@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
@@ -21,6 +23,20 @@
         .ConfigureAwait(false);
 
       Assert.Null(exception);
+    }
+
+    [Fact]
+    public void CannotSetDatabase()
+    {
+      var neo4j = new Neo4jTestcontainerConfiguration();
+      Assert.Throws<NotImplementedException>(() => neo4j.Database = string.Empty);
+    }
+
+    [Fact]
+    public void CannotSetUsername()
+    {
+      var neo4j = new Neo4jTestcontainerConfiguration();
+      Assert.Throws<NotImplementedException>(() => neo4j.Username = string.Empty);
     }
   }
 }

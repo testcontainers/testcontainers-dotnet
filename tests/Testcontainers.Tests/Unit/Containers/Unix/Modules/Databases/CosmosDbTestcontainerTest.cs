@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Net;
   using System.Net.Http;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Microsoft.Azure.Cosmos;
   using Xunit;
@@ -37,7 +38,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 #pragma warning disable xUnit1004
 
       [Fact(Skip = SkipReason)]
-      public async Task ShouldEstablishConnection()
+      public async Task ConnectionEstablished()
       {
         var accountProperties = await this.cosmosClient.ReadAccountAsync()
           .ConfigureAwait(false);
@@ -52,6 +53,13 @@ namespace DotNet.Testcontainers.Tests.Unit
           .ConfigureAwait(false);
 
         Assert.Equal(HttpStatusCode.Created, databaseResponse.StatusCode);
+      }
+
+      [Fact(Skip = SkipReason)]
+      public void CannotSetPassword()
+      {
+        var cosmosDb = new CosmosDbTestcontainerConfiguration();
+        Assert.Throws<NotImplementedException>(() => cosmosDb.Password = string.Empty);
       }
 
 #pragma warning restore xUnit1004

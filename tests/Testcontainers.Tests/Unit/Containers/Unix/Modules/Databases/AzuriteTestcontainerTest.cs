@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task ShouldEstablishServiceConnection()
+      public async Task ConnectionEstablished()
       {
         var exception = await Record.ExceptionAsync(() => Task.WhenAll(EstablishConnection(this.commonContainerPorts), EstablishConnection(this.customContainerPorts)))
           .ConfigureAwait(false);
@@ -131,7 +131,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task ShouldEstablishServiceConnection()
+      public async Task ConnectionEstablished()
       {
         // Given
         var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
@@ -174,7 +174,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task ShouldEstablishServiceConnection()
+      public async Task ConnectionEstablished()
       {
         // Given
         var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
@@ -217,7 +217,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task ShouldEstablishServiceConnection()
+      public async Task ConnectionEstablished()
       {
         // Given
         var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
