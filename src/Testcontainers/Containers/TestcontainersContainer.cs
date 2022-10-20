@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
-  using System.Net;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
@@ -19,8 +18,6 @@ namespace DotNet.Testcontainers.Containers
   public class TestcontainersContainer : ITestcontainersContainer
   {
     private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
-
-    private static readonly string[] DockerDesktopGateways = { "host.docker.internal", "gateway.docker.internal" };
 
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
@@ -379,30 +376,31 @@ namespace DotNet.Testcontainers.Containers
 
     private string GetContainerGateway()
     {
-      if (!this.client.IsRunningInsideDocker || !ContainerHasBeenCreatedStates.HasFlag(this.State))
+      const string localhost = "localhost";
+
+      if (!ContainerHasBeenCreatedStates.HasFlag(this.State))
       {
-        return "localhost";
+        return localhost;
       }
 
-      string GetDockerDesktopGateway(string dockerDesktopGateway)
+      if (!this.client.IsRunningInsideDocker)
       {
-        try
-        {
-          _ = Dns.GetHostEntry(dockerDesktopGateway);
-          return dockerDesktopGateway;
-        }
-        catch
-        {
-          return null;
-        }
+        return localhost;
       }
 
-      var hostname = DockerDesktopGateways
-        .AsParallel()
-        .Select(GetDockerDesktopGateway)
-        .FirstOrDefault(dockerDesktopGateway => dockerDesktopGateway != null);
+      var endpointSettings = this.container.NetworkSettings.Networks.TryGetValue("bridge", out var network) ? network : new EndpointSettings();
+      if (!string.IsNullOrWhiteSpace(endpointSettings.Gateway))
+      {
+        return endpointSettings.Gateway;
+      }
 
-      return hostname ?? this.container.NetworkSettings.Networks.First().Value.Gateway;
+      var networkSettings = this.container.NetworkSettings;
+      if (!string.IsNullOrWhiteSpace(networkSettings.Gateway))
+      {
+        return networkSettings.Gateway;
+      }
+
+      return localhost;
     }
   }
 }
