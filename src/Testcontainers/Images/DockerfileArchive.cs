@@ -86,7 +86,7 @@
 
             var tarEntry = TarEntry.CreateEntryFromFile(file);
             tarEntry.Name = relativePath;
-            tarArchive.WriteEntry(tarEntry, true);
+            tarArchive.WriteEntry(tarEntry, false);
           }
         }
       }
