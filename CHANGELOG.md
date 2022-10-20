@@ -32,6 +32,7 @@
 - 525 Read ServerURL, Username and Secret field from CredsStore response to pull private Docker images
 - 595 Implement `TestcontainersContainer.DisposeAsync` thread safe (rename `TestcontainersState` to `TestcontainersStates`)
 - 604 Do not deny all files in the Docker image tarball when a `.dockerignore` entry ends with `/`
+- 610 Do not deny all files in the Docker image tarball when a `.dockerignore` entry ends with `/*`
 
 ## [2.1.0]
 

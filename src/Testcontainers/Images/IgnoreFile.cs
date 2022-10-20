@@ -32,6 +32,16 @@ namespace DotNet.Testcontainers.Images
         // Trim each line.
         .Select(line => line.Trim())
 
+        // Exclude files and directories.
+        .Select(line => line.TrimEnd('/'))
+
+        // Exclude files and directories.
+        .Select(line =>
+        {
+          const string filesAndDirectories = "/*";
+          return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture) ? line.Substring(0, line.Length - filesAndDirectories.Length) : line;
+        })
+
         // Remove empty line.
         .Where(line => !string.IsNullOrEmpty(line))
 
