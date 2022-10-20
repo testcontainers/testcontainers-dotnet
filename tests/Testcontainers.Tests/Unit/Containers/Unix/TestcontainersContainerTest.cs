@@ -17,8 +17,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
   public static class TestcontainersContainerTest
   {
-    // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory();
+    private static readonly string TempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+
+    static TestcontainersContainerTest()
+    {
+      _ = Directory.CreateDirectory(TempPath);
+    }
 
     [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
@@ -225,9 +229,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
-          .WithBindMount(TempDir, $"/{target}")
+          .WithBindMount(TempPath, $"/{target}")
           .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilFileExists(Path.Combine(TempDir, file)));
+            .UntilFileExists(Path.Combine(TempPath, file)));
 
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -235,7 +239,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.True(File.Exists(Path.Combine(TempDir, file)), $"{file} does not exist.");
+        Assert.True(File.Exists(Path.Combine(TempPath, file)), $"{file} does not exist.");
       }
 
       [Fact]
@@ -254,10 +258,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithNetworkAliases("Foo")
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
-          .WithBindMount(TempDir, $"/{target}")
+          .WithBindMount(TempPath, $"/{target}")
           .ConfigureContainer(_ => { }) // https://github.com/testcontainers/testcontainers-dotnet/issues/507.
           .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilFileExists(Path.Combine(TempDir, file)));
+            .UntilFileExists(Path.Combine(TempPath, file)));
 
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
@@ -265,7 +269,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.Equal(dayOfWeek, await File.ReadAllTextAsync(Path.Combine(TempDir, file)));
+        Assert.Equal(dayOfWeek, await File.ReadAllTextAsync(Path.Combine(TempPath, file)));
       }
 
       [Fact]
