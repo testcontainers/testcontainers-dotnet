@@ -1,5 +1,5 @@
 site_name: Testcontainers for .NET
-repo_name: testcontainers-go
+repo_name: testcontainers-dotnet
 repo_url: https://github.com/testcontainers/testcontainers-dotnet
 theme:
   name: material
@@ -12,6 +12,12 @@ theme:
   favicon: favicon.ico
 extra_css:
   - css/extra.css
+plugins:
+  - codeinclude
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 nav:
   - index.md
   - custom_configuration/index.md
