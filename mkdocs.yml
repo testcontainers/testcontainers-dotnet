@@ -13,11 +13,17 @@ theme:
 extra_css:
   - css/extra.css
 plugins:
-  - codeinclude
+    - search
+    - codeinclude
+    - markdownextradata
 markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
 nav:
-  - index.md
-  - custom_configuration/index.md
+    - Home: index.md
+    - Configuration: custom_configuration/index.md
+    - Examples:
+          - examples/postgres.md
+          - examples/nginx.md
+edit_uri: edit/develop/docs/
