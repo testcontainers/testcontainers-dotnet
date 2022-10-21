@@ -1,0 +1,17 @@
+site_name: Testcontainers for .NET
+repo_name: testcontainers-go
+repo_url: https://github.com/testcontainers/testcontainers-dotnet
+theme:
+  name: material
+  palette:
+    scheme: testcontainers
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: logo.svg
+  favicon: favicon.ico
+extra_css:
+  - css/extra.css
+nav:
+  - index.md
+  - custom_configuration/index.md

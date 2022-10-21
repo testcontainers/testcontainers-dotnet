@@ -10,4 +10,5 @@
 *.ico filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
 
+# Setting up Netlify with Git LFS is cumbersome
 docs/*.png !filter=lfs !diff=lfs !merge=lfs -text
