@@ -6,11 +6,11 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Xunit;
 
   [Collection(nameof(Testcontainers))]
-  public sealed class MySqlTestcontainerTest : IClassFixture<MySqlFixture>
+  public sealed class MySqlTestcontainerRootUserTest : IClassFixture<MySqlRootUserFixture>
   {
-    private readonly MySqlFixture mySqlFixture;
+    private readonly MySqlRootUserFixture mySqlFixture;
 
-    public MySqlTestcontainerTest(MySqlFixture mySqlFixture)
+    public MySqlTestcontainerRootUserTest(MySqlRootUserFixture mySqlFixture)
     {
       this.mySqlFixture = mySqlFixture;
     }
@@ -47,6 +47,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // Then
+      Assert.DoesNotContain("ERROR", result.Stderr);
       Assert.Equal(0, result.ExitCode);
       Assert.Contains("MyName", result.Stdout);
     }

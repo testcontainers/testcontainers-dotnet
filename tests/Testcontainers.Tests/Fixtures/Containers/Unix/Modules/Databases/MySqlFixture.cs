@@ -8,13 +8,13 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using JetBrains.Annotations;
   using MySqlConnector;
 
-  [UsedImplicitly]
-  public sealed class MySqlFixture : DatabaseFixture<MySqlTestcontainer, DbConnection>
+  public abstract class MySqlBaseFixture : DatabaseFixture<MySqlTestcontainer, DbConnection>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new MySqlTestcontainerConfiguration { Database = "db", Username = "mysql", Password = "mysql" };
+    private readonly TestcontainerDatabaseConfiguration configuration;
 
-    public MySqlFixture()
+    public MySqlBaseFixture(string username, string password)
     {
+      this.configuration = new MySqlTestcontainerConfiguration { Database = "db", Username = username, Password = password };
       this.Container = new TestcontainersBuilder<MySqlTestcontainer>()
         .WithDatabase(this.configuration)
         .Build();
@@ -39,6 +39,22 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public override void Dispose()
     {
       this.configuration.Dispose();
+    }
+  }
+
+  [UsedImplicitly]
+  public sealed class MySqlNormalUserFixture : MySqlBaseFixture
+  {
+    public MySqlNormalUserFixture() : base("mysql", "mysql")
+    {
+    }
+  }
+
+  [UsedImplicitly]
+  public sealed class MySqlRootUserFixture : MySqlBaseFixture
+  {
+    public MySqlRootUserFixture() : base("root", "root")
+    {
     }
   }
 }

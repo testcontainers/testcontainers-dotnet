@@ -11,6 +11,9 @@ namespace DotNet.Testcontainers.Configurations
 
     private const int MySqlPort = 3306;
 
+    private const string RootUsername = "root";
+    private string _username = "root";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlTestcontainerConfiguration" /> class.
     /// </summary>
@@ -39,15 +42,36 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override string Username
     {
-      get => this.Environments["MYSQL_USER"];
-      set => this.Environments["MYSQL_USER"] = value;
+      get {
+        return this._username;
+      }
+      set {
+        this._username = value;
+        if(value != RootUsername) {
+          this.Environments["MYSQL_USER"] = value;
+        } else {
+          // No need for setting a username, as it is defined as root for mysql.
+        }
+      }
     }
 
     /// <inheritdoc />
     public override string Password
     {
-      get => this.Environments["MYSQL_PASSWORD"];
-      set => this.Environments["MYSQL_PASSWORD"] = value;
+      get {
+        if(this.Environments.ContainsKey("MYSQL_USER")) {
+          return this.Environments["MYSQL_PASSWORD"];
+        } else {
+          return this.Environments["MYSQL_ROOT_PASSWORD"];
+        }
+      }
+      set {
+        if(this._username == RootUsername) {
+          this.Environments["MYSQL_ROOT_PASSWORD"] = value;
+        } else {
+          this.Environments["MYSQL_PASSWORD"] = value;
+        }
+      }
     }
 
     /// <inheritdoc />
