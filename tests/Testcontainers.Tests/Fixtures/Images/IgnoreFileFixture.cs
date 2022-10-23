@@ -10,14 +10,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       var logger = TestcontainersSettings.Logger;
       var ignoreFilesAndDirectories = new IgnoreFile(new[] { "bin/", "obj/*" }, logger);
+      var ignoreAllFilesAndDirectories = new IgnoreFile(new[] { "*", "!README*.md" }, logger);
       var ignoreNonRecursiveFiles = new IgnoreFile(new[] { "*/temp*" }, logger);
       var ignoreNonRecursiveNestedFiles = new IgnoreFile(new[] { "*/*/temp*" }, logger);
       var ignoreRecursiveFiles = new IgnoreFile(new[] { "**/*.txt" }, logger);
       var ignoreSingleCharacterFiles = new IgnoreFile(new[] { "temp?" }, logger);
       var ignoreExceptionFiles = new IgnoreFile(new[] { "*.md", "!README*.md", "README-secret.md" }, logger);
-      this.Add(ignoreFilesAndDirectories, "bin/Debug/net6.0", false);
-      this.Add(ignoreFilesAndDirectories, "obj/Debug/net6.0", false);
-      this.Add(ignoreFilesAndDirectories, "Testcontainers.sln", true);
+      this.Add(ignoreFilesAndDirectories, "bin/Debug", false);
+      this.Add(ignoreFilesAndDirectories, "obj/Debug", false);
+      this.Add(ignoreFilesAndDirectories, "README.md", true);
+      this.Add(ignoreAllFilesAndDirectories, "bin/Debug", false);
+      this.Add(ignoreAllFilesAndDirectories, "obj/Debug", false);
+      this.Add(ignoreAllFilesAndDirectories, "README.md", true);
       this.Add(ignoreNonRecursiveFiles, "lipsum/temp", false);
       this.Add(ignoreNonRecursiveFiles, "lipsum/temp.txt", false);
       this.Add(ignoreNonRecursiveFiles, "lipsum/lorem/temp", true);

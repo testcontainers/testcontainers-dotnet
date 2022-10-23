@@ -22,6 +22,7 @@
 - 594 Add `IDockerContainer.GetLogs`
 - 601 Add `ITestcontainersBuilder<TDockerContainer>.WithImagePullPolicy` (@BenasB)
 - 616 Add `ITestcontainersBuilder<TDockerContainer>.WithMacAddress` (@seb1992)
+- 618 Match `.dockerignore` entry `*` to all files and directories
 
 ### Changed
 

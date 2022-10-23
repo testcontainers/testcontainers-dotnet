@@ -32,6 +32,12 @@ namespace DotNet.Testcontainers.Images
         // Trim each line.
         .Select(line => line.Trim())
 
+        // Remove empty line.
+        .Where(line => !string.IsNullOrEmpty(line))
+
+        // Remove comment.
+        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+
         // Exclude files and directories.
         .Select(line => line.TrimEnd('/'))
 
@@ -42,11 +48,8 @@ namespace DotNet.Testcontainers.Images
           return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture) ? line.Substring(0, line.Length - filesAndDirectories.Length) : line;
         })
 
-        // Remove empty line.
-        .Where(line => !string.IsNullOrEmpty(line))
-
-        // Remove comment.
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+        // Exclude all files and directories (https://github.com/testcontainers/testcontainers-dotnet/issues/618).
+        .Select(line => "*".Equals(line, StringComparison.OrdinalIgnoreCase) ? "**" : line)
 
         // Check if the pattern contains an optional prefix ("!"), which negates the pattern.
         .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
