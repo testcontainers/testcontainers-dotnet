@@ -59,18 +59,11 @@ namespace DotNet.Testcontainers.Configurations
     public override string Password
     {
       get {
-        if(this.Environments.ContainsKey("MYSQL_USER")) {
           return this.Environments["MYSQL_PASSWORD"];
-        } else {
-          return this.Environments["MYSQL_ROOT_PASSWORD"];
-        }
       }
       set {
-        if(this._username == RootUsername) {
           this.Environments["MYSQL_ROOT_PASSWORD"] = value;
-        } else {
           this.Environments["MYSQL_PASSWORD"] = value;
-        }
       }
     }
 
