@@ -38,8 +38,7 @@ namespace DotNet.Testcontainers.Containers
       await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
         .ConfigureAwait(false);
 
-      // TODO: Shouldn't we always use localhost, if we are inside the container? With 'Hostname' it is failing in Codespaces
-      return await this.ExecAsync(new[] { "mysql", $"--host=localhost", $"--port={this.ContainerPort}", $"--user={this.Username}", $"--password={this.Password}", this.Database, $"--execute=source {tempScriptFile}" }, ct)
+      return await this.ExecAsync(new[] { "mysql", $"--host={this.Hostname}", $"--port={this.ContainerPort}", $"--user={this.Username}", $"--password={this.Password}", this.Database, $"--execute=source {tempScriptFile}" }, ct)
         .ConfigureAwait(false);
     }
   }
