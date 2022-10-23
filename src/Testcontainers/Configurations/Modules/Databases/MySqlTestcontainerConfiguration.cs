@@ -41,17 +41,23 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override string Username
     {
-      get {
+      get
+      {
         string username;
-        if(this.Environments.TryGetValue("MYSQL_USER", out username)) {
+        if (this.Environments.TryGetValue("MYSQL_USER", out username))
+        {
           return username;
-        }else{
+        }
+        else
+        {
           return RootUsername;
         }
       }
-      set {
+      set
+      {
         // Only set the username if it is not "root", as mysql does not allow it.
-        if(value != RootUsername){
+        if (value != RootUsername)
+        {
           this.Environments["MYSQL_USER"] = value;
         }
       }
@@ -61,9 +67,10 @@ namespace DotNet.Testcontainers.Configurations
     public override string Password
     {
       get => this.Environments["MYSQL_PASSWORD"];
-      set {
-          this.Environments["MYSQL_ROOT_PASSWORD"] = value;
-          this.Environments["MYSQL_PASSWORD"] = value;
+      set
+      {
+        this.Environments["MYSQL_ROOT_PASSWORD"] = value;
+        this.Environments["MYSQL_PASSWORD"] = value;
       }
     }
 
