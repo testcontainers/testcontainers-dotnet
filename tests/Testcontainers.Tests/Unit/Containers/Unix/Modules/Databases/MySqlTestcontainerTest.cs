@@ -5,15 +5,14 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public static class MySqlTestcontainerTest
   {
     [Collection(nameof(Testcontainers))]
-    public sealed class MySqlTestcontainerRootUserTest : IClassFixture<MySqlRootUserFixture>
+    public sealed class MySqlCustomUsernameTest : IClassFixture<MySqlFixture>
     {
-      private readonly MySqlRootUserFixture mySqlFixture;
+      private readonly MySqlFixture mySqlFixture;
 
-      public MySqlTestcontainerRootUserTest(MySqlRootUserFixture mySqlFixture)
+      public MySqlCustomUsernameTest(MySqlFixture mySqlFixture)
       {
         this.mySqlFixture = mySqlFixture;
       }
@@ -50,7 +49,6 @@ namespace DotNet.Testcontainers.Tests.Unit
           .ConfigureAwait(false);
 
         // Then
-        Assert.DoesNotContain("ERROR", result.Stderr);
         Assert.Equal(0, result.ExitCode);
         Assert.Contains("MyName", result.Stdout);
       }
@@ -72,65 +70,31 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Collection(nameof(Testcontainers))]
-    public sealed class MySqlTestcontainerNormalUserTest : IClassFixture<MySqlNormalUserFixture>
+    public sealed class MySqlRootUsernameTest : IClassFixture<MySqlRootUsernameFixture>
     {
-      private readonly MySqlNormalUserFixture mySqlFixture;
+      private readonly MySqlFixture mySqlFixture;
 
-      public MySqlTestcontainerNormalUserTest(MySqlNormalUserFixture mySqlFixture)
+      public MySqlRootUsernameTest(MySqlRootUsernameFixture mySqlFixture)
       {
         this.mySqlFixture = mySqlFixture;
       }
 
       [Fact]
-      public async Task ConnectionEstablished()
+      public Task ConnectionEstablished()
       {
-        // Given
-        var connection = this.mySqlFixture.Connection;
-
-        // When
-        await connection.OpenAsync()
-          .ConfigureAwait(false);
-
-        // Then
-        Assert.Equal(ConnectionState.Open, connection.State);
+        return new MySqlCustomUsernameTest(this.mySqlFixture).ConnectionEstablished();
       }
 
       [Fact]
-      public async Task ExecScriptInRunningContainer()
+      public Task ExecScriptInRunningContainer()
       {
-        // Given
-        const string script = @"
-        CREATE TABLE MyTable (
-          id INT(6) UNSIGNED PRIMARY KEY,
-          name VARCHAR(30) NOT NULL
-        );
-        INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
-        SELECT * FROM MyTable;
-      ";
-
-        // When
-        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
-          .ConfigureAwait(false);
-
-        // Then
-        Assert.DoesNotContain("ERROR", result.Stderr);
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("MyName", result.Stdout);
+        return new MySqlCustomUsernameTest(this.mySqlFixture).ExecScriptInRunningContainer();
       }
 
       [Fact]
-      public async Task ThrowErrorInRunningContainerWithInvalidScript()
+      public Task ThrowErrorInRunningContainerWithInvalidScript()
       {
-        // Given
-        const string script = "invalid SQL command";
-
-        // When
-        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
-          .ConfigureAwait(false);
-
-        // Then
-        Assert.NotEqual(0, result.ExitCode);
-        Assert.Contains("ERROR 1064 (42000)", result.Stderr);
+        return new MySqlCustomUsernameTest(this.mySqlFixture).ThrowErrorInRunningContainerWithInvalidScript();
       }
     }
   }

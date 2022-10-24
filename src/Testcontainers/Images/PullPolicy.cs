@@ -2,10 +2,12 @@ namespace DotNet.Testcontainers.Images
 {
   using System;
   using Docker.DotNet.Models;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// Pre-configured image pull policies.
   /// </summary>
+  [PublicAPI]
   public static class PullPolicy
   {
     /// <summary>

@@ -1,7 +1,9 @@
+awslocal
 azurecr
 azurite
 capi
 creds
+dind
 dvcm
 enumerables
 ghcr
@@ -27,3 +29,4 @@ servercore
 sqlplus
 testcontainer
 testcontainers
+tlsverify

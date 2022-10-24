@@ -23,6 +23,7 @@
 - 601 Add `ITestcontainersBuilder<TDockerContainer>.WithImagePullPolicy` (@BenasB)
 - 616 Add `ITestcontainersBuilder<TDockerContainer>.WithMacAddress` (@seb1992)
 - 618 Match `.dockerignore` entry `*` to all files and directories
+- 626 Support MySQL root password configuration (@DanielHabenicht)
 
 ### Changed
 
