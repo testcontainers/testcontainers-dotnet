@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Containers
       await this.CopyFileAsync(tempScriptFile, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
         .ConfigureAwait(false);
 
-      return await this.ExecAsync(new[] { "/bin/sh", "-c", $"exit | $ORACLE_HOME/bin/sqlplus -S {this.Username}/{this.Password}@{this.Hostname} @{tempScriptFile}" }, ct)
+      return await this.ExecAsync(new[] { "/bin/sh", "-c", $"exit | $ORACLE_HOME/bin/sqlplus -S {this.Username}/{this.Password}@localhost @{tempScriptFile}" }, ct)
         .ConfigureAwait(false);
     }
   }
