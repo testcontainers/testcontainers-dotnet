@@ -6,34 +6,37 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Xunit;
 
   [Collection(nameof(Testcontainers))]
-  public sealed class MySqlTestcontainerTest : IClassFixture<MySqlFixture>
+  public static class MySqlTestcontainerTest
   {
-    private readonly MySqlFixture mySqlFixture;
-
-    public MySqlTestcontainerTest(MySqlFixture mySqlFixture)
+    [Collection(nameof(Testcontainers))]
+    public sealed class MySqlTestcontainerRootUserTest : IClassFixture<MySqlRootUserFixture>
     {
-      this.mySqlFixture = mySqlFixture;
-    }
+      private readonly MySqlRootUserFixture mySqlFixture;
 
-    [Fact]
-    public async Task ConnectionEstablished()
-    {
-      // Given
-      var connection = this.mySqlFixture.Connection;
+      public MySqlTestcontainerRootUserTest(MySqlRootUserFixture mySqlFixture)
+      {
+        this.mySqlFixture = mySqlFixture;
+      }
 
-      // When
-      await connection.OpenAsync()
-        .ConfigureAwait(false);
+      [Fact]
+      public async Task ConnectionEstablished()
+      {
+        // Given
+        var connection = this.mySqlFixture.Connection;
 
-      // Then
-      Assert.Equal(ConnectionState.Open, connection.State);
-    }
+        // When
+        await connection.OpenAsync()
+          .ConfigureAwait(false);
 
-    [Fact]
-    public async Task ExecScriptInRunningContainer()
-    {
-      // Given
-      const string script = @"
+        // Then
+        Assert.Equal(ConnectionState.Open, connection.State);
+      }
+
+      [Fact]
+      public async Task ExecScriptInRunningContainer()
+      {
+        // Given
+        const string script = @"
         CREATE TABLE MyTable (
           id INT(6) UNSIGNED PRIMARY KEY,
           name VARCHAR(30) NOT NULL
@@ -42,28 +45,93 @@ namespace DotNet.Testcontainers.Tests.Unit
         SELECT * FROM MyTable;
       ";
 
-      // When
-      var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
-        .ConfigureAwait(false);
+        // When
+        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
+          .ConfigureAwait(false);
 
-      // Then
-      Assert.Equal(0, result.ExitCode);
-      Assert.Contains("MyName", result.Stdout);
+        // Then
+        Assert.DoesNotContain("ERROR", result.Stderr);
+        Assert.Equal(0, result.ExitCode);
+        Assert.Contains("MyName", result.Stdout);
+      }
+
+      [Fact]
+      public async Task ThrowErrorInRunningContainerWithInvalidScript()
+      {
+        // Given
+        const string script = "invalid SQL command";
+
+        // When
+        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("ERROR 1064 (42000)", result.Stderr);
+      }
     }
 
-    [Fact]
-    public async Task ThrowErrorInRunningContainerWithInvalidScript()
+    [Collection(nameof(Testcontainers))]
+    public sealed class MySqlTestcontainerNormalUserTest : IClassFixture<MySqlNormalUserFixture>
     {
-      // Given
-      const string script = "invalid SQL command";
+      private readonly MySqlNormalUserFixture mySqlFixture;
 
-      // When
-      var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
-        .ConfigureAwait(false);
+      public MySqlTestcontainerNormalUserTest(MySqlNormalUserFixture mySqlFixture)
+      {
+        this.mySqlFixture = mySqlFixture;
+      }
 
-      // Then
-      Assert.NotEqual(0, result.ExitCode);
-      Assert.Contains("ERROR 1064 (42000)", result.Stderr);
+      [Fact]
+      public async Task ConnectionEstablished()
+      {
+        // Given
+        var connection = this.mySqlFixture.Connection;
+
+        // When
+        await connection.OpenAsync()
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(ConnectionState.Open, connection.State);
+      }
+
+      [Fact]
+      public async Task ExecScriptInRunningContainer()
+      {
+        // Given
+        const string script = @"
+        CREATE TABLE MyTable (
+          id INT(6) UNSIGNED PRIMARY KEY,
+          name VARCHAR(30) NOT NULL
+        );
+        INSERT INTO MyTable (id, name) VALUES (1, 'MyName');
+        SELECT * FROM MyTable;
+      ";
+
+        // When
+        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.DoesNotContain("ERROR", result.Stderr);
+        Assert.Equal(0, result.ExitCode);
+        Assert.Contains("MyName", result.Stdout);
+      }
+
+      [Fact]
+      public async Task ThrowErrorInRunningContainerWithInvalidScript()
+      {
+        // Given
+        const string script = "invalid SQL command";
+
+        // When
+        var result = await this.mySqlFixture.Container.ExecScriptAsync(script)
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("ERROR 1064 (42000)", result.Stderr);
+      }
     }
   }
 }
