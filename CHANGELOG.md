@@ -36,6 +36,7 @@
 - 604 Do not deny all files in the Docker image tarball when a `.dockerignore` entry ends with `/`
 - 610 Do not deny all files in the Docker image tarball when a `.dockerignore` entry ends with `/*`
 - 632 Execute local database scripts (inside the container) against `localhost`
+- 634 JsonReaderException in Docker.DotNet with Docker Desktop 4.13.0 (https://github.com/dotnet/Docker.DotNet/issues/595)
 
 ## [2.1.0]
 

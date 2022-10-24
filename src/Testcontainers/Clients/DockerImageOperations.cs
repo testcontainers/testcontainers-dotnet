@@ -64,7 +64,8 @@ namespace DotNet.Testcontainers.Clients
     {
       var createParameters = new ImagesCreateParameters
       {
-        FromImage = image.FullName,
+        FromImage = image.FullName.Replace(":" + image.Tag, string.Empty), // Workaround until https://github.com/dotnet/Docker.DotNet/issues/595 is fixed.
+        Tag = image.Tag,
       };
 
       var authConfig = new AuthConfig
