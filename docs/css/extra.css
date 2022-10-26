@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik');
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+{
+  font-family: 'Rubik', sans-serif;
+}
+
+[data-md-color-scheme="testcontainers"]
+{
+  --md-primary-fg-color: #291a3f;
+  --md-accent-fg-color: #291a3f;
+}

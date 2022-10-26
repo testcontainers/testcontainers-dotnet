@@ -1,0 +1,4 @@
+mkdocs==1.4.1
+mkdocs-codeinclude-plugin==0.2.0
+mkdocs-markdownextradata-plugin==0.2.5
+mkdocs-material==8.5.6
