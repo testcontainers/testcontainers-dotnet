@@ -18,13 +18,14 @@
     <Copyright>Copyright (c) 2019 - 2022 Andre Hofmeister and other authors</Copyright>
     <Authors>Andre Hofmeister and contributors</Authors>
     <Company>Andre Hofmeister</Company>
-    <Description>A lightweight library to run tests with throwaway instances of Docker containers.</Description>
-    <Summary>Testcontainers makes it easy to run tests with Docker containers. Create reliable and fast environments within seconds and throw them away if not needed anymore.</Summary>
-    <PackageIcon>Logo.png</PackageIcon>
-    <PackageIconUrl>https://github.com/testcontainers/testcontainers-dotnet/raw/develop/docs/Logo.png</PackageIconUrl>
+    <Description>Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions.</Description>
+    <Summary>Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.</Summary>
+    <PackageIcon>docs/logo.png</PackageIcon>
+    <PackageIconUrl>https://github.com/testcontainers/testcontainers-dotnet/raw/develop/docs/logo.png</PackageIconUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/testcontainers/testcontainers-dotnet</PackageProjectUrl>
-    <PackageTags>.NET;Docker;Container;Test</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://dotnet.testcontainers.org/</PackageProjectUrl>
+    <PackageTags>automation;docker;dotnet;testcontainers;testcontainers-dotnet;testing</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
@@ -36,8 +37,10 @@
     <NoWarn>CA1716,CS1591,SA0001,SA1600,SA1633</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="$(SolutionDir)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
+    <None Include="$(SolutionDir)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />
     <None Include="$(SolutionDir)LICENSE" Visible="false" Pack="true" PackagePath="" />
-    <None Include="$(SolutionDir)docs/Logo.png" Visible="false" Pack="true" PackagePath="" />
+    <None Include="$(SolutionDir)README.md" Visible="false" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

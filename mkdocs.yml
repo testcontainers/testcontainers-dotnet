@@ -1,0 +1,35 @@
+site_name: Testcontainers for .NET
+repo_name: testcontainers-dotnet
+repo_url: https://github.com/testcontainers/testcontainers-dotnet
+edit_uri: edit/develop/docs/
+theme:
+  name: material
+  palette:
+    scheme: testcontainers
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: favicon.ico
+  logo: logo.svg
+extra_css:
+  - css/extra.css
+plugins:
+  - codeinclude
+  - markdownextradata
+  - search
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+nav:
+  - index.md
+  - custom_configuration/index.md
+  - api/create_docker_image.md
+  - api/create_docker_container.md
+  - api/resource-reaper.md
+  - api/wait_strategies.md
+  - Examples:
+    - examples/aspnet.md
+  - Modules:
+    - modules/index.md
+    - modules/postgres.md
