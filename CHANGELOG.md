@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2.2.0]
+
 ### Added
 
 - 370 Add protected Docker daemon socket support (@vlaskal)
