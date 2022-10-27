@@ -6,7 +6,7 @@ Testcontainers automatically assigns a Resource Reaper session id to each Docker
 
     Whenever possible, do **not** disable the Resource Reaper. It keeps your machine and CI/CD environment clean. If at all, consider disabling the Resource Reaper only for environments that have a mechanism to cleanup Docker resources, e.g. ephemeral CI nodes.
 
-## Examples
+<!-- ## Examples
 
 Creates a scoped Resource Reaper and assigns its session id to a container (Docker resource). The container is no longer tracked by the default Resource Reaper.
 
@@ -24,6 +24,6 @@ await new TestcontainersBuilder<TestcontainersContainer>()
 
 !!!warning
 
-    Testcontainers for .NET assigns a default session id. You do not have to override the Resource Reaper session id usually.
+    Testcontainers for .NET assigns a default session id. You do not have to override the Resource Reaper session id usually. -->
 
 [moby-ryuk]: https://github.com/testcontainers/moby-ryuk

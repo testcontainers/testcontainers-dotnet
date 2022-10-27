@@ -25,7 +25,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://dotnet.testcontainers.org/</PackageProjectUrl>
-    <PackageTags>.NET;Docker;Container;Test</PackageTags>
+    <PackageTags>automation;docker;dotnet;testcontainers;testcontainers-dotnet;testing</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
