@@ -16,6 +16,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public ElasticsearchFixture()
     {
+      this.configuration.Environments.Add("node.store.allow_mmap", false.ToString());
       this.Container = new TestcontainersBuilder<ElasticsearchTestcontainer>()
         .WithDatabase(this.configuration)
         .Build();
