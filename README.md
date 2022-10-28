@@ -13,7 +13,7 @@
 
 ## License
 
-See [LICENSE](LICENSE).
+See [LICENSE](https://github.com/testcontainers/testcontainers-dotnet/blob/master/LICENSE).
 
 ## Copyright
 

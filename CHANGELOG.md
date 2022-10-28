@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 642 Expose container port bindings automatically
+
 ## [2.2.0]
 
 ### Added

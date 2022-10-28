@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Tests.Fixtures;
   using MongoDB.Bson;
@@ -8,6 +9,8 @@
   [Collection(nameof(Testcontainers))]
   public sealed class MongoDbTestcontainerTest : IClassFixture<MongoDbFixture>, IClassFixture<MongoDbNoAuthFixture>
   {
+    private const string MongoDbScheme = "mongodb";
+
     private readonly MongoDbFixture mongoDbFixture;
 
     private readonly MongoDbNoAuthFixture mongoDbNoAuthFixture;
@@ -45,13 +48,21 @@
     [Fact]
     public void ConnectionStringShouldContainAuthInformation()
     {
-      Assert.Matches("mongodb:\\/\\/\\w+:\\w+@\\w+:\\d+", this.mongoDbFixture.Container.ConnectionString);
+      var connectionString = new Uri(this.mongoDbFixture.Container.ConnectionString);
+      Assert.Equal(MongoDbScheme, connectionString.Scheme);
+      Assert.NotEmpty(connectionString.Host);
+      Assert.NotEmpty(connectionString.UserInfo);
+      Assert.InRange(connectionString.Port, ushort.MinValue, ushort.MaxValue);
     }
 
     [Fact]
     public void ConnectionStringShouldNotContainAuthInformation()
     {
-      Assert.Matches("mongodb:\\/\\/\\w+:\\d+", this.mongoDbNoAuthFixture.Container.ConnectionString);
+      var connectionString = new Uri(this.mongoDbNoAuthFixture.Container.ConnectionString);
+      Assert.Equal(MongoDbScheme, connectionString.Scheme);
+      Assert.NotEmpty(connectionString.Host);
+      Assert.Empty(connectionString.UserInfo);
+      Assert.InRange(connectionString.Port, ushort.MinValue, ushort.MaxValue);
     }
 
     [Fact]
