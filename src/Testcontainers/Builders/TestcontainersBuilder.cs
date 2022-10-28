@@ -185,7 +185,8 @@ namespace DotNet.Testcontainers.Builders
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
-      return this.MergeNewConfiguration(new TestcontainersConfiguration(portBindings: portBindings));
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(portBindings: portBindings))
+        .WithExposedPort(containerPort);
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />

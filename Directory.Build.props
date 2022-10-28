@@ -11,7 +11,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>2.2.0</Version>
+    <Version>2.3.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
