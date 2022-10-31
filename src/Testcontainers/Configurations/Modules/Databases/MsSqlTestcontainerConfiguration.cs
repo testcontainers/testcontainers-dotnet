@@ -40,7 +40,6 @@ namespace DotNet.Testcontainers.Configurations
     public override string Username
     {
       get => "sa";
-      set => throw new NotImplementedException();
     }
 
     /// <inheritdoc />
