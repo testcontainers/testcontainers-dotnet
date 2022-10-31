@@ -15,3 +15,42 @@ h6
   --md-primary-fg-color: #291a3f;
   --md-accent-fg-color: #291a3f;
 }
+
+body .card-grid-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #c3bede;
+  border-radius: 6px;
+  padding: 16px;
+  font-weight: 600;
+  color: #9991b5;
+  background: #f2f4fe;
+}
+
+body .card-grid-item:hover,
+body .card-grid-item:focus {
+  color: #9991b5;
+}
+
+.card-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 680px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card-grid-item[href] {
+  color: var(--md-primary-fg-color);
+  background: transparent;
+}
+
+.card-grid-item[href]:hover,
+.card-grid-item[href]:focus {
+  color: var(--md-primary-fg-color);
+  background: #f2f4fe;
+}
