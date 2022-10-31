@@ -3,7 +3,7 @@
 ![Testcontainers Banner](banner.png)
 
 <p style="text-align:center">
-  <strong>Not using Java? Here are other supported languages!</strong>
+  <strong>Not using .NET? Here are other supported languages!</strong>
 </p>
 <div class="card-grid">
   <a class="card-grid-item" href="https://www.testcontainers.org">
@@ -12,7 +12,7 @@
   <a class="card-grid-item" href="https://golang.testcontainers.org">
     <img src="language-logos/go.svg" />Go
   </a>
-  <a class="card-grid-item" href="https://dotnet.testcontainers.org">
+  <a class="card-grid-item">
     <img src="language-logos/dotnet.svg" />.NET
   </a>
   <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
