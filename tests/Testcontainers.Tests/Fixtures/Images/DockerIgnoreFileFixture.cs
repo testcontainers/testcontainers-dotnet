@@ -37,6 +37,18 @@
         DirectoryFullName = "/mypath",
       });
 
+      var ignoreDirectoryWildcardDockerIgnoreAndWildcardDockerFile = new DockerIgnoreFile("/mypath/", ".dockerignore", logger, new FileSystemFixture()
+      {
+        Lines =
+        {
+          "**/bin/",
+          "**/.dockerignore",
+          "**/Dockerfile",
+        },
+        Exists = true,
+        DirectoryFullName = "/mypath",
+      });
+
       var dockerIgnoreFile = ".dockerignore";
       var dockerfile = "Dockerfile";
       var nestedDockerfile = "/lipsum/lorem/Dockerfile";
@@ -55,7 +67,12 @@
       this.Add(ignoreDirectoryDockerIgnoreAndDockerFile, dockerIgnoreFile, true);
       this.Add(ignoreDirectoryDockerIgnoreAndDockerFile, dockerfile, true);
       this.Add(ignoreDirectoryDockerIgnoreAndDockerFile, nestedDockerfile, true);
-      this.Add(ignoreDirectory, binDirectory, false);
+      this.Add(ignoreDirectoryDockerIgnoreAndDockerFile, binDirectory, false);
+
+      this.Add(ignoreDirectoryWildcardDockerIgnoreAndWildcardDockerFile, dockerIgnoreFile, true);
+      this.Add(ignoreDirectoryWildcardDockerIgnoreAndWildcardDockerFile, dockerfile, true);
+      this.Add(ignoreDirectoryWildcardDockerIgnoreAndWildcardDockerFile, nestedDockerfile, true);
+      this.Add(ignoreDirectoryWildcardDockerIgnoreAndWildcardDockerFile, binDirectory, false);
     }
   }
 }
