@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var image = new DockerImage("testcontainers", "test", "1.0.0");
 
-      var expected = new SortedSet<string> { "Dockerfile", "setup/setup.sh" };
+      var expected = new SortedSet<string> { ".dockerignore", "Dockerfile", "setup/setup.sh" };
 
       var actual = new SortedSet<string>();
 
