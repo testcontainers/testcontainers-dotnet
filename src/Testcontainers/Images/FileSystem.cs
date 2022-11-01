@@ -4,7 +4,7 @@
   using System.IO;
   using System.Linq;
 
-  public class FileSystem : IFileSystem
+  internal class FileSystem : IFileSystem
   {
     public IEnumerable<string> ReadLines(string path)
     {
