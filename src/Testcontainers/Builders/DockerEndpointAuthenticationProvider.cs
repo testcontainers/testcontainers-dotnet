@@ -1,12 +1,16 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
+    private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
     /// <inheritdoc />
     public virtual bool IsApplicable()
     {
@@ -29,7 +33,7 @@
         {
           try
           {
-            dockerClient.System.PingAsync().GetAwaiter().GetResult();
+            TaskFactory.StartNew(() => dockerClient.System.PingAsync()).Unwrap().GetAwaiter().GetResult();
             return true;
           }
           catch (Exception)

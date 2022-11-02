@@ -8,6 +8,7 @@
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
+  using Microsoft.Extensions.Logging;
   using Xunit;
 
   public abstract class ProtectDockerDaemonSocket : IAsyncLifetime
@@ -34,7 +35,7 @@
         .WithExposedPort(TlsPort)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(this.hostCertsDirectoryPath, this.containerCertsDirectoryPath, AccessMode.ReadWrite)
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(TlsPort))
+        .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilListenOn()))
         .Build();
     }
 
@@ -66,6 +67,16 @@
     public Task DisposeAsync()
     {
       return this.container.DisposeAsync().AsTask();
+    }
+
+    private sealed class UntilListenOn : IWaitUntil
+    {
+      public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+      {
+        var (_, stderr) = await testcontainers.GetLogs()
+          .ConfigureAwait(false);
+        return stderr != null && stderr.Contains("API listen on [::]:2376");
+      }
     }
   }
 }

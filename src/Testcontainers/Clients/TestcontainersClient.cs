@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Clients
   /// <inheritdoc cref="ITestcontainersClient" />
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
-    public const string TestcontainersLabel = "testcontainers";
+    public const string TestcontainersLabel = "org.testcontainers";
 
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using WeatherForecast.Entities;
 using Xunit;
 
@@ -69,7 +70,7 @@ public static class WeatherForecastTest
 
     [Fact]
     [Trait("Category", nameof(Web))]
-    public async Task Get_WeatherForecast_ReturnsSevenDays()
+    public void Get_WeatherForecast_ReturnsSevenDays()
     {
       // Given
       string ScreenshotFileName() => $"{nameof(Get_WeatherForecast_ReturnsSevenDays)}_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.png";
@@ -83,8 +84,8 @@ public static class WeatherForecastTest
 
       chrome.FindElement(By.TagName("fluent-button")).Click();
 
-      await Task.Delay(TimeSpan.FromSeconds(1))
-        .ConfigureAwait(false);
+      var wait = new WebDriverWait(chrome, TimeSpan.FromSeconds(10));
+      wait.Until(webDriver => 1.Equals(webDriver.FindElements(By.TagName("span")).Count));
 
       chrome.GetScreenshot().SaveAsFile(Path.Combine(CommonDirectoryPath.GetSolutionDirectory().DirectoryPath, ScreenshotFileName()));
 

@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Azure.Storage.Queues;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
+  using JetBrains.Annotations;
   using Xunit;
 
   public static class AzuriteTestcontainerTest
@@ -52,38 +53,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
-    public sealed class AllServicesEnabled : IClassFixture<AzuriteFixture.AzuriteDefaultFixture>, IClassFixture<AzuriteFixture.AzuriteWithCustomContainerPortsFixture>
+    [UsedImplicitly]
+    public sealed class AllServicesEnabled
     {
-      private readonly AzuriteFixture.AzuriteDefaultFixture commonContainerPorts;
-
-      private readonly AzuriteFixture.AzuriteDefaultFixture customContainerPorts;
-
-      public AllServicesEnabled(AzuriteFixture.AzuriteDefaultFixture commonContainerPorts, AzuriteFixture.AzuriteWithCustomContainerPortsFixture customContainerPorts)
-      {
-        this.commonContainerPorts = commonContainerPorts;
-        this.customContainerPorts = customContainerPorts;
-      }
-
-      private AllServicesEnabled(AzuriteFixture.AzuriteDefaultFixture commonContainerPorts)
-      {
-        _ = commonContainerPorts;
-      }
-
-      private AllServicesEnabled(AzuriteFixture.AzuriteWithCustomContainerPortsFixture customContainerPorts)
-      {
-        _ = customContainerPorts;
-      }
-
-      [Fact]
-      public async Task ConnectionEstablished()
-      {
-        var exception = await Record.ExceptionAsync(() => Task.WhenAll(EstablishConnection(this.commonContainerPorts), EstablishConnection(this.customContainerPorts)))
-          .ConfigureAwait(false);
-
-        Assert.Null(exception);
-      }
-
       private static async Task EstablishConnection(AzuriteFixture.AzuriteDefaultFixture azurite)
       {
         // Given
@@ -117,6 +89,42 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Contains(BlobServiceDataFileName, execResult.Stdout);
         Assert.Contains(QueueServiceDataFileName, execResult.Stdout);
         Assert.Contains(TableServiceDataFileName, execResult.Stdout);
+      }
+
+      [Collection(nameof(Testcontainers))]
+      public sealed class CommonContainerPorts : IClassFixture<AzuriteFixture.AzuriteDefaultFixture>
+      {
+        private readonly AzuriteFixture.AzuriteDefaultFixture commonContainerPorts;
+
+        public CommonContainerPorts(AzuriteFixture.AzuriteDefaultFixture commonContainerPorts)
+        {
+          this.commonContainerPorts = commonContainerPorts;
+        }
+
+        [Fact]
+        public async Task ConnectionEstablished()
+        {
+          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(this.commonContainerPorts))
+            .ConfigureAwait(false));
+        }
+      }
+
+      [Collection(nameof(Testcontainers))]
+      public sealed class CustomContainerPorts : IClassFixture<AzuriteFixture.AzuriteWithCustomContainerPortsFixture>
+      {
+        private readonly AzuriteFixture.AzuriteDefaultFixture customContainerPorts;
+
+        public CustomContainerPorts(AzuriteFixture.AzuriteWithCustomContainerPortsFixture customContainerPorts)
+        {
+          this.customContainerPorts = customContainerPorts;
+        }
+
+        [Fact]
+        public async Task ConnectionEstablished()
+        {
+          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(this.customContainerPorts))
+            .ConfigureAwait(false));
+        }
       }
     }
 
@@ -256,16 +264,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public CustomLocation(AzuriteFixture.AzuriteWithCustomWorkspaceFixture azurite)
       {
-        if (Directory.Exists(azurite.Configuration.Location))
-        {
-          this.dataFiles = Directory.EnumerateFiles(azurite.Configuration.Location, "*", SearchOption.TopDirectoryOnly)
-            .Select(Path.GetFileName)
-            .ToArray();
-        }
-        else
-        {
-          this.dataFiles = Array.Empty<string>();
-        }
+        this.dataFiles = Directory.Exists(azurite.Configuration.Location) ? Directory.EnumerateFiles(azurite.Configuration.Location, "*", SearchOption.TopDirectoryOnly).Select(Path.GetFileName) : Array.Empty<string>();
       }
 
       [Fact]
