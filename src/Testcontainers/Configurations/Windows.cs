@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public string NormalizePath(string path)
     {
-      return path.Replace('/', '\\');
+      return path?.Replace('/', '\\');
     }
   }
 }

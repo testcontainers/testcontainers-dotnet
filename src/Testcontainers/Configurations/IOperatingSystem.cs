@@ -19,6 +19,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="path">Path to normalize.</param>
     /// <returns>Normalized path.</returns>
     [PublicAPI]
-    string NormalizePath(string path);
+    string NormalizePath([CanBeNull] string path);
   }
 }
