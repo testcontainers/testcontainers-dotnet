@@ -6,6 +6,10 @@
 
 - 642 Expose container port bindings automatically
 
+### Fixed
+
+- 610 Trim traling slashes in Dockerfile directory path (otherwise, it cuts the first character of the relative path)
+
 ## [2.2.0]
 
 ### Added
