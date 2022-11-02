@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Builders
       }
 
       return builder
-        .WithCommand(GetExecutable(configuration))
+        .WithEntrypoint(GetExecutable(configuration))
         .WithCommand(GetEnabledServices(configuration))
         .WithCommand(GetWorkspaceDirectoryPath())
         .WithCommand(GetDebugModeEnabled(configuration))
