@@ -20,6 +20,10 @@ namespace DotNet.Testcontainers.Clients
   {
     public const string TestcontainersLabel = "org.testcontainers";
 
+    public const string TestcontainersLangLabel = TestcontainersLabel + ".lang";
+
+    public const string TestcontainersVersionLabel = TestcontainersLabel + ".version";
+
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly IDockerContainerOperations containers;

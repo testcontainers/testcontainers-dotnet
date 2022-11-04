@@ -67,6 +67,8 @@ Task("Build")
     Verbosity = param.Verbosity,
     NoRestore = true,
     ArgumentCustomization = args => args
+      .Append("/p:ContinuousIntegrationBuild=true")
+      .Append("/p:EmbedUntrackedSources=true")
       .Append($"/p:TreatWarningsAsErrors={param.IsReleaseBuild.ToString()}")
   });
 });
