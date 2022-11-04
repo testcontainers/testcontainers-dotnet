@@ -59,10 +59,12 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="next">Changed configuration.</param>
     /// <param name="previous">Previous configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IReadOnlyDictionary{TKey,TValue}" />.</typeparam>
+    /// <typeparam name="TKey">The type of keys in the read-only dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyDictionary<T, T> Combine<T>(IReadOnlyDictionary<T, T> next, IReadOnlyDictionary<T, T> previous)
-      where T : class
+    public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> next, IReadOnlyDictionary<TKey, TValue> previous)
+      where TKey : class
+      where TValue : class
     {
       if (next == null || previous == null)
       {
