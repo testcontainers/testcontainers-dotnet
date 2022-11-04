@@ -17,6 +17,9 @@ namespace DotNet.Testcontainers.Builders
       builder = configuration.Environments.Aggregate(builder, (current, environment)
         => current.WithEnvironment(environment.Key, environment.Value));
 
+      builder = configuration.ResourceMappings.Values.Aggregate(builder, (current, resourceMapping)
+        => current.WithResourceMapping(resourceMapping));
+
       return builder
         .WithImage(configuration.Image)
         .WithExposedPort(configuration.DefaultPort)

@@ -79,6 +79,7 @@ Assert.Equal("42", magicNumber);
 | `WithEnvironment`                       | Sets an environment variable in the container e.g. `-e`, `--env "MAGIC_NUMBER=42"`.                                                    |
 | `WithExposedPort`                       | Exposes a port inside the container e.g. `--expose "80"`.                                                                              |
 | `WithPortBinding`                       | Publishes a container port to the host e.g. `-p`, `--publish "80:80"`.                                                                 |
+| `WithResourceMapping`                   | Copies a file or any binary content into the created container even before it is started.                                              |
 | `WithBindMount`                         | Binds a path of a file or directory into the container e.g. `-v`, `--volume ".:/tmp"`.                                                 |
 | `WithVolumeMount`                       | Mounts a managed volume into the container e.g. `--mount "type=volume,source=my-vol,destination=/tmp"`.                                |
 | `WithTmpfsMount`                        | Mounts a temporary volume into the container e.g. `--mount "type=tmpfs,destination=/tmp"`.                                             |
