@@ -35,10 +35,10 @@ jobs:
           lfs: true
 
       - name: Cache NuGet Packages
-         uses: actions/cache@v3
-         with:
-           path: ~/.nuget/packages
-           key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Build.props') }}
+        uses: actions/cache@v3
+        with:
+          key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Build.props') }}
+          path: ~/.nuget/packages
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -114,10 +114,10 @@ jobs:
         shell: pwsh
 
       - name: Cache NuGet Packages
-         uses: actions/cache@v3
-         with:
-           path: ~/.nuget/packages
-           key: ubuntu-22.04-nuget-${{ hashFiles('Directory.Build.props') }}
+        uses: actions/cache@v3
+        with:
+          key: ubuntu-22.04-nuget-${{ hashFiles('Directory.Build.props') }}
+          path: ~/.nuget/packages
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
