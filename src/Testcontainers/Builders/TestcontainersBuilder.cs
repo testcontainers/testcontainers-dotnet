@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Globalization;
   using System.Linq;
   using System.Reflection;
@@ -53,6 +54,7 @@ namespace DotNet.Testcontainers.Builders
           dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
           dockerRegistryAuthenticationConfiguration: default(DockerRegistryAuthenticationConfiguration),
           labels: DefaultLabels.Instance,
+          resourceMappings: new ReadOnlyDictionary<string, IResourceMapping>(new Dictionary<string, IResourceMapping>()),
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
           startupCallback: (_, ct) => Task.CompletedTask,
@@ -187,6 +189,25 @@ namespace DotNet.Testcontainers.Builders
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
       return this.MergeNewConfiguration(new TestcontainersConfiguration(portBindings: portBindings))
         .WithExposedPort(containerPort);
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithResourceMapping(string source, string destination)
+    {
+      return this.WithResourceMapping(new FileResourceMapping(source, destination));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithResourceMapping(byte[] resourceContent, string destination)
+    {
+      return this.WithResourceMapping(new BinaryResourceMapping(resourceContent, destination));
+    }
+
+    /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
+    public ITestcontainersBuilder<TDockerContainer> WithResourceMapping(IResourceMapping resourceMapping)
+    {
+      var resourceMappings = new Dictionary<string, IResourceMapping> { { resourceMapping.Target, resourceMapping } };
+      return this.MergeNewConfiguration(new TestcontainersConfiguration(resourceMappings: resourceMappings));
     }
 
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
@@ -372,6 +393,7 @@ namespace DotNet.Testcontainers.Builders
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
       var exposedPorts = BuildConfiguration.Combine(dockerResourceConfiguration.ExposedPorts, this.DockerResourceConfiguration.ExposedPorts);
       var portBindings = BuildConfiguration.Combine(dockerResourceConfiguration.PortBindings, this.DockerResourceConfiguration.PortBindings);
+      var resourceMappings = BuildConfiguration.Combine(dockerResourceConfiguration.ResourceMappings, this.DockerResourceConfiguration.ResourceMappings);
       var mounts = BuildConfiguration.Combine(dockerResourceConfiguration.Mounts, this.DockerResourceConfiguration.Mounts);
       var networks = BuildConfiguration.Combine(dockerResourceConfiguration.Networks, this.DockerResourceConfiguration.Networks);
       var networkAliases = BuildConfiguration.Combine(dockerResourceConfiguration.NetworkAliases, this.DockerResourceConfiguration.NetworkAliases);
@@ -383,7 +405,7 @@ namespace DotNet.Testcontainers.Builders
       var parameterModifiers = BuildConfiguration.Combine(dockerResourceConfiguration.ParameterModifiers, this.DockerResourceConfiguration.ParameterModifiers);
       var startupCallback = BuildConfiguration.Combine(dockerResourceConfiguration.StartupCallback, this.DockerResourceConfiguration.StartupCallback);
 
-      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, imagePullPolicy, name, hostname, macAddress, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
+      var updatedDockerResourceConfiguration = new TestcontainersConfiguration(dockerEndpointAuthConfig, dockerRegistryAuthConfig, image, imagePullPolicy, name, hostname, macAddress, workingDirectory, entrypoint, command, environments, labels, exposedPorts, portBindings, resourceMappings, mounts, networks, networkAliases, outputConsumer, waitStrategies, parameterModifiers, startupCallback, autoRemove, privileged);
       return new TestcontainersBuilder<TDockerContainer>(updatedDockerResourceConfiguration, this.mergeModuleConfiguration);
     }
 

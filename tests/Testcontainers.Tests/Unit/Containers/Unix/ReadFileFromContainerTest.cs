@@ -32,7 +32,7 @@
         .ConfigureAwait(false);
 
       // Then
-      Assert.Equal(dayOfWeek, Encoding.ASCII.GetString(fileContent).TrimEnd());
+      Assert.Equal(dayOfWeek, Encoding.Default.GetString(fileContent).TrimEnd());
     }
 
     [Fact]

@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Configurations
       this.Image = image;
       this.DefaultPort = defaultPort;
       this.Port = port;
+      this.ResourceMappings = new Dictionary<string, IResourceMapping>();
       this.Environments = new Dictionary<string, string>();
       this.OutputConsumer = Consume.DoNotConsumeStdoutAndStderr();
       this.WaitStrategy = Wait.ForUnixContainer();
@@ -40,6 +41,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </remarks>
     [PublicAPI]
     public int DefaultPort { get; }
+
+    /// <summary>
+    /// Gets the resource mapping configuration.
+    /// </summary>
+    [PublicAPI]
+    public IDictionary<string, IResourceMapping> ResourceMappings { get; }
 
     /// <summary>
     /// Gets the environment configuration.

@@ -34,6 +34,12 @@ jobs:
           clean: true
           lfs: true
 
+      - name: Cache NuGet Packages
+        uses: actions/cache@v3
+        with:
+          key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Build.props') }}
+          path: ~/.nuget/packages
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
 
@@ -106,6 +112,12 @@ jobs:
           Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+src', '${{ github.workspace }}/src' | Set-Content $_ }
           Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+tests', '${{ github.workspace }}/tests' | Set-Content $_ }
         shell: pwsh
+
+      - name: Cache NuGet Packages
+        uses: actions/cache@v3
+        with:
+          key: ubuntu-22.04-nuget-${{ hashFiles('Directory.Build.props') }}
+          path: ~/.nuget/packages
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3

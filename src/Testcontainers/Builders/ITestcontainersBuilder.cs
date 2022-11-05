@@ -174,6 +174,31 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort);
 
     /// <summary>
+    /// Copies the specified host machine file into the created container even before it is started.
+    /// </summary>
+    /// <param name="source">An absolute path or a name value within the host machine.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithResourceMapping(string source, string destination);
+
+    /// <summary>
+    /// Copies the byte array content into the created container even before it is started.
+    /// </summary>
+    /// <param name="resourceContent">Byte array content of the resource mapping.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithResourceMapping(byte[] resourceContent, string destination);
+
+    /// <summary>
+    /// Copies the byte array content of the resource mapping into the created container even before it is started.
+    /// </summary>
+    /// <param name="resourceMapping">Resource mapping.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    ITestcontainersBuilder<TDockerContainer> WithResourceMapping(IResourceMapping resourceMapping);
+
+    /// <summary>
     /// Binds and mounts the specified host machine volume into the Testcontainer.
     /// </summary>
     /// <param name="source">An absolute path or a name value within the host machine.</param>

@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -18,6 +19,10 @@ namespace DotNet.Testcontainers.Clients
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
     public const string TestcontainersLabel = "org.testcontainers";
+
+    public const string TestcontainersLangLabel = TestcontainersLabel + ".lang";
+
+    public const string TestcontainersVersionLabel = TestcontainersLabel + ".version";
 
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
@@ -249,6 +254,15 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
+      async Task CopyResourceMapping(string containerId, IResourceMapping resourceMapping)
+      {
+        var resourceMappingContent = await resourceMapping.GetAllBytesAsync(ct)
+          .ConfigureAwait(false);
+
+        await this.CopyFileAsync(containerId, resourceMapping.Target, resourceMappingContent, 420, 0, 0, ct)
+          .ConfigureAwait(false);
+      }
+
       // TODO: Workaround until we have a Windows Docker image of Ryuk
       var isWindowsEngineEnabled = await this.GetIsWindowsEngineEnabled(ct)
         .ConfigureAwait(false);
@@ -272,6 +286,9 @@ namespace DotNet.Testcontainers.Clients
       }
 
       var id = await this.containers.RunAsync(configuration, ct)
+        .ConfigureAwait(false);
+
+      await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMapping(id, resourceMapping)))
         .ConfigureAwait(false);
 
       return id;

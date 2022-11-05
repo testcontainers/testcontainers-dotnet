@@ -85,7 +85,12 @@ namespace DotNet.Testcontainers.Configurations
     IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <summary>
-    /// Gets a list of volumes.
+    /// Gets a list of resource mappings.
+    /// </summary>
+    IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
+
+    /// <summary>
+    /// Gets a list of mounts.
     /// </summary>
     IEnumerable<IMount> Mounts { get; }
 

@@ -40,7 +40,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="labels">The labels.</param>
     /// <param name="exposedPorts">The exposed ports.</param>
     /// <param name="portBindings">The port bindings.</param>
-    /// <param name="mounts">The volumes.</param>
+    /// <param name="resourceMappings">The resource mappings.</param>
+    /// <param name="mounts">The mounts.</param>
     /// <param name="networks">The networks.</param>
     /// <param name="networkAliases">The container network aliases.</param>
     /// <param name="outputConsumer">The output consumer.</param>
@@ -64,6 +65,7 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
+      IReadOnlyDictionary<string, IResourceMapping> resourceMappings = null,
       IEnumerable<IMount> mounts = null,
       IEnumerable<IDockerNetwork> networks = null,
       IEnumerable<string> networkAliases = null,
@@ -89,6 +91,7 @@ namespace DotNet.Testcontainers.Configurations
       this.Environments = environments;
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
+      this.ResourceMappings = resourceMappings;
       this.Mounts = mounts;
       this.Networks = networks;
       this.NetworkAliases = networkAliases;
@@ -141,6 +144,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> PortBindings { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
 
     /// <inheritdoc />
     public IEnumerable<IMount> Mounts { get; }
