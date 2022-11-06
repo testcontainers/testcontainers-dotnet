@@ -1,5 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using System.Collections.Generic;
+
   /// <summary>
   /// A Docker network configuration.
   /// </summary>
@@ -14,5 +16,10 @@
     /// Gets the driver.
     /// </summary>
     NetworkDriver Driver { get; }
+
+    /// <summary>
+    /// Gets the additional options.
+    /// </summary>
+    IReadOnlyDictionary<string, string> Options { get; }
   }
 }

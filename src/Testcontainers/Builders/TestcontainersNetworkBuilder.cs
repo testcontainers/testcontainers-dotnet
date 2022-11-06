@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
@@ -41,6 +42,13 @@
     }
 
     /// <inheritdoc />
+    public ITestcontainersNetworkBuilder WithOption(string option, string value)
+    {
+      var options = new Dictionary<string, string> { { option, value } };
+      return this.MergeNewConfiguration(new TestcontainersNetworkConfiguration(options: options));
+    }
+
+    /// <inheritdoc />
     public IDockerNetwork Build()
     {
       _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IDockerResourceConfiguration.DockerEndpointAuthConfig))
@@ -66,7 +74,8 @@
       var name = BuildConfiguration.Combine(dockerResourceConfiguration.Name, this.DockerResourceConfiguration.Name);
       var driver = BuildConfiguration.Combine(dockerResourceConfiguration.Driver, this.DockerResourceConfiguration.Driver);
       var labels = BuildConfiguration.Combine(dockerResourceConfiguration.Labels, this.DockerResourceConfiguration.Labels);
-      return new TestcontainersNetworkBuilder(new TestcontainersNetworkConfiguration(dockerEndpointAuthConfig, name, driver, labels));
+      var options = BuildConfiguration.Combine(dockerResourceConfiguration.Options, this.DockerResourceConfiguration.Options);
+      return new TestcontainersNetworkBuilder(new TestcontainersNetworkConfiguration(dockerEndpointAuthConfig, name, driver, labels, options));
     }
   }
 }

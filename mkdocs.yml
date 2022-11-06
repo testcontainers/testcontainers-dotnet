@@ -26,6 +26,7 @@ nav:
   - custom_configuration/index.md
   - api/create_docker_image.md
   - api/create_docker_container.md
+  - api/create_docker_network.md
   - api/resource-reaper.md
   - api/wait_strategies.md
   - Examples:

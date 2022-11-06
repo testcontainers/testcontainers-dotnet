@@ -1,6 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Networks
 {
   using System;
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -47,6 +49,15 @@
       {
         this.ThrowIfNetworkHasNotBeenCreated();
         return this.network.Name;
+      }
+    }
+
+    internal IReadOnlyDictionary<string, string> Options
+    {
+      get
+      {
+        this.ThrowIfNetworkHasNotBeenCreated();
+        return new ReadOnlyDictionary<string, string>(this.network.Options ?? new Dictionary<string, string>());
       }
     }
 
