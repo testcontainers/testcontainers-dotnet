@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers
     {
       if (argument.Value.Length == 0)
       {
-        throw new ArgumentException($"{argument.Name} can not be empty.", argument.Name);
+        throw new ArgumentException($"{argument.Name} cannot be empty.", argument.Name);
       }
 
       return ref argument;
@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers
     {
       if (argument.Value.Any(char.IsUpper))
       {
-        throw new ArgumentException(argument.Name, $"{argument.Name} can not have uppercase characters.");
+        throw new ArgumentException(argument.Name, $"{argument.Name} cannot have uppercase characters.");
       }
 
       return ref argument;

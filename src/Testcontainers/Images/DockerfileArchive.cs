@@ -14,7 +14,7 @@
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly IOperatingSystem OS = new Unix();
+    private static readonly IOperatingSystem OS = new Unix(dockerEndpointAuthConfig: null);
 
     private readonly DirectoryInfo dockerfileDirectory;
 
@@ -62,22 +62,24 @@
     /// <inheritdoc />
     public string Tar()
     {
-      var dockerfileArchiveName = Regex.Replace(this.image.FullName, "[^a-zA-Z0-9]", "-").ToLowerInvariant();
+      var dockerfileDirectoryPath = OS.NormalizePath(this.dockerfileDirectory.FullName);
 
-      var dockerfileArchivePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveName}.tar");
+      var dockerfileArchiveFileName = Regex.Replace(this.image.FullName, "[^a-zA-Z0-9]", "-").ToLowerInvariant();
 
-      var dockerIgnoreFile = new DockerIgnoreFile(this.dockerfileDirectory.FullName, ".dockerignore", this.logger);
+      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
 
-      using (var stream = new FileStream(dockerfileArchivePath, FileMode.Create))
+      var dockerIgnoreFile = new DockerIgnoreFile(dockerfileDirectoryPath, ".dockerignore", this.logger);
+
+      using (var stream = new FileStream(dockerfileArchiveFilePath, FileMode.Create))
       {
         using (var tarArchive = TarArchive.CreateOutputTarArchive(stream))
         {
-          tarArchive.RootPath = OS.NormalizePath(this.dockerfileDirectory.FullName);
+          tarArchive.RootPath = dockerfileDirectoryPath;
 
-          foreach (var file in GetFiles(this.dockerfileDirectory.FullName))
+          foreach (var file in GetFiles(dockerfileDirectoryPath))
           {
             // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
-            var relativePath = file.Substring(this.dockerfileDirectory.FullName.TrimEnd('/', '\\').Length + 1);
+            var relativePath = file.Substring(dockerfileDirectoryPath.TrimEnd(Path.AltDirectorySeparatorChar).Length + 1);
 
             if (dockerIgnoreFile.Denies(relativePath))
             {
@@ -91,7 +93,7 @@
         }
       }
 
-      return dockerfileArchivePath;
+      return dockerfileArchiveFilePath;
     }
 
     /// <summary>
