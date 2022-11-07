@@ -2,6 +2,36 @@
 
 Testcontainers' generic container support offers the greatest flexibility and makes it easy to use virtually any container image in the context of a temporary test environment. To interact or exchange data with a container, Testcontainers provides  `TestcontainersBuilder<TDockerContainer>` to configure and create the resource.
 
+## Configure container start
+
+Both `ENTRYPOINT` and `CMD` allows you to configure an executable, that a container runs at the start. By default a container will run whatever `ENTRYPOINT` or `CMD` is specified in the Docker container image. At least one of both configurations is necessary. The container builder implementation supports `WithEntrypoint(params string[])` and `WithCommand(params string[])` to set or override the executable. The `ENTRYPOINT` should set the containers executable, where the `CMD` set the default arguments for an `ENTRYPOINT`.
+
+Instead of running NGINX, the following container configuration overrides the default start and just test the NGINX configuration file.
+
+```csharp
+_ = new TestcontainersBuilder<TestcontainersContainer>()
+  .WithEntrypoint("nginx")
+  .WithCommand("-t")
+```
+
+## Configure container app or service
+
+Apps or services running inside a container are usually configured either with environment variables or configuration files. `WithEnvironment(string, string)` sets an environment variable, while `WithResourceMapping(string, string)` copies a file into a container before it starts. This covers common use cases among many .NET applications.
+
+!!!tip
+
+    The majority of builder methods are overloaded and have different parameters to set configurations.
+
+To configure an ASP.NET Core application, either one or both can be used.
+
+```csharp
+_ = new TestcontainersBuilder<TestcontainersContainer>()
+  .WithEnvironment("ASPNETCORE_URLS", "https://+")
+  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
+  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
+  .WithResourceMapping("certificate.crt", "/app/certificate.crt")
+```
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
