@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
@@ -16,7 +17,8 @@
     public TestcontainersNetworkBuilder()
       : this(new TestcontainersNetworkConfiguration(
         dockerEndpointAuthenticationConfiguration: TestcontainersSettings.OS.DockerEndpointAuthConfig,
-        labels: DefaultLabels.Instance))
+        labels: DefaultLabels.Instance,
+        options: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>())))
     {
     }
 
@@ -42,9 +44,9 @@
     }
 
     /// <inheritdoc />
-    public ITestcontainersNetworkBuilder WithOption(string option, string value)
+    public ITestcontainersNetworkBuilder WithOption(string name, string value)
     {
-      var options = new Dictionary<string, string> { { option, value } };
+      var options = new Dictionary<string, string> { { name, value } };
       return this.MergeNewConfiguration(new TestcontainersNetworkConfiguration(options: options));
     }
 

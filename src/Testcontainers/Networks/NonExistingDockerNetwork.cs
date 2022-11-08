@@ -52,15 +52,6 @@
       }
     }
 
-    internal IReadOnlyDictionary<string, string> Options
-    {
-      get
-      {
-        this.ThrowIfNetworkHasNotBeenCreated();
-        return new ReadOnlyDictionary<string, string>(this.network.Options ?? new Dictionary<string, string>());
-      }
-    }
-
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
