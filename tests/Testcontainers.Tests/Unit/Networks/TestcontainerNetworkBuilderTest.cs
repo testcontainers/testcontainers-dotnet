@@ -1,77 +1,127 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Collections.Generic;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
+  using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class TestcontainerNetworkBuilderTest
+  public sealed class TestcontainerNetworkBuilderTest : IClassFixture<TestcontainerNetworkBuilderTest.DockerNetwork>
   {
-    [Fact]
-    public async Task ShouldCreateNetwork()
+    private static readonly string NetworkName = Guid.NewGuid().ToString("D");
+
+    private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".network.test", Guid.NewGuid().ToString("D"));
+
+    private static readonly KeyValuePair<string, string> Option = new KeyValuePair<string, string>("com.docker.network.driver.mtu", "1350");
+
+    private readonly IDockerNetwork network;
+
+    public TestcontainerNetworkBuilderTest(DockerNetwork network)
     {
-      // Given
-      var networkName = Guid.NewGuid().ToString();
-
-      var networkLabel = Guid.NewGuid().ToString();
-
-      // When
-      var network = new TestcontainersNetworkBuilder()
-        .WithName(networkName)
-        .WithLabel("label", networkLabel)
-        .Build();
-
-      await network.CreateAsync();
-
-      // Then
-      try
-      {
-        Assert.Equal(networkName, network.Name);
-      }
-      finally
-      {
-        await network.DeleteAsync();
-      }
+      this.network = network;
     }
 
     [Fact]
-    public void ShouldThrowInvalidOperationException()
+    public void GetIdOrNameThrowsInvalidOperationException()
     {
-      Assert.Throws<InvalidOperationException>(() => new TestcontainersNetworkBuilder()
-        .WithName(Guid.Empty.ToString())
-        .Build()
-        .Name);
+      var noSuchNetwork = new TestcontainersNetworkBuilder()
+        .WithName(NetworkName)
+        .Build();
+
+      Assert.Throws<InvalidOperationException>(() => noSuchNetwork.Id);
+      Assert.Throws<InvalidOperationException>(() => noSuchNetwork.Name);
     }
 
     [Fact]
-    public async Task ShouldCreateNetworkWWithOption()
+    public void GetIdReturnsNetworkId()
+    {
+      Assert.NotEmpty(this.network.Id);
+    }
+
+    [Fact]
+    public void GetNameReturnsNetworkName()
+    {
+      Assert.Equal(NetworkName, this.network.Name);
+    }
+
+    [Fact]
+    public async Task CreateNetworkAssignsLabels()
     {
       // Given
-      var networkName = Guid.NewGuid().ToString();
-      var networkLabel = Guid.NewGuid().ToString();
-      var networkMtuKey = "com.docker.network.driver.mtu";
-      var networkMtuValue = "1350";
+      using var dockerClientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration();
+      using var dockerClient = dockerClientConfiguration.CreateClient();
 
       // When
-      var network = new TestcontainersNetworkBuilder()
-        .WithName(networkName)
-        .WithLabel("label", networkLabel)
-        .WithOption(networkMtuKey, networkMtuValue)
-        .Build();
-
-      await network.CreateAsync();
+      var networkResponse = await dockerClient.Networks.InspectNetworkAsync(this.network.Id)
+        .ConfigureAwait(false);
 
       // Then
-      try
+      Assert.Equal(Label.Value, Assert.Contains(Label.Key, networkResponse.Labels));
+    }
+
+    [Fact]
+    public async Task CreateNetworkAssignsOptions()
+    {
+      // Given
+      using var dockerClientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration();
+      using var dockerClient = dockerClientConfiguration.CreateClient();
+
+      // When
+      var networkResponse = await dockerClient.Networks.InspectNetworkAsync(this.network.Id)
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(Option.Value, Assert.Contains(Option.Key, networkResponse.Options));
+    }
+
+    [UsedImplicitly]
+    public sealed class DockerNetwork : IDockerNetwork, IAsyncLifetime
+    {
+      private readonly IDockerNetwork network = new TestcontainersNetworkBuilder()
+        .WithName(NetworkName)
+        .WithLabel(Label.Key, Label.Value)
+        .WithOption(Option.Key, Option.Value)
+        .Build();
+
+      public string Id
       {
-        Assert.Equal(networkName, network.Name);
-        Assert.IsAssignableFrom<NonExistingDockerNetwork>(network);
-        Assert.Equal(networkMtuValue, (network as NonExistingDockerNetwork)!.Options[networkMtuKey]);
+        get
+        {
+          return this.network.Id;
+        }
       }
-      finally
+
+      public string Name
       {
-        await network.DeleteAsync();
+        get
+        {
+          return this.network.Name;
+        }
+      }
+
+      public Task InitializeAsync()
+      {
+        return this.CreateAsync();
+      }
+
+      public Task DisposeAsync()
+      {
+        return this.DeleteAsync();
+      }
+
+      public Task CreateAsync(CancellationToken ct = default)
+      {
+        return this.network.CreateAsync(ct);
+      }
+
+      public Task DeleteAsync(CancellationToken ct = default)
+      {
+        return this.network.DeleteAsync(ct);
       }
     }
   }
