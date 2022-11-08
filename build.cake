@@ -104,7 +104,7 @@ Task("Sonar-Begin")
     Key = param.SonarQubeCredentials.Key,
     Login = param.SonarQubeCredentials.Token,
     Organization = param.SonarQubeCredentials.Organization,
-    Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis can not have the branch analysis parameter 'sonar.branch.name'.
+    Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis cannot have the branch analysis parameter 'sonar.branch.name'.
     UseCoreClr = true,
     Silent = true,
     Version = param.Version.Substring(0, 5),

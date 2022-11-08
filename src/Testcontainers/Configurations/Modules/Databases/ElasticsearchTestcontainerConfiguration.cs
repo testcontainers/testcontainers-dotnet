@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class ElasticsearchTestcontainerConfiguration : TestcontainerDatabaseConfiguration
   {
-    private const string ElasticsearchVmOptionsDirectoryPath = "/usr/share/elasticsearch/config/jvm.options.d";
+    private const string ElasticsearchVmOptionsDirectoryPath = "/usr/share/elasticsearch/config/jvm.options.d/";
 
     private const string ElasticsearchDefaultMemoryVmOptionFileName = "elasticsearch-default-memory-vm.options";
 

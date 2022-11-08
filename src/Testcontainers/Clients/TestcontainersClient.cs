@@ -183,6 +183,9 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
+      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
+      var containerPath = os.NormalizePath(filePath);
+
       using (var memStream = new MemoryStream())
       {
         using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
@@ -192,7 +195,7 @@ namespace DotNet.Testcontainers.Clients
             new TarEntry(
               new TarHeader
               {
-                Name = filePath,
+                Name = containerPath,
                 UserId = userId,
                 GroupId = groupId,
                 Mode = accessMode,
@@ -212,7 +215,7 @@ namespace DotNet.Testcontainers.Clients
 
         memStream.Seek(0, SeekOrigin.Begin);
 
-        await this.containers.ExtractArchiveToContainerAsync(id, "/", memStream, ct)
+        await this.containers.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), memStream, ct)
           .ConfigureAwait(false);
       }
     }
@@ -222,14 +225,17 @@ namespace DotNet.Testcontainers.Clients
     {
       Stream tarStream;
 
+      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
+      var containerPath = os.NormalizePath(filePath);
+
       try
       {
-        tarStream = await this.containers.GetArchiveFromContainerAsync(id, filePath, ct)
+        tarStream = await this.containers.GetArchiveFromContainerAsync(id, containerPath, ct)
           .ConfigureAwait(false);
       }
       catch (DockerContainerNotFoundException e)
       {
-        throw new FileNotFoundException(null, Path.GetFileName(filePath), e);
+        throw new FileNotFoundException(null, Path.GetFileName(containerPath), e);
       }
 
       using (var tarInputStream = new TarInputStream(tarStream, Encoding.Default))
@@ -240,7 +246,7 @@ namespace DotNet.Testcontainers.Clients
 
         if (entry.IsDirectory)
         {
-          throw new InvalidOperationException("Can not read from a directory. Use a file instead.");
+          throw new InvalidOperationException("Cannot read from a directory. Use a file instead.");
         }
 
         var content = new byte[entry.Size];

@@ -66,10 +66,10 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
 
     private static readonly Action<ILogger, Guid, Exception> _CanNotGetResourceReaperEndpoint
-      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Can not get resource reaper {Id} endpoint");
+      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Cannot get resource reaper {Id} endpoint");
 
     private static readonly Action<ILogger, Guid, string, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Can not connect to resource reaper {Id} at {Endpoint}");
+      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Cannot connect to resource reaper {Id} at {Endpoint}");
 
     private static readonly Action<ILogger, Guid, string, Exception> _LostConnectionToResourceReaper
       = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Lost connection to resource reaper {Id} at {Endpoint}");

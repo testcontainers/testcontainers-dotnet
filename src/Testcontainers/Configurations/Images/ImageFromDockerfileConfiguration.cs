@@ -6,8 +6,6 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   internal sealed class ImageFromDockerfileConfiguration : DockerResourceConfiguration, IImageFromDockerfileConfiguration
   {
-    private static readonly IOperatingSystem OS = new Unix();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
@@ -38,8 +36,8 @@ namespace DotNet.Testcontainers.Configurations
       : base(dockerEndpointAuthenticationConfiguration, labels)
     {
       this.Image = image;
-      this.Dockerfile = OS.NormalizePath(dockerfile);
-      this.DockerfileDirectory = OS.NormalizePath(dockerfileDirectory);
+      this.Dockerfile = dockerfile;
+      this.DockerfileDirectory = dockerfileDirectory;
       this.DeleteIfExists = deleteIfExists;
       this.BuildArguments = buildArguments;
     }

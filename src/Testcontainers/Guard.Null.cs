@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers
     {
       if (!argument.HasValue())
       {
-        throw new ArgumentNullException(argument.Name, $"{argument.Name} can not be null.");
+        throw new ArgumentNullException(argument.Name, $"{argument.Name} cannot be null.");
       }
 
       return ref argument;
