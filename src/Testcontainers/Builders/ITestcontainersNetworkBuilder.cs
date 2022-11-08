@@ -27,6 +27,15 @@
     ITestcontainersNetworkBuilder WithDriver(NetworkDriver driver);
 
     /// <summary>
+    /// Sets additional options of the Docker network.
+    /// </summary>
+    /// <param name="option">The additional option.</param>
+    /// <param name="value">The option value.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersNetworkBuilder" />.</returns>
+    [PublicAPI]
+    ITestcontainersNetworkBuilder WithOption(string option, string value);
+
+    /// <summary>
     /// Builds the instance of <see cref="IDockerNetwork" /> with the given configuration.
     /// </summary>
     /// <returns>A configured instance of <see cref="IDockerNetwork" />.</returns>
