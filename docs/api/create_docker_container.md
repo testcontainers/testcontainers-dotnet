@@ -32,6 +32,8 @@ _ = new TestcontainersBuilder<TestcontainersContainer>()
   .WithResourceMapping("certificate.crt", "/app/certificate.crt")
 ```
 
+`WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file inside the container. Note, this does not follow our best practices. Host paths differ from environments and may not be available on every system, e.g. CI.
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
