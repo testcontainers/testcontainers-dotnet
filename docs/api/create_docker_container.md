@@ -30,28 +30,30 @@ Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
 This example creates and starts a container, that listens for incoming TCP connections and returns the magic number 42.
 
 ```csharp
+const string MagicNumber = "42";
+
 const ushort MagicNumberPort = 80;
 
-var magicNumberContainer = new TestcontainersBuilder<TestcontainersContainer>()
+var deepThoughtContainer = new TestcontainersBuilder<TestcontainersContainer>()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("alpine")
   .WithExposedPort(MagicNumberPort)
   .WithPortBinding(MagicNumberPort, true)
-  .WithEnvironment("MAGIC_NUMBER", "42")
+  .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")
-  .WithCommand("while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done")
+  .WithCommand($"while true; do echo \"$MAGIC_NUMBER\" | nc -l -p {MagicNumberPort}; done")
   .Build();
 
-await magicNumberContainer.StartAsync()
+await deepThoughtContainer.StartAsync()
   .ConfigureAwait(false);
 
-using var magicNumberClient = new TcpClient(magicNumberContainer.Hostname, magicNumberContainer.GetMappedPublicPort(MagicNumberPort));
+using var magicNumberClient = new TcpClient(deepThoughtContainer.Hostname, deepThoughtContainer.GetMappedPublicPort(MagicNumberPort));
 using var magicNumberReader = new StreamReader(magicNumberClient.GetStream());
 
 var magicNumber = await magicNumberReader.ReadLineAsync()
   .ConfigureAwait(false);
 
-Assert.Equal("42", magicNumber);
+Assert.Equal(MagicNumber, magicNumber);
 ```
 
 !!!tip
