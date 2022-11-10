@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers
         return ref argument;
       }
 
-      const string message = "Cannot detect the Docker endpoint. Use either the environment variables or the ~/.testcontainers.properties file to customize your configuration:\nhttps://www.testcontainers.org/features/configuration/#customizing-docker-host-detection";
+      const string message = "Cannot detect the Docker endpoint. Use either the environment variables or the ~/.testcontainers.properties file to customize your configuration:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       throw new ArgumentNullException(argument.Name, message);
     }
   }
