@@ -4,12 +4,11 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Linq;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
-  using Moq;
   using Xunit;
 
   public static class TestcontainersConfigurationConverterTest
   {
-    private const string Port = "7878";
+    private const string Port = "2375";
 
     public sealed class ExposedPorts
     {
@@ -17,15 +16,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ShouldAddTcpPortSuffix()
       {
         // Given
-        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
-        containerConfiguration.Setup(config => config.ExposedPorts)
-          .Returns(new Dictionary<string, string> { { Port, null } });
+        var containerConfiguration = new TestcontainersConfiguration(exposedPorts: new Dictionary<string, string> { { Port, null } });
 
         // When
-        var exposedPort = new TestcontainersConfigurationConverter(containerConfiguration.Object)
-          .ExposedPorts
-          .Single()
-          .Key;
+        var exposedPort = new TestcontainersConfigurationConverter(containerConfiguration).ExposedPorts.Single().Key;
 
         // Then
         Assert.Equal($"{Port}/tcp", exposedPort);
@@ -40,15 +34,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var qualifiedPort = $"{Port}/{portSuffix}";
 
-        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
-        containerConfiguration.Setup(config => config.ExposedPorts)
-          .Returns(new Dictionary<string, string> { { qualifiedPort, null } });
+        var containerConfiguration = new TestcontainersConfiguration(exposedPorts: new Dictionary<string, string> { { qualifiedPort, null } });
 
         // When
-        var exposedPort = new TestcontainersConfigurationConverter(containerConfiguration.Object)
-          .ExposedPorts
-          .Single()
-          .Key;
+        var exposedPort = new TestcontainersConfigurationConverter(containerConfiguration).ExposedPorts.Single().Key;
 
         // Then
         Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), exposedPort);
@@ -61,15 +50,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ShouldAddTcpPortSuffix()
       {
         // Given
-        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
-        containerConfiguration.Setup(config => config.PortBindings)
-          .Returns(new Dictionary<string, string> { { Port, Port } });
+        var containerConfiguration = new TestcontainersConfiguration(portBindings: new Dictionary<string, string> { { Port, Port } });
 
         // When
-        var portBinding = new TestcontainersConfigurationConverter(containerConfiguration.Object)
-          .PortBindings
-          .Single()
-          .Key;
+        var portBinding = new TestcontainersConfigurationConverter(containerConfiguration).PortBindings.Single().Key;
 
         // Then
         Assert.Equal($"{Port}/tcp", portBinding);
@@ -84,15 +68,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var qualifiedPort = $"{Port}/{portSuffix}";
 
-        var containerConfiguration = new Mock<ITestcontainersConfiguration>();
-        containerConfiguration.Setup(config => config.PortBindings)
-          .Returns(new Dictionary<string, string> { { qualifiedPort, Port } });
+        var containerConfiguration = new TestcontainersConfiguration(portBindings: new Dictionary<string, string> { { qualifiedPort, Port } });
 
         // When
-        var portBinding = new TestcontainersConfigurationConverter(containerConfiguration.Object)
-          .PortBindings
-          .Single()
-          .Key;
+        var portBinding = new TestcontainersConfigurationConverter(containerConfiguration).PortBindings.Single().Key;
 
         // Then
         Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), portBinding);
