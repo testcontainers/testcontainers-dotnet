@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
+    <!-- https://github.com/dotnet/sdk/issues/17645 -->
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), WeatherForecast.sln))/</SolutionDir>
     <BuildDir>$(SolutionDir)build/</BuildDir>
     <BaseIntermediateOutputPath>$(BuildDir)obj/$(MSBuildProjectName)</BaseIntermediateOutputPath>
