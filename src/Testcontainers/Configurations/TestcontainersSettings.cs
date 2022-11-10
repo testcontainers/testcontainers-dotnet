@@ -20,14 +20,13 @@ namespace DotNet.Testcontainers.Configurations
   {
     private static readonly IDockerImage RyukContainerImage = new DockerImage("testcontainers/ryuk:0.3.4");
 
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
-      new IDockerEndpointAuthenticationProvider[]
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig;
+
+    static TestcontainersSettings()
+    {
+      var authProviderConfig = new IDockerEndpointAuthenticationProvider[]
         {
-          new MTlsEndpointAuthenticationProvider(),
-          new TlsEndpointAuthenticationProvider(),
-          new EnvironmentEndpointAuthenticationProvider(),
-          new NpipeEndpointAuthenticationProvider(),
-          new UnixEndpointAuthenticationProvider(),
+          new MTlsEndpointAuthenticationProvider(), new TlsEndpointAuthenticationProvider(), new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider(),
         }
         .AsParallel()
         .Where(authProvider => authProvider.IsApplicable())
@@ -35,8 +34,12 @@ namespace DotNet.Testcontainers.Configurations
         .Select(authProvider => authProvider.GetAuthConfig())
         .FirstOrDefault();
 
-    static TestcontainersSettings()
-    {
+      if (authProviderConfig == null)
+      {
+        throw new InvalidOperationException("Unable to find docker daemon. Is it running?");
+      }
+
+      DockerEndpointAuthConfig = authProviderConfig;
     }
 
     /// <summary>
