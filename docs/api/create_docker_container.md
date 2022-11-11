@@ -4,7 +4,7 @@ Testcontainers' generic container support offers the greatest flexibility and ma
 
 ## Configure container start
 
-Both `ENTRYPOINT` and `CMD` allows you to configure an executable, that a container runs at the start. By default a container will run whatever `ENTRYPOINT` or `CMD` is specified in the Docker container image. At least one of both configurations is necessary. The container builder implementation supports `WithEntrypoint(params string[])` and `WithCommand(params string[])` to set or override the executable. The `ENTRYPOINT` should set the containers executable, where the `CMD` set the default arguments for an `ENTRYPOINT`.
+Both `ENTRYPOINT` and `CMD` allows you to configure an executable and parameters, that a container runs at the start. By default, a container will run whatever `ENTRYPOINT` or `CMD` is specified in the Docker container image. At least one of both configurations is necessary. The container builder implementation supports `WithEntrypoint(params string[])` and `WithCommand(params string[])` to set or override the executable. Ideally, the `ENTRYPOINT` should set the container's executable, whereas the `CMD` sets the default arguments for the `ENTRYPOINT`.
 
 Instead of running NGINX, the following container configuration overrides the default start and just test the NGINX configuration file.
 
