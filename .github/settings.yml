@@ -116,10 +116,9 @@ labels:
     color: '#602a4f'
     description: A flaky test
 
-  - name: wontfix
+  - name: won't fix
     color: '#ffffff'
     description: This will not be worked on
-    new_name: won't fix
 
 # Collaborators: give specific users access to this repository.
 # See https://docs.github.com/en/rest/reference/repos#add-a-repository-collaborator for available options
