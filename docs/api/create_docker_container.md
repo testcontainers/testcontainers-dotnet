@@ -22,7 +22,7 @@ Apps or services running inside a container are usually configured either with e
 
     The majority of builder methods are overloaded and have different parameters to set configurations.
 
-To configure an ASP.NET Core application, either one or both can be used.
+To configure an ASP.NET Core application, either one or both mechanisms can be used.
 
 ```csharp
 _ = new TestcontainersBuilder<TestcontainersContainer>()
