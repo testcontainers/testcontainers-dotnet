@@ -10,7 +10,6 @@
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="Docker.DotNet.X509" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Portable.BouncyCastle" />
     <PackageReference Include="SharpZipLib" />

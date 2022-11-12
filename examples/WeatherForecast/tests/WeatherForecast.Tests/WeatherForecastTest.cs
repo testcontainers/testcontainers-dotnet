@@ -13,7 +13,7 @@ using OpenQA.Selenium.Support.UI;
 using WeatherForecast.Entities;
 using Xunit;
 
-namespace WeatherForecast.Test;
+namespace WeatherForecast.Tests;
 
 public static class WeatherForecastTest
 {

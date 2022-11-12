@@ -7,7 +7,7 @@ using DotNet.Testcontainers.Images;
 using JetBrains.Annotations;
 using Xunit;
 
-namespace WeatherForecast.Test;
+namespace WeatherForecast.Tests;
 
 [UsedImplicitly]
 public sealed class WeatherForecastImage : IDockerImage, IAsyncLifetime

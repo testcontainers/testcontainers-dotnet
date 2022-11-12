@@ -21,9 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Interactors
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Repositories", "src\WeatherForecast.Repositories\WeatherForecast.Repositories.csproj", "{B56FE398-0CD9-4747-9B58-812EE659A61A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Test", "tests\WeatherForecast.Test\WeatherForecast.Test.csproj", "{B8C371A9-6B6C-4595-9B5B-88071D6F3A71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Tests", "tests\WeatherForecast.Tests\WeatherForecast.Tests.csproj", "{B8C371A9-6B6C-4595-9B5B-88071D6F3A71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.InProcess.Test", "tests\WeatherForecast.InProcess.Test\WeatherForecast.InProcess.Test.csproj", "{2D4474DB-9E16-4931-ADD0-569306C1C5AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.InProcess.Tests", "tests\WeatherForecast.InProcess.Tests\WeatherForecast.InProcess.Tests.csproj", "{2D4474DB-9E16-4931-ADD0-569306C1C5AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

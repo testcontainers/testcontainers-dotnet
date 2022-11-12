@@ -15,7 +15,7 @@ using WeatherForecast.Entities;
 using WeatherForecast.Repositories;
 using Xunit;
 
-namespace WeatherForecast.InProcess.Test;
+namespace WeatherForecast.InProcess.Tests;
 
 [UsedImplicitly]
 public sealed class WeatherForecastTest : IAsyncLifetime

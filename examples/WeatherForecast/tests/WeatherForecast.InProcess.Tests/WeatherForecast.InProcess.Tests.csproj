@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../../../src/Testcontainers/Testcontainers.csproj"/>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast/WeatherForecast.csproj"/>
+    <!-- https://github.com/dotnet/sdk/issues/17645 -->
+    <ProjectReference Include="$(SolutionDir)src/WeatherForecast/WeatherForecast.csproj" Private="False"/>
   </ItemGroup>
 </Project>
