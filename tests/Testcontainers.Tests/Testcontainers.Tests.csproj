@@ -39,6 +39,22 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\AzuriteTestcontainer\Testcontainers.Databases.AzuriteTestContainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\CosmosDbTestcontainer\Testcontainers.Databases.CosmosDbTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\CouchbaseTestcontainer\Testcontainers.Databases.CouchbaseTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\CouchdbTestcontainer\Testcontainers.Databases.CouchdbTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\ElasticsearchTestcontainer\Testcontainers.Databases.ElasticsearchTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\MariaDbTestcontainer\Testcontainers.Databases.MariaDbTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\MongoDbTestcontainer\Testcontainers.Databases.MongoDbTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\MsSqlTestcontainer\Testcontainers.Databases.MsSqlTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\MySqlTestcontainer\Testcontainers.Databases.MySqlTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\Neo4jTestcontainer\Testcontainers.Databases.Neo4jTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\OracleTestcontainer\Testcontainers.Databases.OracleTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\PostgreSqlTestcontainer\Testcontainers.Databases.PostgreSqlTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.Databases\RedisTestcontainer\Testcontainers.Databases.RedisTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.MessageBrokers\KafkaTestcontainer\Testcontainers.MessageBrokers.KafkaTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.MessageBrokers\LocalStackTestcontainer\Testcontainers.MessageBrokers.LocalStackTestcontainer.csproj" />
+    <ProjectReference Include="..\..\src\Testcontainers.MessageBrokers\RabbitMqTestcontainer\Testcontainers.MessageBrokers.RabbitMqTestcontainer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

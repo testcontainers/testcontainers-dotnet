@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
 
   /// <inheritdoc cref="IResourceMapping" />
-  internal class FileResourceMapping : IResourceMapping
+  public class FileResourceMapping : IResourceMapping
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="FileResourceMapping" /> class.
