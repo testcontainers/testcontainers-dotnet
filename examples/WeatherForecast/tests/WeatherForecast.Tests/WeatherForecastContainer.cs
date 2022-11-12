@@ -9,7 +9,7 @@ using DotNet.Testcontainers.Networks;
 using JetBrains.Annotations;
 using Xunit;
 
-namespace WeatherForecast.Test;
+namespace WeatherForecast.Tests;
 
 [UsedImplicitly]
 public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
