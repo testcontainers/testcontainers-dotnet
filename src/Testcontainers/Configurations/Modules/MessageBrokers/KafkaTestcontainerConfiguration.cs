@@ -36,7 +36,26 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="image">The Docker image.</param>
     public KafkaTestcontainerConfiguration(string image)
-      : base(image, KafkaPort)
+      : this(image, KafkaPort)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaTestcontainerConfiguration" /> class.
+    /// </summary>
+    /// <param name="port">The port to bind to.</param>
+    public KafkaTestcontainerConfiguration(int port)
+      : this(KafkaImage, port)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaTestcontainerConfiguration" /> class.
+    /// </summary>
+    /// <param name="image">The Docker image.</param>
+    /// <param name="port">The port to bind to.</param>
+    public KafkaTestcontainerConfiguration(string image, int port)
+      : base(image, port)
     {
       // Use two listeners with different names, it will force Kafka to communicate with itself via internal
       // listener when KAFKA_INTER_BROKER_LISTENER_NAME is set, otherwise Kafka will try to use the advertised listener.
