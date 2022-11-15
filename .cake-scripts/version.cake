@@ -1,3 +1,5 @@
+#addin nuget:?package=Cake.Git&version=2.0.0
+
 internal sealed class BuildInformation
 {
   private BuildInformation()
