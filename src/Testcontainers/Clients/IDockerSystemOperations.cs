@@ -8,6 +8,8 @@ namespace DotNet.Testcontainers.Clients
   {
     Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
 
-    Task<VersionResponse> GetVersion(CancellationToken ct = default);
+    Task<SystemInfoResponse> GetInfoAsync(CancellationToken ct = default);
+
+    Task<VersionResponse> GetVersionAsync(CancellationToken ct = default);
   }
 }

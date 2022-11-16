@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, this.authConfig, NullLogger.Instance);
 
         // When
-        var version = await dockerSystemOperations.GetVersion()
+        var version = await dockerSystemOperations.GetVersionAsync()
           .ConfigureAwait(false);
 
         // Then
@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, this.authConfig, NullLogger.Instance);
 
         // When
-        var version = await dockerSystemOperations.GetVersion()
+        var version = await dockerSystemOperations.GetVersionAsync()
           .ConfigureAwait(false);
 
         // Then
