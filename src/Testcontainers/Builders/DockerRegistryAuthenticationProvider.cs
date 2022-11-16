@@ -12,7 +12,7 @@
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   internal sealed class DockerRegistryAuthenticationProvider : IDockerRegistryAuthenticationProvider
   {
-    private const string DockerHub = "index.docker.io";
+    private const string DockerHub = "https://index.docker.io/v1/";
 
     private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 

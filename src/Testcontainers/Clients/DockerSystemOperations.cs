@@ -17,11 +17,17 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      return (await this.Docker.System.GetSystemInfoAsync(ct)
-        .ConfigureAwait(false)).OperatingSystem.Contains("Windows");
+      var version = await this.GetVersionAsync(ct)
+        .ConfigureAwait(false);
+      return version.Os.IndexOf("Windows", StringComparison.OrdinalIgnoreCase) > -1;
     }
 
-    public Task<VersionResponse> GetVersion(CancellationToken ct = default)
+    public Task<SystemInfoResponse> GetInfoAsync(CancellationToken ct = default)
+    {
+      return this.Docker.System.GetSystemInfoAsync(ct);
+    }
+
+    public Task<VersionResponse> GetVersionAsync(CancellationToken ct = default)
     {
       return this.Docker.System.GetVersionAsync(ct);
     }

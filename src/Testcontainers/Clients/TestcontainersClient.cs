@@ -127,7 +127,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
-        .ConfigureAwait(false))
+            .ConfigureAwait(false))
       {
         await this.containers.StartAsync(id, ct)
           .ConfigureAwait(false);
@@ -138,7 +138,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task StopAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
-        .ConfigureAwait(false))
+            .ConfigureAwait(false))
       {
         await this.containers.StopAsync(id, ct)
           .ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
       if (await this.containers.ExistsWithIdAsync(id, ct)
-        .ConfigureAwait(false))
+            .ConfigureAwait(false))
       {
         try
         {
@@ -191,16 +191,17 @@ namespace DotNet.Testcontainers.Clients
         using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
-          tarOutputStream.PutNextEntry(
-            new TarEntry(
-              new TarHeader
-              {
-                Name = containerPath,
-                UserId = userId,
-                GroupId = groupId,
-                Mode = accessMode,
-                Size = fileContent.Length,
-              }));
+
+          var header = new TarHeader();
+          header.Name = containerPath;
+          header.UserId = userId;
+          header.GroupId = groupId;
+          header.Mode = accessMode;
+          header.Size = fileContent.Length;
+
+          var entry = new TarEntry(header);
+
+          tarOutputStream.PutNextEntry(entry);
 
 #if NETSTANDARD2_1_OR_GREATER
           await tarOutputStream.WriteAsync(fileContent.AsMemory(0, fileContent.Length), ct)
@@ -284,8 +285,17 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImagePullPolicy(cachedImage))
       {
-        var authConfig = default(DockerRegistryAuthenticationConfiguration).Equals(configuration.DockerRegistryAuthConfig)
-          ? this.registryAuthenticationProvider.GetAuthConfig(configuration.Image.GetHostname()) : configuration.DockerRegistryAuthConfig;
+        var dockerRegistryServerAddress = configuration.Image.GetHostname();
+
+        if (dockerRegistryServerAddress == null)
+        {
+          var info = await this.system.GetInfoAsync(ct)
+            .ConfigureAwait(false);
+
+          dockerRegistryServerAddress = info.IndexServerAddress;
+        }
+
+        var authConfig = this.registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
 
         await this.images.CreateAsync(configuration.Image, authConfig, ct)
           .ConfigureAwait(false);
