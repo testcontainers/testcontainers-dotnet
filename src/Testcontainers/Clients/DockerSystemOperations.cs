@@ -17,9 +17,9 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      var info = await this.GetInfoAsync(ct)
+      var version = await this.GetVersionAsync(ct)
         .ConfigureAwait(false);
-      return info.OperatingSystem.IndexOf("Windows", StringComparison.OrdinalIgnoreCase) >= -1;
+      return version.Os.IndexOf("Windows", StringComparison.OrdinalIgnoreCase) > -1;
     }
 
     public Task<SystemInfoResponse> GetInfoAsync(CancellationToken ct = default)
