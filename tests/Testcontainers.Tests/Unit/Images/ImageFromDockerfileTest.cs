@@ -11,7 +11,6 @@ namespace DotNet.Testcontainers.Tests.Unit
   using ICSharpCode.SharpZipLib.Tar;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class ImageFromDockerfileTest
   {
     [Fact]

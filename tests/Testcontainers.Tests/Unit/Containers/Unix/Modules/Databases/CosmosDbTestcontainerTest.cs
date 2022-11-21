@@ -11,7 +11,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public static class CosmosDbTestcontainerTest
   {
-    [Collection(nameof(Testcontainers))]
     public sealed class ConnectionTests : IClassFixture<CosmosDbFixture>, IDisposable
     {
       private const string SkipReason = "The Cosmos DB Linux Emulator Docker image does not run on every CI environment."; // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.

@@ -33,7 +33,12 @@
         {
           try
           {
-            TaskFactory.StartNew(() => dockerClient.System.PingAsync()).Unwrap().GetAwaiter().GetResult();
+            TaskFactory.StartNew(() => dockerClient.System.PingAsync())
+              .Unwrap()
+              .ConfigureAwait(false)
+              .GetAwaiter()
+              .GetResult();
+
             return true;
           }
           catch (Exception)

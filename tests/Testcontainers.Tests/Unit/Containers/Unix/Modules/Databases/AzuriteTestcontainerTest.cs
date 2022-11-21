@@ -91,7 +91,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Contains(TableServiceDataFileName, execResult.Stdout);
       }
 
-      [Collection(nameof(Testcontainers))]
       public sealed class CommonContainerPorts : IClassFixture<AzuriteFixture.AzuriteDefaultFixture>
       {
         private readonly AzuriteFixture.AzuriteDefaultFixture commonContainerPorts;
@@ -109,7 +108,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         }
       }
 
-      [Collection(nameof(Testcontainers))]
       public sealed class CustomContainerPorts : IClassFixture<AzuriteFixture.AzuriteWithCustomContainerPortsFixture>
       {
         private readonly AzuriteFixture.AzuriteDefaultFixture customContainerPorts;
@@ -128,7 +126,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class BlobServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithBlobOnlyFixture>
     {
       private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
@@ -171,7 +168,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class QueueServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithQueueOnlyFixture>
     {
       private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
@@ -214,7 +210,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class TableServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithTableOnlyFixture>
     {
       private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
@@ -257,7 +252,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class CustomLocation : IClassFixture<AzuriteFixture.AzuriteWithCustomWorkspaceFixture>
     {
       private readonly IEnumerable<string> dataFiles;

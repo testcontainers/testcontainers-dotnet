@@ -2,15 +2,19 @@ namespace DotNet.Testcontainers.Tests
 {
   using System;
   using System.Diagnostics;
+  using DotNet.Testcontainers.Configurations;
   using Xunit;
 
   public sealed class SkipOnLinuxEngineAttribute : FactAttribute
   {
-    private static readonly bool IsLinuxEngineEnabled = GetIsLinuxEngineEnabled();
+    static SkipOnLinuxEngineAttribute()
+    {
+      TestcontainersSettings.ResourceReaperEnabled = GetIsLinuxEngineEnabled();
+    }
 
     public SkipOnLinuxEngineAttribute()
     {
-      if (IsLinuxEngineEnabled)
+      if (TestcontainersSettings.ResourceReaperEnabled)
       {
         this.Skip = "Windows Docker engine is not available.";
       }

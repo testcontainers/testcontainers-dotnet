@@ -6,7 +6,6 @@
   using MongoDB.Bson;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class MongoDbTestcontainerTest : IClassFixture<MongoDbFixture>, IClassFixture<MongoDbNoAuthFixture>
   {
     private const string MongoDbScheme = "mongodb";

@@ -8,7 +8,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 
   public static class TestcontainersContainerTest
   {
-    [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
     {
       [SkipOnLinuxEngine]

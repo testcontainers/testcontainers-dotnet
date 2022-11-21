@@ -10,7 +10,6 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
-  using Microsoft.Extensions.Logging.Abstractions;
 
   /// <summary>
   /// This class represents the Testcontainers settings.
@@ -83,7 +82,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     [NotNull]
     public static ILogger Logger { get; set; }
-      = NullLogger.Instance;
+      = new Logger();
 
     /// <summary>
     /// Gets or sets the host operating system.

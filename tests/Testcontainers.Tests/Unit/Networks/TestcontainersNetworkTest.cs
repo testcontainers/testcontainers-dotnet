@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class TestcontainersNetworkTest : IClassFixture<NetworkFixture>, IAsyncLifetime
   {
     private const string AliasSuffix = "-alias";

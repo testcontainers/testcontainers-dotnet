@@ -6,7 +6,6 @@
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class Neo4jTestcontainerTest : IClassFixture<Neo4jFixture>
   {
     private readonly Neo4jFixture neo4jFixture;

@@ -7,7 +7,6 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class TestcontainersVolumeTest : IClassFixture<VolumeFixture>, IAsyncLifetime
   {
     private const string Destination = "/tmp/";

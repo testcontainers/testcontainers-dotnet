@@ -376,7 +376,7 @@ namespace DotNet.Testcontainers.Containers
 
     private string GetContainerGateway()
     {
-      const string localhost = "localhost";
+      const string localhost = "127.0.0.1";
 
       if (!ContainerHasBeenCreatedStates.HasFlag(this.State))
       {

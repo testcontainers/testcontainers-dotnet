@@ -24,7 +24,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       _ = Directory.CreateDirectory(TempPath);
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
     {
       [Fact]
@@ -291,8 +290,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Theory]
-      [InlineData("localhost", "npipe://./pipe/docker_engine")]
-      [InlineData("localhost", "unix:/var/run/docker.sock")]
+      [InlineData("127.0.0.1", "npipe://./pipe/docker_engine")]
+      [InlineData("127.0.0.1", "unix:/var/run/docker.sock")]
       [InlineData("docker", "http://docker")]
       [InlineData("docker", "https://docker")]
       [InlineData("docker", "tcp://docker")]

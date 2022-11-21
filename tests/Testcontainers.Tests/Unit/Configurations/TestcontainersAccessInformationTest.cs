@@ -10,7 +10,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public static class TestcontainersAccessInformationTest
   {
-    [Collection(nameof(Testcontainers))]
     public sealed class AccessDockerInformation
     {
       private const string DoesNotExist = nameof(TestcontainersAccessInformationTest);
