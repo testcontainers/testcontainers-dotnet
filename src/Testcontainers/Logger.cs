@@ -90,8 +90,7 @@
           console = Console.Error;
           break;
         default:
-          console = TextWriter.Null;
-          break;
+          return;
       }
 
       var message = string.Format(CultureInfo.CurrentCulture, "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", this.stopwatch.Elapsed, formatter.Invoke(state, exception));
