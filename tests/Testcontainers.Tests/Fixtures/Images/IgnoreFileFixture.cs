@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
-  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;

@@ -11,12 +11,6 @@ namespace DotNet.Testcontainers
   [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Do not apply rule for delegate fields.")]
   internal static class Logging
   {
-    private static readonly Action<ILogger, string, Exception> _Trace
-      = LoggerMessage.Define<string>(LogLevel.Trace, default, "{Message}");
-
-    private static readonly Action<ILogger, string, Exception> _Error
-      = LoggerMessage.Define<string>(LogLevel.Error, default, "{Message}");
-
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
 
@@ -85,22 +79,6 @@ namespace DotNet.Testcontainers
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
-
-    public static void Trace(this ILogger logger, string message)
-    {
-      if (!string.IsNullOrWhiteSpace(message))
-      {
-        _Trace(logger, message, null);
-      }
-    }
-
-    public static void Error(this ILogger logger, string message)
-    {
-      if (!string.IsNullOrWhiteSpace(message))
-      {
-        _Error(logger, message, null);
-      }
-    }
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {

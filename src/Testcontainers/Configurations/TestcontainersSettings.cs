@@ -58,6 +58,9 @@ namespace DotNet.Testcontainers.Configurations
 
               runtimeInfo.AppendLine("Connected to Docker:");
 
+              runtimeInfo.Append("  Host: ");
+              runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
+
               runtimeInfo.Append("  Server Version: ");
               runtimeInfo.AppendLine(dockerInfo.ServerVersion);
 
@@ -71,7 +74,7 @@ namespace DotNet.Testcontainers.Configurations
               runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
               runtimeInfo.Append("  Total Memory: ");
-              runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}{2}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last(), Environment.NewLine);
+              runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last());
             }
             catch
             {
@@ -79,7 +82,9 @@ namespace DotNet.Testcontainers.Configurations
             }
             finally
             {
+#pragma warning disable CA1848, CA2254
               Logger.LogInformation(runtimeInfo.ToString());
+#pragma warning restore CA1848, CA2254
               ManualResetEvent.Set();
             }
           }

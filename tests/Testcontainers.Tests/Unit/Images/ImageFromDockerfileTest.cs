@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging.Abstractions;
