@@ -11,12 +11,6 @@ namespace DotNet.Testcontainers
   [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Do not apply rule for delegate fields.")]
   internal static class Logging
   {
-    private static readonly Action<ILogger, string, Exception> _Trace
-      = LoggerMessage.Define<string>(LogLevel.Trace, default, "{Message}");
-
-    private static readonly Action<ILogger, string, Exception> _Error
-      = LoggerMessage.Define<string>(LogLevel.Error, default, "{Message}");
-
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
 
@@ -33,16 +27,16 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker container {Id}");
 
     private static readonly Action<ILogger, string, string, Exception> _ExtractArchiveToDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to {Path} at Docker container {Id}");
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" at Docker container {Id}");
 
     private static readonly Action<ILogger, string, string, Exception> _GetArchiveFromDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read {Path} from Docker container {Id}");
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read \"{Path}\" from Docker container {Id}");
 
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
       = LoggerMessage.Define<Type, string>(LogLevel.Information, default, "Attach {OutputConsumer} at Docker container {Id}");
 
-    private static readonly Action<ILogger, IEnumerable<string>, string, Exception> _ExecuteCommandInDockerContainer
-      = LoggerMessage.Define<IEnumerable<string>, string>(LogLevel.Information, default, "Execute {Command} at Docker container {Id}");
+    private static readonly Action<ILogger, string, string, Exception> _ExecuteCommandInDockerContainer
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Execute \"{Command}\" at Docker container {Id}");
 
     private static readonly Action<ILogger, string, Exception> _DockerImageCreated
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker image {FullName} created");
@@ -75,7 +69,7 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Lost connection to resource reaper {Id} at {Endpoint}");
 
     private static readonly Action<ILogger, string, Exception> _DockerConfigFileNotFound
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker config {DockerConfigFilePath} not found");
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker config \"{DockerConfigFilePath}\" not found");
 
     private static readonly Action<ILogger, string, Exception> _SearchingDockerRegistryCredential
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Searching Docker registry credential in {CredentialStore}");
@@ -85,22 +79,6 @@ namespace DotNet.Testcontainers
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
-
-    public static void Trace(this ILogger logger, string message)
-    {
-      if (!string.IsNullOrWhiteSpace(message))
-      {
-        _Trace(logger, message, null);
-      }
-    }
-
-    public static void Error(this ILogger logger, string message)
-    {
-      if (!string.IsNullOrWhiteSpace(message))
-      {
-        _Error(logger, message, null);
-      }
-    }
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {
@@ -144,7 +122,7 @@ namespace DotNet.Testcontainers
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)
     {
-      _ExecuteCommandInDockerContainer(logger, command, id, null);
+      _ExecuteCommandInDockerContainer(logger, string.Join(" ", command), id, null);
     }
 
     public static void DockerImageCreated(this ILogger logger, IDockerImage image)

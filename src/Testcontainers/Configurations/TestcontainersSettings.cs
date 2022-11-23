@@ -1,16 +1,19 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Globalization;
   using System.Linq;
   using System.Net;
   using System.Net.Sockets;
   using System.Runtime.InteropServices;
+  using System.Text;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
-  using Microsoft.Extensions.Logging.Abstractions;
 
   /// <summary>
   /// This class represents the Testcontainers settings.
@@ -19,6 +22,8 @@ namespace DotNet.Testcontainers.Configurations
   public static class TestcontainersSettings
   {
     private static readonly IDockerImage RyukContainerImage = new DockerImage("testcontainers/ryuk:0.3.4");
+
+    private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
 
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
       new IDockerEndpointAuthenticationProvider[]
@@ -37,6 +42,63 @@ namespace DotNet.Testcontainers.Configurations
 
     static TestcontainersSettings()
     {
+      Task.Run(async () =>
+      {
+        var runtimeInfo = new StringBuilder();
+
+        if (DockerEndpointAuthConfig != null)
+        {
+          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
+          {
+            using (var dockerClient = dockerClientConfiguration.CreateClient())
+            {
+              try
+              {
+                var byteUnits = new[] { "KB", "MB", "GB" };
+
+                var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
+                  .ConfigureAwait(false);
+
+                var dockerVersion = await dockerClient.System.GetVersionAsync()
+                  .ConfigureAwait(false);
+
+                runtimeInfo.AppendLine("Connected to Docker:");
+
+                runtimeInfo.Append("  Host: ");
+                runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
+
+                runtimeInfo.Append("  Server Version: ");
+                runtimeInfo.AppendLine(dockerInfo.ServerVersion);
+
+                runtimeInfo.Append("  Kernel Version: ");
+                runtimeInfo.AppendLine(dockerInfo.KernelVersion);
+
+                runtimeInfo.Append("  API Version: ");
+                runtimeInfo.AppendLine(dockerVersion.APIVersion);
+
+                runtimeInfo.Append("  Operating System: ");
+                runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
+
+                runtimeInfo.Append("  Total Memory: ");
+                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last());
+              }
+              catch
+              {
+                // Ignore exceptions in auto discovery. Users can provide the Docker endpoint with the builder too.
+              }
+            }
+          }
+        }
+        else
+        {
+          runtimeInfo.AppendLine("Auto discovery did not detect a Docker host configuration");
+        }
+
+#pragma warning disable CA1848, CA2254
+        Logger.LogInformation(runtimeInfo.ToString());
+#pragma warning restore CA1848, CA2254
+        ManualResetEvent.Set();
+      });
     }
 
     /// <summary>
@@ -83,7 +145,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     [NotNull]
     public static ILogger Logger { get; set; }
-      = NullLogger.Instance;
+      = new Logger();
 
     /// <summary>
     /// Gets or sets the host operating system.
@@ -92,6 +154,12 @@ namespace DotNet.Testcontainers.Configurations
     [NotNull]
     public static IOperatingSystem OS { get; set; }
       = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+
+    /// <summary>
+    /// Gets the wait handle that signals settings initialized.
+    /// </summary>
+    internal static WaitHandle SettingsInitialized
+      => ManualResetEvent.WaitHandle;
 
     private static ushort GetResourceReaperPublicHostPort(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {

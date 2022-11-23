@@ -6,12 +6,11 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
+  using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
-  [Collection(nameof(Testcontainers))]
   public sealed class ImageFromDockerfileTest
   {
     [Fact]
@@ -24,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var actual = new SortedSet<string>();
 
-      var dockerFileArchive = new DockerfileArchive("Assets", "Dockerfile", image, TestcontainersSettings.Logger);
+      var dockerFileArchive = new DockerfileArchive("Assets", "Dockerfile", image, NullLogger.Instance);
 
       // When
       using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())

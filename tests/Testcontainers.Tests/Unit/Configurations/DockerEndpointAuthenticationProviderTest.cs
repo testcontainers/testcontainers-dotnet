@@ -50,7 +50,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       public AuthProviderTestData()
       {
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var defaultConfiguration = new PropertiesFileConfiguration(Array.Empty<string>());
         var dockerTlsConfiguration = new PropertiesFileConfiguration("docker.tls=true", $"docker.cert.path={CertificatesDirectoryPath}");
         var dockerMTlsConfiguration = new PropertiesFileConfiguration("docker.tls.verify=true", $"docker.cert.path={CertificatesDirectoryPath}");
@@ -66,8 +65,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(DockerHostConfiguration), true });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(Array.Empty<ICustomConfiguration>()), false });
         this.Add(new object[] { new EnvironmentEndpointAuthenticationProvider(defaultConfiguration, DockerHostConfiguration), true });
-        this.Add(new object[] { new NpipeEndpointAuthenticationProvider(), isWindows });
-        this.Add(new object[] { new UnixEndpointAuthenticationProvider(), !isWindows });
+        this.Add(new object[] { new NpipeEndpointAuthenticationProvider(), RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
+        this.Add(new object[] { new UnixEndpointAuthenticationProvider(), !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
       }
     }
 

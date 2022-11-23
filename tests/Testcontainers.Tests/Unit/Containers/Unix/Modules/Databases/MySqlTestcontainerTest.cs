@@ -7,7 +7,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public static class MySqlTestcontainerTest
   {
-    [Collection(nameof(Testcontainers))]
     public sealed class MySqlCustomUsernameTest : IClassFixture<MySqlFixture>
     {
       private readonly MySqlFixture mySqlFixture;
@@ -69,7 +68,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    [Collection(nameof(Testcontainers))]
     public sealed class MySqlRootUsernameTest : IClassFixture<MySqlRootUsernameFixture>
     {
       private readonly MySqlFixture mySqlFixture;

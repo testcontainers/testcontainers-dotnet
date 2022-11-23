@@ -15,10 +15,19 @@ namespace DotNet.Testcontainers.Clients
 
     public void Report(JSONMessage value)
     {
-      this.logger.Trace(value.Stream);
-      this.logger.Trace(value.ProgressMessage);
-      this.logger.Trace(value.Status);
-      this.logger.Error(value.ErrorMessage);
+#pragma warning disable CA1848, CA2254
+
+      if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
+      {
+        this.logger.LogTrace(value.ProgressMessage);
+      }
+
+      if (!string.IsNullOrWhiteSpace(value.ErrorMessage))
+      {
+        this.logger.LogError(value.ErrorMessage);
+      }
+
+#pragma warning restore CA1848, CA2254
     }
   }
 }

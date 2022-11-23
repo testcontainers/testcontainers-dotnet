@@ -27,21 +27,30 @@
         return false;
       }
 
-      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
-      {
-        using (var dockerClient = dockerClientConfiguration.CreateClient())
+      return TaskFactory.StartNew(async () =>
         {
-          try
+          using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
           {
-            TaskFactory.StartNew(() => dockerClient.System.PingAsync()).Unwrap().GetAwaiter().GetResult();
-            return true;
+            using (var dockerClient = dockerClientConfiguration.CreateClient())
+            {
+              try
+              {
+                await dockerClient.System.PingAsync()
+                  .ConfigureAwait(false);
+
+                return true;
+              }
+              catch (Exception)
+              {
+                return false;
+              }
+            }
           }
-          catch (Exception)
-          {
-            return false;
-          }
-        }
-      }
+        })
+        .Unwrap()
+        .ConfigureAwait(false)
+        .GetAwaiter()
+        .GetResult();
     }
 
     /// <inheritdoc />

@@ -20,6 +20,7 @@
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
     protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration)
     {
+      _ = TestcontainersSettings.SettingsInitialized.WaitOne(TimeSpan.FromSeconds(5));
       this.DockerResourceConfiguration = dockerResourceConfiguration;
     }
 

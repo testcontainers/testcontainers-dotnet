@@ -10,6 +10,7 @@
 ### Changed
 
 - 642 Expose container port bindings automatically
+- 603 Add default logger that forwards messages to the console (does not support every test environment)
 
 ### Fixed
 
