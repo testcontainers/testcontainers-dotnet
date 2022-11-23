@@ -16,78 +16,27 @@ Testcontainers supports various configurations to set up your test environment. 
 
 ## Enable logging
 
-To enable logging, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation. Either use your own implementation or choose one of the common third-party providers.
+In .NET logging goes usually through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the right stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`) and `Debug`. The output should at least pop up in your IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation.
 
-### xUnit.net
-
-The xUnit.net decorators are a convenient way to initialize your test environment just before the first test run. This includes logging. Configure your third-party provider as for any other .NET application, e.g. through the file or environment variables configuration provider. Set up and tear down your test environment with help of `Microsoft.Extensions.Hosting` that encapsulates resources and lifetime functionalities:
-
-```csharp
-/// <summary>
-/// Runs once before the first test.
-/// </summary>
-[CollectionDefinition(nameof(SetUpTearDown))]
-public sealed class SetUpTearDown : IClassFixture<SetUpTearDown>, IAsyncLifetime, IDisposable
-{
-  private readonly IHost _host = Host
-    .CreateDefaultBuilder()
-    .ConfigureServices(serviceCollection =>
-    {
-      serviceCollection.AddSingleton<ILoggerFactory, CustomSerilogLoggerFactory>();
-      serviceCollection.AddHostedService<CustomConfiguration>();
-    })
-    .Build();
-
-  public Task InitializeAsync()
-  {
-    return _host.StartAsync();
-  }
-
-  public Task DisposeAsync()
-  {
-    return _host.StopAsync();
-  }
-
-  public void Dispose()
-  {
-    _host.Dispose();
-  }
-}
-
-/// <summary>
-/// Sets the logger instance.
-/// </summary>
-public sealed class CustomConfiguration : IHostedService
-{
-  public CustomConfiguration(ILogger<CustomConfiguration> logger)
-  {
-    TestcontainersSettings.Logger = logger;
-  }
-
-  public Task StartAsync(CancellationToken cancellationToken)
-  {
-    return Task.CompletedTask;
-  }
-
-  public Task StopAsync(CancellationToken cancellationToken)
-  {
-    return Task.CompletedTask;
-  }
-}
-
-/// <summary>
-/// Assigns the test class to the SetUpTearDown collection.
-/// </summary>
-[Collection(nameof(SetUpTearDown))]
-public sealed class Logger
-{
-  [Fact]
-  public void Initialized()
-  {
-    Assert.IsType<Logger<CustomConfiguration>>(TestcontainersSettings.Logger);
-  }
-}
-```
+    [testcontainers.org 00:00:00.34] Connected to Docker:
+      Host: tcp://127.0.0.1:60706/
+      Server Version: 70+testcontainerscloud
+      Kernel Version: 5.10.137
+      API Version: 1.41
+      Operating System: Ubuntu 20.04 LTS
+      Total Memory: 7.23 GB
+    [testcontainers.org 00:00:00.47] Searching Docker registry credential in CredHelpers
+    [testcontainers.org 00:00:00.47] Searching Docker registry credential in Auths
+    [testcontainers.org 00:00:00.47] Searching Docker registry credential in CredsStore
+    [testcontainers.org 00:00:00.47] Searching Docker registry credential in Auths
+    [testcontainers.org 00:00:00.51] Docker registry credential https://index.docker.io/v1/ found
+    [testcontainers.org 00:00:03.16] Docker image testcontainers/ryuk:0.3.4 created
+    [testcontainers.org 00:00:03.24] Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e created
+    [testcontainers.org 00:00:03.29] Start Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e
+    [testcontainers.org 00:00:06.18] Docker image alpine:latest created
+    [testcontainers.org 00:00:06.22] Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d created
+    [testcontainers.org 00:00:06.26] Start Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
+    [testcontainers.org 00:00:06.64] Delete Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
 
 [properties-file-format]: https://docs.oracle.com/cd/E23095_01/Platform.93/ATGProgGuide/html/s0204propertiesfileformat01.html
 [use-statically-defined-credentials]: https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#use-statically-defined-credentials
