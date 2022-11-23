@@ -2,13 +2,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
   public sealed class IgnoreFileFixture : TheoryData<IgnoreFile, string, bool>
   {
     public IgnoreFileFixture()
     {
-      var logger = TestcontainersSettings.Logger;
+      var logger = NullLogger.Instance;
       var ignoreFilesAndDirectories = new IgnoreFile(new[] { "bin/", "obj/*" }, logger);
       var ignoreAllFilesAndDirectories = new IgnoreFile(new[] { "*", "!README*.md" }, logger);
       var ignoreNonRecursiveFiles = new IgnoreFile(new[] { "*/temp*" }, logger);
