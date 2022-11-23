@@ -11,7 +11,7 @@
   /// An <see cref="ILogger" /> implementation that forwards messages to the console. Not every test framework or environment supports this approach. Developers may still need to configure their own logging implementation.
   /// If VSTest.Console.exe loads the test adapter in a deterministic order, we can write our own test adapter and intercept the IMessageLogger instance: https://github.com/microsoft/vstest/issues/4125#issuecomment-1320880502.
   /// To debug the test host and runner set the environment variables VSTEST_HOST_DEBUG and VSTEST_RUNNER_DEBUG to 1. To enable VSTest logging set VSTEST_DIAG to 1 and VSTEST_DIAG_VERBOSITY to verbose.
-  /// The following example contains the ITestExecutor implementations. It is important that the assembly ends with TestAdapter.dll:
+  /// The following example contains the ITestExecutor implementations. It is important that the assembly ends with TestAdapter.dll.
   /// </summary>
   /// <example>
   /// <code>
