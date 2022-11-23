@@ -28,7 +28,11 @@ namespace DotNet.Testcontainers.Configurations
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
       new IDockerEndpointAuthenticationProvider[]
         {
-          new MTlsEndpointAuthenticationProvider(), new TlsEndpointAuthenticationProvider(), new EnvironmentEndpointAuthenticationProvider(), new NpipeEndpointAuthenticationProvider(), new UnixEndpointAuthenticationProvider(),
+          new MTlsEndpointAuthenticationProvider(),
+          new TlsEndpointAuthenticationProvider(),
+          new EnvironmentEndpointAuthenticationProvider(),
+          new NpipeEndpointAuthenticationProvider(),
+          new UnixEndpointAuthenticationProvider(),
         }
         .AsParallel()
         .Where(authProvider => authProvider.IsApplicable())
@@ -40,55 +44,60 @@ namespace DotNet.Testcontainers.Configurations
     {
       Task.Run(async () =>
       {
-        using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
+        var runtimeInfo = new StringBuilder();
+
+        if (DockerEndpointAuthConfig != null)
         {
-          using (var dockerClient = dockerClientConfiguration.CreateClient())
+          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
           {
-            var runtimeInfo = new StringBuilder();
-
-            try
+            using (var dockerClient = dockerClientConfiguration.CreateClient())
             {
-              var byteUnits = new[] { "KB", "MB", "GB" };
+              try
+              {
+                var byteUnits = new[] { "KB", "MB", "GB" };
 
-              var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
-                .ConfigureAwait(false);
+                var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
+                  .ConfigureAwait(false);
 
-              var dockerVersion = await dockerClient.System.GetVersionAsync()
-                .ConfigureAwait(false);
+                var dockerVersion = await dockerClient.System.GetVersionAsync()
+                  .ConfigureAwait(false);
 
-              runtimeInfo.AppendLine("Connected to Docker:");
+                runtimeInfo.AppendLine("Connected to Docker:");
 
-              runtimeInfo.Append("  Host: ");
-              runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
+                runtimeInfo.Append("  Host: ");
+                runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
 
-              runtimeInfo.Append("  Server Version: ");
-              runtimeInfo.AppendLine(dockerInfo.ServerVersion);
+                runtimeInfo.Append("  Server Version: ");
+                runtimeInfo.AppendLine(dockerInfo.ServerVersion);
 
-              runtimeInfo.Append("  Kernel Version: ");
-              runtimeInfo.AppendLine(dockerInfo.KernelVersion);
+                runtimeInfo.Append("  Kernel Version: ");
+                runtimeInfo.AppendLine(dockerInfo.KernelVersion);
 
-              runtimeInfo.Append("  API Version: ");
-              runtimeInfo.AppendLine(dockerVersion.APIVersion);
+                runtimeInfo.Append("  API Version: ");
+                runtimeInfo.AppendLine(dockerVersion.APIVersion);
 
-              runtimeInfo.Append("  Operating System: ");
-              runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
+                runtimeInfo.Append("  Operating System: ");
+                runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
-              runtimeInfo.Append("  Total Memory: ");
-              runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last());
-            }
-            catch
-            {
-              runtimeInfo.AppendLine("Auto discovery did not detect a Docker host configuration.");
-            }
-            finally
-            {
-#pragma warning disable CA1848, CA2254
-              Logger.LogInformation(runtimeInfo.ToString());
-#pragma warning restore CA1848, CA2254
-              ManualResetEvent.Set();
+                runtimeInfo.Append("  Total Memory: ");
+                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last());
+              }
+              catch
+              {
+                // Ignore exceptions in auto discovery. Users can provide the Docker endpoint with the builder too.
+              }
             }
           }
         }
+        else
+        {
+          runtimeInfo.AppendLine("Auto discovery did not detect a Docker host configuration");
+        }
+
+#pragma warning disable CA1848, CA2254
+        Logger.LogInformation(runtimeInfo.ToString());
+#pragma warning restore CA1848, CA2254
+        ManualResetEvent.Set();
       });
     }
 
