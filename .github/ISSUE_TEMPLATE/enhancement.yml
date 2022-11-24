@@ -1,0 +1,46 @@
+name: Enhancement
+description: Suggest an enhancement
+title: "[Enhancement]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting an `enhancement`, please make sure there is no existing enhancement for the one you are requesting. If so, please provide the following information:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Is this enhancement related to a problem? Please describe it.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution
+      description: What's the proposed solution for this enhancement?
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Benefit
+      description: What's the benefit of adding this enhancement to the project?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Are there other alternatives? Please describe them.
+    validations:
+      required: true
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to help contributing this enhancement?
+      options:
+        - 'Yes'
+        - 'No'
+    validations:
+      required: true
