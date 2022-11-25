@@ -71,6 +71,20 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    public string GetDockerHostOverride()
+    {
+      const string propertyName = "host.override";
+      return this.GetDockerHostOverride(propertyName);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerSocketOverride()
+    {
+      const string propertyName = "docker.socket.override";
+      return this.GetDockerSocketOverride(propertyName);
+    }
+
+    /// <inheritdoc />
     public JsonDocument GetDockerAuthConfig()
     {
       const string propertyName = "docker.auth.config";

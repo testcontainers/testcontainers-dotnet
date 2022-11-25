@@ -2,17 +2,19 @@
 
 Testcontainers supports various configurations to set up your test environment. It automatically discovers the Docker environment and applies the configuration. You can set or override the default values either with the Testcontainers [properties file][properties-file-format] (`~/testcontainers.properties`) or with environment variables. If you prefer to configure your test environment at runtime, you can set or override the configuration through the `TestcontainersSettings` class. The following configurations are available:
 
-| Properties File         | Environment Variable                   | Description                                                                                                               | Default                     |
-|-------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| `docker.config`         | `DOCKER_CONFIG`                        | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                |
-| `docker.host`           | `DOCKER_HOST`                          | The Docker daemon socket to connect to.                                                                                   | -                           |
-| `docker.auth.config`    | `DOCKER_AUTH_CONFIG`                   | The Docker configuration file content (GitLab: [Use statically-defined credentials][use-statically-defined-credentials]). | -                           |
-| `docker.cert.path`      | `DOCKER_CERT_PATH`                     | The directory path that contains the client certificate (`{ca,cert,key}.pem`) files.                                      | `~/.docker/`                |
-| `docker.tls`            | `DOCKER_TLS`                           | Enables TLS.                                                                                                              | false                       |
-| `docker.tls.verify`     | `DOCKER_TLS_VERIFY`                    | Enables TLS verify.                                                                                                       | false                       |
-| `ryuk.disabled`         | `TESTCONTAINERS_RYUK_DISABLED`         | Disables Ryuk (resource reaper).                                                                                          | false                       |
-| `ryuk.container.image`  | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`  | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.3.4` |
-| `hub.image.name.prefix` | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX` | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
+| Properties File          | Environment Variable                    | Description                                                                                                               | Default                     |
+|--------------------------|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| `docker.config`          | `DOCKER_CONFIG`                         | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                |
+| `docker.host`            | `DOCKER_HOST`                           | The Docker daemon socket to connect to.                                                                                   | -                           |
+| `docker.auth.config`     | `DOCKER_AUTH_CONFIG`                    | The Docker configuration file content (GitLab: [Use statically-defined credentials][use-statically-defined-credentials]). | -                           |
+| `docker.cert.path`       | `DOCKER_CERT_PATH`                      | The directory path that contains the client certificate (`{ca,cert,key}.pem`) files.                                      | `~/.docker/`                |
+| `docker.tls`             | `DOCKER_TLS`                            | Enables TLS.                                                                                                              | `false`                     |
+| `docker.tls.verify`      | `DOCKER_TLS_VERIFY`                     | Enables TLS verify.                                                                                                       | `false`                     |
+| `host.override`          | `TESTCONTAINERS_HOST_OVERRIDE`          | The host that exposes Docker's ports.                                                                                     | -                           |
+| `docker.socket.override` | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`      |
+| `ryuk.disabled`          | `TESTCONTAINERS_RYUK_DISABLED`          | Disables Ryuk (resource reaper).                                                                                          | `false`                     |
+| `ryuk.container.image`   | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`   | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.3.4` |
+| `hub.image.name.prefix`  | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`  | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
 
 ## Enable logging
 
