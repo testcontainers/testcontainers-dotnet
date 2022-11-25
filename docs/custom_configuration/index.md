@@ -16,7 +16,7 @@ Testcontainers supports various configurations to set up your test environment. 
 
 ## Enable logging
 
-In .NET logging goes usually through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the right stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`) and `Debug`. The output should at least pop up in your IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation.
+In .NET logging goes usually through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the right stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`) and `Debug`. The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation.
 
     [testcontainers.org 00:00:00.34] Connected to Docker:
       Host: tcp://127.0.0.1:60706/
