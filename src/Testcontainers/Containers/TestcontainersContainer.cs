@@ -134,6 +134,15 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <inheritdoc />
+    public Health Health
+    {
+      get
+      {
+        return this.container.State?.Health;
+      }
+    }
+
     /// <summary>
     /// Gets the logger.
     /// </summary>

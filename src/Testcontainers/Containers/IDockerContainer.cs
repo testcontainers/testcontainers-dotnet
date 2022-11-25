@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -135,6 +136,14 @@ namespace DotNet.Testcontainers.Containers
     /// </value>
     [PublicAPI]
     TestcontainersStates State { get; }
+
+    /// <summary>
+    /// Gets the Testcontainers health.
+    /// </summary>
+    /// <value>
+    /// Returns the Docker container health.
+    /// </value>
+    Health Health { get; }
 
     /// <summary>
     /// Gets the public host port associated with the private container port.
