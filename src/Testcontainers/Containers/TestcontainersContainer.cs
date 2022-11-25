@@ -397,19 +397,8 @@ namespace DotNet.Testcontainers.Containers
         return localhost;
       }
 
-      var endpointSettings = this.container.NetworkSettings.Networks.TryGetValue("bridge", out var network) ? network : new EndpointSettings();
-      if (!string.IsNullOrWhiteSpace(endpointSettings.Gateway))
-      {
-        return endpointSettings.Gateway;
-      }
-
-      var networkSettings = this.container.NetworkSettings;
-      if (!string.IsNullOrWhiteSpace(networkSettings.Gateway))
-      {
-        return networkSettings.Gateway;
-      }
-
-      return localhost;
+      var endpointSettings = this.container.NetworkSettings.Networks.Values.FirstOrDefault();
+      return endpointSettings == null ? localhost : endpointSettings.Gateway;
     }
   }
 }

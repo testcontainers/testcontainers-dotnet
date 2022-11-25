@@ -22,10 +22,13 @@ namespace DotNet.Testcontainers.Containers
     private const ushort RyukPort = 8080;
 
     /// <summary>
-    /// 60 seconds timeout.
+    /// 60 seconds connection timeout.
     /// </summary>
     private const int ConnectionTimeoutInSeconds = 60;
 
+    /// <summary>
+    /// 2 seconds retry timeout.
+    /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
