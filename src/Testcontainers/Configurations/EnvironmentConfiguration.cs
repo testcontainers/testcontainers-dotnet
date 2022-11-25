@@ -22,6 +22,10 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string DockerTlsVerify = "DOCKER_TLS_VERIFY";
 
+    private const string DockerHostOverride = "TESTCONTAINERS_HOST_OVERRIDE";
+
+    private const string DockerSocketOverride = "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE";
+
     private const string RyukDisabled = "TESTCONTAINERS_RYUK_DISABLED";
 
     private const string RyukContainerImage = "TESTCONTAINERS_RYUK_CONTAINER_IMAGE";
@@ -44,6 +48,8 @@ namespace DotNet.Testcontainers.Configurations
           DockerHost,
           DockerTls,
           DockerTlsVerify,
+          DockerHostOverride,
+          DockerSocketOverride,
           RyukDisabled,
           RyukContainerImage,
           HubImageNamePrefix,
@@ -68,6 +74,18 @@ namespace DotNet.Testcontainers.Configurations
     public Uri GetDockerHost()
     {
       return this.GetDockerHost(DockerHost);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerHostOverride()
+    {
+      return this.GetDockerHostOverride(DockerHostOverride);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerSocketOverride()
+    {
+      return this.GetDockerSocketOverride(DockerSocketOverride);
     }
 
     /// <inheritdoc />
