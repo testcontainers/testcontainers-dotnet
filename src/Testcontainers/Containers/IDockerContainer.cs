@@ -143,7 +143,15 @@ namespace DotNet.Testcontainers.Containers
     /// <value>
     /// Returns the Docker container health.
     /// </value>
-    Health Health { get; }
+    TestcontainersHealthStates Health { get; }
+
+    /// <summary>
+    /// Gets the Testcontainers health check failing streak.
+    /// </summary>
+    /// <value>
+    /// Returns the Docker container health check failing streak.
+    /// </value>
+    long HealthFailingStreak { get; }
 
     /// <summary>
     /// Gets the public host port associated with the private container port.

@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilContainerIsHealthy(int failingStreak = 20)
+    public IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20)
     {
       return this.AddCustomWaitStrategy(new WaitStrategies.UntilContainerIsHealthy(failingStreak));
     }

@@ -82,7 +82,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <param name="failingStreak">Number of tolerated failed attempts before throwing a <see cref="ContainerDidNotStartException"/>, default value is 20.</param>
     [PublicAPI]
-    IWaitForContainerOS UntilContainerIsHealthy(int failingStreak = 20);
+    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.

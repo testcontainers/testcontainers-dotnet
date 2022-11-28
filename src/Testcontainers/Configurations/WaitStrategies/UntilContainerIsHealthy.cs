@@ -6,31 +6,25 @@ namespace DotNet.Testcontainers.Configurations.WaitStrategies
 
   internal class UntilContainerIsHealthy : IWaitUntil
   {
-    private readonly int failingStreak;
+    private readonly long failingStreak;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UntilContainerIsHealthy"/> class.
     /// </summary>
     /// <param name="failingStreak">Number of tolerated failed attempts before throwing a <see cref="ContainerDidNotStartException"/>.</param>
-    public UntilContainerIsHealthy(int failingStreak)
+    public UntilContainerIsHealthy(long failingStreak)
     {
       this.failingStreak = failingStreak;
     }
 
     public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
-      var health = testcontainers.Health;
-      if (testcontainers.State != TestcontainersStates.Running || health == null)
+      if (testcontainers.HealthFailingStreak > this.failingStreak)
       {
-        return Task.FromResult(false);
+        throw new ContainerDidNotStartException($"Container ${testcontainers.Name} did not report healthy status after allotted attempts.");
       }
 
-      if (health.FailingStreak > this.failingStreak)
-      {
-        throw new ContainerDidNotStartException($"Container ${testcontainers.Name} did not report healty status after allotted attempts.");
-      }
-
-      return Task.FromResult(health.Status == "healthy");
+      return Task.FromResult(testcontainers.Health == TestcontainersHealthStates.Healthy);
     }
   }
 }

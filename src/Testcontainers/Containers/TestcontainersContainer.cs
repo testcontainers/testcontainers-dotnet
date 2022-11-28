@@ -135,11 +135,37 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Health Health
+    public TestcontainersHealthStates Health
     {
       get
       {
-        return this.container.State?.Health;
+        if (this.container.State?.Health == null)
+        {
+          return TestcontainersHealthStates.Unhealthy;
+        }
+
+        try
+        {
+          if (this.container.State.Health.Status.Equals("healthy", StringComparison.Ordinal))
+          {
+            return TestcontainersHealthStates.Healthy;
+          }
+
+          return TestcontainersHealthStates.Unhealthy;
+        }
+        catch (Exception)
+        {
+          return TestcontainersHealthStates.Unhealthy;
+        }
+      }
+    }
+
+    /// <inheritdoc />
+    public long HealthFailingStreak
+    {
+      get
+      {
+        return this.container.State.Health.FailingStreak;
       }
     }
 
