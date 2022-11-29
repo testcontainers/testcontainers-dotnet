@@ -19,6 +19,11 @@ namespace DotNet.Testcontainers.Configurations.WaitStrategies
 
     public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
+      if (testcontainers.State == TestcontainersStates.Exited)
+      {
+        throw new ContainerDidNotStartException($"Container ${testcontainers.Name} has exited.");
+      }
+
       if (testcontainers.HealthFailingStreak > this.failingStreak)
       {
         throw new ContainerDidNotStartException($"Container ${testcontainers.Name} did not report healthy status after allotted attempts.");
