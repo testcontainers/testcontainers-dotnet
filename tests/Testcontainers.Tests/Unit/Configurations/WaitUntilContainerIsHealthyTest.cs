@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     public async Task StartsOnceHealthy()
     {
       var imageName = await new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy", "ok"))
+        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy"))
         .WithDeleteIfExists(true)
         .Build();
 
@@ -30,7 +30,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     public async Task ContainerStartFailsIfContainerIsUnhealthy()
     {
       var imageName = await new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy", "fail"))
+        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy"))
+        .WithBuildArgument("SHOULD_FAIL", "1")
         .WithDeleteIfExists(true)
         .Build();
 
