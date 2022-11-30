@@ -4,8 +4,10 @@
 
 ### Added
 
+- 531 Add Docker health status wait strategy (@kfrajtak)
 - 640 Add `ITestcontainersBuilder<TDockerContainer>.WithResourceMapping` to copy files or or any binary contents into the created container even before it is started.
 - 654 Add `ITestcontainersNetworkBuilder.WithOption` (@vlaskal)
+- 678 Add support of custom configuration `TESTCONTAINERS_HOST_OVERRIDE` and `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`.
 
 ### Changed
 

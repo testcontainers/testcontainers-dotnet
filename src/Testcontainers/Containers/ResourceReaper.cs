@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -49,10 +50,11 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
-    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, string ryukImage)
+    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IDockerImage ryukImage, string dockerSocketFilePath, bool requiresPrivilegedMode)
     {
       dockerEndpointAuthConfig = dockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig;
-      ryukImage = ryukImage ?? TestcontainersSettings.ResourceReaperImage.FullName;
+      ryukImage = ryukImage ?? TestcontainersSettings.ResourceReaperImage;
+      dockerSocketFilePath = dockerSocketFilePath ?? TestcontainersSettings.DockerSocketOverride;
       this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
@@ -61,7 +63,7 @@ namespace DotNet.Testcontainers.Containers
         .WithCleanUp(false)
         .WithExposedPort(RyukPort)
         .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
-        .WithBindMount("/var/run/docker.sock", "/var/run/docker.sock", AccessMode.ReadOnly)
+        .WithBindMount(dockerSocketFilePath, "/var/run/docker.sock", AccessMode.ReadOnly)
         .Build();
 
       this.SessionId = sessionId;
@@ -135,14 +137,16 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="ryukImage">The Ryuk image.</param>
+    /// <param name="dockerSocketFilePath">The Docker socket file path.</param>
+    /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
     [PublicAPI]
-    public static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, string dockerSocketFilePath = null, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
-      return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, ryukImage, initTimeout, ct);
+      return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, ryukImage, dockerSocketFilePath, requiresPrivilegedMode, initTimeout, ct);
     }
 
     /// <summary>
@@ -151,16 +155,18 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="sessionId">The session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="ryukImage">The Ryuk image.</param>
+    /// <param name="dockerSocketFilePath">The Docker socket file path.</param>
+    /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     /// <remarks>If <paramref name="dockerEndpointAuthConfig" /> is null, the resource reaper will fallback to the default authentication configuration.</remarks>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, TimeSpan initTimeout = default, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = null, string ryukImage = null, string dockerSocketFilePath = null, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
-      var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, ryukImage);
+      var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, ryukImage == null ? null : new DockerImage(ryukImage), dockerSocketFilePath, requiresPrivilegedMode);
 
       initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
