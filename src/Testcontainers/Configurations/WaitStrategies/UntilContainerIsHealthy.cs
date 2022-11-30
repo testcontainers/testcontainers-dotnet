@@ -1,5 +1,6 @@
-namespace DotNet.Testcontainers.Configurations.WaitStrategies
+namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;
@@ -8,10 +9,6 @@ namespace DotNet.Testcontainers.Configurations.WaitStrategies
   {
     private readonly long failingStreak;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UntilContainerIsHealthy"/> class.
-    /// </summary>
-    /// <param name="failingStreak">Number of tolerated failed attempts before throwing a <see cref="ContainerDidNotStartException"/>.</param>
     public UntilContainerIsHealthy(long failingStreak)
     {
       this.failingStreak = failingStreak;
@@ -19,17 +16,17 @@ namespace DotNet.Testcontainers.Configurations.WaitStrategies
 
     public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
-      if (testcontainers.State == TestcontainersStates.Exited)
+      if (TestcontainersStates.Exited.Equals(testcontainers.State))
       {
-        throw new ContainerDidNotStartException($"Container ${testcontainers.Name} has exited.");
+        throw new TimeoutException("Container has exited.");
       }
 
-      if (testcontainers.HealthFailingStreak > this.failingStreak)
+      if (this.failingStreak < testcontainers.HealthCheckFailingStreak)
       {
-        throw new ContainerDidNotStartException($"Container ${testcontainers.Name} did not report healthy status after allotted attempts.");
+        throw new TimeoutException($"Number of failed operations exceeded max count ({this.failingStreak}).");
       }
 
-      return Task.FromResult(testcontainers.Health == TestcontainersHealthStates.Healthy);
+      return Task.FromResult(TestcontainersHealthStatus.Healthy.Equals(testcontainers.Health));
     }
   }
 }

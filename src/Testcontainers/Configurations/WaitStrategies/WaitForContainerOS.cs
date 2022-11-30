@@ -9,6 +9,9 @@ namespace DotNet.Testcontainers.Configurations
   {
     private readonly ICollection<IWaitUntil> waitStrategies = new List<IWaitUntil>();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaitForContainerOS" /> class.
+    /// </summary>
     protected WaitForContainerOS()
     {
       this.waitStrategies.Add(new UntilContainerIsRunning());
@@ -49,9 +52,9 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20)
+    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20)
     {
-      return this.AddCustomWaitStrategy(new WaitStrategies.UntilContainerIsHealthy(failingStreak));
+      return this.AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak));
     }
 
     /// <inheritdoc />

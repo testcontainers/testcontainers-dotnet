@@ -1,46 +1,55 @@
 namespace DotNet.Testcontainers.Tests.Unit.Configurations
 {
-  using System;
-  using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Configurations.WaitStrategies;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
-  public sealed class WaitUntilContainerIsHealthyTest
+  public sealed class WaitUntilContainerIsHealthyTest : IClassFixture<HealthCheckFixture>
   {
-    [Fact]
-    public async Task StartsOnceHealthy()
+    private readonly IDockerImage image;
+
+    public WaitUntilContainerIsHealthyTest(HealthCheckFixture image)
     {
-      var imageName = await new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy"))
-        .WithDeleteIfExists(true)
-        .Build();
-
-      var container = new TestcontainersBuilder<TestcontainersContainer>()
-       .WithImage(imageName)
-       .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
-       .Build();
-
-      await container.StartAsync();
+      this.image = image;
     }
 
     [Fact]
-    public async Task ContainerStartFailsIfContainerIsUnhealthy()
+    public async Task ContainerHealthCheckShouldBeHealthy()
     {
-      var imageName = await new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(Path.Combine(Environment.CurrentDirectory, "Assets", "healthWaitStrategy"))
-        .WithBuildArgument("SHOULD_FAIL", "1")
-        .WithDeleteIfExists(true)
+      // Given
+      var container = new TestcontainersBuilder<TestcontainersContainer>()
+        .WithImage(this.image)
+        .WithEnvironment("START_HEALTHY", bool.TrueString.ToLowerInvariant())
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
         .Build();
 
-      var container = new TestcontainersBuilder<TestcontainersContainer>()
-       .WithImage(imageName)
-       .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
-       .Build();
+      // When
+      await container.StartAsync()
+        .ConfigureAwait(false);
 
-      await Assert.ThrowsAsync<ContainerDidNotStartException>(async () => await container.StartAsync());
+      // Then
+      Assert.Equal(TestcontainersHealthStatus.Healthy, container.Health);
+    }
+
+    [Fact]
+    public async Task ContainerHealthCheckShouldBeUnhealthy()
+    {
+      // Given
+      var container = new TestcontainersBuilder<TestcontainersContainer>()
+        .WithImage(this.image)
+        .WithEnvironment("START_HEALTHY", bool.FalseString.ToLowerInvariant())
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
+        .Build();
+
+      // When
+      _ = await Record.ExceptionAsync(() => container.StartAsync())
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(TestcontainersHealthStatus.Unhealthy, container.Health);
     }
   }
 }
