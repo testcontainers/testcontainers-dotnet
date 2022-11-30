@@ -41,7 +41,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     [Fact]
     public async Task ResourceReaperShouldTimeoutIfInitializationFails()
     {
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", TimeSpan.FromSeconds(10));
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10));
       _ = await Assert.ThrowsAsync<ResourceReaperException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created, ResourceReaperState.InitializingConnection }, this.stateChanges);
     }
@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     {
       ResourceReaper.StateChanged += this.CancelOnCreated;
 
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", TimeSpan.FromSeconds(10), this.cts.Token);
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10), this.cts.Token);
       _ = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created }, this.stateChanges);
     }
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     {
       ResourceReaper.StateChanged += this.CancelOnInitializingConnection;
 
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", TimeSpan.FromSeconds(10), this.cts.Token);
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10), this.cts.Token);
       _ = await Assert.ThrowsAsync<ResourceReaperException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created, ResourceReaperState.InitializingConnection }, this.stateChanges);
     }

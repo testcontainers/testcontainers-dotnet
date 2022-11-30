@@ -87,6 +87,11 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
+        if (!string.IsNullOrEmpty(TestcontainersSettings.DockerHostOverride))
+        {
+          return TestcontainersSettings.DockerHostOverride;
+        }
+
         var dockerHostUri = this.configuration.DockerEndpointAuthConfig.Endpoint;
 
         switch (dockerHostUri.Scheme)
