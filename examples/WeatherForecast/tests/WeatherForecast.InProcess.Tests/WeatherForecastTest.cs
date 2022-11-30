@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -24,9 +23,7 @@ public sealed class WeatherForecastTest : IAsyncLifetime
 
   public WeatherForecastTest()
   {
-    var mssqlConfiguration = new MsSqlTestcontainerConfiguration();
-    mssqlConfiguration.Password = Guid.NewGuid().ToString("D");
-    mssqlConfiguration.Database = Guid.NewGuid().ToString("D");
+    var mssqlConfiguration = new DatabaseContainerConfiguration();
 
     _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
       .WithDatabase(mssqlConfiguration)

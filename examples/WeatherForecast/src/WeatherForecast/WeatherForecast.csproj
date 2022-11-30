@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
     <PackageReference Include="Microsoft.Fast.Components.FluentUI"/>
+    <PackageReference Include="Testcontainers"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
