@@ -77,6 +77,14 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilPortIsAvailable(int port);
 
     /// <summary>
+    /// Waits until the container reports healthy status.
+    /// </summary>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    /// <param name="failingStreak">Number of tolerated failed attempts before throwing a <see cref="ContainerDidNotStartException"/>, default value is 20.</param>
+    [PublicAPI]
+    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20);
+
+    /// <summary>
     /// Returns a collection with all configured wait strategies.
     /// </summary>
     /// <returns>List with all configured wait strategies.</returns>

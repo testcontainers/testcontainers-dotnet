@@ -134,6 +134,41 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <inheritdoc />
+    public TestcontainersHealthStates Health
+    {
+      get
+      {
+        if (this.container.State?.Health == null)
+        {
+          return TestcontainersHealthStates.Unhealthy;
+        }
+
+        try
+        {
+          if (this.container.State.Health.Status.Equals("healthy", StringComparison.Ordinal))
+          {
+            return TestcontainersHealthStates.Healthy;
+          }
+
+          return TestcontainersHealthStates.Unhealthy;
+        }
+        catch (Exception)
+        {
+          return TestcontainersHealthStates.Unhealthy;
+        }
+      }
+    }
+
+    /// <inheritdoc />
+    public long HealthFailingStreak
+    {
+      get
+      {
+        return this.container.State.Health.FailingStreak;
+      }
+    }
+
     /// <summary>
     /// Gets the logger.
     /// </summary>
