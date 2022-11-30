@@ -6,6 +6,7 @@
 
 - 640 Add `ITestcontainersBuilder<TDockerContainer>.WithResourceMapping` to copy files or or any binary contents into the created container even before it is started.
 - 654 Add `ITestcontainersNetworkBuilder.WithOption` (@vlaskal)
+- 531 Add Docker health status wait strategy (@kfrajtak)
 
 ### Changed
 

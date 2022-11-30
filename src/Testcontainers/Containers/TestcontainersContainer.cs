@@ -135,36 +135,37 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public TestcontainersHealthStates Health
+    public TestcontainersHealthStatus Health
     {
       get
       {
-        if (this.container.State?.Health == null)
+        if (this.container.State == null)
         {
-          return TestcontainersHealthStates.Unhealthy;
+          return TestcontainersHealthStatus.Undefined;
+        }
+
+        if (this.container.State.Health == null)
+        {
+          return TestcontainersHealthStatus.None;
         }
 
         try
         {
-          if (this.container.State.Health.Status.Equals("healthy", StringComparison.Ordinal))
-          {
-            return TestcontainersHealthStates.Healthy;
-          }
-
-          return TestcontainersHealthStates.Unhealthy;
+          return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), this.container.State.Health.Status, true);
         }
         catch (Exception)
         {
-          return TestcontainersHealthStates.Unhealthy;
+          return TestcontainersHealthStatus.Undefined;
         }
       }
     }
 
     /// <inheritdoc />
-    public long HealthFailingStreak
+    public long HealthCheckFailingStreak
     {
       get
       {
+        this.ThrowIfContainerHasNotBeenCreated();
         return this.container.State.Health.FailingStreak;
       }
     }
@@ -406,7 +407,7 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      throw new InvalidOperationException("Testcontainers has not been created.");
+      throw new InvalidOperationException("Container has not been created.");
     }
 
     private string GetContainerGateway()

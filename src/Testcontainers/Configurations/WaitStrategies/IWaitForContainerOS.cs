@@ -65,6 +65,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="operation">The operation to be executed.</param>
     /// <param name="maxCallCount">The number of attempts before an exception is thrown.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="maxCallCount" />.</exception>
     [PublicAPI]
     IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount);
 
@@ -77,10 +78,11 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilPortIsAvailable(int port);
 
     /// <summary>
-    /// Waits until the container reports healthy status.
+    /// Waits until the container is healthy.
     /// </summary>
+    /// <param name="failingStreak">The number of attempts before an exception is thrown.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    /// <param name="failingStreak">Number of tolerated failed attempts before throwing a <see cref="ContainerDidNotStartException"/>, default value is 20.</param>
+    /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20);
 
