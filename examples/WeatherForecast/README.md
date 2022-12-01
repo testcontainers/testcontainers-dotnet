@@ -6,6 +6,7 @@ This example builds and ships a Blazor application in a Docker image build, runs
 git lfs version
 git clone --branch develop git@github.com:testcontainers/testcontainers-dotnet.git
 cd ./testcontainers-dotnet/examples/WeatherForecast/
-dotnet build WeatherForecast.sln
-dotnet test WeatherForecast.sln
+dotnet test WeatherForecast.sln --configuration=Release
 ```
+
+_* One unit test depends on Seleium and requires Chrome 106._
