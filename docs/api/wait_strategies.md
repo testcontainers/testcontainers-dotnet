@@ -11,21 +11,22 @@ _ = Wait.ForUnixContainer()
   .AddCustomWaitStrategy(new MyCustomWaitStrategy());
 ```
 
-## Wait for healthy container
+## Wait until the container is healthy
 
-Container may be running but the application inside not - for example the containerized application is booting. If you define `HEALTHCHECK` in `Dockerfile` it will tell Docker how to test a container to check that it is still working.
+If the Docker image supports Dockers's [HEALTHCHECK](docker-docs-healthcheck) feature, like the following configuration:
 
+```Dockerfile
+FROM alpine
+HEALTHCHECK --interval=1s CMD test -e /healthcheck
 ```
-FROM alpine:3.16
-HEALTHCHECK --interval=1s CMD test -e /testfile
-...
-```
 
-You can use the `UntilContainerIsHealthy` to check that the container is fully ready.
+You can leverage the container's health status as your wait strategy to report readiness of your application or service:
 
 ```csharp
 _ = new TestcontainersBuilder<TestcontainersContainer>()
-  .WithImage(imageName)
   .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
   .Build();
 ```
+
+[docker-docs-healthcheck]: https://docs.docker.com/engine/reference/builder/#healthcheck
+
