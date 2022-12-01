@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using JetBrains.Annotations;
@@ -33,9 +32,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     const string weatherForecastStorage = "weatherForecastStorage";
 
-    var mssqlConfiguration = new MsSqlTestcontainerConfiguration();
-    mssqlConfiguration.Password = Guid.NewGuid().ToString("D");
-    mssqlConfiguration.Database = Guid.NewGuid().ToString("D");
+    var mssqlConfiguration = new DatabaseContainerConfiguration();
 
     var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
 
