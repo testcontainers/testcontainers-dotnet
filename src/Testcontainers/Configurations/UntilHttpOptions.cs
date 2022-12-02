@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Configurations
       this.ExpectedResponseCodes = new() { HttpStatusCode.OK };
       this.TimeOut = TimeSpan.FromMinutes(1);
       this.RequestDelay = 1;
+      this.MaxRetries = 10;
     }
 
     public HttpMethod Method { get; set; }
@@ -36,6 +37,7 @@ namespace DotNet.Testcontainers.Configurations
     public TimeSpan TimeOut { get; set; }
     public bool ValidateContent { get; set; }
     public double RequestDelay { get; set; }
+    public int MaxRetries { get; set; }
 
     public Uri Uri => new($"{(this.UseSecure ? "https" : "http")}://{this.Host}:{this.Port}{this.Path}");
   }
