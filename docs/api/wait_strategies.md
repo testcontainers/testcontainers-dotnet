@@ -13,7 +13,7 @@ _ = Wait.ForUnixContainer()
 
 ## Wait until the container is healthy
 
-If the Docker image supports Dockers's [HEALTHCHECK](docker-docs-healthcheck) feature, like the following configuration:
+If the Docker image supports Dockers's [HEALTHCHECK][docker-docs-healthcheck] feature, like the following configuration:
 
 ```Dockerfile
 FROM alpine
@@ -29,4 +29,3 @@ _ = new TestcontainersBuilder<TestcontainersContainer>()
 ```
 
 [docker-docs-healthcheck]: https://docs.docker.com/engine/reference/builder/#healthcheck
-
