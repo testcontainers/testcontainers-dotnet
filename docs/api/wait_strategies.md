@@ -28,5 +28,30 @@ _ = new TestcontainersBuilder<TestcontainersContainer>()
   .Build();
 ```
 
+## Wait until Http Request is successful
+
+You can wait for an HttpResponseCode or even compare the Response Body of an http request to an exposed port on your container
+
+```csharp
+_ = new TestcontainersBuilder<TestcontainersContainer>()
+  .WithWaitStrategy(
+    Wait.ForUnixContainer()
+      .UntilHttp() //Default to a GET to localhost:80 [ExposedfromContianer] Expecting 200 with no response body Validation 
+  .Build();
+```
+or with Options 
+```csharp
+_ = new TestcontainersBuilder<TestcontainersContainer>()
+  .WithWaitStrategy(
+    Wait.ForUnixContainer()
+      .UntilHttp( options => {
+        options.Port = [YourServiceExposedPort];
+        options.Path = [RequestPath];
+        options.Method = [HttpRequestMethod];
+        options.ExpectedResponseCodes = new(){ HttpStatusCode.OK, HttpStatusCode.Accepted };
+      })
+  .Build();
+```
+
 [docker-docs-healthcheck]: https://docs.docker.com/engine/reference/builder/#healthcheck
 

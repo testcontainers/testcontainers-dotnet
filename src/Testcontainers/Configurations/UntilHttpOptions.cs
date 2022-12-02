@@ -7,6 +7,9 @@ namespace DotNet.Testcontainers.Configurations
   using System.Net.Http;
   using System.Security;
 
+  /// <summary>
+  /// Configured the Request and Response Behaviour of the UntilHttp Wait
+  /// </summary>
   public class UntilHttpOptions
   {
     public UntilHttpOptions()
