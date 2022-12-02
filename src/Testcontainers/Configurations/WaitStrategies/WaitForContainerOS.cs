@@ -58,6 +58,15 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    public IWaitForContainerOS UntilHttpSuccess(Action<UntilHttpOptions> action = null)
+    {
+      var options = new UntilHttpOptions();
+      action?.Invoke(options);
+      var httpWait = new UntilHttp(options);
+      return this.AddCustomWaitStrategy(httpWait);
+    }
+
+    /// <inheritdoc />
     public IEnumerable<IWaitUntil> Build()
     {
       return this.waitStrategies;

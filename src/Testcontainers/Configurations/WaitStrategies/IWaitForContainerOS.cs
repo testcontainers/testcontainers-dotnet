@@ -87,6 +87,13 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20);
 
     /// <summary>
+    /// Waits until Http Requests returns Ok
+    /// </summary>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilHttpSuccess(Action<UntilHttpOptions>? action = null);
+
+    /// <summary>
     /// Returns a collection with all configured wait strategies.
     /// </summary>
     /// <returns>List with all configured wait strategies.</returns>

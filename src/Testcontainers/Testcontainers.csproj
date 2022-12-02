@@ -5,6 +5,7 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
