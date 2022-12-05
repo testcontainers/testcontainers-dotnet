@@ -270,11 +270,7 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      // TODO: Workaround until we have a Windows Docker image of Ryuk
-      var isWindowsEngineEnabled = await this.GetIsWindowsEngineEnabled(ct)
-        .ConfigureAwait(false);
-
-      if (!isWindowsEngineEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
+      if (ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, ct)
           .ConfigureAwait(false);

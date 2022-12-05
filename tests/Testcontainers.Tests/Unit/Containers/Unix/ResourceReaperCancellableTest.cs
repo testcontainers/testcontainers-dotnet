@@ -5,7 +5,9 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using Xunit;
 
   // NOTICE: These tests will produce `SocketException` messages in the log, since there is no listening port the ResourceReaper could connect to.
@@ -13,6 +15,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   public sealed class ResourceReaperCancellableTest : IDisposable
   {
     private readonly Guid sessionId = Guid.NewGuid();
+
+    private readonly IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig = TestcontainersSettings.OS.DockerEndpointAuthConfig;
+
+    private readonly IDockerImage ryukImage = new DockerImage("testcontainers/ryuk:0.3.4");
+
+    private readonly IDockerImage nginxImage = new DockerImage("nginx");
+
+    private readonly IMount dockerSocket = ResourceReaper.UnixSocketMount.Instance;
 
     private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -27,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     public async Task DisposeAsyncShouldAwaitConnectionTerminatedState()
     {
       // Given
-      var resourceReaper = await ResourceReaper.GetAndStartNewAsync(this.sessionId)
+      var resourceReaper = await ResourceReaper.GetAndStartNewAsync(this.sessionId, this.dockerEndpointAuthConfig, this.ryukImage, this.dockerSocket)
         .ConfigureAwait(false);
 
       // When
@@ -41,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     [Fact]
     public async Task ResourceReaperShouldTimeoutIfInitializationFails()
     {
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10));
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, this.dockerEndpointAuthConfig, this.nginxImage, this.dockerSocket, false, TimeSpan.FromSeconds(10));
       _ = await Assert.ThrowsAsync<ResourceReaperException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created, ResourceReaperState.InitializingConnection }, this.stateChanges);
     }
@@ -51,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     {
       ResourceReaper.StateChanged += this.CancelOnCreated;
 
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10), this.cts.Token);
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, this.dockerEndpointAuthConfig, this.nginxImage, this.dockerSocket, false, TimeSpan.FromSeconds(10), this.cts.Token);
       _ = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created }, this.stateChanges);
     }
@@ -61,7 +71,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     {
       ResourceReaper.StateChanged += this.CancelOnInitializingConnection;
 
-      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, null, "nginx", null, false, TimeSpan.FromSeconds(10), this.cts.Token);
+      var resourceReaperTask = ResourceReaper.GetAndStartNewAsync(this.sessionId, this.dockerEndpointAuthConfig, this.nginxImage, this.dockerSocket, false, TimeSpan.FromSeconds(10), this.cts.Token);
       _ = await Assert.ThrowsAsync<ResourceReaperException>(() => resourceReaperTask);
       Assert.Equal(new[] { ResourceReaperState.Created, ResourceReaperState.InitializingConnection }, this.stateChanges);
     }

@@ -220,6 +220,14 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithMount(string source, string destination, AccessMode accessMode);
 
     /// <summary>
+    /// Assigns the mount configuration to manage data in the container.
+    /// </summary>
+    /// <param name="mount">Mount configuration.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithMount(IMount mount);
+
+    /// <summary>
     /// Binds and mounts the specified host machine volume into the Testcontainer.
     /// </summary>
     /// <param name="source">An absolute path or a name value within the host machine.</param>

@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Unit;
   using Xunit;
@@ -76,7 +77,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
     {
       if (Docker.Exists(DockerResource.Container, DefaultRyukContainerName))
       {
-        var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync()
+        var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .ConfigureAwait(false);
         await resourceReaper.DisposeAsync()
           .ConfigureAwait(false);

@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Containers
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
