@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Releases all resources used by the <see cref="HostedServiceConfiguration" />.
     /// </summary>
-    /// <param name="disposing">True if managed resources should be disposed, otherwise false..</param>
+    /// <param name="disposing">True if managed resources should be disposed, otherwise false.</param>
     [PublicAPI]
     protected virtual void Dispose(bool disposing)
     {

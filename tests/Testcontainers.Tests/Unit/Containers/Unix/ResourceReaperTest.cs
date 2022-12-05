@@ -3,7 +3,9 @@
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
@@ -96,7 +98,7 @@
 
     public async Task InitializeAsync()
     {
-      this.resourceReaper = await ResourceReaper.GetAndStartNewAsync()
+      this.resourceReaper = await ResourceReaper.GetAndStartNewAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig, new DockerImage("testcontainers/ryuk:0.3.4"), ResourceReaper.UnixSocketMount.Instance)
         .ConfigureAwait(false);
     }
 

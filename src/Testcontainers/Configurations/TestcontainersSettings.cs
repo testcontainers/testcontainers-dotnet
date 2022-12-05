@@ -21,10 +21,6 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private const string DockerSocketFilePath = "/var/run/docker.sock";
-
-    private static readonly IDockerImage RyukImage = new DockerImage("testcontainers/ryuk:0.3.4");
-
     private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
 
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
@@ -113,7 +109,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets the Docker socket override value.
     /// </summary>
     public static string DockerSocketOverride { get; set; }
-      = PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? DockerSocketFilePath;
+      = PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -127,7 +123,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [PublicAPI]
     public static IDockerImage ResourceReaperImage { get; set; }
-      = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage() ?? RyukImage;
+      = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> public host port.
