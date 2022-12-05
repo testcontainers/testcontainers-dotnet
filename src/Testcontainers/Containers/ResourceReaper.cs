@@ -146,7 +146,7 @@ namespace DotNet.Testcontainers.Containers
     /// Starts and returns a new <see cref="ResourceReaper" /> instance.
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
-    /// <param name="resourceReaperImage">The Ryuk image.</param>
+    /// <param name="resourceReaperImage">The Resource Reaper image.</param>
     /// <param name="dockerSocket">The Docker socket.</param>
     /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
@@ -163,7 +163,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="sessionId">The session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
-    /// <param name="resourceReaperImage">The Ryuk image.</param>
+    /// <param name="resourceReaperImage">The Resource Reaper image.</param>
     /// <param name="dockerSocket">The Docker socket.</param>
     /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
