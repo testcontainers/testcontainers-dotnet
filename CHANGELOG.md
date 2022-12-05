@@ -5,7 +5,7 @@
 ### Added
 
 - 531 Add Docker health status wait strategy (@kfrajtak)
-- 640 Add `ITestcontainersBuilder<TDockerContainer>.WithResourceMapping` to copy files or or any binary contents into the created container even before it is started.
+- 640 Add `ITestcontainersBuilder<TDockerContainer>.WithResourceMapping` to copy files or or any binary contents into the created container even before it is started
 - 654 Add `ITestcontainersNetworkBuilder.WithOption` (@vlaskal)
 - 678 Add support of custom configuration `TESTCONTAINERS_HOST_OVERRIDE` and `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`.
 
@@ -14,6 +14,7 @@
 - 642 Expose container port bindings automatically
 - 603 Add default logger that forwards messages to the console (does not support every test environment)
 - 683 Return the gateway address (`IDockerContainer.Hostname`) of a network if one is assigned
+- 703 `ResourceReaper.GetAndStartDefaultAsync` no longer support optional arguments, it is necessary to set the Resource Reaper configuration immediately
 
 ### Fixed
 
