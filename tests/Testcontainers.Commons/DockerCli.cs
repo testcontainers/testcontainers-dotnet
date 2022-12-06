@@ -79,6 +79,10 @@
 
       public CommandResult Execute()
       {
+        DateTime startTime;
+
+        DateTime exitTime;
+
         var process = new Process();
         process.StartInfo = this.processStartInfo;
         process.OutputDataReceived += this.AppendStdout;
@@ -86,6 +90,7 @@
 
         try
         {
+          startTime = DateTime.UtcNow;
           process.Start();
           process.BeginOutputReadLine();
           process.BeginErrorReadLine();
@@ -93,11 +98,12 @@
         }
         finally
         {
+          exitTime = DateTime.UtcNow;
           process.OutputDataReceived -= this.AppendStdout;
           process.ErrorDataReceived -= this.AppendStderr;
         }
 
-        return new CommandResult(process.ExitCode, process.StartTime, process.ExitTime, null, null);
+        return new CommandResult(process.ExitCode, startTime, exitTime, this.stdout.ToString(), this.stderr.ToString());
       }
 
       private void AppendStdout(object sender, DataReceivedEventArgs e)

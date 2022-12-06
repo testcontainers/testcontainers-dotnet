@@ -55,11 +55,6 @@ jobs:
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=FullyQualifiedName~${{ startsWith(matrix.os, 'ubuntu') && 'DotNet.Testcontainers' || 'DotNet.Testcontainers.Tests.Unit.Containers.Windows' }}
 
-      - name: Get Logs
-        run: Get-ChildItem -Path . -Include *.log -Recurse | % { Get-Content -Path $_.FullName }
-        shell: pwsh
-        if: always()
-
       - name: Rename Test And Coverage Results
         run: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage', '${{ matrix.os }}'.ToLower() }
         shell: pwsh
