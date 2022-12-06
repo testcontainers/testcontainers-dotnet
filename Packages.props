@@ -16,11 +16,6 @@
     <PackageReference Update="Microsoft.Extensions.Hosting" Version="3.1.23" />
     <PackageReference Update="coverlet.msbuild" Version="3.2.0" />
     <PackageReference Update="FluentAssertions" Version="5.10.3" />
-    <PackageReference Update="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Update="Serilog.Settings.Configuration" Version="3.3.0" />
-    <PackageReference Update="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Update="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Update="Serilog" Version="2.11.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Update="xunit" Version="2.4.2" />
     <!-- 3rd party client dependencies -->

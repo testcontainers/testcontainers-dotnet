@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
@@ -467,7 +468,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.True(Docker.Exists(DockerResource.Container, testcontainerId));
+        Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Container, testcontainerId));
       }
 
       [Fact]
@@ -490,7 +491,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         }
 
         // Then
-        Assert.False(Docker.Exists(DockerResource.Container, testcontainerId));
+        Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, testcontainerId));
       }
 
       [Fact]
