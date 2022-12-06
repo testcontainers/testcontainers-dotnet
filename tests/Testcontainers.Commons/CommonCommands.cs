@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Common
+﻿namespace DotNet.Testcontainers.Commons
 {
   using JetBrains.Annotations;
 

@@ -15,6 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />
-    <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Common/Testcontainers.Common.csproj" />
+    <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
   </ItemGroup>
 </Project>

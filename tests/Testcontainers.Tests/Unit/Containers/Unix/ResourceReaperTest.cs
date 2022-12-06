@@ -3,6 +3,7 @@
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
@@ -33,7 +34,7 @@
         .ConfigureAwait(false);
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Container, containerName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, containerName));
     }
 
     [Fact]
@@ -51,7 +52,7 @@
         .ConfigureAwait(false);
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Image, dockerImageFullName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Image, dockerImageFullName));
     }
 
     [Fact]
@@ -72,7 +73,7 @@
         .ConfigureAwait(false);
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Network, networkName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Network, networkName));
     }
 
     [Fact]
@@ -93,7 +94,7 @@
         .ConfigureAwait(false);
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Volume, volumeName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Volume, volumeName));
     }
 
     public async Task InitializeAsync()

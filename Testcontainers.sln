@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Common", "tests\Testcontainers.Common\Testcontainers.Common.csproj", "{2478673C-B063-469D-ABD1-0C3E0A25541B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Commons", "tests\Testcontainers.Commons\Testcontainers.Commons.csproj", "{2478673C-B063-469D-ABD1-0C3E0A25541B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
 EndProject

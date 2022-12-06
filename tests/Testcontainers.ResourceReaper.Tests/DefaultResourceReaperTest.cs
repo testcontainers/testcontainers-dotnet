@@ -3,9 +3,9 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
-  using DotNet.Testcontainers.Tests.Unit;
   using Xunit;
 
   // NOTICE: These tests stop the static shared default Resource Reaper (dispose). Unit tests are executed parallel.
@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
       }
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Container, DefaultRyukContainerName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
     }
 
     [Fact]
@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
       }
 
       // Then
-      Assert.True(Docker.Exists(DockerResource.Container, DefaultRyukContainerName));
+      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
     }
 
     [Fact]
@@ -70,12 +70,12 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
       }
 
       // Then
-      Assert.False(Docker.Exists(DockerResource.Container, DefaultRyukContainerName));
+      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
     }
 
     public async Task InitializeAsync()
     {
-      if (Docker.Exists(DockerResource.Container, DefaultRyukContainerName))
+      if (DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName))
       {
         var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .ConfigureAwait(false);

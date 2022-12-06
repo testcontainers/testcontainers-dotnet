@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Common
+﻿namespace DotNet.Testcontainers.Commons
 {
   using System;
   using System.Diagnostics;
@@ -34,6 +34,16 @@
       /// Docker image resource.
       /// </summary>
       Image,
+
+      /// <summary>
+      /// Docker network resource.
+      /// </summary>
+      Network,
+
+      /// <summary>
+      /// Docker volume resource.
+      /// </summary>
+      Volume,
     }
 
     public static bool PlatformIsEnabled(DockerPlatform platform)
