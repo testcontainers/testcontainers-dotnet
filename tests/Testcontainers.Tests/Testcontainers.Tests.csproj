@@ -11,7 +11,6 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="coverlet.msbuild" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit" />

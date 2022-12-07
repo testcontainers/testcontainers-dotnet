@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -18,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
-        .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+        .WithEntrypoint(CommonCommands.SleepInfinity)
         .WithNetwork(networkFixture.Network.Id, networkFixture.Network.Name);
 
       this.testcontainer1 = testcontainersBuilder

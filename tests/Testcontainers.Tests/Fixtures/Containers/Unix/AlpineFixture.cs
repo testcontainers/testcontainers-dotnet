@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
   using Xunit;
@@ -13,7 +14,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public ITestcontainersContainer Container { get; }
       = new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
-        .WithCommand(KeepTestcontainersUpAndRunning.Command)
+        .WithCommand(CommonCommands.SleepInfinity)
         .WithCleanUp(false)
         .WithAutoRemove(true)
         .WithStartupCallback((_, ct) => Task.Delay(TimeSpan.FromMinutes(1), ct))
