@@ -5,15 +5,15 @@
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
-  using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 
   public sealed class ReadFileFromContainerTest : IAsyncLifetime
   {
     private readonly IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage("alpine")
-      .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+      .WithEntrypoint(CommonCommands.SleepInfinity)
       .Build();
 
     [Fact]

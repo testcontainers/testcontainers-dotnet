@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
@@ -20,10 +21,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public TestcontainersVolumeTest(VolumeFixture volumeFixture)
     {
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("alpine")
+        .WithImage(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("touch /tmp/$(uname -n) && tail -f /dev/null")
-        .WithResourceReaperSessionId(volumeFixture.SessionId)
         .WithVolumeMount(volumeFixture.Name, Destination)
         .WithTmpfsMount(TmpfsDestination);
 

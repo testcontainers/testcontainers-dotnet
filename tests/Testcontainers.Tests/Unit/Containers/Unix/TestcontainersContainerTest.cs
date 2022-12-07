@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithName(name);
 
         // Then
@@ -106,7 +106,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithMacAddress(macAddress);
 
         // Then
@@ -158,7 +158,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithExposedPort(80);
 
         // When
@@ -204,7 +204,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("nginx")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithPortBinding(80, true);
 
         // When
@@ -279,7 +279,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -358,7 +358,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithWaitStrategy(Wait.ForUnixContainer()
             .AddCustomWaitStrategy(new WaitUntilFiveSecondsPassedFixture()));
 
@@ -377,7 +377,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -395,7 +395,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -413,7 +413,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -435,7 +435,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         // Then
@@ -458,7 +458,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("alpine")
           .WithAutoRemove(false)
           .WithCleanUp(false)
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
@@ -481,7 +481,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImage("alpine")
           .WithAutoRemove(true)
           .WithCleanUp(false)
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command);
+          .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
@@ -503,7 +503,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
-          .WithEntrypoint(KeepTestcontainersUpAndRunning.Command)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithCreateContainerParametersModifier(parameters => parameters.Name = "placeholder")
           .WithCreateContainerParametersModifier(parameters => parameters.Name = name);
 

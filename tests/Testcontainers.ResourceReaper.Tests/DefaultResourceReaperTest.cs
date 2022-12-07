@@ -1,6 +1,5 @@
-namespace DotNet.Testcontainers.ResourceReaper.Tests
+﻿namespace DotNet.Testcontainers.ResourceReaper.Tests
 {
-  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
@@ -8,85 +7,45 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
-  // NOTICE: These tests stop the static shared default Resource Reaper (dispose). Unit tests are executed parallel.
-  // We cannot stop the default Resource Reaper all of a sudden. Run these tests in an isolated assembly.
   public sealed class DefaultResourceReaperTest : IAsyncLifetime
   {
-    private static readonly string DefaultRyukContainerName = $"testcontainers-ryuk-{ResourceReaper.DefaultSessionId:D}";
-
-    [Fact]
-    public async Task CleanUpFalseDoesNotStartDefaultResourceReaper()
-    {
-      // Given
-      var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("nginx")
-        .WithAutoRemove(true)
-        .WithCleanUp(false);
-
-      // When
-      await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
-      {
-        await testcontainer.StartAsync()
-          .ConfigureAwait(false);
-      }
-
-      // Then
-      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
-    }
-
-    [Fact]
-    public async Task CleanUpTrueDoesStartDefaultResourceReaper()
-    {
-      // Given
-      var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("nginx")
-        .WithCleanUp(true);
-
-      // When
-      await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
-      {
-        await testcontainer.StartAsync()
-          .ConfigureAwait(false);
-      }
-
-      // Then
-      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
-    }
-
-    [Fact]
-    public async Task UsingResourceReaperSessionIdDoesNotStartDefaultResourceReaper()
-    {
-      // Given
-      var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage("nginx")
-        .WithAutoRemove(true)
-        .WithResourceReaperSessionId(Guid.NewGuid());
-
-      // When
-      await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
-      {
-        await testcontainer.StartAsync()
-          .ConfigureAwait(false);
-      }
-
-      // Then
-      Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName));
-    }
-
     public async Task InitializeAsync()
     {
-      if (DockerCli.ResourceExists(DockerCli.DockerResource.Container, DefaultRyukContainerName))
-      {
-        var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig)
-          .ConfigureAwait(false);
-        await resourceReaper.DisposeAsync()
-          .ConfigureAwait(false);
-      }
+      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig)
+        .ConfigureAwait(false);
+
+      await resourceReaper.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
     public Task DisposeAsync()
     {
       return Task.CompletedTask;
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ContainerCleanUpStartsDefaultResourceReaper(bool resourceReaperEnabled)
+    {
+      // Given
+      var container = new TestcontainersBuilder<TestcontainersContainer>()
+        .WithImage(CommonImages.Alpine)
+        .WithEntrypoint(CommonCommands.SleepInfinity)
+        .WithAutoRemove(true)
+        .WithCleanUp(resourceReaperEnabled)
+        .Build();
+
+      // When
+      await container.StartAsync()
+        .ConfigureAwait(false);
+
+      await container.StopAsync()
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal(resourceReaperEnabled, DockerCli.ResourceExists(DockerCli.DockerResource.Container, "testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D")));
     }
   }
 }
