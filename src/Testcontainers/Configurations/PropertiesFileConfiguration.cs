@@ -120,6 +120,13 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    public bool GetRyukContainerPrivileged()
+    {
+      const string propertyName = "ryuk.container.privileged";
+      return this.GetRyukContainerPrivileged(propertyName);
+    }
+
+    /// <inheritdoc />
     public IDockerImage GetRyukContainerImage()
     {
       const string propertyName = "ryuk.container.image";

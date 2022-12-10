@@ -16,7 +16,7 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetDockerConfig(string propertyName)
     {
-      return this.GetPropertyValue(propertyName);
+      return this.GetPropertyValue<string>(propertyName);
     }
 
     protected Uri GetDockerHost(string propertyName)
@@ -26,12 +26,12 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetDockerHostOverride(string propertyName)
     {
-      return this.GetPropertyValue(propertyName);
+      return this.GetPropertyValue<string>(propertyName);
     }
 
     protected string GetDockerSocketOverride(string propertyName)
     {
-      return this.GetPropertyValue(propertyName);
+      return this.GetPropertyValue<string>(propertyName);
     }
 
     protected JsonDocument GetDockerAuthConfig(string propertyName)
@@ -55,24 +55,27 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetDockerCertPath(string propertyName)
     {
-      return this.GetPropertyValue(propertyName);
+      return this.GetPropertyValue<string>(propertyName);
     }
 
     protected bool GetDockerTls(string propertyName)
     {
-      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
-      return "1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var tlsEnabled) && tlsEnabled);
+      return this.GetPropertyValue<bool>(propertyName);
     }
 
     protected bool GetDockerTlsVerify(string propertyName)
     {
-      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
-      return "1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var tlsVerifyEnabled) && tlsVerifyEnabled);
+      return this.GetPropertyValue<bool>(propertyName);
     }
 
     protected bool GetRyukDisabled(string propertyName)
     {
-      return this.properties.TryGetValue(propertyName, out var propertyValue) && bool.TryParse(propertyValue, out var ryukDisabled) && ryukDisabled;
+      return this.GetPropertyValue<bool>(propertyName);
+    }
+
+    protected bool GetRyukContainerPrivileged(string propertyName)
+    {
+      return this.GetPropertyValue<bool>(propertyName);
     }
 
     protected IDockerImage GetRyukContainerImage(string propertyName)
@@ -96,13 +99,25 @@ namespace DotNet.Testcontainers.Configurations
 
     protected string GetHubImageNamePrefix(string propertyName)
     {
-      return this.GetPropertyValue(propertyName);
+      return this.GetPropertyValue<string>(propertyName);
     }
 
-    private string GetPropertyValue(string propertyName)
+    private T GetPropertyValue<T>(string propertyName)
     {
-      _ = this.properties.TryGetValue(propertyName, out var propertyValue);
-      return propertyValue;
+      switch (Type.GetTypeCode(typeof(T)))
+      {
+        case TypeCode.Boolean:
+        {
+          return (T)(object)(this.properties.TryGetValue(propertyName, out var propertyValue) && ("1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var result) && result)));
+        }
+        case TypeCode.String:
+        {
+          _ = this.properties.TryGetValue(propertyName, out var propertyValue);
+          return (T)(object)propertyValue;
+        }
+        default:
+          throw new InvalidOperationException();
+      }
     }
   }
 }

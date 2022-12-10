@@ -28,6 +28,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string RyukDisabled = "TESTCONTAINERS_RYUK_DISABLED";
 
+    private const string RyukContainerPrivileged = "TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED";
+
     private const string RyukContainerImage = "TESTCONTAINERS_RYUK_CONTAINER_IMAGE";
 
     private const string HubImageNamePrefix = "TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX";
@@ -51,6 +53,7 @@ namespace DotNet.Testcontainers.Configurations
           DockerHostOverride,
           DockerSocketOverride,
           RyukDisabled,
+          RyukContainerPrivileged,
           RyukContainerImage,
           HubImageNamePrefix,
         }
@@ -116,6 +119,12 @@ namespace DotNet.Testcontainers.Configurations
     public bool GetRyukDisabled()
     {
       return this.GetRyukDisabled(RyukDisabled);
+    }
+
+    /// <inheritdoc />
+    public bool GetRyukContainerPrivileged()
+    {
+      return this.GetRyukContainerPrivileged(RyukContainerPrivileged);
     }
 
     /// <inheritdoc />
