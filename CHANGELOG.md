@@ -19,6 +19,7 @@
 ### Fixed
 
 - 610 Trim traling slashes in Dockerfile directory path (otherwise, it cuts the first character of the relative path), Normalize paths to forward slashes
+- 648 Always include `.dockerignore` and `Dockerfile` files in tarball (`docker build`)
 - 650 Update SharpZipLib to version 1.4.1 to prevent a deadlock in the Docker container image build
 - 666 DockerImageNotFoundException when logged in with Docker Desktop instead of the CLI
 

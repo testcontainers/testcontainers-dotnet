@@ -17,9 +17,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void DockerfileArchiveTar()
     {
       // Given
-      var image = new DockerImage("testcontainers", "test", "1.0.0");
+      var image = new DockerImage("testcontainers", "test", "0.1.0");
 
-      var expected = new SortedSet<string> { "Dockerfile", "setup/setup.sh" };
+      var expected = new SortedSet<string> { ".dockerignore", "Dockerfile", "setup/setup.sh" };
 
       var actual = new SortedSet<string>();
 
@@ -40,46 +40,56 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task DockerfileDoesNotExist()
+    public async Task ThrowsDockerfileDoesNotExist()
     {
       // Given
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
-        new ImageFromDockerfileBuilder()
-          .WithDockerfile("Dockerfile")
-          .WithDockerfileDirectory(".")
-          .Build());
+      var dockerfileDirectory = Directory.GetCurrentDirectory();
+
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfile("Dockerfile")
+        .WithDockerfileDirectory(dockerfileDirectory);
 
       // When
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
+        .ConfigureAwait(false);
+
       // Then
-      Assert.Equal($"Dockerfile does not exist in '{new DirectoryInfo(".").FullName}'.", exception.Message);
+      Assert.Equal($"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.", exception.Message);
     }
 
     [Fact]
-    public async Task DockerfileDirectoryDoesNotExist()
+    public async Task ThrowsDockerfileDirectoryDoesNotExist()
     {
       // Given
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
-        new ImageFromDockerfileBuilder()
-          .WithDockerfileDirectory("DoesNotExist")
-          .Build());
+      var dockerfileDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory(dockerfileDirectory);
 
       // When
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
+        .ConfigureAwait(false);
+
       // Then
-      Assert.Equal($"Directory '{new DirectoryInfo("DoesNotExist").FullName}' does not exist.", exception.Message);
+      Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
     }
 
     [Fact]
-    public async Task SimpleDockerfile()
+    public async Task BuildsDockerImage()
     {
       // Given
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName("alpine:custom")
+        .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets")
         .WithDeleteIfExists(true);
 
       // When
-      var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build();
-      var imageFromDockerfile2 = await imageFromDockerfileBuilder.Build(); // Deletes the previously created image.
+      var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build()
+        .ConfigureAwait(false);
+
+      var imageFromDockerfile2 = await imageFromDockerfileBuilder.Build()
+        .ConfigureAwait(false);
 
       // Then
       Assert.NotEmpty(imageFromDockerfile1);

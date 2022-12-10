@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Images
 {
+  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using Microsoft.Extensions.Logging;
@@ -14,9 +15,10 @@
     /// </summary>
     /// <param name="dockerIgnoreFileDirectory">Directory that contains all docker configuration files.</param>
     /// <param name="dockerIgnoreFile">.dockerignore file name.</param>
+    /// <param name="dockerfileFile">Dockerfile file name.</param>
     /// <param name="logger">The logger.</param>
-    public DockerIgnoreFile(string dockerIgnoreFileDirectory, string dockerIgnoreFile, ILogger logger)
-      : this(new DirectoryInfo(dockerIgnoreFileDirectory), dockerIgnoreFile, logger)
+    public DockerIgnoreFile(string dockerIgnoreFileDirectory, string dockerIgnoreFile, string dockerfileFile, ILogger logger)
+      : this(new DirectoryInfo(dockerIgnoreFileDirectory), dockerIgnoreFile, dockerfileFile, logger)
     {
     }
 
@@ -25,14 +27,21 @@
     /// </summary>
     /// <param name="dockerIgnoreFileDirectory">Directory that contains all docker configuration files.</param>
     /// <param name="dockerIgnoreFile">.dockerignore file name.</param>
+    /// <param name="dockerfileFile">Dockerfile file name.</param>
     /// <param name="logger">The logger.</param>
-    public DockerIgnoreFile(DirectoryInfo dockerIgnoreFileDirectory, string dockerIgnoreFile, ILogger logger)
-      : base(
-        dockerIgnoreFileDirectory.GetFiles(dockerIgnoreFile, SearchOption.TopDirectoryOnly).Any()
-          ? File.ReadLines(Path.Combine(dockerIgnoreFileDirectory.FullName, dockerIgnoreFile)).Concat(new[] { dockerIgnoreFile }).ToArray()
-          : new[] { dockerIgnoreFile },
-        logger)
+    public DockerIgnoreFile(DirectoryInfo dockerIgnoreFileDirectory, string dockerIgnoreFile, string dockerfileFile, ILogger logger)
+      : base(GetPatterns(dockerIgnoreFileDirectory, dockerIgnoreFile, dockerfileFile), logger)
     {
+    }
+
+    private static IEnumerable<string> GetPatterns(DirectoryInfo dockerIgnoreFileDirectory, string dockerIgnoreFile, string dockerfileFile)
+    {
+      // These files are necessary and sent to the Docker daemon. The ADD and COPY instructions do not copy them to the image:
+      // https://docs.docker.com/engine/reference/builder/#dockerignore-file.
+      var negateNecessaryFiles = new[] { dockerIgnoreFile, dockerfileFile }.Select(file => "!" + file);
+      return dockerIgnoreFileDirectory.GetFiles(dockerIgnoreFile, SearchOption.TopDirectoryOnly).Any()
+        ? File.ReadLines(Path.Combine(dockerIgnoreFileDirectory.FullName, dockerIgnoreFile)).Concat(negateNecessaryFiles)
+        : negateNecessaryFiles;
     }
   }
 }
