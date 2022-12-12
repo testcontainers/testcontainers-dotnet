@@ -2,6 +2,8 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Threading;
+  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Images;
 
   /// <summary>
   /// Resource Reaper states.
@@ -22,7 +24,7 @@ namespace DotNet.Testcontainers.Containers
     /// <see cref="ResourceReaper" /> maintains the TCP connection to Ryuk.
     /// </summary>
     /// <remarks>
-    /// <see cref="ResourceReaper.GetAndStartNewAsync(DotNet.Testcontainers.Configurations.IDockerEndpointAuthenticationConfiguration, string, string, bool, TimeSpan, CancellationToken)" /> will complete now.
+    /// <see cref="ResourceReaper.GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration, IDockerImage, IMount, bool, TimeSpan, CancellationToken)" /> will complete now.
     /// </remarks>
     MaintainingConnection,
 

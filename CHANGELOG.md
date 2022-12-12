@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2.3.0]
+
 ### Added
 
 - 531 Add Docker health status wait strategy (@kfrajtak)
