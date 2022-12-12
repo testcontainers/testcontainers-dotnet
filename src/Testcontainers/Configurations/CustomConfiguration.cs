@@ -110,13 +110,15 @@ namespace DotNet.Testcontainers.Configurations
         {
           return (T)(object)(this.properties.TryGetValue(propertyName, out var propertyValue) && ("1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var result) && result)));
         }
+
         case TypeCode.String:
         {
           _ = this.properties.TryGetValue(propertyName, out var propertyValue);
           return (T)(object)propertyValue;
         }
+
         default:
-          throw new InvalidOperationException();
+          throw new ArgumentOutOfRangeException(typeof(T).Name);
       }
     }
   }
