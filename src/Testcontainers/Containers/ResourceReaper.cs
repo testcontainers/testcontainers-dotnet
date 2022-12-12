@@ -58,6 +58,7 @@ namespace DotNet.Testcontainers.Containers
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
         .WithImage(resourceReaperImage)
+        .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithExposedPort(RyukPort)
@@ -131,7 +132,9 @@ namespace DotNet.Testcontainers.Containers
 
         var resourceReaperImage = TestcontainersSettings.ResourceReaperImage ?? RyukImage;
 
-        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, UnixSocketMount.Instance, ct: ct)
+        var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
+
+        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, UnixSocketMount.Instance, requiresPrivilegedMode, ct: ct)
           .ConfigureAwait(false);
 
         return defaultInstance;
