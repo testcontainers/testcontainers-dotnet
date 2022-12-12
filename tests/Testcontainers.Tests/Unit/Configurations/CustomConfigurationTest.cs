@@ -24,6 +24,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_HOST_OVERRIDE");
         EnvironmentVariables.Add("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_DISABLED");
+        EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
       }
@@ -140,6 +141,18 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetRyukDisabled());
+      }
+
+      [Theory]
+      [InlineData("", "", false)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", false)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
+      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());
       }
 
       [Theory]
@@ -286,6 +299,17 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetRyukDisabled());
+      }
+
+      [Theory]
+      [InlineData("", false)]
+      [InlineData("ryuk.container.privileged=", false)]
+      [InlineData("ryuk.container.privileged=false", false)]
+      [InlineData("ryuk.container.privileged=true", true)]
+      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());
       }
 
       [Theory]

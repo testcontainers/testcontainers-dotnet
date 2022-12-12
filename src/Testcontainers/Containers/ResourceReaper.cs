@@ -230,10 +230,6 @@ namespace DotNet.Testcontainers.Containers
         await this.maintainConnectionTask
           .ConfigureAwait(false);
       }
-      catch (Exception)
-      {
-        // Ignore
-      }
       finally
       {
         this.maintainConnectionCts.Dispose();
