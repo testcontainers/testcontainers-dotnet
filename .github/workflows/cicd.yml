@@ -76,6 +76,10 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: write
+      pull-requests: read
+
     env:
       FEED_SOURCE: https://api.nuget.org/v3/index.json
       FEED_APIKEY: ${{ secrets.FEED_APIKEY }}
