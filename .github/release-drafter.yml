@@ -1,6 +1,5 @@
-name-template: $RESOLVED_VERSION
+name-template: $RESOLVED_VERSION-PRERELEASE
 tag-template: $RESOLVED_VERSION
-commitish: refs/heads/master
 prerelease: true
 template: |
   # What's Changed
