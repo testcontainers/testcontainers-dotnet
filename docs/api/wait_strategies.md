@@ -27,8 +27,4 @@ _ = new TestcontainersBuilder<TestcontainersContainer>()
   .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
 ```
 
-## Wait until custom strategy succeed
-
-In case of the pre-configured wait strategies do not support your use case, you can add your own wait strategy by implementing `IWaitUntil` and calling `AddCustomWaitStrategy(IWaitUntil)`:
-
 [docker-docs-healthcheck]: https://docs.docker.com/engine/reference/builder/#healthcheck
