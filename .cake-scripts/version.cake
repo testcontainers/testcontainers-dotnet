@@ -21,15 +21,11 @@ internal sealed class BuildInformation
   {
     var buildSystem = context.BuildSystem();
 
-    var environment = buildSystem.GitHubActions.Environment;
-
     var isLocalBuild = buildSystem.IsLocalBuild;
 
-    var isPullRequest = environment.PullRequest.IsPullRequest;
+    var environment = buildSystem.GitHubActions.Environment;
 
-    var isFork = "fork".Equals(environment.Workflow.EventName, StringComparison.OrdinalIgnoreCase);
-
-    var buildId = environment.Workflow.RunId;
+    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
 
     var git = context.GitBranchCurrent(".");
 
@@ -37,21 +33,29 @@ internal sealed class BuildInformation
 
     var sha = git.Tip.Sha;
 
-    string branch;
+    var branch = git.FriendlyName;
 
-    string pullRequestId = "0";
+    var isPullRequest = false;
+
+    var isFork = false;
+
+    var buildId = string.Empty;
+
+    var pullRequestId = "0";
 
     string sourceBranch = null;
 
     string targetBranch = null;
 
-    if (isLocalBuild)
-    {
-      branch = git.FriendlyName;
-    }
-    else
+    if (!isLocalBuild)
     {
       branch = environment.Workflow.RefName;
+      isPullRequest = environment.PullRequest.IsPullRequest;
+      isFork = "fork".Equals(environment.Workflow.EventName, StringComparison.OrdinalIgnoreCase);
+      buildId = environment.Workflow.RunId;
+
+      // Set build system environment variables and parameters.
+      buildSystem.GitHubActions.Commands.SetEnvironmentVariable("semVer", version.Substring(0, 5));
     }
 
     if (isPullRequest)
@@ -60,8 +64,6 @@ internal sealed class BuildInformation
       sourceBranch = environment.Workflow.HeadRef;
       targetBranch = environment.Workflow.BaseRef;
     }
-
-    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 

@@ -1,0 +1,26 @@
+name-template: $RESOLVED_VERSION
+tag-template: $RESOLVED_VERSION
+commitish: refs/heads/master
+prerelease: true
+template: |
+  # What's Changed
+  $CHANGES
+
+categories:
+  - title: ⚠️ Breaking Changes
+    labels: breaking change
+
+  - title: 🚀 Features
+    labels: enhancement
+
+  - title: 🐛 Bug Fixes
+    labels: bug
+
+  - title: 📖 Documentation
+    labels: documentation
+
+  - title: 🧹 Housekeeping
+    labels: chore
+
+  - title: 📦 Dependency Updates
+    label: dependencies
