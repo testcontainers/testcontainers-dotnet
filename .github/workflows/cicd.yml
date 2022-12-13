@@ -76,6 +76,10 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: write
+      pull-requests: read
+
     env:
       FEED_SOURCE: https://api.nuget.org/v3/index.json
       FEED_APIKEY: ${{ secrets.FEED_APIKEY }}
@@ -136,3 +140,10 @@ jobs:
         run: dotnet cake --target=Publish
         env:
           PUBLISH_NUGET_PACKAGE: ${{ inputs.publish_nuget_package }}
+
+      - uses: release-drafter/release-drafter@6df64e4ba4842c203c604c1f45246c5863410adb
+        with:
+          publish: true
+          version: ${{ env.semVer }} # Cake sets the semVer environment variable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
