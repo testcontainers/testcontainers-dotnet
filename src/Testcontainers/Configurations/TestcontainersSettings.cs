@@ -32,7 +32,6 @@ namespace DotNet.Testcontainers.Configurations
           new NpipeEndpointAuthenticationProvider(),
           new UnixEndpointAuthenticationProvider(),
         }
-        .AsParallel()
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())
         .Select(authProvider => authProvider.GetAuthConfig())
@@ -95,6 +94,7 @@ namespace DotNet.Testcontainers.Configurations
 #pragma warning disable CA1848, CA2254
         Logger.LogInformation(runtimeInfo.ToString());
 #pragma warning restore CA1848, CA2254
+
         ManualResetEvent.Set();
       });
     }
@@ -102,33 +102,33 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
+    [CanBeNull]
     public static string DockerHostOverride { get; set; }
       = PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
+    [CanBeNull]
     public static string DockerSocketOverride { get; set; }
       = PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
-    [PublicAPI]
     public static bool ResourceReaperEnabled { get; set; }
       = !PropertiesFileConfiguration.Instance.GetRyukDisabled() && !EnvironmentConfiguration.Instance.GetRyukDisabled();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
-    [PublicAPI]
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
       = PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() || EnvironmentConfiguration.Instance.GetRyukContainerPrivileged();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
-    [PublicAPI]
+    [CanBeNull]
     public static IDockerImage ResourceReaperImage { get; set; }
       = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage();
 
@@ -141,7 +141,7 @@ namespace DotNet.Testcontainers.Configurations
     /// - https://github.com/docker/for-win/issues/3171.
     /// - https://github.com/docker/for-win/issues/11584.
     /// </remarks>
-    [PublicAPI]
+    [NotNull]
     public static Func<IDockerEndpointAuthenticationConfiguration, ushort> ResourceReaperPublicHostPort { get; set; }
       = GetResourceReaperPublicHostPort;
 
@@ -151,7 +151,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>
     /// Please verify that all required images exist in your registry.
     /// </remarks>
-    [PublicAPI]
     [CanBeNull]
     public static string HubImageNamePrefix { get; set; }
       = PropertiesFileConfiguration.Instance.GetHubImageNamePrefix() ?? EnvironmentConfiguration.Instance.GetHubImageNamePrefix();
@@ -159,7 +158,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
-    [PublicAPI]
     [NotNull]
     public static ILogger Logger { get; set; }
       = new Logger();
@@ -167,7 +165,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
-    [PublicAPI]
     [NotNull]
     public static IOperatingSystem OS { get; set; }
       = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
@@ -175,7 +172,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the wait handle that signals settings initialized.
     /// </summary>
-    internal static WaitHandle SettingsInitialized
+    [NotNull]
+    public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
 
     private static ushort GetResourceReaperPublicHostPort(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
