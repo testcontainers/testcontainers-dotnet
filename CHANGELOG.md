@@ -1,3 +1,3 @@
 # Changelog
 
-The [release notes](https://github.com/testcontainers/testcontainers-dotnet/releases) are created and updates from pull requests. The pre-release notes contain all upcoming changes.
+The [release notes](https://github.com/testcontainers/testcontainers-dotnet/releases) are created and updated automatically through merged pull requests. The pre-release notes of the next planned release contain all upcoming changes.
