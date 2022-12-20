@@ -6,22 +6,19 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override IWaitForContainerOS UntilCommandIsCompleted(string command)
     {
-      this.AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
-      return this;
+      return this.AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
     }
 
     /// <inheritdoc />
     public override IWaitForContainerOS UntilCommandIsCompleted(params string[] command)
     {
-      this.AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
-      return this;
+      return this.AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
     }
 
     /// <inheritdoc />
     public override IWaitForContainerOS UntilPortIsAvailable(int port)
     {
-      this.AddCustomWaitStrategy(new UntilWindowsPortIsAvailable(port));
-      return this;
+      return this.AddCustomWaitStrategy(new UntilWindowsPortIsAvailable(port));
     }
   }
 }
