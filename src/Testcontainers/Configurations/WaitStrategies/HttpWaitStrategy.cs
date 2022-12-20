@@ -32,19 +32,22 @@
 
     private string pathValue;
 
-    private ushort portNumber;
+    private ushort? portNumber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
     /// </summary>
     public HttpWaitStrategy()
     {
-      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPort(HttpPort).ForPath("/");
+      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/");
     }
 
     /// <inheritdoc />
     public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
+      // Java fall back to the first exposed port. The .NET wait strategies do not have access to the exposed port information yet.
+      var containerPort = this.portNumber.GetValueOrDefault(Uri.UriSchemeHttp.Equals(this.schemeName, StringComparison.OrdinalIgnoreCase) ? HttpPort : HttpsPort);
+
       string host;
 
       ushort port;
@@ -52,7 +55,7 @@
       try
       {
         host = testcontainers.Hostname;
-        port = testcontainers.GetMappedPublicPort(this.portNumber);
+        port = testcontainers.GetMappedPublicPort(containerPort);
       }
       catch
       {
