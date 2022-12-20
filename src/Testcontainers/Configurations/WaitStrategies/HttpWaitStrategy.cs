@@ -13,26 +13,44 @@
   [PublicAPI]
   public sealed class HttpWaitStrategy : IWaitUntil
   {
-    private readonly UriBuilder uriBuilder = new UriBuilder();
-
     private readonly IDictionary<string, string> httpHeaders = new Dictionary<string, string>();
 
     private readonly ISet<HttpStatusCode> httpStatusCodes = new HashSet<HttpStatusCode>();
 
+    private Predicate<HttpStatusCode> httpStatusCodePredicate;
+
     private HttpMethod httpMethod;
 
-    private Predicate<HttpStatusCode> httpStatusCodePredicate;
+    private string schemeName;
+
+    private string pathValue;
+
+    private ushort portNumber;
 
     public HttpWaitStrategy()
     {
-      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/");
+      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPort(80).ForPath("/");
     }
 
     public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
     {
+      string host;
+
+      ushort port;
+
+      try
+      {
+        host = testcontainers.Hostname;
+        port = testcontainers.GetMappedPublicPort(this.portNumber);
+      }
+      catch
+      {
+        return false;
+      }
+
       using (var httpClient = new HttpClient())
       {
-        using (var httpRequestMessage = new HttpRequestMessage(this.httpMethod, this.uriBuilder.Uri))
+        using (var httpRequestMessage = new HttpRequestMessage(this.httpMethod, new UriBuilder(this.schemeName, host, port, this.pathValue).Uri))
         {
           foreach (var httpHeader in this.httpHeaders)
           {
@@ -89,19 +107,19 @@
 
     public HttpWaitStrategy ForPath(string path)
     {
-      this.uriBuilder.Path = path;
+      this.pathValue = path;
       return this;
     }
 
     public HttpWaitStrategy ForPort(ushort port)
     {
-      this.uriBuilder.Port = port;
+      this.portNumber = port;
       return this;
     }
 
     public HttpWaitStrategy UsingTls(bool tlsEnabled = true)
     {
-      this.uriBuilder.Scheme = tlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+      this.schemeName = tlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
       return this;
     }
 
