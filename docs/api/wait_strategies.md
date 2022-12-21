@@ -13,7 +13,10 @@ _ = Wait.ForUnixContainer()
 
 ## Wait until an HTTP(S) endpoint is available
 
-You can choose to wait for an HTTP(S) endpoint to return a particular HTTP response status code or to match a predicate. The default configuration tries to access the HTTP endpoint running inside the container. Chose `ForPort(ushort)` or `ForPath(string)` to adjust the endpoint or `UsingTls()` to switch to HTTPS.
+You can choose to wait for an HTTP(S) endpoint to return a particular HTTP response status code or to match a predicate. 
+The default configuration tries to access the HTTP endpoint running inside the container. Chose `ForPort(ushort)` or `ForPath(string)` to adjust the endpoint or `UsingTls()` to switch to HTTPS.
+When using `UsingTls()` port 443 is used as a default. 
+If your container exposes a different HTTPS port, make sure that the correct waiting port is configured accordingly.
 
 ### Waiting for HTTP response status code _200 OK_
 
