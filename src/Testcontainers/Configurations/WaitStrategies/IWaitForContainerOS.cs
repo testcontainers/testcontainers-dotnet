@@ -91,7 +91,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
-    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20);
+    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.
