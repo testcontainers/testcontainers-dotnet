@@ -11,7 +11,7 @@ _ = await new ImageFromDockerfileBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "src")
   .WithDockerfile("Dockerfile")
-  .Build()
+  .Build();
 ```
 
 !!!tip
