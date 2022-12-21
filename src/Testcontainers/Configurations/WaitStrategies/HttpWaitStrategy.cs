@@ -201,12 +201,7 @@
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy WithHeaders(IReadOnlyDictionary<string, string> headers)
     {
-      foreach (var header in headers)
-      {
-        _ = this.WithHeader(header.Key, header.Value);
-      }
-
-      return this;
+      return headers.Aggregate(this, (httpWaitStrategy, header) => httpWaitStrategy.WithHeader(header.Key, header.Value));
     }
   }
 }
