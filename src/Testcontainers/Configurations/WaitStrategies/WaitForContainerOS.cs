@@ -52,7 +52,13 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 20)
+    public virtual IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request)
+    {
+      return this.AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()));
+    }
+
+    /// <inheritdoc />
+    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3)
     {
       return this.AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak));
     }

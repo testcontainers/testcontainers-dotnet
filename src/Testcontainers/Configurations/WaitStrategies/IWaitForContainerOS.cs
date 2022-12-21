@@ -6,8 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   using JetBrains.Annotations;
 
   /// <summary>
-  /// Collection of pre-configured strategies to wait until the Testcontainer is up and running.
-  /// Waits until all wait strategies are completed.
+  /// Collection of pre-configured strategies to wait until the container is up and running.
   /// </summary>
   [PublicAPI]
   public interface IWaitForContainerOS
@@ -43,6 +42,14 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilCommandIsCompleted(params string[] command);
 
     /// <summary>
+    /// Waits until the port is available.
+    /// </summary>
+    /// <param name="port">The port to be checked.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilPortIsAvailable(int port);
+
+    /// <summary>
     /// Waits until the file exists.
     /// </summary>
     /// <param name="file">The file to be checked.</param>
@@ -70,12 +77,12 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount);
 
     /// <summary>
-    /// Waits until the port is available.
+    /// Waits until the http request is completed successfully.
     /// </summary>
-    /// <param name="port">The port to be checked.</param>
+    /// <param name="request">The http request to be executed.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilPortIsAvailable(int port);
+    IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request);
 
     /// <summary>
     /// Waits until the container is healthy.

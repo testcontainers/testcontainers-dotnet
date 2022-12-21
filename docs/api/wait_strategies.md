@@ -11,6 +11,40 @@ _ = Wait.ForUnixContainer()
   .AddCustomWaitStrategy(new MyCustomWaitStrategy());
 ```
 
+## Wait until an HTTP(S) endpoint is available
+
+You can choose to wait for an HTTP(S) endpoint to return a particular HTTP response status code or to match a predicate. 
+The default configuration tries to access the HTTP endpoint running inside the container. Chose `ForPort(ushort)` or `ForPath(string)` to adjust the endpoint or `UsingTls()` to switch to HTTPS.
+When using `UsingTls()` port 443 is used as a default. 
+If your container exposes a different HTTPS port, make sure that the correct waiting port is configured accordingly.
+
+### Waiting for HTTP response status code _200 OK_ on port 80
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilHttpRequestIsSucceeded(request => request
+    .ForPath("/"));
+```
+
+### Waiting for HTTP response status code _200 OK_ or _301 Moved Permanently_
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilHttpRequestIsSucceeded(request => request
+    .ForPath("/")
+    .ForStatusCode(HttpStatusCode.OK)
+    .ForStatusCode(HttpStatusCode.MovedPermanently));
+```
+
+### Waiting for the HTTP response status code to match a predicate
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilHttpRequestIsSucceeded(request => request
+    .ForPath("/")
+    .ForStatusCodeMatching(statusCode => statusCode >= HttpStatusCode.OK && statusCode < HttpStatusCode.MultipleChoices));
+```
+
 ## Wait until the container is healthy
 
 If the Docker image supports Dockers's [HEALTHCHECK][docker-docs-healthcheck] feature, like the following configuration:
@@ -24,7 +58,7 @@ You can leverage the container's health status as your wait strategy to report r
 
 ```csharp
 _ = new TestcontainersBuilder<TestcontainersContainer>()
-  .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
 ```
 
 [docker-docs-healthcheck]: https://docs.docker.com/engine/reference/builder/#healthcheck

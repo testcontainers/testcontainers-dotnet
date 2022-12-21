@@ -11,7 +11,7 @@ Instead of running the NGINX application, the following container configuration 
 ```csharp
 _ = new TestcontainersBuilder<TestcontainersContainer>()
   .WithEntrypoint("nginx")
-  .WithCommand("-t")
+  .WithCommand("-t");
 ```
 
 ## Configure container app or service
@@ -29,7 +29,7 @@ _ = new TestcontainersBuilder<TestcontainersContainer>()
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
-  .WithResourceMapping("certificate.crt", "/app/certificate.crt")
+  .WithResourceMapping("certificate.crt", "/app/certificate.crt");
 ```
 
 `WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file into the container. Note, this does not follow our best practices. Host paths differ between environments and may not be available on every system or Docker setup, e.g. CI.
