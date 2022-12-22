@@ -101,7 +101,7 @@ namespace DotNet.Testcontainers.Images
         {
           var key = ignorePattern.Key;
           var value = ignorePattern.Value;
-          return new KeyValuePair<Regex, bool>(new Regex(key, RegexOptions.Compiled), value);
+          return new KeyValuePair<Regex, bool>(new Regex(key, RegexOptions.None, TimeSpan.FromSeconds(1)), value);
         })
         .ToArray();
 
@@ -151,7 +151,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     private readonly struct EscapeRegex : ISearchAndReplace<string>
     {
-      private static readonly Regex Pattern = new Regex("[\\-\\[\\]\\/\\{\\}\\(\\)\\+\\?\\.\\\\\\^\\$\\|]", RegexOptions.Compiled);
+      private static readonly Regex Pattern = new Regex("[\\-\\[\\]\\/\\{\\}\\(\\)\\+\\?\\.\\\\\\^\\$\\|]", RegexOptions.None, TimeSpan.FromSeconds(1));
 
       /// <inheritdoc />
       public string Replace(string input)

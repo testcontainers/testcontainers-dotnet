@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.IO;
   using System.Text;
   using System.Text.RegularExpressions;
@@ -28,7 +29,7 @@ namespace DotNet.Testcontainers.Configurations
         var output = await streamReader.ReadToEndAsync()
           .ConfigureAwait(false);
 
-        return Regex.IsMatch(output, this.message);
+        return Regex.IsMatch(output, this.message, RegexOptions.None, TimeSpan.FromSeconds(1));
       }
     }
   }
