@@ -82,18 +82,30 @@
         {
           tarArchive.RootPath = dockerfileDirectoryPath;
 
-          foreach (var file in GetFiles(dockerfileDirectoryPath))
+          foreach (var absoluteFilePath in GetFiles(dockerfileDirectoryPath))
           {
             // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
-            var relativePath = file.Substring(dockerfileDirectoryPath.TrimEnd(Path.AltDirectorySeparatorChar).Length + 1);
+            var relativeFilePath = absoluteFilePath.Substring(dockerfileDirectoryPath.TrimEnd(Path.AltDirectorySeparatorChar).Length + 1);
 
-            if (dockerIgnoreFile.Denies(relativePath))
+            if (dockerIgnoreFile.Denies(relativeFilePath))
             {
               continue;
             }
 
-            var tarEntry = TarEntry.CreateEntryFromFile(file);
-            tarEntry.Name = relativePath;
+            // SharpZipLib's WriteEntry(TarEntry, bool) writes the entry, but without bytes if the file is used by another process.
+            // This results in a TarException on TarArchive.Dispose(): Entry closed at '0' before the 'x' bytes specified in the header were written.
+            try
+            {
+              var fileStream = File.Open(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+              fileStream.Dispose();
+            }
+            catch (IOException e)
+            {
+              throw new IOException("Cannot create Docker image tar archive.", e);
+            }
+
+            var tarEntry = TarEntry.CreateEntryFromFile(absoluteFilePath);
+            tarEntry.Name = relativeFilePath;
             tarArchive.WriteEntry(tarEntry, false);
           }
         }
