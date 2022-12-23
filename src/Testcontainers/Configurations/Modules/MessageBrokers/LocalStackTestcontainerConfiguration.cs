@@ -26,8 +26,8 @@ namespace DotNet.Testcontainers.Configurations
     public LocalStackTestcontainerConfiguration(string image)
       : base(image, LocalStackPort)
     {
-        this.Environments.Add("EXTERNAL_SERVICE_PORTS_START", "4510");
-        this.Environments.Add("EXTERNAL_SERVICE_PORTS_END", "4559");
+      this.Environments.Add("EXTERNAL_SERVICE_PORTS_START", "4510");
+      this.Environments.Add("EXTERNAL_SERVICE_PORTS_END", "4559");
     }
 
     /// <inheritdoc />

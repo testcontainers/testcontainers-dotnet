@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2022]
+        os: [ ubuntu-22.04, windows-2022 ]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,7 +35,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          clean: true
           lfs: true
 
       - name: Cache NuGet Packages
@@ -96,7 +95,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          clean: true
           lfs: true
           fetch-depth: 0
 
