@@ -93,7 +93,7 @@
             }
 
             // SharpZipLib's WriteEntry(TarEntry, bool) writes the entry, but without bytes if the file is used by another process.
-            // This results in a TarException on TarArchive.Dispose(): Entry closed at '0' before the 'x' bytes specified in the header were written.
+            // This results in a TarException on TarArchive.Dispose(): Entry closed at '0' before the 'x' bytes specified in the header were written: https://github.com/icsharpcode/SharpZipLib/issues/819.
             try
             {
               var fileStream = File.Open(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);

@@ -4,21 +4,29 @@ template: |
   # What's Changed
   $CHANGES
 
+include-labels:
+  - breaking change
+  - enhancement
+  - bug
+  - documentation
+  - chore
+  - dependencies
+
 categories:
   - title: ⚠️ Breaking Changes
-    labels: breaking change
+    label: breaking change
 
   - title: 🚀 Features
-    labels: enhancement
+    label: enhancement
 
   - title: 🐛 Bug Fixes
-    labels: bug
+    label: bug
 
   - title: 📖 Documentation
-    labels: documentation
+    label: documentation
 
   - title: 🧹 Housekeeping
-    labels: chore
+    label: chore
 
   - title: 📦 Dependency Updates
     label: dependencies

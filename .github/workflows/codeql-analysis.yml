@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ develop, master ]
 
+concurrency:
+  group: ${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     strategy:
