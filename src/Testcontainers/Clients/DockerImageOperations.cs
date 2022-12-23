@@ -115,9 +115,9 @@ namespace DotNet.Testcontainers.Clients
 
       try
       {
-        using (var dockerfileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
+        using (var dockerfileArchiveStream = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
         {
-          await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
+          await this.Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileArchiveStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), this.traceProgress, ct)
             .ConfigureAwait(false);
 
           var imageHasBeenCreated = await this.ExistsWithNameAsync(image.FullName, ct)

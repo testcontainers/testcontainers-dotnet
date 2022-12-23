@@ -13,7 +13,7 @@ on:
         type: boolean
 
 concurrency:
-  group: ${{ github.head_ref || github.sha }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
 
 env:
