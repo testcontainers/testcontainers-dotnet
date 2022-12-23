@@ -57,7 +57,7 @@
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
       var authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", NullLogger.Instance);
-      Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig(DockerRegistry));
+      Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig("index.docker.io"));
     }
 
     public sealed class Base64ProviderTest
