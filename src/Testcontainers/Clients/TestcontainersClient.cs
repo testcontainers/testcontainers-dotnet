@@ -186,9 +186,9 @@ namespace DotNet.Testcontainers.Clients
       IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
       var containerPath = os.NormalizePath(filePath);
 
-      using (var memStream = new MemoryStream())
+      using (var tarOutputMemStream = new MemoryStream())
       {
-        using (var tarOutputStream = new TarOutputStream(memStream, Encoding.Default))
+        using (var tarOutputStream = new TarOutputStream(tarOutputMemStream, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
 
@@ -201,22 +201,24 @@ namespace DotNet.Testcontainers.Clients
 
           var entry = new TarEntry(header);
 
-          tarOutputStream.PutNextEntry(entry);
+          await tarOutputStream.PutNextEntryAsync(entry, ct)
+            .ConfigureAwait(false);
 
 #if NETSTANDARD2_1_OR_GREATER
-          await tarOutputStream.WriteAsync(fileContent.AsMemory(0, fileContent.Length), ct)
+          await tarOutputStream.WriteAsync(fileContent, ct)
             .ConfigureAwait(false);
 #else
           await tarOutputStream.WriteAsync(fileContent, 0, fileContent.Length, ct)
             .ConfigureAwait(false);
 #endif
 
-          tarOutputStream.CloseEntry();
+          await tarOutputStream.CloseEntryAsync(ct)
+            .ConfigureAwait(false);
         }
 
-        memStream.Seek(0, SeekOrigin.Begin);
+        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
 
-        await this.containers.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), memStream, ct)
+        await this.containers.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), tarOutputMemStream, ct)
           .ConfigureAwait(false);
       }
     }

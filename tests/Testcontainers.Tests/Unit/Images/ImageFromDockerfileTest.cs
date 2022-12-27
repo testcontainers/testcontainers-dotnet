@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   public sealed class ImageFromDockerfileTest
   {
     [Fact]
-    public void DockerfileArchiveTar()
+    public async Task DockerfileArchiveTar()
     {
       // Given
       var image = new DockerImage("testcontainers", "test", "0.1.0");
@@ -23,12 +23,15 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var actual = new SortedSet<string>();
 
-      var dockerFileArchive = new DockerfileArchive("Assets", "Dockerfile", image, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive("Assets", "Dockerfile", image, NullLogger.Instance);
+
+      var dockerfileArchiveFilePath = await dockerfileArchive.Tar()
+        .ConfigureAwait(false);
 
       // When
-      using (var tarOut = new FileInfo(dockerFileArchive.Tar()).OpenRead())
+      using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
       {
-        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut, Encoding.UTF8))
+        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut, Encoding.Default))
         {
           tarIn.ProgressMessageEvent += (_, entry, _) => actual.Add(entry.Name);
           tarIn.ListContents();

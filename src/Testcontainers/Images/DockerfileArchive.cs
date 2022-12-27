@@ -4,7 +4,10 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Text;
   using System.Text.RegularExpressions;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
@@ -64,7 +67,7 @@
     }
 
     /// <inheritdoc />
-    public string Tar()
+    public async Task<string> Tar(CancellationToken ct = default)
     {
       var dockerfileDirectoryPath = OS.NormalizePath(this.dockerfileDirectory.FullName);
 
@@ -76,11 +79,11 @@
 
       var dockerIgnoreFile = new DockerIgnoreFile(dockerfileDirectoryPath, ".dockerignore", dockerfileFilePath, this.logger);
 
-      using (var stream = new FileStream(dockerfileArchiveFilePath, FileMode.Create))
+      using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {
-        using (var tarArchive = TarArchive.CreateOutputTarArchive(stream))
+        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
         {
-          tarArchive.RootPath = dockerfileDirectoryPath;
+          tarOutputStream.IsStreamOwner = false;
 
           foreach (var absoluteFilePath in GetFiles(dockerfileDirectoryPath))
           {
@@ -92,21 +95,27 @@
               continue;
             }
 
-            // SharpZipLib's WriteEntry(TarEntry, bool) writes the entry, but without bytes if the file is used by another process.
-            // This results in a TarException on TarArchive.Dispose(): Entry closed at '0' before the 'x' bytes specified in the header were written: https://github.com/icsharpcode/SharpZipLib/issues/819.
             try
             {
-              var fileStream = File.Open(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-              fileStream.Dispose();
+              using (var inputStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read))
+              {
+                var entry = TarEntry.CreateTarEntry(relativeFilePath);
+                entry.Size = inputStream.Length;
+
+                await tarOutputStream.PutNextEntryAsync(entry, ct)
+                  .ConfigureAwait(false);
+
+                await inputStream.CopyToAsync(tarOutputStream, 4096, ct)
+                  .ConfigureAwait(false);
+
+                await tarOutputStream.CloseEntryAsync(ct)
+                  .ConfigureAwait(false);
+              }
             }
             catch (IOException e)
             {
               throw new IOException("Cannot create Docker image tar archive.", e);
             }
-
-            var tarEntry = TarEntry.CreateEntryFromFile(absoluteFilePath);
-            tarEntry.Name = relativeFilePath;
-            tarArchive.WriteEntry(tarEntry, false);
           }
         }
       }
