@@ -111,7 +111,8 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      var dockerfileArchiveFilePath = dockerfileArchive.Tar();
+      var dockerfileArchiveFilePath = await dockerfileArchive.Tar(ct)
+        .ConfigureAwait(false);
 
       try
       {

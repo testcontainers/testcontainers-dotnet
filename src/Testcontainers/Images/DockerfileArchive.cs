@@ -6,6 +6,8 @@
   using System.Linq;
   using System.Text;
   using System.Text.RegularExpressions;
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
@@ -65,7 +67,7 @@
     }
 
     /// <inheritdoc />
-    public string Tar()
+    public async Task<string> Tar(CancellationToken ct = default)
     {
       var dockerfileDirectoryPath = OS.NormalizePath(this.dockerfileDirectory.FullName);
 
@@ -100,11 +102,14 @@
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
                 entry.Size = inputStream.Length;
 
-                tarOutputStream.PutNextEntry(entry);
+                await tarOutputStream.PutNextEntryAsync(entry, ct)
+                  .ConfigureAwait(false);
 
-                inputStream.CopyTo(tarOutputStream);
+                await inputStream.CopyToAsync(tarOutputStream, 4096, ct)
+                  .ConfigureAwait(false);
 
-                tarOutputStream.CloseEntry();
+                await tarOutputStream.CloseEntryAsync(ct)
+                  .ConfigureAwait(false);
               }
             }
             catch (IOException e)
