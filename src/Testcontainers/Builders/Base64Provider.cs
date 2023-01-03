@@ -38,14 +38,16 @@
       this.logger = logger;
     }
 
+    /// <summary>
+    /// Gets a predicate that determines whether or not a <see cref="JsonProperty" /> contains a Docker registry key.
+    /// </summary>
+    public static Func<JsonProperty, string, bool> HasDockerRegistryKey { get; }
+      = (property, hostname) => property.Name.Equals(hostname, StringComparison.OrdinalIgnoreCase) || property.Name.EndsWith("://" + hostname, StringComparison.OrdinalIgnoreCase);
+
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-#if NETSTANDARD2_1_OR_GREATER
-      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => property.Name.Contains(hostname, StringComparison.OrdinalIgnoreCase));
-#else
-      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => property.Name.IndexOf(hostname, StringComparison.OrdinalIgnoreCase) >= 0);
-#endif
+      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
     }
 
     /// <inheritdoc />
@@ -58,11 +60,7 @@
         return null;
       }
 
-#if NETSTANDARD2_1_OR_GREATER
-      var authProperty = this.rootElement.EnumerateObject().LastOrDefault(property => property.Name.Contains(hostname, StringComparison.OrdinalIgnoreCase));
-#else
-      var authProperty = this.rootElement.EnumerateObject().LastOrDefault(property => property.Name.IndexOf(hostname, StringComparison.OrdinalIgnoreCase) >= 0);
-#endif
+      var authProperty = this.rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryKey(property, hostname));
 
       if (JsonValueKind.Undefined.Equals(authProperty.Value.ValueKind))
       {
