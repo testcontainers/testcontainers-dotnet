@@ -63,6 +63,22 @@
     public sealed class Base64ProviderTest
     {
       [Theory]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}")]
+      [InlineData("{\"auths\":{\"://ghcr.io\":{}}}")]
+      public void ResolvePartialDockerRegistry(string jsonDocument)
+      {
+        // Given
+        var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
+
+        // When
+        var authenticationProvider = new Base64Provider(jsonElement, NullLogger.Instance);
+
+        // Then
+        Assert.False(authenticationProvider.IsApplicable("ghcr"));
+        Assert.True(authenticationProvider.IsApplicable("ghcr.io"));
+      }
+
+      [Theory]
       [InlineData("{}", false)]
       [InlineData("{\"auths\":null}", false)]
       [InlineData("{\"auths\":{}}", false)]
