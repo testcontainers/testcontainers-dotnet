@@ -186,6 +186,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="ITestcontainersBuilder{TDockerContainer}" />
     public ITestcontainersBuilder<TDockerContainer> WithPortBinding(string hostPort, string containerPort)
     {
+      // Prepare Java alignment. Use an empty string instead of 0: https://github.com/docker/for-mac/issues/5588#issuecomment-934600089.
+      hostPort = "0".Equals(hostPort, StringComparison.OrdinalIgnoreCase) ? string.Empty : hostPort;
+
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
       return this.MergeNewConfiguration(new TestcontainersConfiguration(portBindings: portBindings))
         .WithExposedPort(containerPort);

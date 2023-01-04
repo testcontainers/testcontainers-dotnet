@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Tests.Unit.Configurations
 {
+  using System;
   using System.Collections.Generic;
   using System.Linq;
   using System.Net;
@@ -61,6 +62,9 @@
 
       // When
       var succeeded = await httpWaitStrategy.Until(this.container, NullLogger.Instance)
+        .ConfigureAwait(false);
+
+      await Task.Delay(TimeSpan.FromSeconds(1))
         .ConfigureAwait(false);
 
       var (stdout, _) = await this.container.GetLogs()

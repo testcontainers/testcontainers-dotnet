@@ -143,7 +143,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </remarks>
     [NotNull]
     public static Func<IDockerEndpointAuthenticationConfiguration, ushort> ResourceReaperPublicHostPort { get; set; }
-      = GetResourceReaperPublicHostPort;
+      = _ => 0;
 
     /// <summary>
     /// Gets or sets a prefix that applies to every image that is pulled from Docker Hub.
@@ -175,22 +175,5 @@ namespace DotNet.Testcontainers.Configurations
     [NotNull]
     public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
-
-    private static ushort GetResourceReaperPublicHostPort(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
-    {
-      // Let Docker choose the random public host port. This includes Docker Engines exposed via TCP (Docker Desktop for Windows).
-      if (!NpipeEndpointAuthenticationProvider.DockerEngine.Equals(dockerEndpointAuthConfig.Endpoint))
-      {
-        return 0;
-      }
-
-      // Get the next available public host port. This might run in rare cases into a race-condition.
-      // It's still much more stable than letting Docker Desktop for Windows choose the port.
-      using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
-      {
-        socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
-        return (ushort)((IPEndPoint)socket.LocalEndPoint).Port;
-      }
-    }
   }
 }
