@@ -78,7 +78,7 @@ namespace DotNet.Testcontainers.Configurations
       return this.GetPropertyValue<bool>(propertyName);
     }
 
-    protected IDockerImage GetRyukContainerImage(string propertyName)
+    protected IImage GetRyukContainerImage(string propertyName)
     {
       _ = this.properties.TryGetValue(propertyName, out var propertyValue);
 

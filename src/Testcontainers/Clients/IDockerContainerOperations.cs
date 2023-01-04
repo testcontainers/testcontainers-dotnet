@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Clients
 
     Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
-    Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default);
+    Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default);
 
     Task<ContainerInspectResponse> InspectAsync(string id, CancellationToken ct = default);
   }

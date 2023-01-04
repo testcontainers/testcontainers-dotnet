@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Configurations
       this.maxCallCount = maxCallCount;
     }
 
-    public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public Task<bool> Until(IContainer container, ILogger logger)
     {
       if (++this.tryCount > this.maxCallCount)
       {

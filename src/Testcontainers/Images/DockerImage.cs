@@ -4,20 +4,19 @@ namespace DotNet.Testcontainers.Images
   using System.Linq;
   using JetBrains.Annotations;
 
-  /// <inheritdoc cref="IDockerImage" />
+  /// <inheritdoc cref="IImage" />
   [PublicAPI]
-  public sealed class DockerImage : IDockerImage
+  public sealed class DockerImage : IImage
   {
-    private static readonly Func<string, IDockerImage> GetDockerImage = MatchImage.Match;
+    private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
     private readonly string hubImageNamePrefix;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="image">The Docker image.</param>
-    [PublicAPI]
-    public DockerImage(IDockerImage image)
+    /// <param name="image">The image.</param>
+    public DockerImage(IImage image)
       : this(image.Repository, image.Name, image.Tag)
     {
     }
@@ -25,10 +24,9 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="image">The Docker image.</param>
+    /// <param name="image">The image.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
     /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
-    [PublicAPI]
     public DockerImage(string image)
       : this(GetDockerImage(image))
     {
@@ -37,13 +35,12 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <param name="repository">The Docker image repository.</param>
-    /// <param name="name">The Docker image name.</param>
-    /// <param name="tag">The Docker image tag.</param>
+    /// <param name="repository">The repository.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="tag">The tag.</param>
     /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
     /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
-    [PublicAPI]
     public DockerImage(
       string repository,
       string name,
@@ -59,19 +56,11 @@ namespace DotNet.Testcontainers.Images
         .NotEmpty()
         .NotUppercase();
 
-      Guard.Argument(tag, nameof(tag))
-        .NotNull();
-
       this.hubImageNamePrefix = hubImageNamePrefix;
 
       this.Repository = repository;
       this.Name = name;
-      this.Tag = tag;
-
-      if (this.Tag.Length == 0)
-      {
-        this.Tag = "latest";
-      }
+      this.Tag = string.IsNullOrEmpty(tag) ? "latest" : tag;
     }
 
     /// <inheritdoc />

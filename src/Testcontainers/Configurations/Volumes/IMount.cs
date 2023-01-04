@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// This class represents a filesystem mount.
   /// </summary>
+  [PublicAPI]
   public interface IMount
   {
     /// <summary>

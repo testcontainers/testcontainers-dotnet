@@ -8,70 +8,70 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Returns the changed configuration object. If there is no change, the previous configuration object is returned.
     /// </summary>
-    /// <param name="next">Changed configuration object.</param>
-    /// <param name="previous">Previous configuration object.</param>
+    /// <param name="oldValue">The old configuration object.</param>
+    /// <param name="newValue">The new configuration object.</param>
     /// <typeparam name="T">Any class.</typeparam>
     /// <returns>Changed configuration object. If there is no change, the previous configuration object.</returns>
-    public static T Combine<T>(T next, T previous)
+    public static T Combine<T>(T oldValue, T newValue)
     {
-      return next == null ? previous : next;
+      return newValue == null ? oldValue : newValue;
     }
 
     /// <summary>
     /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
     /// </summary>
-    /// <param name="next">Changed configuration.</param>
-    /// <param name="previous">Previous configuration.</param>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
     /// <typeparam name="T">Type of <see cref="IEnumerable{T}" />.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IEnumerable<T> Combine<T>(IEnumerable<T> next, IEnumerable<T> previous)
+    public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
       where T : class
     {
-      if (next == null || previous == null)
+      if (newValue == null || oldValue == null)
       {
-        return next ?? previous;
+        return newValue ?? oldValue;
       }
 
-      return previous.Concat(next).ToArray();
+      return oldValue.Concat(newValue).ToArray();
     }
 
     /// <summary>
     /// Combines all existing and new configuration changes while preserving the order of insertion.
     /// If there are no changes, the previous configurations are returned.
     /// </summary>
-    /// <param name="next">Changed configuration.</param>
-    /// <param name="previous">Previous configuration.</param>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
     /// <typeparam name="T">Type of <see cref="IReadOnlyList{T}" />.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> next, IReadOnlyList<T> previous)
+    public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
       where T : class
     {
-      if (next == null || previous == null)
+      if (newValue == null || oldValue == null)
       {
-        return next ?? previous;
+        return newValue ?? oldValue;
       }
 
-      return previous.Concat(next).ToArray();
+      return oldValue.Concat(newValue).ToArray();
     }
 
     /// <summary>
     /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
     /// </summary>
-    /// <param name="next">Changed configuration.</param>
-    /// <param name="previous">Previous configuration.</param>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
     /// <typeparam name="TKey">The type of keys in the read-only dictionary.</typeparam>
     /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> next, IReadOnlyDictionary<TKey, TValue> previous)
+    public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> oldValue, IReadOnlyDictionary<TKey, TValue> newValue)
       where TKey : class
       where TValue : class
     {
-      if (next == null || previous == null)
+      if (newValue == null || oldValue == null)
       {
-        return next ?? previous;
+        return newValue ?? oldValue;
       }
 
-      return next.Concat(previous.Where(item => !next.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
+      return newValue.Concat(oldValue.Where(item => !newValue.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
     }
   }
 }

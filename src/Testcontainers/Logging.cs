@@ -125,17 +125,17 @@ namespace DotNet.Testcontainers
       _ExecuteCommandInDockerContainer(logger, string.Join(" ", command), id, null);
     }
 
-    public static void DockerImageCreated(this ILogger logger, IDockerImage image)
+    public static void DockerImageCreated(this ILogger logger, IImage image)
     {
       _DockerImageCreated(logger, image.FullName, null);
     }
 
-    public static void DockerImageBuilt(this ILogger logger, IDockerImage image)
+    public static void DockerImageBuilt(this ILogger logger, IImage image)
     {
       _DockerImageBuilt(logger, image.FullName, null);
     }
 
-    public static void DeleteDockerImage(this ILogger logger, IDockerImage image)
+    public static void DeleteDockerImage(this ILogger logger, IImage image)
     {
       _DeleteDockerImage(logger, image.FullName, null);
     }

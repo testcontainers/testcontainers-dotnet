@@ -166,9 +166,9 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
-      var converter = new TestcontainersConfigurationConverter(configuration);
+      var converter = new ContainerConfigurationConverter(configuration);
 
       var hostConfig = new HostConfig
       {
@@ -207,12 +207,11 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      var id = (await this.Docker.Containers.CreateContainerAsync(createParameters, ct)
-        .ConfigureAwait(false)).ID;
+      var createContainerResponse = await this.Docker.Containers.CreateContainerAsync(createParameters, ct)
+        .ConfigureAwait(false);
 
-      this.logger.DockerContainerCreated(id);
-
-      return id;
+      this.logger.DockerContainerCreated(createContainerResponse.ID);
+      return createContainerResponse.ID;
     }
 
     public Task<ContainerInspectResponse> InspectAsync(string id, CancellationToken ct = default)

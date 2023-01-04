@@ -35,7 +35,7 @@
     {
     }
 
-    private static IEnumerable<string> GetPatterns(DirectoryInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile)
+    private static IEnumerable<string> GetPatterns(FileSystemInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile)
     {
       var dockerignoreFilePath = Path.Combine(dockerignoreFileDirectory.FullName, dockerignoreFile);
 

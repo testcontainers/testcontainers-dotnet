@@ -92,7 +92,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>The Ryuk container image custom configuration.</returns>
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
     [CanBeNull]
-    IDockerImage GetRyukContainerImage();
+    IImage GetRyukContainerImage();
 
     /// <summary>
     /// Gets the Docker Hub image name prefix custom configuration.

@@ -53,20 +53,19 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false) != null;
     }
 
-    public async Task<string> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default)
     {
       var createParameters = new VolumesCreateParameters
       {
         Name = configuration.Name,
-        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      var name = (await this.Docker.Volumes.CreateAsync(createParameters, ct)
-        .ConfigureAwait(false)).Name;
+      var createVolumeResponse = await this.Docker.Volumes.CreateAsync(createParameters, ct)
+        .ConfigureAwait(false);
 
-      this.logger.DockerVolumeCreated(name);
-
-      return name;
+      this.logger.DockerVolumeCreated(createVolumeResponse.Name);
+      return createVolumeResponse.Name;
     }
 
     public Task DeleteAsync(string name, CancellationToken ct = default)

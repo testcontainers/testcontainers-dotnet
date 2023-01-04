@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.Ordinal));
+        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
     }
 
     public Task<ImagesListResponse> ByNameAsync(string name, CancellationToken ct = default)
@@ -60,7 +60,7 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false) != null;
     }
 
-    public async Task CreateAsync(IDockerImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
+    public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
     {
       var createParameters = new ImagesCreateParameters
       {
@@ -82,13 +82,13 @@ namespace DotNet.Testcontainers.Clients
       this.logger.DockerImageCreated(image);
     }
 
-    public Task DeleteAsync(IDockerImage image, CancellationToken ct = default)
+    public Task DeleteAsync(IImage image, CancellationToken ct = default)
     {
       this.logger.DeleteDockerImage(image);
       return this.Docker.Images.DeleteImageAsync(image.FullName, new ImageDeleteParameters { Force = true }, ct);
     }
 
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IImageConfiguration configuration, CancellationToken ct = default)
     {
       var image = configuration.Image;
 
@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Clients
       var imageExists = await this.ExistsWithNameAsync(image.FullName, ct)
         .ConfigureAwait(false);
 
-      if (imageExists && configuration.DeleteIfExists)
+      if (imageExists && configuration.DeleteIfExists.HasValue && configuration.DeleteIfExists.Value)
       {
         await this.DeleteAsync(image, ct)
           .ConfigureAwait(false);
@@ -107,8 +107,8 @@ namespace DotNet.Testcontainers.Clients
       {
         Dockerfile = configuration.Dockerfile,
         Tags = new[] { image.FullName },
-        BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
-        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
+        BuildArgs = configuration.BuildArguments?.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(ct)

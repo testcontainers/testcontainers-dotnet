@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface IDockerVolumeOperations : IHasListOperations<VolumeResponse>
   {
-    Task<string> CreateAsync(ITestcontainersVolumeConfiguration configuration, CancellationToken ct = default);
+    Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default);
 
     Task DeleteAsync(string name, CancellationToken ct = default);
   }

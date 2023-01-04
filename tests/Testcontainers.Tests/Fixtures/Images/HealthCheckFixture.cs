@@ -30,11 +30,12 @@
 
     public Task InitializeAsync()
     {
-      return new ImageFromDockerfileBuilder()
-        .WithName(this)
-        .WithDockerfileDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy"))
-        .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
-        .Build();
+      return Task.CompletedTask;
+      // return new ImageFromDockerfileBuilder()
+      //   .WithName(this)
+      //   .WithDockerfileDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy"))
+      //   .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+      //   .Build();
     }
 
     public Task DisposeAsync()

@@ -5,24 +5,23 @@ namespace DotNet.Testcontainers.Images
 
   internal static class MatchImage
   {
-    public static IDockerImage Match(string image)
+    public static IImage Match(string image)
     {
       Guard.Argument(image, nameof(image))
         .NotNull()
         .NotEmpty();
 
-      var dockerImageParts = image.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+      var imageComponents = image.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
-      var repository = string.Join("/", dockerImageParts
-        .Take(dockerImageParts.Length - 1)
-        .ToArray());
+      var repository = string.Join("/", imageComponents
+        .Take(imageComponents.Length - 1));
 
-      var name = dockerImageParts
+      var name = imageComponents
         .Last()
         .Split(':')
         .FirstOrDefault() ?? string.Empty;
 
-      var tag = dockerImageParts
+      var tag = imageComponents
         .Last()
         .Split(':')
         .Skip(1)

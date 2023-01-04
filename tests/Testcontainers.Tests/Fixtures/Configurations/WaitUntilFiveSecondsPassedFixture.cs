@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public Task<bool> Until(IContainer container, ILogger logger)
     {
       return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
     }

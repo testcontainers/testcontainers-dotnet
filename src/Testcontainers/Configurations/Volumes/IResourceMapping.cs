@@ -2,10 +2,12 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System.Threading;
   using System.Threading.Tasks;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// This class represents a read-only filesystem resource mapping.
   /// </summary>
+  [PublicAPI]
   public interface IResourceMapping : IMount
   {
     /// <summary>

@@ -14,19 +14,19 @@ namespace DotNet.Testcontainers.Configurations
       this.failingStreak = failingStreak;
     }
 
-    public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public Task<bool> Until(IContainer container, ILogger logger)
     {
-      if (TestcontainersStates.Exited.Equals(testcontainers.State))
+      if (TestcontainersStates.Exited.Equals(container.State))
       {
         throw new TimeoutException("Container has exited.");
       }
 
-      if (this.failingStreak < testcontainers.HealthCheckFailingStreak)
+      if (this.failingStreak < container.HealthCheckFailingStreak)
       {
         throw new TimeoutException($"Number of failed operations exceeded max count ({this.failingStreak}).");
       }
 
-      return Task.FromResult(TestcontainersHealthStatus.Healthy.Equals(testcontainers.Health));
+      return Task.FromResult(TestcontainersHealthStatus.Healthy.Equals(container.Health));
     }
   }
 }

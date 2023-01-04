@@ -16,7 +16,7 @@
   {
     private const ushort HttpPort = 80;
 
-    private readonly ITestcontainersContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
       .WithCommand($"echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}")

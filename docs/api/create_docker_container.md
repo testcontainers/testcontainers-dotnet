@@ -101,7 +101,6 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithCleanUp`                           | Will remove the container automatically after all tests have been run.                                                                 |
 | `WithLabel`                             | Applies metadata to the container e.g. `-l`, `--label "testcontainers=awesome"`.                                                       |
 | `WithResourceReaperSessionId`           | Assigns a Resource Reaper session id to the container. The assigned Resource Reaper takes care of the cleanup.                         |
-| `WithRegistryAuthentication`            | Sets the basic authentication credentials for accessing a private Docker registry.                                                     |
 | `WithImage`                             | Specifies an image for which to create the container.                                                                                  |
 | `WithImagePullPolicy`                   | Specifies an image pull policy to determine when an image is pulled e.g. <code>--pull "always" &vert; "missing" &vert; "never"</code>. |
 | `WithName`                              | Sets the container name e.g. `--name "testcontainers"`.                                                                                |
@@ -120,10 +119,10 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithNetwork`                           | Assigns a network to the container e.g. `--network "bridge"`.                                                                          |
 | `WithNetworkAliases`                    | Assigns a network-scoped aliases to the container e.g. `--network-alias "alias"`.                                                      |
 | `WithPrivileged`                        | Sets the `--privileged` flag.                                                                                                          |
-| `WithCreateContainerParametersModifier` | Allows low level modifications of the Docker container create parameter.                                                               |
 | `WithOutputConsumer`                    | Redirects `stdout` and `stderr` to capture the container output.                                                                       |
 | `WithWaitStrategy`                      | Sets the wait strategy to complete the container start and indicates when it is ready.                                                 |
 | `WithStartupCallback`                   | Sets the startup callback to invoke after the container start.                                                                         |
+| `WithCreateContainerParametersModifier` | Allows low level modifications of the Docker container create parameter.                                                               |
 
 !!!tip
 
