@@ -9,6 +9,8 @@
     <RootNamespace>DotNet.Testcontainers.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="EventStore.Client" />
+    <PackageReference Include="EventStore.Client.Grpc.Streams" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="coverlet.msbuild" />

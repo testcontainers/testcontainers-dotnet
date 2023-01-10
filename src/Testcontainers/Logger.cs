@@ -67,7 +67,6 @@
       }
     }
 
-
     public void Dispose()
     {
       // The default logger does not support scopes. We return itself as IDisposable implementation.
