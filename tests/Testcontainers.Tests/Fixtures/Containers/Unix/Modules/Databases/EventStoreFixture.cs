@@ -10,13 +10,12 @@
   [UsedImplicitly]
   public sealed class EventStoreFixture : DatabaseFixture<EventStoreTestcontainer, EventStoreClient>
   {
-    private readonly TestcontainerDatabaseConfiguration configuration = new EventStoreTestcontainerConfiguration();
+    private readonly TestcontainerDatabaseConfiguration configuration = new EventStoreTestcontainerConfiguration { Username = "admin", Password = "changeit" };
 
     public EventStoreFixture()
     {
       this.Container = new TestcontainersBuilder<EventStoreTestcontainer>()
         .WithDatabase(this.configuration)
-        .WithPortBinding(2113, true)
         .Build();
     }
 
@@ -27,8 +26,6 @@
 
       var settings = EventStoreClientSettings.Create(this.Container.ConnectionString);
       this.Connection = new EventStoreClient(settings);
-
-      // this.Connection = EventStoreConnection.Create(new Uri(this.Container.ConnectionString));
     }
 
     public override async Task DisposeAsync()

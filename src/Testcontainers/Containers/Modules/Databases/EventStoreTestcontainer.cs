@@ -22,6 +22,6 @@
     public override string ConnectionString
       => string.IsNullOrEmpty(this.Username) && string.IsNullOrEmpty(this.Password)
         ? $"esdb://{this.Hostname}:{this.Port}?tls=false"
-        : $"tcp://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}";
+        : $"esdb://{this.Username}:{this.Password}@{this.Hostname}:{this.Port}?tls=false";
   }
 }
