@@ -12,7 +12,6 @@
     <PackageReference Include="xunit"/>
   </ItemGroup>
   <ItemGroup>
-    <!-- https://github.com/dotnet/sdk/issues/17645 -->
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast/WeatherForecast.csproj" Private="False"/>
+    <ProjectReference Include="$(SolutionDir)src/WeatherForecast/WeatherForecast.csproj"/>
   </ItemGroup>
 </Project>

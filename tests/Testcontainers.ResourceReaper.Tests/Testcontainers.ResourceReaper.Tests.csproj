@@ -5,7 +5,6 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <RootNamespace>DotNet.Testcontainers.ResourceReaper.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -15,7 +14,6 @@
     <PackageReference Include="xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />
     <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
   </ItemGroup>
 </Project>

@@ -5,7 +5,6 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <RootNamespace>DotNet.Testcontainers.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -32,7 +31,6 @@
     <PackageReference Include="System.Data.SqlClient" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />
     <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
   </ItemGroup>
   <ItemGroup>
