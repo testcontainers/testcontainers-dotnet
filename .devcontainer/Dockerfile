@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     curl \
     git \
     git-lfs \
+    gcompat \
     icu-data-full \
     icu-libs \
     && chown rootless:rootless -R /home/rootless
