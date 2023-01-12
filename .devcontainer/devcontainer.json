@@ -1,0 +1,13 @@
+{
+  "dockerFile": "Dockerfile",
+  "runArgs": [
+    "--privileged"
+  ],
+  "extensions": [
+    "formulahendry.dotnet-test-explorer",
+    "ms-azuretools.vscode-docker",
+    "ms-dotnettools.csharp"
+  ],
+  "remoteUser": "rootless",
+  "postCreateCommand": "git config --global --add safe.directory $PWD && git lfs checkout && dotnet build"
+}
