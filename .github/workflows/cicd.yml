@@ -20,10 +20,12 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_USE_POLLING_FILE_WATCHER: true
+  NUGET_XMLDOC_MODE: skip
   TZ: CET # https://stackoverflow.com/q/53510011
 
 jobs:
-  build:
+  ci:
     strategy:
       fail-fast: false
       matrix:
@@ -70,10 +72,10 @@ jobs:
             test-coverage
             test-results
 
-  publish:
+  cd:
     if: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) }}
 
-    needs: build
+    needs: ci
 
     environment: production
 
