@@ -16,6 +16,10 @@
     "ms-azuretools.vscode-docker",
     "ms-dotnettools.csharp"
   ],
-  "postCreateCommand": "dockerd & git config --global --add safe.directory \"$PWD\" && git lfs checkout",
+  "settings": {
+    // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542
+    "omnisharp.path": "latest"
+  },
+  "postCreateCommand": "git config --global --add safe.directory \"$PWD\" && git lfs checkout && dockerd &",
   "postStartCommand": "dotnet build"
 }
