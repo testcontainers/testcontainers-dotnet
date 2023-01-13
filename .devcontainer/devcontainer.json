@@ -3,11 +3,19 @@
   "runArgs": [
     "--privileged"
   ],
+  "forwardPorts": [
+    2375,
+    2376
+  ],
+  "mounts": [
+    "type=bind,source=/lib/modules,target=/lib/modules,readonly",
+    "type=bind,source=/opt/containerd,target=/opt/containerd,readonly"
+  ],
   "extensions": [
     "formulahendry.dotnet-test-explorer",
     "ms-azuretools.vscode-docker",
     "ms-dotnettools.csharp"
   ],
-  "remoteUser": "rootless",
-  "postCreateCommand": "git config --global --add safe.directory $PWD && git lfs checkout && dotnet build"
+  "postCreateCommand": "dockerd & git config --global --add safe.directory \"$PWD\" && git lfs checkout",
+  "postStartCommand": "dotnet build"
 }

@@ -1,6 +1,6 @@
-FROM docker:dind-rootless
+FROM docker:dind
 
-USER root
+ARG DOTNET_SDK_VERSION=6.0.4xx
 
 RUN apk add --no-cache \
     bash \
@@ -10,14 +10,10 @@ RUN apk add --no-cache \
     gcompat \
     icu-data-full \
     icu-libs \
-    && chown rootless:rootless -R /home/rootless
+    && addgroup docker \
+    && addgroup root docker
 
-USER rootless
-
-ARG DOTNET_SDK_VERSION=6.0.4xx
-
-ENV DOCKER_HOST=unix:///var/run/user/1000/docker.sock \
-    DOTNET_CLI_TELEMETRY_OPTOUT=true \
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true \
     DOTNET_NOLOGO=true \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
