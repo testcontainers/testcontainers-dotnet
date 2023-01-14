@@ -17,8 +17,8 @@
     "ms-dotnettools.csharp"
   ],
   "settings": {
-    "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542
+    "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
   },
-  "postCreateCommand": "git config --global --add safe.directory \"$PWD\" && git lfs pull && nohup /bin/sh -c 'dockerd &'",
+  "postCreateCommand": "git config --system --add safe.directory ${containerWorkspaceFolder} && nohup /bin/sh -c 'dockerd &'",
   "postStartCommand": "dotnet build"
 }
