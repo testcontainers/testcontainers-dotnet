@@ -7,10 +7,6 @@
     2375,
     2376
   ],
-  "mounts": [
-    "type=bind,source=/lib/modules,target=/lib/modules,readonly",
-    "type=bind,source=/opt/containerd,target=/opt/containerd,readonly"
-  ],
   "extensions": [
     "formulahendry.dotnet-test-explorer",
     "ms-azuretools.vscode-docker",
@@ -20,5 +16,5 @@
     "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
   },
   "postCreateCommand": "git config --system --add safe.directory ${containerWorkspaceFolder} && nohup /bin/sh -c 'dockerd &'",
-  "postStartCommand": "dotnet build"
+  "postStartCommand": "git lfs pull && dotnet build"
 }
