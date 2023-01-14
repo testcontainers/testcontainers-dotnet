@@ -140,10 +140,10 @@
   }
 
   [PublicAPI]
-  [Obsolete("Use the VolumeBuilder class instead.")]
+  [Obsolete("Use the ContainerBuilder class instead.")]
   public sealed class TestcontainersContainer : DockerContainer
   {
-    public TestcontainersContainer(IContainerConfiguration configuration, ILogger logger)
+    internal TestcontainersContainer(IContainerConfiguration configuration, ILogger logger)
       : base(configuration, logger)
     {
     }

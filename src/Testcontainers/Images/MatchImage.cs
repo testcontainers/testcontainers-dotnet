@@ -24,8 +24,7 @@ namespace DotNet.Testcontainers.Images
       var tag = imageComponents
         .Last()
         .Split(':')
-        .Skip(1)
-        .FirstOrDefault() ?? string.Empty;
+        .LastOrDefault() ?? string.Empty;
 
       return new DockerImage(repository, name, tag);
     }

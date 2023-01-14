@@ -62,6 +62,16 @@
     }
 
     /// <inheritdoc />
+    protected override void Validate()
+    {
+      base.Validate();
+
+      _ = Guard.Argument(this.DockerResourceConfiguration.Name, nameof(IVolumeConfiguration.Name))
+        .NotNull()
+        .NotEmpty();
+    }
+
+    /// <inheritdoc />
     protected override VolumeBuilder Clone(IResourceConfiguration resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new VolumeConfiguration(resourceConfiguration));

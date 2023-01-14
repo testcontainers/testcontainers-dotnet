@@ -45,7 +45,7 @@
     /// <inheritdoc />
     public async Task<bool> Until(IContainer container, ILogger logger)
     {
-      // Java fall back to the first exposed port. The .NET wait strategies do not have access to the exposed port information yet.
+      // Java falls back to the first exposed port. The .NET wait strategies do not have access to the exposed port information yet.
       var containerPort = this.portNumber.GetValueOrDefault(Uri.UriSchemeHttp.Equals(this.schemeName, StringComparison.OrdinalIgnoreCase) ? HttpPort : HttpsPort);
 
       string host;

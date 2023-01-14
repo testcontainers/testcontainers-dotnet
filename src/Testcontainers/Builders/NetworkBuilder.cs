@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Collections.Generic;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
@@ -74,6 +75,16 @@
     protected sealed override NetworkBuilder Init()
     {
       return base.Init().WithDriver(NetworkDriver.Bridge);
+    }
+
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+      base.Validate();
+
+      _ = Guard.Argument(this.DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
+        .NotNull()
+        .NotEmpty();
     }
 
     /// <inheritdoc />

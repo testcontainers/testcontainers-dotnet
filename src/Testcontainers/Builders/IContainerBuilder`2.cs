@@ -379,7 +379,7 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
 
-    // TODO: Move this approach to the abstract builder. All resources an benefit from a method like that.
+    // TODO: Move this approach to the abstract builder, all resources benefit from a method like this.
     TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
 
     [Obsolete("Use WithImage(IImage) instead.")]
