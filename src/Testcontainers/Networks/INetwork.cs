@@ -9,7 +9,7 @@
   /// A network instance.
   /// </summary>
   [PublicAPI]
-  public interface INetwork : IDockerNetwork
+  public interface INetwork : IDockerNetwork, IFutureResource
   {
     /// <summary>
     /// Gets the name.
@@ -26,7 +26,7 @@
     new Task CreateAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Delete the network.
+    /// Deletes the network.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the network has been deleted.</returns>

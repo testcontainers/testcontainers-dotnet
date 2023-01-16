@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.IO;
   using System.Text;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging.Abstractions;
@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class ImageFromDockerfileTest
   {
-    [Fact(Skip = "Fix image builder")]
+    [Fact]
     public async Task DockerfileArchiveTar()
     {
       // Given
@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected, actual);
     }
 
-    [Fact(Skip = "Fix image builder")]
+    [Fact]
     public async Task ThrowsDockerfileDoesNotExist()
     {
       // Given
@@ -50,34 +50,36 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithDockerfile("Dockerfile")
-        .WithDockerfileDirectory(dockerfileDirectory);
+        .WithDockerfileDirectory(dockerfileDirectory)
+        .Build();
 
       // When
-      // var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
-      //   .ConfigureAwait(false);
-      //
-      // // Then
-      // Assert.Equal($"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.", exception.Message);
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal($"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.", exception.Message);
     }
 
-    [Fact(Skip = "Fix image builder")]
+    [Fact]
     public async Task ThrowsDockerfileDirectoryDoesNotExist()
     {
       // Given
       var dockerfileDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(dockerfileDirectory);
+        .WithDockerfileDirectory(dockerfileDirectory)
+        .Build();
 
       // When
-      // var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
-      //   .ConfigureAwait(false);
-      //
-      // // Then
-      // Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
     }
 
-    [Fact(Skip = "Fix image builder")]
+    [Fact]
     public async Task BuildsDockerImage()
     {
       // Given
@@ -85,19 +87,23 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithName("alpine:custom")
         .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets")
-        .WithDeleteIfExists(true);
+        .WithDeleteIfExists(true)
+        .Build();
 
       // When
-      // var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build()
-      //   .ConfigureAwait(false);
-      //
-      // var imageFromDockerfile2 = await imageFromDockerfileBuilder.Build()
-      //   .ConfigureAwait(false);
-      //
-      // // Then
-      // Assert.NotEmpty(imageFromDockerfile1);
-      // Assert.NotEmpty(imageFromDockerfile2);
-      // Assert.Equal(imageFromDockerfile1, imageFromDockerfile2);
+      await imageFromDockerfileBuilder.CreateAsync()
+        .ConfigureAwait(false);
+
+      await imageFromDockerfileBuilder.CreateAsync()
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, imageFromDockerfileBuilder.FullName));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Repository));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Name));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Tag));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.FullName));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.GetHostname()));
     }
   }
 }

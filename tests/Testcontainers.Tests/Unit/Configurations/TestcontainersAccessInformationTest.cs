@@ -2,10 +2,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 

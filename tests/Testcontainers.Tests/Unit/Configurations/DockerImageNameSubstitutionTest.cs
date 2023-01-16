@@ -2,9 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using Xunit;
 

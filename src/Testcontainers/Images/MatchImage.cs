@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Images
   {
     public static IImage Match(string image)
     {
-      Guard.Argument(image, nameof(image))
+      _ = Guard.Argument(image, nameof(image))
         .NotNull()
         .NotEmpty();
 

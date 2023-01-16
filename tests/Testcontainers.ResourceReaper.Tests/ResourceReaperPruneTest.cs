@@ -3,7 +3,6 @@
   using System;
   using System.IO;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -29,6 +28,13 @@
         .WithName(this.name)
         .Build();
 
+      var image = new ImageFromDockerfileBuilder()
+        .WithResourceReaperSessionId(this.id)
+        .WithDockerfileDirectory(TestSession.TempDirectoryPath)
+        .WithDockerfile(this.name)
+        .WithName(this.name)
+        .Build();
+
       var network = new TestcontainersNetworkBuilder()
         .WithResourceReaperSessionId(this.id)
         .WithName(this.name)
@@ -39,14 +45,7 @@
         .WithName(this.name)
         .Build();
 
-      var image = new ImageFromDockerfileBuilder()
-        .WithResourceReaperSessionId(this.id)
-        .WithDockerfileDirectory(TestSession.TempDirectoryPath)
-        .WithDockerfile(this.name)
-        .WithName(this.name);
-
-      // return Task.WhenAll(container.StartAsync(), network.CreateAsync(), volume.CreateAsync(), image.Build());
-      return Task.CompletedTask;
+      return Task.WhenAll(container.StartAsync(), image.CreateAsync(), network.CreateAsync(), volume.CreateAsync());
     }
 
     public Task DisposeAsync()
@@ -54,7 +53,7 @@
       return Task.CompletedTask;
     }
 
-    [Fact(Skip = "Fix image builder")]
+    [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ResourceReaperPrunesDockerResource()
     {

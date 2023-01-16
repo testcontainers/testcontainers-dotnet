@@ -9,7 +9,7 @@
   /// A volume instance.
   /// </summary>
   [PublicAPI]
-  public interface IVolume : IDockerVolume
+  public interface IVolume : IDockerVolume, IFutureResource
   {
     /// <summary>
     /// Gets the name.
@@ -26,7 +26,7 @@
     new Task CreateAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Delete the volume.
+    /// Deletes the volume.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the volume has been deleted.</returns>

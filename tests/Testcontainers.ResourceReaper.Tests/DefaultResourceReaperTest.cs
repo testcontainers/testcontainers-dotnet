@@ -1,7 +1,6 @@
 ﻿namespace DotNet.Testcontainers.ResourceReaper.Tests
 {
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;

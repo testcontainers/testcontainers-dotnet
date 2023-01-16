@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.IO;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -24,7 +25,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ImageBuilder : AbstractBuilder<ImageBuilder, IImage, IImageConfiguration>, IImageBuilder<ImageBuilder>
+  public class ImageBuilder : AbstractBuilder<ImageBuilder, IFutureDockerImage, IImageConfiguration>, IImageBuilder<ImageBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageBuilder" /> class.
@@ -57,39 +58,39 @@
     /// <inheritdoc />
     public ImageBuilder WithName(IImage name)
     {
-      return this.Clone(new ImageConfiguration(image: name));
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(image: name));
     }
 
     /// <inheritdoc />
     public ImageBuilder WithDockerfile(string dockerfile)
     {
-      return this.Clone(new ImageConfiguration(dockerfile: dockerfile));
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfile: dockerfile));
     }
 
     /// <inheritdoc />
     public ImageBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      return this.Clone(new ImageConfiguration(dockerfileDirectory: dockerfileDirectory));
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfileDirectory: dockerfileDirectory));
     }
 
     /// <inheritdoc />
     public ImageBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory)
     {
-      var baseDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
-      return this.Clone(new ImageConfiguration(dockerfileDirectory: baseDirectoryPath));
+      var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
     }
 
     /// <inheritdoc />
     public ImageBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      return this.Clone(new ImageConfiguration(deleteIfExists: deleteIfExists));
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(deleteIfExists: deleteIfExists));
     }
 
     /// <inheritdoc />
     public ImageBuilder WithBuildArgument(string name, string value)
     {
       var buildArguments = new Dictionary<string, string> { { name, value } };
-      return this.Clone(new ImageConfiguration(buildArguments: buildArguments));
+      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(buildArguments: buildArguments));
     }
 
     public ImageBuilder WithName(IDockerImage image)
@@ -98,16 +99,16 @@
     }
 
     /// <inheritdoc />
-    public override IImage Build()
+    public override IFutureDockerImage Build()
     {
       this.Validate();
-      throw new NotImplementedException();
+      return new FutureDockerImage(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
     protected sealed override ImageBuilder Init()
     {
-      return base.Init().WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"));
+      return base.Init().WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage(string.Empty, "testcontainers", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture)));
     }
 
     /// <inheritdoc />

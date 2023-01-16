@@ -2,9 +2,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
-  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
   using Xunit;
 

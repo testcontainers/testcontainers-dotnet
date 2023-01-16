@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using System;
   using System.Collections.Generic;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;

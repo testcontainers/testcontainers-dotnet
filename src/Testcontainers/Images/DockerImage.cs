@@ -47,11 +47,11 @@ namespace DotNet.Testcontainers.Images
       string tag,
       string hubImageNamePrefix = null)
     {
-      Guard.Argument(repository, nameof(repository))
+      _ = Guard.Argument(repository, nameof(repository))
         .NotNull()
         .NotUppercase();
 
-      Guard.Argument(name, nameof(name))
+      _ = Guard.Argument(name, nameof(name))
         .NotNull()
         .NotEmpty()
         .NotUppercase();
