@@ -14,7 +14,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    entrypoint: dotnet test
+    entrypoint: dotnet
+    command: test
     environment:
       - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
     volumes:
