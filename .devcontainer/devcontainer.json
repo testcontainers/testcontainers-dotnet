@@ -1,5 +1,5 @@
 {
-  "image": "ubuntu:22.04",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
   "containerEnv": {
     "DOTNET_CLI_TELEMETRY_OPTOUT": "true",
     "DOTNET_NOLOGO": "true",
@@ -7,10 +7,6 @@
     "DOTNET_USE_POLLING_FILE_WATCHER": "true",
     "NUGET_XMLDOC_MODE": "skip"
   },
-  "forwardPorts": [
-    2375,
-    2376
-  ],
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/git-lfs:1": {},
