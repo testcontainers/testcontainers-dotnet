@@ -30,6 +30,7 @@ nav:
   - api/resource-reaper.md
   - api/wait_strategies.md
   - Examples:
+    - examples/compose.md
     - examples/aspnet.md
   - Modules:
     - modules/index.md
