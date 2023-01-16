@@ -30,7 +30,7 @@
     /// <param name="dockerignoreFile">.dockerignore file name.</param>
     /// <param name="dockerfileFile">Dockerfile file name.</param>
     /// <param name="logger">The logger.</param>
-    public DockerIgnoreFile(DirectoryInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile, ILogger logger)
+    public DockerIgnoreFile(FileSystemInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile, ILogger logger)
       : base(GetPatterns(dockerignoreFileDirectory, dockerignoreFile, dockerfileFile), logger)
     {
     }
