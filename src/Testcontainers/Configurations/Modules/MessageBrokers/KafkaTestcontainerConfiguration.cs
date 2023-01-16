@@ -23,6 +23,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const int ZookeeperPort = 2181;
 
+    public string KafkaBrokerAlias { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaTestcontainerConfiguration" /> class.
     /// </summary>
@@ -38,6 +40,8 @@ namespace DotNet.Testcontainers.Configurations
     public KafkaTestcontainerConfiguration(string image)
       : base(image, KafkaPort)
     {
+      this.KafkaBrokerAlias = Guid.NewGuid().ToString();
+
       // Use two listeners with different names, it will force Kafka to communicate with itself via internal
       // listener when KAFKA_INTER_BROKER_LISTENER_NAME is set, otherwise Kafka will try to use the advertised listener.
       this.Environments.Add("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "BROKER:PLAINTEXT,PLAINTEXT:PLAINTEXT");
@@ -75,7 +79,7 @@ namespace DotNet.Testcontainers.Configurations
         startupScript.Append(lf);
         startupScript.Append("zookeeper-server-start zookeeper.properties &");
         startupScript.Append(lf);
-        startupScript.Append($"export KAFKA_ADVERTISED_LISTENERS='PLAINTEXT://{container.Hostname}:{container.GetMappedPublicPort(this.DefaultPort)},BROKER://localhost:{BrokerPort}'");
+        startupScript.Append($"export KAFKA_ADVERTISED_LISTENERS='PLAINTEXT://{container.Hostname}:{container.GetMappedPublicPort(this.DefaultPort)},BROKER://{this.KafkaBrokerAlias}:{BrokerPort}'");
         startupScript.Append(lf);
         startupScript.Append(". /etc/confluent/docker/bash-config");
         startupScript.Append(lf);

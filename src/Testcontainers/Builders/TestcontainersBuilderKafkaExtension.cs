@@ -19,6 +19,7 @@ namespace DotNet.Testcontainers.Builders
       return builder
         .WithImage(configuration.Image)
         .WithCommand(configuration.Command)
+        .WithNetworkAliases(configuration.KafkaBrokerAlias)
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
         .WithWaitStrategy(configuration.WaitStrategy)
         .WithStartupCallback(configuration.StartupCallback)
