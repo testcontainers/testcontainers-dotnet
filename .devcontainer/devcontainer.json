@@ -31,5 +31,5 @@
     "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
   },
   "postCreateCommand": "git config --system --add safe.directory ${containerWorkspaceFolder}",
-  "postStartCommand": "dotnet build"
+  "postStartCommand": "git lfs pull && dotnet build"
 }
