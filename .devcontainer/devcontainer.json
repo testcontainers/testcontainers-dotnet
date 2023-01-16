@@ -14,7 +14,7 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/git-lfs:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true
     },
     "ghcr.io/devcontainers/features/dotnet:1": {
