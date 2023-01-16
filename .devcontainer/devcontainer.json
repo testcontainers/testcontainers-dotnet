@@ -1,12 +1,26 @@
 {
-  "dockerFile": "Dockerfile",
-  "runArgs": [
-    "--privileged"
-  ],
+  "image": "ubuntu:22.04",
+  "containerEnv": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "true",
+    "DOTNET_NOLOGO": "true",
+    "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "true",
+    "DOTNET_USE_POLLING_FILE_WATCHER": "true",
+    "NUGET_XMLDOC_MODE": "skip"
+  },
   "forwardPorts": [
     2375,
     2376
   ],
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/git-lfs:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/dotnet:1": {
+      "version": "6.0.405"
+    }
+  },
   "extensions": [
     "formulahendry.dotnet-test-explorer",
     "ms-azuretools.vscode-docker",
@@ -15,6 +29,6 @@
   "settings": {
     "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
   },
-  "postCreateCommand": "git config --system --add safe.directory ${containerWorkspaceFolder} && nohup /bin/sh -c 'dockerd &'",
-  "postStartCommand": "git lfs pull && dotnet build"
+  "postCreateCommand": "git config --system --add safe.directory ${containerWorkspaceFolder}",
+  "postStartCommand": "dotnet build"
 }
