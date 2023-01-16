@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;

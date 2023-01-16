@@ -4,8 +4,10 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
   using Xunit;
 

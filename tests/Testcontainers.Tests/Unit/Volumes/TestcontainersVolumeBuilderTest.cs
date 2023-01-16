@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Builders;
   using Xunit;
 
   public sealed class TestcontainersVolumeBuilderTest

@@ -2,7 +2,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.IO;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Xunit;
 

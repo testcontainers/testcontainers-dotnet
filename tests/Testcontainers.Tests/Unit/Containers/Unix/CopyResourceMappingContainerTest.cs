@@ -5,6 +5,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Linq;
   using System.Text;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Containers;
   using Xunit;
 
   public sealed class CopyResourceMappingContainerTest : IAsyncLifetime, IDisposable

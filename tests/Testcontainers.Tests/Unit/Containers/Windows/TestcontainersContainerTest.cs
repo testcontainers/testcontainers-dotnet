@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Containers;
   using Xunit;
 
   public static class TestcontainersContainerTest

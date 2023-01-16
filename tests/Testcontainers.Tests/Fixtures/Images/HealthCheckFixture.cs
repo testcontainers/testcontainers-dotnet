@@ -2,6 +2,7 @@
 {
   using System.IO;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
