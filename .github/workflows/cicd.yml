@@ -25,7 +25,7 @@ env:
   TZ: CET # https://stackoverflow.com/q/53510011
 
 jobs:
-  ci:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -72,10 +72,10 @@ jobs:
             test-coverage
             test-results
 
-  cd:
+  publish:
     if: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) }}
 
-    needs: ci
+    needs: build
 
     environment: production
 
