@@ -13,7 +13,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Throws<ArgumentNullException>(() => new DockerImage((string)null));
       Assert.Throws<ArgumentNullException>(() => new DockerImage(null, null, null));
       Assert.Throws<ArgumentNullException>(() => new DockerImage("fedora", null, null));
-      Assert.Throws<ArgumentNullException>(() => new DockerImage("fedora", "httpd", null));
     }
 
     [Fact]

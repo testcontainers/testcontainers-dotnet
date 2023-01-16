@@ -8,7 +8,7 @@
   using Xunit;
 
   [UsedImplicitly]
-  public sealed class HealthCheckFixture : IDockerImage, IAsyncLifetime
+  public sealed class HealthCheckFixture : IImage, IAsyncLifetime
   {
     private readonly IFutureDockerImage image = new ImageFromDockerfileBuilder()
       .WithDockerfileDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy"))

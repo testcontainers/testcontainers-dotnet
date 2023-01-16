@@ -89,10 +89,28 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public void QueryImageInformationOfNotCreatedImage()
+      {
+        // Given
+        var imageBuilder = new ImageFromDockerfileBuilder();
+
+        // When
+        var image = imageBuilder.Build();
+
+        // Then
+        Assert.Throws<InvalidOperationException>(() => image.Repository);
+        Assert.Throws<InvalidOperationException>(() => image.Name);
+        Assert.Throws<InvalidOperationException>(() => image.Tag);
+        Assert.Throws<InvalidOperationException>(() => image.FullName);
+        Assert.Throws<InvalidOperationException>(() => image.GetHostname());
+      }
+
+      [Fact]
       public void QueryNetworkInformationOfNotCreatedNetwork()
       {
         // Given
-        var networkBuilder = new TestcontainersNetworkBuilder();
+        var networkBuilder = new TestcontainersNetworkBuilder()
+          .WithName(Guid.NewGuid().ToString("D"));
 
         // When
         var network = networkBuilder.Build();
@@ -100,6 +118,20 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Then
         Assert.Throws<InvalidOperationException>(() => network.Id);
         Assert.Throws<InvalidOperationException>(() => network.Name);
+      }
+
+      [Fact]
+      public void QueryVolumeInformationOfNotCreatedVolume()
+      {
+        // Given
+        var volumeBuilder = new TestcontainersVolumeBuilder()
+          .WithName(Guid.NewGuid().ToString("D"));
+
+        // When
+        var volume = volumeBuilder.Build();
+
+        // Then
+        Assert.Throws<InvalidOperationException>(() => volume.Name);
       }
     }
   }
