@@ -86,7 +86,6 @@ Task("Tests")
       Filter = param.TestFilter,
       ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
       ArgumentCustomization = args => args
-        .Append("/p:Platform=AnyCPU")
         .Append("/p:CollectCoverage=true")
         .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
         .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/coverage.net6.0.json\"")
@@ -142,7 +141,6 @@ Task("Create-NuGet-Packages")
     IncludeSymbols = true,
     OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
     ArgumentCustomization = args => args
-      .Append("/p:Platform=AnyCPU")
       .Append("/p:SymbolPackageFormat=snupkg")
       .Append($"/p:Version={param.Version}")
   });

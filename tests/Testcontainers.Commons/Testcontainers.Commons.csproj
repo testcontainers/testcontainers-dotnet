@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <RootNamespace>DotNet.Testcontainers.Commons</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
