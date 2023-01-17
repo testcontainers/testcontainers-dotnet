@@ -14,7 +14,7 @@
   {
     private readonly IDockerImageOperations dockerImageOperations;
 
-    private readonly IImageConfiguration configuration;
+    private readonly IImageFromDockerfileConfiguration configuration;
 
     private ImagesListResponse image = new ImagesListResponse();
 
@@ -23,7 +23,7 @@
     /// </summary>
     /// <param name="configuration">The image configuration.</param>
     /// <param name="logger">The logger.</param>
-    public FutureDockerImage(IImageConfiguration configuration, ILogger logger)
+    public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
     {
       this.dockerImageOperations = new DockerImageOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       this.configuration = configuration;

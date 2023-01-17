@@ -8,7 +8,7 @@
   /// An image configuration.
   /// </summary>
   [PublicAPI]
-  public interface IImageConfiguration : IResourceConfiguration
+  public interface IImageFromDockerfileConfiguration : IResourceConfiguration
   {
     /// <summary>
     /// Gets a value indicating whether Testcontainers removes an existing image or not.

@@ -143,6 +143,6 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="configuration">Dockerfile configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
-    Task<string> BuildAsync(IImageConfiguration configuration, CancellationToken ct = default);
+    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
   }
 }

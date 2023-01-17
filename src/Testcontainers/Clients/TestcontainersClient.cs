@@ -312,7 +312,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<string> BuildAsync(IImageConfiguration configuration, CancellationToken ct = default)
+    public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
       return this.images.BuildAsync(configuration, ct);
     }

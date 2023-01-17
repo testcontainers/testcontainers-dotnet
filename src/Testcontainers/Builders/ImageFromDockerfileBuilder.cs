@@ -25,13 +25,13 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, IImageConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
+  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
     /// </summary>
     public ImageFromDockerfileBuilder()
-      : this(new ImageConfiguration())
+      : this(new ImageFromDockerfileConfiguration())
     {
       this.DockerResourceConfiguration = this.Init().DockerResourceConfiguration;
     }
@@ -40,14 +40,14 @@
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private ImageFromDockerfileBuilder(IImageConfiguration dockerResourceConfiguration)
+    private ImageFromDockerfileBuilder(IImageFromDockerfileConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
       this.DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
-    protected override IImageConfiguration DockerResourceConfiguration { get; }
+    protected override IImageFromDockerfileConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(string name)
@@ -58,39 +58,39 @@
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(IImage name)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(image: name));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfile: dockerfile));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfile));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfileDirectory: dockerfileDirectory));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory)
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(deleteIfExists: deleteIfExists));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithBuildArgument(string name, string value)
     {
       var buildArguments = new Dictionary<string, string> { { name, value } };
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(buildArguments: buildArguments));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(buildArguments: buildArguments));
     }
 
     public ImageFromDockerfileBuilder WithName(IDockerImage image)
@@ -114,13 +114,13 @@
     /// <inheritdoc />
     protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageConfiguration(resourceConfiguration));
+      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override ImageFromDockerfileBuilder Merge(IImageConfiguration oldValue, IImageConfiguration newValue)
+    protected override ImageFromDockerfileBuilder Merge(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
     {
-      return new ImageFromDockerfileBuilder(new ImageConfiguration(oldValue, newValue));
+      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(oldValue, newValue));
     }
   }
 }

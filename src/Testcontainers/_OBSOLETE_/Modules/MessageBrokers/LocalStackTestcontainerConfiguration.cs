@@ -39,9 +39,9 @@ namespace DotNet.Testcontainers.Configurations
 
     private sealed class UntilReady : IWaitUntil
     {
-      public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+      public async Task<bool> Until(IContainer container, ILogger logger)
       {
-        var (stdout, _) = await testcontainers.GetLogs()
+        var (stdout, _) = await container.GetLogs()
           .ConfigureAwait(false);
         return stdout != null && stdout.Contains("Ready.\n");
       }

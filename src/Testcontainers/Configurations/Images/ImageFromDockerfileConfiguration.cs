@@ -5,19 +5,19 @@
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
-  /// <inheritdoc cref="IImageConfiguration" />
+  /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageConfiguration : ResourceConfiguration, IImageConfiguration
+  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration, IImageFromDockerfileConfiguration
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ImageConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="image">The image.</param>
     /// <param name="buildArguments">A list of build arguments.</param>
     /// <param name="deleteIfExists">A value indicating whether Testcontainers removes an existing image or not.</param>
-    public ImageConfiguration(
+    public ImageFromDockerfileConfiguration(
       string dockerfile = null,
       string dockerfileDirectory = null,
       IImage image = null,
@@ -32,29 +32,29 @@
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ImageConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ImageConfiguration(IResourceConfiguration resourceConfiguration)
+    public ImageFromDockerfileConfiguration(IResourceConfiguration resourceConfiguration)
       : base(resourceConfiguration)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ImageConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ImageConfiguration(IImageConfiguration resourceConfiguration)
-      : this(new ImageConfiguration(), resourceConfiguration)
+    public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration resourceConfiguration)
+      : this(new ImageFromDockerfileConfiguration(), resourceConfiguration)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ImageConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ImageConfiguration(IImageConfiguration oldValue, IImageConfiguration newValue)
+    public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
       : base(oldValue, newValue)
     {
       this.Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
