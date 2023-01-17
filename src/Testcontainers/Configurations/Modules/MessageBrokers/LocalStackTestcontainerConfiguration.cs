@@ -1,7 +1,10 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="TestcontainerMessageBrokerConfiguration" />
   [PublicAPI]
@@ -32,6 +35,16 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public override IWaitForContainerOS WaitStrategy => Wait.ForUnixContainer()
-      .UntilPortIsAvailable(LocalStackPort);
+      .AddCustomWaitStrategy(new UntilReady());
+
+    private sealed class UntilReady : IWaitUntil
+    {
+      public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+      {
+        var (stdout, _) = await testcontainers.GetLogs()
+          .ConfigureAwait(false);
+        return stdout != null && stdout.Contains("Ready.\n");
+      }
+    }
   }
 }
