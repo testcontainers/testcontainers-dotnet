@@ -69,6 +69,16 @@ namespace DotNet.Testcontainers
 
       Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
     }
+
+    [PublicAPI]
+    [Obsolete("Use the DockerContainer class instead.")]
+    public sealed class TestcontainersContainer : DockerContainer
+    {
+      internal TestcontainersContainer(IContainerConfiguration configuration, ILogger logger)
+        : base(configuration, logger)
+      {
+      }
+    }
   }
 
   namespace Images
@@ -152,16 +162,6 @@ namespace DotNet.Testcontainers
     [Obsolete("Use the VolumeBuilder class instead.")]
     public sealed class TestcontainersVolumeBuilder : VolumeBuilder
     {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the ContainerBuilder class instead.")]
-    public sealed class TestcontainersContainer : DockerContainer
-    {
-      internal TestcontainersContainer(IContainerConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
-      {
-      }
     }
   }
 }

@@ -2,6 +2,7 @@
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
   [UsedImplicitly]

@@ -20,7 +20,7 @@
   ///     .WithCleanUp(true)
   ///     .WithDockerfile("Dockerfile")
   ///     .WithDockerfileDirectory(Directory.GetCurrentDirectory())
-  ///     .WithName(new DockerImage($"testcontainers:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"))
+  ///     .WithName(new DockerImage(string.Empty, "testcontainers", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture)))
   ///     .Build();
   ///   </code>
   /// </example>

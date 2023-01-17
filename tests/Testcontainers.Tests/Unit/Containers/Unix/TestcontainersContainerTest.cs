@@ -41,6 +41,18 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       }
 
       [Fact]
+      public void ShouldThrowArgumentNullExceptionWhenNetworkBuildConfigurationHasNoName()
+      {
+        Assert.Throws<ArgumentNullException>(() => _ = new NetworkBuilder().Build());
+      }
+
+      [Fact]
+      public void ShouldThrowArgumentNullExceptionWhenVolumeBuildConfigurationHasNoName()
+      {
+        Assert.Throws<ArgumentNullException>(() => _ = new VolumeBuilder().Build());
+      }
+
+      [Fact]
       public async Task GeneratedContainerName()
       {
         // Given
