@@ -9,7 +9,7 @@
   /// </summary>
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   [PublicAPI]
-  public interface IImageBuilder<out TBuilderEntity>
+  public interface IImageFromDockerfileBuilder<out TBuilderEntity>
   {
     /// <summary>
     /// Sets the name.

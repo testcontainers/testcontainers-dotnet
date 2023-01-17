@@ -147,12 +147,6 @@ namespace DotNet.Testcontainers
     }
 
     [PublicAPI]
-    [Obsolete("Use the ImageBuilder class instead.")]
-    public sealed class ImageFromDockerfileBuilder : ImageBuilder
-    {
-    }
-
-    [PublicAPI]
     [Obsolete("Use the NetworkBuilder class instead.")]
     public sealed class TestcontainersNetworkBuilder : NetworkBuilder
     {
