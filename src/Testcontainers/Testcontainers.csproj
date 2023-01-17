@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="Docker.DotNet.X509" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Portable.BouncyCastle" />
     <PackageReference Include="SharpZipLib" />

@@ -2,12 +2,6 @@
 <Project>
   <PropertyGroup>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), WeatherForecast.sln))/</SolutionDir>
-    <BuildDir>$(SolutionDir)build/</BuildDir>
-    <BaseIntermediateOutputPath>$(BuildDir)obj/$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
-    <OutputPath>$(BuildDir)bin/$(Platform)/$(Configuration)/$(TargetFramework)</OutputPath>
-    <OutDir>$(OutputPath)/</OutDir>
   </PropertyGroup>
   <PropertyGroup>
     <Version>0.1.0</Version>
