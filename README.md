@@ -1,5 +1,7 @@
 # Testcontainers
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=170988906&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&location=EastUs)
+
 [![NuGet](https://img.shields.io/nuget/v/Testcontainers.svg)](https://www.nuget.org/packages/Testcontainers)
 [![CI/CD](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml/badge.svg?branch=master)](https://github.com/testcontainers/testcontainers-dotnet/actions/workflows/cicd.yml)
 [![Alert Status](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
