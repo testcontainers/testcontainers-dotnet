@@ -11,7 +11,7 @@
 
   /// <inheritdoc cref="INetwork" />
   [PublicAPI]
-  internal sealed class DockerNetwork : Resource, INetwork
+  internal sealed partial class DockerNetwork : Resource, INetwork
   {
     private readonly IDockerNetworkOperations dockerNetworkOperations;
 

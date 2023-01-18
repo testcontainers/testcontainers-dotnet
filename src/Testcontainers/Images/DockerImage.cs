@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Images
 
   /// <inheritdoc cref="IImage" />
   [PublicAPI]
-  public sealed class DockerImage : IImage
+  public sealed partial class DockerImage : IImage
   {
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
@@ -77,11 +77,11 @@ namespace DotNet.Testcontainers.Images
     {
       get
       {
-        var dockerImageParts = new[] { this.hubImageNamePrefix, this.Repository, this.Name }
-          .Where(dockerImagePart => !string.IsNullOrEmpty(dockerImagePart))
-          .Select(dockerImagePart => dockerImagePart.Trim('/', ':'))
-          .Where(dockerImagePart => !string.IsNullOrEmpty(dockerImagePart));
-        return string.Join("/", dockerImageParts) + ":" + this.Tag;
+        var imageComponents = new[] { this.hubImageNamePrefix, this.Repository, this.Name }
+          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
+          .Select(imageComponent => imageComponent.Trim('/', ':'))
+          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
+        return string.Join("/", imageComponents) + ":" + this.Tag;
       }
     }
 

@@ -102,6 +102,17 @@ namespace DotNet.Testcontainers
       [CanBeNull]
       string GetHostname();
     }
+
+    /// <summary>
+    /// Maps the old to the new interface to provide backwards compatibility.
+    /// </summary>
+    public sealed partial class DockerImage
+    {
+      public DockerImage(IDockerImage image)
+        : this(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix)
+      {
+      }
+    }
   }
 
   namespace Networks
@@ -120,6 +131,18 @@ namespace DotNet.Testcontainers
 
       Task DeleteAsync(CancellationToken ct = default);
     }
+
+    /// <summary>
+    /// Maps the old to the new interface to provide backwards compatibility.
+    /// </summary>
+    internal sealed partial class DockerNetwork
+    {
+      public DockerNetwork(IDockerNetwork network)
+      {
+        this.network.ID = network.Id;
+        this.network.Name = network.Name;
+      }
+    }
   }
 
   namespace Volumes
@@ -134,6 +157,17 @@ namespace DotNet.Testcontainers
       Task CreateAsync(CancellationToken ct = default);
 
       Task DeleteAsync(CancellationToken ct = default);
+    }
+
+    /// <summary>
+    /// Maps the old to the new interface to provide backwards compatibility.
+    /// </summary>
+    internal sealed partial class DockerVolume
+    {
+      public DockerVolume(IDockerVolume volume)
+      {
+        this.volume.Name = volume.Name;
+      }
     }
   }
 

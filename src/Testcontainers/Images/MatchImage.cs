@@ -11,7 +11,8 @@ namespace DotNet.Testcontainers.Images
         .NotNull()
         .NotEmpty();
 
-      var imageComponents = image.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+      var imageComponents = image
+        .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
       var repository = string.Join("/", imageComponents
         .Take(imageComponents.Length - 1));
@@ -19,13 +20,15 @@ namespace DotNet.Testcontainers.Images
       var name = imageComponents
         .Last()
         .Split(':')
-        .FirstOrDefault() ?? string.Empty;
+        .DefaultIfEmpty(string.Empty)
+        .First();
 
       var tag = imageComponents
         .Last()
         .Split(':')
         .Skip(1)
-        .FirstOrDefault() ?? string.Empty;
+        .DefaultIfEmpty(string.Empty)
+        .First();
 
       return new DockerImage(repository, name, tag);
     }

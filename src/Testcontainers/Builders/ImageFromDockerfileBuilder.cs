@@ -95,7 +95,7 @@
 
     public ImageFromDockerfileBuilder WithName(IDockerImage image)
     {
-      return this.WithName((IImage)image);
+      return this.WithName(new DockerImage(image));
     }
 
     /// <inheritdoc />

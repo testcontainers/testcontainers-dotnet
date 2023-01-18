@@ -309,22 +309,22 @@
 
     public TBuilderEntity WithImage(IDockerImage image)
     {
-      return this.WithImage((IImage)image);
+      return this.WithImage(new DockerImage(image));
     }
 
     public TBuilderEntity WithNetwork(IDockerNetwork network)
     {
-      return this.WithNetwork((INetwork)network);
+      return this.WithNetwork(new DockerNetwork(network));
     }
 
     public TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination)
     {
-      return this.WithVolumeMount((IVolume)volume, destination);
+      return this.WithVolumeMount(new DockerVolume(volume), destination);
     }
 
     public TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination, AccessMode accessMode)
     {
-      return this.WithVolumeMount((IVolume)volume, destination, accessMode);
+      return this.WithVolumeMount(new DockerVolume(volume), destination, accessMode);
     }
 
     /// <inheritdoc cref="AbstractBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
