@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
@@ -21,7 +22,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class NetworkBuilder : AbstractBuilder<NetworkBuilder, INetwork, INetworkConfiguration>, INetworkBuilder<NetworkBuilder>
+  public class NetworkBuilder : AbstractBuilder<NetworkBuilder, INetwork, NetworksCreateParameters, INetworkConfiguration>, INetworkBuilder<NetworkBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkBuilder" /> class.
@@ -88,7 +89,7 @@
     }
 
     /// <inheritdoc />
-    protected override NetworkBuilder Clone(IResourceConfiguration resourceConfiguration)
+    protected override NetworkBuilder Clone(IResourceConfiguration<NetworksCreateParameters> resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new NetworkConfiguration(resourceConfiguration));
     }

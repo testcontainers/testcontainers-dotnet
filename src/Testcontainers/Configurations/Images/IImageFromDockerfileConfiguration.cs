@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -8,7 +9,7 @@
   /// An image configuration.
   /// </summary>
   [PublicAPI]
-  public interface IImageFromDockerfileConfiguration : IResourceConfiguration
+  public interface IImageFromDockerfileConfiguration : IResourceConfiguration<ImagesCreateParameters>
   {
     /// <summary>
     /// Gets a value indicating whether Testcontainers removes an existing image or not.

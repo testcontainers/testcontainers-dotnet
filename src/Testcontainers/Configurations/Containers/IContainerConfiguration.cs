@@ -14,7 +14,7 @@
   /// A container configuration.
   /// </summary>
   [PublicAPI]
-  public interface IContainerConfiguration : IResourceConfiguration
+  public interface IContainerConfiguration : IResourceConfiguration<CreateContainerParameters>
   {
     /// <summary>
     /// Gets a value indicating whether Docker removes the container after it exits or not.
@@ -115,10 +115,5 @@
     /// Gets the startup callback.
     /// </summary>
     Func<IContainer, CancellationToken, Task> StartupCallback { get; }
-
-    /// <summary>
-    /// Gets a list of low level modifications of <see cref="CreateContainerParameters" />.
-    /// </summary>
-    IReadOnlyList<Action<CreateContainerParameters>> ParameterModifiers { get; }
   }
 }

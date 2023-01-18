@@ -1,12 +1,13 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="INetworkConfiguration" />
   [PublicAPI]
-  internal sealed class NetworkConfiguration : ResourceConfiguration, INetworkConfiguration
+  internal sealed class NetworkConfiguration : ResourceConfiguration<NetworksCreateParameters>, INetworkConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.
@@ -28,7 +29,7 @@
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public NetworkConfiguration(IResourceConfiguration resourceConfiguration)
+    public NetworkConfiguration(IResourceConfiguration<NetworksCreateParameters> resourceConfiguration)
       : base(resourceConfiguration)
     {
     }

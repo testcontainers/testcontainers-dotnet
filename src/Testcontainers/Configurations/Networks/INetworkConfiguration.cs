@@ -1,13 +1,14 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
+  using Docker.DotNet.Models;
   using JetBrains.Annotations;
 
   /// <summary>
   /// A network configuration.
   /// </summary>
   [PublicAPI]
-  public interface INetworkConfiguration : IResourceConfiguration
+  public interface INetworkConfiguration : IResourceConfiguration<NetworksCreateParameters>
   {
     /// <summary>
     /// Gets the name.

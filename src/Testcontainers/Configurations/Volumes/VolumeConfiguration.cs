@@ -1,11 +1,12 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IVolumeConfiguration" />
   [PublicAPI]
-  internal sealed class VolumeConfiguration : ResourceConfiguration, IVolumeConfiguration
+  internal sealed class VolumeConfiguration : ResourceConfiguration<VolumesCreateParameters>, IVolumeConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.
@@ -21,7 +22,7 @@
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public VolumeConfiguration(IResourceConfiguration resourceConfiguration)
+    public VolumeConfiguration(IResourceConfiguration<VolumesCreateParameters> resourceConfiguration)
       : base(resourceConfiguration)
     {
     }

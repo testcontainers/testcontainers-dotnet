@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
@@ -57,7 +58,7 @@
     }
 
     /// <inheritdoc />
-    protected override ContainerBuilder Clone(IResourceConfiguration resourceConfiguration)
+    protected override ContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }

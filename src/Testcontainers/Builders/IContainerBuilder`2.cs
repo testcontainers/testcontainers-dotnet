@@ -18,7 +18,7 @@
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   [PublicAPI]
-  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity>
+  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
     /// <summary>
     /// Sets the module configuration of the container to override custom properties.
@@ -377,9 +377,7 @@
     /// </remarks>
     /// <param name="parameterModifier">The action that invokes modifying the <see cref="CreateContainerParameters" /> instance.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-
-    // TODO: Move this approach to the abstract builder, all resources benefit from a method like this.
+    [Obsolete("Use WithCreateParameterModifier(Action<CreateContainerParameters>) instead.")]
     TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
 
     [Obsolete("Use WithImage(IImage) instead.")]

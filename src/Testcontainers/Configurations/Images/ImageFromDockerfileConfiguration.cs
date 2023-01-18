@@ -1,13 +1,14 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration, IImageFromDockerfileConfiguration
+  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImagesCreateParameters>, IImageFromDockerfileConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
@@ -35,7 +36,7 @@
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ImageFromDockerfileConfiguration(IResourceConfiguration resourceConfiguration)
+    public ImageFromDockerfileConfiguration(IResourceConfiguration<ImagesCreateParameters> resourceConfiguration)
       : base(resourceConfiguration)
     {
     }
