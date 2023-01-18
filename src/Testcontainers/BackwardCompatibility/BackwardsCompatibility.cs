@@ -109,7 +109,7 @@ namespace DotNet.Testcontainers
     public sealed partial class DockerImage
     {
       public DockerImage(IDockerImage image)
-        : this(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix)
+        : this(image.Repository, image.Name, image.Tag)
       {
       }
     }
