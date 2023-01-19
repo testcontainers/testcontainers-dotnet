@@ -487,23 +487,27 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task AutoRemoveTrueShouldRemoveContainer()
       {
         // Given
-        string testcontainerId;
-
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
-          .WithImage("alpine")
+        var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithAutoRemove(true)
           .WithCleanUp(false)
-          .WithEntrypoint(CommonCommands.SleepInfinity);
+          .Build();
 
         // When
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
-        {
-          await testcontainer.StartAsync();
-          testcontainerId = testcontainer.Id;
-        }
+        await container.StartAsync()
+          .ConfigureAwait(false);
+
+        var id = container.Id;
+
+        await container.DisposeAsync()
+          .ConfigureAwait(false);
+
+        await Task.Delay(TimeSpan.FromSeconds(1))
+          .ConfigureAwait(false);
 
         // Then
-        Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, testcontainerId));
+        Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, id));
       }
 
       [Fact]
