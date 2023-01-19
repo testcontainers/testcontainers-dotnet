@@ -70,13 +70,17 @@
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity}" />
-    public TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId)
+    public abstract TResourceEntity Build();
+
+    /// <summary>
+    /// Sets the Resource Reaper session id.
+    /// </summary>
+    /// <param name="resourceReaperSessionId">The <see cref="ResourceReaper" /> session id.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    protected TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
       return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
-
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity}" />
-    public abstract TResourceEntity Build();
 
     /// <summary>
     /// Initializes the fluent Docker resource builder.

@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Collections.Generic;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
@@ -73,7 +74,7 @@
     /// <inheritdoc />
     protected sealed override NetworkBuilder Init()
     {
-      return base.Init().WithDriver(NetworkDriver.Bridge);
+      return base.Init().WithName(Guid.NewGuid().ToString("D")).WithDriver(NetworkDriver.Bridge);
     }
 
     /// <inheritdoc />

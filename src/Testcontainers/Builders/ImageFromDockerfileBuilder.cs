@@ -20,7 +20,7 @@
   ///     .WithCleanUp(true)
   ///     .WithDockerfile("Dockerfile")
   ///     .WithDockerfileDirectory(Directory.GetCurrentDirectory())
-  ///     .WithName(new DockerImage(string.Empty, "testcontainers", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture)))
+  ///     .WithName(new DockerImage("localhost", "testcontainers", Guid.NewGuid().ToString("D")))
   ///     .Build();
   ///   </code>
   /// </example>
@@ -108,7 +108,7 @@
     /// <inheritdoc />
     protected sealed override ImageFromDockerfileBuilder Init()
     {
-      return base.Init().WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage(string.Empty, "testcontainers", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture)));
+      return base.Init().WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage("localhost", "testcontainers", Guid.NewGuid().ToString("D")));
     }
 
     /// <inheritdoc />

@@ -1,5 +1,6 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
@@ -58,7 +59,7 @@
     /// <inheritdoc />
     protected sealed override VolumeBuilder Init()
     {
-      return base.Init();
+      return base.Init().WithName(Guid.NewGuid().ToString("D"));
     }
 
     /// <inheritdoc />

@@ -17,6 +17,10 @@
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
+    /// <remarks>
+    /// Testcontainers automatically discovers the Docker environment and applies the configuration.
+    /// It is recommended to use the auto discovery. Only certain edge cases require this enhanced API.
+    /// </remarks>
     /// <param name="endpoint">The Docker API endpoint.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -25,6 +29,10 @@
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
+    /// <remarks>
+    /// Testcontainers automatically discovers the Docker environment and applies the configuration.
+    /// It is recommended to use the auto discovery. Only certain edge cases require this enhanced API.
+    /// </remarks>
     /// <param name="endpoint">The Docker API endpoint.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -33,6 +41,10 @@
     /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
+    /// <remarks>
+    /// Testcontainers automatically discovers the Docker environment and applies the configuration.
+    /// It is recommended to use the auto discovery. Only certain edge cases require this enhanced API.
+    /// </remarks>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -62,14 +74,6 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithLabel(IReadOnlyDictionary<string, string> labels);
-
-    /// <summary>
-    /// Sets the Resource Reaper session id.
-    /// </summary>
-    /// <param name="resourceReaperSessionId">The <see cref="ResourceReaper" /> session id.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds an instance of <typeparamref name="TResourceEntity" /> with the given resource configuration.
