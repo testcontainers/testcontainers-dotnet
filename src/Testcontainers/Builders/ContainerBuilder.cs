@@ -25,7 +25,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public sealed class ContainerBuilder : ContainerBuilder<ContainerBuilder, IContainer, IContainerConfiguration>
+  public class ContainerBuilder : ContainerBuilder<ContainerBuilder, IContainer, IContainerConfiguration>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
@@ -60,6 +60,12 @@
     protected override ContainerBuilder Clone(IResourceConfiguration resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected sealed override ContainerBuilder Init()
+    {
+      return base.Init();
     }
 
     /// <inheritdoc />
