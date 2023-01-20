@@ -13,10 +13,7 @@
     /// Checks whether the resources exists or not.
     /// </summary>
     /// <returns>True if the resource exists; otherwise, false.</returns>
-    protected virtual bool Exists()
-    {
-      return true;
-    }
+    protected abstract bool Exists();
 
     /// <summary>
     /// Throws an <see cref="InvalidOperationException" /> when the resources was not found.

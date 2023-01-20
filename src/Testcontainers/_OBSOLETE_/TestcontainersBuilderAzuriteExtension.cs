@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
@@ -129,7 +130,7 @@ namespace DotNet.Testcontainers.Builders
     private static string[] GetDebugModeEnabled(AzuriteTestcontainerConfiguration configuration)
     {
       var debugLogFilePath = Path.Combine(AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath, "debug.log");
-      return configuration.DebugModeEnabled ? new[] { "--debug", debugLogFilePath } : null;
+      return configuration.DebugModeEnabled ? new[] { "--debug", debugLogFilePath } : Array.Empty<string>();
     }
 
     private static string GetSilentModeEnabled(AzuriteTestcontainerConfiguration configuration)

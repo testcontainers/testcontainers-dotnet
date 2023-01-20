@@ -58,15 +58,15 @@
     }
 
     /// <inheritdoc />
-    protected override ContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-    {
-      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
-    }
-
-    /// <inheritdoc />
     protected sealed override ContainerBuilder Init()
     {
       return base.Init();
+    }
+
+    /// <inheritdoc />
+    protected override ContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    {
+      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />

@@ -2,7 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Globalization;
   using System.IO;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;

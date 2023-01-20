@@ -459,13 +459,13 @@
         public string Name { get; }
 
         /// <inheritdoc cref="IVolume" />
-        public Task CreateAsync(CancellationToken ct)
+        public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
         /// <inheritdoc cref="IVolume" />
-        public Task DeleteAsync(CancellationToken ct)
+        public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
