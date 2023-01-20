@@ -7,8 +7,9 @@
   /// <summary>
   /// A resource configuration.
   /// </summary>
+  /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   [PublicAPI]
-  public interface IResourceConfiguration
+  public interface IResourceConfiguration<in TCreateResourceEntity>
   {
     /// <summary>
     /// Gets the test session id.
@@ -24,5 +25,10 @@
     /// Gets a list of labels.
     /// </summary>
     IReadOnlyDictionary<string, string> Labels { get; }
+
+    /// <summary>
+    /// Gets a list of low level modifications of the Docker.DotNet entity.
+    /// </summary>
+    IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
   }
 }

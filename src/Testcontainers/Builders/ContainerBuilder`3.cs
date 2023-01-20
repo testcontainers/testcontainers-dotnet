@@ -21,7 +21,7 @@
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
+  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
@@ -303,8 +303,7 @@
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier)
     {
-      var parameterModifiers = new[] { parameterModifier };
-      return this.Clone(new ContainerConfiguration(parameterModifiers: parameterModifiers));
+      return this.WithCreateParameterModifier(parameterModifier);
     }
 
     public TBuilderEntity WithImage(IDockerImage image)
@@ -327,13 +326,13 @@
       return this.WithVolumeMount(new DockerVolume(volume), destination, accessMode);
     }
 
-    /// <inheritdoc cref="AbstractBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override TBuilderEntity Init()
     {
       return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
     }
 
-    /// <inheritdoc cref="AbstractBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override void Validate()
     {
       base.Validate();
@@ -460,13 +459,13 @@
         public string Name { get; }
 
         /// <inheritdoc cref="IVolume" />
-        public Task CreateAsync(CancellationToken ct)
+        public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
         /// <inheritdoc cref="IVolume" />
-        public Task DeleteAsync(CancellationToken ct)
+        public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }

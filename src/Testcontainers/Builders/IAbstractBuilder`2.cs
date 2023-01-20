@@ -11,8 +11,9 @@
   /// </summary>
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   /// <typeparam name="TResourceEntity">The resource entity.</typeparam>
+  /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   [PublicAPI]
-  public interface IAbstractBuilder<out TBuilderEntity, out TResourceEntity>
+  public interface IAbstractBuilder<out TBuilderEntity, out TResourceEntity, out TCreateResourceEntity>
   {
     /// <summary>
     /// Sets the Docker API endpoint.
@@ -74,6 +75,14 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithLabel(IReadOnlyDictionary<string, string> labels);
+
+    /// <summary>
+    /// Allows low level modifications of the Docker.DotNet entity after the builder configuration has been applied. Multiple low level modifications will be executed in order of insertion.
+    /// </summary>
+    /// <param name="parameterModifier">The action that invokes modifying the Docker.DotNet entity instance.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithCreateParameterModifier(Action<TCreateResourceEntity> parameterModifier);
 
     /// <summary>
     /// Builds an instance of <typeparamref name="TResourceEntity" /> with the given resource configuration.

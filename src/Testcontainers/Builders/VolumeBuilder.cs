@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
@@ -19,7 +20,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class VolumeBuilder : AbstractBuilder<VolumeBuilder, IVolume, IVolumeConfiguration>, IVolumeBuilder<VolumeBuilder>
+  public class VolumeBuilder : AbstractBuilder<VolumeBuilder, IVolume, VolumesCreateParameters, IVolumeConfiguration>, IVolumeBuilder<VolumeBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeBuilder" /> class.
@@ -73,7 +74,7 @@
     }
 
     /// <inheritdoc />
-    protected override VolumeBuilder Clone(IResourceConfiguration resourceConfiguration)
+    protected override VolumeBuilder Clone(IResourceConfiguration<VolumesCreateParameters> resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new VolumeConfiguration(resourceConfiguration));
     }

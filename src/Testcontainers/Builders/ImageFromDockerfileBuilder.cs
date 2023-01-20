@@ -2,8 +2,8 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Globalization;
   using System.IO;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
@@ -25,7 +25,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
+  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, ImagesCreateParameters, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
@@ -112,7 +112,7 @@
     }
 
     /// <inheritdoc />
-    protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration resourceConfiguration)
+    protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration<ImagesCreateParameters> resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
     }

@@ -13,7 +13,7 @@
 
   /// <inheritdoc cref="IContainerConfiguration" />
   [PublicAPI]
-  public class ContainerConfiguration : ResourceConfiguration, IContainerConfiguration
+  public class ContainerConfiguration : ResourceConfiguration<CreateContainerParameters>, IContainerConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
@@ -36,7 +36,6 @@
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
-    /// <param name="parameterModifiers">A list of low level modifications of <see cref="CreateContainerParameters" />.</param>
     /// <param name="autoRemove">A value indicating whether Docker removes the container after it exits or not.</param>
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(
@@ -58,7 +57,6 @@
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
-      IReadOnlyList<Action<CreateContainerParameters>> parameterModifiers = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -82,14 +80,13 @@
       this.OutputConsumer = outputConsumer;
       this.WaitStrategies = waitStrategies;
       this.StartupCallback = startupCallback;
-      this.ParameterModifiers = parameterModifiers;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ContainerConfiguration(IResourceConfiguration resourceConfiguration)
+    public ContainerConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
       : base(resourceConfiguration)
     {
     }
@@ -129,7 +126,6 @@
       this.OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
       this.WaitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       this.StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
-      this.ParameterModifiers = BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers);
       this.AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       this.Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
@@ -193,8 +189,5 @@
 
     /// <inheritdoc />
     public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
-
-    /// <inheritdoc />
-    public IReadOnlyList<Action<CreateContainerParameters>> ParameterModifiers { get; }
   }
 }
