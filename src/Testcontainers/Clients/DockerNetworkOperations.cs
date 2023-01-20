@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Clients
     public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       return (await this.GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.Ordinal));
+        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
     }
 
     public Task<NetworkResponse> ByNameAsync(string name, CancellationToken ct = default)
@@ -55,21 +55,21 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false) != null;
     }
 
-    public async Task<string> CreateAsync(ITestcontainersNetworkConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default)
     {
       var createParameters = new NetworksCreateParameters
       {
         Name = configuration.Name,
         Driver = configuration.Driver.Value,
-        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
-        Options = configuration.Options.ToDictionary(item => item.Key, item => item.Value),
+        Options = configuration.Options?.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
 
-      var id = (await this.Docker.Networks.CreateNetworkAsync(createParameters, ct)
-        .ConfigureAwait(false)).ID;
+      var createNetworkResponse = await this.Docker.Networks.CreateNetworkAsync(createParameters, ct)
+        .ConfigureAwait(false);
 
-      this.logger.DockerNetworkCreated(id);
-      return id;
+      this.logger.DockerNetworkCreated(createNetworkResponse.ID);
+      return createNetworkResponse.ID;
     }
 
     public Task DeleteAsync(string id, CancellationToken ct = default)

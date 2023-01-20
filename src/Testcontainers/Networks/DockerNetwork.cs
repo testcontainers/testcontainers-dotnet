@@ -1,48 +1,79 @@
 ﻿namespace DotNet.Testcontainers.Networks
 {
+  using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
-  /// <inheritdoc cref="IDockerNetwork" />
-  public sealed class DockerNetwork : IDockerNetwork
+  /// <inheritdoc cref="INetwork" />
+  [PublicAPI]
+  internal sealed partial class DockerNetwork : Resource, INetwork
   {
+    private readonly IDockerNetworkOperations dockerNetworkOperations;
+
+    private readonly INetworkConfiguration configuration;
+
+    private NetworkResponse network = new NetworkResponse();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerNetwork" /> class.
     /// </summary>
-    /// <param name="id">The Docker network id.</param>
-    /// <param name="name">The Docker network name.</param>
-    public DockerNetwork(
-      string id,
-      string name)
+    /// <param name="configuration">The network configuration.</param>
+    /// <param name="logger">The logger.</param>
+    public DockerNetwork(INetworkConfiguration configuration, ILogger logger)
     {
-      Guard.Argument(id, nameof(id))
-        .NotNull()
-        .NotEmpty();
-
-      Guard.Argument(name, nameof(name))
-        .NotNull()
-        .NotEmpty();
-
-      this.Id = id;
-      this.Name = name;
+      this.dockerNetworkOperations = new DockerNetworkOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      this.configuration = configuration;
     }
 
     /// <inheritdoc />
-    public string Id { get; }
-
-    /// <inheritdoc />
-    public string Name { get; }
-
-    /// <inheritdoc />
-    public Task CreateAsync(CancellationToken ct = default)
+    [Obsolete("The property is not necessary anymore. Use WithNetwork(string) instead.")]
+    public string Id
     {
-      return Task.CompletedTask;
+      get
+      {
+        this.ThrowIfResourceNotFound();
+        return this.network.ID;
+      }
     }
 
     /// <inheritdoc />
-    public Task DeleteAsync(CancellationToken ct = default)
+    public string Name
     {
-      return Task.CompletedTask;
+      get
+      {
+        this.ThrowIfResourceNotFound();
+        return this.network.Name;
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task CreateAsync(CancellationToken ct = default)
+    {
+      var id = await this.dockerNetworkOperations.CreateAsync(this.configuration, ct)
+        .ConfigureAwait(false);
+
+      this.network = await this.dockerNetworkOperations.ByIdAsync(id, ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(CancellationToken ct = default)
+    {
+      await this.dockerNetworkOperations.DeleteAsync(this.network.ID, ct)
+        .ConfigureAwait(false);
+
+      this.network = new NetworkResponse();
+    }
+
+    /// <inheritdoc />
+    protected override bool Exists()
+    {
+      return !string.IsNullOrEmpty(this.network.ID);
     }
   }
 }

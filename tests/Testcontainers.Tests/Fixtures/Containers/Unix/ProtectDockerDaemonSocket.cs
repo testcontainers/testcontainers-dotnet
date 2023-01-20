@@ -27,7 +27,7 @@
 
     private readonly ITestcontainersContainer container;
 
-    protected ProtectDockerDaemonSocket(ITestcontainersBuilder<TestcontainersContainer> containerConfiguration)
+    protected ProtectDockerDaemonSocket(ContainerBuilder<TestcontainersContainer> containerConfiguration)
     {
       this.container = containerConfiguration
         .WithImage(this.image)
@@ -71,10 +71,11 @@
 
     private sealed class UntilListenOn : IWaitUntil
     {
-      public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+      public async Task<bool> Until(IContainer container, ILogger logger)
       {
-        var (_, stderr) = await testcontainers.GetLogs()
+        var (_, stderr) = await container.GetLogs()
           .ConfigureAwait(false);
+
         return stderr != null && stderr.Contains("API listen on [::]:2376");
       }
     }

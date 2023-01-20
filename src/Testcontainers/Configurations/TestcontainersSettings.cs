@@ -127,7 +127,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [CanBeNull]
-    public static IDockerImage ResourceReaperImage { get; set; }
+    public static IImage ResourceReaperImage { get; set; }
       = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage();
 
     /// <summary>

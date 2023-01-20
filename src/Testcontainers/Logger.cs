@@ -96,7 +96,6 @@
 
       var message = string.Format(CultureInfo.CurrentCulture, "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", this.stopwatch.Elapsed, formatter.Invoke(state, exception));
       console.WriteLine(message);
-      Debug.WriteLine(message);
     }
 
     public bool IsEnabled(LogLevel logLevel)

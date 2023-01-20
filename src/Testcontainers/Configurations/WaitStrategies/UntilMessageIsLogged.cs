@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Configurations
       this.message = message;
     }
 
-    public async Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public async Task<bool> Until(IContainer container, ILogger logger)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
 

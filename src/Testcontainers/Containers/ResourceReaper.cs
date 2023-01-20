@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Containers
   using JetBrains.Annotations;
 
   /// <summary>
-  /// https://hub.docker.com/r/testcontainers/ryuk.
+  /// The Resource Reaper takes care of the remaining Docker resources and removes them: https://dotnet.testcontainers.org/api/resource-reaper/.
   /// </summary>
   [PublicAPI]
   public sealed class ResourceReaper : IAsyncDisposable
@@ -32,7 +32,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IDockerImage RyukImage = new DockerImage("testcontainers/ryuk:0.3.4");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.3.4");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Containers
 
     private readonly CancellationTokenSource maintainConnectionCts = new CancellationTokenSource();
 
-    private readonly TestcontainersContainer resourceReaperContainer;
+    private readonly IContainer resourceReaperContainer;
 
     private Task maintainConnectionTask = Task.CompletedTask;
 
@@ -52,9 +52,9 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
-    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IDockerImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode)
+    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode)
     {
-      this.resourceReaperContainer = new TestcontainersBuilder<TestcontainersContainer>()
+      this.resourceReaperContainer = new ContainerBuilder()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
         .WithImage(resourceReaperImage)
@@ -70,7 +70,7 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Occurs when a ResourceReaper state has changed.
+    /// Occurs when a Resource Reaper state has changed.
     /// </summary>
     /// <remarks>
     /// It emits state changes to uninitialized instances too.
@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <remarks>
     /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, CancellationToken)" />
-    /// or if a <see cref="ITestcontainersContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity}.WithCleanUp" />.
+    /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
@@ -145,6 +145,37 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <inheritdoc />
+    [PublicAPI]
+    public async ValueTask DisposeAsync()
+    {
+      if (this.disposed)
+      {
+        return;
+      }
+
+      this.disposed = true;
+
+      try
+      {
+        this.maintainConnectionCts.Cancel();
+
+        // Close connection before disposing Resource Reaper.
+        await this.maintainConnectionTask
+          .ConfigureAwait(false);
+      }
+      finally
+      {
+        this.maintainConnectionCts.Dispose();
+      }
+
+      if (this.resourceReaperContainer != null)
+      {
+        await this.resourceReaperContainer.DisposeAsync()
+          .ConfigureAwait(false);
+      }
+    }
+
     /// <summary>
     /// Starts and returns a new <see cref="ResourceReaper" /> instance.
     /// </summary>
@@ -156,7 +187,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IDockerImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, requiresPrivilegedMode, initTimeout, ct);
     }
@@ -173,7 +204,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IDockerImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
@@ -212,37 +243,6 @@ namespace DotNet.Testcontainers.Containers
       }
 
       return resourceReaper;
-    }
-
-    /// <inheritdoc />
-    [PublicAPI]
-    public async ValueTask DisposeAsync()
-    {
-      if (this.disposed)
-      {
-        return;
-      }
-
-      this.disposed = true;
-
-      try
-      {
-        this.maintainConnectionCts.Cancel();
-
-        // Close connection before disposing ResourceReaper.
-        await this.maintainConnectionTask
-          .ConfigureAwait(false);
-      }
-      finally
-      {
-        this.maintainConnectionCts.Dispose();
-      }
-
-      if (this.resourceReaperContainer != null)
-      {
-        await this.resourceReaperContainer.DisposeAsync()
-          .ConfigureAwait(false);
-      }
     }
 
     private bool TryGetEndpoint(out string host, out ushort port)

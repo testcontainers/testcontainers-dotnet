@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging.Abstractions;
@@ -50,10 +51,11 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithDockerfile("Dockerfile")
-        .WithDockerfileDirectory(dockerfileDirectory);
+        .WithDockerfileDirectory(dockerfileDirectory)
+        .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
         .ConfigureAwait(false);
 
       // Then
@@ -67,10 +69,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dockerfileDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory(dockerfileDirectory);
+        .WithDockerfileDirectory(dockerfileDirectory)
+        .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.Build())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
         .ConfigureAwait(false);
 
       // Then
@@ -85,19 +88,23 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithName("alpine:custom")
         .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets")
-        .WithDeleteIfExists(true);
+        .WithDeleteIfExists(true)
+        .Build();
 
       // When
-      var imageFromDockerfile1 = await imageFromDockerfileBuilder.Build()
+      await imageFromDockerfileBuilder.CreateAsync()
         .ConfigureAwait(false);
 
-      var imageFromDockerfile2 = await imageFromDockerfileBuilder.Build()
+      await imageFromDockerfileBuilder.CreateAsync()
         .ConfigureAwait(false);
 
       // Then
-      Assert.NotEmpty(imageFromDockerfile1);
-      Assert.NotEmpty(imageFromDockerfile2);
-      Assert.Equal(imageFromDockerfile1, imageFromDockerfile2);
+      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, imageFromDockerfileBuilder.FullName));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Repository));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Name));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Tag));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.FullName));
+      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.GetHostname()));
     }
   }
 }

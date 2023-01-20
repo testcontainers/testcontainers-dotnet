@@ -261,7 +261,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
       async Task CopyResourceMapping(string containerId, IResourceMapping resourceMapping)
       {
@@ -302,8 +302,11 @@ namespace DotNet.Testcontainers.Clients
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
 
-      await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMapping(id, resourceMapping)))
-        .ConfigureAwait(false);
+      if (configuration.ResourceMappings != null)
+      {
+        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMapping(id, resourceMapping)))
+          .ConfigureAwait(false);
+      }
 
       return id;
     }

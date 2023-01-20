@@ -8,7 +8,6 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public interface IWaitUntil
   {
-    [PublicAPI]
-    Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger);
+    Task<bool> Until(IContainer container, ILogger logger);
   }
 }

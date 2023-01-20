@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Containers
     /// <see cref="ResourceReaper" /> maintains the TCP connection to Ryuk.
     /// </summary>
     /// <remarks>
-    /// <see cref="ResourceReaper.GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration, IDockerImage, IMount, bool, TimeSpan, CancellationToken)" /> will complete now.
+    /// <see cref="ResourceReaper.GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration, IImage, IMount, bool, TimeSpan, CancellationToken)" /> will complete now.
     /// </remarks>
     MaintainingConnection,
 

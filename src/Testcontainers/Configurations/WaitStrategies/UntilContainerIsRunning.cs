@@ -8,9 +8,9 @@ namespace DotNet.Testcontainers.Configurations
   {
     private const TestcontainersStates ContainerHasBeenRunningStates = TestcontainersStates.Running | TestcontainersStates.Exited;
 
-    public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public Task<bool> Until(IContainer container, ILogger logger)
     {
-      return Task.FromResult(ContainerHasBeenRunningStates.HasFlag(testcontainers.State));
+      return Task.FromResult(ContainerHasBeenRunningStates.HasFlag(container.State));
     }
   }
 }

@@ -23,7 +23,7 @@
 
     private readonly FileInfo dockerfile;
 
-    private readonly IDockerImage image;
+    private readonly IImage image;
 
     private readonly ILogger logger;
 
@@ -35,7 +35,7 @@
     /// <param name="image">Docker image information to create the tar archive for.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(string dockerfileDirectory, string dockerfile, IDockerImage image, ILogger logger)
+    public DockerfileArchive(string dockerfileDirectory, string dockerfile, IImage image, ILogger logger)
       : this(new DirectoryInfo(dockerfileDirectory), new FileInfo(dockerfile), image, logger)
     {
     }
@@ -48,7 +48,7 @@
     /// <param name="image">Docker image information to create the tar archive for.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(DirectoryInfo dockerfileDirectory, FileInfo dockerfile, IDockerImage image, ILogger logger)
+    public DockerfileArchive(DirectoryInfo dockerfileDirectory, FileInfo dockerfile, IImage image, ILogger logger)
     {
       if (!dockerfileDirectory.Exists)
       {

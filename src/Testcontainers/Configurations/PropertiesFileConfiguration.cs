@@ -127,7 +127,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public IDockerImage GetRyukContainerImage()
+    public IImage GetRyukContainerImage()
     {
       const string propertyName = "ryuk.container.image";
       return this.GetRyukContainerImage(propertyName);

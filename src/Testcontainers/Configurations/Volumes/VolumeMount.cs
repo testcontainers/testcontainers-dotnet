@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="volume">The volume to mount on the host system.</param>
     /// <param name="containerPath">The absolute path of a file or directory to mount in the container.</param>
     /// <param name="accessMode">The Docker volume access mode.</param>
-    public VolumeMount(IDockerVolume volume, string containerPath, AccessMode accessMode)
+    public VolumeMount(IVolume volume, string containerPath, AccessMode accessMode)
     {
       this.Type = MountType.Volume;
       this.Source = volume.Name;

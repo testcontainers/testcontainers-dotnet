@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Configurations
       this.file = file;
     }
 
-    public Task<bool> Until(ITestcontainersContainer testcontainers, ILogger logger)
+    public Task<bool> Until(IContainer container, ILogger logger)
     {
       return Task.FromResult(File.Exists(this.file));
     }
