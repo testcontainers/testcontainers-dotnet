@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers
   /// <summary>
   /// Validates an argument preconditions.
   /// </summary>
-  internal static partial class Guard
+  public static partial class Guard
   {
     /// <summary>
     /// Creates a Guard object that validates argument preconditions.

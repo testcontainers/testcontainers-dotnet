@@ -1,5 +1,6 @@
 namespace Testcontainers.ModuleName;
 
+/// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
 public sealed class ModuleNameContainer : DockerContainer
 {

@@ -50,7 +50,7 @@ See [LICENSE](https://raw.githubusercontent.com/testcontainers/testcontainers-do
 
 ## Copyright
 
-Copyright (c) 2019 - 2022 Andre Hofmeister and other authors.
+Copyright (c) 2019 - 2023 Andre Hofmeister and other authors.
 
 See [contributors][testcontainers-dotnet-contributors] for all contributors.
 

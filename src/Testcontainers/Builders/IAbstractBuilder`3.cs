@@ -88,6 +88,7 @@
     /// Builds an instance of <typeparamref name="TResourceEntity" /> with the given resource configuration.
     /// </summary>
     /// <returns>A configured instance of <typeparamref name="TResourceEntity" />.</returns>
+    /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     [PublicAPI]
     TResourceEntity Build();
   }

@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers
   /// <summary>
   /// Nullability preconditions.
   /// </summary>
-  internal static partial class Guard
+  public static partial class Guard
   {
     /// <summary>
     /// Ensures that an argument value is null.

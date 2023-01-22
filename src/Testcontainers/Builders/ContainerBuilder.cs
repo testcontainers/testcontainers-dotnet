@@ -41,7 +41,7 @@
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private ContainerBuilder(IContainerConfiguration dockerResourceConfiguration)
+    protected ContainerBuilder(IContainerConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
       this.DockerResourceConfiguration = dockerResourceConfiguration;

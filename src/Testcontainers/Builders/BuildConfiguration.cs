@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using System.Linq;
 
-  internal static class BuildConfiguration
+  public static class BuildConfiguration
   {
     /// <summary>
     /// Returns the changed configuration object. If there is no change, the previous configuration object is returned.
