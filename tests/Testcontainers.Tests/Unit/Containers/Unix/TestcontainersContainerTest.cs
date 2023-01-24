@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
       {
-        Assert.Throws<ArgumentNullException>(() => _ = new TestcontainersBuilder<TestcontainersContainer>().Build());
+        Assert.Throws<ArgumentException>(() => _ = new TestcontainersBuilder<TestcontainersContainer>().Build());
       }
 
       [Fact]

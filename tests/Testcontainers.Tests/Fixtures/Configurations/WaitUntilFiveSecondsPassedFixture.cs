@@ -4,13 +4,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging;
 
   public sealed class WaitUntilFiveSecondsPassedFixture : IWaitUntil
   {
     private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    public Task<bool> Until(IContainer container, ILogger logger)
+    public Task<bool> UntilAsync(IContainer container)
     {
       return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
     }

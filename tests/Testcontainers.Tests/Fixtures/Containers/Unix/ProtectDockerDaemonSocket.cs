@@ -8,7 +8,6 @@
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
-  using Microsoft.Extensions.Logging;
   using Xunit;
 
   public abstract class ProtectDockerDaemonSocket : IAsyncLifetime
@@ -71,7 +70,7 @@
 
     private sealed class UntilListenOn : IWaitUntil
     {
-      public async Task<bool> Until(IContainer container, ILogger logger)
+      public async Task<bool> UntilAsync(IContainer container)
       {
         var (_, stderr) = await container.GetLogs()
           .ConfigureAwait(false);

@@ -127,8 +127,9 @@
     /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     protected virtual void Validate()
     {
+      const string message = "Cannot detect the Docker endpoint. Use either the environment variables or the ~/.testcontainers.properties file to customize your configuration:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
-        .DockerEndpointAuthConfigIsSet();
+        .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
     }
 
     /// <summary>

@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitWhile(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
+    public static async Task WaitWhileAsync(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
     {
       var waitTask = Task.Run(
         async () =>
@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitUntil(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
+    public static async Task WaitUntilAsync(Func<Task<bool>> wait, int frequency = 25, int timeout = -1, CancellationToken ct = default)
     {
       var waitTask = Task.Run(
         async () =>

@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Configurations
   using System.IO;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging;
 
   internal class UntilFilesExists : IWaitUntil
   {
@@ -14,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
       this.file = file;
     }
 
-    public Task<bool> Until(IContainer container, ILogger logger)
+    public Task<bool> UntilAsync(IContainer container)
     {
       return Task.FromResult(File.Exists(this.file));
     }

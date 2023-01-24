@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using DotNet.Testcontainers.Configurations;
   using Xunit;
 
   public static class GuardTest
@@ -25,34 +24,31 @@ namespace DotNet.Testcontainers.Tests.Unit
         }
 
         [Fact]
-        public void IfDockerEndpointAuthConfigIsSet()
+        public void ThrowIf()
         {
-          var exception = Record.Exception(() => Guard.Argument(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://127.0.0.1:2375")), nameof(this.IfDockerEndpointAuthConfigIsSet)).DockerEndpointAuthConfigIsSet());
+          var exception = Record.Exception(() => Guard.Argument(new object(), nameof(this.ThrowIf)).ThrowIf(_ => false, _ => new ArgumentException()));
           Assert.Null(exception);
-        }
-      }
-
-      public sealed class ThrowArgumentNullException
-      {
-        [Fact]
-        public void IfNull()
-        {
-          Assert.Throws<ArgumentNullException>(() => Guard.Argument((object)null, nameof(this.IfNull)).NotNull());
-        }
-
-        [Fact]
-        public void IfDockerEndpointAuthConfigIsSet()
-        {
-          Assert.Throws<ArgumentNullException>(() => Guard.Argument((IDockerEndpointAuthenticationConfiguration)null, nameof(this.IfDockerEndpointAuthConfigIsSet)).DockerEndpointAuthConfigIsSet());
         }
       }
 
       public sealed class ThrowArgumentException
       {
         [Fact]
+        public void IfNull()
+        {
+          Assert.Throws<ArgumentException>(() => Guard.Argument((object)null, nameof(this.IfNull)).NotNull());
+        }
+
+        [Fact]
         public void IfNotNull()
         {
           Assert.Throws<ArgumentException>(() => Guard.Argument(new object(), nameof(this.IfNotNull)).Null());
+        }
+
+        [Fact]
+        public void ThrowIf()
+        {
+          Assert.Throws<ArgumentException>(() => Guard.Argument(new object(), nameof(this.ThrowIf)).ThrowIf(_ => true, _ => new ArgumentException()));
         }
       }
     }
