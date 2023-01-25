@@ -12,7 +12,7 @@
         "official-module": {
             "type": "parameter",
             "datatype": "bool",
-            "defaultValue": "true",
+            "defaultValue": "false",
             "description": "Determines whether the template generates an official module or not."
         },
         "official-module-prefix": {
