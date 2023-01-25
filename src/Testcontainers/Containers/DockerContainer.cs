@@ -337,7 +337,7 @@ namespace DotNet.Testcontainers.Containers
     /// Creates the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync"/> are thread-safe for now.
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been created.</returns>
@@ -365,7 +365,7 @@ namespace DotNet.Testcontainers.Containers
     /// Deletes the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync"/> are thread-safe for now.
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been deleted.</returns>
@@ -388,7 +388,7 @@ namespace DotNet.Testcontainers.Containers
     /// Starts the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync"/> are thread-safe for now.
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been started.</returns>
@@ -440,7 +440,7 @@ namespace DotNet.Testcontainers.Containers
     /// Stops the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync"/> are thread-safe for now.
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been stopped.</returns>
