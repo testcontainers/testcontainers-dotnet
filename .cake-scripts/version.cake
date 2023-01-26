@@ -25,6 +25,8 @@ internal sealed class BuildInformation
 
     var environment = buildSystem.GitHubActions.Environment;
 
+    var publishNuGetPackage = context.EnvironmentVariable("PUBLISH_NUGET_PACKAGE");
+
     var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
 
     var git = context.GitBranchCurrent(".");
@@ -67,7 +69,7 @@ internal sealed class BuildInformation
 
     var isReleaseBuild = GetIsReleaseBuild(branch);
 
-    var shouldPublish = GetShouldPublish(branch) && "true".Equals(context.EnvironmentVariable("PUBLISH_NUGET_PACKAGE"), StringComparison.OrdinalIgnoreCase);
+    var shouldPublish = GetShouldPublish(branch) && ("1".Equals(publishNuGetPackage, StringComparison.Ordinal) || (bool.TryParse(publishNuGetPackage, out var result) && result));
 
     if (isFork && isPullRequest && shouldPublish)
     {

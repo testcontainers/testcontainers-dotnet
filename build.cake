@@ -1,8 +1,8 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.8.0
+#tool nuget:?package=dotnet-sonarscanner&version=5.10.0
 
-#addin nuget:?package=Cake.Sonar&version=1.1.29
+#addin nuget:?package=Cake.Sonar&version=1.1.31
 
-#addin nuget:?package=Cake.Git&version=2.0.0
+#addin nuget:?package=Cake.Git&version=3.0.0
 
 #load ".cake-scripts/parameters.cake"
 
@@ -132,7 +132,7 @@ Task("Create-NuGet-Packages")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
-  DotNetPack(param.Projects.Testcontainers.Path.FullPath, new DotNetPackSettings
+  DotNetPack(param.Solution, new DotNetPackSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
@@ -192,6 +192,7 @@ Task("Sonar")
 
 Task("Publish")
   .IsDependentOn("Create-NuGet-Packages")
+  .IsDependentOn("Sign-NuGet-Packages")
   .IsDependentOn("Publish-NuGet-Packages");
 
 RunTarget(param.Target);

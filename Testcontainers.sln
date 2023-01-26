@@ -1,11 +1,11 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF017206-CE20-4DDF-8301-CAC68CED1BE6}"
-ProjectSection(SolutionItems) = preProject
-	CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
-	CONTRIBUTING.md = CONTRIBUTING.md
-	README.md = README.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-7694-4BB9-ABD4-136D6C13634E}"
 EndProject

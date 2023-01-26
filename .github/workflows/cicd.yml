@@ -86,12 +86,15 @@ jobs:
       pull-requests: read
 
     env:
+      CODE_SIGNING_CERTIFICATE_BASE64: ${{ secrets.CODE_SIGNING_CERTIFICATE_BASE64 }}
+      CODE_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}
       FEED_SOURCE: https://api.nuget.org/v3/index.json
-      FEED_APIKEY: ${{ secrets.FEED_APIKEY }}
+      FEED_API_KEY: ${{ secrets.FEED_API_KEY }}
       SONARCLOUD_URL: https://sonarcloud.io
       SONARCLOUD_ORGANIZATION: testcontainers
       SONARCLOUD_KEY: testcontainers_testcontainers-dotnet
       SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+      PUBLISH_NUGET_PACKAGE: ${{ inputs.publish_nuget_package }}
 
     steps:
       - name: Checkout Repository
@@ -115,6 +118,9 @@ jobs:
           Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+src', '${{ github.workspace }}/src' | Set-Content $_ }
           Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+tests', '${{ github.workspace }}/tests' | Set-Content $_ }
         shell: pwsh
+
+      - name: Decode Code Signing Certificate
+        run: echo $CODE_SIGNING_CERTIFICATE_BASE64 | base64 --decode > code-signing-certificate.pfx
 
       - name: Cache NuGet Packages
         uses: actions/cache@v3
@@ -142,8 +148,6 @@ jobs:
 
       - name: Publish NuGet Package
         run: dotnet cake --target=Publish
-        env:
-          PUBLISH_NUGET_PACKAGE: ${{ inputs.publish_nuget_package }}
 
       - uses: release-drafter/release-drafter@6df64e4ba4842c203c604c1f45246c5863410adb
         with:
