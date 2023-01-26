@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Andre Hofmeister and contributors",
+    "description": "A .NET template to scaffold advanced Testcontainers for .NET modules.",
+    "classifications": ["Test", "Testcontainers"],
+    "groupIdentity": "Testcontainers",
+    "identity": "Testcontainers.Module.CSharp",
+    "name": "Testcontainers Module Project",
+    "shortName": "tcm",
+    "sourceName": "ModuleName",
+    "symbols": {
+        "official-module": {
+            "type": "parameter",
+            "datatype": "bool",
+            "defaultValue": "false",
+            "description": "Determines whether the template generates an official module or not."
+        },
+        "official-module-prefix": {
+            "type": "generated",
+            "datatype": "text",
+            "generator": "switch",
+            "fileRename": "Testcontainers.",
+            "replaces": "Testcontainers.",
+            "parameters": {
+                "cases": [
+                    {
+                        "condition": "official-module",
+                        "value": "Testcontainers.",
+                        "description": "Keep the Testcontainers official module prefix."
+                    }
+                ]
+            },
+            "onlyIf": [
+                {
+                    "after": "namespace "
+                }
+            ]
+        }
+    },
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}
