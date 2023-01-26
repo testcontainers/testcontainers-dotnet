@@ -15,6 +15,42 @@
   public interface IContainer : ITestcontainersContainer
   {
     /// <summary>
+    /// Subscribes to the creating event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Creating;
+
+    /// <summary>
+    /// Subscribes to the starting event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Starting;
+
+    /// <summary>
+    /// Subscribes to the stopping event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Stopping;
+
+    /// <summary>
+    /// Subscribes to the created event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Created;
+
+    /// <summary>
+    /// Subscribes to the started event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Started;
+
+    /// <summary>
+    /// Subscribes to the stopped event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Stopped;
+
+    /// <summary>
     /// Gets the logger.
     /// </summary>
     [NotNull]

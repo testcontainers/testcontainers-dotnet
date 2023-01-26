@@ -10,9 +10,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void ShouldThrowArgumentNullExceptionWhenInstantiateDockerImage()
     {
-      Assert.Throws<ArgumentNullException>(() => new DockerImage((string)null));
-      Assert.Throws<ArgumentNullException>(() => new DockerImage(null, null, null));
-      Assert.Throws<ArgumentNullException>(() => new DockerImage("fedora", null, null));
+      Assert.Throws<ArgumentException>(() => new DockerImage((string)null));
+      Assert.Throws<ArgumentException>(() => new DockerImage(null, null, null));
+      Assert.Throws<ArgumentException>(() => new DockerImage("fedora", null, null));
     }
 
     [Fact]

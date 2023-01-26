@@ -1,67 +1,66 @@
 namespace DotNet.Testcontainers
 {
   using System;
-  using System.Diagnostics;
+  using System.Globalization;
   using System.Linq;
-  using JetBrains.Annotations;
 
   /// <summary>
-  /// String preconditions.
+  /// A guard collection of string preconditions.
   /// </summary>
-  internal static partial class Guard
+  public static partial class Guard
   {
     /// <summary>
-    /// Ensures that an argument string value is empty.
+    /// Ensures the argument value is empty.
     /// </summary>
-    /// <param name="argument">String argument to validate.</param>
-    /// <returns>Reference to the Guard object that validates the argument preconditions.</returns>
-    /// <exception cref="ArgumentException">Thrown when argument is not empty.</exception>
-    [PublicAPI]
-    [DebuggerStepThrough]
-    public static ref readonly ArgumentInfo<string> Empty(in this ArgumentInfo<string> argument)
-    {
-      if (argument.Value.Length > 0)
-      {
-        throw new ArgumentException($"{argument.Name} must be empty.", argument.Name);
-      }
-
-      return ref argument;
-    }
-
-    /// <summary>
-    /// Ensure that an argument string value is not empty.
-    /// </summary>
-    /// <param name="argument">String argument to validate.</param>
-    /// <returns>Reference to the Guard object that validates the argument preconditions.</returns>
-    /// <exception cref="ArgumentException">Thrown when argument is empty.</exception>
-    [PublicAPI]
-    [DebuggerStepThrough]
-    public static ref readonly ArgumentInfo<string> NotEmpty(in this ArgumentInfo<string> argument)
+    /// <param name="argument">The argument.</param>
+    /// <param name="exceptionMessage">The exception message.</param>
+    /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
+    /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
+    public static ref readonly ArgumentInfo<string> Empty(in this ArgumentInfo<string> argument, string exceptionMessage = null)
     {
       if (argument.Value.Length == 0)
       {
-        throw new ArgumentException($"{argument.Name} cannot be empty.", argument.Name);
+        return ref argument;
       }
 
-      return ref argument;
+      const string message = "'{0}' must be empty.";
+      throw new ArgumentException(exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name), argument.Name);
     }
 
     /// <summary>
-    /// Ensures that an argument string value does not have uppercase characters.
+    /// Ensures the argument value is not empty.
     /// </summary>
-    /// <param name="argument">String argument to validate.</param>
-    /// <returns>Reference to the Guard object that validates the argument preconditions.</returns>
-    /// <exception cref="ArgumentException">Thrown when argument has uppercase characters.</exception>
-    [PublicAPI]
-    [DebuggerStepThrough]
-    public static ref readonly ArgumentInfo<string> NotUppercase(in this ArgumentInfo<string> argument)
+    /// <param name="argument">The argument.</param>
+    /// <param name="exceptionMessage">The exception message.</param>
+    /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
+    /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
+    public static ref readonly ArgumentInfo<string> NotEmpty(in this ArgumentInfo<string> argument, string exceptionMessage = null)
     {
-      if (argument.Value.Any(char.IsUpper))
+      if (argument.Value.Length > 0)
       {
-        throw new ArgumentException(argument.Name, $"{argument.Name} cannot have uppercase characters.");
+        return ref argument;
       }
 
-      return ref argument;
+      const string message = "'{0}' cannot be empty.";
+      throw new ArgumentException(exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name), argument.Name);
+    }
+
+    /// <summary>
+    /// Ensures the argument value does not contain uppercase characters.
+    /// </summary>
+    /// <param name="argument">The argument.</param>
+    /// <param name="exceptionMessage">The exception message.</param>
+    /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
+    /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
+    public static ref readonly ArgumentInfo<string> NotUppercase(in this ArgumentInfo<string> argument, string exceptionMessage = null)
+    {
+      if (!argument.Value.Any(char.IsUpper))
+      {
+        return ref argument;
+      }
+
+      const string message = "'{0}' cannot contain uppercase characters.";
+      throw new ArgumentException(exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name), argument.Name);
     }
   }
 }

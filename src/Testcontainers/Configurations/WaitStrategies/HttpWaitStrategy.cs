@@ -8,7 +8,6 @@
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// Wait for an HTTP(S) endpoint to return a particular status code.
@@ -43,7 +42,7 @@
     }
 
     /// <inheritdoc />
-    public async Task<bool> Until(IContainer container, ILogger logger)
+    public async Task<bool> UntilAsync(IContainer container)
     {
       // Java falls back to the first exposed port. The .NET wait strategies do not have access to the exposed port information yet.
       var containerPort = this.portNumber.GetValueOrDefault(Uri.UriSchemeHttp.Equals(this.schemeName, StringComparison.OrdinalIgnoreCase) ? HttpPort : HttpsPort);

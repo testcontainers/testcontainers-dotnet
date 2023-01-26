@@ -46,14 +46,6 @@ namespace DotNet.Testcontainers.Clients
     Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default);
 
     /// <summary>
-    /// Gets the Testcontainers.
-    /// </summary>
-    /// <param name="id">Docker container id.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that gets the Testcontainers.</returns>
-    Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default);
-
-    /// <summary>
     /// Gets the Testcontainers inspect information.
     /// </summary>
     /// <param name="id">Docker container id.</param>

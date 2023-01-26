@@ -1,37 +1,39 @@
 namespace DotNet.Testcontainers
 {
   using System.Diagnostics;
-  using System.Runtime.CompilerServices;
+  using JetBrains.Annotations;
 
   /// <summary>
-  /// Validates an argument preconditions.
+  /// A guard to determine if one or more conditions are not met.
   /// </summary>
-  internal static partial class Guard
+  [DebuggerStepThrough]
+  [PublicAPI]
+  public static partial class Guard
   {
     /// <summary>
-    /// Creates a Guard object that validates argument preconditions.
+    /// Initializes a new instance of the <see cref="ArgumentInfo{TType}" /> struct.
     /// </summary>
-    /// <param name="value">Argument value.</param>
-    /// <param name="name">Argument name.</param>
-    /// <typeparam name="TType">Type of the argument.</typeparam>
-    /// <returns>A Guard object that validates argument preconditions.</returns>
+    /// <param name="value">The value.</param>
+    /// <param name="name">The name.</param>
+    /// <typeparam name="TType">The type.</typeparam>
+    /// <returns>A new instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
     public static ArgumentInfo<TType> Argument<TType>(TType value, string name)
     {
       return new ArgumentInfo<TType>(value, name);
     }
 
     /// <summary>
-    /// Represents an argument.
+    /// An argument.
     /// </summary>
-    /// <typeparam name="TType">Type of the argument.</typeparam>
+    /// <typeparam name="TType">The type.</typeparam>
+    [DebuggerStepThrough]
     public readonly struct ArgumentInfo<TType>
     {
       /// <summary>
       /// Initializes a new instance of the <see cref="ArgumentInfo{TType}" /> struct.
       /// </summary>
-      /// <param name="value">Argument value.</param>
-      /// <param name="name">Argument name.</param>
-      [DebuggerStepThrough]
+      /// <param name="value">The value.</param>
+      /// <param name="name">The name.</param>
       public ArgumentInfo(TType value, string name)
       {
         this.Value = value;
@@ -39,21 +41,19 @@ namespace DotNet.Testcontainers
       }
 
       /// <summary>
-      /// Gets the argument value.
+      /// Gets the value.
       /// </summary>
       public TType Value { get; }
 
       /// <summary>
-      /// Gets the argument name.
+      /// Gets the name.
       /// </summary>
       public string Name { get; }
 
       /// <summary>
-      /// Checks whether the argument value is null or not.
+      /// Checks whether the argument has a value or not.
       /// </summary>
-      /// <returns>True if the argument value is not null, otherwise false.</returns>
-      [DebuggerStepThrough]
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      /// <returns>True if the argument has a value; otherwise, false.</returns>
       public bool HasValue()
       {
         return this.Value != null;

@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging;
 
   internal class UntilOperationIsSucceeded : IWaitUntil
   {
@@ -19,7 +18,7 @@ namespace DotNet.Testcontainers.Configurations
       this.maxCallCount = maxCallCount;
     }
 
-    public Task<bool> Until(IContainer container, ILogger logger)
+    public Task<bool> UntilAsync(IContainer container)
     {
       if (++this.tryCount > this.maxCallCount)
       {
