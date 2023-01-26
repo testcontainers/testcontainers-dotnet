@@ -62,7 +62,7 @@ internal sealed class NuGetCredentials
     return new NuGetCredentials
     (
       context.EnvironmentVariable("FEED_SOURCE"),
-      context.EnvironmentVariable("FEED_APIKEY")
+      context.EnvironmentVariable("FEED_API_KEY")
     );
   }
 }
