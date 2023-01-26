@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="TestcontainerMessageBrokerConfiguration" />
   [PublicAPI]
@@ -39,7 +38,7 @@ namespace DotNet.Testcontainers.Configurations
 
     private sealed class UntilReady : IWaitUntil
     {
-      public async Task<bool> Until(IContainer container, ILogger logger)
+      public async Task<bool> UntilAsync(IContainer container)
       {
         var (stdout, _) = await container.GetLogs()
           .ConfigureAwait(false);

@@ -88,12 +88,6 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<ContainerListResponse> GetContainer(string id, CancellationToken ct = default)
-    {
-      return this.containers.ByIdAsync(id, ct);
-    }
-
-    /// <inheritdoc />
     public Task<ContainerInspectResponse> InspectContainer(string id, CancellationToken ct = default)
     {
       return this.containers.InspectAsync(id, ct);

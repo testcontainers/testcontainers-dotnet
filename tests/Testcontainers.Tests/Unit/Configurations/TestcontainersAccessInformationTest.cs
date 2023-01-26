@@ -86,7 +86,6 @@ namespace DotNet.Testcontainers.Tests.Unit
           Assert.Throws<InvalidOperationException>(() => testcontainer.IpAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.MacAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.GetMappedPublicPort(0));
-          await Assert.ThrowsAsync<InvalidOperationException>(() => testcontainer.StopAsync());
         }
       }
 

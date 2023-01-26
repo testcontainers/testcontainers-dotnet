@@ -9,7 +9,6 @@
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
   public sealed class WaitUntilHttpRequestIsSucceededTest : IAsyncLifetime
@@ -46,7 +45,7 @@
     [MemberData(nameof(GetHttpWaitStrategies))]
     public async Task HttpWaitStrategyReceivesStatusCode(HttpWaitStrategy httpWaitStrategy)
     {
-      var succeeded = await httpWaitStrategy.Until(this.container, NullLogger.Instance)
+      var succeeded = await httpWaitStrategy.UntilAsync(this.container)
         .ConfigureAwait(false);
 
       Assert.True(succeeded);
@@ -61,7 +60,7 @@
       var httpWaitStrategy = new HttpWaitStrategy().WithHeaders(httpHeaders);
 
       // When
-      var succeeded = await httpWaitStrategy.Until(this.container, NullLogger.Instance)
+      var succeeded = await httpWaitStrategy.UntilAsync(this.container)
         .ConfigureAwait(false);
 
       await Task.Delay(TimeSpan.FromSeconds(1))

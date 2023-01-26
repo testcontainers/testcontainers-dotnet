@@ -20,15 +20,17 @@ namespace DotNet.Testcontainers.Containers
   {
     private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
 
+    private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
+
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
     private readonly ITestcontainersClient client;
 
     private readonly IContainerConfiguration configuration;
 
-    private int disposed;
-
     private ContainerInspectResponse container = new ContainerInspectResponse();
+
+    private int disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
@@ -41,6 +43,24 @@ namespace DotNet.Testcontainers.Containers
       this.configuration = configuration;
       this.Logger = logger;
     }
+
+    /// <inheritdoc />
+    public event EventHandler Creating;
+
+    /// <inheritdoc />
+    public event EventHandler Starting;
+
+    /// <inheritdoc />
+    public event EventHandler Stopping;
+
+    /// <inheritdoc />
+    public event EventHandler Created;
+
+    /// <inheritdoc />
+    public event EventHandler Started;
+
+    /// <inheritdoc />
+    public event EventHandler Stopped;
 
     /// <inheritdoc />
     public ILogger Logger { get; }
@@ -95,19 +115,38 @@ namespace DotNet.Testcontainers.Containers
           return TestcontainersSettings.DockerHostOverride;
         }
 
-        var dockerHostUri = this.configuration.DockerEndpointAuthConfig.Endpoint;
+        var dockerEndpoint = this.configuration.DockerEndpointAuthConfig.Endpoint;
 
-        switch (dockerHostUri.Scheme)
+        switch (dockerEndpoint.Scheme)
         {
           case "http":
           case "https":
           case "tcp":
-            return dockerHostUri.Host;
+          {
+            return dockerEndpoint.Host;
+          }
+
           case "npipe":
           case "unix":
-            return this.GetContainerGateway();
+          {
+            const string localhost = "127.0.0.1";
+
+            if (!this.Exists())
+            {
+              return localhost;
+            }
+
+            if (!this.client.IsRunningInsideDocker)
+            {
+              return localhost;
+            }
+
+            var endpointSettings = this.container.NetworkSettings.Networks.First().Value;
+            return endpointSettings.Gateway;
+          }
+
           default:
-            throw new InvalidOperationException($"Docker endpoint {dockerHostUri} is not supported.");
+            throw new InvalidOperationException($"Docker endpoint {dockerEndpoint} is not supported.");
         }
       }
     }
@@ -173,8 +212,7 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.container.State.Health.FailingStreak;
+        return ContainerHasHealthCheck.HasFlag(this.Health) ? this.container.State.Health.FailingStreak : 0;
       }
     }
 
@@ -189,7 +227,7 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfResourceNotFound();
 
-      if (this.container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portMap) && ushort.TryParse(portMap.First().HostPort, out var publicPort))
+      if (this.container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.First().HostPort, out var publicPort))
       {
         return publicPort;
       }
@@ -212,43 +250,43 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public virtual async Task StartAsync(CancellationToken ct = default)
+    public async ValueTask DisposeAsync()
     {
-      await this.semaphoreSlim.WaitAsync(ct)
+      await this.DisposeAsyncCore()
         .ConfigureAwait(false);
 
-      try
-      {
-        this.container = await this.Create(ct)
-          .ConfigureAwait(false);
+      GC.SuppressFinalize(this);
+    }
 
-        this.container = await this.Start(this.Id, ct)
-          .ConfigureAwait(false);
-      }
-      finally
+    /// <summary>
+    /// Deletes the container.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been deleted.</returns>
+    [Obsolete("Use DisposeAsync() instead.")]
+    public Task CleanUpAsync(CancellationToken ct = default)
+    {
+      using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        this.semaphoreSlim.Release();
+        return this.UnsafeDeleteAsync(ct);
       }
     }
 
     /// <inheritdoc />
-    public virtual async Task StopAsync(CancellationToken ct = default)
+    public virtual Task StartAsync(CancellationToken ct = default)
     {
-      await this.semaphoreSlim.WaitAsync(ct)
-        .ConfigureAwait(false);
+      using (_ = new AcquireLock(this.semaphoreSlim))
+      {
+        return this.UnsafeStartAsync(ct);
+      }
+    }
 
-      try
+    /// <inheritdoc />
+    public virtual Task StopAsync(CancellationToken ct = default)
+    {
+      using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        this.container = await this.Stop(this.Id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerContainerNotFoundException)
-      {
-        this.container = new ContainerInspectResponse();
-      }
-      finally
-      {
-        this.semaphoreSlim.Release();
+        return this.UnsafeStopAsync(ct);
       }
     }
 
@@ -270,34 +308,167 @@ namespace DotNet.Testcontainers.Containers
       return this.client.ExecAsync(this.Id, command, ct);
     }
 
-    /// <summary>
-    /// Removes the Testcontainers.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that represents the asynchronous clean up operation of a Testcontainers.</returns>
-    public async Task CleanUpAsync(CancellationToken ct = default)
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    protected virtual async ValueTask DisposeAsyncCore()
     {
-      await this.semaphoreSlim.WaitAsync(ct)
+      if (1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0)))
+      {
+        return;
+      }
+
+      using (_ = new AcquireLock(this.semaphoreSlim))
+      {
+        if (Guid.Empty.Equals(this.configuration.SessionId))
+        {
+          await this.UnsafeStopAsync()
+            .ConfigureAwait(false);
+        }
+        else
+        {
+          await this.UnsafeDeleteAsync()
+            .ConfigureAwait(false);
+        }
+      }
+
+      this.semaphoreSlim.Dispose();
+    }
+
+    /// <summary>
+    /// Creates the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been created.</returns>
+    protected virtual async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
+      if (this.Exists())
+      {
+        return;
+      }
+
+      this.Creating?.Invoke(this, EventArgs.Empty);
+
+      var id = await this.client.RunAsync(this.configuration, ct)
+        .ConfigureAwait(false);
+
+      this.container = await this.client.InspectContainer(id, ct)
+        .ConfigureAwait(false);
+
+      this.Created?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Deletes the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been deleted.</returns>
+    protected virtual async Task UnsafeDeleteAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
+      if (!this.Exists())
+      {
+        return;
+      }
+
+      await this.client.RemoveAsync(this.container.ID, ct)
+        .ConfigureAwait(false);
+
+      this.container = new ContainerInspectResponse();
+    }
+
+    /// <summary>
+    /// Starts the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been started.</returns>
+    protected virtual async Task UnsafeStartAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
+      await this.UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
+
+      await this.client.AttachAsync(this.container.ID, this.configuration.OutputConsumer, ct)
+        .ConfigureAwait(false);
+
+      await this.client.StartAsync(this.container.ID, ct)
+        .ConfigureAwait(false);
+
+      this.container = await this.client.InspectContainer(this.container.ID, ct)
+        .ConfigureAwait(false);
+
+      this.Starting?.Invoke(this, EventArgs.Empty);
+
+      await this.configuration.StartupCallback(this, ct)
+        .ConfigureAwait(false);
+
+      // Do not use a too small frequency. The Docker endpoint cancels too many concurrent operations (requests).
+      var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
+
+      const int timeout = -1;
+
+      async Task<bool> CheckReadiness(IWaitUntil wait)
+      {
+        this.container = await this.client.InspectContainer(this.container.ID, ct)
+          .ConfigureAwait(false);
+
+        return await wait.UntilAsync(this)
+          .ConfigureAwait(false);
+      }
+
+      foreach (var waitStrategy in this.configuration.WaitStrategies)
+      {
+        await WaitStrategy.WaitUntilAsync(() => CheckReadiness(waitStrategy), frequency, timeout, ct)
+          .ConfigureAwait(false);
+      }
+
+      this.Started?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Stops the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been stopped.</returns>
+    protected virtual async Task UnsafeStopAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
+      if (!this.Exists())
+      {
+        return;
+      }
+
+      this.Stopping?.Invoke(this, EventArgs.Empty);
+
+      await this.client.StopAsync(this.container.ID, ct)
         .ConfigureAwait(false);
 
       try
       {
-        this.container = await this.CleanUp(this.Id, ct)
+        this.container = await this.client.InspectContainer(this.container.ID, ct)
           .ConfigureAwait(false);
       }
-      finally
+      catch (DockerContainerNotFoundException)
       {
-        this.semaphoreSlim.Release();
+        this.container = new ContainerInspectResponse();
       }
-    }
 
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-      await this.DisposeAsyncCore()
-        .ConfigureAwait(false);
-
-      GC.SuppressFinalize(this);
+      this.Stopped?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
@@ -307,123 +478,29 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Releases any resources associated with the instance of <see cref="DockerContainer" />.
+    /// Throws an <see cref="InvalidOperationException" /> when the lock is not acquired.
     /// </summary>
-    /// <returns>Value task that completes when any resources associated with the instance have been released.</returns>
-    protected virtual async ValueTask DisposeAsyncCore()
+    /// <exception cref="InvalidOperationException">The lock is not acquired.</exception>
+    protected virtual void ThrowIfLockNotAcquired()
     {
-      if (1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0)))
-      {
-        return;
-      }
-
-      if (!ContainerHasBeenCreatedStates.HasFlag(this.State))
-      {
-        return;
-      }
-
-      // If someone calls `DisposeAsync`, we can immediately remove the container. We do not need to wait for the Resource Reaper.
-      if (Guid.Empty.Equals(this.configuration.SessionId))
-      {
-        await this.StopAsync()
-          .ConfigureAwait(false);
-      }
-      else
-      {
-        await this.CleanUpAsync()
-          .ConfigureAwait(false);
-      }
-
-      this.semaphoreSlim.Dispose();
+      _ = Guard.Argument(this.semaphoreSlim, nameof(this.semaphoreSlim))
+        .ThrowIf(argument => argument.Value.CurrentCount > 0, _ => new InvalidOperationException("Unsafe method call requires lock."));
     }
 
-    private async Task<ContainerInspectResponse> Create(CancellationToken ct = default)
+    private sealed class AcquireLock : IDisposable
     {
-      if (ContainerHasBeenCreatedStates.HasFlag(this.State))
+      private readonly SemaphoreSlim semaphoreSlim;
+
+      public AcquireLock(SemaphoreSlim semaphoreSlim)
       {
-        return this.container;
+        this.semaphoreSlim = semaphoreSlim;
+        this.semaphoreSlim.Wait();
       }
 
-      var id = await this.client.RunAsync(this.configuration, ct)
-        .ConfigureAwait(false);
-
-      return await this.client.InspectContainer(id, ct)
-        .ConfigureAwait(false);
-    }
-
-    private async Task<ContainerInspectResponse> Start(string id, CancellationToken ct = default)
-    {
-      await this.client.AttachAsync(id, this.configuration.OutputConsumer, ct)
-        .ConfigureAwait(false);
-
-      await this.client.StartAsync(id, ct)
-        .ConfigureAwait(false);
-
-      this.container = await this.client.InspectContainer(id, ct)
-        .ConfigureAwait(false);
-
-      await this.configuration.StartupCallback(this, ct)
-        .ConfigureAwait(false);
-
-      // Do not use a too small frequency. Especially with a lot of containers,
-      // we send many operations to the Docker endpoint. The endpoint may cancel operations.
-      var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
-
-      const int timeout = -1;
-
-      foreach (var waitStrategy in this.configuration.WaitStrategies)
+      public void Dispose()
       {
-        await WaitStrategy.WaitUntil(
-            async () =>
-            {
-              this.container = await this.client.InspectContainer(id, ct)
-                .ConfigureAwait(false);
-
-              return await waitStrategy.Until(this, this.Logger)
-                .ConfigureAwait(false);
-            },
-            frequency,
-            timeout,
-            ct)
-          .ConfigureAwait(false);
+        this.semaphoreSlim.Release();
       }
-
-      return this.container;
-    }
-
-    private async Task<ContainerInspectResponse> Stop(string id, CancellationToken ct = default)
-    {
-      await this.client.StopAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return await this.client.InspectContainer(id, ct)
-        .ConfigureAwait(false);
-    }
-
-    private async Task<ContainerInspectResponse> CleanUp(string id, CancellationToken ct = default)
-    {
-      await this.client.RemoveAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return new ContainerInspectResponse();
-    }
-
-    private string GetContainerGateway()
-    {
-      const string localhost = "127.0.0.1";
-
-      if (!ContainerHasBeenCreatedStates.HasFlag(this.State))
-      {
-        return localhost;
-      }
-
-      if (!this.client.IsRunningInsideDocker)
-      {
-        return localhost;
-      }
-
-      var endpointSettings = this.container.NetworkSettings.Networks.Values.FirstOrDefault();
-      return endpointSettings == null ? localhost : endpointSettings.Gateway;
     }
   }
 }

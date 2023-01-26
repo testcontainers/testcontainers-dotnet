@@ -1,6 +1,7 @@
 ﻿namespace DotNet.Testcontainers
 {
   using System;
+  using System.Globalization;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -21,13 +22,9 @@
     /// <exception cref="InvalidOperationException">The resource was not found.</exception>
     protected virtual void ThrowIfResourceNotFound()
     {
-      if (this.Exists())
-      {
-        return;
-      }
-
-      var resourceType = this.GetType().Name;
-      throw new InvalidOperationException($"Could not find resource '{resourceType}'. Please create the resource by calling StartAsync(CancellationToken) or CreateAsync(CancellationToken) first.");
+      const string message = "Could not find resource '{0}'. Please create the resource by calling StartAsync(CancellationToken) or CreateAsync(CancellationToken).";
+      _ = Guard.Argument(this, this.GetType().Name)
+        .ThrowIf(argument => !argument.Value.Exists(), argument => new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, message, argument.Name)));
     }
   }
 }

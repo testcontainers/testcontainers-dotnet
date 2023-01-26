@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Configurations
   using System.Text.RegularExpressions;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging;
 
   internal class UntilMessageIsLogged : IWaitUntil
   {
@@ -20,7 +19,7 @@ namespace DotNet.Testcontainers.Configurations
       this.message = message;
     }
 
-    public async Task<bool> Until(IContainer container, ILogger logger)
+    public async Task<bool> UntilAsync(IContainer container)
     {
       this.stream.Seek(0, SeekOrigin.Begin);
 
