@@ -5,6 +5,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2022.3.1"/>
-        <PackageReference Include="Testcontainers" Version="2.4.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj" />
     </ItemGroup>
 </Project>
