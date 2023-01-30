@@ -8,7 +8,7 @@
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImagesCreateParameters>, IImageFromDockerfileConfiguration
+  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
@@ -36,7 +36,7 @@
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ImageFromDockerfileConfiguration(IResourceConfiguration<ImagesCreateParameters> resourceConfiguration)
+    public ImageFromDockerfileConfiguration(IResourceConfiguration<ImageBuildParameters> resourceConfiguration)
       : base(resourceConfiguration)
     {
     }

@@ -25,7 +25,7 @@
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, ImagesCreateParameters, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
+  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, ImageBuildParameters, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
@@ -112,7 +112,7 @@
     }
 
     /// <inheritdoc />
-    protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration<ImagesCreateParameters> resourceConfiguration)
+    protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration<ImageBuildParameters> resourceConfiguration)
     {
       return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
     }

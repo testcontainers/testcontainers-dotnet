@@ -61,6 +61,14 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
 
+      if (configuration.ParameterModifiers != null)
+      {
+        foreach (var parameterModifier in configuration.ParameterModifiers)
+        {
+          parameterModifier(createParameters);
+        }
+      }
+
       var createVolumeResponse = await this.Docker.Volumes.CreateAsync(createParameters, ct)
         .ConfigureAwait(false);
 

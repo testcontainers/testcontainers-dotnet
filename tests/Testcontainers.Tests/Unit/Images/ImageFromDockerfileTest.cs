@@ -84,11 +84,16 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task BuildsDockerImage()
     {
       // Given
+      IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      IImage tag2 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
-        .WithName("alpine:custom")
+        .WithName(tag1)
         .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets")
         .WithDeleteIfExists(true)
+        .WithCreateParameterModifier(parameterModifier => parameterModifier.Tags.Add(tag2.FullName))
         .Build();
 
       // When
@@ -99,12 +104,13 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // Then
-      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, imageFromDockerfileBuilder.FullName));
-      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Repository));
-      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Name));
-      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.Tag));
-      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.FullName));
-      Assert.Null(Record.Exception(() => imageFromDockerfileBuilder.GetHostname()));
+      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));
+      Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag2.FullName));
+      Assert.NotNull(imageFromDockerfileBuilder.Repository);
+      Assert.NotNull(imageFromDockerfileBuilder.Name);
+      Assert.NotNull(imageFromDockerfileBuilder.Tag);
+      Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.Null(imageFromDockerfileBuilder.GetHostname());
     }
   }
 }

@@ -106,10 +106,18 @@ namespace DotNet.Testcontainers.Clients
       var buildParameters = new ImageBuildParameters
       {
         Dockerfile = configuration.Dockerfile,
-        Tags = new[] { image.FullName },
+        Tags = new List<string> { image.FullName },
         BuildArgs = configuration.BuildArguments?.ToDictionary(item => item.Key, item => item.Value),
         Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
+
+      if (configuration.ParameterModifiers != null)
+      {
+        foreach (var parameterModifier in configuration.ParameterModifiers)
+        {
+          parameterModifier(buildParameters);
+        }
+      }
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(ct)
         .ConfigureAwait(false);
