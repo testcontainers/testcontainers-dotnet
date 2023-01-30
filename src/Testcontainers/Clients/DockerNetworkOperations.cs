@@ -65,6 +65,14 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
       };
 
+      if (configuration.ParameterModifiers != null)
+      {
+        foreach (var parameterModifier in configuration.ParameterModifiers)
+        {
+          parameterModifier(createParameters);
+        }
+      }
+
       var createNetworkResponse = await this.Docker.Networks.CreateNetworkAsync(createParameters, ct)
         .ConfigureAwait(false);
 

@@ -9,7 +9,7 @@
   /// An image configuration.
   /// </summary>
   [PublicAPI]
-  public interface IImageFromDockerfileConfiguration : IResourceConfiguration<ImagesCreateParameters>
+  public interface IImageFromDockerfileConfiguration : IResourceConfiguration<ImageBuildParameters>
   {
     /// <summary>
     /// Gets a value indicating whether Testcontainers removes an existing image or not.

@@ -68,6 +68,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           Assert.NotEmpty(testcontainer.Name);
           Assert.NotEmpty(testcontainer.IpAddress);
           Assert.NotEmpty(testcontainer.MacAddress);
+          Assert.NotEmpty(testcontainer.Hostname);
         }
       }
 
@@ -82,10 +83,13 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
         {
+          Assert.Throws<InvalidOperationException>(() => testcontainer.Id);
           Assert.Throws<InvalidOperationException>(() => testcontainer.Name);
           Assert.Throws<InvalidOperationException>(() => testcontainer.IpAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.MacAddress);
           Assert.Throws<InvalidOperationException>(() => testcontainer.GetMappedPublicPort(0));
+          Assert.Equal(TestcontainersStates.Undefined, testcontainer.State);
+          Assert.Equal(TestcontainersHealthStatus.Undefined, testcontainer.Health);
         }
       }
 
