@@ -46,7 +46,7 @@ It is possible to configure Testcontainers to work for other Docker setups, such
 
 ## License
 
-See [LICENSE](https://raw.githubusercontent.com/testcontainers/testcontainers-dotnet/master/LICENSE).
+See [LICENSE](https://raw.githubusercontent.com/testcontainers/testcontainers-dotnet/main/LICENSE).
 
 ## Copyright
 
