@@ -9,7 +9,7 @@ public sealed class ModuleNameContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public ModuleNameContainer(IContainerConfiguration configuration, ILogger logger)
+    public ModuleNameContainer(ModuleNameConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
     }

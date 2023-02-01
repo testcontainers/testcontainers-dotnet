@@ -154,7 +154,7 @@ teams:
     # * `triage` - Recommended for contributors who need to proactively manage issues and pull requests without write access.
 
 branches:
-  - name: master
+  - name: main
     # https://docs.github.com/en/rest/reference/repos#update-branch-protection
     # Branch Protection settings. Set to null to disable
     protection:
@@ -169,7 +169,7 @@ branches:
         # Specify which users and teams can dismiss pull request reviews. Pass an empty dismissal_restrictions object to disable. User and team dismissal_restrictions are only available for organization-owned repositories. Omit this parameter for personal repositories.
         dismissal_restrictions:
           users: []
-          teams: [dotnet-team]
+          teams: [ dotnet-team ]
       # Required. Require status checks to pass before merging. Set to null to disable
       required_status_checks:
         # Required. Require branches to be up to date before merging.
@@ -184,7 +184,7 @@ branches:
       restrictions:
         apps: []
         users: []
-        teams: [dotnet-team]
+        teams: [ dotnet-team ]
 
   - name: develop
     # https://docs.github.com/en/rest/reference/repos#update-branch-protection
@@ -201,7 +201,7 @@ branches:
         # Specify which users and teams can dismiss pull request reviews. Pass an empty dismissal_restrictions object to disable. User and team dismissal_restrictions are only available for organization-owned repositories. Omit this parameter for personal repositories.
         dismissal_restrictions:
           users: []
-          teams: [dotnet-team]
+          teams: [ dotnet-team ]
       # Required. Require status checks to pass before merging. Set to null to disable
       required_status_checks:
         # Required. Require branches to be up to date before merging.
@@ -216,4 +216,4 @@ branches:
       restrictions:
         apps: []
         users: []
-        teams: [dotnet-team]
+        teams: [ dotnet-team ]

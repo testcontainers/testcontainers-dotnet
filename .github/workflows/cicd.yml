@@ -2,9 +2,9 @@ name: Continuous Integration & Delivery
 
 on:
   push:
-    branches: [ develop, master, bugfix/*, feature/* ]
+    branches: [ develop, main, bugfix/*, feature/* ]
   pull_request:
-    branches: [ develop, master ]
+    branches: [ develop, main ]
   workflow_dispatch:
     inputs:
       publish_nuget_package:
@@ -73,7 +73,7 @@ jobs:
             test-results
 
   publish:
-    if: ${{ contains(fromJson('["develop", "master"]'), github.ref_name) }}
+    if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
 
     needs: build
 

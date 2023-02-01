@@ -103,13 +103,13 @@ internal sealed class BuildInformation
 
   private static bool GetIsReleaseBuild(string branch)
   {
-    var branches = new[] { "master" };
+    var branches = new[] { "main" };
     return branches.Any(b => StringComparer.OrdinalIgnoreCase.Equals(b, branch));
   }
 
   private static bool GetShouldPublish(string branch)
   {
-    var branches = new[] { "master", "develop" };
+    var branches = new[] { "main", "develop" };
     return branches.Any(b => StringComparer.OrdinalIgnoreCase.Equals(b, branch));
   }
 }

@@ -79,6 +79,9 @@
     /// <summary>
     /// Allows low level modifications of the Docker.DotNet entity after the builder configuration has been applied. Multiple low level modifications will be executed in order of insertion.
     /// </summary>
+    /// <remarks>
+    /// This API is intended for special use cases only. We do not recommend using it and cannot maintain backwards compatibility.
+    /// </remarks>
     /// <param name="parameterModifier">The action that invokes modifying the Docker.DotNet entity instance.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]

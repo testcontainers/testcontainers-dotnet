@@ -7,6 +7,7 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleNameConfiguration" /> class.
     /// </summary>
+    /// <param name="config">The ModuleName config.</param>
     public ModuleNameConfiguration(object config = null)
     {
         // // Sets the custom builder methods property values.
@@ -20,7 +21,7 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     public ModuleNameConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // Passes the configuration upwards to the base implementations to create an updated immutable copy. 
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -30,7 +31,7 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     public ModuleNameConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // Passes the configuration upwards to the base implementations to create an updated immutable copy. 
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -40,7 +41,7 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     public ModuleNameConfiguration(ModuleNameConfiguration resourceConfiguration)
         : this(new ModuleNameConfiguration(), resourceConfiguration)
     {
-        // Passes the configuration upwards to the base implementations to create an updated immutable copy. 
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
