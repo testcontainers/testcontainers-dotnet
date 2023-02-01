@@ -120,8 +120,8 @@ jobs:
         shell: pwsh
 
       - name: Decode Code Signing Certificate
-        shell: bash
         run: echo $CODE_SIGNING_CERTIFICATE_BASE64 | base64 --decode > code-signing-certificate.pfx
+        shell: bash
 
       - name: Cache NuGet Packages
         uses: actions/cache@v3
