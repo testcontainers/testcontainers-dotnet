@@ -17,11 +17,11 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   private static readonly WeatherForecastImage Image = new();
 
-  private readonly IDockerNetwork _weatherForecastNetwork;
+  private readonly INetwork _weatherForecastNetwork;
 
-  private readonly IDockerContainer _mssqlContainer;
+  private readonly IContainer _mssqlContainer;
 
-  private readonly IDockerContainer _weatherForecastContainer;
+  private readonly IContainer _weatherForecastContainer;
 
   public WeatherForecastContainer()
     : base(new HttpClientHandler
@@ -36,17 +36,19 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
     var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
 
-    _weatherForecastNetwork = new TestcontainersNetworkBuilder()
+    _weatherForecastNetwork = new NetworkBuilder()
       .WithName(Guid.NewGuid().ToString("D"))
       .Build();
 
+#pragma warning disable 618
     _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
+#pragma warning restore 618
       .WithDatabase(mssqlConfiguration)
       .WithNetwork(_weatherForecastNetwork)
       .WithNetworkAliases(weatherForecastStorage)
       .Build();
 
-    _weatherForecastContainer = new TestcontainersBuilder<TestcontainersContainer>()
+    _weatherForecastContainer = new ContainerBuilder()
       .WithImage(Image)
       .WithNetwork(_weatherForecastNetwork)
       .WithPortBinding(WeatherForecastImage.HttpsPort, true)

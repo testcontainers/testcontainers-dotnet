@@ -8,7 +8,9 @@ namespace WeatherForecast;
 
 public sealed class DatabaseContainer : IHostedService
 {
+#pragma warning disable 618
   private readonly TestcontainerDatabase _container = new TestcontainersBuilder<MsSqlTestcontainer>()
+#pragma warning restore 618
     .WithDatabase(new DatabaseContainerConfiguration())
     .Build();
 

@@ -10,7 +10,7 @@ using Xunit;
 namespace WeatherForecast.Tests;
 
 [UsedImplicitly]
-public sealed class WeatherForecastImage : IDockerImage, IAsyncLifetime
+public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 {
   public const ushort HttpsPort = 443;
 
@@ -20,7 +20,7 @@ public sealed class WeatherForecastImage : IDockerImage, IAsyncLifetime
 
   private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
-  private readonly IDockerImage _image = new DockerImage(string.Empty, "weather-forecast", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+  private readonly IImage _image = new DockerImage("localhost/testcontainers", "weather-forecast", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
 
   public async Task InitializeAsync()
   {
@@ -29,13 +29,14 @@ public sealed class WeatherForecastImage : IDockerImage, IAsyncLifetime
 
     try
     {
-      _ = await new ImageFromDockerfileBuilder()
+      await new ImageFromDockerfileBuilder()
         .WithName(this)
         .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
         .WithDockerfile("Dockerfile")
         .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D")) // https://github.com/testcontainers/testcontainers-dotnet/issues/602.
         .WithDeleteIfExists(false)
         .Build()
+        .CreateAsync()
         .ConfigureAwait(false);
     }
     finally
