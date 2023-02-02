@@ -31,20 +31,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void GetIdOrNameThrowsInvalidOperationException()
+    public void GetNameThrowsInvalidOperationException()
     {
-      var noSuchNetwork = new TestcontainersNetworkBuilder()
+      _ = Assert.Throws<InvalidOperationException>(() => new TestcontainersNetworkBuilder()
         .WithName(NetworkName)
-        .Build();
-
-      Assert.Throws<InvalidOperationException>(() => noSuchNetwork.Id);
-      Assert.Throws<InvalidOperationException>(() => noSuchNetwork.Name);
-    }
-
-    [Fact]
-    public void GetIdReturnsNetworkId()
-    {
-      Assert.NotEmpty(this.network.Id);
+        .Build()
+        .Name);
     }
 
     [Fact]
@@ -90,14 +82,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithLabel(Label.Key, Label.Value)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
         .Build();
-
-      public string Id
-      {
-        get
-        {
-          return this.network.Id;
-        }
-      }
 
       public string Name
       {

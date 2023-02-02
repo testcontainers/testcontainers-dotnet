@@ -31,17 +31,6 @@
     }
 
     /// <inheritdoc />
-    [Obsolete("The property is not necessary anymore. Use WithNetwork(string) instead.")]
-    public string Id
-    {
-      get
-      {
-        this.ThrowIfResourceNotFound();
-        return this.network.ID;
-      }
-    }
-
-    /// <inheritdoc />
     public string Name
     {
       get

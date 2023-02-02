@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
         .WithEntrypoint(CommonCommands.SleepInfinity)
-        .WithNetwork(networkFixture.Network.Id, networkFixture.Network.Name);
+        .WithNetwork(networkFixture.Network.Name);
 
       this.testcontainer1 = testcontainersBuilder
         .WithHostname(nameof(this.testcontainer1))

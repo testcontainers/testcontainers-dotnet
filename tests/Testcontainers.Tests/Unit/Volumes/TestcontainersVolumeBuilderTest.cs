@@ -29,13 +29,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void GetIdOrNameThrowsInvalidOperationException()
+    public void GetNameThrowsInvalidOperationException()
     {
-      var noSuchVolume = new TestcontainersVolumeBuilder()
+      _ = Assert.Throws<InvalidOperationException>(() => new TestcontainersVolumeBuilder()
         .WithName(VolumeName)
-        .Build();
-
-      Assert.Throws<InvalidOperationException>(() => noSuchVolume.Name);
+        .Build()
+        .Name);
     }
 
     [Fact]

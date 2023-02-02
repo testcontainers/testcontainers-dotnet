@@ -388,12 +388,8 @@
         /// <param name="name">The name.</param>
         public DockerNetwork(string name)
         {
-          this.Id = string.Empty;
           this.Name = name;
         }
-
-        /// <inheritdoc cref="INetwork" />
-        public string Id { get; }
 
         /// <inheritdoc cref="INetwork" />
         public string Name { get; }
