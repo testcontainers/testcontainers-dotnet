@@ -282,16 +282,6 @@
     /// <summary>
     /// Assigns the specified network to the container.
     /// </summary>
-    /// <param name="id">The network's id to connect to.</param>
-    /// <param name="name">The network's name to connect to.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    [Obsolete("Use WithNetwork(string) instead.")]
-    TBuilderEntity WithNetwork(string id, string name);
-
-    /// <summary>
-    /// Assigns the specified network to the container.
-    /// </summary>
     /// <param name="name">The network's name to connect to.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]

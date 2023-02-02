@@ -122,9 +122,6 @@ namespace DotNet.Testcontainers
     public interface IDockerNetwork
     {
       [NotNull]
-      string Id { get; }
-
-      [NotNull]
       string Name { get; }
 
       Task CreateAsync(CancellationToken ct = default);
@@ -139,7 +136,6 @@ namespace DotNet.Testcontainers
     {
       public DockerNetwork(IDockerNetwork network)
       {
-        this.network.ID = network.Id;
         this.network.Name = network.Name;
       }
     }

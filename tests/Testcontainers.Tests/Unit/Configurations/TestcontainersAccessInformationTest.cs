@@ -121,7 +121,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         var network = networkBuilder.Build();
 
         // Then
-        Assert.Throws<InvalidOperationException>(() => network.Id);
         Assert.Throws<InvalidOperationException>(() => network.Name);
       }
 
