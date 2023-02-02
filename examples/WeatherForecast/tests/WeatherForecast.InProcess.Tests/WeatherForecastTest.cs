@@ -25,7 +25,9 @@ public sealed class WeatherForecastTest : IAsyncLifetime
   {
     var mssqlConfiguration = new DatabaseContainerConfiguration();
 
+#pragma warning disable 618
     _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
+#pragma warning restore 618
       .WithDatabase(mssqlConfiguration)
       .Build();
   }
