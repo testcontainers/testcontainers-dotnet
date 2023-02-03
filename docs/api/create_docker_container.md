@@ -9,7 +9,7 @@ Both `ENTRYPOINT` and `CMD` allows you to configure an executable and parameters
 Instead of running the NGINX application, the following container configuration overrides the default start procedure of the image and just tests the NGINX configuration file.
 
 ```csharp
-_ = new TestcontainersBuilder<TestcontainersContainer>()
+_ = new ContainerBuilder()
   .WithEntrypoint("nginx")
   .WithCommand("-t");
 ```
@@ -25,7 +25,7 @@ Apps or services running inside a container are usually configured either with e
 To configure an ASP.NET Core application, either one or both mechanisms can be used.
 
 ```csharp
-_ = new TestcontainersBuilder<TestcontainersContainer>()
+_ = new ContainerBuilder()
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
@@ -41,7 +41,7 @@ An NGINX container that binds the HTTP port to a random host port and hosts stat
 ```csharp
 const ushort HttpPort = 80;
 
-var nginxContainer = new TestcontainersBuilder<TestcontainersContainer>()
+var nginxContainer = new ContainerBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("nginx")
   .WithPortBinding(HttpPort, true)
@@ -66,7 +66,7 @@ const string MagicNumber = "42";
 
 const ushort MagicNumberPort = 80;
 
-var deepThoughtContainer = new TestcontainersBuilder<TestcontainersContainer>()
+var deepThoughtContainer = new ContainerBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("alpine")
   .WithExposedPort(MagicNumberPort)
@@ -100,7 +100,6 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithAutoRemove`                        | Will remove the stopped container automatically, similar to `--rm`.                                                                    |
 | `WithCleanUp`                           | Will remove the container automatically after all tests have been run.                                                                 |
 | `WithLabel`                             | Applies metadata to the container e.g. `-l`, `--label "testcontainers=awesome"`.                                                       |
-| `WithResourceReaperSessionId`           | Assigns a Resource Reaper session id to the container. The assigned Resource Reaper takes care of the cleanup.                         |
 | `WithImage`                             | Specifies an image for which to create the container.                                                                                  |
 | `WithImagePullPolicy`                   | Specifies an image pull policy to determine when an image is pulled e.g. <code>--pull "always" &vert; "missing" &vert; "never"</code>. |
 | `WithName`                              | Sets the container name e.g. `--name "testcontainers"`.                                                                                |
@@ -122,7 +121,7 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithOutputConsumer`                    | Redirects `stdout` and `stderr` to capture the container output.                                                                       |
 | `WithWaitStrategy`                      | Sets the wait strategy to complete the container start and indicates when it is ready.                                                 |
 | `WithStartupCallback`                   | Sets the startup callback to invoke after the container start.                                                                         |
-| `WithCreateContainerParametersModifier` | Allows low level modifications of the Docker container create parameter.                                                               |
+| `WithCreateParameterModifier`           | Allows low level modifications of the Docker container create parameter.                                                               |
 
 !!!tip
 

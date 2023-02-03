@@ -5,7 +5,7 @@ Here is an example of a pre-configured PostgreSQL container. In the example, Tes
 ```csharp
 public sealed class PostgreSqlTest : IAsyncLifetime
 {
-  private readonly TestcontainerDatabase _postgresqlContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+  private readonly TestcontainerDatabase _postgresqlContainer = new ContainerBuilder<PostgreSqlTestcontainer>()
     .WithDatabase(new PostgreSqlTestcontainerConfiguration
     {
       Database = "db",

@@ -13,10 +13,7 @@ _ = Wait.ForUnixContainer()
 
 ## Wait until an HTTP(S) endpoint is available
 
-You can choose to wait for an HTTP(S) endpoint to return a particular HTTP response status code or to match a predicate. 
-The default configuration tries to access the HTTP endpoint running inside the container. Chose `ForPort(ushort)` or `ForPath(string)` to adjust the endpoint or `UsingTls()` to switch to HTTPS.
-When using `UsingTls()` port 443 is used as a default. 
-If your container exposes a different HTTPS port, make sure that the correct waiting port is configured accordingly.
+You can choose to wait for an HTTP(S) endpoint to return a particular HTTP response status code or to match a predicate. The default configuration tries to access the HTTP endpoint running inside the container. Chose `ForPort(ushort)` or `ForPath(string)` to adjust the endpoint or `UsingTls()` to switch to HTTPS. When using `UsingTls()` port 443 is used as a default. If your container exposes a different HTTPS port, make sure that the correct waiting port is configured accordingly.
 
 ### Waiting for HTTP response status code _200 OK_ on port 80
 
@@ -57,7 +54,7 @@ HEALTHCHECK --interval=1s CMD test -e /healthcheck
 You can leverage the container's health status as your wait strategy to report readiness of your application or service:
 
 ```csharp
-_ = new TestcontainersBuilder<TestcontainersContainer>()
+_ = new ContainerBuilder()
   .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
 ```
 

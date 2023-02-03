@@ -15,17 +15,17 @@ mssqlConfiguration.Database = Guid.NewGuid().ToString("D");
 
 var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
 
-_weatherForecastNetwork = new TestcontainersNetworkBuilder()
+_weatherForecastNetwork = new NetworkBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .Build();
 
-_mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
+_mssqlContainer = new ContainerBuilder<MsSqlTestcontainer>()
   .WithDatabase(mssqlConfiguration)
   .WithNetwork(_weatherForecastNetwork)
   .WithNetworkAliases(weatherForecastStorage)
   .Build();
 
-_weatherForecastContainer = new TestcontainersBuilder<TestcontainersContainer>()
+_weatherForecastContainer = new ContainerBuilder()
   .WithImage(Image)
   .WithNetwork(_weatherForecastNetwork)
   .WithPortBinding(WeatherForecastImage.HttpsPort, true)

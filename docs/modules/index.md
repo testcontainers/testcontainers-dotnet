@@ -2,6 +2,10 @@
 
 Modules are a great example of the capabilities of Testcontainers for .NET. Choose one of the pre-configurations below or find further examples in [TestcontainersContainerTest][testcontainers-container-tests] as well as in the [database][testcontainers-database-tests] or [message broker][testcontainers-message-broker-tests] tests to set up your test environment.
 
+!!!warning
+
+    We are redesigning modules and removing the extension method in the future. Modules will become independent projects that allow more complex and advanced features. Due to a design flaw in the current module system, we cannot distinguish between a generic and module builder. If you rely on a module you will get an obsolete warning until the next version of Testcontainers gets released. You will find more information [here](https://github.com/testcontainers/testcontainers-dotnet/issues/750#issuecomment-1412257694).
+
 | Module                     | Container image                                                  |
 |----------------------------|------------------------------------------------------------------|
 | LocalStack                 | `localstack/localstack:1.2.0`                                    |
@@ -24,7 +28,7 @@ Modules are a great example of the capabilities of Testcontainers for .NET. Choo
 Due to a design flaw in the current module system, pre-configured containers must be configured through their corresponding extension method (`WithDatabase` or `WithMessageBroker`):
 
 ```csharp
-await new TestcontainersBuilder<PostgreSqlTestcontainer>()
+await new ContainerBuilder<PostgreSqlTestcontainer>()
   .WithDatabase(new PostgreSqlTestcontainerConfiguration())
   .Build()
   .StartAsync()
