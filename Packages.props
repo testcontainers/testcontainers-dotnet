@@ -34,6 +34,5 @@
     <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Update="RabbitMQ.Client" Version="6.2.4" />
     <PackageReference Update="StackExchange.Redis" Version="2.6.48" />
-    <PackageReference Update="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 </Project>
