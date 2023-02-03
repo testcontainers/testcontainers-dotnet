@@ -4,22 +4,17 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
+    public const string MsSqlImage = "2019-CU18-ubuntu-20.04";
+
+    public const ushort MsSqlPort = 1433;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
     public MsSqlBuilder()
         : this(new MsSqlConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "MsSqlBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "MsSqlBuilder WithMsSqlConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable MsSqlConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +24,21 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     private MsSqlBuilder(MsSqlConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override MsSqlConfiguration DockerResourceConfiguration { get; }
+    /// <inheritdoc />
+    protected override MsSqlConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the MsSql config.
-    // /// </summary>
-    // /// <param name="config">The MsSql config.</param>
-    // /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    // public MsSqlBuilder WithMsSqlConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in MsSqlConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new MsSqlConfiguration(config: config));
-    // }
+    /// <summary>
+    /// Sets the MsSql password.
+    /// </summary>
+    /// <param name="password">The MsSql password.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    public MsSqlBuilder WithPassword(string password)
+    {
+        return Clone(new MsSqlConfiguration(password: password)).WithEnvironment("MSSQL_SA_PASSWORD", password);
+    }
 
     /// <inheritdoc />
     public override MsSqlContainer Build()
@@ -54,17 +47,27 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         return new MsSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override MsSqlBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <inheritdoc />
+    protected override MsSqlBuilder Init()
+    {
+        return base.Init()
+            .WithImage(MsSqlImage)
+            .WithPortBinding(MsSqlPort, true)
+            .WithEnvironment("ACCEPT_EULA", "Y")
+            .WithDatabase("master")
+            .WithUsername("sa")
+            .WithPassword(Guid.NewGuid().ToString());
+    }
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
 
     /// <inheritdoc />
     protected override MsSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,5 +85,31 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     protected override MsSqlBuilder Merge(MsSqlConfiguration oldValue, MsSqlConfiguration newValue)
     {
         return new MsSqlBuilder(new MsSqlConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Sets the MsSql database.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the database.
+    /// </remarks>
+    /// <param name="database">The MsSql database.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    private MsSqlBuilder WithDatabase(string database)
+    {
+        return Clone(new MsSqlConfiguration(database: database));
+    }
+
+    /// <summary>
+    /// Sets the MsSql username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The MsSql username.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    private MsSqlBuilder WithUsername(string username)
+    {
+        return Clone(new MsSqlConfiguration(username: username));
     }
 }

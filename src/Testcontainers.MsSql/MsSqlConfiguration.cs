@@ -7,11 +7,17 @@ public sealed class MsSqlConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The MsSql config.</param>
-    public MsSqlConfiguration(object config = null)
+    /// <param name="database">The MsSql database.</param>
+    /// <param name="username">The MsSql username.</param>
+    /// <param name="password">The MsSql password.</param>
+    public MsSqlConfiguration(
+        string database = null,
+        string username = null,
+        string password = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
+        Database = database;
+        Username = username;
+        Password = password;
     }
 
     /// <summary>
@@ -52,12 +58,23 @@ public sealed class MsSqlConfiguration : ContainerConfiguration
     public MsSqlConfiguration(MsSqlConfiguration oldValue, MsSqlConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
+        Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
+        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
-    // /// <summary>
-    // /// Gets the MsSql config.
-    // /// </summary>
-    // public object Config { get; }
+    /// <summary>
+    /// Gets the MsSql database.
+    /// </summary>
+    public string Database { get; }
+
+    /// <summary>
+    /// Gets the MsSql username.
+    /// </summary>
+    public string Username { get; }
+
+    /// <summary>
+    /// Gets the MsSql password.
+    /// </summary>
+    public string Password { get; }
 }
