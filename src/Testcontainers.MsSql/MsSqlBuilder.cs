@@ -4,7 +4,7 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
-    public const string MsSqlImage = "2019-CU18-ubuntu-20.04";
+    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04";
 
     public const ushort MsSqlPort = 1433;
 
@@ -37,7 +37,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     public MsSqlBuilder WithPassword(string password)
     {
-        return Clone(new MsSqlConfiguration(password: password)).WithEnvironment("MSSQL_SA_PASSWORD", password);
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(password: password))
+            .WithEnvironment("MSSQL_SA_PASSWORD", password);
     }
 
     /// <inheritdoc />
@@ -56,7 +57,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithDatabase("master")
             .WithUsername("sa")
-            .WithPassword(Guid.NewGuid().ToString());
+            .WithPassword(Guid.NewGuid().ToString())
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -97,7 +99,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     private MsSqlBuilder WithDatabase(string database)
     {
-        return Clone(new MsSqlConfiguration(database: database));
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database));
     }
 
     /// <summary>
@@ -110,6 +112,18 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     private MsSqlBuilder WithUsername(string username)
     {
-        return Clone(new MsSqlConfiguration(username: username));
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+
+            return stdout.Contains("SQL Server is now ready for client connections.");
+        }
     }
 }

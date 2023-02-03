@@ -28,6 +28,7 @@ public sealed class MsSqlContainer : DockerContainer
         properties.Add("Database", _configuration.Database);
         properties.Add("User Id", _configuration.Username);
         properties.Add("Password", _configuration.Password);
+        properties.Add("TrustServerCertificate", bool.TrueString);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 }
