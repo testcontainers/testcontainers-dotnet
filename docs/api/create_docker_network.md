@@ -60,12 +60,12 @@ Assert.Equal(MagicNumber, execResult.Stdout.Trim());
 
 ## Supported commands
 
-| Builder method                          | Description                                                                                      |
-|-----------------------------------------|--------------------------------------------------------------------------------------------------|
-| `WithDockerEndpoint`                    | Sets the Docker daemon socket to connect to.                                                     |
-| `WithCleanUp`                           | Will remove the network automatically after all tests have been run.                             |
-| `WithLabel`                             | Applies metadata to the network e.g. `-l`, `--label "testcontainers=awesome"`.                   |
-| `WithName`                              | Sets the network name e.g. `docker network create "testcontainers"`.                             |
-| `WithDriver`                            | Sets the network driver e.g. `-d`, `--driver "bridge"`                                           |
-| `WithOption`                            | Adds a driver specific option `-o`, `--opt "com.docker.network.driver.mtu=1350"`                 |
-| `WithCreateContainerParametersModifier` | Allows low level modifications of the Docker network create parameter.                           |
+| Builder method                | Description                                                                                      |
+|-------------------------------|--------------------------------------------------------------------------------------------------|
+| `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                                     |
+| `WithCleanUp`                 | Will remove the network automatically after all tests have been run.                             |
+| `WithLabel`                   | Applies metadata to the network e.g. `-l`, `--label "testcontainers=awesome"`.                   |
+| `WithName`                    | Sets the network name e.g. `docker network create "testcontainers"`.                             |
+| `WithDriver`                  | Sets the network driver e.g. `-d`, `--driver "bridge"`                                           |
+| `WithOption`                  | Adds a driver specific option `-o`, `--opt "com.docker.network.driver.mtu=1350"`                 |
+| `WithCreateParameterModifier` | Allows low level modifications of the Docker network create parameter.                           |
