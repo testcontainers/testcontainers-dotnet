@@ -38,7 +38,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     public MsSqlBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new MsSqlConfiguration(password: password))
-            .WithEnvironment("MSSQL_SA_PASSWORD", password);
+            .WithEnvironment("MSSQL_SA_PASSWORD", password)
+            .WithEnvironment("SQLCMDPASSWORD", password);
     }
 
     /// <inheritdoc />
@@ -99,7 +100,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     private MsSqlBuilder WithDatabase(string database)
     {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database));
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
+            .WithEnvironment("SQLCMDDBNAME", database);
     }
 
     /// <summary>
@@ -112,18 +114,24 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     private MsSqlBuilder WithUsername(string username)
     {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username));
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
+            .WithEnvironment("SQLCMDUSER", username);
     }
 
     /// <inheritdoc cref="IWaitUntil" />
+    /// <remarks>
+    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
+    /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
+    /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
+        /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogs()
+            var execResult = await container.ExecAsync(new[] { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
-            return stdout.Contains("SQL Server is now ready for client connections.");
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }
