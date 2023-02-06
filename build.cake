@@ -74,24 +74,21 @@ Task("Build")
 Task("Tests")
   .Does(() =>
 {
-  foreach(var testProject in param.Projects.OnlyTests)
+  DotNetTest(param.Solution, new DotNetTestSettings
   {
-    DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
-    {
-      Configuration = param.Configuration,
-      Verbosity = param.Verbosity,
-      NoRestore = true,
-      NoBuild = true,
-      Loggers = new[] { "trx" },
-      Filter = param.TestFilter,
-      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-      ArgumentCustomization = args => args
-        .Append("/p:CollectCoverage=true")
-        .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
-        .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/coverage.net6.0.json\"")
-        .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/\"")
-    });
-  }
+    Configuration = param.Configuration,
+    Verbosity = param.Verbosity,
+    NoRestore = true,
+    NoBuild = true,
+    Loggers = new[] { "trx" },
+    Filter = param.TestFilter,
+    ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
+    ArgumentCustomization = args => args
+      .Append("/p:CollectCoverage=true")
+      .Append("/p:CoverletOutputFormat=\"json%2copencover\"") // https://github.com/coverlet-coverage/coverlet/pull/220#issuecomment-431507570.
+      .Append($"/p:MergeWith=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/coverage.net6.0.json\"")
+      .Append($"/p:CoverletOutput=\"{MakeAbsolute(param.Paths.Directories.TestCoverageDirectoryPath)}/\"")
+  });
 });
 
 Task("Sonar-Begin")
