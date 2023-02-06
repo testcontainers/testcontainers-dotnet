@@ -25,6 +25,7 @@
     <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
     <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.3" />
     <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
+    <PackageReference Update="Microsoft.Data.SqlClient" Version="5.1.0" />
     <PackageReference Update="MongoDB.Driver" Version="2.17.1" />
     <PackageReference Update="MyCouch" Version="7.6.0" />
     <PackageReference Update="Neo4j.Driver" Version="4.4.0" />
@@ -33,6 +34,5 @@
     <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Update="RabbitMQ.Client" Version="6.2.4" />
     <PackageReference Update="StackExchange.Redis" Version="2.6.48" />
-    <PackageReference Update="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 </Project>
