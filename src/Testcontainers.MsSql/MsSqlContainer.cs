@@ -40,7 +40,7 @@ public sealed class MsSqlContainer : DockerContainer
     /// <returns>Task that completes when the SQL script has been executed.</returns>
     public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
     {
-        var scriptFilePath = string.Join("/", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
         await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
             .ConfigureAwait(false);
