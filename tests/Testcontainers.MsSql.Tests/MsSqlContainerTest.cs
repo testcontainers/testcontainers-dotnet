@@ -40,6 +40,6 @@ public sealed class MsSqlContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
 
         // When
-        Assert.Equal(0, execResult.ExitCode);
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
     }
 }
