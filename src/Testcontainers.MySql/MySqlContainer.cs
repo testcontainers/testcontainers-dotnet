@@ -31,4 +31,21 @@ public sealed class MySqlContainer : DockerContainer
         properties.Add("Pwd", _configuration.Password);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
+    
+    /// <summary>
+    /// Executes the SQL script in the MySql container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the SQL script to execute.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the SQL script has been executed.</returns>
+    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    {
+        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+
+        await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
+            .ConfigureAwait(false);
+
+        return await ExecAsync(new[] { "mysql", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath}" }, ct)
+            .ConfigureAwait(false);
+    }
 }
