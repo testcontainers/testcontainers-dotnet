@@ -74,8 +74,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     {
         base.Validate();
         
-        _ = Guard.Argument(DockerResourceConfiguration.UserName, DockerResourceConfiguration.UserName).NotNull().NotEmpty();
-        _ = Guard.Argument(DockerResourceConfiguration.Password, DockerResourceConfiguration.Password).NotNull().NotEmpty();
+        _ = Guard.Argument(DockerResourceConfiguration.UserName, nameof(DockerResourceConfiguration.UserName)).NotNull().NotEmpty();
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password)).NotNull().NotEmpty();
     }
 
     protected override MinioBuilder Merge(MinioConfiguration oldValue, MinioConfiguration newValue)
