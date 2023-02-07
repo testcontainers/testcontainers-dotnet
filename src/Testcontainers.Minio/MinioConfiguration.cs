@@ -2,6 +2,7 @@ using System;
 
 namespace TestContainers.Minio;
 
+/// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
 public sealed class MinioConfiguration : ContainerConfiguration
 {
@@ -14,7 +15,11 @@ public sealed class MinioConfiguration : ContainerConfiguration
     /// </summary>
     public string Password { get; }
 
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// </summary>
+    /// <param name="userName">The Minio database.</param>
+    /// <param name="password">The Minio username.</param>
     public MinioConfiguration(string userName = "ROOTNAME", string password = "ChangeMe2137") : base()
     {
         this.UserName = userName;

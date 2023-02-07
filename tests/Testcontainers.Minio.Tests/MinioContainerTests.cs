@@ -17,6 +17,7 @@ public sealed class MinioContainerTests : IAsyncLifetime
     [Fact]
     public async Task TestMinio()
     {
+        const string bucketName = "somebucket";
         await _minioTestcontainer.StartAsync();
         var config = new AmazonS3Config
         {
@@ -27,13 +28,14 @@ public sealed class MinioContainerTests : IAsyncLifetime
         };
         var s3 = new AmazonS3Client(_minioTestcontainer.GetAccessId(), _minioTestcontainer.GetAccessKey(), config);
 
-        await s3.PutBucketAsync("somebucket");
+        await s3.PutBucketAsync(bucketName);
 
         var buckets = await s3.ListBucketsAsync();
 
         Assert.NotNull(buckets);
         Assert.NotNull(buckets.Buckets);
         Assert.NotEmpty(buckets.Buckets);
+        Assert.Contains(buckets.Buckets, bucket => bucket.BucketName == bucketName);
     }
     
     [Fact]

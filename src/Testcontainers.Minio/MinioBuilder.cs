@@ -1,5 +1,6 @@
 namespace TestContainers.Minio;
 
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
@@ -7,25 +8,43 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
     
     protected override MinioConfiguration DockerResourceConfiguration { get; }
-    
-    public MinioBuilder(MinioConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration)
-    {
-        DockerResourceConfiguration = dockerResourceConfiguration;
-        
-    }
 
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
     public MinioBuilder()
         : this(new MinioConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
+    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
+    private MinioBuilder(MinioConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration)
+    {
+        DockerResourceConfiguration = dockerResourceConfiguration;
+        
+    }
+    
+    /// <summary>
+    /// Sets the Minio username.
+    /// </summary>
+    /// <param name="username">The MsSql password.</param>
+    /// <returns>A configured instance of <see cref="MinioBuilder" />.</returns>
     public MinioBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(userName: username))
             .WithEnvironment("MINIO_ROOT_USER", username);
     }
     
+    /// <summary>
+    /// Sets the Minio password.
+    /// </summary>
+    /// <param name="password">The MsSql password.</param>
+    /// <returns>A configured instance of <see cref="MinioBuilder" />.</returns>
     public MinioBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(password: password))
