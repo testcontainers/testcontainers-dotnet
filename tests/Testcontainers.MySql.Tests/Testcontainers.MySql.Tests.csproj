@@ -9,7 +9,7 @@
         <PackageReference Include="coverlet.msbuild" Version="3.2.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
         <PackageReference Include="xunit" Version="2.4.2"/>
-        <PackageReference Include="MySql.Data" Version="8.0.32"/>
+        <PackageReference Include="MySqlConnector" Version="2.2.5"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.MySql/Testcontainers.MySql.csproj"/>
