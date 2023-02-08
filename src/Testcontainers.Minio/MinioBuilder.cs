@@ -32,18 +32,18 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Sets the Minio username.
     /// </summary>
-    /// <param name="username">The MsSql password.</param>
+    /// <param name="username">The Minio username.</param>
     /// <returns>A configured instance of <see cref="MinioBuilder" />.</returns>
     public MinioBuilder WithUsername(string username)
     {
-        return Merge(DockerResourceConfiguration, new MinioConfiguration(userName: username))
+        return Merge(DockerResourceConfiguration, new MinioConfiguration(username: username))
             .WithEnvironment("MINIO_ROOT_USER", username);
     }
     
     /// <summary>
     /// Sets the Minio password.
     /// </summary>
-    /// <param name="password">The MsSql password.</param>
+    /// <param name="password">The Minio password.</param>
     /// <returns>A configured instance of <see cref="MinioBuilder" />.</returns>
     public MinioBuilder WithPassword(string password)
     {
@@ -56,7 +56,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
         return base.Init()
             .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
-            .WithUsername(DockerResourceConfiguration.UserName)
+            .WithUsername(DockerResourceConfiguration.Username)
             .WithPassword(DockerResourceConfiguration.Password)
             .WithCommand("server", "/data")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(MinioPort));
@@ -74,7 +74,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     {
         base.Validate();
         
-        _ = Guard.Argument(DockerResourceConfiguration.UserName, nameof(DockerResourceConfiguration.UserName)).NotNull().NotEmpty();
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username)).NotNull().NotEmpty();
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password)).NotNull().NotEmpty();
     }
 

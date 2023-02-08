@@ -9,7 +9,7 @@ public sealed class MinioConfiguration : ContainerConfiguration
     /// <summary>
     /// Minio UserName
     /// </summary>
-    public string UserName { get; }
+    public string Username { get; }
     /// <summary>
     /// Minio Password
     /// </summary>
@@ -18,11 +18,11 @@ public sealed class MinioConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
     /// </summary>
-    /// <param name="userName">The Minio database.</param>
+    /// <param name="username">The Minio database.</param>
     /// <param name="password">The Minio username.</param>
-    public MinioConfiguration(string userName = "ROOTNAME", string password = "ChangeMe2137") : base()
+    public MinioConfiguration(string username = "ROOTNAME", string password = "ChangeMe2137") : base()
     {
-        this.UserName = userName;
+        this.Username = username;
         this.Password = password;
     }
 
@@ -64,7 +64,7 @@ public sealed class MinioConfiguration : ContainerConfiguration
     public MinioConfiguration(MinioConfiguration oldValue, MinioConfiguration newValue)
         : base(oldValue, newValue)
     {
-        UserName = BuildConfiguration.Combine(oldValue.UserName, newValue.UserName);
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 }
