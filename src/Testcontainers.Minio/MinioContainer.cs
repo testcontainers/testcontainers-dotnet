@@ -17,30 +17,12 @@ public sealed class MinioContainer: DockerContainer
     }
 
     /// <summary>
-    /// Gets the Minio UserName.
-    /// </summary>
-    /// <returns>The Minio UserName.</returns>
-    public string GetUserName()
-    {
-        return _configuration.UserName;
-    }
-    
-    /// <summary>
-    /// Gets the Minio Password.
-    /// </summary>
-    /// <returns>The Minio Password.</returns>
-    public string GetPassword()
-    {
-        return _configuration.Password;
-    }
-    
-    /// <summary>
     /// Gets the Minio AccessKeyid for the AmazonS3 purpose.
     /// </summary>
     /// <returns>The Minio AccessKeyid.</returns>
     public string GetAccessId()
     {
-        return _configuration.UserName;
+        return _configuration.Username;
     }
     
     /// <summary>
