@@ -18,7 +18,6 @@ public sealed class MinioContainerTests : IAsyncLifetime
     public async Task TestMinio()
     {
         const string bucketName = "somebucket";
-        await _minioTestcontainer.StartAsync();
         var config = new AmazonS3Config
         {
             AuthenticationRegion = "eu-west-1",
@@ -43,7 +42,6 @@ public sealed class MinioContainerTests : IAsyncLifetime
     {
         const string bucketName = "somebucket2";
         const string fileName = "jp2137.jpg";
-        await _minioTestcontainer.StartAsync();
         var config = new AmazonS3Config
         {
             AuthenticationRegion = "eu-west-1",
@@ -87,9 +85,9 @@ public sealed class MinioContainerTests : IAsyncLifetime
         Assert.Throws<ArgumentException>(() => ct.Build());
     }
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        await _minioTestcontainer.StartAsync();
+        return _minioTestcontainer.StartAsync();
     }
 
     public Task DisposeAsync()
