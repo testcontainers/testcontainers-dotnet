@@ -43,7 +43,7 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
         return base.Init()
             .WithImage(RedisImage)
             .WithPortBinding(RedisPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -62,5 +62,18 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     protected override RedisBuilder Merge(RedisConfiguration oldValue, RedisConfiguration newValue)
     {
         return new RedisBuilder(new RedisConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var execResult = await container.ExecAsync(new[] { "redis-cli", "ping" })
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        }
     }
 }
