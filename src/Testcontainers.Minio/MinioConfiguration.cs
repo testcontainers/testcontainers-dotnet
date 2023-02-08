@@ -60,12 +60,12 @@ public sealed class MinioConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// Gets the Mino username.
+    /// Gets the Minio username.
     /// </summary>
     public string Username { get; }
 
     /// <summary>
-    /// Gets the Mino password.
+    /// Gets the Minio password.
     /// </summary>
     public string Password { get; }
 }
