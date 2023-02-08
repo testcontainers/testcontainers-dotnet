@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Minio.Tests.Container;
+﻿namespace Testcontainers.Minio;
 
 public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 {
@@ -6,11 +6,10 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
     private readonly string _testFileName;
     private readonly string _testFileContentFilePath;
     
-    private readonly MinioContainer _minioContainer;
+    private readonly MinioContainer _minioContainer = new MinioBuilder().Build();
 
     public MinioContainerTests()
     {
-        _minioContainer = new MinioBuilder().Build();
         var tmpFile = Path.GetTempFileName();
         _testFileName = Path.GetFileName(tmpFile);
         _testFileContentFilePath = Path.Combine(Path.GetTempPath(), tmpFile);
