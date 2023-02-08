@@ -58,7 +58,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithDatabase("master")
             .WithUsername("sa")
-            .WithPassword(Guid.NewGuid().ToString())
+            .WithPassword(Guid.NewGuid().ToString("D"))
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 

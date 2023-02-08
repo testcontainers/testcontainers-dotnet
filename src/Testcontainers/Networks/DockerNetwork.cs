@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Networks
 {
-  using System;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
