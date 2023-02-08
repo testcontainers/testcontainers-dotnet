@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using Amazon.S3;
-using Amazon.S3.Model;
-
-namespace Testcontainers.Minio.Tests.Container;
+﻿namespace Testcontainers.Minio.Tests.Container;
 
 public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 {
