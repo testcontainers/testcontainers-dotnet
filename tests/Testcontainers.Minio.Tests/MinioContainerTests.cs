@@ -11,8 +11,9 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
     public MinioContainerTests()
     {
         _minioContainer = new MinioBuilder().Build();
-        _testFileName =  Path.GetTempFileName();
-        _testFileContentFilePath = Path.Combine(Path.GetTempPath(), _testFileName);
+        var tmpFile = Path.GetTempFileName();
+        _testFileName = Path.GetFileName(tmpFile);
+        _testFileContentFilePath = Path.Combine(Path.GetTempPath(), tmpFile);
     }
 
     [Fact]
