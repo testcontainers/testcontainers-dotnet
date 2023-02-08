@@ -56,8 +56,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
         return base.Init()
             .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
-            .WithUsername(DockerResourceConfiguration.Username ?? "ROOTNAME")
-            .WithPassword(DockerResourceConfiguration.Password ?? Guid.NewGuid().ToString("D"))
+            .WithUsername("ROOTNAME")
+            .WithPassword(Guid.NewGuid().ToString("D"))
             .WithCommand("server", "/data")
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilHttpRequestIsSucceeded(req => req.ForPath(MinioHealthEndpoint).ForPort(MinioPort)));
