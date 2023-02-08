@@ -6,7 +6,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
 {
     public const ushort MinioPort = 9000;
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
-    
+    private const string MinioHealthEndpoint = "/minio/health/ready";
+
     protected override MinioConfiguration DockerResourceConfiguration { get; }
 
 
@@ -18,7 +19,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
@@ -26,9 +27,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     private MinioBuilder(MinioConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration)
     {
         DockerResourceConfiguration = dockerResourceConfiguration;
-        
     }
-    
+
     /// <summary>
     /// Sets the Minio username.
     /// </summary>
@@ -39,7 +39,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
         return Merge(DockerResourceConfiguration, new MinioConfiguration(username: username))
             .WithEnvironment("MINIO_ROOT_USER", username);
     }
-    
+
     /// <summary>
     /// Sets the Minio password.
     /// </summary>
@@ -50,7 +50,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
         return Merge(DockerResourceConfiguration, new MinioConfiguration(password: password))
             .WithEnvironment("MINIO_ROOT_PASSWORD", password);
     }
-    
+
     protected override MinioBuilder Init()
     {
         return base.Init()
@@ -59,23 +59,26 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
             .WithUsername(DockerResourceConfiguration.Username)
             .WithPassword(DockerResourceConfiguration.Password)
             .WithCommand("server", "/data")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(MinioPort));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(req => req.ForPath(MinioHealthEndpoint).ForPort(MinioPort)));
     }
-    
-    
+
+
     public override MinioContainer Build()
     {
         Validate();
         return new MinioContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    
+
     protected override void Validate()
     {
         base.Validate();
-        
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username)).NotNull().NotEmpty();
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password)).NotNull().NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username)).NotNull()
+            .NotEmpty();
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password)).NotNull()
+            .NotEmpty();
     }
 
     protected override MinioBuilder Merge(MinioConfiguration oldValue, MinioConfiguration newValue)
@@ -87,7 +90,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }
-    
+
     protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
