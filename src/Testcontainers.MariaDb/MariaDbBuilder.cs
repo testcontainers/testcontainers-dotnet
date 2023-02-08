@@ -87,8 +87,8 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         return base.Init()
             .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
-            .WithDatabase("mysql")
-            .WithUsername("mysql")
+            .WithDatabase("mariadb")
+            .WithUsername("mariadb")
             .WithPassword(Guid.NewGuid().ToString("D"));
     }
 
