@@ -75,9 +75,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     {
         Validate();
 
-        // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured username and password.
+        // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
-        var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count().Equals(1) ? WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration.Username, DockerResourceConfiguration.Password))) : this;
+        var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
@@ -132,11 +132,10 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitUntil" /> class.
         /// </summary>
-        /// <param name="username">The MySql username.</param>
-        /// <param name="password">The MySql password.</param>
-        public WaitUntil(string username, string password)
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(MySqlConfiguration configuration)
         {
-            _command = new List<string> { "mysql", $"--user={username}", $"--password={password}", "--execute=SELECT 1;" };
+            _command = new List<string> { "mysql", $"--port={MySqlPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--execute=SELECT 1;" };
         }
 
         /// <inheritdoc />
