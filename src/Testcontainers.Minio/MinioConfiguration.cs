@@ -5,23 +5,16 @@ namespace Testcontainers.Minio;
 public sealed class MinioConfiguration : ContainerConfiguration
 {
     /// <summary>
-    /// Minio UserName
-    /// </summary>
-    public string Username { get; }
-    /// <summary>
-    /// Minio Password
-    /// </summary>
-    public string Password { get; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
     /// </summary>
     /// <param name="username">The Minio database.</param>
     /// <param name="password">The Minio username.</param>
-    public MinioConfiguration([CanBeNull] string username = null, [CanBeNull] string password = null)
+    public MinioConfiguration(
+        string username = null,
+        string password = null)
     {
-        this.Username = username;
-        this.Password = password;
+        Username = username;
+        Password = password;
     }
 
     /// <summary>
@@ -65,4 +58,14 @@ public sealed class MinioConfiguration : ContainerConfiguration
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
+
+    /// <summary>
+    /// Gets the Mino username.
+    /// </summary>
+    public string Username { get; }
+
+    /// <summary>
+    /// Gets the Mino password.
+    /// </summary>
+    public string Password { get; }
 }

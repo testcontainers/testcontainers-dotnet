@@ -4,12 +4,9 @@ namespace Testcontainers.Minio;
 [PublicAPI]
 public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
-    public const ushort MinioPort = 9000;
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
-    private const string MinioHealthEndpoint = "/minio/health/ready";
 
-    protected override MinioConfiguration DockerResourceConfiguration { get; }
-
+    public const ushort MinioPort = 9000;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
@@ -24,10 +21,14 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private MinioBuilder(MinioConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration)
+    private MinioBuilder(MinioConfiguration dockerResourceConfiguration)
+        : base(dockerResourceConfiguration)
     {
         DockerResourceConfiguration = dockerResourceConfiguration;
     }
+
+    /// <inheritdoc />
+    protected override MinioConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
     /// Sets the Minio username.
@@ -51,48 +52,54 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
             .WithEnvironment("MINIO_ROOT_PASSWORD", password);
     }
 
-    protected override MinioBuilder Init()
-    {
-        return base.Init()
-            .WithImage(MinioImage)
-            .WithPortBinding(MinioPort, true)
-            .WithUsername("ROOTNAME")
-            .WithPassword(Guid.NewGuid().ToString("D"))
-            .WithCommand("server", "/data")
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(req => req.ForPath(MinioHealthEndpoint).ForPort(MinioPort)));
-    }
-
-
+    /// <inheritdoc />
     public override MinioContainer Build()
     {
         Validate();
         return new MinioContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
+    /// <inheritdoc />
+    protected override MinioBuilder Init()
+    {
+        return base.Init()
+            .WithImage(MinioImage)
+            .WithPortBinding(MinioPort, true)
+            .WithCommand("server", "/data")
+            .WithUsername("minio")
+            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/minio/health/ready").ForPort(MinioPort)));
+    }
 
+    /// <inheritdoc />
     protected override void Validate()
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username)).NotNull()
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull()
             .NotEmpty();
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password)).NotNull()
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
             .NotEmpty();
     }
 
-    protected override MinioBuilder Merge(MinioConfiguration oldValue, MinioConfiguration newValue)
-    {
-        return new MinioBuilder(new MinioConfiguration(oldValue, newValue));
-    }
-
+    /// <inheritdoc />
     protected override MinioBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }
 
+    /// <inheritdoc />
     protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override MinioBuilder Merge(MinioConfiguration oldValue, MinioConfiguration newValue)
+    {
+        return new MinioBuilder(new MinioConfiguration(oldValue, newValue));
     }
 }
