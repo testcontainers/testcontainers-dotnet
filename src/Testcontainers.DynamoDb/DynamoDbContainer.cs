@@ -1,17 +1,17 @@
-namespace Testcontainers.Dynalite;
+namespace Testcontainers.DynamoDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class DynaliteContainer : DockerContainer
+public sealed class DynamoDbContainer : DockerContainer
 {
-    private readonly DynaliteConfiguration _configuration;
+    private readonly DynamoDbConfiguration _configuration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynaliteContainer" /> class.
+    /// Initializes a new instance of the <see cref="DynamoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public DynaliteContainer(DynaliteConfiguration configuration, ILogger logger)
+    public DynamoDbContainer(DynamoDbConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
         _configuration = configuration;
@@ -23,6 +23,6 @@ public sealed class DynaliteContainer : DockerContainer
     /// <returns>The Dynalite endpoint.</returns>
     public string GetEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynaliteBuilder.DynalitePort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDbBuilder.DynalitePort)).ToString();
     }
 }
