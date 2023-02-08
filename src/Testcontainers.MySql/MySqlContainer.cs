@@ -29,7 +29,6 @@ public sealed class MySqlContainer : DockerContainer
         properties.Add("Database", _configuration.Database);
         properties.Add("Uid", _configuration.Username);
         properties.Add("Pwd", _configuration.Password);
-        properties.Add("SslMode", "None");
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 
