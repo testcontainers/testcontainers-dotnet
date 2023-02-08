@@ -25,6 +25,4 @@ public sealed class DynaliteContainer : DockerContainer
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynaliteBuilder.DynalitePort)).ToString();
     }
-    
-    
 }
