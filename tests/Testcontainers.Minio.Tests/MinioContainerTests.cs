@@ -10,11 +10,11 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
     private const string TestFileContent = "👋";
     private readonly string TestFileContentFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
     
-    private readonly MinioContainer _minioTestcontainer;
+    private readonly MinioContainer _minioContainer;
 
     public MinioContainerTests()
     {
-        _minioTestcontainer = new MinioBuilder().Build();
+        _minioContainer = new MinioBuilder().Build();
     }
 
     [Fact]
@@ -24,11 +24,11 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
         var config = new AmazonS3Config
         {
             AuthenticationRegion = "eu-west-1",
-            ServiceURL = _minioTestcontainer.GetMinioUrl(),
+            ServiceURL = _minioContainer.GetMinioUrl(),
             UseHttp = true,
             ForcePathStyle = true,
         };
-        var s3 = new AmazonS3Client(_minioTestcontainer.GetAccessId(), _minioTestcontainer.GetAccessKey(), config);
+        var s3 = new AmazonS3Client(_minioContainer.GetAccessId(), _minioContainer.GetAccessKey(), config);
 
         await s3.PutBucketAsync(bucketName);
 
@@ -47,11 +47,11 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
         var config = new AmazonS3Config
         {
             AuthenticationRegion = "eu-west-1",
-            ServiceURL = _minioTestcontainer.GetMinioUrl(),
+            ServiceURL = _minioContainer.GetMinioUrl(),
             UseHttp = true,
             ForcePathStyle = true,
         };
-        var s3 = new AmazonS3Client(_minioTestcontainer.GetAccessId(), _minioTestcontainer.GetAccessKey(), config);
+        var s3 = new AmazonS3Client(_minioContainer.GetAccessId(), _minioContainer.GetAccessKey(), config);
 
         await s3.PutBucketAsync(bucketName);
         await using var file = File.OpenRead(TestFileContentFilePath);
@@ -89,12 +89,12 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
     public Task InitializeAsync()
     {
         File.WriteAllText(TestFileContentFilePath, TestFileContent); 
-        return _minioTestcontainer.StartAsync();
+        return _minioContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _minioTestcontainer.DisposeAsync().AsTask();
+        return _minioContainer.DisposeAsync().AsTask();
     }
 
     public void Dispose()
