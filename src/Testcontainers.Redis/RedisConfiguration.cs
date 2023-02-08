@@ -7,11 +7,8 @@ public sealed class RedisConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Redis config.</param>
-    public RedisConfiguration(object config = null)
+    public RedisConfiguration()
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
     }
 
     /// <summary>
@@ -52,12 +49,5 @@ public sealed class RedisConfiguration : ContainerConfiguration
     public RedisConfiguration(RedisConfiguration oldValue, RedisConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-
-    // /// <summary>
-    // /// Gets the Redis config.
-    // /// </summary>
-    // public object Config { get; }
 }

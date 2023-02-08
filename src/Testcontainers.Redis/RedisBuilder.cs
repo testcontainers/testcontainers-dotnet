@@ -4,22 +4,17 @@ namespace Testcontainers.Redis;
 [PublicAPI]
 public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
 {
+    public const string RedisImage = "redis:7.0";
+
+    public const ushort RedisPort = 6379;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
     /// </summary>
     public RedisBuilder()
         : this(new RedisConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "RedisBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "RedisBuilder WithRedisConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable RedisConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +24,11 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     private RedisBuilder(RedisConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override RedisConfiguration DockerResourceConfiguration { get; }
-
-    // /// <summary>
-    // /// Sets the Redis config.
-    // /// </summary>
-    // /// <param name="config">The Redis config.</param>
-    // /// <returns>A configured instance of <see cref="RedisBuilder" />.</returns>
-    // public RedisBuilder WithRedisConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in RedisConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new RedisConfiguration(config: config));
-    // }
+    /// <inheritdoc />
+    protected override RedisConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
     public override RedisContainer Build()
@@ -54,17 +37,14 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
         return new RedisContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override RedisBuilder Init()
-    // {
-    //     return base.Init();
-    // }
-
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override RedisBuilder Init()
+    {
+        return base.Init()
+            .WithImage(RedisImage)
+            .WithPortBinding(RedisPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
+    }
 
     /// <inheritdoc />
     protected override RedisBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
