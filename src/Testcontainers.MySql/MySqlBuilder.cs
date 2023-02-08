@@ -135,7 +135,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MySqlConfiguration configuration)
         {
-            _command = new List<string> { "mysql", $"--port={MySqlPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string> { "mysql", "--protocol=TCP", $"--port={MySqlPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
         }
 
         /// <inheritdoc />
