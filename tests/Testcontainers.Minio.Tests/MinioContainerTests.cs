@@ -94,7 +94,7 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 
     public Task DisposeAsync()
     {
-        return _minioTestcontainer.StopAsync();
+        return _minioTestcontainer.DisposeAsync().AsTask();
     }
 
     public void Dispose()
