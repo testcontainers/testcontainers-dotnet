@@ -1,10 +1,10 @@
-﻿namespace Testcontainers.MySql;
+﻿namespace Testcontainers.MariaDb;
 
-public abstract class MySqlContainerTest : IAsyncLifetime
+public abstract class MariaDbContainerTest : IAsyncLifetime
 {
-    private readonly MySqlContainer _mySqlContainer;
+    private readonly MariaDbContainer _mySqlContainer;
 
-    protected MySqlContainerTest(MySqlContainer mySqlContainer)
+    protected MariaDbContainerTest(MariaDbContainer mySqlContainer)
     {
         _mySqlContainer = mySqlContainer;
     }
@@ -49,19 +49,19 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class MySqlUserConfiguration : MySqlContainerTest
+    public sealed class MariaDbUserConfiguration : MariaDbContainerTest
     {
-        public MySqlUserConfiguration()
-            : base(new MySqlBuilder().Build())
+        public MariaDbUserConfiguration()
+            : base(new MariaDbBuilder().Build())
         {
         }
     }
 
     [UsedImplicitly]
-    public sealed class MySqlRootConfiguration : MySqlContainerTest
+    public sealed class MariaDbRootConfiguration : MariaDbContainerTest
     {
-        public MySqlRootConfiguration()
-            : base(new MySqlBuilder().WithUsername("root").Build())
+        public MariaDbRootConfiguration()
+            : base(new MariaDbBuilder().WithUsername("root").Build())
         {
         }
     }
