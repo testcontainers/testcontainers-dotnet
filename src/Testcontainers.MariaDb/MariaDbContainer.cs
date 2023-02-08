@@ -45,7 +45,7 @@ public sealed class MariaDbContainer : DockerContainer
         await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mysql", $"--port={MariaDbBuilder.MariaDbPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath}" }, ct)
+        return await ExecAsync(new[] { "mysql", "--protocol=TCP", $"--port={MariaDbBuilder.MariaDbPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
             .ConfigureAwait(false);
     }
 }

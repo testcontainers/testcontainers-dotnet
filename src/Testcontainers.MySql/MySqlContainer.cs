@@ -45,7 +45,7 @@ public sealed class MySqlContainer : DockerContainer
         await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mysql", $"--port={MySqlBuilder.MySqlPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath}" }, ct)
+        return await ExecAsync(new[] { "mysql", "--protocol=TCP", $"--port={MySqlBuilder.MySqlPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
             .ConfigureAwait(false);
     }
 }
