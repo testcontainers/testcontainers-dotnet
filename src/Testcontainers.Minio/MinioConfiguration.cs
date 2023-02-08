@@ -1,5 +1,3 @@
-using System;
-
 namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerConfiguration" />
