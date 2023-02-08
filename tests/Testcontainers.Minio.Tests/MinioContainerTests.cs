@@ -1,92 +1,11 @@
 ﻿namespace Testcontainers.Minio;
 
-public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
+public sealed class MinioContainerTest : IAsyncLifetime
 {
-    private const string TestFileContent = "👋";
-    private readonly string _testFileName;
-    private readonly string _testFileContentFilePath;
-    
     private readonly MinioContainer _minioContainer = new MinioBuilder().Build();
-
-    public MinioContainerTests()
-    {
-        var tmpFile = Path.GetTempFileName();
-        _testFileName = Path.GetFileName(tmpFile);
-        _testFileContentFilePath = Path.Combine(Path.GetTempPath(), tmpFile);
-    }
-
-    [Fact]
-    public async Task TestMinio()
-    {
-        const string bucketName = "somebucket";
-        var config = new AmazonS3Config
-        {
-            AuthenticationRegion = "eu-west-1",
-            ServiceURL = _minioContainer.GetMinioUrl(),
-            UseHttp = true,
-            ForcePathStyle = true,
-        };
-        var s3 = new AmazonS3Client(_minioContainer.GetAccessId(), _minioContainer.GetAccessKey(), config);
-
-        await s3.PutBucketAsync(bucketName);
-
-        var buckets = await s3.ListBucketsAsync();
-
-        Assert.NotNull(buckets);
-        Assert.NotNull(buckets.Buckets);
-        Assert.NotEmpty(buckets.Buckets);
-        Assert.Contains(buckets.Buckets, bucket => bucket.BucketName == bucketName);
-    }
-    
-    [Fact]
-    public async Task TestInsertAndGetDataFromMinio()
-    {
-        const string bucketName = "somebucket2";
-        var config = new AmazonS3Config
-        {
-            AuthenticationRegion = "eu-west-1",
-            ServiceURL = _minioContainer.GetMinioUrl(),
-            UseHttp = true,
-            ForcePathStyle = true,
-        };
-        var s3 = new AmazonS3Client(_minioContainer.GetAccessId(), _minioContainer.GetAccessKey(), config);
-
-        await s3.PutBucketAsync(bucketName);
-        await using var file = File.OpenRead(_testFileContentFilePath);
-
-        await s3.PutObjectAsync(new PutObjectRequest()
-        {
-            Key = _testFileName,
-            BucketName = bucketName,
-            InputStream = file,
-        });
-
-        var subject = await s3.GetObjectAsync(new GetObjectRequest() { Key = _testFileName, BucketName = bucketName });
-
-        Assert.NotNull(subject);
-        Assert.NotEqual(0, subject.ContentLength);
-    }
-    
-    
-    [Fact]
-    public void TestMinioWithEmptyUsername()
-    {
-        var ct = new MinioBuilder().WithUsername(string.Empty);
-
-        Assert.Throws<ArgumentException>(() => ct.Build());
-    }
-    
-    [Fact]
-    public void TestMinioWithEmptyPassword()
-    {
-        var ct = new MinioBuilder().WithPassword(string.Empty);
-
-        Assert.Throws<ArgumentException>(() => ct.Build());
-    }
 
     public Task InitializeAsync()
     {
-        File.WriteAllText(_testFileContentFilePath, TestFileContent); 
         return _minioContainer.StartAsync();
     }
 
@@ -95,11 +14,52 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
         return _minioContainer.DisposeAsync().AsTask();
     }
 
-    public void Dispose()
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ListBucketsReturnsHttpStatusCodeOk()
     {
-        if (File.Exists(_testFileContentFilePath))
-        {
-            File.Delete(_testFileContentFilePath);
-        }
+        // Given
+        var config = new AmazonS3Config();
+        config.ServiceURL = _minioContainer.GetEndpoint();
+
+        var client = new AmazonS3Client(_minioContainer.GetAccessKeyId(), _minioContainer.GetAccessSecret(), config);
+
+        // When
+        var buckets = await client.ListBucketsAsync()
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task GetObjectReturnsPutObject()
+    {
+        // Given
+        using var inputStream = new MemoryStream(new byte[byte.MaxValue]);
+
+        var config = new AmazonS3Config();
+        config.ServiceURL = _minioContainer.GetEndpoint();
+
+        var client = new AmazonS3Client(_minioContainer.GetAccessKeyId(), _minioContainer.GetAccessSecret(), config);
+
+        var objectRequest = new PutObjectRequest();
+        objectRequest.BucketName = Guid.NewGuid().ToString("D");
+        objectRequest.Key = Guid.NewGuid().ToString("D");
+        objectRequest.InputStream = inputStream;
+
+        // When
+        _ = await client.PutBucketAsync(objectRequest.BucketName)
+            .ConfigureAwait(false);
+
+        _ = await client.PutObjectAsync(objectRequest)
+            .ConfigureAwait(false);
+
+        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key)
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(byte.MaxValue, objectResponse.ContentLength);
     }
 }
