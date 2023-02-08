@@ -3,13 +3,16 @@
 public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 {
     private const string TestFileContent = "👋";
-    private readonly string TestFileContentFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+    private readonly string _testFileName;
+    private readonly string _testFileContentFilePath;
     
     private readonly MinioContainer _minioContainer;
 
     public MinioContainerTests()
     {
         _minioContainer = new MinioBuilder().Build();
+        _testFileName =  Path.GetTempFileName();
+        _testFileContentFilePath = Path.Combine(Path.GetTempPath(), _testFileName);
     }
 
     [Fact]
@@ -49,16 +52,16 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
         var s3 = new AmazonS3Client(_minioContainer.GetAccessId(), _minioContainer.GetAccessKey(), config);
 
         await s3.PutBucketAsync(bucketName);
-        await using var file = File.OpenRead(TestFileContentFilePath);
+        await using var file = File.OpenRead(_testFileContentFilePath);
 
         await s3.PutObjectAsync(new PutObjectRequest()
         {
-            Key = TestFileContentFilePath,
+            Key = _testFileName,
             BucketName = bucketName,
             InputStream = file,
         });
 
-        var subject = await s3.GetObjectAsync(new GetObjectRequest() { Key = TestFileContentFilePath, BucketName = bucketName });
+        var subject = await s3.GetObjectAsync(new GetObjectRequest() { Key = _testFileName, BucketName = bucketName });
 
         Assert.NotNull(subject);
         Assert.NotEqual(0, subject.ContentLength);
@@ -83,7 +86,7 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 
     public Task InitializeAsync()
     {
-        File.WriteAllText(TestFileContentFilePath, TestFileContent); 
+        File.WriteAllText(_testFileContentFilePath, TestFileContent); 
         return _minioContainer.StartAsync();
     }
 
@@ -94,9 +97,9 @@ public sealed class MinioContainerTests : IAsyncLifetime, IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(TestFileContentFilePath))
+        if (File.Exists(_testFileContentFilePath))
         {
-            File.Delete(TestFileContentFilePath);
+            File.Delete(_testFileContentFilePath);
         }
     }
 }
