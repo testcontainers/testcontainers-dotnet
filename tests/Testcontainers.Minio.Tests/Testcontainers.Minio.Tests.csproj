@@ -14,7 +14,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
-		<ProjectReference Include="..\..\src\Testcontainers.Minio\Testcontainers.Minio.csproj" />
+		<ProjectReference Include="$(SolutionDir)src/Testcontainers.Minio/Testcontainers.Minio.csproj"/>
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="jp2137.jpg">
