@@ -18,7 +18,7 @@ public sealed class MinioConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The Minio database.</param>
     /// <param name="password">The Minio username.</param>
-    public MinioConfiguration(string username = "ROOTNAME", string password = "ChangeMe2137") : base()
+    public MinioConfiguration([CanBeNull] string username = null, [CanBeNull] string password = null)
     {
         this.Username = username;
         this.Password = password;
