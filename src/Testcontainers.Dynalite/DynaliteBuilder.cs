@@ -46,14 +46,7 @@ public sealed class DynaliteBuilder : ContainerBuilder<DynaliteBuilder, Dynalite
         return base.Init()
             .WithImage(DynaliteImage)
             .WithPortBinding(DynalitePort, true)
-            .WithCommand("server", "/data")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/minio/health/ready").ForPort(DynalitePort)));
-    }
-
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        base.Validate();
+            .WithWaitStrategy(Wait.ForUnixContainer());
     }
 
     /// <inheritdoc />
