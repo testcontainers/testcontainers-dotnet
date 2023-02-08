@@ -1,6 +1,6 @@
 using System;
 
-namespace TestContainers.Minio;
+namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]

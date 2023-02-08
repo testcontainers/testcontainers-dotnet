@@ -3,7 +3,7 @@ using System.IO;
 using Amazon.S3;
 using Amazon.S3.Model;
 
-namespace TestContainers.Minio.Tests.Container;
+namespace Testcontainers.Minio.Tests.Container;
 
 public sealed class MinioContainerTests : IAsyncLifetime
 {
