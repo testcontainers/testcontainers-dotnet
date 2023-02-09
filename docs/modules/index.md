@@ -129,7 +129,7 @@ protected override void Validate()
 
 or extend the `Init()` member as we have already done and add `WithPassword(Guid.NewGuid().ToString())` to set a default value.
 
-It is always a good idea to add both approaches. This way, the user can be sure that the module is properly configured, whether by themself or by default. This helps maintain a consistent and reliable experience for the user. Following it, when creating your own modules, either in-house or public you can be a role model for other developers too.
+It is always a good idea to add both approaches. This way, the user can be sure that the module is properly configured, whether by themself or by default. This helps maintain a consistent and reliable experience for the user.
 
 The repository provides reference implementations of [modules](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src). This modules are comprehensive examples and can serve as guides for you to get a better understanding of how to implement an entire module including the tests.
 
