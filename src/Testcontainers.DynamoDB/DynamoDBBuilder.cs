@@ -66,10 +66,6 @@ public sealed class DynamoDBBuilder : ContainerBuilder<DynamoDBBuilder, DynamoDB
     }
     
     /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
-    /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
-    /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly ushort _port;
