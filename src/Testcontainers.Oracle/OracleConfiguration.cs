@@ -7,11 +7,17 @@ public sealed class OracleConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Oracle config.</param>
-    public OracleConfiguration(object config = null)
+    /// <param name="database">The Oracle database.</param>
+    /// <param name="username">The Oracle username.</param>
+    /// <param name="password">The Oracle password.</param>
+    public OracleConfiguration(
+        string database = null,
+        string username = null,
+        string password = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
+        Database = database;
+        Username = username;
+        Password = password;
     }
 
     /// <summary>
@@ -52,12 +58,23 @@ public sealed class OracleConfiguration : ContainerConfiguration
     public OracleConfiguration(OracleConfiguration oldValue, OracleConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
+        Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
+        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
-    // /// <summary>
-    // /// Gets the Oracle config.
-    // /// </summary>
-    // public object Config { get; }
+    /// <summary>
+    /// Gets the Oracle database.
+    /// </summary>
+    public string Database { get; }
+
+    /// <summary>
+    /// Gets the Oracle username.
+    /// </summary>
+    public string Username { get; }
+
+    /// <summary>
+    /// Gets the Oracle password.
+    /// </summary>
+    public string Password { get; }
 }

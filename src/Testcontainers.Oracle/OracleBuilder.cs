@@ -4,22 +4,17 @@ namespace Testcontainers.Oracle;
 [PublicAPI]
 public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
+    public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
+
+    public const ushort OraclePort = 1521;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
     public OracleBuilder()
         : this(new OracleConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "OracleBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "OracleBuilder WithOracleConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable OracleConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +24,23 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     private OracleBuilder(OracleConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override OracleConfiguration DockerResourceConfiguration { get; }
+    /// <inheritdoc />
+    protected override OracleConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the Oracle config.
-    // /// </summary>
-    // /// <param name="config">The Oracle config.</param>
-    // /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
-    // public OracleBuilder WithOracleConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in OracleConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new OracleConfiguration(config: config));
-    // }
+    /// <summary>
+    /// Sets the Oracle password.
+    /// </summary>
+    /// <param name="password">The Oracle password.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    public OracleBuilder WithPassword(string password)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(password: password))
+            .WithEnvironment("ORACLE_PASSWORD", password)
+            .WithEnvironment("APP_USER_PASSWORD", password);
+    }
 
     /// <inheritdoc />
     public override OracleContainer Build()
@@ -54,17 +49,27 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         return new OracleContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override OracleBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <inheritdoc />
+    protected override OracleBuilder Init()
+    {
+        return base.Init()
+            .WithImage(OracleImage)
+            .WithPortBinding(OraclePort, true)
+            .WithDatabase("XEPDB1")
+            .WithUsername("oracle")
+            .WithPassword(Guid.NewGuid().ToString("N").Substring(0, 16))
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+    }
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
 
     /// <inheritdoc />
     protected override OracleBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,5 +87,45 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Merge(OracleConfiguration oldValue, OracleConfiguration newValue)
     {
         return new OracleBuilder(new OracleConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Sets the Oracle database.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the database.
+    /// </remarks>
+    /// <param name="database">The Oracle database.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    private OracleBuilder WithDatabase(string database)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
+    }
+
+    /// <summary>
+    /// Sets the Oracle username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The Oracle username.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    private OracleBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(username: username))
+            .WithEnvironment("APP_USER", username);
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+
+            return stdout.Contains("DATABASE IS READY TO USE!");
+        }
     }
 }
