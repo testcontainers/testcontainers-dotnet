@@ -1,8 +1,8 @@
-﻿namespace Testcontainers.DynamoDb;
+﻿namespace Testcontainers.DynamoDB;
 
 public sealed class MinioContainerTest : IAsyncLifetime
 {
-  private readonly DynamoDbContainer dynamoDbContainer = new DynamoDbBuilder().Build();
+  private readonly DynamoDBContainer dynamoDbContainer = new DynamoDBBuilder().Build();
 
   public Task InitializeAsync()
   {
@@ -19,10 +19,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
   public async Task CreateTableReturnsHttpStatusCodeOk()
   {
     // Given
-    var clientConfig = new AmazonDynamoDBConfig();
-    clientConfig.ServiceURL = this.dynamoDbContainer.GetEndpoint();
-    clientConfig.UseHttp = true;
-    using var client = new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+    using var client = this.dynamoDbContainer.GetAmazonDynamoDBClient();
 
     // When
     var tableResponse = await client.CreateTableAsync(new CreateTableRequest()
@@ -47,10 +44,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
     var tableName = $"TestDynamoDbTable-{Guid.NewGuid():D}";
     var itemId = Guid.NewGuid().ToString("D");
 
-    var clientConfig = new AmazonDynamoDBConfig();
-    clientConfig.ServiceURL = this.dynamoDbContainer.GetEndpoint();
-    clientConfig.UseHttp = true;
-    using var client = new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+    using var client = this.dynamoDbContainer.GetAmazonDynamoDBClient();
 
     // When
     _ = await client.CreateTableAsync(new CreateTableRequest()
