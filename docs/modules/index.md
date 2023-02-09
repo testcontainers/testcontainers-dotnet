@@ -8,10 +8,6 @@ Modules are a great example of the capabilities of Testcontainers for .NET. Choo
 
 ## Implement a module
 
-Testcontainers offers two ways of implementing a module, depending on the complexity of the use case. For simple modules, developers can inherit from the `ContainerBuilder` class. It provides a straightforward way to build a module and configure it as needed.
-
-For more advanced use cases, Testcontainers provides a second option for developers to inherit from `ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>`. This class offers a more flexible and powerful way to build modules and provides access to additional features and configurations.
-
 The Testcontainers for .NET repository contains a .NET [template](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Templates) to scaffold advanced modules quickly. To create and add a new module to the Testcontainers solution file, checkout the repository and install the .NET template first:
 
 ```console
