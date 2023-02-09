@@ -8,3 +8,4 @@ global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
 global using Amazon.DynamoDBv2;
 global using Amazon.Runtime;
+global using System.Threading.Tasks;

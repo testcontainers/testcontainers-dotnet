@@ -44,7 +44,7 @@ public sealed class DynamoDBBuilder : ContainerBuilder<DynamoDBBuilder, DynamoDB
         return base.Init()
             .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer());
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DynamoDbPort)));
     }
 
     /// <inheritdoc />
@@ -63,5 +63,28 @@ public sealed class DynamoDBBuilder : ContainerBuilder<DynamoDBBuilder, DynamoDB
     protected override DynamoDBBuilder Merge(DynamoDBConfiguration oldValue, DynamoDBConfiguration newValue)
     {
         return new DynamoDBBuilder(new DynamoDBConfiguration(oldValue, newValue));
+    }
+    
+    /// <inheritdoc cref="IWaitUntil" />
+    /// <remarks>
+    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
+    /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
+    /// </remarks>
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private readonly ushort _port;
+
+        public WaitUntil(ushort port)
+        {
+            _port = port;
+        }
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var execResult = await container.ExecAsync(new[] { "curl", $"http://localhost:{_port}" })
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        }
     }
 }
