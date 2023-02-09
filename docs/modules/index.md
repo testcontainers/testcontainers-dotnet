@@ -57,7 +57,7 @@ private PostgreSqlBuilder(PostgreSqlConfiguration resourceConfiguration)
 protected override PostgreSqlConfiguration DockerResourceConfiguration { get; }
 ```
 
-To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the member `Init()` and add the necessary configurations such as the Docker image and a wait strategy to the base implementation:
+To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the `Init()` member and add the necessary configurations such as the Docker image and a wait strategy to the base implementation:
 
 ```csharp
 protected override PostgreSqlBuilder Init()
