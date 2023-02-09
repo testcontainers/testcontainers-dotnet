@@ -4,8 +4,7 @@ namespace Testcontainers.DynamoDB;
 [PublicAPI]
 public sealed class DynamoDBContainer : DockerContainer
 {
-    private readonly DynamoDBConfiguration _configuration;
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDBContainer" /> class.
     /// </summary>
@@ -14,7 +13,6 @@ public sealed class DynamoDBContainer : DockerContainer
     public DynamoDBContainer(DynamoDBConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _configuration = configuration;
     }
     
     /// <summary>
@@ -26,6 +24,10 @@ public sealed class DynamoDBContainer : DockerContainer
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDBBuilder.DynamoDbPort)).ToString();
     }
 
+    /// <summary>
+    /// Gets the AmazonDynamoDBClient client.
+    /// </summary>
+    /// <returns>The AmazonDynamoDBClient.</returns>
     public AmazonDynamoDBClient GetAmazonDynamoDBClient()
     {
         var clientConfig = new AmazonDynamoDBConfig();
