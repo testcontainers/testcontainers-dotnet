@@ -91,7 +91,7 @@ Since the `PostgreSqlConfiguration` class is now able to store the password valu
 ```csharp
 public PostgreSqlBuilder WithPassword(string password)
 {
-    return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(password: password)).WithEnvironment("POSTGRES_PASSWORD", password);
+  return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(password: password)).WithEnvironment("POSTGRES_PASSWORD", password);
 }
 ```
 
