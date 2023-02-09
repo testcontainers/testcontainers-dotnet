@@ -16,15 +16,16 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task CreateTableReturnsHttpStatusCodeOk()
+  public async Task CreateTableReturnsCorrectTableDescription()
   {
     // Given
+    const string tableName = "TestDynamoDbTable";
     using var client = this.dynamoDbContainer.GetAmazonDynamoDBClient();
 
     // When
-    var tableResponse = await client.CreateTableAsync(new CreateTableRequest()
+    _ = await client.CreateTableAsync(new CreateTableRequest()
       {
-        TableName = "TestDynamoDbTable",
+        TableName = tableName,
         AttributeDefinitions = new List<AttributeDefinition>() { new AttributeDefinition("Id", ScalarAttributeType.S), new AttributeDefinition("Name", ScalarAttributeType.S), },
         KeySchema = new List<KeySchemaElement>() { new KeySchemaElement("Id", KeyType.HASH), new KeySchemaElement("Name", KeyType.RANGE), },
         ProvisionedThroughput = new ProvisionedThroughput(1, 1),
@@ -32,17 +33,23 @@ public sealed class MinioContainerTest : IAsyncLifetime
       })
       .ConfigureAwait(false);
 
+    var tableDescription = await client.DescribeTableAsync(tableName);
+
     // Then
-    Assert.Equal(HttpStatusCode.OK, tableResponse.HttpStatusCode);
+    Assert.NotNull(tableDescription);
+    Assert.Equal(HttpStatusCode.OK, tableDescription.HttpStatusCode);
+    Assert.Equal(tableName, tableDescription.Table.TableName);
+    Assert.Equal("Id", tableDescription.Table.KeySchema[0].AttributeName);
   }
 
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task InsertElementToTableReturnsInsertedElement()
+  public async Task InsertElementToTableReturnsHttpStatusCodeOk()
   {
     // Given
     var tableName = $"TestDynamoDbTable-{Guid.NewGuid():D}";
     var itemId = Guid.NewGuid().ToString("D");
+    var itemName = Guid.NewGuid().ToString("D");
 
     using var client = this.dynamoDbContainer.GetAmazonDynamoDBClient();
 
@@ -57,10 +64,10 @@ public sealed class MinioContainerTest : IAsyncLifetime
       })
       .ConfigureAwait(false);
 
-    var response = await client.PutItemAsync(new PutItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = "Test" } } }));
+    var response = await client.PutItemAsync(new PutItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }));
     Assert.Equal(HttpStatusCode.OK, response.HttpStatusCode);
 
-    var getItemResponse = await client.GetItemAsync(new GetItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = "Test" } } }, true));
+    var getItemResponse = await client.GetItemAsync(new GetItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }));
 
     // Then
     Assert.Equal(HttpStatusCode.OK, getItemResponse.HttpStatusCode);
