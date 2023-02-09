@@ -71,7 +71,9 @@ protected override PostgreSqlBuilder Init()
 
 When using the PostgreSQL Docker image, it is required to have a password set in order to run it. To demonstrate how to add a new builder member, we will use this requirement as an example.
 
-First add a new property `Password` to the `PostgreSqlConfiguration` class. Add a `password` argument with a default value of `null` to the default constructor. This allows the builder to set individual arguments or configurations. The overloaded `PostgreSqlConfiguration(PostgreSqlConfiguration, PostgreSqlConfiguration)` constructor takes care of merging the configurations together. The builder will receive and hold an updated instances that contains all information:
+First add a new property `Password` to the `PostgreSqlConfiguration` class. Add a `password` argument with a default value of `null` to the default constructor. This allows the builder to set individual arguments or configurations.
+
+The overloaded `PostgreSqlConfiguration(PostgreSqlConfiguration, PostgreSqlConfiguration)` constructor takes care of merging the configurations together. The builder will receive and hold an updated instances that contains all information:
 
 ```csharp
 public PostgreSqlConfiguration(string password = null)
