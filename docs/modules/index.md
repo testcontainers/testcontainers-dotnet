@@ -37,7 +37,9 @@ A module typically consists of three classes representing the builder, the confi
 
 The configuration classes in Testcontainers are designed to be immutable, meaning that once an instance of a configuration class has been created, its values cannot be changed. This has a number of benefits, it is more reliable, easier to understand and to share between different use cases like A/B testing.
 
-To set the PostgreSQL module default configuration, override the read-only `DockerResourceConfiguration` property in `PostgreSqlBuilder` and set its value in both constructors. The default constructor sets `DockerResourceConfiguration` to the return value of `Init().DockerResourceConfiguration`, where the overloaded private constructor just sets the argument value. It receives an updated instance of the immutable Docker resource configuration as soon as a property changes. The .NET template already includes this configuration, making it easy for developers to quickly get started by simply commenting out the necessary parts:
+To set the PostgreSQL module default configuration, override the read-only `DockerResourceConfiguration` property in `PostgreSqlBuilder` and set its value in both constructors. The default constructor sets `DockerResourceConfiguration` to the return value of `Init().DockerResourceConfiguration`, where the overloaded private constructor just sets the argument value. It receives an updated instance of the immutable Docker resource configuration as soon as a property changes.
+
+The .NET template already includes this configuration, making it easy for developers to quickly get started by simply commenting out the necessary parts:
 
 ```csharp
 public PostgreSqlBuilder()
