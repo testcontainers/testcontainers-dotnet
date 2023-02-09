@@ -33,7 +33,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
       })
       .ConfigureAwait(false);
 
-    var tableDescription = await client.DescribeTableAsync(tableName);
+    var tableDescription = await client.DescribeTableAsync(tableName).ConfigureAwait(false);
 
     // Then
     Assert.NotNull(tableDescription);
@@ -64,10 +64,10 @@ public sealed class MinioContainerTest : IAsyncLifetime
       })
       .ConfigureAwait(false);
 
-    var response = await client.PutItemAsync(new PutItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }));
-    Assert.Equal(HttpStatusCode.OK, response.HttpStatusCode);
+    _ = await client.PutItemAsync(new PutItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } })).ConfigureAwait(false);
 
-    var getItemResponse = await client.GetItemAsync(new GetItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }));
+    var getItemResponse = await client.GetItemAsync(new GetItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }))
+      .ConfigureAwait(false);
 
     // Then
     Assert.Equal(HttpStatusCode.OK, getItemResponse.HttpStatusCode);
