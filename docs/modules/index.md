@@ -18,7 +18,7 @@ dotnet new --install ./src/Templates
 
 The following CLI commands create and add a new PostgreSQL module to the solution file:
 
-```
+```console
 dotnet new tcm --name PostgreSql --official-module true --output ./src
 dotnet sln add ./src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj
 ```
