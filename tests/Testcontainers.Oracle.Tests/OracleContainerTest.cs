@@ -27,4 +27,19 @@ public sealed class OracleContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
     }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ExecScriptReturnsSuccessful()
+    {
+        // Given
+        const string scriptContent = "SELECT 1 FROM DUAL;";
+
+        // When
+        var execResult = await _oracleContainer.ExecScriptAsync(scriptContent)
+            .ConfigureAwait(false);
+
+        // When
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+    }
 }
