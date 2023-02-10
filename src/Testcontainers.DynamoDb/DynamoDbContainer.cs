@@ -4,7 +4,6 @@ namespace Testcontainers.DynamoDb;
 [PublicAPI]
 public sealed class DynamoDbContainer : DockerContainer
 {
-    
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDbContainer" /> class.
     /// </summary>
