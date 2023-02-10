@@ -1,12 +1,10 @@
-﻿using System.Linq;
-
-namespace Testcontainers.DynamoDb;
+﻿namespace Testcontainers.DynamoDb;
 
 public sealed class DynamoDbContainerTest : IAsyncLifetime
 {
     private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder().Build();
 
-    public DynamoDbContainerTest()
+    static DynamoDbContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", "AKIAIOSFODNN7EXAMPLE");
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
