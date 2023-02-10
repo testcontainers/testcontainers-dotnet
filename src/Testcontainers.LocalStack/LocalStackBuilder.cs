@@ -61,7 +61,12 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
     public LocalStackBuilder WithServices(params AwsService[] services)
     {
-        string servicesNames = string.Join("SERVICES", services.Select(service => service.Name));
+        if (services?.Length is null)
+        {
+            return this;
+        }
+
+        string servicesNames = string.Join(",", services.Select(service => service.Name));
         return Merge(DockerResourceConfiguration, new LocalStackConfiguration(services: services))
             .WithEnvironment("SERVICES", servicesNames);
     }
@@ -97,7 +102,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         _ = Guard.Argument(DockerResourceConfiguration.ExternalServicePortEnd, nameof(DockerResourceConfiguration.ExternalServicePortEnd))
             .NotNull()
             .NotEmpty();
-
     }
 
     /// <inheritdoc />
