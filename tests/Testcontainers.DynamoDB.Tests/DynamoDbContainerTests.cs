@@ -1,6 +1,6 @@
 ﻿namespace Testcontainers.DynamoDb;
 
-public sealed class MinioContainerTest : IAsyncLifetime
+public sealed class DynamoDbContainerTest : IAsyncLifetime
 {
   private readonly DynamoDbContainer dynamoDbContainer = new DynamoDbBuilder().Build();
 
