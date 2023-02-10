@@ -100,7 +100,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .WithDefaultRegion("eu-west-1")
             .WithServices()
             .WithPortBinding(LocalStackPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer());
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilReady()));
     }
 
     /// <inheritdoc />
