@@ -13,11 +13,11 @@ public sealed class DynamoDbContainer : DockerContainer
         : base(configuration, logger)
     {
     }
-    
+
     /// <summary>
-    /// Gets the DynamoDB endpoint.
+    /// Gets the DynamoDb endpoint.
     /// </summary>
-    /// <returns>The DynamoDB endpoint.</returns>
+    /// <returns>The DynamoDb endpoint.</returns>
     public string GetEndpoint()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDbBuilder.DynamoDbPort)).ToString();

@@ -30,7 +30,6 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// <inheritdoc />
     protected override DynamoDbConfiguration DockerResourceConfiguration { get; }
 
-
     /// <inheritdoc />
     public override DynamoDbContainer Build()
     {
@@ -44,11 +43,8 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
         return base.Init()
             .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(request: req =>
-                    req.ForPath("/")
-                        .ForStatusCode(HttpStatusCode.BadRequest)
-                        .ForPort(DynamoDbPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/").ForPort(DynamoDbPort).ForStatusCode(HttpStatusCode.BadRequest)));
     }
 
     /// <inheritdoc />
