@@ -5,7 +5,7 @@ using Amazon.Runtime;
 
 namespace Testcontainers.Minio;
 
-public sealed class MinioContainerTest : IAsyncLifetime
+public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().WithServices(AwsService.S3, AwsService.DynamoDb).Build();
 
@@ -21,7 +21,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ListBucketsReturnsHttpStatusCodeOk()
+    public async Task ListAmazonS3BucketsReturnsHttpStatusCodeOk()
     {
         // Given
         var config = new AmazonS3Config();
@@ -39,7 +39,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task GetObjectReturnsPutObject()
+    public async Task GetAmazonS3ObjectReturnsPutObject()
     {
         // Given
         using var inputStream = new MemoryStream(new byte[byte.MaxValue]);
@@ -71,7 +71,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
     
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task CreateTableReturnsCorrectTableDescription()
+  public async Task CreateDynamoDbTableReturnsCorrectTableDescription()
   {
     // Given
     const string tableName = "TestDynamoDbTable";
@@ -102,7 +102,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task InsertElementToTableReturnsHttpStatusCodeOk()
+  public async Task InsertElementToDynamoDbTableReturnsHttpStatusCodeOk()
   {
     // Given
     var tableName = $"TestDynamoDbTable-{Guid.NewGuid():D}";
