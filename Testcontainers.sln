@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Minio", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Minio.Tests", "tests\Testcontainers.Minio.Tests\Testcontainers.Minio.Tests.csproj", "{5DB1F35F-B714-4B62-84BE-16A33084D3E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.LocalStack", "src\Testcontainers.LocalStack\Testcontainers.LocalStack.csproj", "{3792268A-EF08-4569-8118-991E08FD61C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{5DB1F35F-B714-4B62-84BE-16A33084D3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DB1F35F-B714-4B62-84BE-16A33084D3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DB1F35F-B714-4B62-84BE-16A33084D3E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3792268A-EF08-4569-8118-991E08FD61C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3792268A-EF08-4569-8118-991E08FD61C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3792268A-EF08-4569-8118-991E08FD61C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3792268A-EF08-4569-8118-991E08FD61C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -159,5 +165,6 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{1266E1E6-5CEF-4161-8B45-83282455746E} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{5DB1F35F-B714-4B62-84BE-16A33084D3E1} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{3792268A-EF08-4569-8118-991E08FD61C4} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 	EndGlobalSection
 EndGlobal
