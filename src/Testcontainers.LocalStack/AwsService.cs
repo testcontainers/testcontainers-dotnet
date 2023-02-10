@@ -1,5 +1,9 @@
 ﻿namespace Testcontainers.Minio;
 
+
+/// <summary>
+/// AwsService
+/// </summary>
 [PublicAPI]
 public sealed class AwsService
 {
@@ -10,6 +14,9 @@ public sealed class AwsService
         Name = name;
     }
     
+    /// <summary>
+    /// Enables AWS ApiGateway Service. <a href="https://aws.amazon.com/api-gateway/">See docs</a>
+    /// </summary>
     public static readonly AwsService ApiGateway = new("apigateway");
     public static readonly AwsService Ec2 = new ("ec2");
     public static readonly AwsService Kinesis = new ("kinesis");
