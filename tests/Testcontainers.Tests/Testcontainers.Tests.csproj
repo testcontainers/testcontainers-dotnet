@@ -23,7 +23,6 @@
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="MyCouch" />
     <PackageReference Include="Neo4j.Driver" />
-    <PackageReference Include="Npgsql" />
     <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>

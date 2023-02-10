@@ -68,7 +68,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
             .WithCommand("server", "/data")
             .WithUsername("minio")
             .WithPassword(Guid.NewGuid().ToString("D"))
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/minio/health/ready").ForPort(MinioPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/minio/health/ready").ForPort(MinioPort)));
     }
 
     /// <inheritdoc />
