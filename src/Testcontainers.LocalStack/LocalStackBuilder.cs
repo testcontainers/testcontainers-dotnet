@@ -31,20 +31,9 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
 
     /// <inheritdoc />
     protected override LocalStackConfiguration DockerResourceConfiguration { get; }
-
-    /// <summary>
-    /// Sets the LocalStack default region.
-    /// </summary>
-    /// <param name="defaultRegion">The LocalStack Default Region.</param>
-    /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
-    public LocalStackBuilder WithDefaultRegion(string defaultRegion)
-    {
-        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(defaultRegion: defaultRegion))
-            .WithEnvironment("DEFAULT_REGION", defaultRegion);
-    }
     
     /// <summary>
-    /// Sets the Minio username.
+    /// Sets the LocalStack Default Ports Start.
     /// </summary>
     /// <param name="port">The LocalStack Default Ports Start.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
@@ -55,7 +44,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     }
     
     /// <summary>
-    /// Sets the Minio username.
+    /// Sets the LocalStack Default Ports End.
     /// </summary>
     /// <param name="port">The LocalStack Default Ports End.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
@@ -66,7 +55,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     }
     
     /// <summary>
-    /// Sets the Minio username.
+    /// Sets the LocalStack Services.
     /// </summary>
     /// <param name="services">The LocalStack services.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
@@ -96,8 +85,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .WithImage(LocalStackImage)
             .WithExternalServicePortStart("4510")
             .WithExternalServicePortEnd("4559")
-            .WithEnvironment("USE_SSL", "false")
-            .WithDefaultRegion("eu-west-1")
             .WithServices()
             .WithPortBinding(LocalStackPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilReady()));
@@ -108,10 +95,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.UseSsl, nameof(DockerResourceConfiguration.UseSsl))
-            .NotNull()
-            .NotEmpty();
-
         _ = Guard.Argument(DockerResourceConfiguration.ExternalServicePortStart, nameof(DockerResourceConfiguration.ExternalServicePortStart))
             .NotNull()
             .NotEmpty();
@@ -120,10 +103,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.UseSsl, nameof(DockerResourceConfiguration.UseSsl))
-            .NotNull()
-            .NotEmpty();
-        
         _ = Guard.Argument(DockerResourceConfiguration.Services, nameof(DockerResourceConfiguration.Services))
             .NotNull();
         

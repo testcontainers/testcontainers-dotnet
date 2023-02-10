@@ -7,27 +7,20 @@ namespace Testcontainers.Minio;
 public sealed class LocalStackConfiguration : ContainerConfiguration
 {
     public IEnumerable<AwsService> Services { get; }
-    public string DefaultRegion { get; }
     public string ExternalServicePortStart { get; }
     public string ExternalServicePortEnd { get; }
-    
-    public string UseSsl { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="services">The LocalStack services list.</param>
-    /// <param name="defaultRegion">The LocalStack services list.</param>
     /// <param name="externalServicePortStart">The LocalStack services list.</param>
     /// <param name="externalServicePortEnd">The LocalStack services list.</param>
-    /// <param name="useSsl">The LocalStack use ssl param.</param>
-    public LocalStackConfiguration(IEnumerable<AwsService> services = null, string defaultRegion = null, string externalServicePortStart = null, string externalServicePortEnd = null, string useSsl = null)
+    public LocalStackConfiguration(IEnumerable<AwsService> services = null, string externalServicePortStart = null, string externalServicePortEnd = null)
     {
         Services = services;
-        DefaultRegion = defaultRegion;
         ExternalServicePortStart = externalServicePortStart;
         ExternalServicePortEnd = externalServicePortEnd;
-        UseSsl = useSsl;
     }
 
     /// <summary>
@@ -69,7 +62,6 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
         Services = BuildConfiguration.Combine(oldValue.Services, newValue.Services);
-        DefaultRegion = BuildConfiguration.Combine(oldValue.DefaultRegion, newValue.DefaultRegion);
         ExternalServicePortStart = BuildConfiguration.Combine(oldValue.ExternalServicePortStart, newValue.ExternalServicePortStart);
         ExternalServicePortEnd = BuildConfiguration.Combine(oldValue.ExternalServicePortEnd, newValue.ExternalServicePortEnd);
     }

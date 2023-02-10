@@ -29,14 +29,6 @@ public sealed class LocalStackContainer : DockerContainer
     /// <returns>The AWS access secret.</returns>
     public string GetAccessSecret() => "dummy";
     
-    /// <summary>
-    /// Gets the Minio Url.
-    /// </summary>
-    /// <returns>The LocalStack Default Region.</returns>
-    public string GetDefaultRegion()
-    {
-        return _configuration.DefaultRegion!;
-    }
 
     /// <summary>
     /// Gets the Minio endpoint.
