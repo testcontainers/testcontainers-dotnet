@@ -2,21 +2,21 @@
 
 public abstract class MariaDbContainerTest : IAsyncLifetime
 {
-    private readonly MariaDbContainer _mySqlContainer;
+    private readonly MariaDbContainer _mariaDbContainer;
 
-    protected MariaDbContainerTest(MariaDbContainer mySqlContainer)
+    protected MariaDbContainerTest(MariaDbContainer mariaDbContainer)
     {
-        _mySqlContainer = mySqlContainer;
+        _mariaDbContainer = mariaDbContainer;
     }
 
     public Task InitializeAsync()
     {
-        return _mySqlContainer.StartAsync();
+        return _mariaDbContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _mySqlContainer.DisposeAsync().AsTask();
+        return _mariaDbContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new MySqlConnection(_mySqlContainer.GetConnectionString());
+        using DbConnection connection = new MySqlConnection(_mariaDbContainer.GetConnectionString());
 
         // When
         connection.Open();
@@ -41,7 +41,7 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _mySqlContainer.ExecScriptAsync(scriptContent)
+        var execResult = await _mariaDbContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When

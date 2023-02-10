@@ -24,7 +24,6 @@
     <PackageReference Include="MyCouch" />
     <PackageReference Include="Neo4j.Driver" />
     <PackageReference Include="Npgsql" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" />
     <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
