@@ -88,45 +88,45 @@ public sealed class AwsService
     /// <summary>
     /// Enables AWS CloudFormation Service. <a href="https://aws.amazon.com/cloudformation/">See docs</a>
     /// </summary>
-    public static readonly AwsService CloudFormation = new("cloudformation");
+    public static readonly AwsService CloudFormation = new AwsService("cloudformation");
 
     /// <summary>
     /// Enables AWS CloudWatch Service. <a href="https://aws.amazon.com/cloudwatch/">See docs</a>
     /// </summary>
-    public static readonly AwsService CloudWatch = new("cloudwatch");
+    public static readonly AwsService CloudWatch = new AwsService("cloudwatch");
 
     /// <summary>
     /// Enables AWS Simple System Manager (SSM) Service. <a href="https://aws.amazon.com/ssm/">See docs</a>
     /// </summary>
-    public static readonly AwsService Ssm = new("ssm");
+    public static readonly AwsService Ssm = new AwsService("ssm");
 
     /// <summary>
     /// Enables AWS Secrets Manager Service. <a href="https://aws.amazon.com/secrets-manager/">See docs</a>
     /// </summary>
-    public static readonly AwsService SecretsManager = new("secretsmanager");
+    public static readonly AwsService SecretsManager = new AwsService("secretsmanager");
 
     /// <summary>
     /// Enables AWS Step Functions Service. <a href="https://aws.amazon.com/step-functions/">See docs</a>
     /// </summary>
-    public static readonly AwsService StepFunctions = new("stepfunctions");
+    public static readonly AwsService StepFunctions = new AwsService("stepfunctions");
 
     /// <summary>
     /// Enables AWS CloudWatch Logs Service. <a href="https://aws.amazon.com/cloudwatch/">See docs</a>
     /// </summary>
-    public static readonly AwsService CloudWatchLogs = new("logs");
+    public static readonly AwsService CloudWatchLogs = new AwsService("logs");
 
     /// <summary>
     /// Enables AWS Security Token Service (STS) Service. <a href="https://aws.amazon.com/sts/">See docs</a>
     /// </summary>
-    public static readonly AwsService Sts = new("sts");
+    public static readonly AwsService Sts = new AwsService("sts");
 
     /// <summary>
     /// Enables AWS Identity and Access Management (IAM) Service. <a href="https://aws.amazon.com/iam/">See docs</a>
     /// </summary>
-    public static readonly AwsService Iam = new("iam");
+    public static readonly AwsService Iam = new AwsService("iam");
 
     /// <summary>
     /// Enables AWS Key Management Service (KMS) Service. <a href="https://aws.amazon.com/kms/">See docs</a>
     /// </summary>
-    public static readonly AwsService Kms = new("kms");
+    public static readonly AwsService Kms = new AwsService("kms");
 }
