@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Testcontainers.Minio;
 
@@ -76,8 +77,9 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             return this;
         }
 
+        string servicesNames = string.Join("SERVICES", services.Select(service => service.Name));
         return Merge(DockerResourceConfiguration, new LocalStackConfiguration(services: services))
-            .WithEnvironment("SERVICES", string.Join(',', services.Select(service => service.Name)));
+            .WithEnvironment("SERVICES", servicesNames);
     }
 
     
@@ -98,8 +100,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .WithDefaultRegion("eu-west-1")
             .WithServices()
             .WithPortBinding(LocalStackPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .AddCustomWaitStrategy(new UntilReady()));
+            .WithWaitStrategy(Wait.ForUnixContainer());
     }
 
     /// <inheritdoc />
@@ -144,5 +145,15 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackBuilder Merge(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
     {
         return new LocalStackBuilder(new LocalStackConfiguration(oldValue, newValue));
+    }
+    
+    private sealed class UntilReady : IWaitUntil
+    {
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+            return stdout != null && stdout.Contains("Ready.\n");
+        }
     }
 }
