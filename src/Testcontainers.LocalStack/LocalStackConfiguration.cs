@@ -7,9 +7,11 @@ namespace Testcontainers.Minio;
 public sealed class LocalStackConfiguration : ContainerConfiguration
 {
     public IEnumerable<AwsService> Services { get; }
-    public string? DefaultRegion { get; }
-    public string? ExternalServicePortStart { get; }
-    public string? ExternalServicePortEnd { get; }
+    public string DefaultRegion { get; }
+    public string ExternalServicePortStart { get; }
+    public string ExternalServicePortEnd { get; }
+    
+    public string UseSsl { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
@@ -18,12 +20,14 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
     /// <param name="defaultRegion">The LocalStack services list.</param>
     /// <param name="externalServicePortStart">The LocalStack services list.</param>
     /// <param name="externalServicePortEnd">The LocalStack services list.</param>
-    public LocalStackConfiguration(IEnumerable<AwsService> services = null, string defaultRegion = null, string externalServicePortStart = null, string externalServicePortEnd = null) : base()
+    /// <param name="useSsl">The LocalStack use ssl param.</param>
+    public LocalStackConfiguration(IEnumerable<AwsService> services = null, string defaultRegion = null, string externalServicePortStart = null, string externalServicePortEnd = null, string useSsl = null)
     {
         Services = services;
         DefaultRegion = defaultRegion;
         ExternalServicePortStart = externalServicePortStart;
         ExternalServicePortEnd = externalServicePortEnd;
+        UseSsl = useSsl;
     }
 
     /// <summary>

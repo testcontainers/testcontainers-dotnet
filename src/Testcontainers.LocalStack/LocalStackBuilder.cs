@@ -1,12 +1,13 @@
+using System.Linq;
+
 namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
-    public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
-
-    public const ushort MinioPort = 9000;
+    public const ushort LocalStackPort = 4566;
+    public const string LocalStackImage = "localstack/localstack:1.3.1";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
@@ -31,27 +32,55 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
+    /// Sets the LocalStack default region.
+    /// </summary>
+    /// <param name="defaultRegion">The LocalStack Default Region.</param>
+    /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
+    public LocalStackBuilder WithDefaultRegion(string defaultRegion)
+    {
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(defaultRegion: defaultRegion))
+            .WithEnvironment("DEFAULT_REGION", defaultRegion);
+    }
+    
+    /// <summary>
     /// Sets the Minio username.
     /// </summary>
-    /// <param name="username">The Minio username.</param>
+    /// <param name="port">The LocalStack Default Ports Start.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
-    public LocalStackBuilder WithUsername(string username)
+    public LocalStackBuilder WithExternalServicePortStart(string port)
     {
-        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(username: username))
-            .WithEnvironment("MINIO_ROOT_USER", username);
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(externalServicePortStart: port))
+            .WithEnvironment("EXTERNAL_SERVICE_PORTS_START", port);
     }
-
+    
     /// <summary>
-    /// Sets the Minio password.
+    /// Sets the Minio username.
     /// </summary>
-    /// <param name="password">The Minio password.</param>
+    /// <param name="port">The LocalStack Default Ports End.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
-    public LocalStackBuilder WithPassword(string password)
+    public LocalStackBuilder WithExternalServicePortEnd(string port)
     {
-        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(password: password))
-            .WithEnvironment("MINIO_ROOT_PASSWORD", password);
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(externalServicePortEnd: port))
+            .WithEnvironment("EXTERNAL_SERVICE_PORTS_END", port);
+    }
+    
+    /// <summary>
+    /// Sets the Minio username.
+    /// </summary>
+    /// <param name="services">The LocalStack services.</param>
+    /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
+    public LocalStackBuilder WithServices(params AwsService[] services)
+    {
+        if (services?.Length is null)
+        {
+            return this;
+        }
+
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(services: services))
+            .WithEnvironment("SERVICES", string.Join(',', services.Select(service => service.Name)));
     }
 
+    
     /// <inheritdoc />
     public override LocalStackContainer Build()
     {
@@ -59,16 +88,18 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         return new LocalStackContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    /// <inheritdoc />
     protected override LocalStackBuilder Init()
     {
         return base.Init()
-            .WithImage(MinioImage)
-            .WithPortBinding(MinioPort, true)
-            .WithCommand("server", "/data")
-            .WithUsername("minio")
-            .WithPassword(Guid.NewGuid().ToString("D"))
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/minio/health/ready").ForPort(MinioPort)));
+            .WithImage(LocalStackImage)
+            .WithExternalServicePortStart("4510")
+            .WithExternalServicePortEnd("4559")
+            .WithEnvironment("USE_SSL", "false")
+            .WithDefaultRegion("eu-west-1")
+            .WithServices()
+            .WithPortBinding(LocalStackPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .AddCustomWaitStrategy(new UntilReady()));
     }
 
     /// <inheritdoc />
@@ -76,13 +107,25 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard.Argument(DockerResourceConfiguration.UseSsl, nameof(DockerResourceConfiguration.UseSsl))
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard.Argument(DockerResourceConfiguration.ExternalServicePortStart, nameof(DockerResourceConfiguration.ExternalServicePortStart))
             .NotNull()
             .NotEmpty();
+        
+        _ = Guard.Argument(DockerResourceConfiguration.ExternalServicePortEnd, nameof(DockerResourceConfiguration.ExternalServicePortEnd))
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.UseSsl, nameof(DockerResourceConfiguration.UseSsl))
+            .NotNull()
+            .NotEmpty();
+        
+        _ = Guard.Argument(DockerResourceConfiguration.Services, nameof(DockerResourceConfiguration.Services))
+            .NotNull();
+        
     }
 
     /// <inheritdoc />

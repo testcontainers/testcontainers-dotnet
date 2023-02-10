@@ -21,26 +21,29 @@ public sealed class LocalStackContainer : DockerContainer
     /// Gets the AWS access key id.
     /// </summary>
     /// <returns>The AWS access key id.</returns>
-    public string GetAccessKeyId()
-    {
-        return _configuration.Username;
-    }
+    public string GetAccessKeyId() => "dummy";
 
     /// <summary>
     /// Gets the AWS access secret.
     /// </summary>
     /// <returns>The AWS access secret.</returns>
-    public string GetAccessSecret()
+    public string GetAccessSecret() => "dummy";
+    
+    /// <summary>
+    /// Gets the Minio Url.
+    /// </summary>
+    /// <returns>The LocalStack Default Region.</returns>
+    public string GetDefaultRegion()
     {
-        return _configuration.Password;
+        return _configuration.DefaultRegion!;
     }
 
     /// <summary>
     /// Gets the Minio endpoint.
     /// </summary>
-    /// <returns>The Minio endpoint.</returns>
+    /// <returns>The LocalStack endpoint.</returns>
     public string GetEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LocalStackBuilder.MinioPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LocalStackBuilder.LocalStackPort)).ToString();
     }
 }
