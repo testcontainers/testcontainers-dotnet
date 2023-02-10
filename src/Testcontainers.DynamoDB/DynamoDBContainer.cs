@@ -1,16 +1,16 @@
-namespace Testcontainers.DynamoDB;
+namespace Testcontainers.DynamoDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class DynamoDBContainer : DockerContainer
+public sealed class DynamoDbContainer : DockerContainer
 {
     
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynamoDBContainer" /> class.
+    /// Initializes a new instance of the <see cref="DynamoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public DynamoDBContainer(DynamoDBConfiguration configuration, ILogger logger)
+    public DynamoDbContainer(DynamoDbConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
     }
@@ -19,20 +19,8 @@ public sealed class DynamoDBContainer : DockerContainer
     /// Gets the DynamoDB endpoint.
     /// </summary>
     /// <returns>The DynamoDB endpoint.</returns>
-    private string GetEndpoint()
+    public string GetEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDBBuilder.DynamoDbPort)).ToString();
-    }
-
-    /// <summary>
-    /// Gets the AmazonDynamoDBClient client.
-    /// </summary>
-    /// <returns>The AmazonDynamoDBClient.</returns>
-    public AmazonDynamoDBClient GetAmazonDynamoDBClient()
-    {
-        var clientConfig = new AmazonDynamoDBConfig();
-        clientConfig.ServiceURL = this.GetEndpoint();
-        clientConfig.UseHttp = true;
-        return new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDbBuilder.DynamoDbPort)).ToString();
     }
 }

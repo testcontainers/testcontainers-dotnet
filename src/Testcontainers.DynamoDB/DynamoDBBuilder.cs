@@ -1,45 +1,45 @@
-namespace Testcontainers.DynamoDB;
+namespace Testcontainers.DynamoDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class DynamoDBBuilder : ContainerBuilder<DynamoDBBuilder, DynamoDBContainer, DynamoDBConfiguration>
+public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDbContainer, DynamoDbConfiguration>
 {
     public const string DynamoDbImage = "amazon/dynamodb-local:1.21.0";
 
     public const ushort DynamoDbPort = 8000;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynamoDBBuilder" /> class.
+    /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
     /// </summary>
-    public DynamoDBBuilder()
-        : this(new DynamoDBConfiguration())
+    public DynamoDbBuilder()
+        : this(new DynamoDbConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynamoDBBuilder" /> class.
+    /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private DynamoDBBuilder(DynamoDBConfiguration dockerResourceConfiguration)
+    private DynamoDbBuilder(DynamoDbConfiguration dockerResourceConfiguration)
         : base(dockerResourceConfiguration)
     {
         DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
-    protected override DynamoDBConfiguration DockerResourceConfiguration { get; }
+    protected override DynamoDbConfiguration DockerResourceConfiguration { get; }
     
 
     /// <inheritdoc />
-    public override DynamoDBContainer Build()
+    public override DynamoDbContainer Build()
     {
         Validate();
-        return new DynamoDBContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new DynamoDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
-    protected override DynamoDBBuilder Init()
+    protected override DynamoDbBuilder Init()
     {
         return base.Init()
             .WithImage(DynamoDbImage)
@@ -48,21 +48,21 @@ public sealed class DynamoDBBuilder : ContainerBuilder<DynamoDBBuilder, DynamoDB
     }
 
     /// <inheritdoc />
-    protected override DynamoDBBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new DynamoDBConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override DynamoDBBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new DynamoDBConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override DynamoDBBuilder Merge(DynamoDBConfiguration oldValue, DynamoDBConfiguration newValue)
+    protected override DynamoDbBuilder Merge(DynamoDbConfiguration oldValue, DynamoDbConfiguration newValue)
     {
-        return new DynamoDBBuilder(new DynamoDBConfiguration(oldValue, newValue));
+        return new DynamoDbBuilder(new DynamoDbConfiguration(oldValue, newValue));
     }
     
     /// <inheritdoc cref="IWaitUntil" />
