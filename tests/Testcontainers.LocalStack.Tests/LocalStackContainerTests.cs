@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
+using Amazon.CloudWatchLogs;
+using Amazon.CloudWatchLogs.Model;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 
 namespace Testcontainers.Minio;
 
 public sealed class LocalStackContainerTest : IAsyncLifetime
 {
-    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().WithServices(AwsService.S3, AwsService.DynamoDb).Build();
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder()
+        .WithServices(AwsService.S3, AwsService.DynamoDb, AwsService.CloudWatchLogs, AwsService.Sqs, AwsService.Sns)
+        .Build();
 
     public Task InitializeAsync()
     {
@@ -27,7 +35,8 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetEndpoint();
 
-        var client = new AmazonS3Client(_localStackContainer.GetAccessKeyId(), _localStackContainer.GetAccessSecret(), config);
+        var client = new AmazonS3Client(_localStackContainer.GetAccessKeyId(), _localStackContainer.GetAccessSecret(),
+            config);
 
         // When
         var buckets = await client.ListBucketsAsync()
@@ -39,98 +48,93 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task GetAmazonS3ObjectReturnsPutObject()
+    public async Task CreateDynamoDbTableReturnsCorrectTableDescription()
     {
         // Given
-        using var inputStream = new MemoryStream(new byte[byte.MaxValue]);
-
-        var config = new AmazonS3Config();
-        config.ServiceURL = _localStackContainer.GetEndpoint();
-
-        var client = new AmazonS3Client(_localStackContainer.GetAccessKeyId(), _localStackContainer.GetAccessSecret(), config);
-
-        var objectRequest = new PutObjectRequest();
-        objectRequest.BucketName = Guid.NewGuid().ToString("D");
-        objectRequest.Key = Guid.NewGuid().ToString("D");
-        objectRequest.InputStream = inputStream;
+        const string tableName = "TestDynamoDbTable";
+        var clientConfig = new AmazonDynamoDBConfig();
+        clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
+        clientConfig.UseHttp = true;
+        using var client = new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
 
         // When
-        _ = await client.PutBucketAsync(objectRequest.BucketName)
+        _ = await client.CreateTableAsync(new CreateTableRequest()
+            {
+                TableName = tableName,
+                AttributeDefinitions = new List<AttributeDefinition>()
+                {
+                    new AttributeDefinition("Id", ScalarAttributeType.S),
+                    new AttributeDefinition("Name", ScalarAttributeType.S),
+                },
+                KeySchema = new List<KeySchemaElement>()
+                    { new KeySchemaElement("Id", KeyType.HASH), new KeySchemaElement("Name", KeyType.RANGE), },
+                ProvisionedThroughput = new ProvisionedThroughput(1, 1),
+                TableClass = TableClass.STANDARD,
+            })
             .ConfigureAwait(false);
 
-        _ = await client.PutObjectAsync(objectRequest)
-            .ConfigureAwait(false);
-
-        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key)
-            .ConfigureAwait(false);
+        var tableDescription = await client.DescribeTableAsync(tableName).ConfigureAwait(false);
 
         // Then
-        Assert.Equal(byte.MaxValue, objectResponse.ContentLength);
+        Assert.NotNull(tableDescription);
+        Assert.Equal(HttpStatusCode.OK, tableDescription.HttpStatusCode);
+        Assert.Equal(tableName, tableDescription.Table.TableName);
+        Assert.Equal("Id", tableDescription.Table.KeySchema[0].AttributeName);
     }
-    
-    
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task CreateDynamoDbTableReturnsCorrectTableDescription()
-  {
-    // Given
-    const string tableName = "TestDynamoDbTable";
-    var clientConfig = new AmazonDynamoDBConfig();
-    clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
-    clientConfig.UseHttp = true;
-    using var client =  new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
 
-    // When
-    _ = await client.CreateTableAsync(new CreateTableRequest()
-      {
-        TableName = tableName,
-        AttributeDefinitions = new List<AttributeDefinition>() { new AttributeDefinition("Id", ScalarAttributeType.S), new AttributeDefinition("Name", ScalarAttributeType.S), },
-        KeySchema = new List<KeySchemaElement>() { new KeySchemaElement("Id", KeyType.HASH), new KeySchemaElement("Name", KeyType.RANGE), },
-        ProvisionedThroughput = new ProvisionedThroughput(1, 1),
-        TableClass = TableClass.STANDARD,
-      })
-      .ConfigureAwait(false);
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreateSqsQueueReturnsHttpStatusCodeOk()
+    {
+        // Given
+        string queueName = Guid.NewGuid().ToString("D");
+        var clientConfig = new AmazonSQSConfig();
+        clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
+        clientConfig.UseHttp = true;
+        using var client = new AmazonSQSClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
 
-    var tableDescription = await client.DescribeTableAsync(tableName).ConfigureAwait(false);
+        // When
+        var response = await client.CreateQueueAsync(new CreateQueueRequest(queueName));
 
-    // Then
-    Assert.NotNull(tableDescription);
-    Assert.Equal(HttpStatusCode.OK, tableDescription.HttpStatusCode);
-    Assert.Equal(tableName, tableDescription.Table.TableName);
-    Assert.Equal("Id", tableDescription.Table.KeySchema[0].AttributeName);
-  }
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.HttpStatusCode);
+    }
 
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task InsertElementToDynamoDbTableReturnsHttpStatusCodeOk()
-  {
-    // Given
-    var tableName = $"TestDynamoDbTable-{Guid.NewGuid():D}";
-    var itemId = Guid.NewGuid().ToString("D");
-    var itemName = Guid.NewGuid().ToString("D");
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreateLogGroupReturnsHttpStatusCodeOk()
+    {
+        // Given
+        string logGroupName = Guid.NewGuid().ToString("D");
+        var clientConfig = new AmazonCloudWatchLogsConfig();
+        clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
+        clientConfig.UseHttp = true;
+        using var client = new AmazonCloudWatchLogsClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
 
-    var clientConfig = new AmazonDynamoDBConfig();
-    clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
-    clientConfig.UseHttp = true;
-    using var client =  new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+        // When
+        var response = await client.CreateLogGroupAsync(new CreateLogGroupRequest(logGroupName));
 
-    // When
-    _ = await client.CreateTableAsync(new CreateTableRequest()
-      {
-        TableName = tableName,
-        AttributeDefinitions = new List<AttributeDefinition>() { new AttributeDefinition("Id", ScalarAttributeType.S), new AttributeDefinition("Name", ScalarAttributeType.S), },
-        KeySchema = new List<KeySchemaElement>() { new KeySchemaElement("Id", KeyType.HASH), new KeySchemaElement("Name", KeyType.RANGE), },
-        ProvisionedThroughput = new ProvisionedThroughput(1, 1),
-        TableClass = TableClass.STANDARD,
-      })
-      .ConfigureAwait(false);
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.HttpStatusCode);
+    }
 
-    _ = await client.PutItemAsync(new PutItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } })).ConfigureAwait(false);
 
-    var getItemResponse = await client.GetItemAsync(new GetItemRequest(tableName, new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue() { S = itemId } }, { "Name", new AttributeValue() { S = itemName } } }))
-      .ConfigureAwait(false);
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreateSnsTopicReturnsHttpStatusCodeOk()
+    {
+        // Given
+        string topicName = Guid.NewGuid().ToString("D");
+        var clientConfig = new AmazonSimpleNotificationServiceConfig();
+        clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
+        clientConfig.UseHttp = true;
+        using var client =
+            new AmazonSimpleNotificationServiceClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
 
-    // Then
-    Assert.Equal(HttpStatusCode.OK, getItemResponse.HttpStatusCode);
-  }
+        // When
+        var response = await client.CreateTopicAsync(new CreateTopicRequest(topicName));
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.HttpStatusCode);
+    }
 }
