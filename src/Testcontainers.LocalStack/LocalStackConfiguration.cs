@@ -1,20 +1,29 @@
+using System.Collections.Generic;
+
 namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
 public sealed class LocalStackConfiguration : ContainerConfiguration
 {
+    public IEnumerable<AwsService> Services { get; }
+    public string? DefaultRegion { get; }
+    public string? ExternalServicePortStart { get; }
+    public string? ExternalServicePortEnd { get; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
-    /// <param name="username">The Minio database.</param>
-    /// <param name="password">The Minio username.</param>
-    public LocalStackConfiguration(
-        string username = null,
-        string password = null)
+    /// <param name="services">The LocalStack services list.</param>
+    /// <param name="defaultRegion">The LocalStack services list.</param>
+    /// <param name="externalServicePortStart">The LocalStack services list.</param>
+    /// <param name="externalServicePortEnd">The LocalStack services list.</param>
+    public LocalStackConfiguration(IEnumerable<AwsService> services = null, string defaultRegion = null, string externalServicePortStart = null, string externalServicePortEnd = null) : base()
     {
-        Username = username;
-        Password = password;
+        Services = services;
+        DefaultRegion = defaultRegion;
+        ExternalServicePortStart = externalServicePortStart;
+        ExternalServicePortEnd = externalServicePortEnd;
     }
 
     /// <summary>
@@ -55,17 +64,9 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
     public LocalStackConfiguration(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
         : base(oldValue, newValue)
     {
-        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
-        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+        Services = BuildConfiguration.Combine(oldValue.Services, newValue.Services);
+        DefaultRegion = BuildConfiguration.Combine(oldValue.DefaultRegion, newValue.DefaultRegion);
+        ExternalServicePortStart = BuildConfiguration.Combine(oldValue.ExternalServicePortStart, newValue.ExternalServicePortStart);
+        ExternalServicePortEnd = BuildConfiguration.Combine(oldValue.ExternalServicePortEnd, newValue.ExternalServicePortEnd);
     }
-
-    /// <summary>
-    /// Gets the Minio username.
-    /// </summary>
-    public string Username { get; }
-
-    /// <summary>
-    /// Gets the Minio password.
-    /// </summary>
-    public string Password { get; }
 }
