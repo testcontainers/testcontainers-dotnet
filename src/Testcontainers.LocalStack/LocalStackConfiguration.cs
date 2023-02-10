@@ -2,14 +2,14 @@ namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
-public sealed class MinioConfiguration : ContainerConfiguration
+public sealed class LocalStackConfiguration : ContainerConfiguration
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="username">The Minio database.</param>
     /// <param name="password">The Minio username.</param>
-    public MinioConfiguration(
+    public LocalStackConfiguration(
         string username = null,
         string password = null)
     {
@@ -18,41 +18,41 @@ public sealed class MinioConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MinioConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public LocalStackConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MinioConfiguration(IContainerConfiguration resourceConfiguration)
+    public LocalStackConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MinioConfiguration(MinioConfiguration resourceConfiguration)
-        : this(new MinioConfiguration(), resourceConfiguration)
+    public LocalStackConfiguration(LocalStackConfiguration resourceConfiguration)
+        : this(new LocalStackConfiguration(), resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public MinioConfiguration(MinioConfiguration oldValue, MinioConfiguration newValue)
+    public LocalStackConfiguration(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
         : base(oldValue, newValue)
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);

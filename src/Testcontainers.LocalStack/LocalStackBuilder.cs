@@ -2,7 +2,7 @@ namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, MinioContainer, MinioConfiguration>
+public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
 
@@ -12,7 +12,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Mini
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
     public LocalStackBuilder()
-        : this(new MinioConfiguration())
+        : this(new LocalStackConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
@@ -21,14 +21,14 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Mini
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private LocalStackBuilder(MinioConfiguration dockerResourceConfiguration)
+    private LocalStackBuilder(LocalStackConfiguration dockerResourceConfiguration)
         : base(dockerResourceConfiguration)
     {
         DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
-    protected override MinioConfiguration DockerResourceConfiguration { get; }
+    protected override LocalStackConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
     /// Sets the Minio username.
@@ -37,7 +37,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Mini
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
     public LocalStackBuilder WithUsername(string username)
     {
-        return Merge(DockerResourceConfiguration, new MinioConfiguration(username: username))
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(username: username))
             .WithEnvironment("MINIO_ROOT_USER", username);
     }
 
@@ -48,15 +48,15 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Mini
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
     public LocalStackBuilder WithPassword(string password)
     {
-        return Merge(DockerResourceConfiguration, new MinioConfiguration(password: password))
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(password: password))
             .WithEnvironment("MINIO_ROOT_PASSWORD", password);
     }
 
     /// <inheritdoc />
-    public override MinioContainer Build()
+    public override LocalStackContainer Build()
     {
         Validate();
-        return new MinioContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new LocalStackContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -88,18 +88,18 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Mini
     /// <inheritdoc />
     protected override LocalStackBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
     protected override LocalStackBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override LocalStackBuilder Merge(MinioConfiguration oldValue, MinioConfiguration newValue)
+    protected override LocalStackBuilder Merge(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
     {
-        return new LocalStackBuilder(new MinioConfiguration(oldValue, newValue));
+        return new LocalStackBuilder(new LocalStackConfiguration(oldValue, newValue));
     }
 }

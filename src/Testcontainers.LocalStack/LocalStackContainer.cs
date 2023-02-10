@@ -2,16 +2,16 @@ namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MinioContainer : DockerContainer
+public sealed class LocalStackContainer : DockerContainer
 {
-    private readonly MinioConfiguration _configuration;
+    private readonly LocalStackConfiguration _configuration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MinioContainer" /> class.
+    /// Initializes a new instance of the <see cref="LocalStackContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public MinioContainer(MinioConfiguration configuration, ILogger logger)
+    public LocalStackContainer(LocalStackConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
         _configuration = configuration;
