@@ -29,7 +29,7 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
 
     /// <inheritdoc />
     protected override DynamoDbConfiguration DockerResourceConfiguration { get; }
-    
+
 
     /// <inheritdoc />
     public override DynamoDbContainer Build()
@@ -44,7 +44,11 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
         return base.Init()
             .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DynamoDbPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(request: req =>
+                    req.ForPath("/")
+                        .ForStatusCode(HttpStatusCode.BadRequest)
+                        .ForPort(DynamoDbPort)));
     }
 
     /// <inheritdoc />
@@ -63,24 +67,5 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     protected override DynamoDbBuilder Merge(DynamoDbConfiguration oldValue, DynamoDbConfiguration newValue)
     {
         return new DynamoDbBuilder(new DynamoDbConfiguration(oldValue, newValue));
-    }
-    
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly ushort _port;
-
-        public WaitUntil(ushort port)
-        {
-            _port = port;
-        }
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(new[] { "curl", $"http://localhost:{_port}" })
-                .ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }
