@@ -9,7 +9,7 @@ using Amazon.SimpleNotificationService.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
-namespace Testcontainers.Minio;
+namespace Testcontainers.LocalStack;
 
 public sealed class LocalStackContainerTest : IAsyncLifetime
 {

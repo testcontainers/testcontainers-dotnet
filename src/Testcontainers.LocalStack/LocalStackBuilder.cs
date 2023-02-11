@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Testcontainers.Minio;
+namespace Testcontainers.LocalStack;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -65,9 +65,9 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     {
         return base.Init()
             .WithImage(LocalStackImage)
+            .WithPortBinding(LocalStackPort, true)
             .WithExternalServicePortStart("4510")
             .WithExternalServicePortEnd("4559")
-            .WithPortBinding(LocalStackPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/health").ForPort(LocalStackPort)));
     }
 

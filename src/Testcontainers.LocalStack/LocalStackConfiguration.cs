@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace Testcontainers.Minio;
+namespace Testcontainers.LocalStack;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]

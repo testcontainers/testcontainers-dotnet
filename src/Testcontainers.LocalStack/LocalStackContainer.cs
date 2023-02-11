@@ -1,4 +1,4 @@
-namespace Testcontainers.Minio;
+namespace Testcontainers.LocalStack;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
