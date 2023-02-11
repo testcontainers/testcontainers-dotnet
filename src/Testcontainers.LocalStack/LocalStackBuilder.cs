@@ -33,9 +33,9 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackConfiguration DockerResourceConfiguration { get; }
     
     /// <summary>
-    /// Sets the LocalStack Default Ports Start.
+    /// Sets the LocalStack external service start port.
     /// </summary>
-    /// <param name="port">The LocalStack Default Ports Start.</param>
+    /// <param name="port">The LocalStack external service start port.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
     public LocalStackBuilder WithExternalServicePortStart(string port)
     {
@@ -44,9 +44,9 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     }
     
     /// <summary>
-    /// Sets the LocalStack Default Ports End.
+    /// Sets the LocalStack external service end port.
     /// </summary>
-    /// <param name="port">The LocalStack Default Ports End.</param>
+    /// <param name="port">The LocalStack external service end port.</param>
     /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
     public LocalStackBuilder WithExternalServicePortEnd(string port)
     {
