@@ -9,7 +9,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
 {
     public const ushort LocalStackPort = 4566;
     public const string LocalStackImage = "localstack/localstack:1.3.1";
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
@@ -53,25 +53,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         return Merge(DockerResourceConfiguration, new LocalStackConfiguration(externalServicePortEnd: port))
             .WithEnvironment("EXTERNAL_SERVICE_PORTS_END", port);
     }
-    
-    /// <summary>
-    /// Sets the LocalStack Services.
-    /// </summary>
-    /// <param name="services">The LocalStack services.</param>
-    /// <returns>A configured instance of <see cref="LocalStackBuilder" />.</returns>
-    public LocalStackBuilder WithServices(params AwsService[] services)
-    {
-        if (services?.Length is null)
-        {
-            return this;
-        }
 
-        string servicesNames = string.Join(",", services.Select(service => service.Name));
-        return Merge(DockerResourceConfiguration, new LocalStackConfiguration(services: services))
-            .WithEnvironment("SERVICES", servicesNames);
-    }
-
-    
     /// <inheritdoc />
     public override LocalStackContainer Build()
     {
@@ -85,9 +67,8 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .WithImage(LocalStackImage)
             .WithExternalServicePortStart("4510")
             .WithExternalServicePortEnd("4559")
-            .WithServices()
             .WithPortBinding(LocalStackPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilReady()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/health").ForPort(LocalStackPort)));
     }
 
     /// <inheritdoc />
@@ -120,15 +101,5 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackBuilder Merge(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
     {
         return new LocalStackBuilder(new LocalStackConfiguration(oldValue, newValue));
-    }
-    
-    private sealed class UntilReady : IWaitUntil
-    {
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogs()
-                .ConfigureAwait(false);
-            return stdout != null && stdout.Contains("Ready.\n");
-        }
     }
 }

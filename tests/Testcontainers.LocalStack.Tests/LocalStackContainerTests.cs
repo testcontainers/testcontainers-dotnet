@@ -13,9 +13,7 @@ namespace Testcontainers.Minio;
 
 public sealed class LocalStackContainerTest : IAsyncLifetime
 {
-    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder()
-        .WithServices(AwsService.S3, AwsService.DynamoDb, AwsService.CloudWatchLogs, AwsService.Sqs, AwsService.Sns)
-        .Build();
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().Build();
 
     public Task InitializeAsync()
     {
