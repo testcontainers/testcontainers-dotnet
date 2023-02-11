@@ -18,19 +18,6 @@ public sealed class LocalStackContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the AWS access key id.
-    /// </summary>
-    /// <returns>The AWS access key id.</returns>
-    public string GetAccessKeyId() => "dummy";
-
-    /// <summary>
-    /// Gets the AWS access secret.
-    /// </summary>
-    /// <returns>The AWS access secret.</returns>
-    public string GetAccessSecret() => "dummy";
-    
-
-    /// <summary>
     /// Gets the Minio endpoint.
     /// </summary>
     /// <returns>The LocalStack endpoint.</returns>

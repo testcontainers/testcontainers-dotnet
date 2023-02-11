@@ -15,6 +15,12 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().Build();
 
+    public LocalStackContainerTest()
+    {
+        Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", "AKIAIOSFODNN7EXAMPLE"); 
+        Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"); 
+    }
+    
     public Task InitializeAsync()
     {
         return _localStackContainer.StartAsync();
@@ -33,8 +39,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetEndpoint();
 
-        var client = new AmazonS3Client(_localStackContainer.GetAccessKeyId(), _localStackContainer.GetAccessSecret(),
-            config);
+        var client = new AmazonS3Client(config);
 
         // When
         var buckets = await client.ListBucketsAsync()
@@ -53,7 +58,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var clientConfig = new AmazonDynamoDBConfig();
         clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
         clientConfig.UseHttp = true;
-        using var client = new AmazonDynamoDBClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+        using var client = new AmazonDynamoDBClient(clientConfig);
 
         // When
         _ = await client.CreateTableAsync(new CreateTableRequest()
@@ -89,7 +94,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var clientConfig = new AmazonSQSConfig();
         clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
         clientConfig.UseHttp = true;
-        using var client = new AmazonSQSClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+        using var client = new AmazonSQSClient(clientConfig);
 
         // When
         var response = await client.CreateQueueAsync(new CreateQueueRequest(queueName));
@@ -107,7 +112,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var clientConfig = new AmazonCloudWatchLogsConfig();
         clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
         clientConfig.UseHttp = true;
-        using var client = new AmazonCloudWatchLogsClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+        using var client = new AmazonCloudWatchLogsClient(clientConfig);
 
         // When
         var response = await client.CreateLogGroupAsync(new CreateLogGroupRequest(logGroupName));
@@ -127,7 +132,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         clientConfig.ServiceURL = this._localStackContainer.GetEndpoint();
         clientConfig.UseHttp = true;
         using var client =
-            new AmazonSimpleNotificationServiceClient(new BasicAWSCredentials("dummy", "dummy"), clientConfig);
+            new AmazonSimpleNotificationServiceClient(clientConfig);
 
         // When
         var response = await client.CreateTopicAsync(new CreateTopicRequest(topicName));
