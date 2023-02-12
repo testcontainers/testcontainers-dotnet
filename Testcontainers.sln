@@ -89,6 +89,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ResourceReap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Azurite", "src\Testcontainers.Azurite\Testcontainers.Azurite.csproj", "{C0CD6682-27CE-4ACB-9D80-69304D088D81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Azurite.Tests", "tests\Testcontainers.Azurite.Tests\Testcontainers.Azurite.Tests.csproj", "{856ABF96-3CB3-4BE9-A208-33DB363742FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -250,6 +254,14 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0CD6682-27CE-4ACB-9D80-69304D088D81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0CD6682-27CE-4ACB-9D80-69304D088D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0CD6682-27CE-4ACB-9D80-69304D088D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0CD6682-27CE-4ACB-9D80-69304D088D81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{856ABF96-3CB3-4BE9-A208-33DB363742FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{856ABF96-3CB3-4BE9-A208-33DB363742FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{856ABF96-3CB3-4BE9-A208-33DB363742FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{856ABF96-3CB3-4BE9-A208-33DB363742FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -290,5 +302,7 @@ Global
 		{31EE94A0-E721-4073-B6F1-DD912D004DEF} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{9E8E6AA5-65D1-498F-BEAB-BA34723A0050} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{C0CD6682-27CE-4ACB-9D80-69304D088D81} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{856ABF96-3CB3-4BE9-A208-33DB363742FD} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
