@@ -65,7 +65,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
             .WithPortBinding(LocalStackPort, true)
             .WithExternalServicePortStart("4510")
             .WithExternalServicePortEnd("4559")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/health").ForPort(LocalStackPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
     }
 
     /// <inheritdoc />
