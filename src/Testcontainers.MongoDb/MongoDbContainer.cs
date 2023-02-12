@@ -29,4 +29,21 @@ public sealed class MongoDbContainer : DockerContainer
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();
     }
+
+    /// <summary>
+    /// Executes the JavaScript script in the MongoDb container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the JavaScript script to execute.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the JavaScript script has been executed.</returns>
+    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    {
+        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+
+        await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
+            .ConfigureAwait(false);
+
+        return await ExecAsync(new MongoDbShellCommand($"load('{scriptFilePath}')", _configuration.Username, _configuration.Password), ct)
+            .ConfigureAwait(false);
+    }
 }

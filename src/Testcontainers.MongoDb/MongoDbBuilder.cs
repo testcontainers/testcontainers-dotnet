@@ -56,7 +56,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     public override MongoDbContainer Build()
     {
         Validate();
-        return new MongoDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -66,8 +68,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername("mongo")
-            .WithPassword(Guid.NewGuid().ToString("D"))
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithPassword(Guid.NewGuid().ToString("D"));
     }
 
     /// <inheritdoc />
@@ -105,12 +106,22 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
+        private readonly IList<string> _mongoDbShellCommand;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(MongoDbConfiguration configuration)
+        {
+            const string js = "db.runCommand({ping:1})";
+            _mongoDbShellCommand = new MongoDbShellCommand(js, configuration.Username, configuration.Password);
+        }
+
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            const string command = "db.runCommand({ ping: 1 }).ok";
-
-            var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", $"mongosh --eval \"{command}\" || mongo --eval \"{command}\"" })
+            var execResult = await container.ExecAsync(_mongoDbShellCommand)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);

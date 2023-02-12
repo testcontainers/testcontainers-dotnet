@@ -18,19 +18,19 @@ public sealed class MinioContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the AWS access key id.
+    /// Gets the AWS access key.
     /// </summary>
-    /// <returns>The AWS access key id.</returns>
-    public string GetAccessKeyId()
+    /// <returns>The AWS access key.</returns>
+    public string GetAccessKey()
     {
         return _configuration.Username;
     }
 
     /// <summary>
-    /// Gets the AWS access secret.
+    /// Gets the AWS secret key.
     /// </summary>
-    /// <returns>The AWS access secret.</returns>
-    public string GetAccessSecret()
+    /// <returns>The AWS secret key.</returns>
+    public string GetSecretKey()
     {
         return _configuration.Password;
     }

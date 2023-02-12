@@ -33,6 +33,21 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         Assert.Contains(databases.ToEnumerable(), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ExecScriptReturnsSuccessful()
+    {
+        // Given
+        const string scriptContent = "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
+
+        // When
+        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
+            .ConfigureAwait(false);
+
+        // When
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+    }
+
     [UsedImplicitly]
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
