@@ -1,5 +1,4 @@
+global using System.Net;
 global using System.Threading.Tasks;
-global using DotNet.Testcontainers.Commons;
-global using JetBrains.Annotations;
-global using MongoDB.Driver;
+global using MyCouch;
 global using Xunit;

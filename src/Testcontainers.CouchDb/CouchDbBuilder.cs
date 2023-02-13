@@ -4,22 +4,17 @@ namespace Testcontainers.CouchDb;
 [PublicAPI]
 public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
 {
+    public const string CouchDbImage = "couchdb:3.3";
+
+    public const ushort CouchDbPort = 5984;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
     public CouchDbBuilder()
         : this(new CouchDbConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "CouchDbBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "CouchDbBuilder WithCouchDbConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable CouchDbConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +24,36 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     private CouchDbBuilder(CouchDbConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override CouchDbConfiguration DockerResourceConfiguration { get; }
+    /// <inheritdoc />
+    protected override CouchDbConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the CouchDb config.
-    // /// </summary>
-    // /// <param name="config">The CouchDb config.</param>
-    // /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
-    // public CouchDbBuilder WithCouchDbConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in CouchDbConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new CouchDbConfiguration(config: config));
-    // }
+    /// <summary>
+    /// Sets the CouchDb username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The CouchDb username.</param>
+    /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
+    public CouchDbBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new CouchDbConfiguration(username: username))
+            .WithEnvironment("COUCHDB_USER", username);
+    }
+
+    /// <summary>
+    /// Sets the CouchDb password.
+    /// </summary>
+    /// <param name="password">The CouchDb password.</param>
+    /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
+    public CouchDbBuilder WithPassword(string password)
+    {
+        return Merge(DockerResourceConfiguration, new CouchDbConfiguration(password: password))
+            .WithEnvironment("COUCHDB_PASSWORD", password);
+    }
 
     /// <inheritdoc />
     public override CouchDbContainer Build()
@@ -54,17 +62,31 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
         return new CouchDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override CouchDbBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <inheritdoc />
+    protected override CouchDbBuilder Init()
+    {
+        return base.Init()
+            .WithImage(CouchDbImage)
+            .WithPortBinding(CouchDbPort, true)
+            .WithUsername("couchdb")
+            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/").ForPort(CouchDbPort)));
+    }
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
 
     /// <inheritdoc />
     protected override CouchDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
