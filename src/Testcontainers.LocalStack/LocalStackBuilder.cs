@@ -4,9 +4,10 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
-    public const ushort LocalStackPort = 4566;
     public const string LocalStackImage = "localstack/localstack:1.4.0";
-    
+
+    public const ushort LocalStackPort = 4566;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
@@ -42,7 +43,8 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         return base.Init()
             .WithImage(LocalStackImage)
             .WithPortBinding(LocalStackPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
     }
 
     /// <inheritdoc />

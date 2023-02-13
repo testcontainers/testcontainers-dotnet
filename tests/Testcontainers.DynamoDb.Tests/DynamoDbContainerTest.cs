@@ -28,7 +28,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         var config = new AmazonDynamoDBConfig();
         config.ServiceURL = _dynamoDbContainer.GetEndpoint();
 
-        var client = new AmazonDynamoDBClient(config);
+        using var client = new AmazonDynamoDBClient(config);
 
         // When
         var tables = await client.ListTablesAsync()
@@ -50,7 +50,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         var config = new AmazonDynamoDBConfig();
         config.ServiceURL = _dynamoDbContainer.GetEndpoint();
 
-        var client = new AmazonDynamoDBClient(config);
+        using var client = new AmazonDynamoDBClient(config);
 
         var tableRequest = new CreateTableRequest();
         tableRequest.TableName = tableName;
