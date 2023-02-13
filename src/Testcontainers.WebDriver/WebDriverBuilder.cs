@@ -7,8 +7,10 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public const string ChromeStandaloneImage = "selenium/standalone-chrome";
     public const string FirefoxStandaloneImage = "selenium/standalone-firefox";
     public const string EdgeStandaloneImage = "selenium/standalone-edge";
+    public const string OperaStandaloneImage = "selenium/standalone-opera";
 
     public const ushort SeleniumPort = 4444;
+    public const ushort VncServerPort = 5900;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -32,10 +34,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private WebDriverBuilder(WebDriverConfiguration resourceConfiguration)
-        : base(resourceConfiguration)
+    private WebDriverBuilder(WebDriverConfiguration resourceConfiguration) : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     // /// <inheritdoc />

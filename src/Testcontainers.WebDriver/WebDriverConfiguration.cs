@@ -1,5 +1,3 @@
-using OpenQA.Selenium;
-
 namespace WebDriver;
 
 /// <inheritdoc cref="ContainerConfiguration" />
@@ -9,10 +7,8 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
-    /// <param name="options">The WebDriver browser options.</param>
-    public WebDriverConfiguration(DriverOptions options = null)
+    public WebDriverConfiguration()
     {
-        Options = options;
     }
 
     /// <summary>
@@ -56,9 +52,4 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
         // // Create an updated immutable copy of the module configuration.
         // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-
-    // /// <summary>
-    // /// Gets the WebDriver Options.
-    // /// </summary>
-    public DriverOptions Options { get; }
 }
