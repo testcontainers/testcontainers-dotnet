@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Testcontainers.LocalStack;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -41,7 +43,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         return base.Init()
             .WithImage(LocalStackImage)
             .WithPortBinding(LocalStackPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilReady()));
     }
 
     /// <inheritdoc />
@@ -60,5 +62,17 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackBuilder Merge(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
     {
         return new LocalStackBuilder(new LocalStackConfiguration(oldValue, newValue));
+    }
+    
+    /// <inheritdoc />
+    private sealed class UntilReady : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+            return stdout != null && stdout.Contains("Ready.\n");
+        }
     }
 }
