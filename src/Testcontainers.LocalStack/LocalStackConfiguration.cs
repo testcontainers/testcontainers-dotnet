@@ -4,18 +4,11 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackConfiguration : ContainerConfiguration
 {
-    public string ExternalServicePortStart { get; }
-    public string ExternalServicePortEnd { get; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
-    /// <param name="externalServicePortStart">The LocalStack services list.</param>
-    /// <param name="externalServicePortEnd">The LocalStack services list.</param>
-    public LocalStackConfiguration(string externalServicePortStart = null, string externalServicePortEnd = null)
+    public LocalStackConfiguration()
     {
-        ExternalServicePortStart = externalServicePortStart;
-        ExternalServicePortEnd = externalServicePortEnd;
     }
 
     /// <summary>
@@ -56,7 +49,5 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
     public LocalStackConfiguration(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
         : base(oldValue, newValue)
     {
-        ExternalServicePortStart = BuildConfiguration.Combine(oldValue.ExternalServicePortStart, newValue.ExternalServicePortStart);
-        ExternalServicePortEnd = BuildConfiguration.Combine(oldValue.ExternalServicePortEnd, newValue.ExternalServicePortEnd);
     }
 }
