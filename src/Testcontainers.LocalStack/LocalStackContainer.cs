@@ -18,10 +18,10 @@ public sealed class LocalStackContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the LocalStack endpoint.
+    /// Gets the LocalStack connection string.
     /// </summary>
-    /// <returns>The LocalStack endpoint.</returns>
-    public string GetEndpoint()
+    /// <returns>The LocalStack connection string.</returns>
+    public string GetConnectionString()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LocalStackBuilder.LocalStackPort)).ToString();
     }
