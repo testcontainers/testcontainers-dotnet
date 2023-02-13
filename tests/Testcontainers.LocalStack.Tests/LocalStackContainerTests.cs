@@ -24,21 +24,23 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    [Trait(AwsService, "s3")]
-    public async Task ListBucketsReturnsHttpStatusCodeOk()
+    [Trait(AwsService, "cloudwatch")]
+    public async Task CreateLogReturnsHttpStatusCodeOk()
     {
         // Given
-        var config = new AmazonS3Config();
+        var config = new AmazonCloudWatchLogsConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
-        using var client = new AmazonS3Client(config);
+        using var client = new AmazonCloudWatchLogsClient(config);
+        
+        var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When
-        var buckets = await client.ListBucketsAsync()
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
             .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+        Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
     }
 
     [Fact]
@@ -86,21 +88,21 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    [Trait(AwsService, "sqs")]
-    public async Task CreateQueueReturnsHttpStatusCodeOk()
+    [Trait(AwsService, "s3")]
+    public async Task ListBucketsReturnsHttpStatusCodeOk()
     {
         // Given
-        var config = new AmazonSQSConfig();
+        var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
-        using var client = new AmazonSQSClient(config);
+        using var client = new AmazonS3Client(config);
 
         // When
-        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
+        var buckets = await client.ListBucketsAsync()
             .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
+        Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
     }
 
     [Fact]
@@ -124,22 +126,20 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    [Trait(AwsService, "cloudwatch")]
-    public async Task CreateLogReturnsHttpStatusCodeOk()
+    [Trait(AwsService, "sqs")]
+    public async Task CreateQueueReturnsHttpStatusCodeOk()
     {
         // Given
-        var config = new AmazonCloudWatchLogsConfig();
+        var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
-        var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
-
-        using var client = new AmazonCloudWatchLogsClient(config);
+        using var client = new AmazonSQSClient(config);
 
         // When
-        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
             .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
     }
 }
