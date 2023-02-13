@@ -18,7 +18,7 @@ public sealed class LocalStackContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Minio endpoint.
+    /// Gets the LocalStack endpoint.
     /// </summary>
     /// <returns>The LocalStack endpoint.</returns>
     public string GetEndpoint()

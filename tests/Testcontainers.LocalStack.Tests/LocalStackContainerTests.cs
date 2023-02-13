@@ -1,21 +1,10 @@
-﻿using System.Collections.Generic;
-using Amazon.CloudWatchLogs;
-using Amazon.CloudWatchLogs.Model;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Amazon.Runtime;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
-using Amazon.SQS;
-using Amazon.SQS.Model;
-
-namespace Testcontainers.LocalStack;
+﻿namespace Testcontainers.LocalStack;
 
 public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().Build();
 
-    public LocalStackContainerTest()
+    static LocalStackContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", "AKIAIOSFODNN7EXAMPLE"); 
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"); 

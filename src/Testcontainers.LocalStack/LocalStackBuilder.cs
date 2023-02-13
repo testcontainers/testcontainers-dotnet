@@ -36,6 +36,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
         return new LocalStackContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
+    /// <inheritdoc />
     protected override LocalStackBuilder Init()
     {
         return base.Init()
