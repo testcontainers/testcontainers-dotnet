@@ -22,7 +22,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetEndpoint();
 
-        var client = new AmazonS3Client(_minioContainer.GetAccessKeyId(), _minioContainer.GetAccessSecret(), config);
+        var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 
         // When
         var buckets = await client.ListBucketsAsync()
@@ -42,7 +42,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetEndpoint();
 
-        var client = new AmazonS3Client(_minioContainer.GetAccessKeyId(), _minioContainer.GetAccessSecret(), config);
+        var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 
         var objectRequest = new PutObjectRequest();
         objectRequest.BucketName = Guid.NewGuid().ToString("D");
