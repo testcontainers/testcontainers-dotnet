@@ -13,4 +13,13 @@ public sealed class Neo4jContainer : DockerContainer
         : base(configuration, logger)
     {
     }
+
+    /// <summary>
+    /// Gets the Neo4j connection string.
+    /// </summary>
+    /// <returns>The Neo4j connection string.</returns>
+    public string GetConnectionString()
+    {
+        return new UriBuilder("neo4j", Hostname, GetMappedPublicPort(Neo4jBuilder.Neo4jBoltPort)).ToString();
+    }
 }
