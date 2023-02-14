@@ -73,6 +73,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ResourceReap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStore", "src\Testcontainers.EventStore\Testcontainers.EventStore.csproj", "{84D707E0-C9FA-4327-85DC-0AFEBEA73572}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStore.Tests", "tests\Testcontainers.EventStore.Tests\Testcontainers.EventStore.Tests.csproj", "{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -202,6 +206,14 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84D707E0-C9FA-4327-85DC-0AFEBEA73572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84D707E0-C9FA-4327-85DC-0AFEBEA73572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84D707E0-C9FA-4327-85DC-0AFEBEA73572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84D707E0-C9FA-4327-85DC-0AFEBEA73572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -234,5 +246,7 @@ Global
 		{31EE94A0-E721-4073-B6F1-DD912D004DEF} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{9E8E6AA5-65D1-498F-BEAB-BA34723A0050} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{84D707E0-C9FA-4327-85DC-0AFEBEA73572} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
