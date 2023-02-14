@@ -7,11 +7,8 @@ public sealed class Neo4jConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Neo4j config.</param>
-    public Neo4jConfiguration(object config = null)
+    public Neo4jConfiguration()
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
     }
 
     /// <summary>
@@ -52,12 +49,5 @@ public sealed class Neo4jConfiguration : ContainerConfiguration
     public Neo4jConfiguration(Neo4jConfiguration oldValue, Neo4jConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-
-    // /// <summary>
-    // /// Gets the Neo4j config.
-    // /// </summary>
-    // public object Config { get; }
 }
