@@ -10,7 +10,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public const string OperaStandaloneImage = "selenium/standalone-opera";
 
     public const ushort SeleniumPort = 4444;
-    public const ushort VncServerPort = 5900;
+    public const ushort VncServerPort = 7900;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -54,6 +54,45 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     //     return Merge(DockerResourceConfiguration, new WebDriverConfiguration(config: config));
     // }
 
+    public WebDriverBuilder WithConfigurationOptions(string options)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithEnvironment("SE_OPTS", options);
+    }
+
+    public WebDriverBuilder WithJavaEnvironmentOptions(string javaOptions)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithEnvironment("SE_JAVA_OPTS", javaOptions);
+    }
+
+    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1360 , int screenHeight = 1020, int screenDepth = 24, int screenDpi = 96)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
+            .WithEnvironment("SE_SCREEN_HEIGHT", screenHeight.ToString())
+            .WithEnvironment("SE_SCREEN_DEPTH", screenDepth.ToString())
+            .WithEnvironment("SE_SCREEN_DPI", screenDpi.ToString());
+    }
+
+    public WebDriverBuilder SetSessionTimeout(int sessionTimeout = 300)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.ToString());
+    }
+
+    public WebDriverBuilder SetTimeZone(string timeZone)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithEnvironment("TZ", timeZone);
+    }
+
+    public WebDriverBuilder SetConfigurationFromTomlFile(string configTomlFilePath)
+    {
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
+            .WithVolumeMount(configTomlFilePath, "/opt/bin/config.toml");
+    }
+
     /// <inheritdoc />
     public override WebDriverContainer Build()
     {
@@ -65,8 +104,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     protected override WebDriverBuilder Init()
     {
         return base.Init()
-            .WithImage(ChromeStandaloneImage)
-            .WithPortBinding(SeleniumPort, true);
+            .WithImage(FirefoxStandaloneImage)
+            .WithPortBinding(SeleniumPort, true)
+            .WithPortBinding(VncServerPort, true);
     }
 
     /// <inheritdoc />
