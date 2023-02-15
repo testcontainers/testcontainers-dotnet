@@ -7,11 +7,14 @@ public sealed class RabbitMqConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The RabbitMq config.</param>
-    public RabbitMqConfiguration(object config = null)
+    /// <param name="username">The RabbitMq username.</param>
+    /// <param name="password">The RabbitMq password.</param>
+    public RabbitMqConfiguration(
+        string username = null,
+        string password = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
+        Username = username;
+        Password = password;
     }
 
     /// <summary>
@@ -52,12 +55,17 @@ public sealed class RabbitMqConfiguration : ContainerConfiguration
     public RabbitMqConfiguration(RabbitMqConfiguration oldValue, RabbitMqConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
+        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
-    // /// <summary>
-    // /// Gets the RabbitMq config.
-    // /// </summary>
-    // public object Config { get; }
+    /// <summary>
+    /// Gets the RabbitMq username.
+    /// </summary>
+    public string Username { get; }
+
+    /// <summary>
+    /// Gets the RabbitMq password.
+    /// </summary>
+    public string Password { get; }
 }

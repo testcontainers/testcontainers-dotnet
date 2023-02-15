@@ -4,22 +4,17 @@ namespace Testcontainers.RabbitMq;
 [PublicAPI]
 public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMqContainer, RabbitMqConfiguration>
 {
+    public const string RabbitMqImage = "rabbitmq:3.11";
+
+    public const ushort RabbitMqPort = 5672;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
     public RabbitMqBuilder()
         : this(new RabbitMqConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "RabbitMqBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "RabbitMqBuilder WithRabbitMqConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable RabbitMqConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +24,36 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     private RabbitMqBuilder(RabbitMqConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override RabbitMqConfiguration DockerResourceConfiguration { get; }
+    /// <inheritdoc />
+    protected override RabbitMqConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the RabbitMq config.
-    // /// </summary>
-    // /// <param name="config">The RabbitMq config.</param>
-    // /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
-    // public RabbitMqBuilder WithRabbitMqConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in RabbitMqConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new RabbitMqConfiguration(config: config));
-    // }
+    /// <summary>
+    /// Sets the RabbitMq username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The RabbitMq username.</param>
+    /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
+    public RabbitMqBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new RabbitMqConfiguration(username: username))
+            .WithEnvironment("RABBITMQ_DEFAULT_USER", username);
+    }
+
+    /// <summary>
+    /// Sets the RabbitMq password.
+    /// </summary>
+    /// <param name="password">The RabbitMq password.</param>
+    /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
+    public RabbitMqBuilder WithPassword(string password)
+    {
+        return Merge(DockerResourceConfiguration, new RabbitMqConfiguration(password: password))
+            .WithEnvironment("RABBITMQ_DEFAULT_PASS", password);
+    }
 
     /// <inheritdoc />
     public override RabbitMqContainer Build()
@@ -54,17 +62,30 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
         return new RabbitMqContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override RabbitMqBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <inheritdoc />
+    protected override RabbitMqBuilder Init()
+    {
+        return base.Init()
+            .WithImage(RabbitMqImage)
+            .WithPortBinding(RabbitMqPort, true)
+            .WithUsername("rabbitmq")
+            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+    }
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
 
     /// <inheritdoc />
     protected override RabbitMqBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,5 +103,18 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     protected override RabbitMqBuilder Merge(RabbitMqConfiguration oldValue, RabbitMqConfiguration newValue)
     {
         return new RabbitMqBuilder(new RabbitMqConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+
+            return stdout.Contains("Server startup complete");
+        }
     }
 }

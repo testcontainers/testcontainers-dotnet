@@ -2,15 +2,29 @@
 
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
-    private readonly RabbitMqContainer _rabbitMqContainerContainer = new RabbitMqBuilder().Build();
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _rabbitMqContainerContainer.StartAsync();
+        return _rabbitMqContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _rabbitMqContainerContainer.DisposeAsync().AsTask();
+        return _rabbitMqContainer.DisposeAsync().AsTask();
+    }
+
+    [Fact]
+    public void IsOpenReturnsOpen()
+    {
+        // Given
+        var connectionFactory = new ConnectionFactory();
+        connectionFactory.Uri = new Uri(_rabbitMqContainer.GetConnectionString());
+
+        // When
+        using var connection = connectionFactory.CreateConnection();
+
+        // Then
+        Assert.True(connection.IsOpen);
     }
 }
