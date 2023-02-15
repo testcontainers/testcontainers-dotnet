@@ -16,7 +16,7 @@ public sealed class Neo4jContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task SessionReturnsDatabase()
+    public void SessionReturnsDatabase()
     {
         // Given
         const string database = "neo4j";
