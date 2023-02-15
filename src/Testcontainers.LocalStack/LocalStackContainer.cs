@@ -4,8 +4,6 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackContainer : DockerContainer
 {
-    private readonly LocalStackConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackContainer" /> class.
     /// </summary>
@@ -14,7 +12,6 @@ public sealed class LocalStackContainer : DockerContainer
     public LocalStackContainer(LocalStackConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _configuration = configuration;
     }
 
     /// <summary>

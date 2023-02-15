@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Commons
   using JetBrains.Annotations;
 
   [PublicAPI]
-  public sealed class CommonCredentials
+  public static class CommonCredentials
   {
     public const string AwsAccessKey = "AKIAIOSFODNN7EXAMPLE";
 
