@@ -15,7 +15,7 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
     }
 
     [Fact]
-    public void IsOpenReturnsOpen()
+    public void IsOpenReturnsTrue()
     {
         // Given
         var connectionFactory = new ConnectionFactory();
