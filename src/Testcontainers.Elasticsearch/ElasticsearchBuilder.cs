@@ -113,7 +113,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly Regex Pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)", RegexOptions.None, TimeSpan.FromSeconds(1));
+        private readonly Regex _pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)", RegexOptions.None, TimeSpan.FromSeconds(1));
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
@@ -121,7 +121,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             var (stdout, _) = await container.GetLogs()
                 .ConfigureAwait(false);
 
-            return Pattern.IsMatch(stdout);
+            return _pattern.IsMatch(stdout);
         }
     }
 }
