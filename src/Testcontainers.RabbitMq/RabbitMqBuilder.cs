@@ -33,9 +33,6 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Sets the RabbitMq username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The RabbitMq username.</param>
     /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
     public RabbitMqBuilder WithUsername(string username)

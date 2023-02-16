@@ -13,4 +13,9 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
     {
         return _elasticsearchContainer.DisposeAsync().AsTask();
     }
+
+    [Fact]
+    public void F()
+    {
+    }
 }
