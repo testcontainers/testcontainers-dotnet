@@ -116,7 +116,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly Regex _pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)", RegexOptions.None, TimeSpan.FromSeconds(1));
+        private readonly Regex _pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)");
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)

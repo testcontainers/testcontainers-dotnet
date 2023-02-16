@@ -24,6 +24,5 @@
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
     <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
-    <PackageReference Update="Microsoft.Data.SqlClient" Version="5.1.0" />
   </ItemGroup>
 </Project>
