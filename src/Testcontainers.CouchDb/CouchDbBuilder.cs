@@ -33,9 +33,6 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Sets the CouchDb username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The CouchDb username.</param>
     /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
     public CouchDbBuilder WithUsername(string username)

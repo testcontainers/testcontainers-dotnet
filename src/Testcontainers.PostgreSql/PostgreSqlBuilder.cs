@@ -33,9 +33,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql database.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
     /// <param name="database">The PostgreSql database.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithDatabase(string database)
@@ -47,9 +44,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The PostgreSql username.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithUsername(string username)

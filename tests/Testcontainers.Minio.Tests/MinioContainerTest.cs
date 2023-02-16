@@ -20,7 +20,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonS3Config();
-        config.ServiceURL = _minioContainer.GetEndpoint();
+        config.ServiceURL = _minioContainer.GetConnectionString();
 
         using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 
@@ -40,7 +40,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
         using var inputStream = new MemoryStream(new byte[byte.MaxValue]);
 
         var config = new AmazonS3Config();
-        config.ServiceURL = _minioContainer.GetEndpoint();
+        config.ServiceURL = _minioContainer.GetConnectionString();
 
         using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 

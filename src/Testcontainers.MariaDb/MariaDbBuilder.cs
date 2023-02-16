@@ -33,9 +33,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb database.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
     /// <param name="database">The MariaDb database.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithDatabase(string database)
@@ -47,9 +44,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The MariaDb username.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithUsername(string username)

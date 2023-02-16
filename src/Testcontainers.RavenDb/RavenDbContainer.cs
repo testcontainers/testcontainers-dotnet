@@ -15,10 +15,10 @@ public sealed class RavenDbContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the RavenDb endpoint.
+    /// Gets the RavenDb connection string.
     /// </summary>
-    /// <returns>The RavenDb endpoint.</returns>
-    public string GetEndpoint()
+    /// <returns>The RavenDb connection string.</returns>
+    public string GetConnectionString()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RavenDbBuilder.RavenDbPort)).ToString();
     }

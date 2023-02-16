@@ -36,10 +36,10 @@ public sealed class MinioContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Minio endpoint.
+    /// Gets the Minio connection string.
     /// </summary>
-    /// <returns>The Minio endpoint.</returns>
-    public string GetEndpoint()
+    /// <returns>The Minio connection string.</returns>
+    public string GetConnectionString()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MinioBuilder.MinioPort)).ToString();
     }
