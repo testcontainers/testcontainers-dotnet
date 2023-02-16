@@ -15,7 +15,18 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
     }
 
     [Fact]
-    public void F()
+    public void PingReturnsValidResponse()
     {
+        // Given
+        var clientSettings = new ElasticsearchClientSettings(new Uri(_elasticsearchContainer.GetConnectionString()));
+        clientSettings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
+
+        var client = new ElasticsearchClient(clientSettings);
+
+        // When
+        var response = client.Ping();
+
+        // Then
+        Assert.True(response.IsValidResponse);
     }
 }

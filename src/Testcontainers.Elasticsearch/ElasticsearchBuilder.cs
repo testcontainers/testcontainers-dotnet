@@ -12,7 +12,9 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const string ElasticsearchImage = "elasticsearch:8.6.1";
 
-    public const ushort ElasticsearchPort = 9200;
+    public const ushort ElasticsearchHttpsPort = 9200;
+
+    public const ushort ElasticsearchTcpPort = 9300;
 
     private static readonly byte[] DefaultMemoryVmOption = Encoding.Default.GetBytes(string.Join("\n", "-Xms2147483648", "-Xmx2147483648"));
 
@@ -61,7 +63,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     {
         return base.Init()
             .WithImage(ElasticsearchImage)
-            .WithPortBinding(ElasticsearchPort, true)
+            .WithPortBinding(ElasticsearchHttpsPort, true)
+            .WithPortBinding(ElasticsearchTcpPort, true)
             .WithUsername("elastic")
             .WithPassword(Guid.NewGuid().ToString("D"))
             .WithEnvironment("discovery.type", "single-node")
