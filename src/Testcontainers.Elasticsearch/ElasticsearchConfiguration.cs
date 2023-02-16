@@ -7,11 +7,14 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Elasticsearch config.</param>
-    public ElasticsearchConfiguration(object config = null)
+    /// <param name="username">The Elasticsearch username.</param>
+    /// <param name="password">The Elasticsearch password.</param>
+    public ElasticsearchConfiguration(
+        string username = null,
+        string password = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
+        Username = username;
+        Password = password;
     }
 
     /// <summary>
@@ -52,12 +55,17 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     public ElasticsearchConfiguration(ElasticsearchConfiguration oldValue, ElasticsearchConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
+        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
-    // /// <summary>
-    // /// Gets the Elasticsearch config.
-    // /// </summary>
-    // public object Config { get; }
+    /// <summary>
+    /// Gets the Elasticsearch username.
+    /// </summary>
+    public string Username { get; }
+
+    /// <summary>
+    /// Gets the Elasticsearch password.
+    /// </summary>
+    public string Password { get; }
 }

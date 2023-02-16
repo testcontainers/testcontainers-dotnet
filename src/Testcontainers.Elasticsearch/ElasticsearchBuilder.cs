@@ -4,22 +4,25 @@ namespace Testcontainers.Elasticsearch;
 [PublicAPI]
 public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder, ElasticsearchContainer, ElasticsearchConfiguration>
 {
+    public const string ElasticsearchVmOptionsDirectoryPath = "/usr/share/elasticsearch/config/jvm.options.d/";
+
+    public const string ElasticsearchDefaultMemoryVmOptionFileName = "elasticsearch-default-memory-vm.options";
+
+    public const string ElasticsearchDefaultMemoryVmOptionFilePath = ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
+
+    public const string ElasticsearchImage = "elasticsearch:8.6.1";
+
+    public const ushort ElasticsearchPort = 9200;
+
+    private static readonly byte[] DefaultMemoryVmOption = Encoding.Default.GetBytes(string.Join("\n", "-Xms2147483648", "-Xmx2147483648"));
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
     /// </summary>
     public ElasticsearchBuilder()
         : this(new ElasticsearchConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "ElasticsearchBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "ElasticsearchBuilder WithElasticsearchConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable ElasticsearchConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +32,22 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     private ElasticsearchBuilder(ElasticsearchConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override ElasticsearchConfiguration DockerResourceConfiguration { get; }
+    /// <inheritdoc />
+    protected override ElasticsearchConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the Elasticsearch config.
-    // /// </summary>
-    // /// <param name="config">The Elasticsearch config.</param>
-    // /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
-    // public ElasticsearchBuilder WithElasticsearchConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in ElasticsearchConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(config: config));
-    // }
+    /// <summary>
+    /// Sets the Elasticsearch password.
+    /// </summary>
+    /// <param name="password">The Elasticsearch password.</param>
+    /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
+    public ElasticsearchBuilder WithPassword(string password)
+    {
+        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(password: password))
+            .WithEnvironment("ELASTIC_PASSWORD", password);
+    }
 
     /// <inheritdoc />
     public override ElasticsearchContainer Build()
@@ -54,17 +56,28 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
         return new ElasticsearchContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override ElasticsearchBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <inheritdoc />
+    protected override ElasticsearchBuilder Init()
+    {
+        return base.Init()
+            .WithImage(ElasticsearchImage)
+            .WithPortBinding(ElasticsearchPort, true)
+            .WithUsername("elastic")
+            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithEnvironment("discovery.type", "single-node")
+            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+    }
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
 
     /// <inheritdoc />
     protected override ElasticsearchBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,5 +95,33 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     protected override ElasticsearchBuilder Merge(ElasticsearchConfiguration oldValue, ElasticsearchConfiguration newValue)
     {
         return new ElasticsearchBuilder(new ElasticsearchConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Sets the Elasticsearch username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The Elasticsearch username.</param>
+    /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
+    private ElasticsearchBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(username: username));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private static readonly Regex Pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)", RegexOptions.None, TimeSpan.FromSeconds(1));
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogs()
+                .ConfigureAwait(false);
+
+            return Pattern.IsMatch(stdout);
+        }
     }
 }

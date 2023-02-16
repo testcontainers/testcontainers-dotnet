@@ -11,7 +11,7 @@
         <PackageReference Include="xunit" Version="2.4.2"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Neo4j/Testcontainers.Neo4j.csproj"/>
+        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>
