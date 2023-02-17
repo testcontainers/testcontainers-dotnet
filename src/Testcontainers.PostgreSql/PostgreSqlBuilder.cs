@@ -8,6 +8,12 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
     public const ushort PostgreSqlPort = 5432;
 
+    public const string DefaultDatabase = "postgres";
+
+    public const string DefaultUsername = "postgres";
+
+    public const string DefaultPassword = "postgres";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
@@ -76,9 +82,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         return base.Init()
             .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
-            .WithDatabase("postgres")
-            .WithUsername("postgres")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")

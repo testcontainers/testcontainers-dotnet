@@ -8,6 +8,10 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
 
     public const ushort RabbitMqPort = 5672;
 
+    public const string DefaultUsername = "rabbitmq";
+
+    public const string DefaultPassword = "rabbitmq";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
@@ -65,8 +69,8 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
         return base.Init()
             .WithImage(RabbitMqImage)
             .WithPortBinding(RabbitMqPort, true)
-            .WithUsername("rabbitmq")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 

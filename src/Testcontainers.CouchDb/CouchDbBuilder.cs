@@ -8,6 +8,10 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
 
     public const ushort CouchDbPort = 5984;
 
+    public const string DefaultUsername = "couchdb";
+
+    public const string DefaultPassword = "couchdb";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
@@ -65,8 +69,8 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
         return base.Init()
             .WithImage(CouchDbImage)
             .WithPortBinding(CouchDbPort, true)
-            .WithUsername("couchdb")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(CouchDbPort)));
     }

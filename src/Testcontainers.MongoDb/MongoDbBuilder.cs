@@ -8,6 +8,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     public const ushort MongoDbPort = 27017;
 
+    public const string DefaultUsername = "mongo";
+
+    public const string DefaultPassword = "mongo";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
@@ -67,8 +71,8 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         return base.Init()
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
-            .WithUsername("mongo")
-            .WithPassword(Guid.NewGuid().ToString("D"));
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />
