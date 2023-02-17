@@ -12,7 +12,6 @@ public sealed class EventStoreContainer : DockerContainer
     public EventStoreContainer(EventStoreConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _configuration = configuration;
     }
 
     /// <summary>

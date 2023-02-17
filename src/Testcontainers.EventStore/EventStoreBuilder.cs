@@ -27,8 +27,7 @@
 
         /// <inheritdoc />
         protected override EventStoreConfiguration DockerResourceConfiguration { get; }
-
-
+        
         /// <inheritdoc />
         public override EventStoreContainer Build()
         {
@@ -45,7 +44,6 @@
                 .WithEnvironment("EVENTSTORE_CLUSTER_SIZE", "1")
                 .WithEnvironment("EVENTSTORE_RUN_PROJECTIONS", "All")
                 .WithEnvironment("EVENTSTORE_START_STANDARD_PROJECTIONS", "true")
-                .WithEnvironment("EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP", "true")
                 .WithEnvironment("EVENTSTORE_INSECURE", "true");
         }
 
