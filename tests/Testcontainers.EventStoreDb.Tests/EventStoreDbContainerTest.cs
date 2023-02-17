@@ -1,6 +1,6 @@
 ﻿namespace Testcontainers.EventStore;
 
-public sealed class EventStoreContainerTest : IAsyncLifetime
+public sealed class EventStoreDbContainerTest : IAsyncLifetime
 {
   private readonly EventStoreDbContainer _eventStoreContainer = new EventStoreDbBuilder().Build();
 
