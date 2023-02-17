@@ -56,8 +56,7 @@
         }
 
         /// <inheritdoc />
-        protected override EventStoreBuilder Clone(
-            IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+        protected override EventStoreBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         {
             return Merge(DockerResourceConfiguration, new EventStoreConfiguration(resourceConfiguration));
         }
