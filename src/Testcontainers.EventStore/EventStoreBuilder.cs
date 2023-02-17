@@ -1,6 +1,6 @@
 ﻿namespace Testcontainers.EventStore
 {
-    public class EventStoreBuilder : ContainerBuilder<EventStoreBuilder, EventStoreContainer, EventStoreConfiguration>
+    public sealed class EventStoreBuilder : ContainerBuilder<EventStoreBuilder, EventStoreContainer, EventStoreConfiguration>
     {
         private const string EventStoreImage = "eventstore/eventstore:21.2.0-buster-slim";
 
