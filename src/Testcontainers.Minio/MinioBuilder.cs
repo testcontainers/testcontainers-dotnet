@@ -8,9 +8,9 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
 
     public const ushort MinioPort = 9000;
 
-    public const string DefaultUsername = "minio";
+    public const string DefaultUsername = "AKIAIOSFODNN7EXAMPLE";
 
-    public const string DefaultPassword = "minio";
+    public const string DefaultPassword = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
