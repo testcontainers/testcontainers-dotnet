@@ -21,6 +21,10 @@ public sealed class EventStoreContainer : DockerContainer
     /// Gets the EventStore connection string.
     /// </summary>
     /// <returns>The EventStore connection string.</returns>
-    public string GetConnectionString() =>
-        $"esdb://{Hostname}:{GetMappedPublicPort(EventStoreBuilder.EventStorePort)}?tls=false";
+    public string GetConnectionString()
+    {
+        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreBuilder.EventStorePort));
+        endpoint.Query = "tls=false";
+        return endpoint.ToString();
+    }
 }
