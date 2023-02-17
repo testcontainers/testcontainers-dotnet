@@ -1,11 +1,5 @@
 ﻿namespace Testcontainers.EventStore;
 
-using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using global::EventStore.Client;
-
 public sealed class EventStoreContainerTest : IAsyncLifetime
 {
   private readonly EventStoreContainer _eventStoreContainer = new EventStoreBuilder().Build();
