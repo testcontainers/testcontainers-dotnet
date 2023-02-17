@@ -120,7 +120,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static IEnumerable<string> _pattern = new[] { "\"message\":\"started\"", "\"message\": \"started\"" };
+        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
@@ -128,7 +128,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             var (stdout, _) = await container.GetLogs()
                 .ConfigureAwait(false);
 
-            return _pattern.Any(stdout.Contains);
+            return Pattern.Any(stdout.Contains);
         }
     }
 }
