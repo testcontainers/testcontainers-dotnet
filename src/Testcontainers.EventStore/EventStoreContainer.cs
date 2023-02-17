@@ -4,8 +4,6 @@
 [PublicAPI]
 public sealed class EventStoreContainer : DockerContainer
 {
-    private readonly EventStoreConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EventStoreContainer" /> class.
     /// </summary>
