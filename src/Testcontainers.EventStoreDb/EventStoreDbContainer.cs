@@ -2,14 +2,14 @@
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class EventStoreContainer : DockerContainer
+public sealed class EventStoreDbContainer : DockerContainer
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="EventStoreContainer" /> class.
+    /// Initializes a new instance of the <see cref="EventStoreDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public EventStoreContainer(EventStoreConfiguration configuration, ILogger logger)
+    public EventStoreDbContainer(EventStoreDbConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
     }
@@ -20,7 +20,7 @@ public sealed class EventStoreContainer : DockerContainer
     /// <returns>The EventStore connection string.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreBuilder.EventStorePort));
+        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreDbBuilder.EventStorePort));
         endpoint.Query = "tls=false";
         return endpoint.ToString();
     }

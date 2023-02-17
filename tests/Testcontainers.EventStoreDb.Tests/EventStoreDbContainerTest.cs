@@ -2,7 +2,7 @@
 
 public sealed class EventStoreContainerTest : IAsyncLifetime
 {
-  private readonly EventStoreContainer _eventStoreContainer = new EventStoreBuilder().Build();
+  private readonly EventStoreDbContainer _eventStoreContainer = new EventStoreDbBuilder().Build();
 
   public Task InitializeAsync()
   {

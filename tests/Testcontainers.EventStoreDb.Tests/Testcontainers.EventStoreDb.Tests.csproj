@@ -12,7 +12,7 @@
   <PackageReference Include="xunit" Version="2.4.2" />
 </ItemGroup>
 <ItemGroup>
-  <ProjectReference Include="$(SolutionDir)src/Testcontainers.EventStore/Testcontainers.EventStore.csproj" />
+  <ProjectReference Include="..\..\src\Testcontainers.EventStoreDb\Testcontainers.EventStoreDb.csproj" />
   <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
 </ItemGroup>
 </Project>

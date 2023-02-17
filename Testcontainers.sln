@@ -73,9 +73,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ResourceReap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStore", "src\Testcontainers.EventStore\Testcontainers.EventStore.csproj", "{84D707E0-C9FA-4327-85DC-0AFEBEA73572}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStoreDb", "src\Testcontainers.EventStoreDb\Testcontainers.EventStoreDb.csproj", "{84D707E0-C9FA-4327-85DC-0AFEBEA73572}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStore.Tests", "tests\Testcontainers.EventStore.Tests\Testcontainers.EventStore.Tests.csproj", "{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStoreDb.Tests", "tests\Testcontainers.EventStoreDb.Tests\Testcontainers.EventStoreDb.Tests.csproj", "{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
