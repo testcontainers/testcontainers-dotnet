@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using global::EventStore.Client;
 
-public class EventStoreContainerTest: IAsyncLifetime
+public sealed class EventStoreContainerTest : IAsyncLifetime
 {
   private readonly EventStoreContainer _eventStoreContainer = new EventStoreBuilder().Build();
 
