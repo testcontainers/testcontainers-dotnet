@@ -266,7 +266,7 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      if (ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
+      if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, ct)
           .ConfigureAwait(false);
