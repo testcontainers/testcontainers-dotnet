@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.EventStore;
+﻿namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
@@ -15,12 +15,12 @@ public sealed class EventStoreDbContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the EventStore connection string.
+    /// Gets the EventStoreDb connection string.
     /// </summary>
-    /// <returns>The EventStore connection string.</returns>
+    /// <returns>The EventStoreDb connection string.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreDbBuilder.EventStorePort));
+        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreDbBuilder.EventStoreDbPort));
         endpoint.Query = "tls=false";
         return endpoint.ToString();
     }
