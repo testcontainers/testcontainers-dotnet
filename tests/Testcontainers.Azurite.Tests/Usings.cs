@@ -1,7 +1,5 @@
 global using System;
 global using System.Collections.Generic;
-global using System.Data;
-global using System.Data.Common;
 global using System.IO;
 global using System.Linq;
 global using System.Threading.Tasks;
@@ -9,7 +7,6 @@ global using Azure;
 global using Azure.Data.Tables;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Queues;
-global using DotNet.Testcontainers.Commons;
 global using JetBrains.Annotations;
 global using Testcontainers.Azurite.Tests.Fixtures;
 global using Xunit;

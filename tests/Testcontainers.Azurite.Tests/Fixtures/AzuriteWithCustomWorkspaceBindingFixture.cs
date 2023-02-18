@@ -1,24 +1,33 @@
-﻿namespace Testcontainers.Azurite.Tests.Fixtures;
-
-[UsedImplicitly]
-public sealed class AzuriteWithCustomWorkspaceBindingFixture : AzuriteDefaultFixture, IDisposable
+namespace Testcontainers.Azurite.Tests.Fixtures
 {
-  public AzuriteWithCustomWorkspaceBindingFixture()
-    : base(builder => builder.WithWorkspaceLocationBinding(GetFolderName))
+  [UsedImplicitly]
+  public sealed class AzuriteWithWorkspaceBindingFixture : AzuriteDefaultFixture, IDisposable
   {
-    if (Configuration.WorkspaceLocationBinding != null)
+    public AzuriteWithWorkspaceBindingFixture()
+      : base(builder => builder.WithBindMount(GetFolderName, AzuriteBuilder.DefaultWorkspaceDirectoryPath))
     {
-      Directory.CreateDirectory(Configuration.WorkspaceLocationBinding);
+      var workspaceFolder = this.Container.WorkspaceLocationBinding;
+      if (workspaceFolder != null)
+      {
+        _ = Directory.CreateDirectory(workspaceFolder);
+      }
     }
-  }
 
-  private static string GetFolderName => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
-
-  public void Dispose()
-  {
-    if (Directory.Exists(Configuration.WorkspaceLocationBinding))
+    private static string GetFolderName
     {
-      Directory.Delete(Configuration.WorkspaceLocationBinding, true);
+      get
+      {
+        return Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+      }
+    }
+
+    public void Dispose()
+    {
+      var workspaceFolder = this.Container.WorkspaceLocationBinding;
+      if (workspaceFolder != null && Directory.Exists(workspaceFolder))
+      {
+        Directory.Delete(workspaceFolder, true);
+      }
     }
   }
 }
