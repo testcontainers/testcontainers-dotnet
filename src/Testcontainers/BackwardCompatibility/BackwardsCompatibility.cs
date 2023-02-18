@@ -57,7 +57,7 @@ namespace DotNet.Testcontainers
 
       Task<long> GetExitCode(CancellationToken ct = default);
 
-      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
       Task StartAsync(CancellationToken ct = default);
 

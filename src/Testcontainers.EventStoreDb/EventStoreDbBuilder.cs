@@ -1,5 +1,7 @@
 ﻿namespace Testcontainers.EventStoreDb;
 
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+[PublicAPI]
 public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
 {
     public const string EventStoreDbImage = "eventstore/eventstore:22.10.1-buster-slim";

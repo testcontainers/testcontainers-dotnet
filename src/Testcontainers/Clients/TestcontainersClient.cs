@@ -100,7 +100,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
       var unixEpoch = new DateTime(1970, 1, 1);
 
@@ -114,7 +114,7 @@ namespace DotNet.Testcontainers.Clients
         until = DateTime.MaxValue;
       }
 
-      return this.containers.GetLogs(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), ct);
+      return this.containers.GetLogs(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
     }
 
     /// <inheritdoc />

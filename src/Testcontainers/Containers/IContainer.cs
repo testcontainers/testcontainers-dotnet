@@ -140,9 +140,10 @@
     /// </summary>
     /// <param name="since">Only logs since this time.</param>
     /// <param name="until">Only logs until this time.</param>
+    /// <param name="timestampsEnabled">Determines whether every log line contains a timestamp or not.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container logs.</returns>
-    new Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+    new Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Starts the container.

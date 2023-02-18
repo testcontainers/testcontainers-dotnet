@@ -244,9 +244,9 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
-      return this.client.GetContainerLogs(this.Id, since, until, ct);
+      return this.client.GetContainerLogs(this.Id, since, until, timestampsEnabled, ct);
     }
 
     /// <inheritdoc />
@@ -383,9 +383,6 @@ namespace DotNet.Testcontainers.Containers
       this.ThrowIfLockNotAcquired();
 
       await this.UnsafeCreateAsync(ct)
-        .ConfigureAwait(false);
-
-      await this.client.AttachAsync(this.container.ID, this.configuration.OutputConsumer, ct)
         .ConfigureAwait(false);
 
       await this.client.StartAsync(this.container.ID, ct)
