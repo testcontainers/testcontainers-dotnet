@@ -23,10 +23,6 @@
     <PackageReference Update="Azure.Storage.Queues" Version="12.11.0" />
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
-    <PackageReference Update="Elastic.Clients.Elasticsearch" Version="8.0.0-beta.3" />
     <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
-    <PackageReference Update="Microsoft.Data.SqlClient" Version="5.1.0" />
-    <PackageReference Update="Neo4j.Driver" Version="4.4.0" />
-    <PackageReference Update="RabbitMQ.Client" Version="6.2.4" />
   </ItemGroup>
 </Project>

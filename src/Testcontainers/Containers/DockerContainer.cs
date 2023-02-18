@@ -258,20 +258,6 @@ namespace DotNet.Testcontainers.Containers
       GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Deletes the container.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been deleted.</returns>
-    [Obsolete("Use DisposeAsync() instead.")]
-    public Task CleanUpAsync(CancellationToken ct = default)
-    {
-      using (_ = new AcquireLock(this.semaphoreSlim))
-      {
-        return this.UnsafeDeleteAsync(ct);
-      }
-    }
-
     /// <inheritdoc />
     public virtual Task StartAsync(CancellationToken ct = default)
     {

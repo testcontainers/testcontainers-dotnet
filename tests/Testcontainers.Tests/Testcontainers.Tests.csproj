@@ -18,10 +18,7 @@
     <PackageReference Include="Azure.Storage.Queues" />
     <PackageReference Include="Confluent.Kafka" />
     <PackageReference Include="CouchbaseNetClient" />
-    <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="Microsoft.Azure.Cosmos" />
-    <PackageReference Include="Neo4j.Driver" />
-    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />

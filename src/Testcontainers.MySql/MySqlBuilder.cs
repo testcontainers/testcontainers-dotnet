@@ -33,9 +33,6 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Sets the MySql database.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
     /// <param name="database">The MySql database.</param>
     /// <returns>A configured instance of <see cref="MySqlBuilder" />.</returns>
     public MySqlBuilder WithDatabase(string database)
@@ -47,9 +44,6 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Sets the MySql username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The MySql username.</param>
     /// <returns>A configured instance of <see cref="MySqlBuilder" />.</returns>
     public MySqlBuilder WithUsername(string username)

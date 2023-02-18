@@ -67,10 +67,12 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
+        private readonly string[] _command = { "redis-cli", "ping" };
+
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(new[] { "redis-cli", "ping" })
+            var execResult = await container.ExecAsync(_command)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
