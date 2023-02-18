@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.EventStore;
+﻿namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]

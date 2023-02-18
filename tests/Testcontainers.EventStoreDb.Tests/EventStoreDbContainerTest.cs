@@ -1,52 +1,44 @@
-﻿namespace Testcontainers.EventStore;
+﻿namespace Testcontainers.EventStoreDb;
 
 public sealed class EventStoreDbContainerTest : IAsyncLifetime
 {
-  private readonly EventStoreDbContainer _eventStoreContainer = new EventStoreDbBuilder().Build();
+    private readonly EventStoreDbContainer _eventStoreDbContainer = new EventStoreDbBuilder().Build();
 
-  public Task InitializeAsync()
-  {
-    return _eventStoreContainer.StartAsync();
-  }
+    public Task InitializeAsync()
+    {
+        return _eventStoreDbContainer.StartAsync();
+    }
 
-  public Task DisposeAsync()
-  {
-    return _eventStoreContainer.DisposeAsync().AsTask();
-  }
+    public Task DisposeAsync()
+    {
+        return _eventStoreDbContainer.DisposeAsync().AsTask();
+    }
 
-  [Fact]
-  public async Task ConnectionEstablished()
-  {
-    // Given
-    var settings = EventStoreClientSettings.Create(_eventStoreContainer.GetConnectionString());
-    using EventStoreClient connection = new EventStoreClient(settings);
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ReadStreamReturnsEvent()
+    {
+        // Given
+        const string eventType = "some-event";
 
-    // When
-    var tokenSource = new CancellationTokenSource();
-    var cancellationToken = tokenSource.Token;
+        const string streamName = "some-stream";
 
-    var evt = new { EntityId = Guid.NewGuid().ToString("N"), ImportantData = "I wrote my first event!" };
+        var settings = EventStoreClientSettings.Create(_eventStoreDbContainer.GetConnectionString());
 
-    var eventData = new EventData(
-      Uuid.NewUuid(),
-      "TestEvent",
-      JsonSerializer.SerializeToUtf8Bytes(evt));
+        using var client = new EventStoreClient(settings);
 
-    await connection.AppendToStreamAsync(
-      "some-stream",
-      StreamState.Any,
-      new[] { eventData },
-      cancellationToken: cancellationToken);
+        var eventData = new EventData(Uuid.NewUuid(), eventType, Array.Empty<byte>());
 
-    var result = connection.ReadStreamAsync(
-      Direction.Forwards,
-      "some-stream",
-      StreamPosition.Start,
-      cancellationToken: cancellationToken);
+        // When
+        _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, new[] { eventData })
+            .ConfigureAwait(false);
 
-    var events = await result.ToListAsync(cancellationToken);
+        var resolvedEvents = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start);
 
-    // Then
-    Assert.NotNull(events);
-  }
+        var resolvedEvent = await resolvedEvents.FirstAsync()
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(eventType, resolvedEvent.Event.EventType);
+    }
 }
