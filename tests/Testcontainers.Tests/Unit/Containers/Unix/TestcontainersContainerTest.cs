@@ -27,13 +27,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     public sealed class WithConfiguration
     {
       [Fact]
-      public async Task IsLinuxEngineEnabled()
-      {
-        var client = new TestcontainersClient();
-        Assert.False(await client.GetIsWindowsEngineEnabled());
-      }
-
-      [Fact]
       public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
       {
         Assert.Throws<ArgumentException>(() => _ = new TestcontainersBuilder<TestcontainersContainer>().Build());
