@@ -356,8 +356,6 @@
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-
-    // TODO: Set this methode to obsolete and replace it with TAP.
     TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback);
 
     /// <summary>
