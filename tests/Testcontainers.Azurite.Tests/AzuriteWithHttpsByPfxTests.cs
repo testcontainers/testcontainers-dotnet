@@ -1,11 +1,10 @@
-namespace Testcontainers.Azurite.Tests.Unit
+namespace Testcontainers.Azurite.Tests
 {
-  [UsedImplicitly]
-  public sealed class AzuriteContainerTests : IClassFixture<AzuriteDefaultFixture>
+  public sealed class AzuriteWithHttpsByPfxTests : IClassFixture<AzuriteWithHttpsByPfxFixture>
   {
-    private readonly AzuriteDefaultFixture azuriteFixture;
+    private readonly AzuriteWithHttpsByPfxFixture azuriteFixture;
 
-    public AzuriteContainerTests(AzuriteDefaultFixture azuriteFixture)
+    public AzuriteWithHttpsByPfxTests(AzuriteWithHttpsByPfxFixture azuriteFixture)
     {
       this.azuriteFixture = azuriteFixture;
     }
@@ -14,11 +13,11 @@ namespace Testcontainers.Azurite.Tests.Unit
     public async Task ConnectionEstablished()
     {
       // Given
-      var blobServiceClient = new BlobServiceClient(this.azuriteFixture.Container.ConnectionString);
+      var blobServiceClient = new BlobServiceClient(this.azuriteFixture.Container.ConnectionString, new BlobClientOptions { Transport = AzuriteWithHttpsByPfxFixture.HttpClientTransport });
 
-      var queueServiceClient = new QueueServiceClient(this.azuriteFixture.Container.ConnectionString);
+      var queueServiceClient = new QueueServiceClient(this.azuriteFixture.Container.ConnectionString, new QueueClientOptions { Transport = AzuriteWithHttpsByPfxFixture.HttpClientTransport });
 
-      var tableServiceClient = new TableServiceClient(this.azuriteFixture.Container.ConnectionString);
+      var tableServiceClient = new TableServiceClient(this.azuriteFixture.Container.ConnectionString, new TableClientOptions { Transport = AzuriteWithHttpsByPfxFixture.HttpClientTransport });
 
       // When
       var blobProperties = await blobServiceClient.GetPropertiesAsync()

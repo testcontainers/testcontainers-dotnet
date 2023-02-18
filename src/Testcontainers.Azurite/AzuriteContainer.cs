@@ -182,6 +182,39 @@ namespace Testcontainers.Azurite
     }
 
     /// <summary>
+    ///   Gets a PFX file path or certificate PEM file path used by https endpoints.
+    /// </summary>
+    public string Certificate
+    {
+      get
+      {
+        return this.configuration.Certificate;
+      }
+    }
+
+    /// <summary>
+    ///   Gets a password for a protected PFX file.
+    /// </summary>
+    public string Password
+    {
+      get
+      {
+        return this.configuration.Password;
+      }
+    }
+
+    /// <summary>
+    ///   Gets a key PEM file path used by https endpoints.
+    /// </summary>
+    public string Key
+    {
+      get
+      {
+        return this.configuration.Key;
+      }
+    }
+
+    /// <summary>
     ///   Gets the storage connection string.
     /// </summary>
     public string ConnectionString
@@ -211,14 +244,15 @@ namespace Testcontainers.Azurite
     }
 
 
-    private string GetConnectionString(string hostname, int blobPort, int queuePort, int tablePort)
+    private string GetConnectionString(string host, int blobPort, int queuePort, int tablePort)
     {
       // https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio#well-known-storage-account-and-key.
       const string accountName = "devstoreaccount1";
-      const string accountKey =
-        "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+      const string accountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
-      var endpointBuilder = new UriBuilder("http", hostname, -1, accountName);
+      var scheme = string.IsNullOrEmpty(this.Certificate) ? "http" : "https";
+
+      var endpointBuilder = new UriBuilder(scheme, host, -1, accountName);
 
       var connectionString = new Dictionary<string, string>
       {

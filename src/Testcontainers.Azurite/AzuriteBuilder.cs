@@ -62,14 +62,19 @@ namespace Testcontainers.Azurite
     /// <inheritdoc />
     public override AzuriteContainer Build()
     {
-      var builder = this.WithEntrypoint(this.GetExecutable())
-        .WithCommand(this.GetExposedServices())
-        .WithCommand(this.GetWorkspaceLocationDirectoryPath())
-        .WithCommand(this.GetDebugModeEnabled())
-        .WithCommand(this.GetSilentModeEnabled())
-        .WithCommand(this.GetLooseModeEnabled())
-        .WithCommand(this.GetSkipApiVersionCheckEnabled())
-        .WithCommand(this.GetProductStyleUrlDisabled());
+      var commandArgs = new List<string>();
+      commandArgs.AddRange(this.GetExposedServices());
+      commandArgs.AddRange(this.GetWorkspaceLocationDirectoryPath());
+      commandArgs.AddRange(this.GetDebugModeEnabled());
+      commandArgs.Add(this.GetSilentModeEnabled());
+      commandArgs.Add(this.GetLooseModeEnabled());
+      commandArgs.Add(this.GetSkipApiVersionCheckEnabled());
+      commandArgs.Add(this.GetProductStyleUrlDisabled());
+      commandArgs.AddRange(this.GetHttps());
+
+      var builder = this
+        .WithEntrypoint(this.GetExecutable())
+        .WithCommand(commandArgs.Where(x => !string.IsNullOrEmpty(x)).ToArray());
 
       builder.Validate();
 
@@ -118,8 +123,7 @@ namespace Testcontainers.Azurite
     /// </remarks>
     public AzuriteBuilder WithSkipApiVersionCheckEnabled(bool skipApiVersionCheckEnabled)
     {
-      return this.Merge(this.DockerResourceConfiguration,
-        new AzuriteConfiguration(skipApiVersionCheckEnabled: skipApiVersionCheckEnabled));
+      return this.Merge(this.DockerResourceConfiguration, new AzuriteConfiguration(skipApiVersionCheckEnabled: skipApiVersionCheckEnabled));
     }
 
     /// <summary>
@@ -131,8 +135,24 @@ namespace Testcontainers.Azurite
     /// </remarks>
     public AzuriteBuilder WithProductStyleUrlDisabled(bool productStyleUrlDisabled)
     {
+      return this.Merge(this.DockerResourceConfiguration, new AzuriteConfiguration(productStyleUrlDisabled: productStyleUrlDisabled));
+    }
+
+    /// <summary>
+    ///   Sets a pfx file path and its password to enable https endpoints.
+    /// </summary>
+    public AzuriteBuilder WithHttpsDefinedByPfxFile(string pfxFilePath, string pfxFilePassword)
+    {
+      return this.Merge(this.DockerResourceConfiguration, new AzuriteConfiguration(certificate: pfxFilePath, password: pfxFilePassword));
+    }
+
+    /// <summary>
+    ///   Sets a certificate and key pem file paths to enable https endpoints.
+    /// </summary>
+    public AzuriteBuilder WithHttpsDefinedByPemFiles(string certificateFilePath, string keyFilePath)
+    {
       return this.Merge(this.DockerResourceConfiguration,
-        new AzuriteConfiguration(productStyleUrlDisabled: productStyleUrlDisabled));
+        new AzuriteConfiguration(certificate: certificateFilePath, key: keyFilePath));
     }
 
     /// <inheritdoc />
@@ -220,6 +240,30 @@ namespace Testcontainers.Azurite
     private string GetProductStyleUrlDisabled()
     {
       return this.DockerResourceConfiguration.ProductStyleUrlDisabled ?? false ? "--disableProductStyleUrl" : null;
+    }
+
+    private string[] GetHttps()
+    {
+      if (string.IsNullOrEmpty(this.DockerResourceConfiguration.Certificate))
+      {
+        return Array.Empty<string>();
+      }
+
+      var args = new List<string> { "--cert", this.DockerResourceConfiguration.Certificate };
+
+      if (!string.IsNullOrEmpty(this.DockerResourceConfiguration.Key))
+      {
+        args.Add("--key");
+        args.Add(this.DockerResourceConfiguration.Key);
+      }
+
+      if (!string.IsNullOrEmpty(this.DockerResourceConfiguration.Password))
+      {
+        args.Add("--pwd");
+        args.Add(this.DockerResourceConfiguration.Password);
+      }
+
+      return args.ToArray();
     }
   }
 }

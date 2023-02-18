@@ -1,10 +1,10 @@
-namespace Testcontainers.Azurite.Tests.Unit
+namespace Testcontainers.Azurite.Tests
 {
-  public sealed class CustomWorkspaceBinding : IClassFixture<AzuriteWithWorkspaceBindingFixture>
+  public sealed class AzuriteCustomWorkspaceBinding : IClassFixture<AzuriteWithWorkspaceBindingFixture>
   {
     private readonly IEnumerable<string> dataFiles;
 
-    public CustomWorkspaceBinding(AzuriteWithWorkspaceBindingFixture azurite)
+    public AzuriteCustomWorkspaceBinding(AzuriteWithWorkspaceBindingFixture azurite)
     {
       var workspaceLocation = azurite.Container.WorkspaceLocationBinding;
       this.dataFiles = Directory.Exists(workspaceLocation)
