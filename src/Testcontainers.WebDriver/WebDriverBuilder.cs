@@ -62,8 +62,8 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <param name="screenDepth">The screen depth resolution.</param>
     /// <param name="screenDpi">The screen depth resolution.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1360 , 
-        int screenHeight = 1020, int screenDepth = 24, int screenDpi = 96)
+    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1020 , 
+        int screenHeight = 1360, int screenDepth = 24, int screenDpi = 96)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
