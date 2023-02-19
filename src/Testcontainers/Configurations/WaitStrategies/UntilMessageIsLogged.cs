@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Configurations
 
     public async Task<bool> UntilAsync(IContainer container)
     {
-      var (stdout, stderr) = await container.GetLogs(timestampsEnabled: false)
+      var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
         .ConfigureAwait(false);
 
       return this.pattern.IsMatch(stdout) || this.pattern.IsMatch(stderr);
