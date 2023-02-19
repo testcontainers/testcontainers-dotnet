@@ -407,7 +407,7 @@ namespace DotNet.Testcontainers.Containers
 
       async Task<bool> CheckPortBindings()
       {
-        this.container = await this.client.InspectContainer(this.container.ID, ct)
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
 
         var boundPorts = this.container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
