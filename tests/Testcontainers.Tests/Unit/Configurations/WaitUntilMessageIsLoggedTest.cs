@@ -1,36 +1,48 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using System.IO;
-  using System.Linq;
+  using System;
+  using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Commons;
+  using DotNet.Testcontainers.Containers;
   using Xunit;
 
-  public sealed class WaitUntilMessageIsLoggedTest
+  public sealed class WaitUntilMessageIsLoggedTest : IAsyncLifetime, IDisposable
   {
-    [Fact]
-    public async Task UntilMessageIsLogged()
+    private readonly CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+
+    private readonly IContainer container;
+
+    public WaitUntilMessageIsLoggedTest()
     {
-      // Given
-      const string expectedMessage = "Message has been logged.";
+      this.container = new ContainerBuilder()
+        .WithImage(CommonImages.Alpine)
+        .WithEntrypoint("/bin/sh", "-c")
+        .WithCommand("echo \"Started\" | tee /dev/stderr && trap : TERM INT; sleep infinity & wait")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"))
+        .Build();
+    }
 
-      await using var memoryStream = new MemoryStream();
-      await using var streamWriter = new StreamWriter(memoryStream);
+    public Task InitializeAsync()
+    {
+      return this.container.StartAsync(this.cts.Token);
+    }
 
-      // When
-      await streamWriter.WriteAsync(expectedMessage);
-      await streamWriter.FlushAsync();
+    public Task DisposeAsync()
+    {
+      return this.container.StartAsync();
+    }
 
-      var wait = Wait.ForUnixContainer()
-        .UntilMessageIsLogged(memoryStream, expectedMessage)
-        .Build()
-        .Skip(1)
-        .First();
+    public void Dispose()
+    {
+      this.cts.Dispose();
+    }
 
-      // Then
-      var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null)));
-      Assert.Null(exception);
+    [Fact]
+    public void ContainerIsRunning()
+    {
+      Assert.Equal(TestcontainersStates.Running, this.container.State);
     }
   }
 }

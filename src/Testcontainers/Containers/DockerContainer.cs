@@ -240,13 +240,25 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public Task<long> GetExitCode(CancellationToken ct = default)
     {
-      return this.client.GetContainerExitCode(this.Id, ct);
+      return this.GetExitCodeAsync(ct);
     }
 
     /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<long> GetExitCodeAsync(CancellationToken ct = default)
     {
-      return this.client.GetContainerLogs(this.Id, since, until, ct);
+      return this.client.GetContainerExitCodeAsync(this.Id, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
+    {
+      return this.GetLogsAsync(since, until, timestampsEnabled, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
+    {
+      return this.client.GetContainerLogsAsync(this.Id, since, until, timestampsEnabled, ct);
     }
 
     /// <inheritdoc />
@@ -256,20 +268,6 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
 
       GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Deletes the container.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been deleted.</returns>
-    [Obsolete("Use DisposeAsync() instead.")]
-    public Task CleanUpAsync(CancellationToken ct = default)
-    {
-      using (_ = new AcquireLock(this.semaphoreSlim))
-      {
-        return this.UnsafeDeleteAsync(ct);
-      }
     }
 
     /// <inheritdoc />
@@ -355,7 +353,7 @@ namespace DotNet.Testcontainers.Containers
       var id = await this.client.RunAsync(this.configuration, ct)
         .ConfigureAwait(false);
 
-      this.container = await this.client.InspectContainer(id, ct)
+      this.container = await this.client.InspectContainerAsync(id, ct)
         .ConfigureAwait(false);
 
       this.Created?.Invoke(this, EventArgs.Empty);
@@ -399,9 +397,6 @@ namespace DotNet.Testcontainers.Containers
       await this.UnsafeCreateAsync(ct)
         .ConfigureAwait(false);
 
-      await this.client.AttachAsync(this.container.ID, this.configuration.OutputConsumer, ct)
-        .ConfigureAwait(false);
-
       await this.client.StartAsync(this.container.ID, ct)
         .ConfigureAwait(false);
 
@@ -430,7 +425,7 @@ namespace DotNet.Testcontainers.Containers
 
       async Task<bool> CheckReadiness(IWaitUntil wait)
       {
-        this.container = await this.client.InspectContainer(this.container.ID, ct)
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
 
         return await wait.UntilAsync(this)
@@ -470,7 +465,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        this.container = await this.client.InspectContainer(this.container.ID, ct)
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
       }
       catch (DockerContainerNotFoundException)

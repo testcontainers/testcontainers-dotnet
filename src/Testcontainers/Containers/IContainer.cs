@@ -128,21 +128,28 @@
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     new ushort GetMappedPublicPort(string containerPort);
 
+    /// <inheritdoc cref="GetExitCodeAsync" />
+    new Task<long> GetExitCode(CancellationToken ct = default);
+
     /// <summary>
     /// Gets the container exit code.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container exit code.</returns>
-    new Task<long> GetExitCode(CancellationToken ct = default);
+    new Task<long> GetExitCodeAsync(CancellationToken ct = default);
+
+    /// <inheritdoc cref="GetLogsAsync" />
+    new Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the container logs.
     /// </summary>
     /// <param name="since">Only logs since this time.</param>
     /// <param name="until">Only logs until this time.</param>
+    /// <param name="timestampsEnabled">Determines whether every log line contains a timestamp or not.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container logs.</returns>
-    new Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+    new Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Starts the container.

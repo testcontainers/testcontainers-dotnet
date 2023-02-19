@@ -21,19 +21,12 @@ namespace DotNet.Testcontainers.Clients
     bool IsRunningInsideDocker { get; }
 
     /// <summary>
-    /// Returns true if the Docker Windows engine is enabled, otherwise false.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that returns true if the Docker Windows engine is enabled, otherwise false.</returns>
-    Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
-
-    /// <summary>
     /// Gets the Testcontainers exit code.
     /// </summary>
     /// <param name="id">Docker container id.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that gets the Testcontainers exit code.</returns>
-    Task<long> GetContainerExitCode(string id, CancellationToken ct = default);
+    Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the Testcontainers logs.
@@ -41,9 +34,10 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">Docker container id.</param>
     /// <param name="since">Only logs since this time.</param>
     /// <param name="until">Only logs until this time.</param>
+    /// <param name="timestampsEnabled">Determines whether every log line contains a timestamp or not.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that gets the Testcontainers logs.</returns>
-    Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default);
+    Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the Testcontainers inspect information.
@@ -55,7 +49,7 @@ namespace DotNet.Testcontainers.Clients
     /// <exception cref="DockerApiException">The daemon experienced an error.</exception>
     /// <exception cref="DockerContainerNotFoundException">No such container was found.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-    Task<ContainerInspectResponse> InspectContainer(string id, CancellationToken ct = default);
+    Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default);
 
     /// <summary>
     /// Starts a container.
