@@ -82,25 +82,13 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
+    public Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default)
     {
-      return this.system.GetIsWindowsEngineEnabled(ct);
+      return this.containers.GetExitCodeAsync(id, ct);
     }
 
     /// <inheritdoc />
-    public Task<ContainerInspectResponse> InspectContainer(string id, CancellationToken ct = default)
-    {
-      return this.containers.InspectAsync(id, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<long> GetContainerExitCode(string id, CancellationToken ct = default)
-    {
-      return this.containers.GetExitCode(id, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
       var unixEpoch = new DateTime(1970, 1, 1);
 
@@ -114,7 +102,13 @@ namespace DotNet.Testcontainers.Clients
         until = DateTime.MaxValue;
       }
 
-      return this.containers.GetLogs(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), ct);
+      return this.containers.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default)
+    {
+      return this.containers.InspectAsync(id, ct);
     }
 
     /// <inheritdoc />

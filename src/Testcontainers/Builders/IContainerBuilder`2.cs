@@ -336,6 +336,7 @@
     /// <param name="outputConsumer">The output consumer.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
     TBuilderEntity WithOutputConsumer(IOutputConsumer outputConsumer);
 
     /// <summary>
@@ -355,8 +356,6 @@
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-
-    // TODO: Set this methode to obsolete and replace it with TAP.
     TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback);
 
     /// <summary>

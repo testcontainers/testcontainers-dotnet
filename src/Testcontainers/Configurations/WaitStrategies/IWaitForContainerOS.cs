@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Text.RegularExpressions;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -58,12 +59,29 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilFileExists(string file);
 
     /// <summary>
+    /// Waits until the message is logged.
+    /// </summary>
+    /// <param name="pattern">The regular expression that matches the log message.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilMessageIsLogged(string pattern);
+
+    /// <summary>
+    /// Waits until the message is logged.
+    /// </summary>
+    /// <param name="pattern">The regular expression that matches the log message.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilMessageIsLogged(Regex pattern);
+
+    /// <summary>
     /// Waits until the message is logged in the steam.
     /// </summary>
     /// <param name="stream">The stream to be searched.</param>
     /// <param name="message">The message to be checked.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
+    [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IWaitForContainerOS.UntilMessageIsLogged(string) or IWaitForContainerOS.UntilMessageIsLogged(Regex) instead.")]
     IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message);
 
     /// <summary>

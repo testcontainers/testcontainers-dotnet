@@ -55,9 +55,15 @@ namespace DotNet.Testcontainers
 
       ushort GetMappedPublicPort(string containerPort);
 
+      [Obsolete("Use IContainer.GetExitCodeAsync(CancellationToken) instead.")]
       Task<long> GetExitCode(CancellationToken ct = default);
 
-      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+      Task<long> GetExitCodeAsync(CancellationToken ct = default);
+
+      [Obsolete("Use IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
+      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
+
+      Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
       Task StartAsync(CancellationToken ct = default);
 

@@ -114,7 +114,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MongoDbConfiguration configuration)
         {
-            const string js = "db.runCommand({ping:1})";
+            const string js = "db.runCommand({hello:1}).isWritablePrimary";
             _mongoDbShellCommand = new MongoDbShellCommand(js, configuration.Username, configuration.Password);
         }
 
@@ -124,7 +124,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             var execResult = await container.ExecAsync(_mongoDbShellCommand)
                 .ConfigureAwait(false);
 
-            return 0L.Equals(execResult.ExitCode);
+            return 0L.Equals(execResult.ExitCode) && "true\n".Equals(execResult.Stdout, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

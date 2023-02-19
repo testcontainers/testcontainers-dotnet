@@ -118,7 +118,6 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithNetwork`                           | Assigns a network to the container e.g. `--network "bridge"`.                                                                          |
 | `WithNetworkAliases`                    | Assigns a network-scoped aliases to the container e.g. `--network-alias "alias"`.                                                      |
 | `WithPrivileged`                        | Sets the `--privileged` flag.                                                                                                          |
-| `WithOutputConsumer`                    | Redirects `stdout` and `stderr` to capture the container output.                                                                       |
 | `WithWaitStrategy`                      | Sets the wait strategy to complete the container start and indicates when it is ready.                                                 |
 | `WithStartupCallback`                   | Sets the startup callback to invoke after the container start.                                                                         |
 | `WithCreateParameterModifier`           | Allows low level modifications of the Docker container create parameter.                                                               |

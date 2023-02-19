@@ -122,7 +122,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogs()
+            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return stdout.Contains("DATABASE IS READY TO USE!");

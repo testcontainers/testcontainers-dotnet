@@ -108,7 +108,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogs()
+            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return stdout.Contains("Server startup complete");
