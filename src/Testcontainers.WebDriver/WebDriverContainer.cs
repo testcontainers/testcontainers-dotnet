@@ -13,4 +13,13 @@ public sealed class WebDriverContainer : DockerContainer
         : base(configuration, logger)
     {
     }
+
+    /// <summary>
+    /// Gets the uri entry point of the grid.
+    /// </summary>
+    /// <returns>The PostgreSql connection string.</returns>
+    public Uri GetWebDriverUri()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverPort)).Uri;
+    }
 }
