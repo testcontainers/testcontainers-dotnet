@@ -1,4 +1,4 @@
-namespace WebDriver;
+namespace Testcontainers.Webdriver;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -9,7 +9,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public const string EdgeStandaloneImage = "selenium/standalone-edge";
     public const string OperaStandaloneImage = "selenium/standalone-opera";
 
-    public const ushort SeleniumPort = 4444;
+    public const ushort WebDriverPort = 4444;
     public const ushort VncServerPort = 7900;
 
     /// <summary>
@@ -17,17 +17,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </summary>
     public WebDriverBuilder() : this(new WebDriverConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "WebDriverBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "WebDriverBuilder WithWebDriverConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable WebDriverConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -39,7 +29,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
+    /// <inheritdoc />
     protected override WebDriverConfiguration DockerResourceConfiguration { get; }
 
     // /// <summary>
@@ -105,7 +95,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     {
         return base.Init()
             .WithImage(FirefoxStandaloneImage)
-            .WithPortBinding(SeleniumPort, true)
+            .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true);
     }
 

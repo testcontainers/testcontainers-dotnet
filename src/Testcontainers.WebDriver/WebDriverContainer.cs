@@ -1,4 +1,4 @@
-namespace WebDriver;
+namespace Testcontainers.Webdriver;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
