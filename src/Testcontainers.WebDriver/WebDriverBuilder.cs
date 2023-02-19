@@ -1,4 +1,4 @@
-namespace Testcontainers.Webdriver;
+namespace Testcontainers.WebDriver;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -32,31 +32,38 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <inheritdoc />
     protected override WebDriverConfiguration DockerResourceConfiguration { get; }
 
-    // /// <summary>
-    // /// Sets the WebDriver config.
-    // /// </summary>
-    // /// <param name="config">The WebDriver config.</param>
-    // /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    // public WebDriverBuilder WithWebDriverConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in WebDriverConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new WebDriverConfiguration(config: config));
-    // }
-
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="options">The options as string list for starting a hub or a node.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationOptions(string options)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("SE_OPTS", options);
     }
 
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="javaOptions">The java options environment variables as string list.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithJavaEnvironmentOptions(string javaOptions)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("SE_JAVA_OPTS", javaOptions);
     }
 
-    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1360 , int screenHeight = 1020, int screenDepth = 24, int screenDpi = 96)
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="screenWidth">The screen width resolution.</param>
+    /// <param name="screenHeight">The screen height resolution.</param>
+    /// <param name="screenDepth">The screen depth resolution.</param>
+    /// <param name="screenDpi">The screen depth resolution.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
+    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1360 , 
+        int screenHeight = 1020, int screenDepth = 24, int screenDpi = 96)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
@@ -65,18 +72,33 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithEnvironment("SE_SCREEN_DPI", screenDpi.ToString());
     }
 
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="sessionTimeout">The Grid  session timeout config.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetSessionTimeout(int sessionTimeout = 300)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.ToString());
     }
 
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="timeZone">The desirable time zone.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetTimeZone(string timeZone)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
             .WithEnvironment("TZ", timeZone);
     }
 
+    /// <summary>
+    /// Sets the WebDriver config.
+    /// </summary>
+    /// <param name="configTomlFilePath">The config toml file path.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetConfigurationFromTomlFile(string configTomlFilePath)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
