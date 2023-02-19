@@ -15,6 +15,7 @@ namespace Testcontainers.Azurite
     /// <param name="certificate">A value to certificate pem or PFX file to use by https endpoints.</param>
     /// <param name="password">A value with password for PFX file.</param>
     /// <param name="key">A value to key pem file.</param>
+    /// <param name="oauthLevel">A value indicating whether the Azurite should support specified OAuth level.</param>
     public AzuriteConfiguration(
       bool? debugModeEnabled = null,
       bool? silentModeEnabled = null,
@@ -23,7 +24,8 @@ namespace Testcontainers.Azurite
       bool? skipApiVersionCheckEnabled = null,
       string certificate = null,
       string password = null,
-      string key = null)
+      string key = null,
+      AzuriteOauthLevels? oauthLevel = null)
     {
       this.DebugModeEnabled = debugModeEnabled;
       this.SilentModeEnabled = silentModeEnabled;
@@ -33,6 +35,7 @@ namespace Testcontainers.Azurite
       this.Certificate = certificate;
       this.Password = password;
       this.Key = key;
+      this.OauthLevel = oauthLevel;
     }
 
     /// <summary>
@@ -81,6 +84,7 @@ namespace Testcontainers.Azurite
       this.Certificate = BuildConfiguration.Combine(oldValue.Certificate, newValue.Certificate);
       this.Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
       this.Key = BuildConfiguration.Combine(oldValue.Key, newValue.Key);
+      this.OauthLevel = BuildConfiguration.Combine(oldValue.OauthLevel, newValue.OauthLevel);
     }
 
     /// <summary>
@@ -117,6 +121,15 @@ namespace Testcontainers.Azurite
     public bool? SkipApiVersionCheckEnabled { get; }
 
     /// <summary>
+    ///   Gets a value indicating whether product style URL is enabled or not.
+    /// </summary>
+    /// <remarks>
+    ///   Parses storage account name from the URI path, instead of the URI host.
+    ///   Default value is false.
+    /// </remarks>
+    public bool? ProductStyleUrlDisabled { get; }
+
+    /// <summary>
     ///   Gets a PFX file path or certificate PEM file path used by https endpoints.
     /// </summary>
     public string Certificate { get; }
@@ -132,12 +145,8 @@ namespace Testcontainers.Azurite
     public string Key { get; }
 
     /// <summary>
-    ///   Gets a value indicating whether product style URL is enabled or not.
+    ///   Gets a value of OAuth level.
     /// </summary>
-    /// <remarks>
-    ///   Parses storage account name from the URI path, instead of the URI host.
-    ///   Default value is false.
-    /// </remarks>
-    public bool? ProductStyleUrlDisabled { get; }
+    public AzuriteOauthLevels? OauthLevel { get; }
   }
 }

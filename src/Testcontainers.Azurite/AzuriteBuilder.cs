@@ -71,6 +71,7 @@ namespace Testcontainers.Azurite
       commandArgs.Add(this.GetSkipApiVersionCheckEnabled());
       commandArgs.Add(this.GetProductStyleUrlDisabled());
       commandArgs.AddRange(this.GetHttps());
+      commandArgs.AddRange(this.GetOauthLevel());
 
       var builder = this
         .WithEntrypoint(this.GetExecutable())
@@ -151,8 +152,15 @@ namespace Testcontainers.Azurite
     /// </summary>
     public AzuriteBuilder WithHttpsDefinedByPemFiles(string certificateFilePath, string keyFilePath)
     {
-      return this.Merge(this.DockerResourceConfiguration,
-        new AzuriteConfiguration(certificate: certificateFilePath, key: keyFilePath));
+      return this.Merge(this.DockerResourceConfiguration, new AzuriteConfiguration(certificate: certificateFilePath, key: keyFilePath));
+    }
+
+    /// <summary>
+    ///   Sets an OAuth level.
+    /// </summary>
+    public AzuriteBuilder WithOauth(AzuriteOauthLevels level = AzuriteOauthLevels.Basic)
+    {
+      return this.Merge(this.DockerResourceConfiguration, new AzuriteConfiguration(oauthLevel: level));
     }
 
     /// <inheritdoc />
@@ -187,6 +195,27 @@ namespace Testcontainers.Azurite
     protected override AzuriteBuilder Merge(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
     {
       return new AzuriteBuilder(new AzuriteConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+      base.Validate();
+
+      if (!string.IsNullOrEmpty(this.DockerResourceConfiguration.Certificate))
+      {
+        if (string.IsNullOrEmpty(this.DockerResourceConfiguration.Key) && string.IsNullOrEmpty(this.DockerResourceConfiguration.Password))
+        {
+          const string certificateMessage = "Cannot setup HTTPS configuration certificate without provided key or password. Set key pem file or set password for PFX file.\nhttps://github.com/Azure/Azurite#certificate-configuration-https";
+          throw new ArgumentException(certificateMessage, nameof(AzuriteConfiguration.Certificate));
+        }
+      }
+
+      if (this.DockerResourceConfiguration.OauthLevel.HasValue && string.IsNullOrEmpty(this.DockerResourceConfiguration.Certificate))
+      {
+        const string oauthMessage = "Cannot setup OAuth configuration without configured HTTPS. Set HTTPS configuration for Azurite or do not use OAuth configuration. More info:\nhttps://github.com/Azure/Azurite#oauth-configuration";
+        throw new ArgumentException(oauthMessage, nameof(AzuriteConfiguration.OauthLevel));
+      }
     }
 
     private string GetExecutable()
@@ -264,6 +293,16 @@ namespace Testcontainers.Azurite
       }
 
       return args.ToArray();
+    }
+
+    private string[] GetOauthLevel()
+    {
+      if (!this.DockerResourceConfiguration.OauthLevel.HasValue)
+      {
+        return Array.Empty<string>();
+      }
+
+      return new[] { "--oauth", this.DockerResourceConfiguration.OauthLevel.ToString().ToLowerInvariant() };
     }
   }
 }
