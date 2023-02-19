@@ -157,12 +157,6 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
-    {
-      return this.containers.AttachAsync(id, outputConsumer, ct);
-    }
-
-    /// <inheritdoc />
     public Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       return this.containers.ExecAsync(id, command, ct);
@@ -233,7 +227,8 @@ namespace DotNet.Testcontainers.Clients
       {
         tarInputStream.IsStreamOwner = true;
 
-        var entry = tarInputStream.GetNextEntry();
+        var entry = await tarInputStream.GetNextEntryAsync(ct)
+          .ConfigureAwait(false);
 
         if (entry.IsDirectory)
         {
@@ -242,8 +237,9 @@ namespace DotNet.Testcontainers.Clients
 
         var content = new byte[entry.Size];
 
-        // Calling ReadAsync will not work reliably because of some internal buffering in SharpZipLib. This might very well change in future versions of SharpZipLib.
-        _ = tarInputStream.Read(content, 0, content.Length);
+        _ = await tarInputStream.ReadAsync(content, 0, content.Length, ct)
+          .ConfigureAwait(false);
+
         return content;
       }
     }
