@@ -17,7 +17,7 @@ public sealed class WebDriverContainer : DockerContainer
     /// <summary>
     /// Gets the uri entry point of the grid.
     /// </summary>
-    /// <returns>The PostgreSql connection string.</returns>
+    /// <returns>Uri of selenium grid router.</returns>
     public Uri GetWebDriverUri()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverPort)).Uri;
