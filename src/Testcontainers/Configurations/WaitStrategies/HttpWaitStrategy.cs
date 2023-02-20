@@ -5,6 +5,7 @@
   using System.Linq;
   using System.Net;
   using System.Net.Http;
+  using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
@@ -179,6 +180,17 @@
     {
       this.httpMethod = method;
       return this;
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public HttpWaitStrategy WithBasicAuthentication(string username, string password)
+    {
+      return this.WithHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(":", username, password))));
     }
 
     /// <summary>
