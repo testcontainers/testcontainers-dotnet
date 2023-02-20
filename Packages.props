@@ -10,7 +10,7 @@
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
     <PackageReference Update="Portable.BouncyCastle" Version="1.9.0" />
-    <PackageReference Update="SharpZipLib" Version="1.4.1" />
+    <PackageReference Update="SharpZipLib" Version="1.4.2" />
     <PackageReference Update="System.Text.Json" Version="6.0.7" />
     <!-- Unit and integration test dependencies: -->
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.4.1" />

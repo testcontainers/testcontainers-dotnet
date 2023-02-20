@@ -8,6 +8,12 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
 
     public const ushort MySqlPort = 3306;
 
+    public const string DefaultDatabase = "mysql";
+
+    public const string DefaultUsername = "mysql";
+
+    public const string DefaultPassword = "mysql";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
@@ -81,9 +87,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         return base.Init()
             .WithImage(MySqlImage)
             .WithPortBinding(MySqlPort, true)
-            .WithDatabase("mysql")
-            .WithUsername("mysql")
-            .WithPassword(Guid.NewGuid().ToString("D"));
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />

@@ -7,7 +7,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;

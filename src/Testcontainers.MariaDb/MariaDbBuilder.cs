@@ -8,6 +8,12 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
 
     public const ushort MariaDbPort = 3306;
 
+    public const string DefaultDatabase = "mariadb";
+
+    public const string DefaultUsername = "mariadb";
+
+    public const string DefaultPassword = "mariadb";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
     /// </summary>
@@ -81,9 +87,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         return base.Init()
             .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
-            .WithDatabase("mariadb")
-            .WithUsername("mariadb")
-            .WithPassword(Guid.NewGuid().ToString("D"));
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />

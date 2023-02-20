@@ -8,6 +8,10 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
 
     public const ushort MinioPort = 9000;
 
+    public const string DefaultUsername = "AKIAIOSFODNN7EXAMPLE";
+
+    public const string DefaultPassword = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
@@ -66,8 +70,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
             .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
             .WithCommand("server", "/data")
-            .WithUsername("minio")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/minio/health/ready").ForPort(MinioPort)));
     }

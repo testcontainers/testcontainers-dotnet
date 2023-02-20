@@ -16,6 +16,10 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const ushort ElasticsearchTcpPort = 9300;
 
+    public const string DefaultUsername = "elastic";
+
+    public const string DefaultPassword = "elastic";
+
     private static readonly byte[] DefaultMemoryVmOption = Encoding.Default.GetBytes(string.Join("\n", "-Xms2147483648", "-Xmx2147483648"));
 
     /// <summary>
@@ -65,8 +69,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithImage(ElasticsearchImage)
             .WithPortBinding(ElasticsearchHttpsPort, true)
             .WithPortBinding(ElasticsearchTcpPort, true)
-            .WithUsername("elastic")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
             .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
@@ -116,7 +120,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly Regex _pattern = new Regex(".*(\"message\":\\s?\"started[\\s?|\"].*|] started\n$)");
+        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
@@ -124,7 +128,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
-            return _pattern.IsMatch(stdout);
+            return Pattern.Any(stdout.Contains);
         }
     }
 }

@@ -8,6 +8,12 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
 
     public const ushort MsSqlPort = 1433;
 
+    public const string DefaultDatabase = "master";
+
+    public const string DefaultUsername = "sa";
+
+    public const string DefaultPassword = "yourStrong(!)Password";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
@@ -56,9 +62,9 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithImage(MsSqlImage)
             .WithPortBinding(MsSqlPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithDatabase("master")
-            .WithUsername("sa")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 

@@ -8,6 +8,12 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
 
     public const ushort OraclePort = 1521;
 
+    public const string DefaultDatabase = "XEPDB1";
+
+    public const string DefaultUsername = "oracle";
+
+    public const string DefaultPassword = "oracle";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
@@ -55,9 +61,9 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         return base.Init()
             .WithImage(OracleImage)
             .WithPortBinding(OraclePort, true)
-            .WithDatabase("XEPDB1")
-            .WithUsername("oracle")
-            .WithPassword(Guid.NewGuid().ToString("N").Substring(0, 16))
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 

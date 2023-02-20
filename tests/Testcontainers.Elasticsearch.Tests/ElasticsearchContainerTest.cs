@@ -15,6 +15,7 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void PingReturnsValidResponse()
     {
         // Given
