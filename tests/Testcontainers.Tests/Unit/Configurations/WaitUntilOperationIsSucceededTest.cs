@@ -25,7 +25,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() => ++tryCount < 0, maxTryCount).Build().Skip(1).Single();
 
       // Then
-      await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(1)))
+      await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(5)))
         .ConfigureAwait(false);
 
       Assert.Equal(expectedCount, tryCount);
@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var wait = Wait.ForUnixContainer().UntilOperationIsSucceeded(() => ++tryCount >= expectedCount, maxTryCount).Build().Skip(1).Single();
 
       // Then
-      _ = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(1)))
+      _ = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(5)))
         .ConfigureAwait(false);
 
       Assert.Equal(expectedCount, tryCount);

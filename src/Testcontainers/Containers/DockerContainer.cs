@@ -399,7 +399,7 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfLockNotAcquired();
 
-      async Task<bool> CheckStartup()
+      async Task<bool> CheckPortBindings()
       {
         this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
@@ -408,7 +408,7 @@ namespace DotNet.Testcontainers.Containers
         return this.configuration.PortBindings == null || /* IPv4 or IPv6 */ this.configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * this.configuration.PortBindings.Count == boundPorts;
       }
 
-      async Task<bool> CheckReadiness(IWaitUntil wait)
+      async Task<bool> CheckWaitStrategy(IWaitUntil wait)
       {
         this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
@@ -420,7 +420,7 @@ namespace DotNet.Testcontainers.Containers
       await this.client.StartAsync(this.container.ID, ct)
         .ConfigureAwait(false);
 
-      await WaitStrategy.WaitUntilAsync(CheckStartup, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15), ct)
+      await WaitStrategy.WaitUntilAsync(CheckPortBindings, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15), ct)
         .ConfigureAwait(false);
 
       this.Starting?.Invoke(this, EventArgs.Empty);
@@ -430,7 +430,7 @@ namespace DotNet.Testcontainers.Containers
 
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntilAsync(() => CheckReadiness(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
+        await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategy(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
           .ConfigureAwait(false);
       }
 
