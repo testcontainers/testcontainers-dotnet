@@ -235,12 +235,17 @@ namespace DotNet.Testcontainers.Clients
           throw new InvalidOperationException("Cannot read from a directory. Use a file instead.");
         }
 
-        var content = new byte[entry.Size];
+        var readBytes = new byte[entry.Size];
 
-        _ = await tarInputStream.ReadAsync(content, 0, content.Length, ct)
+#if NETSTANDARD2_1_OR_GREATER
+        _ = await tarInputStream.ReadAsync(new Memory<byte>(readBytes), ct)
           .ConfigureAwait(false);
+#else
+        _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+          .ConfigureAwait(false);
+#endif
 
-        return content;
+        return readBytes;
       }
     }
 

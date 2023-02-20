@@ -271,20 +271,25 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public virtual Task StartAsync(CancellationToken ct = default)
+    public virtual async Task StartAsync(CancellationToken ct = default)
     {
       using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        return this.UnsafeStartAsync(ct);
+        await this.UnsafeCreateAsync(ct)
+          .ConfigureAwait(false);
+
+        await this.UnsafeStartAsync(ct)
+          .ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
-    public virtual Task StopAsync(CancellationToken ct = default)
+    public virtual async Task StopAsync(CancellationToken ct = default)
     {
       using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        return this.UnsafeStopAsync(ct);
+        await this.UnsafeStopAsync(ct)
+          .ConfigureAwait(false);
       }
     }
 
@@ -394,18 +399,7 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfLockNotAcquired();
 
-      await this.UnsafeCreateAsync(ct)
-        .ConfigureAwait(false);
-
-      await this.client.StartAsync(this.container.ID, ct)
-        .ConfigureAwait(false);
-
-      // Do not use a too small frequency. The Docker endpoint cancels too many concurrent operations (requests).
-      var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
-
-      var timeout = (int)TimeSpan.FromSeconds(15).TotalMilliseconds;
-
-      async Task<bool> CheckPortBindings()
+      async Task<bool> CheckStartup()
       {
         this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
@@ -413,15 +407,6 @@ namespace DotNet.Testcontainers.Containers
         var boundPorts = this.container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
         return this.configuration.PortBindings == null || /* IPv4 or IPv6 */ this.configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * this.configuration.PortBindings.Count == boundPorts;
       }
-
-      // Wait until the inspect container response contains all port bindings.
-      await WaitStrategy.WaitUntilAsync(CheckPortBindings, frequency, timeout, ct)
-        .ConfigureAwait(false);
-
-      this.Starting?.Invoke(this, EventArgs.Empty);
-
-      await this.configuration.StartupCallback(this, ct)
-        .ConfigureAwait(false);
 
       async Task<bool> CheckReadiness(IWaitUntil wait)
       {
@@ -432,9 +417,20 @@ namespace DotNet.Testcontainers.Containers
           .ConfigureAwait(false);
       }
 
+      await this.client.StartAsync(this.container.ID, ct)
+        .ConfigureAwait(false);
+
+      await WaitStrategy.WaitUntilAsync(CheckStartup, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15), ct)
+        .ConfigureAwait(false);
+
+      this.Starting?.Invoke(this, EventArgs.Empty);
+
+      await this.configuration.StartupCallback(this, ct)
+        .ConfigureAwait(false);
+
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntilAsync(() => CheckReadiness(waitStrategy), frequency, -1, ct)
+        await WaitStrategy.WaitUntilAsync(() => CheckReadiness(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
           .ConfigureAwait(false);
       }
 

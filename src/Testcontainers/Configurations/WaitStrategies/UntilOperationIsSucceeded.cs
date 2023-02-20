@@ -25,7 +25,7 @@ namespace DotNet.Testcontainers.Configurations
         throw new TimeoutException($"Number of failed operations exceeded max count ({this.maxCallCount}).");
       }
 
-      return Task.FromResult(this.operation());
+      return Task.FromResult(this.operation.Invoke());
     }
   }
 }
