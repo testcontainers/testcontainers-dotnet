@@ -49,7 +49,5 @@ public sealed class RedpandaConfiguration : ContainerConfiguration
     public RedpandaConfiguration(RedpandaConfiguration oldValue, RedpandaConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
 }
