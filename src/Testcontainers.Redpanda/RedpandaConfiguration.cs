@@ -9,8 +9,6 @@ public sealed class RedpandaConfiguration : ContainerConfiguration
     /// </summary>
     public RedpandaConfiguration()
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
     }
 
     /// <summary>
