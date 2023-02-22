@@ -31,5 +31,4 @@ public sealed class RedpandaContainer : DockerContainer
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)).ToString();
     }
-
 }
