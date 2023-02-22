@@ -28,6 +28,7 @@
       yield return new object[] { new HttpWaitStrategy().ForPort(HttpPort) };
       yield return new object[] { new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK) };
       yield return new object[] { new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)) };
+      yield return new object[] { new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)) };
       yield return new object[] { new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)) };
     }
 
@@ -55,9 +56,13 @@
     public async Task HttpWaitStrategySendsHeaders()
     {
       // Given
-      var httpHeaders = new Dictionary<string, string> { { "Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==" } };
+      const string username = "Aladdin";
 
-      var httpWaitStrategy = new HttpWaitStrategy().WithHeaders(httpHeaders);
+      const string password = "open sesame";
+
+      var httpHeaders = new Dictionary<string, string> { { "Connection", "keep-alive" } };
+
+      var httpWaitStrategy = new HttpWaitStrategy().WithBasicAuthentication(username, password).WithHeaders(httpHeaders);
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(this.container)
@@ -71,6 +76,8 @@
 
       // Then
       Assert.True(succeeded);
+      Assert.Contains("Authorization", stdout);
+      Assert.Contains("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", stdout);
       Assert.Contains(httpHeaders.First().Key, stdout);
       Assert.Contains(httpHeaders.First().Value, stdout);
     }

@@ -4,6 +4,8 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseContainer : DockerContainer
 {
+    private readonly CouchbaseConfiguration _configuration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseContainer" /> class.
     /// </summary>
@@ -12,5 +14,20 @@ public sealed class CouchbaseContainer : DockerContainer
     public CouchbaseContainer(CouchbaseConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
+        _configuration = configuration;
+    }
+
+    /// <summary>
+    /// Gets a list of buckets.
+    /// </summary>
+    public IEnumerable<CouchbaseBucket> Buckets => _configuration.Buckets;
+
+    /// <summary>
+    /// Gets the Couchbase connection string.
+    /// </summary>
+    /// <returns>The Couchbase connection string.</returns>
+    public string GetConnectionString()
+    {
+        return new UriBuilder("couchbase", Hostname, GetMappedPublicPort(CouchbaseBuilder.KvPort)).Uri.Authority;
     }
 }

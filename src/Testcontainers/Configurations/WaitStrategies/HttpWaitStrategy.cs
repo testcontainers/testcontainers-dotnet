@@ -26,6 +26,8 @@
 
     private Predicate<HttpStatusCode> httpStatusCodePredicate;
 
+    private Func<HttpResponseMessage, Task<bool>> httpResponseMessagePredicate;
+
     private HttpMethod httpMethod;
 
     private string schemeName;
@@ -39,7 +41,7 @@
     /// </summary>
     public HttpWaitStrategy()
     {
-      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/");
+      _ = this.WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true));
     }
 
     /// <inheritdoc />
@@ -102,7 +104,21 @@
             predicate = this.httpStatusCodePredicate;
           }
 
-          return predicate.Invoke(httpResponseMessage.StatusCode);
+          try
+          {
+            var responseMessagePredicate = await this.httpResponseMessagePredicate.Invoke(httpResponseMessage)
+              .ConfigureAwait(false);
+
+            return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
+          }
+          catch
+          {
+            return false;
+          }
+          finally
+          {
+            httpResponseMessage.Dispose();
+          }
         }
       }
     }
@@ -126,6 +142,17 @@
     public HttpWaitStrategy ForStatusCodeMatching(Predicate<HttpStatusCode> statusCodePredicate)
     {
       this.httpStatusCodePredicate = statusCodePredicate;
+      return this;
+    }
+
+    /// <summary>
+    /// Waits for the response message to pass the predicate.
+    /// </summary>
+    /// <param name="responseMessagePredicate">The predicate to test the HTTP response against.</param>
+    /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
+    public HttpWaitStrategy ForResponseMessageMatching(Func<HttpResponseMessage, Task<bool>> responseMessagePredicate)
+    {
+      this.httpResponseMessagePredicate = responseMessagePredicate;
       return this;
     }
 
@@ -183,14 +210,14 @@
     }
 
     /// <summary>
-    ///
+    /// Adds a basic authentication HTTP header to the HTTP request.
     /// </summary>
-    /// <param name="username"></param>
-    /// <param name="password"></param>
-    /// <returns></returns>
+    /// <param name="username">The username.</param>
+    /// <param name="password">The password.</param>
+    /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy WithBasicAuthentication(string username, string password)
     {
-      return this.WithHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(":", username, password))));
+      return this.WithHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(string.Join(":", username, password))));
     }
 
     /// <summary>

@@ -7,11 +7,10 @@ public sealed class CouchbaseConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Couchbase config.</param>
-    public CouchbaseConfiguration(object config = null)
+    /// <param name="buckets">A list of Couchbase buckets.</param>
+    public CouchbaseConfiguration(IEnumerable<CouchbaseBucket> buckets = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
+        Buckets = buckets;
     }
 
     /// <summary>
@@ -52,12 +51,11 @@ public sealed class CouchbaseConfiguration : ContainerConfiguration
     public CouchbaseConfiguration(CouchbaseConfiguration oldValue, CouchbaseConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
+        Buckets = BuildConfiguration.Combine(oldValue.Buckets, newValue.Buckets);
     }
 
-    // /// <summary>
-    // /// Gets the Couchbase config.
-    // /// </summary>
-    // public object Config { get; }
+    /// <summary>
+    /// Gets a list of Couchbase buckets.
+    /// </summary>
+    public IEnumerable<CouchbaseBucket> Buckets { get; } = Array.Empty<CouchbaseBucket>();
 }
