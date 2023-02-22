@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Testcontainers.Redpanda;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
