@@ -7,7 +7,6 @@ public sealed class RedpandaConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Redpanda config.</param>
     public RedpandaConfiguration()
     {
         // // Sets the custom builder methods property values.
