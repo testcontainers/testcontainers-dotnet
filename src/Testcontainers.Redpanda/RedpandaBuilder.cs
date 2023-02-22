@@ -48,17 +48,16 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
             .WithImage(Image)
             .WithPortBinding(Port, true)
             .WithPortBinding(SchemaRegistryPort, true)
-            .WithCreateParameterModifier(cmd => cmd.Entrypoint = new List<string>{"sh"})
+            .WithEntrypoint("/bin/sh", "-c")
+            .WithCommand("while [ ! -f " + StarterScript + " ]; do sleep 0.1; done; " + StarterScript)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
-            .WithCommand("-c", "while [ ! -f " + StarterScript + " ]; do sleep 0.1; done; " + StarterScript)
-            .WithStartupCallback((container, token) =>
+            .WithStartupCallback((container, ct) =>
             {
                 var cmd = "#!/bin/bash\n";
                 cmd += "/usr/bin/rpk redpanda start --mode dev-container ";
                 cmd += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ";
                 cmd += "--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(Port);
-                
-                return container.CopyFileAsync(StarterScript, Encoding.Default.GetBytes(cmd), 0x1ff, ct: token);
+                return container.CopyFileAsync(StarterScript, Encoding.Default.GetBytes(cmd), 0x1ff, ct: ct);
             });
     }
 
