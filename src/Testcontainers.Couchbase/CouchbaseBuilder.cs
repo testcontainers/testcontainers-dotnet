@@ -194,22 +194,22 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 }
             }
 
-            using (var request = new SetupMemoryQuotasRequest(_enabledServices.ToArray()))
-            {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
-                {
-                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase memory quotas.")
-                        .ConfigureAwait(false);
-                }
-            }
-
             using (var request = new SetupNodeServicesRequest(_enabledServices.ToArray()))
             {
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
                     await EnsureSuccessStatusCode(response, "Failed to enable the Couchbase services.")
+                        .ConfigureAwait(false);
+                }
+            }
+
+            using (var request = new SetupMemoryQuotasRequest(_enabledServices.ToArray()))
+            {
+                using (var response = await httpClient.SendAsync(request, ct)
+                    .ConfigureAwait(false))
+                {
+                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase memory quotas.")
                         .ConfigureAwait(false);
                 }
             }
