@@ -29,8 +29,7 @@ public sealed class RedpandaContainer : DockerContainer
     /// <returns>The Redpanda's Schema Registry connection string.</returns>
     public string GetSchemaRegistryAddress()
     {
-        var endpoint = new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort));
-        return endpoint.ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)).ToString();
     }
 
 }
