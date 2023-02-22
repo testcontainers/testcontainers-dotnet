@@ -20,7 +20,7 @@ public sealed class RedpandaContainer : DockerContainer
     /// <returns>The Redpanda connection string.</returns>
     public string GetBootstrapServers()
     {
-        return string.Format("PLAINTEXT://{0}:{1}", Hostname, GetMappedPublicPort(RedpandaBuilder.Port));
+        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.Port)).ToString();
     }
     
     /// <summary>
