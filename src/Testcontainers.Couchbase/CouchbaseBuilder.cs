@@ -177,35 +177,19 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <param name="ct">Cancellation token.</param>
     private async Task ConfigureCouchbaseAsync(IContainer container, CancellationToken ct = default)
     {
-        HttpClient GetCouchbaseHttpClient()
-        {
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MgmtPort)).Uri;
-            httpClient.DefaultRequestHeaders.Add(_basicAuthenticationHeader.Key, _basicAuthenticationHeader.Value);
-            return httpClient;
-        }
-
-        await WaitStrategy.WaitUntilAsync(() => _waitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(5), ct)
+        await WaitStrategy.WaitUntilAsync(() => _waitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
             .ConfigureAwait(false);
 
-        using (var httpClient = GetCouchbaseHttpClient())
+        using (var httpClient = new HttpClient())
         {
+            httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MgmtPort)).Uri;
+
             using (var request = new RenameNodeRequest(container))
             {
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
                     await EnsureSuccessStatusCode(response, "Failed to rename the Couchbase node.")
-                        .ConfigureAwait(false);
-                }
-            }
-
-            using (var request = new SetupNodeServicesRequest(_enabledServices.ToArray()))
-            {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
-                {
-                    await EnsureSuccessStatusCode(response, "Failed to enable the Couchbase services.")
                         .ConfigureAwait(false);
                 }
             }
@@ -220,19 +204,16 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 }
             }
 
-            using (var request = new SetupCredentialsRequest())
+            using (var request = new SetupNodeServicesRequest(_enabledServices.ToArray()))
             {
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase administrator credentials.")
+                    await EnsureSuccessStatusCode(response, "Failed to enable the Couchbase services.")
                         .ConfigureAwait(false);
                 }
             }
-        }
 
-        using (var httpClient = GetCouchbaseHttpClient())
-        {
             using (var request = new ConfigureExternalAddressesRequest(container, _enabledServices.ToArray()))
             {
                 using (var response = await httpClient.SendAsync(request, ct)
@@ -242,10 +223,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                         .ConfigureAwait(false);
                 }
             }
-        }
 
-        using (var httpClient = GetCouchbaseHttpClient())
-        {
             foreach (var bucket in DockerResourceConfiguration.Buckets)
             {
                 using (var request = new CreateBucketRequest(bucket))
@@ -258,6 +236,16 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                     }
                 }
             }
+
+            using (var request = new SetupCredentialsRequest())
+            {
+                using (var response = await httpClient.SendAsync(request, ct)
+                    .ConfigureAwait(false))
+                {
+                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase administrator credentials.")
+                        .ConfigureAwait(false);
+                }
+            }
         }
 
         var waitUntilBucketIsCreated = DockerResourceConfiguration.Buckets.Aggregate(Wait.ForUnixContainer(), (waitStrategy, bucket)
@@ -268,10 +256,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                     .ForResponseMessageMatching(AllServicesEnabledAsync)
                     .WithHeader(_basicAuthenticationHeader.Key, _basicAuthenticationHeader.Value)))
             .Build()
-            .Skip(1)
-            .First();
+            .Last();
 
-        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(5), ct)
+        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
             .ConfigureAwait(false);
     }
 
