@@ -108,8 +108,8 @@ Task("Sonar-Begin")
     PullRequestKey = param.IsPullRequest && System.Int32.TryParse(param.PullRequestId, out var id) ? id : (int?)null,
     PullRequestBranch = param.SourceBranch,
     PullRequestBase = param.TargetBranch,
-    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml"
-    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx",
+    OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml",
+    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx"
   });
 });
 
