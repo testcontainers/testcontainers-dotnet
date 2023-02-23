@@ -67,7 +67,7 @@ jobs:
           path: test-results
 
   publish:
-    if: ${{ contains(fromJson('["develop", "main", "bugfix/fix-unable-to-read-beyond-the-end-of-the-stream"]'), github.ref_name) }}
+    if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
 
     needs: build
 
