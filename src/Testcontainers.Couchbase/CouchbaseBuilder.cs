@@ -1,6 +1,9 @@
 namespace Testcontainers.Couchbase;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+/// <remarks>
+/// The Couchbase module runs the following services: Data, Index, Query, Search and creates the <see cref="CouchbaseBucket.Default" /> bucket during the start.
+/// </remarks>
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
@@ -42,7 +45,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
     private readonly IWaitUntil _waitUntilNodeIsReady = new HttpWaitStrategy().ForPath("/pools").ForPort(MgmtPort);
 
-    private readonly List<CouchbaseService> _enabledServices = new List<CouchbaseService>();
+    private readonly ISet<CouchbaseService> _enabledServices = new HashSet<CouchbaseService>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
@@ -265,8 +268,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
         await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
             .ConfigureAwait(false);
-
-        container.Logger.LogInformation("Configure Couchbase single-node");
     }
 
     /// <summary>
