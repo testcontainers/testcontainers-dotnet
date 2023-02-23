@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Testcontainers.WebDriver;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -10,7 +12,8 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public const string OperaStandaloneImage = "selenium/standalone-opera";
 
     public const ushort WebDriverPort = 4444;
-    public const ushort VncServerPort = 7900;
+    public const ushort VncServerPort = 5900;
+    public const ushort NoVncServerPort = 7900;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -62,7 +65,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <param name="screenDepth">The screen depth resolution.</param>
     /// <param name="screenDpi">The screen depth resolution.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1020 , 
+    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1020,
         int screenHeight = 1360, int screenDepth = 24, int screenDpi = 96)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
@@ -109,6 +112,32 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public override WebDriverContainer Build()
     {
         Validate();
+
+        Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request
+            => request
+                .ForPath("/wd/hub/status")
+                .ForPort(WebDriverPort)
+                .ForResponseMessageMatching(async response =>
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync()
+                        .ConfigureAwait(false);
+
+                    try
+                    {
+                        var isReady = JsonDocument.Parse(jsonString)
+                            .RootElement
+                            .GetProperty("value")
+                            .GetProperty("ready")
+                            .GetBoolean();
+                        
+                        return isReady;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }));
+        
         return new WebDriverContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
@@ -118,7 +147,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
         return base.Init()
             .WithImage(FirefoxStandaloneImage)
             .WithPortBinding(WebDriverPort, true)
-            .WithPortBinding(VncServerPort, true);
+            .WithPortBinding(VncServerPort, true)
+            .WithPortBinding(NoVncServerPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WebDriverPort));
     }
 
     /// <inheritdoc />
