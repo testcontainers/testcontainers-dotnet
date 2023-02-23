@@ -13,22 +13,22 @@ public sealed class RedpandaContainer : DockerContainer
         : base(configuration, logger)
     {
     }
-    
+
     /// <summary>
-    /// Gets the Redpanda connection string.
+    /// Gets the Schema Registry address.
     /// </summary>
-    /// <returns>The Redpanda connection string.</returns>
-    public string GetBootstrapServers()
-    {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.Port)).ToString();
-    }
-    
-    /// <summary>
-    /// Gets the Redpanda's Schema Registry connection string.
-    /// </summary>
-    /// <returns>The Redpanda's Schema Registry connection string.</returns>
+    /// <returns>The Schema Registry address.</returns>
     public string GetSchemaRegistryAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)).ToString();
+    }
+
+    /// <summary>
+    /// Gets the broker address.
+    /// </summary>
+    /// <returns>The broker address.</returns>
+    public string GetBrokerAddress()
+    {
+        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.BrokerPort)).ToString();
     }
 }
