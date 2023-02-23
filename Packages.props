@@ -22,7 +22,6 @@
     <PackageReference Update="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Update="Azure.Storage.Queues" Version="12.11.0" />
     <PackageReference Update="Confluent.Kafka" Version="1.8.2" />
-    <PackageReference Update="CouchbaseNetClient" Version="3.2.9" />
     <PackageReference Update="Microsoft.Azure.Cosmos" Version="3.30.0" />
   </ItemGroup>
 </Project>

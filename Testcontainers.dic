@@ -24,6 +24,7 @@ npipe
 postgre
 ramsize
 rebalance
+redpanda
 ryuk
 servercore
 sqlplus

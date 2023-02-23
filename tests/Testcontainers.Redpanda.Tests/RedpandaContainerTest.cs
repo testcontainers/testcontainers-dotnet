@@ -21,11 +21,13 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
+        var bootstrapServer = _redpandaContainer.GetBrokerAddress();
+
         var producerConfig = new ProducerConfig();
-        producerConfig.BootstrapServers = _redpandaContainer.GetBootstrapServers();
+        producerConfig.BootstrapServers = bootstrapServer;
 
         var consumerConfig = new ConsumerConfig();
-        consumerConfig.BootstrapServers = _redpandaContainer.GetBootstrapServers();
+        consumerConfig.BootstrapServers = bootstrapServer;
         consumerConfig.GroupId = "sample-consumer";
         consumerConfig.AutoOffsetReset = AutoOffsetReset.Earliest;
 

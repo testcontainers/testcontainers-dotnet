@@ -4,14 +4,14 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
-    public const string Image = "docker.redpanda.com/vectorized/redpanda:v22.2.1";
-
-    public const ushort Port = 9092;
+    public const string RedpandaImage = "docker.redpanda.com/vectorized/redpanda:v22.2.1";
 
     public const ushort SchemaRegistryPort = 8081;
 
+    public const ushort BrokerPort = 9092;
+
     public const string StarterScript = "/testcontainers.sh";
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
     /// </summary>
@@ -45,9 +45,9 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     protected override RedpandaBuilder Init()
     {
         return base.Init()
-            .WithImage(Image)
-            .WithPortBinding(Port, true)
+            .WithImage(RedpandaImage)
             .WithPortBinding(SchemaRegistryPort, true)
+            .WithPortBinding(BrokerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StarterScript + " ]; do sleep 0.1; done; " + StarterScript)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
@@ -56,8 +56,8 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
                 var cmd = "#!/bin/bash\n";
                 cmd += "/usr/bin/rpk redpanda start --mode dev-container ";
                 cmd += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ";
-                cmd += "--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(Port);
-                return container.CopyFileAsync(StarterScript, Encoding.Default.GetBytes(cmd), 0x1ff, ct: ct);
+                cmd += "--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(BrokerPort);
+                return container.CopyFileAsync(StarterScript, Encoding.Default.GetBytes(cmd), 493, ct: ct);
             });
     }
 
