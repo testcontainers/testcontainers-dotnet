@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.LocalStack;
+namespace Testcontainers.LocalStack;
 
 public sealed class LocalStackContainerTest : IAsyncLifetime
 {
@@ -32,7 +32,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
         using var client = new AmazonCloudWatchLogsClient(config);
-        
+
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When

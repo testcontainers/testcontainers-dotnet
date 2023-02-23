@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Networks
+namespace DotNet.Testcontainers.Networks
 {
   using System.Threading;
   using System.Threading.Tasks;

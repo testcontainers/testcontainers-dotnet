@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit" />
   </ItemGroup>
