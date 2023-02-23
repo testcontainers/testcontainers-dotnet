@@ -189,7 +189,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to rename the Couchbase node.")
+                    await EnsureSuccessStatusCodeAsync(response)
                         .ConfigureAwait(false);
                 }
             }
@@ -199,7 +199,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to enable the Couchbase services.")
+                    await EnsureSuccessStatusCodeAsync(response)
                         .ConfigureAwait(false);
                 }
             }
@@ -209,7 +209,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase memory quotas.")
+                    await EnsureSuccessStatusCodeAsync(response)
                         .ConfigureAwait(false);
                 }
             }
@@ -219,7 +219,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase alternate addresses.")
+                    await EnsureSuccessStatusCodeAsync(response)
                         .ConfigureAwait(false);
                 }
             }
@@ -231,27 +231,32 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                     using (var response = await httpClient.SendAsync(request, ct)
                         .ConfigureAwait(false))
                     {
-                        await EnsureSuccessStatusCode(response, "Failed to create Couchbase bucket.")
+                        await EnsureSuccessStatusCodeAsync(response)
                             .ConfigureAwait(false);
                     }
                 }
             }
 
+            // This HTTP request initiates the provisioning of the single-node cluster.
+            // All subsequent requests following this HTTP request require credentials.
+            // Setting the credentials upfront interfere with other HTTP requests.
+            // We got frequently: System.IO.IOException The response ended prematurely.
             using (var request = new SetupCredentialsRequest())
             {
                 using (var response = await httpClient.SendAsync(request, ct)
                     .ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCode(response, "Failed to configure the Couchbase administrator credentials.")
+                    await EnsureSuccessStatusCodeAsync(response)
                         .ConfigureAwait(false);
                 }
             }
         }
 
+        // As long as we do not expose the bucket API, we do not need to iterate over all of them.
         var waitUntilBucketIsCreated = DockerResourceConfiguration.Buckets.Aggregate(Wait.ForUnixContainer(), (waitStrategy, bucket)
             => waitStrategy.UntilHttpRequestIsSucceeded(request
                 => request
-                    .ForPath("/pools/default/b/" + bucket.Name)
+                    .ForPath("/pools/default/buckets/" + bucket.Name)
                     .ForPort(MgmtPort)
                     .ForResponseMessageMatching(AllServicesEnabledAsync)
                     .WithHeader(_basicAuthenticationHeader.Key, _basicAuthenticationHeader.Value)))
@@ -260,8 +265,18 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
         await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
             .ConfigureAwait(false);
+
+        container.Logger.LogInformation("Configure Couchbase single-node");
     }
 
+    /// <summary>
+    /// Determines whether the single-node is healthy or not.
+    /// </summary>
+    /// <remarks>
+    /// https://docs.couchbase.com/server/current/rest-api/rest-cluster-get.html#http-method-and-uri
+    /// </remarks>
+    /// <param name="response">The HTTP response that contains the cluster information.</param>
+    /// <returns>A value indicating whether the single-node is healthy or not.</returns>
     private async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
@@ -285,6 +300,14 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         }
     }
 
+    /// <summary>
+    /// Determines whether all services are enabled for a bucket or not.
+    /// </summary>
+    /// <remarks>
+    /// https://docs.couchbase.com/server/current/rest-api/rest-buckets-summary.html#http-methods-and-uris.
+    /// </remarks>
+    /// <param name="response">The HTTP response that contains the bucket information.</param>
+    /// <returns>A value indicating whether all services are enabled for a bucket or not.</returns>
     private async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
@@ -294,12 +317,13 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         {
             var services = JsonDocument.Parse(jsonString)
                 .RootElement
-                .GetProperty("nodesExt")
+                .GetProperty("nodes")
                 .EnumerateArray()
                 .ElementAt(0)
                 .GetProperty("services")
-                .EnumerateObject()
-                .Select(service => service.Name);
+                .EnumerateArray()
+                .Select(service => service.GetString())
+                .Where(service => service != null);
 
             return _enabledServices.All(enabledService => services.Any(service => service.StartsWith(enabledService.Identifier)));
         }
@@ -309,17 +333,24 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         }
     }
 
-    private static async Task EnsureSuccessStatusCode(HttpResponseMessage response, string message)
+    /// <summary>
+    /// Throws an exception if the <see cref="HttpResponseMessage.IsSuccessStatusCode" /> property for the HTTP response is <see langword="false" />
+    /// </summary>
+    /// <param name="response">The HTTP response.</param>
+    /// <exception cref="InvalidOperationException">The HTTP response is unsuccessful.</exception>
+    private static async Task EnsureSuccessStatusCodeAsync(HttpResponseMessage response)
     {
-        if (response.IsSuccessStatusCode)
+        try
         {
-            return;
+            response.EnsureSuccessStatusCode();
         }
+        catch (Exception e)
+        {
+            var content = await response.Content.ReadAsStringAsync()
+                .ConfigureAwait(false);
 
-        var content = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
-
-        throw new InvalidOperationException(content);
+            throw new InvalidOperationException(content, e);
+        }
     }
 
     /// <summary>
@@ -330,6 +361,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// <summary>
         /// Initializes a new instance of the <see cref="RenameNodeRequest" /> class.
         /// </summary>
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-name-node.html#http-method-and-uri.
+        /// </remarks>
         /// <param name="container">The Couchbase container.</param>
         public RenameNodeRequest(IContainer container)
             : base(HttpMethod.Post, "/node/controller/rename")
@@ -348,6 +382,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// <summary>
         /// Initializes a new instance of the <see cref="SetupNodeServicesRequest" /> class.
         /// </summary>
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-set-up-services.html#http-method-and-uri.
+        /// </remarks>
         /// <param name="enabledServices">The enabled Couchbase node services.</param>
         public SetupNodeServicesRequest(params CouchbaseService[] enabledServices)
             : base(HttpMethod.Post, "/node/controller/setupServices")
@@ -366,6 +403,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// <summary>
         /// Initializes a new instance of the <see cref="SetupNodeServicesRequest" /> class.
         /// </summary>
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-configure-memory.html#http-method-and-uri
+        /// </remarks>
         /// <param name="enabledServices">The enabled Couchbase node services.</param>
         public SetupMemoryQuotasRequest(params CouchbaseService[] enabledServices)
             : base(HttpMethod.Post, "/pools/default")
@@ -394,25 +434,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     }
 
     /// <summary>
-    /// An HTTP request that sets the Couchbase administrator credentials.
-    /// </summary>
-    private sealed class SetupCredentialsRequest : HttpRequestMessage
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetupCredentialsRequest" /> class.
-        /// </summary>
-        public SetupCredentialsRequest()
-            : base(HttpMethod.Post, "/settings/web")
-        {
-            IDictionary<string, string> content = new Dictionary<string, string>();
-            content.Add("username", DefaultUsername);
-            content.Add("password", DefaultPassword);
-            content.Add("port", "SAME");
-            Content = new FormUrlEncodedContent(content);
-        }
-    }
-
-    /// <summary>
     /// An HTTP request that configures the Couchbase node external addresses.
     /// </summary>
     private sealed class ConfigureExternalAddressesRequest : HttpRequestMessage
@@ -420,6 +441,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigureExternalAddressesRequest" /> class.
         /// </summary>
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-set-up-alternate-address.html#http-method-and-uri.
+        /// </remarks>
         /// <param name="container">The Couchbase container.</param>
         /// <param name="enabledServices">The enabled Couchbase node services.</param>
         public ConfigureExternalAddressesRequest(IContainer container, params CouchbaseService[] enabledServices)
@@ -468,6 +492,28 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     }
 
     /// <summary>
+    /// An HTTP request that sets the Couchbase administrator credentials.
+    /// </summary>
+    private sealed class SetupCredentialsRequest : HttpRequestMessage
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetupCredentialsRequest" /> class.
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-establish-credentials.html#http-method-and-uri.
+        /// </remarks>
+        /// </summary>
+        public SetupCredentialsRequest()
+            : base(HttpMethod.Post, "/settings/web")
+        {
+            IDictionary<string, string> content = new Dictionary<string, string>();
+            content.Add("username", DefaultUsername);
+            content.Add("password", DefaultPassword);
+            content.Add("port", "SAME");
+            Content = new FormUrlEncodedContent(content);
+        }
+    }
+
+    /// <summary>
     /// An HTTP request that creates a Couchbase bucket.
     /// </summary>
     private sealed class CreateBucketRequest : HttpRequestMessage
@@ -475,6 +521,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateBucketRequest" /> class.
         /// </summary>
+        /// <remarks>
+        /// https://docs.couchbase.com/server/current/rest-api/rest-bucket-create.html#http-methods-and-uris.
+        /// </remarks>
         /// <param name="bucket">The Couchbase bucket.</param>
         public CreateBucketRequest(CouchbaseBucket bucket)
             : base(HttpMethod.Post, "/pools/default/buckets")
