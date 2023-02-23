@@ -27,7 +27,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         producerConfig.BootstrapServers = bootstrapServer;
 
         var consumerConfig = new ConsumerConfig();
-        producerConfig.BootstrapServers = bootstrapServer;
+        consumerConfig.BootstrapServers = bootstrapServer;
         consumerConfig.GroupId = "sample-consumer";
         consumerConfig.AutoOffsetReset = AutoOffsetReset.Earliest;
 
