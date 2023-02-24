@@ -6,11 +6,11 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
 {
     public const string RedpandaImage = "docker.redpanda.com/vectorized/redpanda:v22.2.1";
 
+    public const ushort RedpandaPort = 9092;
+
     public const ushort SchemaRegistryPort = 8081;
 
-    public const ushort BrokerPort = 9092;
-
-    public const string StarterScript = "/testcontainers.sh";
+    public const string StartupScriptFilePath = "/testcontainers.sh";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
@@ -47,17 +47,21 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
         return base.Init()
             .WithImage(RedpandaImage)
             .WithPortBinding(SchemaRegistryPort, true)
-            .WithPortBinding(BrokerPort, true)
+            .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StarterScript + " ]; do sleep 0.1; done; " + StarterScript)
+            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
             .WithStartupCallback((container, ct) =>
             {
-                var cmd = "#!/bin/bash\n";
-                cmd += "/usr/bin/rpk redpanda start --mode dev-container ";
-                cmd += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ";
-                cmd += "--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(BrokerPort);
-                return container.CopyFileAsync(StarterScript, Encoding.Default.GetBytes(cmd), 493, ct: ct);
+                const char lf = '\n';
+                var startupScript = new StringBuilder();
+                startupScript.Append("#!/bin/bash");
+                startupScript.Append(lf);
+                startupScript.Append("/usr/bin/rpk redpanda start ");
+                startupScript.Append("--mode dev-container ");
+                startupScript.Append("--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ");
+                startupScript.Append("--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(RedpandaPort));
+                return container.CopyFileAsync(StartupScriptFilePath, Encoding.Default.GetBytes(startupScript.ToString()), 493, ct: ct);
             });
     }
 

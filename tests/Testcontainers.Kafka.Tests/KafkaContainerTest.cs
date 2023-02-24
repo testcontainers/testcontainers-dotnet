@@ -1,17 +1,17 @@
-namespace Testcontainers.Redpanda;
+namespace Testcontainers.Kafka;
 
-public sealed class RedpandaContainerTest : IAsyncLifetime
+public sealed class KafkaContainerTest : IAsyncLifetime
 {
-    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder().Build();
+    private readonly KafkaContainer _kafkaContainer = new KafkaBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _redpandaContainer.StartAsync();
+        return _kafkaContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _redpandaContainer.DisposeAsync().AsTask();
+        return _kafkaContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
-        var bootstrapServer = _redpandaContainer.GetBootstrapAddress();
+        var bootstrapServer = _kafkaContainer.GetBootstrapAddress();
 
         var producerConfig = new ProducerConfig();
         producerConfig.BootstrapServers = bootstrapServer;

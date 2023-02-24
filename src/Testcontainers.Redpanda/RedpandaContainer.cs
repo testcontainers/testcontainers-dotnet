@@ -24,11 +24,11 @@ public sealed class RedpandaContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the broker address.
+    /// Gets the bootstrap address.
     /// </summary>
-    /// <returns>The broker address.</returns>
-    public string GetBrokerAddress()
+    /// <returns>The bootstrap address.</returns>
+    public string GetBootstrapAddress()
     {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.BrokerPort)).ToString();
+        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.RedpandaPort)).ToString();
     }
 }
