@@ -121,32 +121,6 @@ namespace DotNet.Testcontainers
     }
   }
 
-  namespace Networks
-  {
-    [PublicAPI]
-    [Obsolete("Use the INetwork interface instead.")]
-    public interface IDockerNetwork
-    {
-      [NotNull]
-      string Name { get; }
-
-      Task CreateAsync(CancellationToken ct = default);
-
-      Task DeleteAsync(CancellationToken ct = default);
-    }
-
-    /// <summary>
-    /// Maps the old to the new interface to provide backwards compatibility.
-    /// </summary>
-    internal sealed partial class DockerNetwork
-    {
-      public DockerNetwork(IDockerNetwork network)
-      {
-        this.network.Name = network.Name;
-      }
-    }
-  }
-
   namespace Volumes
   {
     [PublicAPI]
@@ -179,12 +153,6 @@ namespace DotNet.Testcontainers
     [Obsolete("Use the ContainerBuilder class instead.")]
     public sealed class TestcontainersBuilder<TContainerEntity> : ContainerBuilder<TContainerEntity>
       where TContainerEntity : DockerContainer
-    {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the NetworkBuilder class instead.")]
-    public sealed class TestcontainersNetworkBuilder : NetworkBuilder
     {
     }
 

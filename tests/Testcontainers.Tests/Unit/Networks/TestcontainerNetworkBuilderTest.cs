@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
 
-    private readonly IDockerNetwork network;
+    private readonly INetwork network;
 
     public TestcontainerNetworkBuilderTest(DockerNetwork network)
     {
@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameThrowsInvalidOperationException()
     {
-      _ = Assert.Throws<InvalidOperationException>(() => new TestcontainersNetworkBuilder()
+      _ = Assert.Throws<InvalidOperationException>(() => new NetworkBuilder()
         .WithName(NetworkName)
         .Build()
         .Name);
@@ -74,9 +74,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [UsedImplicitly]
-    public sealed class DockerNetwork : IDockerNetwork, IAsyncLifetime
+    public sealed class DockerNetwork : INetwork, IAsyncLifetime
     {
-      private readonly IDockerNetwork network = new TestcontainersNetworkBuilder()
+      private readonly INetwork network = new NetworkBuilder()
         .WithName(NetworkName)
         .WithOption(Option.Key, Option.Value)
         .WithLabel(Label.Key, Label.Value)

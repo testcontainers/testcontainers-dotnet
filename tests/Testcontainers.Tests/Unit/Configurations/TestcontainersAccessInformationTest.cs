@@ -114,7 +114,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void QueryNetworkInformationOfNotCreatedNetwork()
       {
         // Given
-        var networkBuilder = new TestcontainersNetworkBuilder()
+        var networkBuilder = new NetworkBuilder()
           .WithName(Guid.NewGuid().ToString("D"));
 
         // When

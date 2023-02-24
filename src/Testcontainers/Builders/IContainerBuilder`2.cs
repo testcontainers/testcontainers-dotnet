@@ -372,9 +372,6 @@
     [Obsolete("Use WithImage(IImage) instead.")]
     TBuilderEntity WithImage(IDockerImage image);
 
-    [Obsolete("Use WithNetwork(INetwork) instead.")]
-    TBuilderEntity WithNetwork(IDockerNetwork network);
-
     [Obsolete("Use WithVolumeMount(IVolume, string) instead.")]
     TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination);
 
