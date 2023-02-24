@@ -110,7 +110,7 @@ jobs:
           path: test-results
 
       - name: Fix Absolute Code Coverage Paths
-        run: Get-ChildItem -Path 'test-results' -Filter *.xml -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content $_ }
+        run: Get-ChildItem -Path 'test-results' -Filter *.xml -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content -LiteralPath $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content -LiteralPath $_ }
         shell: pwsh
 
       - name: Decode Code Signing Certificate
