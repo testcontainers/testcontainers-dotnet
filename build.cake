@@ -85,7 +85,6 @@ Task("Tests")
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args
-      .Append("/m:1") // https://github.com/coverlet-coverage/coverlet/blob/a014bf0cd0fdb5a65a24df393d254ae98f7f45f9/Documentation/Examples/MSBuild/MergeWith/HowTo.md
   });
 });
 
