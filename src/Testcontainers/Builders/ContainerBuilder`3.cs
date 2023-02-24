@@ -311,11 +311,6 @@ namespace DotNet.Testcontainers.Builders
       return this.WithImage(new DockerImage(image));
     }
 
-    public TBuilderEntity WithNetwork(IDockerNetwork network)
-    {
-      return this.WithNetwork(new DockerNetwork(network));
-    }
-
     public TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination)
     {
       return this.WithVolumeMount(new DockerVolume(volume), destination);
