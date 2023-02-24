@@ -14,7 +14,7 @@
     <PackageReference Update="System.Text.Json" Version="6.0.7" />
     <!-- Unit and integration test dependencies: -->
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-    <PackageReference Update="coverlet.msbuild" Version="3.2.0" />
+    <PackageReference Update="coverlet.collector" Version="3.2.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Update="xunit" Version="2.4.2" />
     <!-- 3rd party client dependencies -->

@@ -60,17 +60,11 @@ jobs:
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=FullyQualifiedName~${{ startsWith(matrix.os, 'ubuntu') && 'Testcontainers' || 'DotNet.Testcontainers.Tests.Unit.Containers.Windows' }}
 
-      - name: Rename Test And Coverage Results
-        run: Get-ChildItem -Path 'test-coverage' -Filter *.xml | Rename-Item -NewName { $_.Name -Replace 'coverage', '${{ matrix.os }}'.ToLower() }
-        shell: pwsh
-
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}
-          path: |
-            test-coverage
-            test-results
+          path: test-results
 
   publish:
     if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
@@ -107,16 +101,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ubuntu-22.04
+          path: test-results
 
       - name: Download Test And Coverage Results (windows-2022)
         uses: actions/download-artifact@v3
         with:
           name: windows-2022
+          path: test-results
 
       - name: Fix Absolute Code Coverage Paths
-        run: |
-          Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+src', '${{ github.workspace }}/src' | Set-Content $_ }
-          Get-ChildItem -Path 'test-coverage' -Filter *.xml | % { (Get-Content $_) -Replace '[A-Za-z0-9:\-\/\\]+tests', '${{ github.workspace }}/tests' | Set-Content $_ }
+        run: Get-ChildItem -Path 'test-results' -Filter *.xml -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content $_ }
         shell: pwsh
 
       - name: Decode Code Signing Certificate
