@@ -21,7 +21,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
-        var bootstrapServer = _redpandaContainer.GetBrokerAddress();
+        var bootstrapServer = _redpandaContainer.GetBootstrapAddress();
 
         var producerConfig = new ProducerConfig();
         producerConfig.BootstrapServers = bootstrapServer;

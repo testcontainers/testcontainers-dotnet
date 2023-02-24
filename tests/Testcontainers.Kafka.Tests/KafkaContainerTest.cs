@@ -21,7 +21,7 @@ public sealed class KafkaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
-        var bootstrapServer = _kafkaContainer.GetBrokerAddress();
+        var bootstrapServer = _kafkaContainer.GetBootstrapAddress();
 
         var producerConfig = new ProducerConfig();
         producerConfig.BootstrapServers = bootstrapServer;

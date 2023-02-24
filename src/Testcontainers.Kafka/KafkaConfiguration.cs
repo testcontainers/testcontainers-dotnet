@@ -7,7 +7,6 @@ public sealed class KafkaConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Kafka config.</param>
     public KafkaConfiguration()
     {
     }

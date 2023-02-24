@@ -15,20 +15,11 @@ public sealed class KafkaContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Schema Registry address.
-    /// </summary>
-    /// <returns>The Schema Registry address.</returns>
-    public string GetSchemaRegistryAddress()
-    {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)).ToString();
-    }
-
-    /// <summary>
     /// Gets the broker address.
     /// </summary>
     /// <returns>The broker address.</returns>
-    public string GetBrokerAddress()
+    public string GetBootstrapAddress()
     {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.BrokerPort)).ToString();
+        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
     }
 }
