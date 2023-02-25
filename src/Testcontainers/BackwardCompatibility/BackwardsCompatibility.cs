@@ -121,44 +121,12 @@ namespace DotNet.Testcontainers
     }
   }
 
-  namespace Volumes
-  {
-    [PublicAPI]
-    [Obsolete("Use the IVolume interface instead.")]
-    public interface IDockerVolume
-    {
-      [NotNull]
-      string Name { get; }
-
-      Task CreateAsync(CancellationToken ct = default);
-
-      Task DeleteAsync(CancellationToken ct = default);
-    }
-
-    /// <summary>
-    /// Maps the old to the new interface to provide backwards compatibility.
-    /// </summary>
-    internal sealed partial class DockerVolume
-    {
-      public DockerVolume(IDockerVolume volume)
-      {
-        this.volume.Name = volume.Name;
-      }
-    }
-  }
-
   namespace Builders
   {
     [PublicAPI]
     [Obsolete("Use the ContainerBuilder class instead.")]
     public sealed class TestcontainersBuilder<TContainerEntity> : ContainerBuilder<TContainerEntity>
       where TContainerEntity : DockerContainer
-    {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the VolumeBuilder class instead.")]
-    public sealed class TestcontainersVolumeBuilder : VolumeBuilder
     {
     }
   }

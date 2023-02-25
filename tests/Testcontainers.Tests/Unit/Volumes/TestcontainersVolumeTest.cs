@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithImage(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("touch /tmp/$(uname -n) && tail -f /dev/null")
-        .WithVolumeMount(volumeFixture.Name, Destination)
+        .WithVolumeMount(volumeFixture.Volume.Name, Destination)
         .WithTmpfsMount(TmpfsDestination);
 
       this.testcontainer1 = testcontainersBuilder

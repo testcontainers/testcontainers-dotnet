@@ -128,7 +128,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void QueryVolumeInformationOfNotCreatedVolume()
       {
         // Given
-        var volumeBuilder = new TestcontainersVolumeBuilder()
+        var volumeBuilder = new VolumeBuilder()
           .WithName(Guid.NewGuid().ToString("D"));
 
         // When
