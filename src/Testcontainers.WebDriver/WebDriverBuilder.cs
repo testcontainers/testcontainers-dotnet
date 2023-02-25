@@ -1,4 +1,5 @@
 using System.Text.Json;
+using WebDriver;
 
 namespace Testcontainers.WebDriver;
 
@@ -13,7 +14,6 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     public const ushort WebDriverPort = 4444;
     public const ushort VncServerPort = 5900;
-    public const ushort NoVncServerPort = 7900;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -42,8 +42,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationOptions(string options)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithEnvironment("SE_OPTS", options);
+        return WithEnvironment("SE_OPTS", options);
     }
 
     /// <summary>
@@ -53,8 +52,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithJavaEnvironmentOptions(string javaOptions)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithEnvironment("SE_JAVA_OPTS", javaOptions);
+        return WithEnvironment("SE_JAVA_OPTS", javaOptions);
     }
 
     /// <summary>
@@ -68,8 +66,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public WebDriverBuilder SettingScreenResolution(int screenWidth = 1020,
         int screenHeight = 1360, int screenDepth = 24, int screenDpi = 96)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
+        return WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
             .WithEnvironment("SE_SCREEN_HEIGHT", screenHeight.ToString())
             .WithEnvironment("SE_SCREEN_DEPTH", screenDepth.ToString())
             .WithEnvironment("SE_SCREEN_DPI", screenDpi.ToString());
@@ -82,8 +79,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetSessionTimeout(int sessionTimeout = 300)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.ToString());
+        return WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.ToString());
     }
 
     /// <summary>
@@ -93,8 +89,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetTimeZone(string timeZone)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithEnvironment("TZ", timeZone);
+        return WithEnvironment("TZ", timeZone);
     }
 
     /// <summary>
@@ -104,8 +99,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetConfigurationFromTomlFile(string configTomlFilePath)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration())
-            .WithVolumeMount(configTomlFilePath, "/opt/bin/config.toml");
+        return WithResourceMapping(configTomlFilePath, "/opt/bin/config.toml");
     }
 
     /// <inheritdoc />
@@ -145,10 +139,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     protected override WebDriverBuilder Init()
     {
         return base.Init()
-            .WithImage(FirefoxStandaloneImage)
+            .WithImage(BrowserType.Firefox.ImageName)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)
-            .WithPortBinding(NoVncServerPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WebDriverPort));
     }
 
