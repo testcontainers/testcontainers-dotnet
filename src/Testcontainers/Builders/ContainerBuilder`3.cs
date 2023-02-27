@@ -304,11 +304,6 @@ namespace DotNet.Testcontainers.Builders
       return this.WithCreateParameterModifier(parameterModifier);
     }
 
-    public TBuilderEntity WithImage(IDockerImage image)
-    {
-      return this.WithImage(new DockerImage(image));
-    }
-
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override TBuilderEntity Init()
     {

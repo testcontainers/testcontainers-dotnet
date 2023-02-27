@@ -368,8 +368,5 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [Obsolete("Use WithCreateParameterModifier(Action<CreateContainerParameters>) instead.")]
     TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
-
-    [Obsolete("Use WithImage(IImage) instead.")]
-    TBuilderEntity WithImage(IDockerImage image);
   }
 }
