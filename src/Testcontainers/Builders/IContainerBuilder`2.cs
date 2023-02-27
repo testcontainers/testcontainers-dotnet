@@ -371,11 +371,5 @@
 
     [Obsolete("Use WithImage(IImage) instead.")]
     TBuilderEntity WithImage(IDockerImage image);
-
-    [Obsolete("Use WithVolumeMount(IVolume, string) instead.")]
-    TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination);
-
-    [Obsolete("Use WithVolumeMount(IVolume, string, AccessMode) instead.")]
-    TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination, AccessMode accessMode);
   }
 }
