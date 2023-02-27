@@ -10,21 +10,19 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class VolumeFixture : IAsyncLifetime
   {
-    private readonly IDockerVolume volume = new TestcontainersVolumeBuilder()
-      .WithName(Guid.NewGuid().ToString("D"))
-      .Build();
-
-    public string Name
-      => this.volume.Name;
+    public IVolume Volume { get; }
+      = new VolumeBuilder()
+        .WithName(Guid.NewGuid().ToString("D"))
+        .Build();
 
     public Task InitializeAsync()
     {
-      return this.volume.CreateAsync();
+      return this.Volume.CreateAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.volume.DeleteAsync();
+      return this.Volume.DeleteAsync();
     }
   }
 }

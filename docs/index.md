@@ -18,11 +18,14 @@
   <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
     <img src="language-logos/python.svg" />Python
   </a>
-  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-node/">
+  <a class="card-grid-item" href="https://node.testcontainers.org">
     <img src="language-logos/nodejs.svg" />Node.js
   </a>
   <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
     <img src="language-logos/rust.svg" />Rust
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
+    <img src="language-logos/haskell.svg"/>Haskell
   </a>
 </div>
 

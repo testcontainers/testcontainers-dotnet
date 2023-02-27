@@ -10,14 +10,12 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit" />
     <PackageReference Include="Azure.Data.Tables" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Queues" />
-    <PackageReference Include="Confluent.Kafka" />
-    <PackageReference Include="CouchbaseNetClient" />
     <PackageReference Include="Microsoft.Azure.Cosmos" />
   </ItemGroup>
   <ItemGroup>

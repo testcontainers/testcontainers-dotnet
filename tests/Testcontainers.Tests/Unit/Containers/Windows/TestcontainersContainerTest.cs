@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
@@ -10,13 +9,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Windows
   {
     public sealed class WithConfiguration
     {
-      [SkipOnLinuxEngine]
-      public async Task IsWindowsEngineEnabled()
-      {
-        var client = new TestcontainersClient();
-        Assert.True(await client.GetIsWindowsEngineEnabled());
-      }
-
       [SkipOnLinuxEngine]
       public async Task UntilCommandIsCompleted()
       {

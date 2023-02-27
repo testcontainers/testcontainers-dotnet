@@ -82,25 +82,13 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
+    public Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default)
     {
-      return this.system.GetIsWindowsEngineEnabled(ct);
+      return this.containers.GetExitCodeAsync(id, ct);
     }
 
     /// <inheritdoc />
-    public Task<ContainerInspectResponse> InspectContainer(string id, CancellationToken ct = default)
-    {
-      return this.containers.InspectAsync(id, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<long> GetContainerExitCode(string id, CancellationToken ct = default)
-    {
-      return this.containers.GetExitCode(id, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetContainerLogs(string id, DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
       var unixEpoch = new DateTime(1970, 1, 1);
 
@@ -114,7 +102,13 @@ namespace DotNet.Testcontainers.Clients
         until = DateTime.MaxValue;
       }
 
-      return this.containers.GetLogs(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), ct);
+      return this.containers.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default)
+    {
+      return this.containers.InspectAsync(id, ct);
     }
 
     /// <inheritdoc />
@@ -160,12 +154,6 @@ namespace DotNet.Testcontainers.Clients
           }
         }
       }
-    }
-
-    /// <inheritdoc />
-    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
-    {
-      return this.containers.AttachAsync(id, outputConsumer, ct);
     }
 
     /// <inheritdoc />
@@ -239,18 +227,25 @@ namespace DotNet.Testcontainers.Clients
       {
         tarInputStream.IsStreamOwner = true;
 
-        var entry = tarInputStream.GetNextEntry();
+        var entry = await tarInputStream.GetNextEntryAsync(ct)
+          .ConfigureAwait(false);
 
         if (entry.IsDirectory)
         {
           throw new InvalidOperationException("Cannot read from a directory. Use a file instead.");
         }
 
-        var content = new byte[entry.Size];
+        var readBytes = new byte[entry.Size];
 
-        // Calling ReadAsync will not work reliably because of some internal buffering in SharpZipLib. This might very well change in future versions of SharpZipLib.
-        _ = tarInputStream.Read(content, 0, content.Length);
-        return content;
+#if NETSTANDARD2_1_OR_GREATER
+        _ = await tarInputStream.ReadAsync(new Memory<byte>(readBytes), ct)
+          .ConfigureAwait(false);
+#else
+        _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+          .ConfigureAwait(false);
+#endif
+
+        return readBytes;
       }
     }
 

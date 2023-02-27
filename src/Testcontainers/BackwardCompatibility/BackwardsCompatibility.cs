@@ -55,9 +55,15 @@ namespace DotNet.Testcontainers
 
       ushort GetMappedPublicPort(string containerPort);
 
+      [Obsolete("Use IContainer.GetExitCodeAsync(CancellationToken) instead.")]
       Task<long> GetExitCode(CancellationToken ct = default);
 
-      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default);
+      Task<long> GetExitCodeAsync(CancellationToken ct = default);
+
+      [Obsolete("Use IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
+      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
+
+      Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
       Task StartAsync(CancellationToken ct = default);
 
@@ -115,76 +121,12 @@ namespace DotNet.Testcontainers
     }
   }
 
-  namespace Networks
-  {
-    [PublicAPI]
-    [Obsolete("Use the INetwork interface instead.")]
-    public interface IDockerNetwork
-    {
-      [NotNull]
-      string Name { get; }
-
-      Task CreateAsync(CancellationToken ct = default);
-
-      Task DeleteAsync(CancellationToken ct = default);
-    }
-
-    /// <summary>
-    /// Maps the old to the new interface to provide backwards compatibility.
-    /// </summary>
-    internal sealed partial class DockerNetwork
-    {
-      public DockerNetwork(IDockerNetwork network)
-      {
-        this.network.Name = network.Name;
-      }
-    }
-  }
-
-  namespace Volumes
-  {
-    [PublicAPI]
-    [Obsolete("Use the IVolume interface instead.")]
-    public interface IDockerVolume
-    {
-      [NotNull]
-      string Name { get; }
-
-      Task CreateAsync(CancellationToken ct = default);
-
-      Task DeleteAsync(CancellationToken ct = default);
-    }
-
-    /// <summary>
-    /// Maps the old to the new interface to provide backwards compatibility.
-    /// </summary>
-    internal sealed partial class DockerVolume
-    {
-      public DockerVolume(IDockerVolume volume)
-      {
-        this.volume.Name = volume.Name;
-      }
-    }
-  }
-
   namespace Builders
   {
     [PublicAPI]
     [Obsolete("Use the ContainerBuilder class instead.")]
     public sealed class TestcontainersBuilder<TContainerEntity> : ContainerBuilder<TContainerEntity>
       where TContainerEntity : DockerContainer
-    {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the NetworkBuilder class instead.")]
-    public sealed class TestcontainersNetworkBuilder : NetworkBuilder
-    {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the VolumeBuilder class instead.")]
-    public sealed class TestcontainersVolumeBuilder : VolumeBuilder
     {
     }
   }

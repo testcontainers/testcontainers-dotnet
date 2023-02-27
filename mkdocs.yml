@@ -4,6 +4,7 @@ repo_url: https://github.com/testcontainers/testcontainers-dotnet
 edit_uri: edit/develop/docs/
 theme:
   name: material
+  custom_dir: docs/theme
   palette:
     scheme: testcontainers
   font:

@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
 
-    private readonly IDockerVolume volume;
+    private readonly IVolume volume;
 
     public TestcontainersVolumeBuilderTest(DockerVolume volume)
     {
@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameThrowsInvalidOperationException()
     {
-      _ = Assert.Throws<InvalidOperationException>(() => new TestcontainersVolumeBuilder()
+      _ = Assert.Throws<InvalidOperationException>(() => new VolumeBuilder()
         .WithName(VolumeName)
         .Build()
         .Name);
@@ -59,9 +59,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [UsedImplicitly]
-    public sealed class DockerVolume : IDockerVolume, IAsyncLifetime
+    public sealed class DockerVolume : IVolume, IAsyncLifetime
     {
-      private readonly IDockerVolume volume = new TestcontainersVolumeBuilder()
+      private readonly IVolume volume = new VolumeBuilder()
         .WithName(VolumeName)
         .WithLabel(Label.Key, Label.Value)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))

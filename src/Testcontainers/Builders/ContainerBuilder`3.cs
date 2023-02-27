@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
@@ -149,16 +149,14 @@
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithPortBinding(string port, bool assignRandomHostPort = false)
     {
-      var hostPort = assignRandomHostPort ? "0" : port;
+      // Use an empty string instead of "0": https://github.com/docker/for-mac/issues/5588#issuecomment-934600089.
+      var hostPort = assignRandomHostPort ? string.Empty : port;
       return this.WithPortBinding(hostPort, port);
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithPortBinding(string hostPort, string containerPort)
     {
-      // Prepare Java alignment. Use an empty string instead of 0: https://github.com/docker/for-mac/issues/5588#issuecomment-934600089.
-      hostPort = "0".Equals(hostPort, StringComparison.OrdinalIgnoreCase) ? string.Empty : hostPort;
-
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
       return this.Clone(new ContainerConfiguration(portBindings: portBindings)).WithExposedPort(containerPort);
     }
@@ -309,21 +307,6 @@
     public TBuilderEntity WithImage(IDockerImage image)
     {
       return this.WithImage(new DockerImage(image));
-    }
-
-    public TBuilderEntity WithNetwork(IDockerNetwork network)
-    {
-      return this.WithNetwork(new DockerNetwork(network));
-    }
-
-    public TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination)
-    {
-      return this.WithVolumeMount(new DockerVolume(volume), destination);
-    }
-
-    public TBuilderEntity WithVolumeMount(IDockerVolume volume, string destination, AccessMode accessMode)
-    {
-      return this.WithVolumeMount(new DockerVolume(volume), destination, accessMode);
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
