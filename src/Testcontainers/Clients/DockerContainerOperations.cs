@@ -57,13 +57,13 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false) != null;
     }
 
-    public async Task<long> GetExitCode(string id, CancellationToken ct = default)
+    public async Task<long> GetExitCodeAsync(string id, CancellationToken ct = default)
     {
       return (await this.Docker.Containers.WaitContainerAsync(id, ct)
         .ConfigureAwait(false)).StatusCode;
     }
 
-    public async Task<(string Stdout, string Stderr)> GetLogs(string id, TimeSpan since, TimeSpan until, CancellationToken ct = default)
+    public async Task<(string Stdout, string Stderr)> GetLogsAsync(string id, TimeSpan since, TimeSpan until, bool timestampsEnabled = true, CancellationToken ct = default)
     {
       var logsParameters = new ContainerLogsParameters
       {
@@ -71,7 +71,7 @@ namespace DotNet.Testcontainers.Clients
         ShowStderr = true,
         Since = since.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
         Until = until.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
-        Timestamps = true,
+        Timestamps = timestampsEnabled,
       };
 
       using (var stdOutAndErrStream = await this.Docker.Containers.GetContainerLogsAsync(id, false, logsParameters, ct)

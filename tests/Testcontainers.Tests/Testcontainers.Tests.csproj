@@ -10,18 +10,13 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit" />
     <PackageReference Include="Azure.Data.Tables" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Queues" />
-    <PackageReference Include="Confluent.Kafka" />
-    <PackageReference Include="CouchbaseNetClient" />
-    <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="Microsoft.Azure.Cosmos" />
-    <PackageReference Include="Neo4j.Driver" />
-    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />

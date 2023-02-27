@@ -8,6 +8,12 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
     public const ushort PostgreSqlPort = 5432;
 
+    public const string DefaultDatabase = "postgres";
+
+    public const string DefaultUsername = "postgres";
+
+    public const string DefaultPassword = "postgres";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
@@ -33,9 +39,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql database.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
     /// <param name="database">The PostgreSql database.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithDatabase(string database)
@@ -47,9 +50,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The PostgreSql username.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithUsername(string username)
@@ -82,14 +82,14 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         return base.Init()
             .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
-            .WithDatabase("postgres")
-            .WithUsername("postgres")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
             .WithCommand("-c", "synchronous_commit=off")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready"));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -118,5 +118,23 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     protected override PostgreSqlBuilder Merge(PostgreSqlConfiguration oldValue, PostgreSqlConfiguration newValue)
     {
         return new PostgreSqlBuilder(new PostgreSqlConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private static readonly string[] LineEndings = { "\r\n", "\n" };
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, stderr) = await container.GetLogs(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
+            return 2.Equals(Array.Empty<string>()
+                .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
+                .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
+                .Count(line => line.Contains("database system is ready to accept connections")));
+        }
     }
 }

@@ -240,13 +240,25 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public Task<long> GetExitCode(CancellationToken ct = default)
     {
-      return this.client.GetContainerExitCode(this.Id, ct);
+      return this.GetExitCodeAsync(ct);
     }
 
     /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, CancellationToken ct = default)
+    public Task<long> GetExitCodeAsync(CancellationToken ct = default)
     {
-      return this.client.GetContainerLogs(this.Id, since, until, ct);
+      return this.client.GetContainerExitCodeAsync(this.Id, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
+    {
+      return this.GetLogsAsync(since, until, timestampsEnabled, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
+    {
+      return this.client.GetContainerLogsAsync(this.Id, since, until, timestampsEnabled, ct);
     }
 
     /// <inheritdoc />
@@ -258,35 +270,26 @@ namespace DotNet.Testcontainers.Containers
       GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Deletes the container.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been deleted.</returns>
-    [Obsolete("Use DisposeAsync() instead.")]
-    public Task CleanUpAsync(CancellationToken ct = default)
+    /// <inheritdoc />
+    public virtual async Task StartAsync(CancellationToken ct = default)
     {
       using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        return this.UnsafeDeleteAsync(ct);
+        await this.UnsafeCreateAsync(ct)
+          .ConfigureAwait(false);
+
+        await this.UnsafeStartAsync(ct)
+          .ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
-    public virtual Task StartAsync(CancellationToken ct = default)
+    public virtual async Task StopAsync(CancellationToken ct = default)
     {
       using (_ = new AcquireLock(this.semaphoreSlim))
       {
-        return this.UnsafeStartAsync(ct);
-      }
-    }
-
-    /// <inheritdoc />
-    public virtual Task StopAsync(CancellationToken ct = default)
-    {
-      using (_ = new AcquireLock(this.semaphoreSlim))
-      {
-        return this.UnsafeStopAsync(ct);
+        await this.UnsafeStopAsync(ct)
+          .ConfigureAwait(false);
       }
     }
 
@@ -355,7 +358,7 @@ namespace DotNet.Testcontainers.Containers
       var id = await this.client.RunAsync(this.configuration, ct)
         .ConfigureAwait(false);
 
-      this.container = await this.client.InspectContainer(id, ct)
+      this.container = await this.client.InspectContainerAsync(id, ct)
         .ConfigureAwait(false);
 
       this.Created?.Invoke(this, EventArgs.Empty);
@@ -396,16 +399,28 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfLockNotAcquired();
 
-      await this.UnsafeCreateAsync(ct)
-        .ConfigureAwait(false);
+      async Task<bool> CheckPortBindings()
+      {
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
+          .ConfigureAwait(false);
 
-      await this.client.AttachAsync(this.container.ID, this.configuration.OutputConsumer, ct)
-        .ConfigureAwait(false);
+        var boundPorts = this.container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
+        return this.configuration.PortBindings == null || /* IPv4 or IPv6 */ this.configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * this.configuration.PortBindings.Count == boundPorts;
+      }
+
+      async Task<bool> CheckWaitStrategy(IWaitUntil wait)
+      {
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
+          .ConfigureAwait(false);
+
+        return await wait.UntilAsync(this)
+          .ConfigureAwait(false);
+      }
 
       await this.client.StartAsync(this.container.ID, ct)
         .ConfigureAwait(false);
 
-      this.container = await this.client.InspectContainer(this.container.ID, ct)
+      await WaitStrategy.WaitUntilAsync(CheckPortBindings, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15), ct)
         .ConfigureAwait(false);
 
       this.Starting?.Invoke(this, EventArgs.Empty);
@@ -413,23 +428,9 @@ namespace DotNet.Testcontainers.Containers
       await this.configuration.StartupCallback(this, ct)
         .ConfigureAwait(false);
 
-      // Do not use a too small frequency. The Docker endpoint cancels too many concurrent operations (requests).
-      var frequency = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
-
-      const int timeout = -1;
-
-      async Task<bool> CheckReadiness(IWaitUntil wait)
-      {
-        this.container = await this.client.InspectContainer(this.container.ID, ct)
-          .ConfigureAwait(false);
-
-        return await wait.UntilAsync(this)
-          .ConfigureAwait(false);
-      }
-
       foreach (var waitStrategy in this.configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntilAsync(() => CheckReadiness(waitStrategy), frequency, timeout, ct)
+        await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategy(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
           .ConfigureAwait(false);
       }
 
@@ -460,7 +461,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        this.container = await this.client.InspectContainer(this.container.ID, ct)
+        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
           .ConfigureAwait(false);
       }
       catch (DockerContainerNotFoundException)

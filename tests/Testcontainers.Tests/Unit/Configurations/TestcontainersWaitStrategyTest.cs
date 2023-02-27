@@ -11,16 +11,20 @@ namespace DotNet.Testcontainers.Tests.Unit
     public sealed class Finish : IWaitUntil, IWaitWhile
     {
       [Fact]
-      public async Task UntilImmediately()
+      public async Task ImmediatelyUntil()
       {
-        var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null)));
+        var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)))
+          .ConfigureAwait(false);
+
         Assert.Null(exception);
       }
 
       [Fact]
-      public async Task WhileImmediately()
+      public async Task ImmediatelyWhile()
       {
-        var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null)));
+        var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)))
+          .ConfigureAwait(false);
+
         Assert.Null(exception);
       }
 
@@ -38,15 +42,15 @@ namespace DotNet.Testcontainers.Tests.Unit
     public sealed class Timeout : IWaitUntil, IWaitWhile
     {
       [Fact]
-      public async Task UntilAfter1Ms()
+      public Task After100MsUntil()
       {
-        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null), 1000, 1));
+        return Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)));
       }
 
       [Fact]
-      public async Task WhileAfter1Ms()
+      public Task After100MsWhile()
       {
-        await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null), 1000, 1));
+        return Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)));
       }
 
       public Task<bool> UntilAsync(IContainer container)
@@ -63,15 +67,15 @@ namespace DotNet.Testcontainers.Tests.Unit
     public sealed class Rethrow : IWaitUntil, IWaitWhile
     {
       [Fact]
-      public async Task RethrowUntil()
+      public Task RethrowUntil()
       {
-        await Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null)));
+        return Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitUntilAsync(() => this.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)));
       }
 
       [Fact]
-      public async Task RethrowWhile()
+      public Task RethrowWhile()
       {
-        await Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null)));
+        return Assert.ThrowsAsync<NotImplementedException>(() => WaitStrategy.WaitWhileAsync(() => this.WhileAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)));
       }
 
       public Task<bool> UntilAsync(IContainer container)

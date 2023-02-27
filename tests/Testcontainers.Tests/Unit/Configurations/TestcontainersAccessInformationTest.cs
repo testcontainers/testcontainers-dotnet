@@ -114,7 +114,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void QueryNetworkInformationOfNotCreatedNetwork()
       {
         // Given
-        var networkBuilder = new TestcontainersNetworkBuilder()
+        var networkBuilder = new NetworkBuilder()
           .WithName(Guid.NewGuid().ToString("D"));
 
         // When
@@ -128,7 +128,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void QueryVolumeInformationOfNotCreatedVolume()
       {
         // Given
-        var volumeBuilder = new TestcontainersVolumeBuilder()
+        var volumeBuilder = new VolumeBuilder()
           .WithName(Guid.NewGuid().ToString("D"));
 
         // When

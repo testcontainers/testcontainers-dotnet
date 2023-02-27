@@ -8,6 +8,10 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
 
     public const ushort CouchDbPort = 5984;
 
+    public const string DefaultUsername = "couchdb";
+
+    public const string DefaultPassword = "couchdb";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
@@ -33,9 +37,6 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Sets the CouchDb username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The CouchDb username.</param>
     /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
     public CouchDbBuilder WithUsername(string username)
@@ -68,8 +69,8 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
         return base.Init()
             .WithImage(CouchDbImage)
             .WithPortBinding(CouchDbPort, true)
-            .WithUsername("couchdb")
-            .WithPassword(Guid.NewGuid().ToString("D"))
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(CouchDbPort)));
     }

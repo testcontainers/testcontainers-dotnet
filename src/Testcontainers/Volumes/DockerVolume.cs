@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Volumes
 
   /// <inheritdoc cref="IVolume" />
   [PublicAPI]
-  internal sealed partial class DockerVolume : Resource, IVolume
+  internal sealed class DockerVolume : Resource, IVolume
   {
     private readonly IDockerVolumeOperations dockerVolumeOperations;
 

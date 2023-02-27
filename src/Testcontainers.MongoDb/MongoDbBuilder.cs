@@ -8,6 +8,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     public const ushort MongoDbPort = 27017;
 
+    public const string DefaultUsername = "mongo";
+
+    public const string DefaultPassword = "mongo";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
@@ -67,8 +71,8 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         return base.Init()
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
-            .WithUsername("mongo")
-            .WithPassword(Guid.NewGuid().ToString("D"));
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />
@@ -114,7 +118,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MongoDbConfiguration configuration)
         {
-            const string js = "db.runCommand({ping:1})";
+            const string js = "db.runCommand({hello:1}).isWritablePrimary";
             _mongoDbShellCommand = new MongoDbShellCommand(js, configuration.Username, configuration.Password);
         }
 
@@ -124,7 +128,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             var execResult = await container.ExecAsync(_mongoDbShellCommand)
                 .ConfigureAwait(false);
 
-            return 0L.Equals(execResult.ExitCode);
+            return 0L.Equals(execResult.ExitCode) && "true\n".Equals(execResult.Stdout, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -20,7 +20,7 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
     {
         // Given
         using var documentStore = new DocumentStore();
-        documentStore.Urls = new[] { _ravenDbContainer.GetEndpoint() };
+        documentStore.Urls = new[] { _ravenDbContainer.GetConnectionString() };
         documentStore.Initialize();
 
         // When

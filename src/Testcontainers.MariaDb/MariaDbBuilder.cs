@@ -8,6 +8,12 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
 
     public const ushort MariaDbPort = 3306;
 
+    public const string DefaultDatabase = "mariadb";
+
+    public const string DefaultUsername = "mariadb";
+
+    public const string DefaultPassword = "mariadb";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
     /// </summary>
@@ -33,9 +39,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb database.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
     /// <param name="database">The MariaDb database.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithDatabase(string database)
@@ -47,9 +50,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The MariaDb username.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithUsername(string username)
@@ -87,9 +87,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         return base.Init()
             .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
-            .WithDatabase("mariadb")
-            .WithUsername("mariadb")
-            .WithPassword(Guid.NewGuid().ToString("D"));
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />

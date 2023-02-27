@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Networks
+namespace DotNet.Testcontainers.Networks
 {
   using System.Threading;
   using System.Threading.Tasks;
@@ -10,7 +10,7 @@
 
   /// <inheritdoc cref="INetwork" />
   [PublicAPI]
-  internal sealed partial class DockerNetwork : Resource, INetwork
+  internal sealed class DockerNetwork : Resource, INetwork
   {
     private readonly IDockerNetworkOperations dockerNetworkOperations;
 
