@@ -461,8 +461,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
-          .WithCreateContainerParametersModifier(parameters => parameters.Name = "placeholder")
-          .WithCreateContainerParametersModifier(parameters => parameters.Name = name);
+          .WithCreateParameterModifier(parameters => parameters.Name = "placeholder")
+          .WithCreateParameterModifier(parameters => parameters.Name = name);
 
         // Then
         await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
