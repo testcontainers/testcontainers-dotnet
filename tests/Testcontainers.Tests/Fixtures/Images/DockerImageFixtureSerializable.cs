@@ -9,12 +9,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
     }
 
-    public DockerImageFixtureSerializable(IDockerImage image)
+    public DockerImageFixtureSerializable(IImage image)
     {
       this.Image = image;
     }
 
-    public IDockerImage Image { get; private set; }
+    public IImage Image { get; private set; }
 
     public void Deserialize(IXunitSerializationInfo info)
     {
