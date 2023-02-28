@@ -357,16 +357,5 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback);
-
-    /// <summary>
-    /// Allows low level modifications of <see cref="CreateContainerParameters" /> after the builder configuration has been applied. Multiple low level modifications will be executed in order of insertion.
-    /// </summary>
-    /// <remarks>
-    /// This exposes the underlying Docker.DotNet API. Changes are outside of this project.
-    /// </remarks>
-    /// <param name="parameterModifier">The action that invokes modifying the <see cref="CreateContainerParameters" /> instance.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [Obsolete("Use WithCreateParameterModifier(Action<CreateContainerParameters>) instead.")]
-    TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier);
   }
 }
