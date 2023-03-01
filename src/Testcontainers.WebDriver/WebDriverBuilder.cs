@@ -1,5 +1,5 @@
-using System.Text.Json;
-using WebDriver;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Testcontainers.WebDriver;
 
@@ -7,12 +7,8 @@ namespace Testcontainers.WebDriver;
 [PublicAPI]
 public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDriverContainer, WebDriverConfiguration>
 {
-    public const string ChromeStandaloneImage = "selenium/standalone-chrome";
-    public const string FirefoxStandaloneImage = "selenium/standalone-firefox";
-    public const string EdgeStandaloneImage = "selenium/standalone-edge";
-    public const string OperaStandaloneImage = "selenium/standalone-opera";
+    public const ushort HubRouteServicePort = 4444;
 
-    public const ushort WebDriverPort = 4444;
     public const ushort VncServerPort = 5900;
 
     /// <summary>
@@ -34,6 +30,16 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     /// <inheritdoc />
     protected override WebDriverConfiguration DockerResourceConfiguration { get; }
+
+    /// <summary>
+    /// Sets the browser type to run.
+    /// </summary>
+    /// <param name="browserType">Struct represents the browser type to lunch with latest tag.</param>
+    /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
+    public WebDriverBuilder WithBrowser(BrowserType browserType)
+    {
+        return WithImage(browserType.BrowserName);
+    }
 
     /// <summary>
     /// Sets the WebDriver config.
@@ -106,32 +112,6 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public override WebDriverContainer Build()
     {
         Validate();
-
-        Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request
-            => request
-                .ForPath("/wd/hub/status")
-                .ForPort(WebDriverPort)
-                .ForResponseMessageMatching(async response =>
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync()
-                        .ConfigureAwait(false);
-
-                    try
-                    {
-                        var isReady = JsonDocument.Parse(jsonString)
-                            .RootElement
-                            .GetProperty("value")
-                            .GetProperty("ready")
-                            .GetBoolean();
-                        
-                        return isReady;
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }));
-        
         return new WebDriverContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
@@ -139,16 +119,15 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     protected override WebDriverBuilder Init()
     {
         return base.Init()
-            .WithImage(BrowserType.Firefox.ImageName)
-            .WithPortBinding(WebDriverPort, true)
+            .WithImage(BrowserType.Chrome.BrowserName)
+            .WithPortBinding(HubRouteServicePort, true)
             .WithPortBinding(VncServerPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WebDriverPort));
-    }
-
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        base.Validate();
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request
+                => request
+                    .ForPath("/wd/hub/status")
+                    .ForPort(HubRouteServicePort)
+                    .ForResponseMessageMatching(IsGridReadyAsync)
+            ));
     }
 
     /// <inheritdoc />
@@ -167,5 +146,34 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     protected override WebDriverBuilder Merge(WebDriverConfiguration oldValue, WebDriverConfiguration newValue)
     {
         return new WebDriverBuilder(new WebDriverConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Determines whether the selenium grid is up and ready to receive requests.
+    /// </summary>
+    /// <remarks>
+    /// https://github.com/SeleniumHQ/docker-selenium#waiting-for-the-grid-to-be-ready
+    /// </remarks>
+    /// <param name="response">The HTTP response that contains the hub and nodes information.</param>
+    /// <returns>A value indicating whether the selenium grid is ready.</returns>
+    private async Task<bool> IsGridReadyAsync(HttpResponseMessage response)
+    {
+        var jsonString = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        try
+        {
+            var isReady = JsonDocument.Parse(jsonString)
+                .RootElement
+                .GetProperty("value")
+                .GetProperty("ready")
+                .GetBoolean();
+
+            return isReady;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
