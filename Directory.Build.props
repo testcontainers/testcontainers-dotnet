@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Testcontainers.sln))/</SolutionDir>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildProjectDirectory)', 'Testcontainers.sln'))/</SolutionDir>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
@@ -23,12 +23,16 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)src/strongname.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>CS0618,CS1591,SA0001,SA1600,SA1633,SA1649</NoWarn>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>CA1716,CS1591,SA0001,SA1402,SA1600,SA1633,SA1649,CS0618</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
@@ -38,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Testcontainers.Tests</_Parameter1>
+      <_Parameter1>Testcontainers.Tests, PublicKey=$([System.IO.File]::ReadAllText($(SolutionDir)src/strongname.pub))</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 </Project>

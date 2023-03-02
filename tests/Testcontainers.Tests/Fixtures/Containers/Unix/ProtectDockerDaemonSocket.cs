@@ -22,7 +22,7 @@
 
     private readonly string containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
-    private readonly IDockerImage image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
+    private readonly IImage image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
 
     private readonly ITestcontainersContainer container;
 

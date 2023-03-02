@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Images
 
   /// <inheritdoc cref="IImage" />
   [PublicAPI]
-  public sealed partial class DockerImage : IImage
+  public sealed class DockerImage : IImage
   {
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 

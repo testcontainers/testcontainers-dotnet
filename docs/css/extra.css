@@ -55,3 +55,70 @@ body .card-grid-item:focus {
   color: var(--md-primary-fg-color);
   background: #f2f4fe;
 }
+
+@media (min-width: 1220px) {
+  .community-callout-wrapper {
+    padding: 40px 0 0;
+  }
+
+  @media (min-width: 1600px) {
+    .community-callout h2 {
+      font-size: 1.15em;
+    }
+  }
+}
+
+.community-callout {
+  background: linear-gradient(10.88deg, rgba(102, 56, 242, 0.4) 9.56%, #6638F2 100%), #291A3F;
+  border-radius: 10px;
+  box-shadow: 0px 20px 45px rgba(#9991B5, 0.75);
+  color: #F2F4FE;
+  padding: 20px;
+}
+
+.community-callout a {
+  transition: opacity 0.2s ease;
+}
+
+.community-callout a img {
+  height: 1.75em;
+}
+
+.community-callout a img {
+  height: 2em;
+}
+
+.community-callout a img {
+  aspect-ratio: 1;
+  height: 1.75em;
+  width: auto;
+}
+
+.community-callout a:hover {
+  opacity: 0.5;
+}
+
+.community-callout h2 {
+  font-size: 1.25em;
+}
+
+.community-callout h2 {
+  color: #F2F4FE;
+  font-size: 1.15em;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.community-callout ul {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  list-style: none;
+  margin-bottom: 0;
+  margin-top: 20px;
+  padding: 0;
+}
+
+.community-callout-wrapper {
+  padding: 30px 10px 0 10px;
+}

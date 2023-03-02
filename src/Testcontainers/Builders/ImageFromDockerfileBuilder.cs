@@ -93,11 +93,6 @@
       return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(buildArguments: buildArguments));
     }
 
-    public ImageFromDockerfileBuilder WithName(IDockerImage image)
-    {
-      return this.WithName(new DockerImage(image));
-    }
-
     /// <inheritdoc />
     public override IFutureDockerImage Build()
     {
