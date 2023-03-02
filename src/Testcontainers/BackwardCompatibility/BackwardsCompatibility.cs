@@ -1,4 +1,5 @@
-﻿#pragma warning disable SA1403
+﻿#pragma warning disable SA1402
+#pragma warning disable SA1403
 
 namespace DotNet.Testcontainers
 {
@@ -98,4 +99,5 @@ namespace DotNet.Testcontainers
   }
 }
 
+#pragma warning restore SA1402
 #pragma warning restore SA1403
