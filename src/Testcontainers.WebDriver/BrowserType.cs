@@ -1,24 +1,22 @@
 ﻿namespace WebDriver
 {
-    public class  BrowserType
+    public readonly struct BrowserType
     {
-        private BrowserType(string value, string imageName)
+        private BrowserType(string browserName)
         {
-            Value = value;
-            ImageName = imageName;
+            BrowserName = browserName;
         }
         
-        public string Value { get; }
-        public string ImageName { get; }
+        public string BrowserName { get; }
 
-        public static BrowserType Chrome => new BrowserType("chrome", "selenium/standalone-chrome");
-        public static BrowserType Firefox => new BrowserType("firefox", "selenium/standalone-firefox");
-        public static BrowserType MicrosoftEdge => new BrowserType("MicrosoftEdge", "selenium/standalone-edge");
-        public static BrowserType Opera => new BrowserType("opera", "selenium/standalone-opera");
+        public static BrowserType Chrome => new BrowserType("selenium/standalone-chrome");
+        public static BrowserType Firefox => new BrowserType("selenium/standalone-firefox");
+        public static BrowserType MicrosoftEdge => new BrowserType("selenium/standalone-edge");
+        public static BrowserType Opera => new BrowserType("selenium/standalone-opera");
         
         public override string ToString()
         {
-            return Value;
+            return BrowserName;
         }
     }
 }

@@ -7,10 +7,8 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
-    /// /// <param name="browserType">The browser type running on.</param>
-    public WebDriverConfiguration(string browserType = null)
+    public WebDriverConfiguration()
     {
-        BrowserType = browserType;
     }
 
     /// <summary>
@@ -49,12 +47,5 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <param name="newValue">The new Docker resource configuration.</param>
     public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-    
-    /// <summary>
-    /// Gets the browser type running on.
-    /// </summary>
-    public string BrowserType { get; }
 }
