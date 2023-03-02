@@ -7,6 +7,9 @@
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DotNet.Testcontainers.Commons</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
   </ItemGroup>

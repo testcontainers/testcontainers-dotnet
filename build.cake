@@ -67,7 +67,6 @@ Task("Build")
     Verbosity = param.Verbosity,
     NoRestore = true,
     ArgumentCustomization = args => args
-      .Append($"/p:TreatWarningsAsErrors={param.IsReleaseBuild.ToString()}")
   });
 });
 
