@@ -8,7 +8,7 @@ public readonly struct WebDriverType
     public static WebDriverType Opera => new WebDriverType("opera", new DockerImage("selenium/standalone-opera"));
     public static WebDriverType Video => new WebDriverType("ffmpeg", new DockerImage("selenium/video"));
 
-    private WebDriverType(string name, IImage image)
+    public WebDriverType(string name, IImage image)
     {
         Name = name;
         Image = image;
