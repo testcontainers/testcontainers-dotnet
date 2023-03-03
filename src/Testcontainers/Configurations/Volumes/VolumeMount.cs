@@ -5,6 +5,10 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IMount" />
   internal readonly struct VolumeMount : IMount
   {
+    // Do not set the volume name immediately in the constructor. This may raise an InvalidOperationException too early.
+    // Depending on when the developer passes the instance to VolumeMount it may not exist yet.
+    private readonly IVolume volume;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeMount" /> struct.
     /// </summary>
@@ -13,8 +17,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public VolumeMount(IVolume volume, string containerPath, AccessMode accessMode)
     {
+      this.volume = volume;
       this.Type = MountType.Volume;
-      this.Source = volume.Name;
       this.Target = containerPath;
       this.AccessMode = accessMode;
     }
@@ -26,7 +30,7 @@ namespace DotNet.Testcontainers.Configurations
     public AccessMode AccessMode { get; }
 
     /// <inheritdoc />
-    public string Source { get; }
+    public string Source => this.volume.Name;
 
     /// <inheritdoc />
     public string Target { get; }
