@@ -30,6 +30,7 @@ nav:
   - api/create_docker_network.md
   - api/resource-reaper.md
   - api/wait_strategies.md
+  - api/best_practices.md
   - Examples:
     - examples/compose.md
     - examples/aspnet.md
