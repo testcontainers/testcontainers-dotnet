@@ -49,8 +49,6 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <param name="newValue">The new Docker resource configuration.</param>
     public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
     
     /// <summary>
