@@ -31,5 +31,5 @@ sqlplus
 testcontainer
 testcontainers
 tlsverify
-vstest
 toml
+vstest
