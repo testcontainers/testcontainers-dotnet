@@ -298,17 +298,6 @@ namespace DotNet.Testcontainers.Builders
       return this.Clone(new ContainerConfiguration(startupCallback: startupCallback));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
-    public TBuilderEntity WithCreateContainerParametersModifier(Action<CreateContainerParameters> parameterModifier)
-    {
-      return this.WithCreateParameterModifier(parameterModifier);
-    }
-
-    public TBuilderEntity WithImage(IDockerImage image)
-    {
-      return this.WithImage(new DockerImage(image));
-    }
-
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override TBuilderEntity Init()
     {

@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var expected = serializable.Image;
 
       // When
-      IDockerImage dockerImage = new DockerImage(fullName);
+      IImage dockerImage = new DockerImage(fullName);
 
       // Then
       Assert.Equal(expected.Repository, dockerImage.Repository);

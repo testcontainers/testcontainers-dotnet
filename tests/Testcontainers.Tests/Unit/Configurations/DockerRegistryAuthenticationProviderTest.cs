@@ -38,7 +38,7 @@
     [InlineData("myregistry.azurecr.io/baz:foo/bar:1.0.0", "myregistry.azurecr.io")]
     public void GetHostnameFromDockerImage(string dockerImageName, string hostname)
     {
-      IDockerImage image = new DockerImage(dockerImageName);
+      IImage image = new DockerImage(dockerImageName);
       Assert.Equal(hostname, image.GetHostname());
     }
 
@@ -49,7 +49,7 @@
     public void GetHostnameFromHubImageNamePrefix(string repository, string name, string tag)
     {
       const string hubImageNamePrefix = "myregistry.azurecr.io";
-      IDockerImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
+      IImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
       Assert.Equal(hubImageNamePrefix, image.GetHostname());
     }
 

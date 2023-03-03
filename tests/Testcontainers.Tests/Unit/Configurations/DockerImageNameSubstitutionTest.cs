@@ -53,7 +53,7 @@
         // Given
         TestcontainersSettings.HubImageNamePrefix = hubImageNamePrefix;
 
-        IDockerImage image = new DockerImage(imageName);
+        IImage image = new DockerImage(imageName);
 
         // When
         IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
@@ -99,7 +99,7 @@
         // Given
         const string imageName = "bar:latest";
 
-        IDockerImage image = new DockerImage(imageName);
+        IImage image = new DockerImage(imageName);
 
         // When
         IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()

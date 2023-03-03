@@ -7,6 +7,9 @@
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DotNet.Testcontainers.Tests</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

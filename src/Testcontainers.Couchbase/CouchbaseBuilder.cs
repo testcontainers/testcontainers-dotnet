@@ -7,7 +7,7 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
-    public const string CouchbaseImage = "couchbase:community-7.1.1";
+    public const string CouchbaseImage = "couchbase:community-7.0.2";
 
     public const ushort MgmtPort = 8091;
 

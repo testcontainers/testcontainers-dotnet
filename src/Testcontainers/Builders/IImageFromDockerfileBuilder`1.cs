@@ -1,6 +1,5 @@
 ﻿namespace DotNet.Testcontainers.Builders
 {
-  using System;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -68,8 +67,5 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithBuildArgument(string name, string value);
-
-    [Obsolete("Use WithName(IImage) instead.")]
-    TBuilderEntity WithName(IDockerImage image);
   }
 }

@@ -24,6 +24,9 @@
   <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
     <img src="language-logos/rust.svg" />Rust
   </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
+    <img src="language-logos/haskell.svg"/>Haskell
+  </a>
 </div>
 
 ## About

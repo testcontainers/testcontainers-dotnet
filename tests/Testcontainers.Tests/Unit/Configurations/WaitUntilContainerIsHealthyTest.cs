@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
 
   public sealed class WaitUntilContainerIsHealthyTest : IClassFixture<HealthCheckFixture>
   {
-    private readonly IDockerImage image;
+    private readonly IImage image;
 
     public WaitUntilContainerIsHealthyTest(HealthCheckFixture image)
     {

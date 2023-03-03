@@ -144,8 +144,9 @@ namespace DotNet.Testcontainers.Clients
 
       public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
       {
+        // https://github.com/moby/moby/pull/41805#issuecomment-893349240.
         return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
-          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostPort = portBinding.Value } }));
+          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostIP = "0.0.0.0", HostPort = portBinding.Value } }));
       }
     }
   }
