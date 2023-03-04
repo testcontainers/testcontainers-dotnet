@@ -1,31 +1,39 @@
 namespace Testcontainers.WebDriver;
 
-using System;
-using Xunit.Abstractions;
-
-public class WebDriverContainerTest : IAsyncLifetime
+public sealed class WebDriverContainerTest : IAsyncLifetime
 {
-  private readonly ITestOutputHelper testOutputHelper;
-  private readonly WebDriverContainer _webDriverContainer = new WebDriverBuilder().Build();
+  private readonly WebDriverContainer _webDriverContainer = new WebDriverBuilder()
+    .WithRecording(videosFolder: "C:\\Projects\\selenium-docker\\videos\\recording\\")
+    .Build();
 
-  public WebDriverContainerTest(ITestOutputHelper testOutputHelper)
+
+
+  public async Task InitializeAsync()
   {
-    this.testOutputHelper = testOutputHelper;
+    await _webDriverContainer.StartAsync()
+      .ConfigureAwait(false);
   }
 
-  public Task InitializeAsync()
+  public async Task DisposeAsync()
   {
-    return _webDriverContainer.StartAsync();
-  }
+    await _webDriverContainer.StopAsync()
+      .ConfigureAwait(false);
 
-  public Task DisposeAsync()
-  {
-    return _webDriverContainer.DisposeAsync().AsTask();
+    await _webDriverContainer.DisposeAsync()
+      .ConfigureAwait(false);
   }
 
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public void CreateContainer()
+  public void ConnectionStateReturnsOpen()
   {
+    // Given
+    var remoteWebDriver = new RemoteWebDriver(_webDriverContainer.GetWebDriverUri(), new ChromeOptions());
+
+    // When
+    remoteWebDriver.ExecuteAsyncScript("return document.readyState").Equals("complete");
+
+    // Then
+    Assert.Equal(remoteWebDriver.Url, _webDriverContainer.GetWebDriverUri().ToString());
   }
 }

@@ -1,4 +1,10 @@
 global using System.Threading.Tasks;
-global using DotNet.Testcontainers.Commons;
 global using Xunit;
-global using WebDriver;
+global using System;
+global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Configurations;
+global using DotNet.Testcontainers.Containers;
+global using DotNet.Testcontainers.Networks;
+global using OpenQA.Selenium.Chrome;
+global using OpenQA.Selenium.Remote;
+global using DotNet.Testcontainers.Commons;
