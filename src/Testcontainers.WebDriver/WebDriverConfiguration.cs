@@ -7,8 +7,14 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
-    public WebDriverConfiguration()
+    /// <param name="network">The network for recording.</param>
+    /// <param name="recordingContainer">The ffmpeg video recording container.</param>
+    public WebDriverConfiguration(
+        INetwork network = null,
+        IContainer recordingContainer = null)
     {
+        Network = network;
+        RecordingContainer = recordingContainer;
     }
 
     /// <summary>
@@ -47,5 +53,17 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <param name="newValue">The new Docker resource configuration.</param>
     public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue, newValue)
     {
+        Network = BuildConfiguration.Combine(oldValue.Network, newValue.Network);
+        RecordingContainer = BuildConfiguration.Combine(oldValue.RecordingContainer, newValue.RecordingContainer);
     }
+
+    /// <summary>
+    /// Gets the shared recording network.
+    /// </summary>
+    public INetwork Network { get; }
+
+    /// <summary>
+    /// Gets the ffmpeg video recording container.
+    /// </summary>
+    public IContainer RecordingContainer { get; }
 }
