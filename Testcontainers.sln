@@ -13,105 +13,106 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-769
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Couchbase", "src\Testcontainers.Couchbase\Testcontainers.Couchbase.csproj", "{58E94721-2681-4D82-8D94-0B2F9DB0D575}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Couchbase", "src\Testcontainers.Couchbase\Testcontainers.Couchbase.csproj", "{58E94721-2681-4D82-8D94-0B2F9DB0D575}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.CouchDb", "src\Testcontainers.CouchDb\Testcontainers.CouchDb.csproj", "{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.CouchDb", "src\Testcontainers.CouchDb\Testcontainers.CouchDb.csproj", "{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.DynamoDb", "src\Testcontainers.DynamoDb\Testcontainers.DynamoDb.csproj", "{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.DynamoDb", "src\Testcontainers.DynamoDb\Testcontainers.DynamoDb.csproj", "{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Elasticsearch", "src\Testcontainers.Elasticsearch\Testcontainers.Elasticsearch.csproj", "{641DDEA5-B6E0-41E6-BA11-7A28C0913127}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Elasticsearch", "src\Testcontainers.Elasticsearch\Testcontainers.Elasticsearch.csproj", "{641DDEA5-B6E0-41E6-BA11-7A28C0913127}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStoreDb", "src\Testcontainers.EventStoreDb\Testcontainers.EventStoreDb.csproj", "{84D707E0-C9FA-4327-85DC-0AFEBEA73572}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.EventStoreDb", "src\Testcontainers.EventStoreDb\Testcontainers.EventStoreDb.csproj", "{84D707E0-C9FA-4327-85DC-0AFEBEA73572}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Kafka", "src\Testcontainers.Kafka\Testcontainers.Kafka.csproj", "{E93E40CE-59AA-4561-9B4C-E7B0A686326E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Kafka", "src\Testcontainers.Kafka\Testcontainers.Kafka.csproj", "{E93E40CE-59AA-4561-9B4C-E7B0A686326E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.LocalStack", "src\Testcontainers.LocalStack\Testcontainers.LocalStack.csproj", "{3792268A-EF08-4569-8118-991E08FD61C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.LocalStack", "src\Testcontainers.LocalStack\Testcontainers.LocalStack.csproj", "{3792268A-EF08-4569-8118-991E08FD61C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MariaDb", "src\Testcontainers.MariaDb\Testcontainers.MariaDb.csproj", "{4B204EB3-C478-422E-9B6F-62DF3871291A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MariaDb", "src\Testcontainers.MariaDb\Testcontainers.MariaDb.csproj", "{4B204EB3-C478-422E-9B6F-62DF3871291A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Minio", "src\Testcontainers.Minio\Testcontainers.Minio.csproj", "{1266E1E6-5CEF-4161-8B45-83282455746E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Minio", "src\Testcontainers.Minio\Testcontainers.Minio.csproj", "{1266E1E6-5CEF-4161-8B45-83282455746E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MongoDb", "src\Testcontainers.MongoDb\Testcontainers.MongoDb.csproj", "{2613F146-6C66-4059-9D37-D48BA6B61515}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MongoDb", "src\Testcontainers.MongoDb\Testcontainers.MongoDb.csproj", "{2613F146-6C66-4059-9D37-D48BA6B61515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MsSql", "src\Testcontainers.MsSql\Testcontainers.MsSql.csproj", "{121FB123-40D9-44D4-9AB7-AD57ED34F466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MsSql", "src\Testcontainers.MsSql\Testcontainers.MsSql.csproj", "{121FB123-40D9-44D4-9AB7-AD57ED34F466}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MySql", "src\Testcontainers.MySql\Testcontainers.MySql.csproj", "{9FDCFAEA-AE42-4C69-89EF-F1FF75E88CCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MySql", "src\Testcontainers.MySql\Testcontainers.MySql.csproj", "{9FDCFAEA-AE42-4C69-89EF-F1FF75E88CCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Neo4j", "src\Testcontainers.Neo4j\Testcontainers.Neo4j.csproj", "{ADC2372B-6FE0-421D-8277-BB628E8EFC22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j", "src\Testcontainers.Neo4j\Testcontainers.Neo4j.csproj", "{ADC2372B-6FE0-421D-8277-BB628E8EFC22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Oracle", "src\Testcontainers.Oracle\Testcontainers.Oracle.csproj", "{596EAFC1-0496-495C-B382-D57415FA456A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle", "src\Testcontainers.Oracle\Testcontainers.Oracle.csproj", "{596EAFC1-0496-495C-B382-D57415FA456A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PostgreSql", "src\Testcontainers.PostgreSql\Testcontainers.PostgreSql.csproj", "{8AB91636-9055-4900-A72A-7CFFACDFDBF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.PostgreSql", "src\Testcontainers.PostgreSql\Testcontainers.PostgreSql.csproj", "{8AB91636-9055-4900-A72A-7CFFACDFDBF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.RabbitMq", "src\Testcontainers.RabbitMq\Testcontainers.RabbitMq.csproj", "{A6D480BC-FDE8-4B92-A2A6-FF16BEE486AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.RabbitMq", "src\Testcontainers.RabbitMq\Testcontainers.RabbitMq.csproj", "{A6D480BC-FDE8-4B92-A2A6-FF16BEE486AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.RavenDb", "src\Testcontainers.RavenDb\Testcontainers.RavenDb.csproj", "{F6394475-D6F1-46E2-81BF-4BA78A40B878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.RavenDb", "src\Testcontainers.RavenDb\Testcontainers.RavenDb.csproj", "{F6394475-D6F1-46E2-81BF-4BA78A40B878}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Redis", "src\Testcontainers.Redis\Testcontainers.Redis.csproj", "{BFDA179A-40EB-4CEB-B8E9-0DF32C65E2C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redis", "src\Testcontainers.Redis\Testcontainers.Redis.csproj", "{BFDA179A-40EB-4CEB-B8E9-0DF32C65E2C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Redpanda", "src\Testcontainers.Redpanda\Testcontainers.Redpanda.csproj", "{45D6F69C-4D87-4130-AA90-0DB2F7460DAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redpanda", "src\Testcontainers.Redpanda\Testcontainers.Redpanda.csproj", "{45D6F69C-4D87-4130-AA90-0DB2F7460DAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.SqlEdge", "src\Testcontainers.SqlEdge\Testcontainers.SqlEdge.csproj", "{C95A3B2F-2B28-49A7-8806-731C158BBC21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.SqlEdge", "src\Testcontainers.SqlEdge\Testcontainers.SqlEdge.csproj", "{C95A3B2F-2B28-49A7-8806-731C158BBC21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Commons", "tests\Testcontainers.Commons\Testcontainers.Commons.csproj", "{2478673C-B063-469D-ABD1-0C3E0A25541B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Commons", "tests\Testcontainers.Commons\Testcontainers.Commons.csproj", "{2478673C-B063-469D-ABD1-0C3E0A25541B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Couchbase.Tests", "tests\Testcontainers.Couchbase.Tests\Testcontainers.Couchbase.Tests.csproj", "{809322BA-D690-4F2B-B884-23F895663963}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Couchbase.Tests", "tests\Testcontainers.Couchbase.Tests\Testcontainers.Couchbase.Tests.csproj", "{809322BA-D690-4F2B-B884-23F895663963}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.CouchDb.Tests", "tests\Testcontainers.CouchDb.Tests\Testcontainers.CouchDb.Tests.csproj", "{E4520FB1-4466-4DCA-AD08-4075102C68D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.CouchDb.Tests", "tests\Testcontainers.CouchDb.Tests\Testcontainers.CouchDb.Tests.csproj", "{E4520FB1-4466-4DCA-AD08-4075102C68D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.DynamoDb.Tests", "tests\Testcontainers.DynamoDb.Tests\Testcontainers.DynamoDb.Tests.csproj", "{101515E6-74C1-40F9-85C8-871F742A378D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.DynamoDb.Tests", "tests\Testcontainers.DynamoDb.Tests\Testcontainers.DynamoDb.Tests.csproj", "{101515E6-74C1-40F9-85C8-871F742A378D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Elasticsearch.Tests", "tests\Testcontainers.Elasticsearch.Tests\Testcontainers.Elasticsearch.Tests.csproj", "{DD5B3678-468F-4D73-AECE-705E3D66CD43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Elasticsearch.Tests", "tests\Testcontainers.Elasticsearch.Tests\Testcontainers.Elasticsearch.Tests.csproj", "{DD5B3678-468F-4D73-AECE-705E3D66CD43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.EventStoreDb.Tests", "tests\Testcontainers.EventStoreDb.Tests\Testcontainers.EventStoreDb.Tests.csproj", "{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.EventStoreDb.Tests", "tests\Testcontainers.EventStoreDb.Tests\Testcontainers.EventStoreDb.Tests.csproj", "{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Kafka.Tests", "tests\Testcontainers.Kafka.Tests\Testcontainers.Kafka.Tests.csproj", "{6F2AEE03-629A-4B49-BD5B-25CA3C61FFB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Kafka.Tests", "tests\Testcontainers.Kafka.Tests\Testcontainers.Kafka.Tests.csproj", "{6F2AEE03-629A-4B49-BD5B-25CA3C61FFB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.LocalStack.Tests", "tests\Testcontainers.LocalStack.Tests\Testcontainers.LocalStack.Tests.csproj", "{728CBE16-1D52-4F84-AF01-7229E6013512}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.LocalStack.Tests", "tests\Testcontainers.LocalStack.Tests\Testcontainers.LocalStack.Tests.csproj", "{728CBE16-1D52-4F84-AF01-7229E6013512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MariaDb.Tests", "tests\Testcontainers.MariaDb.Tests\Testcontainers.MariaDb.Tests.csproj", "{7F0AE083-9DB8-4BD4-91F7-C199DCC7301D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MariaDb.Tests", "tests\Testcontainers.MariaDb.Tests\Testcontainers.MariaDb.Tests.csproj", "{7F0AE083-9DB8-4BD4-91F7-C199DCC7301D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Minio.Tests", "tests\Testcontainers.Minio.Tests\Testcontainers.Minio.Tests.csproj", "{5DB1F35F-B714-4B62-84BE-16A33084D3E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Minio.Tests", "tests\Testcontainers.Minio.Tests\Testcontainers.Minio.Tests.csproj", "{5DB1F35F-B714-4B62-84BE-16A33084D3E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MongoDb.Tests", "tests\Testcontainers.MongoDb.Tests\Testcontainers.MongoDb.Tests.csproj", "{82A7E7B8-3187-4CAE-845B-0BF43409B38A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MongoDb.Tests", "tests\Testcontainers.MongoDb.Tests\Testcontainers.MongoDb.Tests.csproj", "{82A7E7B8-3187-4CAE-845B-0BF43409B38A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MsSql.Tests", "tests\Testcontainers.MsSql.Tests\Testcontainers.MsSql.Tests.csproj", "{25DBED78-99F4-433F-BBF5-1B4E9DEAE437}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MsSql.Tests", "tests\Testcontainers.MsSql.Tests\Testcontainers.MsSql.Tests.csproj", "{25DBED78-99F4-433F-BBF5-1B4E9DEAE437}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.MySql.Tests", "tests\Testcontainers.MySql.Tests\Testcontainers.MySql.Tests.csproj", "{E42DA1CE-698F-4E45-8D1F-5D5895893840}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.MySql.Tests", "tests\Testcontainers.MySql.Tests\Testcontainers.MySql.Tests.csproj", "{E42DA1CE-698F-4E45-8D1F-5D5895893840}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Neo4j.Tests", "tests\Testcontainers.Neo4j.Tests\Testcontainers.Neo4j.Tests.csproj", "{D3F63405-C0FA-4F83-8B79-E30BFF5FF5BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j.Tests", "tests\Testcontainers.Neo4j.Tests\Testcontainers.Neo4j.Tests.csproj", "{D3F63405-C0FA-4F83-8B79-E30BFF5FF5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Oracle.Tests", "tests\Testcontainers.Oracle.Tests\Testcontainers.Oracle.Tests.csproj", "{4AC1088B-9965-4497-AC8E-570F1AD5631F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle.Tests", "tests\Testcontainers.Oracle.Tests\Testcontainers.Oracle.Tests.csproj", "{4AC1088B-9965-4497-AC8E-570F1AD5631F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Platform.Windows.Tests", "tests\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj", "{3E55CBE8-AFE8-426D-9470-49D63CD1051C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Platform.Windows.Tests", "tests\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj", "{3E55CBE8-AFE8-426D-9470-49D63CD1051C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PostgreSql.Tests", "tests\Testcontainers.PostgreSql.Tests\Testcontainers.PostgreSql.Tests.csproj", "{56D0DCA5-567F-4B3B-8B79-CB108F8EB8A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.PostgreSql.Tests", "tests\Testcontainers.PostgreSql.Tests\Testcontainers.PostgreSql.Tests.csproj", "{56D0DCA5-567F-4B3B-8B79-CB108F8EB8A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.RabbitMq.Tests", "tests\Testcontainers.RabbitMq.Tests\Testcontainers.RabbitMq.Tests.csproj", "{19564567-1736-4626-B406-17E4E02F18B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.RabbitMq.Tests", "tests\Testcontainers.RabbitMq.Tests\Testcontainers.RabbitMq.Tests.csproj", "{19564567-1736-4626-B406-17E4E02F18B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.RavenDb.Tests", "tests\Testcontainers.RavenDb.Tests\Testcontainers.RavenDb.Tests.csproj", "{D53726B6-5447-47E6-B881-A44EFF6E5534}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.RavenDb.Tests", "tests\Testcontainers.RavenDb.Tests\Testcontainers.RavenDb.Tests.csproj", "{D53726B6-5447-47E6-B881-A44EFF6E5534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Redis.Tests", "tests\Testcontainers.Redis.Tests\Testcontainers.Redis.Tests.csproj", "{31EE94A0-E721-4073-B6F1-DD912D004DEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redis.Tests", "tests\Testcontainers.Redis.Tests\Testcontainers.Redis.Tests.csproj", "{31EE94A0-E721-4073-B6F1-DD912D004DEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Redpanda.Tests", "tests\Testcontainers.Redpanda.Tests\Testcontainers.Redpanda.Tests.csproj", "{867BD04E-4670-4FBA-98D5-9F83220E6DFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redpanda.Tests", "tests\Testcontainers.Redpanda.Tests\Testcontainers.Redpanda.Tests.csproj", "{867BD04E-4670-4FBA-98D5-9F83220E6DFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ResourceReaper.Tests", "tests\Testcontainers.ResourceReaper.Tests\Testcontainers.ResourceReaper.Tests.csproj", "{9E8E6AA5-65D1-498F-BEAB-BA34723A0050}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.ResourceReaper.Tests", "tests\Testcontainers.ResourceReaper.Tests\Testcontainers.ResourceReaper.Tests.csproj", "{9E8E6AA5-65D1-498F-BEAB-BA34723A0050}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.SqlEdge.Tests", "tests\Testcontainers.SqlEdge.Tests\Testcontainers.SqlEdge.Tests.csproj", "{1A1983E6-5297-435F-B467-E8E1F11277D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.SqlEdge.Tests", "tests\Testcontainers.SqlEdge.Tests\Testcontainers.SqlEdge.Tests.csproj", "{1A1983E6-5297-435F-B467-E8E1F11277D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Pulsar.Tests", "tests\Testcontainers.Pulsar.Tests\Testcontainers.Pulsar.Tests.csproj", "{575FCC92-E6CE-46E9-8889-8A00EF8C9F53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Pulsar", "src\Testcontainers.Pulsar\Testcontainers.Pulsar.csproj", "{DF7D597B-184E-4796-816A-DB8B743172BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{58E94721-2681-4D82-8D94-0B2F9DB0D575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -298,6 +299,17 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27CDB869-A150-4593-958F-6F26E5391E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{575FCC92-E6CE-46E9-8889-8A00EF8C9F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{575FCC92-E6CE-46E9-8889-8A00EF8C9F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{575FCC92-E6CE-46E9-8889-8A00EF8C9F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{575FCC92-E6CE-46E9-8889-8A00EF8C9F53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF7D597B-184E-4796-816A-DB8B743172BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7D597B-184E-4796-816A-DB8B743172BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7D597B-184E-4796-816A-DB8B743172BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7D597B-184E-4796-816A-DB8B743172BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{58E94721-2681-4D82-8D94-0B2F9DB0D575} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -346,5 +358,7 @@ Global
 		{9E8E6AA5-65D1-498F-BEAB-BA34723A0050} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{1A1983E6-5297-435F-B467-E8E1F11277D6} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{575FCC92-E6CE-46E9-8889-8A00EF8C9F53} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{DF7D597B-184E-4796-816A-DB8B743172BB} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 	EndGlobalSection
 EndGlobal
