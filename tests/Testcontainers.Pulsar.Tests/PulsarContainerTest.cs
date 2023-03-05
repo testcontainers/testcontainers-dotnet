@@ -14,7 +14,7 @@ public sealed class PulsarContainerTest : IAsyncLifetime
     {
         await _pulsarContainer.StartAsync();
         _output.WriteLine("Start Test Container");
-        await AwaitPortReadiness($"http://127.0.0.1:8080/metrics/");
+        await AwaitPortReadiness($"http://127.0.0.1:{_pulsarContainer.GetMappedPublicPort(8080)}/metrics/");
         _output.WriteLine("metrics");
     }
     private static async ValueTask AwaitPortReadiness(string address)
@@ -59,7 +59,7 @@ public sealed class PulsarContainerTest : IAsyncLifetime
     public async Task ConsumerReturnsProducerMessage()
     {
         const string topic = "sample";
-        var url = "pulsar://127.0.0.1:6650";
+        var url = $"pulsar://127.0.0.1:{_pulsarContainer.GetMappedPublicPort(6650)}";
         var clientConfig = new PulsarClientConfigBuilder()
                 .EnableTransaction(true)
                 .ServiceUrl(url);

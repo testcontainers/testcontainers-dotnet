@@ -19,7 +19,7 @@ namespace Testcontainers.Pulsar
     public PulsarBuilder()
         : this(new PulsarConfiguration())
     {
-      DockerResourceConfiguration = Init().DockerResourceConfiguration;
+      this.DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace Testcontainers.Pulsar
     private PulsarBuilder(PulsarConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-      DockerResourceConfiguration = resourceConfiguration;
+      this.DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -46,9 +46,9 @@ namespace Testcontainers.Pulsar
     {
       return base.Init()
           .WithImage(PulsarImage)
-          .WithPortBinding(this.PulsarPort, this.PulsarPort)
-          .WithPortBinding(this.PulsarAdminPort, this.PulsarAdminPort)
-          .WithPortBinding(this.PulsarSQLPort, this.PulsarSQLPort)
+          .WithPortBinding(this.PulsarPort, true)
+          .WithPortBinding(this.PulsarAdminPort, true)
+          .WithPortBinding(this.PulsarSQLPort, true)
           .WithEnvironment("PULSAR_MEM", "-Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g")
           .WithEnvironment("PULSAR_PREFIX_acknowledgmentAtBatchIndexLevelEnabled", "true")
           .WithEnvironment("PULSAR_PREFIX_nettyMaxFrameSizeBytes", "5253120")
@@ -79,12 +79,12 @@ namespace Testcontainers.Pulsar
     /// <inheritdoc />
     protected override PulsarBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-      return Merge(this.DockerResourceConfiguration, new PulsarConfiguration(resourceConfiguration));
+      return this.Merge(this.DockerResourceConfiguration, new PulsarConfiguration(resourceConfiguration));
     }
 
     protected override PulsarBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-      return Merge(this.DockerResourceConfiguration, new PulsarConfiguration(resourceConfiguration));
+      return this.Merge(this.DockerResourceConfiguration, new PulsarConfiguration(resourceConfiguration));
     }
 
     protected override PulsarBuilder Merge(PulsarConfiguration oldValue, PulsarConfiguration newValue)
