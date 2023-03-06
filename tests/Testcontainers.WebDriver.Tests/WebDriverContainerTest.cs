@@ -2,26 +2,48 @@ namespace Testcontainers.WebDriver;
 
 public class WebDriverContainerTest : IAsyncLifetime
 {
-  private readonly WebDriverContainer _webDriverContainer = new WebDriverBuilder()
-    .WithBrowser(WebDriverType.Chrome)
-    .Build();
-
   private const ushort UiPort = 8080;
-  private readonly IContainer _testcontainersHelloworld = new ContainerBuilder()
-    .WithImage("testcontainers/helloworld")
-    .WithPortBinding(UiPort, true)
-    .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(UiPort))
+  private const string NetworkAliasName = "helloworld";
+
+  private static readonly INetwork Network = new NetworkBuilder()
+    .WithDriver(NetworkDriver.Bridge)
     .Build();
 
-  public Task InitializeAsync()
+  private readonly WebDriverContainer webDriverContainer = new WebDriverBuilder()
+    .WithBrowser(WebDriverType.Firefox)
+    .WithNetwork(Network)
+    .Build();
+
+  private readonly IContainer helloWorldTestContainer = new ContainerBuilder()
+    .WithImage("testcontainers/helloworld")
+    .WithPortBinding(UiPort, UiPort)
+    .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(UiPort))
+    .WithNetwork(Network)
+    .WithNetworkAliases(NetworkAliasName)
+    .Build();
+
+  public async Task InitializeAsync()
   {
-    this._testcontainersHelloworld.StartAsync();
-    return this._webDriverContainer.StartAsync();
+    await Network.CreateAsync()
+      .ConfigureAwait(false);
+
+    await this.helloWorldTestContainer.StartAsync()
+      .ConfigureAwait(false);
+
+    await this.webDriverContainer.StartAsync()
+      .ConfigureAwait(false);
   }
 
-  public Task DisposeAsync()
+  public async Task DisposeAsync()
   {
-    return this._webDriverContainer.DisposeAsync().AsTask();
+    await this.webDriverContainer.DisposeAsync()
+      .ConfigureAwait(false);
+
+    await this.helloWorldTestContainer.DisposeAsync()
+      .ConfigureAwait(false);
+
+    await Network.DeleteAsync()
+      .ConfigureAwait(false);
   }
 
   [Fact]
@@ -29,15 +51,12 @@ public class WebDriverContainerTest : IAsyncLifetime
   public void CreateContainer()
   {
     // Given
-    var remoteWebDriver = new RemoteWebDriver(this._webDriverContainer.GetWebDriverUri(), new ChromeOptions());
+    var driver = new RemoteWebDriver(this.webDriverContainer.GetWebDriverUri(), new FirefoxOptions());
 
     // Then
-    var helloWorldUri = new UriBuilder(Uri.UriSchemeHttp,
-      this._testcontainersHelloworld.Hostname,
-          this._testcontainersHelloworld.GetMappedPublicPort(UiPort)).Uri;
-
-    remoteWebDriver.Navigate().GoToUrl(helloWorldUri);
-    var title = remoteWebDriver.FindElementByTagName("h1").Text;
+    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+    driver.Navigate().GoToUrl($"{NetworkAliasName}:{UiPort}");
+    var title = driver.FindElementByTagName("h1").Text;
 
     // Then
     Assert.Equal("Hello world", title);

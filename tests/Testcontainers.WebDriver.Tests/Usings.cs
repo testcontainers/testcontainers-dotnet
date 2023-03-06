@@ -5,6 +5,6 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
 global using DotNet.Testcontainers.Networks;
-global using OpenQA.Selenium.Chrome;
+global using OpenQA.Selenium.Firefox;
 global using OpenQA.Selenium.Remote;
 global using DotNet.Testcontainers.Commons;
