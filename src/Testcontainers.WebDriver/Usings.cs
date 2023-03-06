@@ -12,3 +12,6 @@ global using System.Threading;
 global using DotNet.Testcontainers.Images;
 global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Networks;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.Linq;

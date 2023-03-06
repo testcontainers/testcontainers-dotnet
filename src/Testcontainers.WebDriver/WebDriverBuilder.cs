@@ -44,11 +44,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <remarks>
     /// https://github.com/SeleniumHQ/docker-selenium#se_opts-selenium-configuration-options
     /// </remarks>
-    /// <param name="options">The options as string list for starting a hub or a node.</param>
+    /// <param name="options">The options as a dictionary list divided by comma for starting hub or node.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithConfigurationOptions(string options)
+    public WebDriverBuilder WithConfigurationOptions(IDictionary<string, string> options)
     {
-        return WithEnvironment("SE_OPTS", options);
+        return WithEnvironment("SE_OPTS", string.Join(",", options.Select(option => string.Join("=", option.Key, option.Value))));
     }
 
     /// <summary>
@@ -57,11 +57,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <remarks>
     /// https://github.com/SeleniumHQ/docker-selenium#se_java_opts-java-environment-options
     /// </remarks>
-    /// <param name="javaOptions">The java options environment variables as string list.</param>
+    /// <param name="javaOptions">The java options environment variables as a dictionary list divided by comma.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithJavaEnvironmentOptions(string javaOptions)
+    public WebDriverBuilder WithJavaEnvironmentOptions(IDictionary<string, string> javaOptions)
     {
-        return WithEnvironment("SE_JAVA_OPTS", javaOptions);
+        return WithEnvironment("SE_JAVA_OPTS", string.Join(",", javaOptions.Select(option => string.Join("=", option.Key, option.Value))));
     }
 
     /// <summary>
@@ -90,11 +90,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <remarks>
     /// https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
     /// </remarks>
-    /// <param name="sessionTimeout">The Grid  session timeout config.</param>
+    /// <param name="sessionTimeout">The Grid  session timeout config as TimeSpan.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SetSessionTimeout(int sessionTimeout = 300)
+    public WebDriverBuilder SetSessionTimeout(TimeSpan sessionTimeout = default)
     {
-        return WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.ToString());
+        return WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.TotalSeconds.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <summary>
@@ -102,9 +102,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </summary>
     /// <param name="timeZone">The desirable time zone.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SetTimeZone(string timeZone)
+    public WebDriverBuilder SetTimeZone(TimeZoneInfo timeZone)
     {
-        return WithEnvironment("TZ", timeZone);
+        return WithEnvironment("TZ", timeZone.DisplayName);
     }
 
     /// <summary>
@@ -165,18 +165,12 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithBrowser(WebDriverType.Chrome)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(VncServerPort))
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request
                 => request
                     .ForPath("/wd/hub/status")
                     .ForPort(WebDriverPort)
                     .ForResponseMessageMatching(IsGridReadyAsync)
             ));
-    }
-
-    /// <inheritdoc />
-    protected override void Validate()
-    {
     }
 
     /// <inheritdoc />
@@ -212,13 +206,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
         try
         {
-            var isReady = JsonDocument.Parse(jsonString)
+            return JsonDocument.Parse(jsonString)
                 .RootElement
                 .GetProperty("value")
                 .GetProperty("ready")
                 .GetBoolean();
-
-            return isReady;
         }
         catch
         {
