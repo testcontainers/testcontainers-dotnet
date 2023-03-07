@@ -1,6 +1,6 @@
 # Creating a container
 
-Testcontainers' generic container support offers the greatest flexibility and makes it easy to use virtually any container image in the context of a temporary test environment. To interact or exchange data with a container, Testcontainers provides  `TestcontainersBuilder<TDockerContainer>` to configure and create the resource.
+Testcontainers' generic container support offers the greatest flexibility and makes it easy to use virtually any container image in the context of a temporary test environment. To interact or exchange data with a container, Testcontainers provides `ContainerBuilder` to configure and create the resource.
 
 ## Configure container start
 

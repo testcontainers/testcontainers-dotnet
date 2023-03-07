@@ -24,7 +24,7 @@
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)src/strongname.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src/strongname.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Testcontainers.Tests, PublicKey=$([System.IO.File]::ReadAllText($(SolutionDir)src/strongname.pub))</_Parameter1>
+      <_Parameter1>Testcontainers.Tests, PublicKey=$([System.IO.File]::ReadAllText($(MSBuildThisFileDirectory)src/strongname.pub))</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 </Project>
