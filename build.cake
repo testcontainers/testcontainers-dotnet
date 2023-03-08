@@ -164,7 +164,8 @@ Task("Publish-NuGet-Packages")
     DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
     {
       Source = param.NuGetCredentials.Source,
-      ApiKey = param.NuGetCredentials.ApiKey
+      ApiKey = param.NuGetCredentials.ApiKey,
+      SkipDuplicate = true
     });
   }
 });
