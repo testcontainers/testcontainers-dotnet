@@ -50,7 +50,7 @@ public sealed class WebDriverContainer : DockerContainer
 
         if (_configuration.Network is not null)
         {
-            await _configuration.RecordingContainer.StartAsync(ct)
+            await _configuration.FFmpegContainer.StartAsync(ct)
                 .ConfigureAwait(false);
         }
     }
@@ -67,18 +67,18 @@ public sealed class WebDriverContainer : DockerContainer
     /// </remarks>
     public override async Task StopAsync(CancellationToken ct = default)
     {
-        if (_configuration.RecordingContainer is not null)
+        if (_configuration.FFmpegContainer is not null)
         {
-            await _configuration.RecordingContainer.StopAsync(ct)
+            await _configuration.FFmpegContainer.StopAsync(ct)
                 .ConfigureAwait(false);
         }
 
         await base.StopAsync(ct)
             .ConfigureAwait(false);
 
-        if (_configuration.RecordingContainer is not null)
+        if (_configuration.FFmpegContainer is not null)
         {
-            await _configuration.RecordingContainer.DisposeAsync()
+            await _configuration.FFmpegContainer.DisposeAsync()
                 .ConfigureAwait(false);
 
             await _configuration.Network.DeleteAsync(ct)

@@ -10,7 +10,7 @@ public class WebDriverContainerTest : IAsyncLifetime
     .Build();
 
   private readonly WebDriverContainer webDriverContainer = new WebDriverBuilder()
-    .WithBrowser(WebDriverType.Firefox)
+    .WithBrowser(WebDriverBrowser.Firefox)
     .WithNetwork(Network)
     .Build();
 

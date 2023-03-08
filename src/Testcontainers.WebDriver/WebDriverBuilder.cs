@@ -4,15 +4,39 @@ namespace Testcontainers.WebDriver;
 [PublicAPI]
 public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDriverContainer, WebDriverConfiguration>
 {
+    public const string WebDriverNetworkAlias = "standalone-container";
+
+    public const string FFmpegNetworkAlias = "ffmpeg-container";
+
+    public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20210215";
+
     public const ushort WebDriverPort = 4444;
 
     public const ushort VncServerPort = 5900;
 
+    private readonly INetwork _network;
+
+    private readonly IContainer _ffmpegContainer;
+
+    private readonly string _videoFilePath = string.Join("/", string.Empty, "videos", "video.mp4");
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
-    public WebDriverBuilder() : this(new WebDriverConfiguration())
+    public WebDriverBuilder()
+        : this(new WebDriverConfiguration())
     {
+        _network = new NetworkBuilder()
+            .Build();
+
+        _ffmpegContainer = new ContainerBuilder()
+            .WithImage(FFmpegImage)
+            .WithNetwork(_network)
+            .WithNetworkAliases(FFmpegNetworkAlias)
+            .WithEnvironment("FILE_NAME", Path.GetFileName(_videoFilePath))
+            .WithEnvironment("DISPLAY_CONTAINER_NAME", WebDriverNetworkAlias)
+            .Build();
+
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
@@ -20,7 +44,8 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private WebDriverBuilder(WebDriverConfiguration resourceConfiguration) : base(resourceConfiguration)
+    private WebDriverBuilder(WebDriverConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
         DockerResourceConfiguration = resourceConfiguration;
     }
@@ -31,11 +56,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Sets the browser type to run.
     /// </summary>
-    /// <param name="webDriverType">Struct represents the browser type to lunch with latest tag.</param>
+    /// <param name="webDriverBrowser">Struct represents the browser type to lunch with latest tag.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithBrowser(WebDriverType webDriverType)
+    public WebDriverBuilder WithBrowser(WebDriverBrowser webDriverBrowser)
     {
-        return WithImage(webDriverType.Image);
+        return WithImage(webDriverBrowser.Image);
     }
 
     /// <summary>
@@ -46,7 +71,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </remarks>
     /// <param name="options">The options as a dictionary list divided by comma for starting hub or node.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithConfigurationOptions(IDictionary<string, string> options)
+    public WebDriverBuilder WithConfigurationOptions(IReadOnlyDictionary<string, string> options)
     {
         return WithEnvironment("SE_OPTS", string.Join(",", options.Select(option => string.Join("=", option.Key, option.Value))));
     }
@@ -59,7 +84,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </remarks>
     /// <param name="javaOptions">The java options environment variables as a dictionary list divided by comma.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithJavaEnvironmentOptions(IDictionary<string, string> javaOptions)
+    public WebDriverBuilder WithJavaEnvironmentOptions(IReadOnlyDictionary<string, string> javaOptions)
     {
         return WithEnvironment("SE_JAVA_OPTS", string.Join(",", javaOptions.Select(option => string.Join("=", option.Key, option.Value))));
     }
@@ -70,18 +95,17 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <remarks>
     /// https://github.com/SeleniumHQ/docker-selenium#setting-screen-resolution
     /// </remarks>
-    /// <param name="screenWidth">The screen width resolution.</param>
-    /// <param name="screenHeight">The screen height resolution.</param>
-    /// <param name="screenDepth">The screen depth resolution.</param>
-    /// <param name="screenDpi">The screen depth resolution.</param>
+    /// <param name="width">The screen width resolution.</param>
+    /// <param name="height">The screen height resolution.</param>
+    /// <param name="depth">The screen depth resolution.</param>
+    /// <param name="dpi">The screen depth resolution.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SettingScreenResolution(int screenWidth = 1020,
-        int screenHeight = 1360, int screenDepth = 24, int screenDpi = 96)
+    public WebDriverBuilder SettingScreenResolution(int width = 1020, int height = 1360, int depth = 24, int dpi = 96)
     {
-        return WithEnvironment("SE_SCREEN_WIDTH", screenWidth.ToString())
-            .WithEnvironment("SE_SCREEN_HEIGHT", screenHeight.ToString())
-            .WithEnvironment("SE_SCREEN_DEPTH", screenDepth.ToString())
-            .WithEnvironment("SE_SCREEN_DPI", screenDpi.ToString());
+        return WithEnvironment("SE_SCREEN_WIDTH", width.ToString())
+            .WithEnvironment("SE_SCREEN_HEIGHT", height.ToString())
+            .WithEnvironment("SE_SCREEN_DEPTH", depth.ToString())
+            .WithEnvironment("SE_SCREEN_DPI", dpi.ToString());
     }
 
     /// <summary>
@@ -102,9 +126,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </summary>
     /// <param name="timeZone">The desirable time zone.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SetTimeZone(TimeZoneInfo timeZone)
+    public WebDriverBuilder SetTimeZone(string timeZone)
     {
-        return WithEnvironment("TZ", timeZone.DisplayName);
+        return WithEnvironment("TZ", timeZone);
     }
 
     /// <summary>
@@ -115,7 +139,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </remarks>
     /// <param name="configTomlFilePath">The config toml file path.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder SetConfigurationFromTomlFile(string configTomlFilePath)
+    public WebDriverBuilder WithConfigurationFromTomlFile(string configTomlFilePath)
     {
         return WithResourceMapping(configTomlFilePath, "/opt/bin/config.toml");
     }
@@ -130,25 +154,9 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <param name="fileType">video file type - default mp4 type</param>
     /// <param name="videosFolder">source of video folder on your host - default /tmp/videos path</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithRecording(string fileName = "video", string fileType = "mp4", string videosFolder = "/tmp/videos")
+    public WebDriverBuilder WithRecording()
     {
-        var webDriverContainerNetworkName = Guid.NewGuid().ToString("D");
-
-        var network = new NetworkBuilder()
-            .WithDriver(NetworkDriver.Bridge)
-            .Build();
-
-        var recordingContainer = new ContainerBuilder()
-            .WithImage(WebDriverType.Video.Image)
-            .WithNetwork(network)
-            .WithEnvironment("FILE_NAME", $"{fileName}.{fileType}")
-            .WithEnvironment("DISPLAY_CONTAINER_NAME", webDriverContainerNetworkName)
-            .WithBindMount(videosFolder, "/videos")
-            .Build();
-
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(network: network, recordingContainer: recordingContainer))
-            .WithNetwork(network)
-            .WithNetworkAliases(webDriverContainerNetworkName);
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(network: _network, ffmpegContainer: _ffmpegContainer));
     }
 
     /// <inheritdoc />
@@ -162,15 +170,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     protected override WebDriverBuilder Init()
     {
         return base.Init()
-            .WithBrowser(WebDriverType.Chrome)
+            .WithBrowser(WebDriverBrowser.Chrome)
+            .WithNetwork(_network)
+            .WithNetworkAliases(WebDriverNetworkAlias)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request
-                => request
-                    .ForPath("/wd/hub/status")
-                    .ForPort(WebDriverPort)
-                    .ForResponseMessageMatching(IsGridReadyAsync)
-            ));
+                => request.ForPath("/wd/hub/status").ForPort(WebDriverPort).ForResponseMessageMatching(IsGridReadyAsync)));
     }
 
     /// <inheritdoc />
@@ -179,7 +185,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration(resourceConfiguration));
     }
 
-    /// <inheritdoc /> 
+    /// <inheritdoc />
     protected override WebDriverBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration(resourceConfiguration));
