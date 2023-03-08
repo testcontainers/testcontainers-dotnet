@@ -1,31 +1,26 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Hosting;
+using Testcontainers.SqlEdge;
 
 namespace WeatherForecast;
 
 public sealed class DatabaseContainer : IHostedService
 {
-#pragma warning disable 618
-  private readonly TestcontainerDatabase _container = new TestcontainersBuilder<MsSqlTestcontainer>()
-#pragma warning restore 618
-    .WithDatabase(new DatabaseContainerConfiguration())
-    .Build();
+  private readonly SqlEdgeContainer _sqlEdgeContainer = new SqlEdgeBuilder().Build();
 
   public Task StartAsync(CancellationToken cancellationToken)
   {
-    return _container.StartAsync(cancellationToken);
+    return _sqlEdgeContainer.StartAsync(cancellationToken);
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
   {
-    return _container.StopAsync(cancellationToken);
+    return _sqlEdgeContainer.StopAsync(cancellationToken);
   }
 
   public string GetConnectionString()
   {
-    return _container.ConnectionString;
+    return _sqlEdgeContainer.GetConnectionString();
   }
 }

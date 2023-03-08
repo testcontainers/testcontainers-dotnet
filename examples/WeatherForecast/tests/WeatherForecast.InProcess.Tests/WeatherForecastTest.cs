@@ -5,11 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.SqlEdge;
 using WeatherForecast.Entities;
 using WeatherForecast.Repositories;
 using Xunit;
@@ -19,27 +18,16 @@ namespace WeatherForecast.InProcess.Tests;
 [UsedImplicitly]
 public sealed class WeatherForecastTest : IAsyncLifetime
 {
-  private readonly MsSqlTestcontainer _mssqlContainer;
-
-  public WeatherForecastTest()
-  {
-    var mssqlConfiguration = new DatabaseContainerConfiguration();
-
-#pragma warning disable 618
-    _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
-#pragma warning restore 618
-      .WithDatabase(mssqlConfiguration)
-      .Build();
-  }
+  private readonly SqlEdgeContainer _sqlEdgeContainer = new SqlEdgeBuilder().Build();
 
   public Task InitializeAsync()
   {
-    return _mssqlContainer.StartAsync();
+    return _sqlEdgeContainer.StartAsync();
   }
 
   public Task DisposeAsync()
   {
-    return _mssqlContainer.DisposeAsync().AsTask();
+    return _sqlEdgeContainer.DisposeAsync().AsTask();
   }
 
   public sealed class Api : IClassFixture<WeatherForecastTest>, IDisposable
@@ -55,7 +43,7 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "https://+");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path", "certificate.crt");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password", "password");
-      Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", weatherForecastTest._mssqlContainer.ConnectionString);
+      Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", weatherForecastTest._sqlEdgeContainer.GetConnectionString());
       _webApplicationFactory = new WebApplicationFactory<Program>();
       _serviceScope = _webApplicationFactory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
       _httpClient = _webApplicationFactory.CreateClient();

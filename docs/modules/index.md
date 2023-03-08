@@ -1,10 +1,29 @@
 # Modules
 
-Modules are a great example of the capabilities of Testcontainers for .NET. Choose one of the pre-configurations below or find further examples in [TestcontainersContainerTest][testcontainers-container-tests] as well as in the [database][testcontainers-database-tests] or [message broker][testcontainers-message-broker-tests] tests to set up your test environment.
+Modules are great examples of Testcontainers' capabilities. To write tests against real dependencies, you can either choose one of the pre-configurations listed below or create your own implementation.
 
-!!!warning
-
-    We are redesigning modules and removing the extension method in the future. Modules will become independent projects that allow more complex and advanced features. Due to a design flaw in the current module system, we cannot distinguish between a generic and module builder. If you rely on a module you will get an obsolete warning until the next version of Testcontainers gets released. You will find more information [here](https://github.com/testcontainers/testcontainers-dotnet/issues/750#issuecomment-1412257694).
+| Module        | Image                                                   | NuGet                                                                | Source                                                                                                          |
+|---------------|---------------------------------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| Couchbase     | `couchbase:community-7.0.2`                             | [NuGet](https://www.nuget.org/packages/Testcontainers.Couchbase)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Couchbase)     |
+| CouchDB       | `couchdb:3.3`                                           | [NuGet](https://www.nuget.org/packages/Testcontainers.CouchDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.CouchDb)       |
+| DynamoDB      | `amazon/dynamodb-local:1.21.0`                          | [NuGet](https://www.nuget.org/packages/Testcontainers.DynamoDb)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.DynamoDb)      |
+| Elasticsearch | `elasticsearch:8.6.1`                                   | [NuGet](https://www.nuget.org/packages/Testcontainers.Elasticsearch) | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Elasticsearch) |
+| EventStoreDB  | `eventstore/eventstore:22.10.1-buster-slim`             | [NuGet](https://www.nuget.org/packages/Testcontainers.EventStoreDb)  | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.EventStoreDb)  |
+| Kafka         | `confluentinc/cp-kafka:6.1.9`                           | [NuGet](https://www.nuget.org/packages/Testcontainers.Kafka)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Kafka)         |
+| LocalStack    | `localstack/localstack:1.4`                             | [NuGet](https://www.nuget.org/packages/Testcontainers.LocalStack)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.LocalStack)    |
+| MariaDB       | `mariadb:10.10`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.MariaDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MariaDb)       |
+| MinIO         | `minio/minio:RELEASE.2023-01-31T02-24-19Z`              | [NuGet](https://www.nuget.org/packages/Testcontainers.Minio)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Minio)         |
+| MongoDB       | `mongo:6.0`                                             | [NuGet](https://www.nuget.org/packages/Testcontainers.MongoDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MongoDb)       |
+| SQL Server    | `mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04` | [NuGet](https://www.nuget.org/packages/Testcontainers.MsSql)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MsSql)         |
+| MySQL         | `mysql:8.0`                                             | [NuGet](https://www.nuget.org/packages/Testcontainers.MySql)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MySql)         |
+| Neo4j         | `neo4j:5.4`                                             | [NuGet](https://www.nuget.org/packages/Testcontainers.Neo4j)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Neo4j)         |
+| Oracle        | `gvenzl/oracle-xe:21.3.0-slim-faststart`                | [NuGet](https://www.nuget.org/packages/Testcontainers.Oracle)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Oracle)        |
+| PostgreSQL    | `postgres:15.1`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.PostgreSql)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.PostgreSql)    |
+| RabbitMQ      | `rabbitmq:3.11`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.RabbitMq)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.RabbitMq)      |
+| RavenDB       | `ravendb/ravendb:5.4-ubuntu-latest`                     | [NuGet](https://www.nuget.org/packages/Testcontainers.RavenDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.RavenDb)       |
+| Redis         | `redis:7.0`                                             | [NuGet](https://www.nuget.org/packages/Testcontainers.Redis)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Redis)         |
+| Redpanda      | `docker.redpanda.com/vectorized/redpanda:v22.2.1`       | [NuGet](https://www.nuget.org/packages/Testcontainers.Redpanda)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Redpanda)      |
+| SQL Edge      | `mcr.microsoft.com/azure-sql-edge:1.0.7`                | [NuGet](https://www.nuget.org/packages/Testcontainers.SqlEdge)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.SqlEdge)       |
 
 ## Implement a module
 
@@ -132,40 +151,3 @@ or extend the `Init()` member as we have already done and add `WithPassword(Guid
 It is always a good idea to add both approaches. This way, the user can be sure that the module is properly configured, whether by themself or by default. This helps maintain a consistent and reliable experience for the user.
 
 The repository provides reference implementations of [modules](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src). This modules are comprehensive examples and can serve as guides for you to get a better understanding of how to implement an entire module including the tests.
-
-## Extension method module
-
-Please note that this approach will be obsolete soon. We will update the documentation soon as the new modules (NuGets) are available. You find the refactored modules and sources [here](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src).
-
-| Module                     | Container image                                                  |
-|----------------------------|------------------------------------------------------------------|
-| LocalStack                 | `localstack/localstack:1.2.0`                                    |
-| Apache CouchDB             | `couchdb:2.3.1`                                                  |
-| Azurite                    | `mcr.microsoft.com/azure-storage/azurite:3.18.0`                 |
-| Cosmos DB Linux Emulator   | `mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest`  |
-| Couchbase                  | `couchbase:6.5.1`                                                |
-| Elasticsearch              | `elasticsearch:8.3.2`                                            |
-| MariaDB                    | `mariadb:10.8`                                                   |
-| Microsoft SQL Server       | `mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04`          |
-| MongoDB                    | `mongo:5.0.6`                                                    |
-| MySQL                      | `mysql:8.0.28`                                                   |
-| Neo4j                      | `neo4j:4.4.11`                                                   |
-| Oracle Database            | `gvenzl/oracle-xe:21-slim`                                       |
-| PostgreSQL                 | `postgres:11.14`                                                 |
-| Redis                      | `redis:5.0.14`                                                   |
-| Apache Kafka               | `confluentinc/cp-kafka:6.0.5`                                    |
-| RabbitMQ                   | `rabbitmq:3.7.28`                                                |
-
-Due to a design flaw in the current module system, pre-configured containers must be configured through their corresponding extension method (`WithDatabase` or `WithMessageBroker`):
-
-```csharp
-await new ContainerBuilder<PostgreSqlTestcontainer>()
-  .WithDatabase(new PostgreSqlTestcontainerConfiguration())
-  .Build()
-  .StartAsync()
-  .ConfigureAwait(false);
-```
-
-[testcontainers-container-tests]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/TestcontainersContainerTest.cs
-[testcontainers-database-tests]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/Databases
-[testcontainers-message-broker-tests]: https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Tests/Unit/Containers/Unix/Modules/MessageBrokers
