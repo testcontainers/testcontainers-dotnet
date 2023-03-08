@@ -8,17 +8,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     public const string FFmpegNetworkAlias = "ffmpeg-container";
 
-    public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20210215";
+    public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20230306";
 
     public const ushort WebDriverPort = 4444;
 
     public const ushort VncServerPort = 5900;
 
-    private readonly INetwork _network;
-
-    private readonly IContainer _ffmpegContainer;
-
-    private readonly string _videoFilePath = string.Join("/", string.Empty, "videos", "video.mp4");
+    public static readonly string VideoFilePath = string.Join("/", string.Empty, "videos", "video.mp4");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -26,17 +22,6 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public WebDriverBuilder()
         : this(new WebDriverConfiguration())
     {
-        _network = new NetworkBuilder()
-            .Build();
-
-        _ffmpegContainer = new ContainerBuilder()
-            .WithImage(FFmpegImage)
-            .WithNetwork(_network)
-            .WithNetworkAliases(FFmpegNetworkAlias)
-            .WithEnvironment("FILE_NAME", Path.GetFileName(_videoFilePath))
-            .WithEnvironment("DISPLAY_CONTAINER_NAME", WebDriverNetworkAlias)
-            .Build();
-
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
@@ -121,8 +106,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetSessionTimeout(TimeSpan sessionTimeout = default)
     {
-        return WithEnvironment("SE_NODE_SESSION_TIMEOUT",
-            sessionTimeout.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+        return WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.TotalSeconds.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <summary>
@@ -157,7 +141,16 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithRecording()
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(network: _network, ffmpegContainer: _ffmpegContainer));
+        var ffmpegContainer = new ContainerBuilder()
+            .WithImage(FFmpegImage)
+            .WithNetwork(DockerResourceConfiguration.Networks.Single())
+            .WithNetworkAliases(FFmpegNetworkAlias)
+            .WithEnvironment("FILE_NAME", Path.GetFileName(VideoFilePath))
+            .WithEnvironment("DISPLAY_CONTAINER_NAME", WebDriverNetworkAlias)
+            .Build();
+
+        // TODO: Pass the depended container (Docker resource) to the builder and resolve the dependency graph internal (not by an individual property).
+        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(ffmpegContainer: ffmpegContainer));
     }
 
     /// <inheritdoc />
@@ -172,7 +165,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     {
         return base.Init()
             .WithBrowser(WebDriverBrowser.Chrome)
-            .WithNetwork(_network)
+            .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(WebDriverNetworkAlias)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)

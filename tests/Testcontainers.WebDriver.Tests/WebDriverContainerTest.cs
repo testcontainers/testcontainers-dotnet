@@ -15,28 +15,28 @@ public sealed class WebDriverContainerTest : IAsyncLifetime
         return _webDriverContainer.DisposeAsync().AsTask();
     }
 
-    public sealed class MyClass : IClassFixture<WebDriverContainerTest>, IAsyncLifetime
+    public sealed class HelloWorldContainer : IClassFixture<WebDriverContainerTest>, IAsyncLifetime
     {
-        private const string HelloWorldNetworkAlias = "hello-world-container";
-
         private const string HelloWorldImage = "testcontainers/helloworld:1.1.0";
 
-        private const ushort HelloWorldPort = 8080;
-
-        private readonly Uri _seleniumGridUri;
+        private readonly Uri _helloWorldEndpoint = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
 
         private readonly IContainer _helloWorldContainer;
 
-        public MyClass(WebDriverContainerTest fixture)
-        {
-            _seleniumGridUri = fixture._webDriverContainer.GetWebDriverUri();
+        private readonly WebDriverContainerTest _fixture;
 
+        public HelloWorldContainer(WebDriverContainerTest fixture)
+        {
+            _fixture = fixture;
+
+            // TODO: Pass the depended container (Docker resource) to the builder and resolve the dependency graph internal.
             _helloWorldContainer = new ContainerBuilder()
                 .WithImage(HelloWorldImage)
-                .WithNetwork(fixture._webDriverContainer.GetNetwork())
-                .WithNetworkAliases(HelloWorldNetworkAlias)
-                .WithPortBinding(HelloWorldPort, true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/").ForPort(HelloWorldPort)))
+                .WithNetwork(_fixture._webDriverContainer.GetNetwork())
+                .WithNetworkAliases(_helloWorldEndpoint.Host)
+                .WithPortBinding(_helloWorldEndpoint.Port, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                    request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldEndpoint.Port))))
                 .Build();
         }
 
@@ -51,16 +51,23 @@ public sealed class WebDriverContainerTest : IAsyncLifetime
         }
 
         [Fact]
-        public void GetHelloWorld()
+        public async Task HeadingElementReturnsHelloWorld()
         {
             // Given
-            using var driver = new RemoteWebDriver(_seleniumGridUri,  new ChromeOptions());
+            using var driver = new RemoteWebDriver(new Uri(_fixture._webDriverContainer.GetConnectionString()), new ChromeOptions());
 
             // When
-            driver.Navigate().GoToUrl(new UriBuilder(Uri.UriSchemeHttp, HelloWorldNetworkAlias, HelloWorldPort).ToString());
+            driver.Navigate().GoToUrl(_helloWorldEndpoint.ToString());
+            var headingElementText = driver.FindElementByTagName("h1").Text;
+
+            await _fixture._webDriverContainer.StopAsync()
+                .ConfigureAwait(false);
+
+            await _fixture._webDriverContainer.ExportVideo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()))
+                .ConfigureAwait(false);
 
             // Then
-            Assert.Equal("Hello world", driver.FindElementByTagName("h1").Text);
+            Assert.Equal("Hello world", headingElementText);
         }
     }
 }

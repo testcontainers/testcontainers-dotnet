@@ -7,13 +7,9 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
-    /// <param name="network">The network.</param>
     /// <param name="ffmpegContainer">The ffmpeg container.</param>
-    public WebDriverConfiguration(
-        INetwork network = null,
-        IContainer ffmpegContainer = null)
+    public WebDriverConfiguration(IContainer ffmpegContainer = null)
     {
-        Network = network;
         FFmpegContainer = ffmpegContainer;
     }
 
@@ -54,17 +50,11 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue,
         newValue)
     {
-        Network = BuildConfiguration.Combine(oldValue.Network, newValue.Network);
         FFmpegContainer = BuildConfiguration.Combine(oldValue.FFmpegContainer, newValue.FFmpegContainer);
     }
 
     /// <summary>
-    /// Gets the network.
-    /// </summary>
-    public INetwork Network { get; }
-
-    /// <summary>
-    /// Gets the ffmpeg container.
+    /// Gets the FFmpeg container.
     /// </summary>
     public IContainer FFmpegContainer { get; }
 }
