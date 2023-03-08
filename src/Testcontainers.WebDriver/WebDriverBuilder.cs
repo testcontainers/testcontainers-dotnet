@@ -52,11 +52,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     /// <inheritdoc />
     protected override WebDriverConfiguration DockerResourceConfiguration { get; }
-
+    
     /// <summary>
-    /// Sets the browser type to run.
+    /// Sets the Web Driver browser configuration.
     /// </summary>
-    /// <param name="webDriverBrowser">Struct represents the browser type to lunch with latest tag.</param>
+    /// <param name="webDriverBrowser">The Web Driver browser configuration.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithBrowser(WebDriverBrowser webDriverBrowser)
     {
@@ -64,57 +64,59 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     }
 
     /// <summary>
-    /// Sets the grid additional commandline parameters for starting.
+    /// Sets Selenium Grid container configurations.
     /// </summary>
     /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#se_opts-selenium-configuration-options
+    /// https://github.com/SeleniumHQ/docker-selenium#se_opts-selenium-configuration-options.
     /// </remarks>
-    /// <param name="options">The options as a dictionary list divided by comma for starting hub or node.</param>
+    /// <param name="options">A list of Selenium Grid container configurations.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationOptions(IReadOnlyDictionary<string, string> options)
     {
-        return WithEnvironment("SE_OPTS", string.Join(",", options.Select(option => string.Join("=", option.Key, option.Value))));
+        return WithEnvironment("SE_OPTS", string.Join(" ", options.Select(option => string.Join("=", option.Key, option.Value))));
     }
 
     /// <summary>
-    /// Sets the environment variable to java process.
+    /// Sets JVM configurations.
     /// </summary>
     /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#se_java_opts-java-environment-options
+    /// https://github.com/SeleniumHQ/docker-selenium#se_java_opts-java-environment-options.
     /// </remarks>
-    /// <param name="javaOptions">The java options environment variables as a dictionary list divided by comma.</param>
+    /// <param name="javaOptions">A list of JVM configurations.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithJavaEnvironmentOptions(IReadOnlyDictionary<string, string> javaOptions)
+    public WebDriverBuilder WithJavaEnvironmentOptions(IEnumerable<string> javaOptions)
     {
-        return WithEnvironment("SE_JAVA_OPTS", string.Join(",", javaOptions.Select(option => string.Join("=", option.Key, option.Value))));
+        return WithEnvironment("SE_JAVA_OPTS", string.Join(" ", javaOptions));
     }
 
     /// <summary>
     /// Sets the screen resolution.
     /// </summary>
     /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#setting-screen-resolution
+    /// https://github.com/SeleniumHQ/docker-selenium#setting-screen-resolution.
     /// </remarks>
-    /// <param name="width">The screen width resolution.</param>
-    /// <param name="height">The screen height resolution.</param>
-    /// <param name="depth">The screen depth resolution.</param>
-    /// <param name="dpi">The screen depth resolution.</param>
+    /// <param name="width">The screen width.</param>
+    /// <param name="height">The screen height.</param>
+    /// <param name="depth">The screen depth.</param>
+    /// <param name="dpi">The screen dpi.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SettingScreenResolution(int width = 1020, int height = 1360, int depth = 24, int dpi = 96)
     {
-        return WithEnvironment("SE_SCREEN_WIDTH", width.ToString())
-            .WithEnvironment("SE_SCREEN_HEIGHT", height.ToString())
-            .WithEnvironment("SE_SCREEN_DEPTH", depth.ToString())
-            .WithEnvironment("SE_SCREEN_DPI", dpi.ToString());
+        IDictionary<string, string> screenResolution = new Dictionary<string, string>();
+        screenResolution.Add("SE_SCREEN_WIDTH", width.ToString());
+        screenResolution.Add("SE_SCREEN_HEIGHT", height.ToString());
+        screenResolution.Add("SE_SCREEN_DEPTH", depth.ToString());
+        screenResolution.Add("SE_SCREEN_DPI", dpi.ToString());
+        return WithEnvironment(new ReadOnlyDictionary<string, string>(screenResolution));
     }
 
     /// <summary>
-    /// Sets the grid session timeout until it is killed.
+    /// Sets the session timeout.
     /// </summary>
     /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
+    /// https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout.
     /// </remarks>
-    /// <param name="sessionTimeout">The Grid  session timeout config as TimeSpan.</param>
+    /// <param name="sessionTimeout">The session timeout.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetSessionTimeout(TimeSpan sessionTimeout = default)
     {
@@ -122,9 +124,12 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     }
 
     /// <summary>
-    /// Sets grid time zone by env variable.
+    /// Sets the time zone.
     /// </summary>
-    /// <param name="timeZone">The desirable time zone.</param>
+    /// <remarks>
+    /// Time Zone Database name (IANA).
+    /// </remarks>
+    /// <param name="timeZone">The time zone.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetTimeZone(string timeZone)
     {
@@ -132,27 +137,21 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     }
 
     /// <summary>
-    /// Sets grid configuration by toml file.
+    /// Overrides the Selenium Grid configurations with the TOML file.
     /// </summary>
     /// <remarks>
-    /// https://www.selenium.dev/documentation/grid/configuration/toml_options/
+    /// https://www.selenium.dev/documentation/grid/configuration/toml_options/.
     /// </remarks>
-    /// <param name="configTomlFilePath">The config toml file path.</param>
+    /// <param name="configTomlFilePath">The TOML file.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationFromTomlFile(string configTomlFilePath)
     {
         return WithResourceMapping(configTomlFilePath, "/opt/bin/config.toml");
     }
-
+    
     /// <summary>
-    /// Sets ffmpeg video recording container.
+    /// Enables the video recording.
     /// </summary>
-    /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#video-recording
-    /// </remarks>
-    /// <param name="fileName">video file name - default video name</param>
-    /// <param name="fileType">video file type - default mp4 type</param>
-    /// <param name="videosFolder">source of video folder on your host - default /tmp/videos path</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithRecording()
     {
@@ -198,13 +197,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     }
 
     /// <summary>
-    /// Determines whether the selenium grid is up and ready to receive requests.
+    /// Determines whether the Selenium Grid is up and ready to receive requests.
     /// </summary>
     /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#waiting-for-the-grid-to-be-ready
+    /// https://github.com/SeleniumHQ/docker-selenium#waiting-for-the-grid-to-be-ready.
     /// </remarks>
-    /// <param name="response">The HTTP response that contains the hub and nodes information.</param>
-    /// <returns>A value indicating whether the selenium grid is ready.</returns>
+    /// <param name="response">The HTTP response that contains the Selenium Grid information.</param>
+    /// <returns>A value indicating whether the Selenium Grid is ready.</returns>
     private async Task<bool> IsGridReadyAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
