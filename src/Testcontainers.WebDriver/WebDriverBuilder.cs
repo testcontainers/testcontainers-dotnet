@@ -52,7 +52,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     /// <inheritdoc />
     protected override WebDriverConfiguration DockerResourceConfiguration { get; }
-    
+
     /// <summary>
     /// Sets the Web Driver browser configuration.
     /// </summary>
@@ -73,7 +73,8 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationOptions(IReadOnlyDictionary<string, string> options)
     {
-        return WithEnvironment("SE_OPTS", string.Join(" ", options.Select(option => string.Join("=", option.Key, option.Value))));
+        return WithEnvironment("SE_OPTS",
+            string.Join(" ", options.Select(option => string.Join("=", option.Key, option.Value))));
     }
 
     /// <summary>
@@ -120,7 +121,8 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder SetSessionTimeout(TimeSpan sessionTimeout = default)
     {
-        return WithEnvironment("SE_NODE_SESSION_TIMEOUT", sessionTimeout.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+        return WithEnvironment("SE_NODE_SESSION_TIMEOUT",
+            sessionTimeout.TotalSeconds.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <summary>
@@ -148,7 +150,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     {
         return WithResourceMapping(configTomlFilePath, "/opt/bin/config.toml");
     }
-    
+
     /// <summary>
     /// Enables the video recording.
     /// </summary>

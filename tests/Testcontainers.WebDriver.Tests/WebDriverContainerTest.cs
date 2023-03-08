@@ -1,64 +1,66 @@
 namespace Testcontainers.WebDriver;
 
-public class WebDriverContainerTest : IAsyncLifetime
+[UsedImplicitly]
+public sealed class WebDriverContainerTest : IAsyncLifetime
 {
-  private const ushort UiPort = 8080;
-  private const string NetworkAliasName = "helloworld";
+    private readonly WebDriverContainer _webDriverContainer = new WebDriverBuilder().WithRecording().Build();
 
-  private static readonly INetwork Network = new NetworkBuilder()
-    .WithDriver(NetworkDriver.Bridge)
-    .Build();
+    public Task InitializeAsync()
+    {
+        return _webDriverContainer.StartAsync();
+    }
 
-  private readonly WebDriverContainer webDriverContainer = new WebDriverBuilder()
-    .WithBrowser(WebDriverBrowser.Firefox)
-    .WithNetwork(Network)
-    .Build();
+    public Task DisposeAsync()
+    {
+        return _webDriverContainer.DisposeAsync().AsTask();
+    }
 
-  private readonly IContainer helloWorldTestContainer = new ContainerBuilder()
-    .WithImage("testcontainers/helloworld")
-    .WithPortBinding(UiPort, UiPort)
-    .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(UiPort))
-    .WithNetwork(Network)
-    .WithNetworkAliases(NetworkAliasName)
-    .Build();
+    public sealed class MyClass : IClassFixture<WebDriverContainerTest>, IAsyncLifetime
+    {
+        private const string HelloWorldNetworkAlias = "hello-world-container";
 
-  public async Task InitializeAsync()
-  {
-    await Network.CreateAsync()
-      .ConfigureAwait(false);
+        private const string HelloWorldImage = "testcontainers/helloworld:1.1.0";
 
-    await this.helloWorldTestContainer.StartAsync()
-      .ConfigureAwait(false);
+        private const ushort HelloWorldPort = 8080;
 
-    await this.webDriverContainer.StartAsync()
-      .ConfigureAwait(false);
-  }
+        private readonly Uri _seleniumGridUri;
 
-  public async Task DisposeAsync()
-  {
-    await this.webDriverContainer.DisposeAsync()
-      .ConfigureAwait(false);
+        private readonly IContainer _helloWorldContainer;
 
-    await this.helloWorldTestContainer.DisposeAsync()
-      .ConfigureAwait(false);
+        public MyClass(WebDriverContainerTest fixture)
+        {
+            _seleniumGridUri = fixture._webDriverContainer.GetWebDriverUri();
 
-    await Network.DeleteAsync()
-      .ConfigureAwait(false);
-  }
+            _helloWorldContainer = new ContainerBuilder()
+                .WithImage(HelloWorldImage)
+                .WithNetwork(fixture._webDriverContainer.GetNetwork())
+                .WithNetworkAliases(HelloWorldNetworkAlias)
+                .WithPortBinding(HelloWorldPort, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/").ForPort(HelloWorldPort)))
+                .Build();
+        }
 
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public void CreateContainer()
-  {
-    // Given
-    var driver = new RemoteWebDriver(this.webDriverContainer.GetWebDriverUri(), new FirefoxOptions());
+        public Task InitializeAsync()
+        {
+            return _helloWorldContainer.StartAsync();
+        }
 
-    // Then
-    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
-    driver.Navigate().GoToUrl($"{NetworkAliasName}:{UiPort}");
-    var title = driver.FindElementByTagName("h1").Text;
+        public Task DisposeAsync()
+        {
+            return _helloWorldContainer.DisposeAsync().AsTask();
+        }
 
-    // Then
-    Assert.Equal("Hello world", title);
-  }
+        [Fact]
+        public void GetHelloWorld()
+        {
+            // Given
+            using var driver = new RemoteWebDriver(_seleniumGridUri,  new ChromeOptions());
+
+            // When
+            driver.Navigate().GoToUrl(new UriBuilder(Uri.UriSchemeHttp, HelloWorldNetworkAlias, HelloWorldPort).ToString());
+
+            // Then
+            Assert.Equal("Hello world", driver.FindElementByTagName("h1").Text);
+        }
+    }
 }

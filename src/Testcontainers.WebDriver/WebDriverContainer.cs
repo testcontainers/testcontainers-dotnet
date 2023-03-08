@@ -18,71 +18,66 @@ public sealed class WebDriverContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the uri entry point of the grid.
+    /// Gets the Selenium Grid endpoint.
     /// </summary>
-    /// <returns>Uri of selenium grid router component.</returns>
-    /// <remarks>
-    /// https://www.selenium.dev/documentation/grid/components/#router
-    /// </remarks>
+    /// <returns>The Selenium Grid endpoint.</returns>
     public Uri GetWebDriverUri()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverBuilder.WebDriverPort)).Uri;
     }
 
     /// <summary>
-    /// overwrite base StartAsync. With Recording cause: 
-    /// Create Network that both base and recording containers use
-    /// Start base - WebDriver container and then recording container
+    ///
     /// </summary>
-    /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#video-recording
-    /// </remarks>
-    public override async Task StartAsync(CancellationToken ct = default)
+    /// <returns></returns>
+    public INetwork GetNetwork()
     {
-        if (_configuration.Network is not null)
-        {
-            await _configuration.Network.CreateAsync(ct)
-                .ConfigureAwait(false);
-        }
+        return _configuration.Network;
+    }
 
-        await base.StartAsync(ct)
+    /// <inheritdoc />
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+        await _configuration.Network.CreateAsync(ct)
             .ConfigureAwait(false);
 
-        if (_configuration.Network is not null)
+        await base.UnsafeCreateAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeStartAsync(CancellationToken ct = default)
+    {
+        await base.UnsafeStartAsync(ct)
+            .ConfigureAwait(false);
+
+        if (_configuration.FFmpegContainer != null)
         {
             await _configuration.FFmpegContainer.StartAsync(ct)
                 .ConfigureAwait(false);
         }
     }
 
-    /// <summary>
-    /// Overwrite base StopAsync. With Recording cause: 
-    /// *Stop* Recording - avoid recording file to be corrupt
-    /// Stop base - WebDriver container
-    /// Then dispose the recording container
-    /// Finally delete the network
-    /// </summary>
-    /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#video-recording
-    /// </remarks>
-    public override async Task StopAsync(CancellationToken ct = default)
+    /// <inheritdoc />
+    protected override async Task UnsafeStopAsync(CancellationToken ct = default)
     {
-        if (_configuration.FFmpegContainer is not null)
+        if (_configuration.FFmpegContainer != null)
         {
             await _configuration.FFmpegContainer.StopAsync(ct)
                 .ConfigureAwait(false);
         }
 
-        await base.StopAsync(ct)
+        await base.UnsafeStopAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
+    {
+        await base.UnsafeDeleteAsync(ct)
             .ConfigureAwait(false);
 
-        if (_configuration.FFmpegContainer is not null)
-        {
-            await _configuration.FFmpegContainer.DisposeAsync()
-                .ConfigureAwait(false);
-
-            await _configuration.Network.DeleteAsync(ct)
-                .ConfigureAwait(false);
-        }
+        await _configuration.Network.DeleteAsync(ct)
+            .ConfigureAwait(false);
     }
 }
