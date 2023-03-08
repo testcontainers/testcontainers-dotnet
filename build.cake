@@ -161,15 +161,11 @@ Task("Publish-NuGet-Packages")
 {
   foreach(var package in GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.(nupkg|snupkgs)"))
   {
-    if (package.FullPath.Contains("Testcontainers.3.0.0"))
-    {
-      continue;
-    }
-
     DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
     {
       Source = param.NuGetCredentials.Source,
-      ApiKey = param.NuGetCredentials.ApiKey
+      ApiKey = param.NuGetCredentials.ApiKey,
+      SkipDuplicate = true
     });
   }
 });
