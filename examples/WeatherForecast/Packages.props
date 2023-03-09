@@ -5,7 +5,7 @@
     <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.13"/>
     <PackageReference Update="Microsoft.EntityFrameworkCore" Version="6.0.13"/>
     <PackageReference Update="Microsoft.Fast.Components.FluentUI" Version="2.0.3"/>
-    <PackageReference Update="Testcontainers" Version="2.4.0"/>
+    <PackageReference Update="Testcontainers.SqlEdge" Version="3.0.0"/>
     <PackageReference Update="System.ComponentModel.Annotations" Version="5.0.0"/>
     <PackageReference Update="System.Text.Json" Version="6.0.7"/>
     <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.13"/>

@@ -6,6 +6,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using JetBrains.Annotations;
+using Testcontainers.SqlEdge;
 using Xunit;
 
 namespace WeatherForecast.Tests;
@@ -19,7 +20,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   private readonly INetwork _weatherForecastNetwork;
 
-  private readonly IContainer _mssqlContainer;
+  private readonly IContainer _sqlEdgeContainer;
 
   private readonly IContainer _weatherForecastContainer;
 
@@ -32,18 +33,12 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     const string weatherForecastStorage = "weatherForecastStorage";
 
-    var mssqlConfiguration = new DatabaseContainerConfiguration();
-
-    var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
+    const string connectionString = $"server={weatherForecastStorage};user id=sa;password={SqlEdgeBuilder.DefaultPassword};database={SqlEdgeBuilder.DefaultDatabase}";
 
     _weatherForecastNetwork = new NetworkBuilder()
-      .WithName(Guid.NewGuid().ToString("D"))
       .Build();
 
-#pragma warning disable 618
-    _mssqlContainer = new TestcontainersBuilder<MsSqlTestcontainer>()
-#pragma warning restore 618
-      .WithDatabase(mssqlConfiguration)
+    _sqlEdgeContainer = new SqlEdgeBuilder()
       .WithNetwork(_weatherForecastNetwork)
       .WithNetworkAliases(weatherForecastStorage)
       .Build();
@@ -69,7 +64,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await _weatherForecastNetwork.CreateAsync()
       .ConfigureAwait(false);
 
-    await _mssqlContainer.StartAsync()
+    await _sqlEdgeContainer.StartAsync()
       .ConfigureAwait(false);
 
     await _weatherForecastContainer.StartAsync()
@@ -84,7 +79,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await _weatherForecastContainer.DisposeAsync()
       .ConfigureAwait(false);
 
-    await _mssqlContainer.DisposeAsync()
+    await _sqlEdgeContainer.DisposeAsync()
       .ConfigureAwait(false);
 
     await _weatherForecastNetwork.DeleteAsync()
