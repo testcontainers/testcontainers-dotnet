@@ -61,8 +61,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationOptions(IReadOnlyDictionary<string, string> options)
     {
-        return WithEnvironment("SE_OPTS",
-            string.Join(" ", options.Select(option => string.Join("=", option.Key, option.Value))));
+        return WithEnvironment("SE_OPTS", string.Join(" ", options.Select(option => string.Join("=", option.Key, option.Value))));
     }
 
     /// <summary>
