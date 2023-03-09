@@ -7,14 +7,10 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
-    /// <param name="network">The network for recording.</param>
-    /// <param name="recordingContainer">The ffmpeg video recording container.</param>
-    public WebDriverConfiguration(
-        INetwork network = null,
-        IContainer recordingContainer = null)
+    /// <param name="ffmpegContainer">The ffmpeg container.</param>
+    public WebDriverConfiguration(IContainer ffmpegContainer = null)
     {
-        Network = network;
-        RecordingContainer = recordingContainer;
+        FFmpegContainer = ffmpegContainer;
     }
 
     /// <summary>
@@ -51,19 +47,14 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue, newValue)
+    public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue,
+        newValue)
     {
-        Network = BuildConfiguration.Combine(oldValue.Network, newValue.Network);
-        RecordingContainer = BuildConfiguration.Combine(oldValue.RecordingContainer, newValue.RecordingContainer);
+        FFmpegContainer = BuildConfiguration.Combine(oldValue.FFmpegContainer, newValue.FFmpegContainer);
     }
 
     /// <summary>
-    /// Gets the shared recording network.
+    /// Gets the FFmpeg container.
     /// </summary>
-    public INetwork Network { get; }
-
-    /// <summary>
-    /// Gets the ffmpeg video recording container.
-    /// </summary>
-    public IContainer RecordingContainer { get; }
+    public IContainer FFmpegContainer { get; }
 }

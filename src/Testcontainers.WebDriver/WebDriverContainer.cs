@@ -18,71 +18,69 @@ public sealed class WebDriverContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the uri entry point of the grid.
+    /// Gets the Selenium Grid connection string.
     /// </summary>
-    /// <returns>Uri of selenium grid router component.</returns>
-    /// <remarks>
-    /// https://www.selenium.dev/documentation/grid/components/#router
-    /// </remarks>
-    public Uri GetWebDriverUri()
+    /// <returns>The Selenium Grid connection string.</returns>
+    public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverBuilder.WebDriverPort)).Uri;
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverBuilder.WebDriverPort)).ToString();
     }
 
     /// <summary>
-    /// overwrite base StartAsync. With Recording cause: 
-    /// Create Network that both base and recording containers use
-    /// Start base - WebDriver container and then recording container
+    /// Gets the Selenium Grid network.
     /// </summary>
-    /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#video-recording
-    /// </remarks>
-    public override async Task StartAsync(CancellationToken ct = default)
+    /// <returns>The Selenium Grid network.</returns>
+    public INetwork GetNetwork()
     {
-        if (_configuration.Network is not null)
-        {
-            await _configuration.Network.CreateAsync(ct)
-                .ConfigureAwait(false);
-        }
+        return _configuration.Networks.Single();
+    }
 
-        await base.StartAsync(ct)
+    /// <summary>
+    /// Exports the recorded video.
+    /// </summary>
+    /// <param name="target">The target file path to write.</param>
+    /// <param name="ct">Cancellation token.</param>
+    public async Task ExportVideo(string target, CancellationToken ct = default)
+    {
+        var bytes = await _configuration.FFmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
             .ConfigureAwait(false);
 
-        if (_configuration.Network is not null)
+        File.WriteAllBytes(target, bytes);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+        await _configuration.Networks.Single().CreateAsync(ct)
+            .ConfigureAwait(false);
+
+        await base.UnsafeCreateAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeStartAsync(CancellationToken ct = default)
+    {
+        await base.UnsafeStartAsync(ct)
+            .ConfigureAwait(false);
+
+        if (_configuration.FFmpegContainer is not null)
         {
-            await _configuration.RecordingContainer.StartAsync(ct)
+            await _configuration.FFmpegContainer.StartAsync(ct)
                 .ConfigureAwait(false);
         }
     }
 
-    /// <summary>
-    /// Overwrite base StopAsync. With Recording cause: 
-    /// *Stop* Recording - avoid recording file to be corrupt
-    /// Stop base - WebDriver container
-    /// Then dispose the recording container
-    /// Finally delete the network
-    /// </summary>
-    /// <remarks>
-    /// https://github.com/SeleniumHQ/docker-selenium#video-recording
-    /// </remarks>
-    public override async Task StopAsync(CancellationToken ct = default)
+    /// <inheritdoc />
+    protected override async Task UnsafeStopAsync(CancellationToken ct = default)
     {
-        if (_configuration.RecordingContainer is not null)
+        if (_configuration.FFmpegContainer is not null)
         {
-            await _configuration.RecordingContainer.StopAsync(ct)
+            await _configuration.FFmpegContainer.StopAsync(ct)
                 .ConfigureAwait(false);
         }
 
-        await base.StopAsync(ct)
+        await base.UnsafeStopAsync(ct)
             .ConfigureAwait(false);
-
-        if (_configuration.RecordingContainer is not null)
-        {
-            await _configuration.RecordingContainer.DisposeAsync()
-                .ConfigureAwait(false);
-
-            await _configuration.Network.DeleteAsync(ct)
-                .ConfigureAwait(false);
-        }
     }
 }
