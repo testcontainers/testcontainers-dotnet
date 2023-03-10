@@ -1,76 +1,103 @@
 namespace Testcontainers.WebDriver;
 
-[UsedImplicitly]
-public sealed class WebDriverContainerTest : IAsyncLifetime
+public abstract class WebDriverContainerTest : IAsyncLifetime
 {
-    private readonly WebDriverContainer _webDriverContainer = new WebDriverBuilder().WithRecording().Build();
+    private readonly Uri _helloWorldBaseAddress = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
 
-    public Task InitializeAsync()
+    private readonly IContainer _helloWorldContainer;
+
+    private readonly WebDriverContainer _webDriverContainer;
+
+    private WebDriverContainerTest(WebDriverContainer webDriverContainer)
     {
-        return _webDriverContainer.StartAsync();
+        _helloWorldContainer = new ContainerBuilder()
+            .WithImage("testcontainers/helloworld:1.1.0")
+            .WithNetwork(webDriverContainer.GetNetwork())
+            .WithNetworkAliases(_helloWorldBaseAddress.Host)
+            .WithPortBinding(_helloWorldBaseAddress.Port, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldBaseAddress.Port))))
+            .Build();
+
+        _webDriverContainer = webDriverContainer;
     }
 
-    public Task DisposeAsync()
+    public async Task InitializeAsync()
     {
-        return _webDriverContainer.DisposeAsync().AsTask();
+        await _webDriverContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        await _helloWorldContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public sealed class HelloWorldContainer : IClassFixture<WebDriverContainerTest>, IAsyncLifetime
+    public async Task DisposeAsync()
     {
-        private const string HelloWorldImage = "testcontainers/helloworld:1.1.0";
+        await _helloWorldContainer.DisposeAsync()
+            .ConfigureAwait(false);
 
-        private readonly Uri _helloWorldEndpoint = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
+        await _webDriverContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
 
-        private readonly IContainer _helloWorldContainer;
+    [Fact]
+    public void HeadingElementReturnsHelloWorld()
+    {
+        // Given
+        using var driver = new RemoteWebDriver(new Uri(_webDriverContainer.GetConnectionString()), new ChromeOptions());
 
-        private readonly WebDriverContainerTest _fixture;
+        // When
+        driver.Navigate().GoToUrl(_helloWorldBaseAddress.ToString());
+        var headingElementText = driver.FindElementByTagName("h1").Text;
 
-        public HelloWorldContainer(WebDriverContainerTest fixture)
+        // Then
+        Assert.Equal("Hello world", headingElementText);
+    }
+
+    [UsedImplicitly]
+    public sealed class RecordingEnabled : WebDriverContainerTest
+    {
+        public RecordingEnabled()
+            : base(new WebDriverBuilder().WithRecording().Build())
         {
-            _fixture = fixture;
-
-            // TODO: Pass the depended container (Docker resource) to the builder and resolve the dependency graph internal.
-            _helloWorldContainer = new ContainerBuilder()
-                .WithImage(HelloWorldImage)
-                .WithNetwork(_fixture._webDriverContainer.GetNetwork())
-                .WithNetworkAliases(_helloWorldEndpoint.Host)
-                .WithPortBinding(_helloWorldEndpoint.Port, true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                    request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldEndpoint.Port))))
-                .Build();
-        }
-
-        public Task InitializeAsync()
-        {
-            return _helloWorldContainer.StartAsync();
-        }
-
-        public Task DisposeAsync()
-        {
-            return _helloWorldContainer.DisposeAsync().AsTask();
         }
 
         [Fact]
-        public async Task HeadingElementReturnsHelloWorld()
+        public async Task ExportVideoWritesFile()
         {
             // Given
-            using var driver = new RemoteWebDriver(new Uri(_fixture._webDriverContainer.GetConnectionString()), new ChromeOptions());
-
             var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
 
             // When
-            driver.Navigate().GoToUrl(_helloWorldEndpoint.ToString());
-            var headingElementText = driver.FindElementByTagName("h1").Text;
-
-            await _fixture._webDriverContainer.StopAsync()
+            await _webDriverContainer.StopAsync()
                 .ConfigureAwait(false);
 
-            await _fixture._webDriverContainer.ExportVideoAsync(videoFilePath)
+            await _webDriverContainer.ExportVideoAsync(videoFilePath)
                 .ConfigureAwait(false);
 
             // Then
-            Assert.Equal("Hello world", headingElementText);
             Assert.True(File.Exists(videoFilePath));
+        }
+
+        [Fact]
+        public Task ExportVideoThrowsInvalidOperationException()
+        {
+            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty));
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class RecordingDisabled : WebDriverContainerTest
+    {
+        public RecordingDisabled()
+            : base(new WebDriverBuilder().Build())
+        {
+        }
+
+        [Fact]
+        public Task ExportVideoThrowsInvalidOperationException()
+        {
+            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty));
         }
     }
 }
