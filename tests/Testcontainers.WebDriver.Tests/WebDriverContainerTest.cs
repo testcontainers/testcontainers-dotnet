@@ -18,8 +18,6 @@ public sealed class WebDriverContainerTest : IAsyncLifetime
     public sealed class HelloWorldContainer : IClassFixture<WebDriverContainerTest>, IAsyncLifetime
     {
         private const string HelloWorldImage = "testcontainers/helloworld:1.1.0";
-        
-        private readonly string _videoRecordingPath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
 
         private readonly Uri _helloWorldEndpoint = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
 
@@ -58,6 +56,8 @@ public sealed class WebDriverContainerTest : IAsyncLifetime
             // Given
             using var driver = new RemoteWebDriver(new Uri(_fixture._webDriverContainer.GetConnectionString()), new ChromeOptions());
 
+            var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
+
             // When
             driver.Navigate().GoToUrl(_helloWorldEndpoint.ToString());
             var headingElementText = driver.FindElementByTagName("h1").Text;
@@ -65,12 +65,12 @@ public sealed class WebDriverContainerTest : IAsyncLifetime
             await _fixture._webDriverContainer.StopAsync()
                 .ConfigureAwait(false);
 
-            await _fixture._webDriverContainer.ExportVideo(_videoRecordingPath)
+            await _fixture._webDriverContainer.ExportVideoAsync(videoFilePath)
                 .ConfigureAwait(false);
 
             // Then
-            Assert.True(File.Exists(_videoRecordingPath));
             Assert.Equal("Hello world", headingElementText);
+            Assert.True(File.Exists(videoFilePath));
         }
     }
 }

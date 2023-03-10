@@ -6,6 +6,8 @@ public sealed class WebDriverContainer : DockerContainer
 {
     private readonly WebDriverConfiguration _configuration;
 
+    private readonly IContainer _ffmpegContainer;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverContainer" /> class.
     /// </summary>
@@ -15,6 +17,7 @@ public sealed class WebDriverContainer : DockerContainer
         : base(configuration, logger)
     {
         _configuration = configuration;
+        _ffmpegContainer = configuration.FFmpegContainer ?? FFmpegContainer.Instance;
     }
 
     /// <summary>
@@ -38,11 +41,21 @@ public sealed class WebDriverContainer : DockerContainer
     /// <summary>
     /// Exports the recorded video.
     /// </summary>
+    /// <remarks>
+    /// To export the video, the container must be stopped.
+    /// </remarks>
     /// <param name="target">The target file path to write.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task ExportVideo(string target, CancellationToken ct = default)
+    /// <exception cref="InvalidOperationException">The video recording is either not enabled or the container has not been stopped.</exception>
+    public async Task ExportVideoAsync(string target, CancellationToken ct = default)
     {
-        var bytes = await _configuration.FFmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
+        Guard.Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
+            .ThrowIf(argument => TestcontainersStates.Undefined.Equals(argument.Value), _ => new InvalidOperationException("Could not export video. Please enable the video recording first."));
+
+        Guard.Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
+            .ThrowIf(argument => !TestcontainersStates.Exited.Equals(argument.Value), _ => new InvalidOperationException("Could not export video. Please stop the WebDriver container first."));
+
+        var bytes = await _ffmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
             .ConfigureAwait(false);
 
         File.WriteAllBytes(target, bytes);
@@ -59,28 +72,64 @@ public sealed class WebDriverContainer : DockerContainer
     }
 
     /// <inheritdoc />
+    protected override Task UnsafeDeleteAsync(CancellationToken ct = default)
+    {
+        return Task.WhenAll(_ffmpegContainer.DisposeAsync().AsTask(), base.UnsafeDeleteAsync(ct));
+    }
+
+    /// <inheritdoc />
     protected override async Task UnsafeStartAsync(CancellationToken ct = default)
     {
         await base.UnsafeStartAsync(ct)
             .ConfigureAwait(false);
 
-        if (_configuration.FFmpegContainer is not null)
-        {
-            await _configuration.FFmpegContainer.StartAsync(ct)
-                .ConfigureAwait(false);
-        }
+        await _ffmpegContainer.StartAsync(ct)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async Task UnsafeStopAsync(CancellationToken ct = default)
     {
-        if (_configuration.FFmpegContainer is not null)
-        {
-            await _configuration.FFmpegContainer.StopAsync(ct)
-                .ConfigureAwait(false);
-        }
+        await _ffmpegContainer.StopAsync(ct)
+            .ConfigureAwait(false);
 
         await base.UnsafeStopAsync(ct)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// A default FFmpeg container to avoid null-coalescing.
+    /// </summary>
+    private sealed class FFmpegContainer : DockerContainer
+    {
+        static FFmpegContainer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FFmpegContainer" /> class.
+        /// </summary>
+        private FFmpegContainer()
+            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")))), NullLogger.Instance)
+        {
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IContainer" /> instance.
+        /// </summary>
+        public static IContainer Instance { get; }
+            = new FFmpegContainer();
+
+        /// <inheritdoc />
+        public override Task StartAsync(CancellationToken ct = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public override Task StopAsync(CancellationToken ct = default)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
