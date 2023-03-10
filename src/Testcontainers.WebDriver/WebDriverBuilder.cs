@@ -1,6 +1,9 @@
 namespace Testcontainers.WebDriver;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+/// <remarks>
+/// Find further information about the Selenium Grid image, including its configurations, here: https://github.com/SeleniumHQ/docker-selenium.
+/// </remarks>
 [PublicAPI]
 public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDriverContainer, WebDriverConfiguration>
 {
