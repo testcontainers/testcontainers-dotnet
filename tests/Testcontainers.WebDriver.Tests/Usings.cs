@@ -1,0 +1,10 @@
+global using System;
+global using System.IO;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Containers;
+global using JetBrains.Annotations;
+global using OpenQA.Selenium.Chrome;
+global using OpenQA.Selenium.Remote;
+global using Xunit;

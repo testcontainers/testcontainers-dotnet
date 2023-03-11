@@ -4,7 +4,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
 {
     private readonly MongoDbContainer _mongoDbContainer;
 
-    protected MongoDbContainerTest(MongoDbContainer mongoDbContainer)
+    private MongoDbContainerTest(MongoDbContainer mongoDbContainer)
     {
         _mongoDbContainer = mongoDbContainer;
     }

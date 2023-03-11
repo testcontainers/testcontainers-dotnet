@@ -6,6 +6,7 @@ creds
 dind
 dvcm
 enumerables
+fmpeg
 ghcr
 httpd
 identitytoken
@@ -31,4 +32,5 @@ sqlplus
 testcontainer
 testcontainers
 tlsverify
+toml
 vstest
