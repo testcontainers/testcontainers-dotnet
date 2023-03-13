@@ -61,8 +61,8 @@ namespace DotNet.Testcontainers.Clients
       {
         Name = configuration.Name,
         Driver = configuration.Driver.Value,
-        Options = configuration.Options?.ToDictionary(item => item.Key, item => item.Value),
-        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
+        Options = configuration.Options.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
       if (configuration.ParameterModifiers != null)

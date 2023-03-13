@@ -29,7 +29,7 @@
     TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration);
 
     /// <summary>
-    /// Set the dependent container to resolve and start before starting this container configuration.
+    /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
     /// <param name="container">The dependent container.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>

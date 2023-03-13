@@ -117,7 +117,7 @@
       this.Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
       this.MacAddress = BuildConfiguration.Combine(oldValue.MacAddress, newValue.MacAddress);
       this.WorkingDirectory = BuildConfiguration.Combine(oldValue.WorkingDirectory, newValue.WorkingDirectory);
-      this.Entrypoint = BuildConfiguration.Combine(oldValue.Entrypoint, newValue.Entrypoint);
+      this.Entrypoint = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.Entrypoint, newValue.Entrypoint);
       this.Command = BuildConfiguration.Combine(oldValue.Command, newValue.Command);
       this.Environments = BuildConfiguration.Combine(oldValue.Environments, newValue.Environments);
       this.ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
