@@ -87,14 +87,19 @@
     IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
 
     /// <summary>
+    /// Gets a list of containers.
+    /// </summary>
+    ISet<IContainer> Containers { get; }
+
+    /// <summary>
     /// Gets a list of mounts.
     /// </summary>
-    IEnumerable<IMount> Mounts { get; }
+    ISet<IMount> Mounts { get; }
 
     /// <summary>
     /// Gets a list of networks.
     /// </summary>
-    IEnumerable<INetwork> Networks { get; }
+    ISet<INetwork> Networks { get; }
 
     /// <summary>
     /// Gets a list of network-scoped aliases.

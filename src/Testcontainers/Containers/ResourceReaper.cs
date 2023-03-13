@@ -417,7 +417,7 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
-    public sealed class NamedPipeSocketMount : IMount
+    private sealed class NamedPipeSocketMount : IMount
     {
       private const string DockerSocketFilePath = "\\\\.\\pipe\\docker_engine";
 
@@ -443,9 +443,19 @@ namespace DotNet.Testcontainers.Containers
 
       public string Target
         => DockerSocketFilePath;
+
+      public Task CreateAsync(CancellationToken ct = default)
+      {
+        return Task.CompletedTask;
+      }
+
+      public Task DeleteAsync(CancellationToken ct = default)
+      {
+        return Task.CompletedTask;
+      }
     }
 
-    public sealed class UnixSocketMount : IMount
+    private sealed class UnixSocketMount : IMount
     {
       private const string DockerSocketFilePath = "/var/run/docker.sock";
 
@@ -471,6 +481,16 @@ namespace DotNet.Testcontainers.Containers
 
       public string Target
         => DockerSocketFilePath;
+
+      public Task CreateAsync(CancellationToken ct = default)
+      {
+        return Task.CompletedTask;
+      }
+
+      public Task DeleteAsync(CancellationToken ct = default)
+      {
+        return Task.CompletedTask;
+      }
     }
   }
 }

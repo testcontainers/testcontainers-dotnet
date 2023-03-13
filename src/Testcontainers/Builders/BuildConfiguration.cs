@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Linq;
 
   public static class BuildConfiguration
@@ -27,12 +29,30 @@ namespace DotNet.Testcontainers.Builders
     public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
       where T : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return Array.Empty<T>();
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;
       }
 
       return oldValue.Concat(newValue).ToArray();
+    }
+
+    /// <summary>
+    /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
+    /// </summary>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
+    /// <typeparam name="T">Type of <see cref="ISet{T}" />.</typeparam>
+    /// <returns>An updated configuration.</returns>
+    public static ISet<T> Combine<T>(ISet<T> oldValue, ISet<T> newValue)
+      where T : class
+    {
+      return new HashSet<T>(Combine((IEnumerable<T>)oldValue, (IEnumerable<T>)newValue));
     }
 
     /// <summary>
@@ -46,6 +66,11 @@ namespace DotNet.Testcontainers.Builders
     public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
       where T : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return Array.Empty<T>();
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;
@@ -66,6 +91,11 @@ namespace DotNet.Testcontainers.Builders
       where TKey : class
       where TValue : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;

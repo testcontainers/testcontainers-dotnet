@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Volumes;
 
   /// <inheritdoc cref="IMount" />
@@ -34,5 +36,17 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public string Target { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return this.volume.CreateAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return this.volume.DeleteAsync(ct);
+    }
   }
 }

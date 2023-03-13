@@ -275,6 +275,16 @@ namespace DotNet.Testcontainers.Containers
     {
       using (_ = new AcquireLock(this.semaphoreSlim))
       {
+        var futureResources = Array.Empty<IFutureResource>()
+          .Concat(this.configuration.Mounts)
+          .Concat(this.configuration.Networks);
+
+        await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
+          .ConfigureAwait(false);
+
+        await Task.WhenAll(this.configuration.Containers.Select(resource => resource.StartAsync(ct)))
+          .ConfigureAwait(false);
+
         await this.UnsafeCreateAsync(ct)
           .ConfigureAwait(false);
 
