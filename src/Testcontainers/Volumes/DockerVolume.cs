@@ -42,6 +42,11 @@ namespace DotNet.Testcontainers.Volumes
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
+      if (this.Exists())
+      {
+        return;
+      }
+
       var name = await this.dockerVolumeOperations.CreateAsync(this.configuration, ct)
         .ConfigureAwait(false);
 

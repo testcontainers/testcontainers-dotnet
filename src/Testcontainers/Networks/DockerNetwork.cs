@@ -42,6 +42,11 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
+      if (this.Exists())
+      {
+        return;
+      }
+
       var id = await this.dockerNetworkOperations.CreateAsync(this.configuration, ct)
         .ConfigureAwait(false);
 
