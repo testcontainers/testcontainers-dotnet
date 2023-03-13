@@ -20,6 +20,9 @@ public sealed class DependsOnTests : IAsyncLifetime
         .WithNetwork(new NetworkBuilder()
             .WithLabel(DependsOnKey, DependsOnValue)
             .Build())
+        .WithVolumeMount(new VolumeBuilder()
+            .WithLabel(DependsOnKey, DependsOnValue)
+            .Build(), "/workdir")
         .WithImage(CommonImages.Alpine)
         .WithLabel(DependsOnKey, DependsOnValue)
         .Build();
@@ -35,6 +38,7 @@ public sealed class DependsOnTests : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task DependsOnCreatesDependentResources()
     {
         // Given
@@ -46,6 +50,8 @@ public sealed class DependsOnTests : IAsyncLifetime
 
         var networksListParameters = new NetworksListParameters { Filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } } };
 
+        var volumesListParameters = new VolumesListParameters { Filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } } };
+
         // When
         var containers = await client.Containers.ListContainersAsync(containersListParameters)
             .ConfigureAwait(false);
@@ -53,8 +59,12 @@ public sealed class DependsOnTests : IAsyncLifetime
         var networks = await client.Networks.ListNetworksAsync(networksListParameters)
             .ConfigureAwait(false);
 
+        var volumesListResponse = await client.Volumes.ListAsync(volumesListParameters)
+            .ConfigureAwait(false);
+
         // Then
         Assert.Equal(3, containers.Count);
         Assert.Equal(1, networks.Count);
+        Assert.Equal(1, volumesListResponse.Volumes.Count);
     }
 }
