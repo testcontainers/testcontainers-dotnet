@@ -1,19 +1,17 @@
-using System.Net;
-
 namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
-    public const string CosmosDbEmulatorImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
-    
+    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+
     public const ushort CosmosDbPort = 8081;
-    
+
     public const string DefaultAccountKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-    
+
     public const int DefaultPartitionCount = 2;
-    
+
     public const string DefaultIpAddressOverride = "127.0.0.1";
 
     /// <summary>
@@ -71,7 +69,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CosmosDbEmulatorImage)
+            .WithImage(CosmosDbImage)
             .WithPortBinding(CosmosDbPort, true)
             .WithPartitionCount(DefaultPartitionCount)
             .WithIpAddressOverride(DefaultIpAddressOverride)
@@ -92,7 +90,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
         {
             throw new ArgumentException($"'{nameof(DockerResourceConfiguration.PartitionCount)}' cannot be less than 1.");
         }
-        
+
         _ = Guard.Argument(DockerResourceConfiguration.IpAddressOverride, nameof(DockerResourceConfiguration.IpAddressOverride))
             .NotNull()
             .NotEmpty();

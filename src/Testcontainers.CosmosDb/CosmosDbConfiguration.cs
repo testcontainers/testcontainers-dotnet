@@ -65,7 +65,7 @@ public sealed class CosmosDbConfiguration : ContainerConfiguration
     public int? PartitionCount { get; }
 
     /// <summary>
-    /// Gets the overridden IP address 
+    /// Gets the overridden IP address
     /// </summary>
     public string IpAddressOverride { get; }
 }

@@ -1,7 +1,3 @@
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -32,7 +28,7 @@ public sealed class CosmosDbContainer : DockerContainer
         properties.Add("AccountKey", CosmosDbBuilder.DefaultAccountKey);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
-    
+
     /// <summary>
     /// Gets a configured HTTP message handler that automatically trusts the CosmosDb Emulator's certificate.
     /// </summary>
@@ -46,9 +42,10 @@ public sealed class CosmosDbContainer : DockerContainer
     private sealed class UriRewriter : DelegatingHandler
     {
         private readonly string _hostname;
-        private readonly int _port;
 
-        public UriRewriter(string hostname, int port)
+        private readonly ushort _port;
+
+        public UriRewriter(string hostname, ushort port)
             : base(new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, _, _, _) => true })
         {
             _hostname = hostname;

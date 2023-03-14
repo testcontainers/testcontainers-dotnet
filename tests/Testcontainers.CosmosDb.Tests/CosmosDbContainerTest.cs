@@ -1,6 +1,3 @@
-﻿using System;
-using Microsoft.Azure.Cosmos;
-
 namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
@@ -22,19 +19,19 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
     public async Task ConnectionStateReturnsOpen()
     {
         // Given
-        var options = new CosmosClientOptions
-        {
-            ConnectionMode = ConnectionMode.Gateway,
-            HttpClientFactory = () => _cosmosDbContainer.HttpClient,
-            RequestTimeout = TimeSpan.FromMinutes(3)
-        };
-        
-        var client = new CosmosClient(_cosmosDbContainer.GetConnectionString(), options);
-        
+        using var httpClient = _cosmosDbContainer.HttpClient;
+
+        var cosmosClientOptions = new CosmosClientOptions();
+        cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+        cosmosClientOptions.HttpClientFactory = () => httpClient;
+
+        using var cosmosClient = new CosmosClient(_cosmosDbContainer.GetConnectionString(), cosmosClientOptions);
+
         // When
-        var account = await client.ReadAccountAsync();
-        
+        var accountProperties = await cosmosClient.ReadAccountAsync()
+            .ConfigureAwait(false);
+
         // Then
-        Assert.Equal("localhost", account.Id);
+        Assert.Equal("localhost", accountProperties.Id);
     }
 }
