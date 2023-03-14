@@ -2,7 +2,9 @@ namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder()
+        .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "2")
+        .Build();
 
     public Task InitializeAsync()
     {

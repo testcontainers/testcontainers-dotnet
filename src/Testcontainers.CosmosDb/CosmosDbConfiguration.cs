@@ -7,14 +7,8 @@ public sealed class CosmosDbConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbConfiguration" /> class.
     /// </summary>
-    /// <param name="partitionCount">The number of partitions to create</param>
-    /// <param name="ipAddressOverride">The overridden IP address.</param>
-    public CosmosDbConfiguration(
-        int? partitionCount = null,
-        string ipAddressOverride = null)
+    public CosmosDbConfiguration()
     {
-        PartitionCount = partitionCount;
-        IpAddressOverride = ipAddressOverride;
     }
 
     /// <summary>
@@ -55,17 +49,5 @@ public sealed class CosmosDbConfiguration : ContainerConfiguration
     public CosmosDbConfiguration(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
         : base(oldValue, newValue)
     {
-        PartitionCount = BuildConfiguration.Combine(oldValue.PartitionCount, newValue.PartitionCount);
-        IpAddressOverride = BuildConfiguration.Combine(oldValue.IpAddressOverride, newValue.IpAddressOverride);
     }
-
-    /// <summary>
-    /// Gets the partition count
-    /// </summary>
-    public int? PartitionCount { get; }
-
-    /// <summary>
-    /// Gets the overridden IP address
-    /// </summary>
-    public string IpAddressOverride { get; }
 }
