@@ -73,7 +73,7 @@ Task("Build")
 Task("Tests")
   .Does(() =>
 {
-  DotNetTest(param.Solution, new DotNetTestSettings
+  DotNetTest("tests/Testcontainers.CosmosDb.Tests/Testcontainers.CosmosDb.Tests.csproj", new DotNetTestSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,

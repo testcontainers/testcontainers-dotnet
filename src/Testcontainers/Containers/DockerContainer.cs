@@ -227,6 +227,13 @@ namespace DotNet.Testcontainers.Containers
     {
       this.ThrowIfResourceNotFound();
 
+      this.Logger.LogInformation(this.container.NetworkSettings.Ports.Count.ToString());
+
+      foreach (var port in this.container.NetworkSettings.Ports)
+      {
+        this.Logger.LogInformation(port.Value?.FirstOrDefault()?.HostPort);
+      }
+
       if (this.container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.First().HostPort, out var publicPort))
       {
         return publicPort;
