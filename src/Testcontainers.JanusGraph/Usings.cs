@@ -4,8 +4,3 @@ global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
-global using Gremlin.Net.Driver;
-global using Gremlin.Net.Driver.Remote;
-global using Gremlin.Net.Process.Traversal;
-global using JanusGraph.Net.IO.GraphSON;
-global using static Gremlin.Net.Process.Traversal.AnonymousTraversalSource;

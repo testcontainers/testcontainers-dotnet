@@ -43,6 +43,7 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
       return base.Init()
         .WithImage(JanusGraphImage)
         .WithPortBinding(JanusGraphPort, true)
+        .WithEnvironment("janusgraph.storage.backend", "inmemory")
         .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Channel started at port"));
     }
 
