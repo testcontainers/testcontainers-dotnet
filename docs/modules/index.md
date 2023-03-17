@@ -10,7 +10,7 @@ dotnet add package Testcontainers.ModuleName
 
 All modules follow the same design and come pre-configured with best practices. Usually, you do not need to worry about configuring them yourself. To create and start a container, all you need is:
 
-```chsarp
+```csharp
 var moduleNameContainer = new ModuleNameBuilder().Build();
 
 await moduleNameContainer.StartAsync()
