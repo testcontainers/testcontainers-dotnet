@@ -2,6 +2,25 @@
 
 Modules are great examples of Testcontainers' capabilities. To write tests against real dependencies, you can either choose one of the pre-configurations listed below or create your own implementation.
 
+Modules are standalone dependencies that can be installed from [NuGet.org](https://www.nuget.org/profiles/Testcontainers). To use a module in your test project, you need to add it as a dependency first:
+
+```console
+dotnet add package Testcontainers.ModuleName
+```
+
+All modules follow the same design and come pre-configured with best practices. Usually, you do not need to worry about configuring them yourself. To create and start a container, all you need is:
+
+```chsarp
+var moduleNameContainer = new ModuleNameBuilder().Build();
+
+await moduleNameContainer.StartAsync()
+  .ConfigureAwait(false);
+```
+
+!!! note
+
+    We will be add module-specific documentations soon.
+
 | Module        | Image                                                   | NuGet                                                                | Source                                                                                                          |
 |---------------|---------------------------------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | Couchbase     | `couchbase:community-7.0.2`                             | [NuGet](https://www.nuget.org/packages/Testcontainers.Couchbase)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Couchbase)     |
