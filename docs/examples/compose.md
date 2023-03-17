@@ -7,7 +7,7 @@ it is necessary to override Testcontainers' Docker host resolution and set the e
 Otherwise, Testcontainers cannot access sibling containers like the Resource Reaper Ryuk or other services running on the Docker host.
 A minimal `docker-compose.yml` file that builds a new container image and runs the test inside the container look something like:
 
-```Yaml
+```yaml
 version: "3"
 services:
   docker_compose_test:
