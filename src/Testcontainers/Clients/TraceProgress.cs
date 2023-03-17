@@ -17,6 +17,16 @@ namespace DotNet.Testcontainers.Clients
     {
 #pragma warning disable CA1848, CA2254
 
+      if (!string.IsNullOrWhiteSpace(value.Status))
+      {
+        this.logger.LogTrace(value.Status);
+      }
+
+      if (!string.IsNullOrWhiteSpace(value.Stream))
+      {
+        this.logger.LogTrace(value.Stream);
+      }
+
       if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
       {
         this.logger.LogTrace(value.ProgressMessage);

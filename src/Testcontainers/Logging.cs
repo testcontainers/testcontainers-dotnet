@@ -2,15 +2,14 @@ namespace DotNet.Testcontainers
 {
   using System;
   using System.Collections.Generic;
-  using System.Diagnostics.CodeAnalysis;
   using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
-  [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1309", MessageId = "Field names should not begin with underscore", Justification = "Do not apply rule for delegate fields.")]
-  [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Do not apply rule for delegate fields.")]
   internal static class Logging
   {
+#pragma warning disable InconsistentNaming, SA1309
+
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
 
@@ -79,6 +78,8 @@ namespace DotNet.Testcontainers
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
+
+#pragma warning restore InconsistentNaming, SA1309
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {
