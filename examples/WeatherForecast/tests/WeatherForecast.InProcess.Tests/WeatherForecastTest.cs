@@ -40,6 +40,8 @@ public sealed class WeatherForecastTest : IAsyncLifetime
 
     public Api(WeatherForecastTest weatherForecastTest)
     {
+      // Instead of using environment variables to bootstrap our application configuration, we can implement a custom WebApplicationFactory<TEntryPoint>
+      // that overrides the ConfigureWebHost(IWebHostBuilder) method to add a WeatherDataContext to the service collection.
       Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "https://+");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path", "certificate.crt");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password", "password");
