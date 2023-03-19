@@ -62,10 +62,25 @@
 
       var authProperty = this.rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryKey(property, hostname));
 
-      if (JsonValueKind.Undefined.Equals(authProperty.Value.ValueKind))
+      if (!JsonValueKind.Object.Equals(authProperty.Value.ValueKind))
       {
         return null;
       }
+
+      // if the json object has a property named 'identitytoken' then that value is all we need
+      // to authenticate. (no need for username or password as it is implied by the token)
+
+      if (authProperty.Value.TryGetProperty("identitytoken", out var identitytoken))
+      {
+        if (JsonValueKind.String.Equals(identitytoken.ValueKind))
+        {
+          this.logger.DockerRegistryCredentialFound(hostname);
+          return new DockerRegistryAuthenticationConfiguration(authProperty.Name, null, null, identitytoken.GetString());
+        }
+      }
+
+      // ... otherwise we expect the 'auth' property to contain the username and password
+      // in base64 encoded form and separated by a colon char.
 
       if (!authProperty.Value.TryGetProperty("auth", out var auth))
       {
