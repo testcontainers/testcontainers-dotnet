@@ -1,13 +1,8 @@
-using DotNet.Testcontainers.Configurations;
-using Microsoft.Extensions.Logging;
-
 namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder()
-        .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "2")
-        .Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
 
     public Task InitializeAsync()
     {
@@ -19,24 +14,10 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         return _cosmosDbContainer.DisposeAsync().AsTask();
     }
 
-    [Fact]
+    [Fact(Skip = "The Cosmos DB Linux Emulator Docker image does not run on Microsoft's CI environment (GitHub, Azure DevOps).")] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ConnectionStateReturnsOpen()
+    public async Task ReadAccountIdReturnsLocalhost()
     {
-        var (stdout, stderr) = await _cosmosDbContainer.GetLogs()
-            .ConfigureAwait(false);
-
-        var exitCode = await _cosmosDbContainer.GetExitCode()
-            .ConfigureAwait(false);
-
-        var state = _cosmosDbContainer.State;
-
-        var logger = TestcontainersSettings.Logger;
-        logger.LogInformation(state.ToString());
-        logger.LogInformation(exitCode.ToString());
-        logger.LogInformation(stdout);
-        logger.LogInformation(stderr);
-        
         // Given
         using var httpClient = _cosmosDbContainer.HttpClient;
 
