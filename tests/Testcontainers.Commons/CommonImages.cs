@@ -9,5 +9,5 @@ public static class CommonImages
 
     public static readonly IImage Nginx = new DockerImage("nginx:1.22");
 
-    public static readonly IImage ServerCore = new DockerImage("mcr.microsoft.com/windows/servercore:ltsc2019");
+    public static readonly IImage ServerCore = new DockerImage("mcr.microsoft.com/windows/servercore:ltsc2022");
 }
