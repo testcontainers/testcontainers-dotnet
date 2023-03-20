@@ -1,9 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-        <IsPackable>false</IsPackable>
-        <IsPublishable>false</IsPublishable>
-        <SignAssembly>true</SignAssembly>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>

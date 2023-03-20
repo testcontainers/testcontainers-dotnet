@@ -43,18 +43,7 @@ public sealed class MongoDbContainer : DockerContainer
         await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
             .ConfigureAwait(false);
 
-
-        var mongoShellCommand = new MongoDbShellCommand($"load('{scriptFilePath}')", _configuration.Username, _configuration.Password);
-
-        Logger.LogInformation(string.Format("{0}: {1}", Id, string.Join(" ", mongoShellCommand)));
-
-        var result = await ExecAsync(mongoShellCommand, ct)
+        return await ExecAsync(new MongoDbShellCommand($"load('{scriptFilePath}')", _configuration.Username, _configuration.Password), ct)
             .ConfigureAwait(false);
-
-        Logger.LogInformation(string.Format("{0}: {1}", "ExitCode", result.ExitCode));
-        Logger.LogInformation(string.Format("{0}: {1}", "Stdout", result.Stdout));
-        Logger.LogInformation(string.Format("{0}: {1}", "Stderr", result.Stderr));
-
-        return result;
     }
 }
