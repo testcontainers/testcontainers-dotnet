@@ -15,7 +15,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
     }
 
     [Fact(Skip = "The Cosmos DB Linux Emulator Docker image does not run on Microsoft's CI environment (GitHub, Azure DevOps).")] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
-    public async Task ReadAccountIdReturnsLocalhost()
+    public async Task AccountPropertiesIdReturnsLocalhost()
     {
         // Given
         using var httpClient = _cosmosDbContainer.HttpClient;

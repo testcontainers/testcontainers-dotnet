@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Commons;
+namespace Testcontainers.Platform.Windows.Tests;
 
 [PublicAPI]
 public sealed class SkipOnLinuxEngineAttribute : FactAttribute
