@@ -2,9 +2,7 @@ namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder()
-        .WithImage("mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator:latest")
-        .Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
 
     public Task InitializeAsync()
     {
@@ -16,8 +14,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         return _cosmosDbContainer.DisposeAsync().AsTask();
     }
 
-    [SkipOnLinuxEngine] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
+    [Fact(Skip = "The Cosmos DB Linux Emulator Docker image does not run on Microsoft's CI environment (GitHub, Azure DevOps).")] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
     public async Task ReadAccountIdReturnsLocalhost()
     {
         // Given
