@@ -52,9 +52,9 @@
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IReadOnlyDictionary<string, IResourceMapping> resourceMappings = null,
-      ISet<IContainer> containers = null,
-      ISet<IMount> mounts = null,
-      ISet<INetwork> networks = null,
+      IEnumerable<IContainer> containers = null,
+      IEnumerable<IMount> mounts = null,
+      IEnumerable<INetwork> networks = null,
       IEnumerable<string> networkAliases = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
@@ -177,13 +177,13 @@
     public IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
 
     /// <inheritdoc />
-    public ISet<IContainer> Containers { get; }
+    public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
-    public ISet<IMount> Mounts { get; }
+    public IEnumerable<IMount> Mounts { get; }
 
     /// <inheritdoc />
-    public ISet<INetwork> Networks { get; }
+    public IEnumerable<INetwork> Networks { get; }
 
     /// <inheritdoc />
     public IEnumerable<string> NetworkAliases { get; }

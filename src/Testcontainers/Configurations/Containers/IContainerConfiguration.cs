@@ -89,17 +89,17 @@
     /// <summary>
     /// Gets a list of containers.
     /// </summary>
-    ISet<IContainer> Containers { get; }
+    IEnumerable<IContainer> Containers { get; }
 
     /// <summary>
     /// Gets a list of mounts.
     /// </summary>
-    ISet<IMount> Mounts { get; }
+    IEnumerable<IMount> Mounts { get; }
 
     /// <summary>
     /// Gets a list of networks.
     /// </summary>
-    ISet<INetwork> Networks { get; }
+    IEnumerable<INetwork> Networks { get; }
 
     /// <summary>
     /// Gets a list of network-scoped aliases.

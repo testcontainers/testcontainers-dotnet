@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity DependsOn(IContainer container)
     {
-      var containers = new HashSet<IContainer> { container };
+      var containers = new[] { container };
       return this.Clone(new ContainerConfiguration(containers: containers));
     }
 
@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithMount(IMount mount)
     {
-      var mounts = new HashSet<IMount> { mount };
+      var mounts = new[] { mount };
       return this.Clone(new ContainerConfiguration(mounts: mounts));
     }
 
@@ -259,7 +259,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithNetwork(INetwork network)
     {
-      var networks = new HashSet<INetwork> { network };
+      var networks = new[] { network };
       return this.Clone(new ContainerConfiguration(networks: networks));
     }
 

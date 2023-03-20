@@ -43,19 +43,6 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
-    /// </summary>
-    /// <param name="oldValue">The old configuration.</param>
-    /// <param name="newValue">The new configuration.</param>
-    /// <typeparam name="T">Type of <see cref="ISet{T}" />.</typeparam>
-    /// <returns>An updated configuration.</returns>
-    public static ISet<T> Combine<T>(ISet<T> oldValue, ISet<T> newValue)
-      where T : class
-    {
-      return new HashSet<T>(Combine((IEnumerable<T>)oldValue, (IEnumerable<T>)newValue));
-    }
-
-    /// <summary>
     /// Combines all existing and new configuration changes while preserving the order of insertion.
     /// If there are no changes, the previous configurations are returned.
     /// </summary>

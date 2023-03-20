@@ -46,11 +46,13 @@ public sealed class DependsOnTests : IAsyncLifetime
 
         using var client = clientConfiguration.CreateClient();
 
-        var containersListParameters = new ContainersListParameters { All = true, Filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } } };
+        var filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } };
 
-        var networksListParameters = new NetworksListParameters { Filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } } };
+        var containersListParameters = new ContainersListParameters { All = true, Filters = filters };
 
-        var volumesListParameters = new VolumesListParameters { Filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } } };
+        var networksListParameters = new NetworksListParameters { Filters = filters };
+
+        var volumesListParameters = new VolumesListParameters { Filters = filters };
 
         // When
         var containers = await client.Containers.ListContainersAsync(containersListParameters)
