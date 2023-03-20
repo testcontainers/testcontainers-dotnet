@@ -2,7 +2,9 @@ namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder()
+        .WithImage("mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator:latest")
+        .Build();
 
     public Task InitializeAsync()
     {
