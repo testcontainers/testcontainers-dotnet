@@ -81,7 +81,6 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithEnvironment("DISPLAY_CONTAINER_NAME", WebDriverNetworkAlias)
             .Build();
 
-        // TODO: Pass the depended container (Docker resource) to the builder and resolve the dependency graph internal (not by an individual property).
         return Merge(DockerResourceConfiguration, new WebDriverConfiguration(ffmpegContainer: ffmpegContainer));
     }
 

@@ -1,6 +1,6 @@
 # PostgreSQL
 
-Here is an example of a pre-configured PostgreSQL container. In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query against it.
+Here is an example of a pre-configured PostgreSQL module. In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query against it.
 
 ```csharp
 public sealed class PostgreSqlContainerTest : IAsyncLifetime

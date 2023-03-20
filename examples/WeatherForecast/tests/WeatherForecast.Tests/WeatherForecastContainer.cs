@@ -33,7 +33,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     const string weatherForecastStorage = "weatherForecastStorage";
 
-    const string connectionString = $"server={weatherForecastStorage};user id=sa;password={SqlEdgeBuilder.DefaultPassword};database={SqlEdgeBuilder.DefaultDatabase}";
+    const string connectionString = $"server={weatherForecastStorage};user id={SqlEdgeBuilder.DefaultUsername};password={SqlEdgeBuilder.DefaultPassword};database={SqlEdgeBuilder.DefaultDatabase}";
 
     _weatherForecastNetwork = new NetworkBuilder()
       .Build();

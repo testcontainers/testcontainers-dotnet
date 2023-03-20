@@ -18,7 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
-  // No database connection string is available. Start and seed a database using Testcontainers for .NET first.
+  // The application configuration does not include a database connection string, use Testcontainers for .NET to create, start and seed the dependent database.
   builder.Services.AddSingleton<DatabaseContainer>();
   builder.Services.AddHostedService(services => services.GetRequiredService<DatabaseContainer>());
   builder.Services.AddDbContext<WeatherDataContext>((services, options) =>
@@ -29,6 +29,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 else
 {
+  // The application configuration includes a database connection string, use it to establish a connection and seed the database.
   builder.Services.AddDbContext<WeatherDataContext>((_, options) => options.UseSqlServer(connectionString));
 }
 

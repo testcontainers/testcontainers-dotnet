@@ -4,7 +4,7 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
-    public const string RedpandaImage = "docker.redpanda.com/vectorized/redpanda:v22.2.1";
+    public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
     public const ushort RedpandaPort = 9092;
 

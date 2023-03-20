@@ -1,26 +1,30 @@
 # ASP.NET Core Blazor
 
-No matter if your tests require databases, message brokers, your own services or even a running instance of your entire application, leveraging Testcontainers in your tests means you can set up the infrastructure fast and reliably. You can also run tests in parallel against multiple lightweight or a single shared heavyweight instance, depending on the use case. xUnit.net’s [shared context][xunit-shared-context] offers several methods to access resources efficiently among different tests and scopes.
+No matter if your tests require databases, message brokers, your own services or even a running instance of your entire application, leveraging Testcontainers in your tests means you can set up the infrastructure fast and reliably. You can also run tests in parallel against multiple lightweight or a single shared heavyweight instance, depending on the use case. xUnit.net’s [shared context](https://xunit.net/docs/shared-context) offers several methods to access resources efficiently among different tests and scopes.
 
-The following example adds tests to an ASP.NET Core Blazor application. The tests cover the web front-end including the REST API of a weather forecast application. Testcontainers builds and ships our app in a Docker image, runs it in a Docker container, orchestrates the necessary resources, and executes the tests against it. This setup includes a Microsoft SQL Server to persist data and covers a common use case among many productive .NET applications. You find the entire example in the [testcontainers-dotnet][testcontainers-dotnet-weather-forecast-example] repository.
+The following example adds tests to an ASP.NET Core Blazor application. The tests cover the web front-end including the REST API of a weather forecast application. Testcontainers builds and ships our app in a Docker image, runs it in a Docker container, orchestrates the necessary resources, and executes the tests against it. This setup includes a Microsoft SQL Server to persist data and covers a common use case among many productive .NET applications. You find the entire example in the [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/examples/WeatherForecast) repository.
+
+To use Testcontainers' pre-configured Microsoft SQL Server module, add the [Testcontainers.MsSql](https://www.nuget.org/packages/Testcontainers.MsSql) NuGet dependency to your test project:
+
+```console
+dotnet add package Testcontainers.MsSql --version 3.0.0
+```
+
+!!! note
+
+    The Microsoft SQL Server Docker image is not compatible with ARM devices, such as Macs with Apple Silicon. Instead, you can use the [SqlEdge](https://www.nuget.org/packages/Testcontainers.SqlEdge) module or [Testcontainers Cloud](https://www.testcontainers.cloud/).
 
 The `WeatherForecastContainer` class configures in the default constructor all dependencies to start the container that hosts our application.
 
 ```csharp
 const string weatherForecastStorage = "weatherForecastStorage";
 
-var mssqlConfiguration = new MsSqlTestcontainerConfiguration();
-mssqlConfiguration.Password = Guid.NewGuid().ToString("D");
-mssqlConfiguration.Database = Guid.NewGuid().ToString("D");
-
-var connectionString = $"server={weatherForecastStorage};user id=sa;password={mssqlConfiguration.Password};database={mssqlConfiguration.Database}";
+const string connectionString = $"server={weatherForecastStorage};user id={MsSqlBuilder.DefaultUsername};password={MsSqlBuilder.DefaultPassword};database={MsSqlBuilder.DefaultDatabase}";
 
 _weatherForecastNetwork = new NetworkBuilder()
-  .WithName(Guid.NewGuid().ToString("D"))
   .Build();
 
-_mssqlContainer = new ContainerBuilder<MsSqlTestcontainer>()
-  .WithDatabase(mssqlConfiguration)
+_msSqlContainer = new MsSqlBuilder()
   .WithNetwork(_weatherForecastNetwork)
   .WithNetworkAliases(weatherForecastStorage)
   .Build();
@@ -46,7 +50,7 @@ await Image.InitializeAsync()
 await _weatherForecastNetwork.CreateAsync()
   .ConfigureAwait(false);
 
-await _mssqlContainer.StartAsync()
+await _msSqlContainer.StartAsync()
   .ConfigureAwait(false);
 
 await _weatherForecastContainer.StartAsync()
@@ -57,5 +61,4 @@ xUnit.net passes the `WeatherForecastContainer` class fixture instance to the te
 
 As soon as the container is up and the application is running, each test sends an HTTP request to the weather forecast application and validates the REST or web front-end response. To visualize the web front-end, Selenium takes a screenshot right before and after the test.
 
-[xunit-shared-context]: https://xunit.net/docs/shared-context
-[testcontainers-dotnet-weather-forecast-example]: https://github.com/testcontainers/testcontainers-dotnet/tree/develop/examples/WeatherForecast
+Testcontainers not only works great for testing an application or service out-of-process, as shown in the example above, but it is probably even better for testing it in-process as shown in [this](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/examples/WeatherForecast/tests/WeatherForecast.InProcess.Tests) example. When used in conjunction with the ASP.NET `WebApplicationFactory<TEntryPoint>` class, Testcontainers spins up the dependent container together with the application, resulting in much faster tests. Depending on the application or service configuration, adding Testcontainers to bootstrap dependent services significantly improves the development experience. There is no longer a need to ensure that dependent services are running and wired up correctly on the development machine or CI environment.
