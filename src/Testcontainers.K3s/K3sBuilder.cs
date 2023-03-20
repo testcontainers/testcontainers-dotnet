@@ -40,15 +40,15 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Init()
     {
         return base.Init().WithImage(RancherImage)
-            .WithPortBinding(KubeSecurePort)
-            .WithPortBinding(RancherWebhookPort)
+            .WithPortBinding(KubeSecurePort, true)
+            .WithPortBinding(RancherWebhookPort, true)
             .WithPrivileged(true)
             .WithCreateParameterModifier(it => it.HostConfig.CgroupnsMode = "host")
             .WithBindMount("/sys/fs/cgroup", "/sys/fs/cgroup", AccessMode.ReadWrite)
             .WithTmpfsMount("/run")
             .WithTmpfsMount("/var/run")
             .WithCommand("server", "--disable=traefik")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new LogMessageWaitStrategy(SuccessMessage)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(SuccessMessage));
     }
 
     /// <inheritdoc />
@@ -67,35 +67,5 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Merge(K3sConfiguration oldValue, K3sConfiguration newValue)
     {
         return new K3sBuilder(new K3sConfiguration(oldValue, newValue));
-    }
-
-    public sealed class LogMessageWaitStrategy : IWaitUntil {
-        private readonly string _regex;
-
-        // timeout in seconds
-        private readonly int _timeOut;
-
-        public LogMessageWaitStrategy(string regex, int timeOut = 60) {
-            _regex = regex ?? throw new ArgumentException($"{nameof(regex)} is null or empty.");
-            _timeOut = timeOut;
-        }
-
-        public async Task<bool> UntilAsync(IContainer container) {
-            var regex = new Regex(_regex);
-            var sw = new Stopwatch();
-
-            sw.Start();
-
-            while (true) {
-                var (stdout, stderr) = await container.GetLogs().ConfigureAwait(false);
-                if (regex.IsMatch(stdout) || regex.IsMatch(stderr)) {
-                    return true;
-                }
-
-                if (sw.Elapsed.Seconds > _timeOut) {
-                    throw new TimeoutException();
-                }
-            }
-        }
     }
 }

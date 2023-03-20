@@ -4,16 +4,35 @@ namespace Testcontainers.K3s;
 [PublicAPI]
 public sealed class K3sContainer : DockerContainer
 {
-    public string KubeConfigYaml { get; private set; }
+    private string _kubeConfigYaml;
 
     private void OnContainerStarted() {
-        InitKubeConfig().Wait();
+        InitKubeConfigAsync().Wait();
     }
 
-    private async Task InitKubeConfig() {
-        var configBytes = await ReadFileAsync("/etc/rancher/k3s/k3s.yaml");
-        KubeConfigYaml = Encoding.UTF8.GetString(configBytes);
+    private string GetConfigWithServerUrl(string kubeConfigYaml, string serverUrl) {
+        var yaml = new YamlStream();
+        using var reader = new StringReader(kubeConfigYaml);
+        yaml.Load(reader);
+        
+        var rootNode = (YamlMappingNode) yaml.Documents[0].RootNode;
+        var clusters = (YamlMappingNode) rootNode["clusters"][0];
+        ((YamlScalarNode) clusters.Children["cluster"]["server"]).Value = serverUrl;
+        
+        using var writer = new StringWriter();
+        yaml.Save(writer);
+        
+        return writer.ToString();
     }
+
+    private async Task InitKubeConfigAsync() {
+        var configBytes = await ReadFileAsync("/etc/rancher/k3s/k3s.yaml");
+        var serverUrl = $"https://{Hostname}:{GetMappedPublicPort(K3sBuilder.KubeSecurePort)}";
+        var kubeConfigYaml = Encoding.UTF8.GetString(configBytes);
+        _kubeConfigYaml = GetConfigWithServerUrl(kubeConfigYaml, serverUrl);
+    }
+    
+    public string GetKubeConfig() => _kubeConfigYaml;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sContainer" /> class.

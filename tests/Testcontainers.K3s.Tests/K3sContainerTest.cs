@@ -18,7 +18,7 @@ public sealed class K3sContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateNamespaceSuccessfully()
     {
-        var config = _k3sConainter.KubeConfigYaml;
+        var config = _k3sConainter.GetKubeConfig();
 
         Assert.NotNull(config);
         Assert.NotEmpty(config);
