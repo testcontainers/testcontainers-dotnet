@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 namespace Testcontainers.K3s;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -12,7 +8,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     public const int RancherWebhookPort = 8443;
     public const string RancherImage = "rancher/k3s:v1.26.2-k3s1";
     public const string SuccessMessage = ".*Node controller sync successful.*";
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
@@ -30,7 +26,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
+    /// <inheritdoc />
     protected override K3sConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
@@ -40,7 +36,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
         return new K3sContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
+    /// <inheritdoc />
     protected override K3sBuilder Init()
     {
         return base.Init().WithImage(RancherImage)
