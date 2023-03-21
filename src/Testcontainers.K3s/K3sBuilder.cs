@@ -4,15 +4,17 @@ namespace Testcontainers.K3s;
 [PublicAPI]
 public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sConfiguration>
 {
-    public const int KubeSecurePort = 6443;
-    public const int RancherWebhookPort = 8443;
     public const string RancherImage = "rancher/k3s:v1.26.2-k3s1";
-    public const string SuccessMessage = ".*Node controller sync successful.*";
+
+    public const ushort KubeSecurePort = 6443;
+
+    public const ushort RancherWebhookPort = 8443;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
-    public K3sBuilder() : this(new K3sConfiguration())
+    public K3sBuilder()
+        : this(new K3sConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
@@ -21,7 +23,8 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private K3sBuilder(K3sConfiguration resourceConfiguration) : base(resourceConfiguration)
+    private K3sBuilder(K3sConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
         DockerResourceConfiguration = resourceConfiguration;
     }
@@ -39,16 +42,17 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// <inheritdoc />
     protected override K3sBuilder Init()
     {
-        return base.Init().WithImage(RancherImage)
+        return base.Init()
+            .WithImage(RancherImage)
+            .WithPrivileged(true)
             .WithPortBinding(KubeSecurePort, true)
             .WithPortBinding(RancherWebhookPort, true)
-            .WithPrivileged(true)
-            .WithCreateParameterModifier(it => it.HostConfig.CgroupnsMode = "host")
             .WithBindMount("/sys/fs/cgroup", "/sys/fs/cgroup", AccessMode.ReadWrite)
             .WithTmpfsMount("/run")
             .WithTmpfsMount("/var/run")
             .WithCommand("server", "--disable=traefik")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(SuccessMessage));
+            .WithCreateParameterModifier(parameterModifier => parameterModifier.HostConfig.CgroupnsMode = "host")
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -67,5 +71,18 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Merge(K3sConfiguration oldValue, K3sConfiguration newValue)
     {
         return new K3sBuilder(new K3sConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (_, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
+            return stderr.Contains("Node controller sync successful");
+        }
     }
 }

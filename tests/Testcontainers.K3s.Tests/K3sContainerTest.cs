@@ -1,4 +1,4 @@
-namespace Testcontainers.K3s.Tests;
+namespace Testcontainers.K3s;
 
 public sealed class K3sContainerTest : IAsyncLifetime
 {
@@ -16,22 +16,27 @@ public sealed class K3sContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task CreateNamespaceSuccessfully()
+    public async Task CreateNamespaceReturnsHttpStatusCodeCreated()
     {
-        var config = _k3sConainter.GetKubeConfig();
+        // Given
+        using var kubeconfigStream = new MemoryStream();
 
-        Assert.NotNull(config);
-        Assert.NotEmpty(config);
+        var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
+            .ConfigureAwait(false);
 
-        var tempFile = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-        await File.WriteAllTextAsync(tempFile, config);
+        await kubeconfigStream.WriteAsync(Encoding.Default.GetBytes(kubeconfig))
+            .ConfigureAwait(false);
 
-        var configFile = new FileInfo(tempFile);
-        var k8sConfig = await KubernetesClientConfiguration.BuildConfigFromConfigFileAsync(configFile);
-        var client = new Kubernetes(k8sConfig);
+        var clientConfiguration = await KubernetesClientConfiguration.BuildConfigFromConfigFileAsync(kubeconfigStream)
+            .ConfigureAwait(false);
 
-        var res = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(new V1Namespace
-            { Metadata = new V1ObjectMeta { Name = "namespace" } });
-        Assert.Equal(System.Net.HttpStatusCode.Created, res.Response.StatusCode);
+        using var client = new Kubernetes(clientConfiguration);
+
+        // When
+        using var response = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(new V1Namespace(metadata: new V1ObjectMeta(name: Guid.NewGuid().ToString("D"))))
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(HttpStatusCode.Created, response.Response.StatusCode);
     }
 }
