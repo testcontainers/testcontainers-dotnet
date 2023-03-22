@@ -370,19 +370,25 @@ namespace DotNet.Testcontainers.Builders
           this.Name = name;
         }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public ValueTask DisposeAsync()
+        {
+          return default;
         }
       }
     }
@@ -430,19 +436,24 @@ namespace DotNet.Testcontainers.Builders
           this.Name = name;
         }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
+        }
+
+        public ValueTask DisposeAsync()
+        {
+          return default;
         }
       }
     }

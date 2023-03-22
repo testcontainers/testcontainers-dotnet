@@ -42,6 +42,34 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
+      using (_ = this.AcquireLock())
+      {
+        await this.UnsafeCreateAsync(ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(CancellationToken ct = default)
+    {
+      using (_ = this.AcquireLock())
+      {
+        await this.UnsafeDeleteAsync(ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    protected override bool Exists()
+    {
+      return !string.IsNullOrEmpty(this.network.ID);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
       if (this.Exists())
       {
         return;
@@ -55,18 +83,19 @@ namespace DotNet.Testcontainers.Networks
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(CancellationToken ct = default)
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
+      this.ThrowIfLockNotAcquired();
+
+      if (!this.Exists())
+      {
+        return;
+      }
+
       await this.dockerNetworkOperations.DeleteAsync(this.network.ID, ct)
         .ConfigureAwait(false);
 
       this.network = new NetworkResponse();
-    }
-
-    /// <inheritdoc />
-    protected override bool Exists()
-    {
-      return !string.IsNullOrEmpty(this.network.ID);
     }
   }
 }
