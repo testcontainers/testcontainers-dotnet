@@ -128,18 +128,12 @@
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     ushort GetMappedPublicPort(string containerPort);
 
-    /// <inheritdoc cref="GetExitCodeAsync" />
-    Task<long> GetExitCode(CancellationToken ct = default);
-
     /// <summary>
     /// Gets the container exit code.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container exit code.</returns>
     Task<long> GetExitCodeAsync(CancellationToken ct = default);
-
-    /// <inheritdoc cref="GetLogsAsync" />
-    Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the container logs.

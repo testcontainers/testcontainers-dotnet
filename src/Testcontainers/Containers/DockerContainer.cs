@@ -234,21 +234,9 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task<long> GetExitCode(CancellationToken ct = default)
-    {
-      return this.GetExitCodeAsync(ct);
-    }
-
-    /// <inheritdoc />
     public Task<long> GetExitCodeAsync(CancellationToken ct = default)
     {
       return this.client.GetContainerExitCodeAsync(this.Id, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
-    {
-      return this.GetLogsAsync(since, until, timestampsEnabled, ct);
     }
 
     /// <inheritdoc />
