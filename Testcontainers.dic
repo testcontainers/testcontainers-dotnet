@@ -12,6 +12,7 @@ httpd
 identitytoken
 initdb
 isready
+kubeconfig
 lipsum
 ltsc
 memopt
