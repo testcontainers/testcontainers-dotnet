@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Volumes
 {
+  using System;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -57,6 +58,24 @@ namespace DotNet.Testcontainers.Volumes
         await this.UnsafeDeleteAsync(ct)
           .ConfigureAwait(false);
       }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
+    {
+      if (this.Disposed)
+      {
+        return;
+      }
+
+      if (!Guid.Empty.Equals(this.configuration.SessionId))
+      {
+        await this.DeleteAsync()
+          .ConfigureAwait(false);
+      }
+
+      await base.DisposeAsyncCore()
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />

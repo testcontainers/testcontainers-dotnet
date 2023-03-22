@@ -3,12 +3,8 @@
 namespace DotNet.Testcontainers
 {
   using System;
-  using System.Collections.Generic;
-  using System.Threading;
-  using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
-  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
