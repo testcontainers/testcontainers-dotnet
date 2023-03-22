@@ -22,15 +22,11 @@ namespace DotNet.Testcontainers.Containers
 
     private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
 
-    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
-
     private readonly ITestcontainersClient client;
 
     private readonly IContainerConfiguration configuration;
 
     private ContainerInspectResponse container = new ContainerInspectResponse();
-
-    private int disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
@@ -273,7 +269,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public virtual async Task StartAsync(CancellationToken ct = default)
     {
-      using (_ = new AcquireLock(this.semaphoreSlim))
+      using (_ = this.AcquireLock())
       {
         var futureResources = Array.Empty<IFutureResource>()
           .Concat(this.configuration.Mounts)
@@ -296,7 +292,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public virtual async Task StopAsync(CancellationToken ct = default)
     {
-      using (_ = new AcquireLock(this.semaphoreSlim))
+      using (_ = this.AcquireLock())
       {
         await this.UnsafeStopAsync(ct)
           .ConfigureAwait(false);
@@ -322,14 +318,14 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
-    protected virtual async ValueTask DisposeAsyncCore()
+    protected override async ValueTask DisposeAsyncCore()
     {
-      if (1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0)))
+      if (this.Disposed)
       {
         return;
       }
 
-      using (_ = new AcquireLock(this.semaphoreSlim))
+      using (_ = this.AcquireLock())
       {
         if (Guid.Empty.Equals(this.configuration.SessionId))
         {
@@ -343,18 +339,15 @@ namespace DotNet.Testcontainers.Containers
         }
       }
 
-      this.semaphoreSlim.Dispose();
+      await base.DisposeAsyncCore()
+        .ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Creates the container.
-    /// </summary>
+    /// <inheritdoc />
     /// <remarks>
     /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been created.</returns>
-    protected virtual async Task UnsafeCreateAsync(CancellationToken ct = default)
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
       this.ThrowIfLockNotAcquired();
 
@@ -374,15 +367,11 @@ namespace DotNet.Testcontainers.Containers
       this.Created?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Deletes the container.
-    /// </summary>
+    /// <inheritdoc />
     /// <remarks>
     /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
     /// </remarks>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been deleted.</returns>
-    protected virtual async Task UnsafeDeleteAsync(CancellationToken ct = default)
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
       this.ThrowIfLockNotAcquired();
 
@@ -486,32 +475,6 @@ namespace DotNet.Testcontainers.Containers
     protected override bool Exists()
     {
       return ContainerHasBeenCreatedStates.HasFlag(this.State);
-    }
-
-    /// <summary>
-    /// Throws an <see cref="InvalidOperationException" /> when the lock is not acquired.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">The lock is not acquired.</exception>
-    protected virtual void ThrowIfLockNotAcquired()
-    {
-      _ = Guard.Argument(this.semaphoreSlim, nameof(this.semaphoreSlim))
-        .ThrowIf(argument => argument.Value.CurrentCount > 0, _ => new InvalidOperationException("Unsafe method call requires lock."));
-    }
-
-    private sealed class AcquireLock : IDisposable
-    {
-      private readonly SemaphoreSlim semaphoreSlim;
-
-      public AcquireLock(SemaphoreSlim semaphoreSlim)
-      {
-        this.semaphoreSlim = semaphoreSlim;
-        this.semaphoreSlim.Wait();
-      }
-
-      public void Dispose()
-      {
-        this.semaphoreSlim.Release();
-      }
     }
   }
 }
