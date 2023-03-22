@@ -14,9 +14,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private const string TmpfsDestination = "/dev/shm";
 
-    private readonly ITestcontainersContainer testcontainer1;
+    private readonly IContainer testcontainer1;
 
-    private readonly ITestcontainersContainer testcontainer2;
+    private readonly IContainer testcontainer2;
 
     public TestcontainersVolumeTest(VolumeFixture volumeFixture)
     {

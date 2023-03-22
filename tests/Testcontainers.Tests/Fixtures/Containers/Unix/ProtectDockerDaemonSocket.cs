@@ -24,7 +24,7 @@
 
     private readonly IImage image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
 
-    private readonly ITestcontainersContainer container;
+    private readonly IContainer container;
 
     protected ProtectDockerDaemonSocket(ContainerBuilder<TestcontainersContainer> containerConfiguration)
     {

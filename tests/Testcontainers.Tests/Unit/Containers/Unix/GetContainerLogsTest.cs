@@ -8,7 +8,7 @@
 
   public sealed class GetContainerLogsTest : IAsyncLifetime
   {
-    private readonly ITestcontainersContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage("amazon/dynamodb-local:1.20.0")
       .WithWaitStrategy(Wait.ForUnixContainer()
         .UntilPortIsAvailable(8000))

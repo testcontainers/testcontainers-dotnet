@@ -15,68 +15,6 @@ namespace DotNet.Testcontainers
   namespace Containers
   {
     [PublicAPI]
-    [Obsolete("Use the IContainer interface instead.")]
-    public interface ITestcontainersContainer : IDockerContainer
-    {
-    }
-
-    [PublicAPI]
-    [Obsolete("Use the IContainer interface instead.")]
-    public interface IDockerContainer
-    {
-      [NotNull]
-      ILogger Logger { get; }
-
-      [NotNull]
-      string Id { get; }
-
-      [NotNull]
-      string Name { get; }
-
-      [NotNull]
-      string IpAddress { get; }
-
-      [NotNull]
-      string MacAddress { get; }
-
-      [NotNull]
-      string Hostname { get; }
-
-      [NotNull]
-      IImage Image { get; }
-
-      TestcontainersStates State { get; }
-
-      TestcontainersHealthStatus Health { get; }
-
-      long HealthCheckFailingStreak { get; }
-
-      ushort GetMappedPublicPort(int containerPort);
-
-      ushort GetMappedPublicPort(string containerPort);
-
-      [Obsolete("Use IContainer.GetExitCodeAsync(CancellationToken) instead.")]
-      Task<long> GetExitCode(CancellationToken ct = default);
-
-      Task<long> GetExitCodeAsync(CancellationToken ct = default);
-
-      [Obsolete("Use IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
-      Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
-
-      Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
-
-      Task StartAsync(CancellationToken ct = default);
-
-      Task StopAsync(CancellationToken ct = default);
-
-      Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
-
-      Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
-
-      Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
-    }
-
-    [PublicAPI]
     [Obsolete("Use the DockerContainer class instead.")]
     public sealed class TestcontainersContainer : DockerContainer
     {
