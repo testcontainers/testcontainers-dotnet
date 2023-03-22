@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers
 
     [PublicAPI]
     [Obsolete("Use the IContainer interface instead.")]
-    public interface IDockerContainer : IAsyncDisposable
+    public interface IDockerContainer
     {
       [NotNull]
       ILogger Logger { get; }

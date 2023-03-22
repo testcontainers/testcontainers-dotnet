@@ -10,7 +10,7 @@
   /// A resource instance.
   /// </summary>
   [PublicAPI]
-  public abstract class Resource
+  public abstract class Resource : IAsyncDisposable
   {
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
@@ -20,6 +20,15 @@
     /// Gets a value indicating whether the resource has been disposed or not.
     /// </summary>
     protected bool Disposed => 1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0));
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+      await this.DisposeAsyncCore()
+        .ConfigureAwait(false);
+
+      GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Checks whether the resources exists or not.

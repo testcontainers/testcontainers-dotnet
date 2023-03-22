@@ -258,15 +258,6 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-      await this.DisposeAsyncCore()
-        .ConfigureAwait(false);
-
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc />
     public virtual async Task StartAsync(CancellationToken ct = default)
     {
       using (_ = this.AcquireLock())
