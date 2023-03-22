@@ -58,10 +58,10 @@ public sealed class CosmosDbContainer : DockerContainer
         }
 
         /// <inheritdoc />
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             request.RequestUri = new UriBuilder(Uri.UriSchemeHttps, _hostname, _port, request.RequestUri.PathAndQuery).Uri;
-            return base.SendAsync(request, ct);
+            return base.SendAsync(request, cancellationToken);
         }
     }
 }
