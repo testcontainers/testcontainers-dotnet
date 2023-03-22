@@ -31,7 +31,6 @@
       this.container = containerConfiguration
         .WithImage(this.image)
         .WithPrivileged(true)
-        .WithExposedPort(TlsPort)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(this.hostCertsDirectoryPath, this.containerCertsDirectoryPath, AccessMode.ReadWrite)
         .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilListenOn()))
