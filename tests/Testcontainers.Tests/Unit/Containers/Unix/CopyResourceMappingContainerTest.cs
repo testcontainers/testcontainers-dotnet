@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
     private readonly string resourceMappingBytesDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
 
-    private readonly IDockerContainer container;
+    private readonly IContainer container;
 
     public CopyResourceMappingContainerTest()
     {

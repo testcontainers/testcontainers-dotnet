@@ -71,7 +71,7 @@
       await Task.Delay(TimeSpan.FromSeconds(1))
         .ConfigureAwait(false);
 
-      var (stdout, _) = await this.container.GetLogs()
+      var (stdout, _) = await this.container.GetLogsAsync()
         .ConfigureAwait(false);
 
       // Then

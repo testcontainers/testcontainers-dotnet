@@ -7,7 +7,7 @@
   /// A network instance.
   /// </summary>
   [PublicAPI]
-  public interface INetwork : IFutureResource
+  public interface INetwork : IFutureResource, IAsyncDisposable
   {
     /// <summary>
     /// Gets the name.

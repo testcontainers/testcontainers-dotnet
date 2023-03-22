@@ -38,7 +38,7 @@
         TestcontainersSettings.HubImageNamePrefix = hubImageNamePrefix;
 
         // When
-        IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage(imageName)
           .Build();
 
@@ -56,7 +56,7 @@
         IImage image = new DockerImage(imageName);
 
         // When
-        IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage(image)
           .Build();
 
@@ -85,7 +85,7 @@
         const string imageName = "bar:latest";
 
         // When
-        IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage(imageName)
           .Build();
 
@@ -102,7 +102,7 @@
         IImage image = new DockerImage(imageName);
 
         // When
-        IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
           .WithImage(image)
           .Build();
 

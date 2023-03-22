@@ -72,7 +72,7 @@
     {
       public async Task<bool> UntilAsync(IContainer container)
       {
-        var (_, stderr) = await container.GetLogs()
+        var (_, stderr) = await container.GetLogsAsync()
           .ConfigureAwait(false);
 
         return stderr != null && stderr.Contains("API listen on [::]:2376");

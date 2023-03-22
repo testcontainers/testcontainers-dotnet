@@ -17,7 +17,7 @@
     [Fact]
     public async Task GetLogsShouldNotBeEmpty()
     {
-      var (stdout, _) = await this.container.GetLogs()
+      var (stdout, _) = await this.container.GetLogsAsync()
         .ConfigureAwait(false);
 
       Assert.NotEmpty(stdout);
@@ -26,7 +26,7 @@
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenSinceIsOutOfDateRage()
     {
-      var (stdout, stderr) = await this.container.GetLogs(since: DateTime.Now.AddDays(1))
+      var (stdout, stderr) = await this.container.GetLogsAsync(since: DateTime.Now.AddDays(1))
         .ConfigureAwait(false);
 
       Assert.Empty(stdout);
@@ -36,7 +36,7 @@
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenUntilIsOutOfDateRage()
     {
-      var (stdout, stderr) = await this.container.GetLogs(until: DateTime.Now.AddDays(-1))
+      var (stdout, stderr) = await this.container.GetLogsAsync(until: DateTime.Now.AddDays(-1))
         .ConfigureAwait(false);
 
       Assert.Empty(stdout);

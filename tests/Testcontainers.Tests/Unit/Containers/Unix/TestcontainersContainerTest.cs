@@ -84,7 +84,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(0, await testcontainer.GetExitCode());
+          Assert.Equal(0, await testcontainer.GetExitCodeAsync());
         }
       }
 
@@ -122,7 +122,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(0, await testcontainer.GetExitCode());
+          Assert.Equal(0, await testcontainer.GetExitCodeAsync());
         }
       }
 
@@ -139,7 +139,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(255, await testcontainer.GetExitCode());
+          Assert.Equal(255, await testcontainer.GetExitCodeAsync());
         }
       }
 

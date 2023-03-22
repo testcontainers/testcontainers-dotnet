@@ -12,7 +12,7 @@
   /// A container instance.
   /// </summary>
   [PublicAPI]
-  public interface IContainer
+  public interface IContainer : IAsyncDisposable
   {
     /// <summary>
     /// Subscribes to the creating event.
