@@ -4,8 +4,6 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
 {
     private readonly JanusGraphContainer _janusGraphContainer = new JanusGraphBuilder().Build();
 
-    private IGremlinClient _client;
-
     public Task InitializeAsync()
     {
         return _janusGraphContainer.StartAsync();
@@ -16,24 +14,27 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
         return _janusGraphContainer.DisposeAsync().AsTask();
     }
 
-    private GraphTraversalSource GraphTraversalSource => Traversal().WithRemote(new DriverRemoteConnection(GremlinClient()));
-
-    private IGremlinClient GremlinClient()
-    {
-        _client ??= new GremlinClient(new GremlinServer(_janusGraphContainer.Hostname,
-          _janusGraphContainer.GetMappedPublicPort(JanusGraphBuilder.JanusGraphPort)), new JanusGraphGraphSONMessageSerializer());
-        return _client;
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task InsertedVertexCanBeFound()
     {
-        var g = GraphTraversalSource;
-        await g.AddV("testLabel").Promise(t => t.Iterate());
+        // Given
+        var label = Guid.NewGuid().ToString("D");
 
-        var actualCount = await g.V().HasLabel("testLabel").Count().Promise(t => t.Next());
+        using var client = new GremlinClient(new GremlinServer(_janusGraphContainer.Hostname, _janusGraphContainer.GetMappedPublicPort(JanusGraphBuilder.JanusGraphPort)), new JanusGraphGraphSONMessageSerializer());
 
-        Assert.Equal(1, actualCount);
+        using var connection = new DriverRemoteConnection(client);
+
+        var graphTraversalSource = AnonymousTraversalSource.Traversal().WithRemote(connection);
+
+        // When
+        await graphTraversalSource.AddV(label).Promise(traversal => traversal.Iterate())
+            .ConfigureAwait(false);
+
+        var count = await graphTraversalSource.V().HasLabel(label).Count().Promise(traversal => traversal.Next())
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(1, count);
     }
 }
