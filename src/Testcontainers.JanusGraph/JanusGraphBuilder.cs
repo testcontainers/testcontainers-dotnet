@@ -4,7 +4,7 @@ namespace Testcontainers.JanusGraph;
 [PublicAPI]
 public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
 {
-    public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0-rc2";
+    public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0";
 
     public const ushort JanusGraphPort = 8182;
 
