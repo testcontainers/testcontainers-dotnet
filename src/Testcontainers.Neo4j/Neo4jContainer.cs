@@ -20,6 +20,6 @@ public sealed class Neo4jContainer : DockerContainer
     /// <returns>The Neo4j connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("neo4j", Hostname, GetMappedPublicPort(Neo4jBuilder.Neo4JBoltPort)).ToString();
+        return new UriBuilder("neo4j", Hostname, GetMappedPublicPort(Neo4jBuilder.Neo4jBoltPort)).ToString();
     }
 }
