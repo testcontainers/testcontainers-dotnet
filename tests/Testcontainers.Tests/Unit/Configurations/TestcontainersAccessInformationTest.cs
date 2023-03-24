@@ -60,7 +60,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
 
@@ -81,7 +81,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           Assert.Throws<InvalidOperationException>(() => testcontainer.Id);
           Assert.Throws<InvalidOperationException>(() => testcontainer.Name);

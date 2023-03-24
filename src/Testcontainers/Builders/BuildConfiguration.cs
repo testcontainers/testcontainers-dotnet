@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.Linq;
 
   public static class BuildConfiguration
@@ -27,6 +29,11 @@ namespace DotNet.Testcontainers.Builders
     public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
       where T : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return Array.Empty<T>();
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;
@@ -46,6 +53,11 @@ namespace DotNet.Testcontainers.Builders
     public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
       where T : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return Array.Empty<T>();
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;
@@ -66,6 +78,11 @@ namespace DotNet.Testcontainers.Builders
       where TKey : class
       where TValue : class
     {
+      if (newValue == null && oldValue == null)
+      {
+        return new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+      }
+
       if (newValue == null || oldValue == null)
       {
         return newValue ?? oldValue;

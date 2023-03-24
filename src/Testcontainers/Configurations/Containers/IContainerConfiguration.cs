@@ -87,12 +87,17 @@
     IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
 
     /// <summary>
-    /// Gets a list of mounts.
+    /// Gets a list of dependent containers.
+    /// </summary>
+    IEnumerable<IContainer> Containers { get; }
+
+    /// <summary>
+    /// Gets a list of dependent mounts.
     /// </summary>
     IEnumerable<IMount> Mounts { get; }
 
     /// <summary>
-    /// Gets a list of networks.
+    /// Gets a list of dependent networks.
     /// </summary>
     IEnumerable<INetwork> Networks { get; }
 

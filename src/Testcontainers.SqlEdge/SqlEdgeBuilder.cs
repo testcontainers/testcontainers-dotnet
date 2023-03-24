@@ -127,7 +127,7 @@ public sealed class SqlEdgeBuilder : ContainerBuilder<SqlEdgeBuilder, SqlEdgeCon
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogs(timestampsEnabled: false)
+            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return stdout.Contains("Recovery is complete.");

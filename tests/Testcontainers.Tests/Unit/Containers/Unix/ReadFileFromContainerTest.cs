@@ -11,7 +11,7 @@
 
   public sealed class ReadFileFromContainerTest : IAsyncLifetime
   {
-    private readonly IDockerContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage("alpine")
       .WithEntrypoint(CommonCommands.SleepInfinity)
       .Build();

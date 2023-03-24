@@ -33,6 +33,18 @@ namespace DotNet.Testcontainers.Configurations
     public string Target { get; }
 
     /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
     public virtual Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
     {
       return Task.FromResult(File.ReadAllBytes(this.Source));

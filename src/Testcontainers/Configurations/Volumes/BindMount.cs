@@ -1,5 +1,8 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
+
   /// <inheritdoc cref="IMount" />
   internal readonly struct BindMount : IMount
   {
@@ -27,5 +30,17 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public AccessMode AccessMode { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
   }
 }

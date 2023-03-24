@@ -107,8 +107,8 @@ namespace DotNet.Testcontainers.Clients
       {
         Dockerfile = configuration.Dockerfile,
         Tags = new List<string> { image.FullName },
-        BuildArgs = configuration.BuildArguments?.ToDictionary(item => item.Key, item => item.Value),
-        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
+        BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
       if (configuration.ParameterModifiers != null)

@@ -45,6 +45,31 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(IContainer container)
+    {
+      var containers = new[] { container };
+      return this.Clone(new ContainerConfiguration(containers: containers));
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(INetwork network)
+    {
+      return this.WithNetwork(network);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(IVolume volume, string destination)
+    {
+      return this.WithVolumeMount(volume, destination);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(IVolume volume, string destination, AccessMode accessMode)
+    {
+      return this.WithVolumeMount(volume, destination, accessMode);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithImage(string image)
     {
       return this.WithImage(new DockerImage(image));
@@ -363,19 +388,25 @@ namespace DotNet.Testcontainers.Builders
           this.Name = name;
         }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
-        /// <inheritdoc cref="INetwork" />
+        /// <inheritdoc />
         public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public ValueTask DisposeAsync()
+        {
+          return default;
         }
       }
     }
@@ -423,19 +454,24 @@ namespace DotNet.Testcontainers.Builders
           this.Name = name;
         }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public Task CreateAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
         }
 
-        /// <inheritdoc cref="IVolume" />
+        /// <inheritdoc />
         public Task DeleteAsync(CancellationToken ct = default)
         {
           return Task.CompletedTask;
+        }
+
+        public ValueTask DisposeAsync()
+        {
+          return default;
         }
       }
     }

@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Clients
       var createParameters = new VolumesCreateParameters
       {
         Name = configuration.Name,
-        Labels = configuration.Labels?.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
       if (configuration.ParameterModifiers != null)

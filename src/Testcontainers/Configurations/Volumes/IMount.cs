@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   /// This class represents a filesystem mount.
   /// </summary>
   [PublicAPI]
-  public interface IMount
+  public interface IMount : IFutureResource
   {
     /// <summary>
     /// Gets the Docker mount type.

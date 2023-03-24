@@ -96,6 +96,7 @@ Assert.Equal(MagicNumber, magicNumber);
 
 | Builder method                          | Description                                                                                                                            |
 |-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `DependsOn`                             | Sets the dependent resource to resolve and create or start before starting this container configuration.                               |
 | `WithDockerEndpoint`                    | Sets the Docker daemon socket to connect to.                                                                                           |
 | `WithAutoRemove`                        | Will remove the stopped container automatically, similar to `--rm`.                                                                    |
 | `WithCleanUp`                           | Will remove the container automatically after all tests have been run.                                                                 |

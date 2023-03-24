@@ -24,14 +24,13 @@
 
     private readonly IImage image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
 
-    private readonly ITestcontainersContainer container;
+    private readonly IContainer container;
 
     protected ProtectDockerDaemonSocket(ContainerBuilder<TestcontainersContainer> containerConfiguration)
     {
       this.container = containerConfiguration
         .WithImage(this.image)
         .WithPrivileged(true)
-        .WithExposedPort(TlsPort)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(this.hostCertsDirectoryPath, this.containerCertsDirectoryPath, AccessMode.ReadWrite)
         .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilListenOn()))
@@ -72,7 +71,7 @@
     {
       public async Task<bool> UntilAsync(IContainer container)
       {
-        var (_, stderr) = await container.GetLogs()
+        var (_, stderr) = await container.GetLogsAsync()
           .ConfigureAwait(false);
 
         return stderr != null && stderr.Contains("API listen on [::]:2376");

@@ -12,7 +12,7 @@
   /// A container instance.
   /// </summary>
   [PublicAPI]
-  public interface IContainer : ITestcontainersContainer
+  public interface IContainer : IAsyncDisposable
   {
     /// <summary>
     /// Subscribes to the creating event.
@@ -54,63 +54,63 @@
     /// Gets the logger.
     /// </summary>
     [NotNull]
-    new ILogger Logger { get; }
+    ILogger Logger { get; }
 
     /// <summary>
     /// Gets the container id.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     [NotNull]
-    new string Id { get; }
+    string Id { get; }
 
     /// <summary>
     /// Gets the container name.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     [NotNull]
-    new string Name { get; }
+    string Name { get; }
 
     /// <summary>
     /// Gets the container IP address.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     [NotNull]
-    new string IpAddress { get; }
+    string IpAddress { get; }
 
     /// <summary>
     /// Gets the container MAC address.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     [NotNull]
-    new string MacAddress { get; }
+    string MacAddress { get; }
 
     /// <summary>
     /// Gets the container hostname.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     [NotNull]
-    new string Hostname { get; }
+    string Hostname { get; }
 
     /// <summary>
     /// Gets the container image.
     /// </summary>
     [NotNull]
-    new IImage Image { get; }
+    IImage Image { get; }
 
     /// <summary>
     /// Gets the container state.
     /// </summary>
-    new TestcontainersStates State { get; }
+    TestcontainersStates State { get; }
 
     /// <summary>
     /// Gets the container health status.
     /// </summary>
-    new TestcontainersHealthStatus Health { get; }
+    TestcontainersHealthStatus Health { get; }
 
     /// <summary>
     /// Gets the container health check failing streak.
     /// </summary>
-    new long HealthCheckFailingStreak { get; }
+    long HealthCheckFailingStreak { get; }
 
     /// <summary>
     /// Resolves the public assigned host port.
@@ -118,7 +118,7 @@
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
-    new ushort GetMappedPublicPort(int containerPort);
+    ushort GetMappedPublicPort(int containerPort);
 
     /// <summary>
     /// Resolves the public assigned host port.
@@ -126,20 +126,14 @@
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
-    new ushort GetMappedPublicPort(string containerPort);
-
-    /// <inheritdoc cref="GetExitCodeAsync" />
-    new Task<long> GetExitCode(CancellationToken ct = default);
+    ushort GetMappedPublicPort(string containerPort);
 
     /// <summary>
     /// Gets the container exit code.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container exit code.</returns>
-    new Task<long> GetExitCodeAsync(CancellationToken ct = default);
-
-    /// <inheritdoc cref="GetLogsAsync" />
-    new Task<(string Stdout, string Stderr)> GetLogs(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
+    Task<long> GetExitCodeAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Gets the container logs.
@@ -149,7 +143,7 @@
     /// <param name="timestampsEnabled">Determines whether every log line contains a timestamp or not.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Returns the container logs.</returns>
-    new Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
+    Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
 
     /// <summary>
     /// Starts the container.
@@ -159,7 +153,7 @@
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
-    new Task StartAsync(CancellationToken ct = default);
+    Task StartAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Stops the container.
@@ -168,7 +162,7 @@
     /// <returns>Task that completes when the container has been stopped.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
-    new Task StopAsync(CancellationToken ct = default);
+    Task StopAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.
@@ -188,7 +182,7 @@
     ///     <li>644 octal 🠒 110_100_100 binary 🠒 420 decimal</li>
     ///   </ul>
     /// </remarks>
-    new Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
+    Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
 
     /// <summary>
     /// Reads a file from the container.
@@ -196,7 +190,7 @@
     /// <param name="filePath">An absolute path or a name value within the container.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the file has been read.</returns>
-    new Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
+    Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
 
     /// <summary>
     /// Executes a command in the container.
@@ -204,6 +198,6 @@
     /// <param name="command">Shell command.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
-    new Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
+    Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }

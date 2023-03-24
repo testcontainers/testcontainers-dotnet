@@ -41,7 +41,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.NotEmpty(testcontainer.Name);
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithName(name);
 
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.EndsWith(name, testcontainer.Name);
@@ -81,10 +81,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithHostname(hostname);
 
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(0, await testcontainer.GetExitCode());
+          Assert.Equal(0, await testcontainer.GetExitCodeAsync());
         }
       }
 
@@ -101,7 +101,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithMacAddress(macAddress);
 
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.Equal(macAddress, testcontainer.MacAddress);
@@ -119,10 +119,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(0, await testcontainer.GetExitCode());
+          Assert.Equal(0, await testcontainer.GetExitCodeAsync());
         }
       }
 
@@ -136,10 +136,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
-          Assert.Equal(255, await testcontainer.GetExitCode());
+          Assert.Equal(255, await testcontainer.GetExitCodeAsync());
         }
       }
 
@@ -154,7 +154,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           var exception = await Record.ExceptionAsync(() => testcontainer.StartAsync());
           Assert.Null(exception);
@@ -175,7 +175,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
 
@@ -200,7 +200,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.NotEqual(0, testcontainer.GetMappedPublicPort(80));
@@ -224,7 +224,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempPath, file)));
 
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -254,7 +254,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempPath, file)));
 
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
         }
@@ -274,7 +274,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           var exception = await Record.ExceptionAsync(() => testcontainer.StartAsync());
           Assert.Null(exception);
@@ -317,7 +317,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           var exception = await Record.ExceptionAsync(() => testcontainer.StartAsync());
           Assert.Null(exception);
@@ -334,7 +334,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           var execResult = await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" });
@@ -352,7 +352,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           var execResult = await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "ping -c 4 google.com" });
@@ -370,7 +370,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           var execResult = await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "cd missing_directory" });
@@ -392,7 +392,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         // When
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           await testcontainer.CopyFileAsync(dayOfWeekFilePath, Encoding.Default.GetBytes(dayOfWeek));
@@ -414,7 +414,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
         // When
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           testcontainerId = testcontainer.Id;
@@ -465,7 +465,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithCreateParameterModifier(parameterModifier => parameterModifier.Name = name);
 
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await testcontainer.StartAsync();
           Assert.EndsWith(name, testcontainer.Name);
@@ -486,7 +486,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .WithImagePullPolicy(PullPolicy.Never);
 
         // Then
-        await using (ITestcontainersContainer testcontainer = testcontainersBuilder.Build())
+        await using (IContainer testcontainer = testcontainersBuilder.Build())
         {
           await Assert.ThrowsAnyAsync<Exception>(() => testcontainer.StartAsync());
         }

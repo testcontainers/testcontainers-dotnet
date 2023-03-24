@@ -1,5 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
+
   /// <inheritdoc cref="IMount" />
   internal readonly struct TmpfsMount : IMount
   {
@@ -27,5 +30,17 @@
 
     /// <inheritdoc />
     public string Target { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
   }
 }

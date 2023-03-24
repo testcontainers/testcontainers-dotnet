@@ -79,6 +79,39 @@
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
+      using (_ = this.AcquireLock())
+      {
+        await this.UnsafeCreateAsync(ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(CancellationToken ct = default)
+    {
+      using (_ = this.AcquireLock())
+      {
+        await this.UnsafeDeleteAsync(ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    protected override bool Exists()
+    {
+      return !string.IsNullOrEmpty(this.image.ID);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+      this.ThrowIfLockNotAcquired();
+
+      if (this.Exists())
+      {
+        return;
+      }
+
       _ = await this.dockerImageOperations.BuildAsync(this.configuration, ct)
         .ConfigureAwait(false);
 
@@ -87,18 +120,19 @@
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(CancellationToken ct = default)
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
+      this.ThrowIfLockNotAcquired();
+
+      if (!this.Exists())
+      {
+        return;
+      }
+
       await this.dockerImageOperations.DeleteAsync(this.configuration.Image, ct)
         .ConfigureAwait(false);
 
       this.image = new ImagesListResponse();
-    }
-
-    /// <inheritdoc />
-    protected override bool Exists()
-    {
-      return !string.IsNullOrEmpty(this.image.ID);
     }
   }
 }

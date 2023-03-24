@@ -29,6 +29,41 @@
     TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration);
 
     /// <summary>
+    /// Sets the dependent container to resolve and start before starting this container configuration.
+    /// </summary>
+    /// <param name="container">The dependent container.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity DependsOn(IContainer container);
+
+    /// <summary>
+    /// Sets the dependent network to resolve and create before starting this container configuration.
+    /// </summary>
+    /// <param name="network">The dependent network.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity DependsOn(INetwork network);
+
+    /// <summary>
+    /// Sets the dependent volume to resolve and create before starting this container configuration.
+    /// </summary>
+    /// <param name="volume">The dependent volume.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity DependsOn(IVolume volume, string destination);
+
+    /// <summary>
+    /// Sets the dependent volume to resolve and create before starting this container configuration.
+    /// </summary>
+    /// <param name="volume">The dependent volume.</param>
+    /// <param name="destination">An absolute path as destination in the container.</param>
+    /// <param name="accessMode">The volume access mode.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity DependsOn(IVolume volume, string destination, AccessMode accessMode);
+
+    /// <summary>
     /// Sets an image for which to create the container.
     /// </summary>
     /// <param name="image">The image.</param>

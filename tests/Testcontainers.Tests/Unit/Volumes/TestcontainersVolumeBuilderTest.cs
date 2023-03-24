@@ -82,7 +82,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public Task DisposeAsync()
       {
-        return this.DeleteAsync();
+        IAsyncDisposable asyncDisposable = this;
+        return asyncDisposable.DisposeAsync().AsTask();
       }
 
       public Task CreateAsync(CancellationToken ct = default)
@@ -93,6 +94,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       public Task DeleteAsync(CancellationToken ct = default)
       {
         return this.volume.DeleteAsync(ct);
+      }
+
+      ValueTask IAsyncDisposable.DisposeAsync()
+      {
+        return this.volume.DisposeAsync();
       }
     }
   }

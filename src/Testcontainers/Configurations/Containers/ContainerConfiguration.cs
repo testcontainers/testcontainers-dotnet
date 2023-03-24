@@ -30,6 +30,7 @@
     /// <param name="exposedPorts">A dictionary of exposed ports.</param>
     /// <param name="portBindings">A dictionary of port bindings.</param>
     /// <param name="resourceMappings">A dictionary of resource mappings.</param>
+    /// <param name="containers">A list of containers.</param>
     /// <param name="mounts">A list of mounts.</param>
     /// <param name="networks">A list of networks.</param>
     /// <param name="networkAliases">A list of network-scoped aliases.</param>
@@ -51,6 +52,7 @@
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IReadOnlyDictionary<string, IResourceMapping> resourceMappings = null,
+      IEnumerable<IContainer> containers = null,
       IEnumerable<IMount> mounts = null,
       IEnumerable<INetwork> networks = null,
       IEnumerable<string> networkAliases = null,
@@ -74,6 +76,7 @@
       this.ExposedPorts = exposedPorts;
       this.PortBindings = portBindings;
       this.ResourceMappings = resourceMappings;
+      this.Containers = containers;
       this.Mounts = mounts;
       this.Networks = networks;
       this.NetworkAliases = networkAliases;
@@ -114,12 +117,13 @@
       this.Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
       this.MacAddress = BuildConfiguration.Combine(oldValue.MacAddress, newValue.MacAddress);
       this.WorkingDirectory = BuildConfiguration.Combine(oldValue.WorkingDirectory, newValue.WorkingDirectory);
-      this.Entrypoint = BuildConfiguration.Combine(oldValue.Entrypoint, newValue.Entrypoint);
+      this.Entrypoint = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.Entrypoint, newValue.Entrypoint);
       this.Command = BuildConfiguration.Combine(oldValue.Command, newValue.Command);
       this.Environments = BuildConfiguration.Combine(oldValue.Environments, newValue.Environments);
       this.ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
       this.PortBindings = BuildConfiguration.Combine(oldValue.PortBindings, newValue.PortBindings);
       this.ResourceMappings = BuildConfiguration.Combine(oldValue.ResourceMappings, newValue.ResourceMappings);
+      this.Containers = BuildConfiguration.Combine(oldValue.Containers, newValue.Containers);
       this.Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
       this.Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
       this.NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
@@ -171,6 +175,9 @@
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
+
+    /// <inheritdoc />
+    public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
     public IEnumerable<IMount> Mounts { get; }
