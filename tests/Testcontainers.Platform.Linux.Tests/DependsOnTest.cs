@@ -6,8 +6,6 @@ public sealed class DependsOnTest : IAsyncLifetime
 
     private const string DependsOnValue = "true";
 
-    private static readonly IDictionary<string, bool> LabelFilter = new Dictionary<string, bool> { { string.Join("=", DependsOnKey, DependsOnValue), true } };
-
     private readonly IContainer _container = new ContainerBuilder()
         .DependsOn(new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
@@ -46,7 +44,9 @@ public sealed class DependsOnTest : IAsyncLifetime
 
         using var client = clientConfiguration.CreateClient();
 
-        var filters = new Dictionary<string, IDictionary<string, bool>> { { "label", LabelFilter } };
+        var labelFilter = new Dictionary<string, bool> { { string.Join("=", DependsOnKey, DependsOnValue), true } };
+
+        var filters = new Dictionary<string, IDictionary<string, bool>> { { "label", labelFilter } };
 
         var containersListParameters = new ContainersListParameters { All = true, Filters = filters };
 
