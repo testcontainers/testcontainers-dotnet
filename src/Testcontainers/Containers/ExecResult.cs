@@ -16,9 +16,9 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="exitCode">The exit code.</param>
     public ExecResult(string stdout, string stderr, long exitCode)
     {
-      this.Stdout = stdout;
-      this.Stderr = stderr;
-      this.ExitCode = exitCode;
+      Stdout = stdout;
+      Stderr = stderr;
+      ExitCode = exitCode;
     }
 
     /// <summary>

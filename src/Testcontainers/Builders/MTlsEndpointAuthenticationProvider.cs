@@ -38,22 +38,22 @@ namespace DotNet.Testcontainers.Builders
     public override bool IsApplicable()
     {
       var certificatesFiles = new[] { ClientCertificateFileName, ClientCertificateKeyFileName };
-      return this.TlsEnabled && this.TlsVerifyEnabled && certificatesFiles.Select(fileName => Path.Combine(this.CertificatesDirectoryPath, fileName)).All(File.Exists);
+      return TlsEnabled && TlsVerifyEnabled && certificatesFiles.Select(fileName => Path.Combine(CertificatesDirectoryPath, fileName)).All(File.Exists);
     }
 
     /// <inheritdoc />
     public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
-      var credentials = new CertificateCredentials(this.GetClientCertificate());
-      credentials.ServerCertificateValidationCallback = this.ServerCertificateValidationCallback;
-      return new DockerEndpointAuthenticationConfiguration(this.DockerEngine, credentials);
+      var credentials = new CertificateCredentials(GetClientCertificate());
+      credentials.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+      return new DockerEndpointAuthenticationConfiguration(DockerEngine, credentials);
     }
 
     /// <inheritdoc />
     protected override X509Certificate2 GetClientCertificate()
     {
-      var clientCertificateFilePath = Path.Combine(this.CertificatesDirectoryPath, ClientCertificateFileName);
-      var clientCertificateKeyFilePath = Path.Combine(this.CertificatesDirectoryPath, ClientCertificateKeyFileName);
+      var clientCertificateFilePath = Path.Combine(CertificatesDirectoryPath, ClientCertificateFileName);
+      var clientCertificateKeyFilePath = Path.Combine(CertificatesDirectoryPath, ClientCertificateKeyFileName);
       return CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
     }
 

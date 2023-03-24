@@ -38,15 +38,15 @@ namespace DotNet.Testcontainers.Containers
 
     private static readonly LingerOption DiscardAllPendingData = new LingerOption(true, 0);
 
-    private static ResourceReaper defaultInstance;
+    private static ResourceReaper _defaultInstance;
 
-    private readonly CancellationTokenSource maintainConnectionCts = new CancellationTokenSource();
+    private readonly CancellationTokenSource _maintainConnectionCts = new CancellationTokenSource();
 
-    private readonly IContainer resourceReaperContainer;
+    private readonly IContainer _resourceReaperContainer;
 
-    private Task maintainConnectionTask = Task.CompletedTask;
+    private Task _maintainConnectionTask = Task.CompletedTask;
 
-    private bool disposed;
+    private bool _disposed;
 
     static ResourceReaper()
     {
@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Containers
 
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode)
     {
-      this.resourceReaperContainer = new ContainerBuilder()
+      _resourceReaperContainer = new ContainerBuilder()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
         .WithImage(resourceReaperImage)
@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Containers
         .WithMount(dockerSocket)
         .Build();
 
-      this.SessionId = sessionId;
+      SessionId = sessionId;
     }
 
     /// <summary>
@@ -104,18 +104,18 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, CancellationToken ct = default)
     {
-      if (defaultInstance != null && !defaultInstance.disposed)
+      if (_defaultInstance != null && !_defaultInstance._disposed)
       {
-        return defaultInstance;
+        return _defaultInstance;
       }
 
       await DefaultLock.WaitAsync(ct)
         .ConfigureAwait(false);
 
-      if (defaultInstance != null && !defaultInstance.disposed)
+      if (_defaultInstance != null && !_defaultInstance._disposed)
       {
         DefaultLock.Release();
-        return defaultInstance;
+        return _defaultInstance;
       }
 
       try
@@ -134,10 +134,10 @@ namespace DotNet.Testcontainers.Containers
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
 
-        defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, UnixSocketMount.Instance, requiresPrivilegedMode, ct: ct)
+        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, UnixSocketMount.Instance, requiresPrivilegedMode, ct: ct)
           .ConfigureAwait(false);
 
-        return defaultInstance;
+        return _defaultInstance;
       }
       finally
       {
@@ -149,29 +149,29 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public async ValueTask DisposeAsync()
     {
-      if (this.disposed)
+      if (_disposed)
       {
         return;
       }
 
-      this.disposed = true;
+      _disposed = true;
 
       try
       {
-        this.maintainConnectionCts.Cancel();
+        _maintainConnectionCts.Cancel();
 
         // Close connection before disposing Resource Reaper.
-        await this.maintainConnectionTask
+        await _maintainConnectionTask
           .ConfigureAwait(false);
       }
       finally
       {
-        this.maintainConnectionCts.Dispose();
+        _maintainConnectionCts.Dispose();
       }
 
-      if (this.resourceReaperContainer != null)
+      if (_resourceReaperContainer != null)
       {
-        await this.resourceReaperContainer.DisposeAsync()
+        await _resourceReaperContainer.DisposeAsync()
           .ConfigureAwait(false);
       }
     }
@@ -216,7 +216,7 @@ namespace DotNet.Testcontainers.Containers
       {
         StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.Created));
 
-        await resourceReaper.resourceReaperContainer.StartAsync(ct)
+        await resourceReaper._resourceReaperContainer.StartAsync(ct)
           .ConfigureAwait(false);
 
         StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.InitializingConnection));
@@ -225,7 +225,7 @@ namespace DotNet.Testcontainers.Containers
         {
           using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(initTimeoutCts.Token, ct))
           {
-            resourceReaper.maintainConnectionTask = resourceReaper.MaintainRyukConnection(ryukInitializedTaskSource, linkedCts.Token);
+            resourceReaper._maintainConnectionTask = resourceReaper.MaintainRyukConnection(ryukInitializedTaskSource, linkedCts.Token);
             initTimeoutCts.CancelAfter(initTimeout);
 
             await ryukInitializedTaskSource.Task
@@ -249,13 +249,13 @@ namespace DotNet.Testcontainers.Containers
     {
       try
       {
-        host = this.resourceReaperContainer.Hostname;
-        port = this.resourceReaperContainer.GetMappedPublicPort(RyukPort);
+        host = _resourceReaperContainer.Hostname;
+        port = _resourceReaperContainer.GetMappedPublicPort(RyukPort);
         return true;
       }
       catch (Exception e)
       {
-        this.resourceReaperContainer.Logger.CanNotGetResourceReaperEndpoint(this.SessionId, e);
+        _resourceReaperContainer.Logger.CanNotGetResourceReaperEndpoint(SessionId, e);
         host = null;
         port = 0;
         return false;
@@ -279,9 +279,9 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
     private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
     {
-      connect_to_ryuk: while (!this.maintainConnectionCts.IsCancellationRequested && !ct.IsCancellationRequested && !ryukInitializedTaskSource.Task.IsCompleted)
+      connect_to_ryuk: while (!_maintainConnectionCts.IsCancellationRequested && !ct.IsCancellationRequested && !ryukInitializedTaskSource.Task.IsCompleted)
       {
-        if (!this.TryGetEndpoint(out var host, out var port))
+        if (!TryGetEndpoint(out var host, out var port))
         {
           await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
             .ConfigureAwait(false);
@@ -300,7 +300,7 @@ namespace DotNet.Testcontainers.Containers
 
             var stream = tcpClient.GetStream();
 
-            var filter = $"label={ResourceReaperSessionLabel}={this.SessionId:D}\n";
+            var filter = $"label={ResourceReaperSessionLabel}={SessionId:D}\n";
 
             var sendBytes = Encoding.ASCII.GetBytes(filter);
 
@@ -368,14 +368,14 @@ namespace DotNet.Testcontainers.Containers
               }
             }
 
-            while (!this.maintainConnectionCts.IsCancellationRequested)
+            while (!_maintainConnectionCts.IsCancellationRequested)
             {
               // Keep the connection to Ryuk up.
 #if NETSTANDARD2_1_OR_GREATER
-              _ = await stream.ReadAsync(new Memory<byte>(readBytes), this.maintainConnectionCts.Token)
+              _ = await stream.ReadAsync(new Memory<byte>(readBytes), _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #else
-              _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, this.maintainConnectionCts.Token)
+              _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #endif
             }
@@ -386,14 +386,14 @@ namespace DotNet.Testcontainers.Containers
           }
           catch (SocketException e)
           {
-            this.resourceReaperContainer.Logger.CanNotConnectToResourceReaper(this.SessionId, host, port, e);
+            _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
 
             await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
               .ConfigureAwait(false);
           }
           catch (Exception e)
           {
-            this.resourceReaperContainer.Logger.LostConnectionToResourceReaper(this.SessionId, host, port, e);
+            _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, e);
 
             await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
               .ConfigureAwait(false);

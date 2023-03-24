@@ -4,11 +4,11 @@ namespace Testcontainers.Neo4j;
 [PublicAPI]
 public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
 {
-    public const string Neo4jImage = "neo4j:5.4";
+    public const string Neo4JImage = "neo4j:5.4";
 
-    public const ushort Neo4jHttpPort = 7474;
+    public const ushort Neo4JHttpPort = 7474;
 
-    public const ushort Neo4jBoltPort = 7687;
+    public const ushort Neo4JBoltPort = 7687;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
@@ -43,12 +43,12 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Init()
     {
         return base.Init()
-            .WithImage(Neo4jImage)
-            .WithPortBinding(Neo4jHttpPort, true)
-            .WithPortBinding(Neo4jBoltPort, true)
+            .WithImage(Neo4JImage)
+            .WithPortBinding(Neo4JHttpPort, true)
+            .WithPortBinding(Neo4JBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(Neo4jHttpPort)));
+                request.ForPath("/").ForPort(Neo4JHttpPort)));
     }
 
     /// <inheritdoc />

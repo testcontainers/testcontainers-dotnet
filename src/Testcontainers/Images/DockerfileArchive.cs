@@ -19,13 +19,13 @@
   {
     private static readonly IOperatingSystem OS = new Unix(dockerEndpointAuthConfig: null);
 
-    private readonly DirectoryInfo dockerfileDirectory;
+    private readonly DirectoryInfo _dockerfileDirectory;
 
-    private readonly FileInfo dockerfile;
+    private readonly FileInfo _dockerfile;
 
-    private readonly IImage image;
+    private readonly IImage _image;
 
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerfileArchive" /> class.
@@ -60,24 +60,24 @@
         throw new ArgumentException($"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'.");
       }
 
-      this.dockerfileDirectory = dockerfileDirectory;
-      this.dockerfile = dockerfile;
-      this.image = image;
-      this.logger = logger;
+      _dockerfileDirectory = dockerfileDirectory;
+      _dockerfile = dockerfile;
+      _image = image;
+      _logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<string> Tar(CancellationToken ct = default)
     {
-      var dockerfileDirectoryPath = OS.NormalizePath(this.dockerfileDirectory.FullName);
+      var dockerfileDirectoryPath = OS.NormalizePath(_dockerfileDirectory.FullName);
 
-      var dockerfileFilePath = OS.NormalizePath(this.dockerfile.ToString());
+      var dockerfileFilePath = OS.NormalizePath(_dockerfile.ToString());
 
-      var dockerfileArchiveFileName = Regex.Replace(this.image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
+      var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
       var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
 
-      var dockerIgnoreFile = new DockerIgnoreFile(dockerfileDirectoryPath, ".dockerignore", dockerfileFilePath, this.logger);
+      var dockerIgnoreFile = new DockerIgnoreFile(dockerfileDirectoryPath, ".dockerignore", dockerfileFilePath, _logger);
 
       using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {

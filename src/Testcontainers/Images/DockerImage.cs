@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Images
   {
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
-    private readonly string hubImageNamePrefix;
+    private readonly string _hubImageNamePrefix;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -56,11 +56,11 @@ namespace DotNet.Testcontainers.Images
         .NotEmpty()
         .NotUppercase();
 
-      this.hubImageNamePrefix = hubImageNamePrefix;
+      _hubImageNamePrefix = hubImageNamePrefix;
 
-      this.Repository = repository;
-      this.Name = name;
-      this.Tag = string.IsNullOrEmpty(tag) ? "latest" : tag;
+      Repository = repository;
+      Name = name;
+      Tag = string.IsNullOrEmpty(tag) ? "latest" : tag;
     }
 
     /// <inheritdoc />
@@ -77,18 +77,18 @@ namespace DotNet.Testcontainers.Images
     {
       get
       {
-        var imageComponents = new[] { this.hubImageNamePrefix, this.Repository, this.Name }
+        var imageComponents = new[] { _hubImageNamePrefix, Repository, Name }
           .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
           .Select(imageComponent => imageComponent.Trim('/', ':'))
           .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
-        return string.Join("/", imageComponents) + ":" + this.Tag;
+        return string.Join("/", imageComponents) + ":" + Tag;
       }
     }
 
     /// <inheritdoc />
     public string GetHostname()
     {
-      var firstSegmentOfRepository = (string.IsNullOrEmpty(this.hubImageNamePrefix) ? this.Repository : this.hubImageNamePrefix).Split('/').First();
+      var firstSegmentOfRepository = (string.IsNullOrEmpty(_hubImageNamePrefix) ? Repository : _hubImageNamePrefix).Split('/').First();
       return firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRepository : null;
     }
   }

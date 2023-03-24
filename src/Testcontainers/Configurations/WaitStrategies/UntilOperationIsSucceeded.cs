@@ -6,26 +6,26 @@ namespace DotNet.Testcontainers.Configurations
 
   internal class UntilOperationIsSucceeded : IWaitUntil
   {
-    private readonly int maxCallCount;
+    private readonly int _maxCallCount;
 
-    private readonly Func<bool> operation;
+    private readonly Func<bool> _operation;
 
-    private int tryCount;
+    private int _tryCount;
 
     public UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount)
     {
-      this.operation = operation;
-      this.maxCallCount = maxCallCount;
+      _operation = operation;
+      _maxCallCount = maxCallCount;
     }
 
     public Task<bool> UntilAsync(IContainer container)
     {
-      if (++this.tryCount > this.maxCallCount)
+      if (++_tryCount > _maxCallCount)
       {
-        throw new TimeoutException($"Number of failed operations exceeded max count ({this.maxCallCount}).");
+        throw new TimeoutException($"Number of failed operations exceeded max count ({_maxCallCount}).");
       }
 
-      return Task.FromResult(this.operation.Invoke());
+      return Task.FromResult(_operation.Invoke());
     }
   }
 }

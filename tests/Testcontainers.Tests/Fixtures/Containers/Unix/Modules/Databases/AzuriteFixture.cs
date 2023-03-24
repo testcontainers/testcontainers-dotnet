@@ -21,8 +21,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
       protected AzuriteDefaultFixture(AzuriteTestcontainerConfiguration configuration)
       {
-        this.Configuration = configuration;
-        this.Container = new TestcontainersBuilder<AzuriteTestcontainer>()
+        Configuration = configuration;
+        Container = new TestcontainersBuilder<AzuriteTestcontainer>()
           .WithAzurite(configuration)
           .Build();
       }
@@ -33,12 +33,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
       public Task InitializeAsync()
       {
-        return this.Container.StartAsync();
+        return Container.StartAsync();
       }
 
       public Task DisposeAsync()
       {
-        return this.Container.DisposeAsync().AsTask();
+        return Container.DisposeAsync().AsTask();
       }
     }
 
@@ -92,17 +92,17 @@ namespace DotNet.Testcontainers.Tests.Fixtures
           Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D")),
         })
       {
-        if (this.Configuration.Location != null)
+        if (Configuration.Location != null)
         {
-          Directory.CreateDirectory(this.Configuration.Location);
+          Directory.CreateDirectory(Configuration.Location);
         }
       }
 
       public void Dispose()
       {
-        if (Directory.Exists(this.Configuration.Location))
+        if (Directory.Exists(Configuration.Location))
         {
-          Directory.Delete(this.Configuration.Location, true);
+          Directory.Delete(Configuration.Location, true);
         }
       }
     }

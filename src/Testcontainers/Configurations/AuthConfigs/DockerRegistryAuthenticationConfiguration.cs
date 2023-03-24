@@ -19,10 +19,10 @@ namespace DotNet.Testcontainers.Configurations
       string password = null,
       string identityToken = null)
     {
-      this.RegistryEndpoint = registryEndpoint;
-      this.Username = username;
-      this.Password = password;
-      this.IdentityToken = identityToken;
+      RegistryEndpoint = registryEndpoint;
+      Username = username;
+      Password = password;
+      IdentityToken = identityToken;
     }
 
     /// <summary>
@@ -34,23 +34,23 @@ namespace DotNet.Testcontainers.Configurations
       string registryEndpoint,
       JsonElement credential)
     {
-      var username = credential.TryGetProperty(nameof(this.Username), out var usernameProperty) ? usernameProperty.GetString() : null;
+      var username = credential.TryGetProperty(nameof(Username), out var usernameProperty) ? usernameProperty.GetString() : null;
 
       var password = credential.TryGetProperty("Secret", out var passwordProperty) ? passwordProperty.GetString() : null;
 
       if ("<token>".Equals(username, StringComparison.OrdinalIgnoreCase))
       {
-        this.RegistryEndpoint = registryEndpoint;
-        this.Username = null;
-        this.Password = null;
-        this.IdentityToken = password;
+        RegistryEndpoint = registryEndpoint;
+        Username = null;
+        Password = null;
+        IdentityToken = password;
       }
       else
       {
-        this.RegistryEndpoint = registryEndpoint;
-        this.Username = username;
-        this.Password = password;
-        this.IdentityToken = null;
+        RegistryEndpoint = registryEndpoint;
+        Username = username;
+        Password = password;
+        IdentityToken = null;
       }
     }
 

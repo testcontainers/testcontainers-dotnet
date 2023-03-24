@@ -57,7 +57,7 @@
   /// </example>
   internal sealed class Logger : ILogger, IDisposable
   {
-    private readonly Stopwatch stopwatch = Stopwatch.StartNew();
+    private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
     public Logger()
     {
@@ -94,7 +94,7 @@
           return;
       }
 
-      var message = string.Format(CultureInfo.CurrentCulture, "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", this.stopwatch.Elapsed, formatter.Invoke(state, exception));
+      var message = string.Format(CultureInfo.CurrentCulture, "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, formatter.Invoke(state, exception));
       console.WriteLine(message);
     }
 

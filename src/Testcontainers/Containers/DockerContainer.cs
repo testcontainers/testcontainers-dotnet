@@ -22,11 +22,11 @@ namespace DotNet.Testcontainers.Containers
 
     private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
 
-    private readonly ITestcontainersClient client;
+    private readonly ITestcontainersClient _client;
 
-    private readonly IContainerConfiguration configuration;
+    private readonly IContainerConfiguration _configuration;
 
-    private ContainerInspectResponse container = new ContainerInspectResponse();
+    private ContainerInspectResponse _container = new ContainerInspectResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
@@ -35,9 +35,9 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="logger">The logger.</param>
     public DockerContainer(IContainerConfiguration configuration, ILogger logger)
     {
-      this.client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
-      this.configuration = configuration;
-      this.Logger = logger;
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _configuration = configuration;
+      Logger = logger;
     }
 
     /// <inheritdoc />
@@ -66,8 +66,8 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.container.ID;
+        ThrowIfResourceNotFound();
+        return _container.ID;
       }
     }
 
@@ -76,8 +76,8 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.container.Name;
+        ThrowIfResourceNotFound();
+        return _container.Name;
       }
     }
 
@@ -86,8 +86,8 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.container.NetworkSettings.Networks.First().Value.IPAddress;
+        ThrowIfResourceNotFound();
+        return _container.NetworkSettings.Networks.First().Value.IPAddress;
       }
     }
 
@@ -96,8 +96,8 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.container.NetworkSettings.Networks.First().Value.MacAddress;
+        ThrowIfResourceNotFound();
+        return _container.NetworkSettings.Networks.First().Value.MacAddress;
       }
     }
 
@@ -111,7 +111,7 @@ namespace DotNet.Testcontainers.Containers
           return TestcontainersSettings.DockerHostOverride;
         }
 
-        var dockerEndpoint = this.configuration.DockerEndpointAuthConfig.Endpoint;
+        var dockerEndpoint = _configuration.DockerEndpointAuthConfig.Endpoint;
 
         switch (dockerEndpoint.Scheme)
         {
@@ -127,17 +127,17 @@ namespace DotNet.Testcontainers.Containers
           {
             const string localhost = "127.0.0.1";
 
-            if (!this.Exists())
+            if (!Exists())
             {
               return localhost;
             }
 
-            if (!this.client.IsRunningInsideDocker)
+            if (!_client.IsRunningInsideDocker)
             {
               return localhost;
             }
 
-            var endpointSettings = this.container.NetworkSettings.Networks.First().Value;
+            var endpointSettings = _container.NetworkSettings.Networks.First().Value;
             return endpointSettings.Gateway;
           }
 
@@ -152,7 +152,7 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        return this.configuration.Image;
+        return _configuration.Image;
       }
     }
 
@@ -161,14 +161,14 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        if (this.container.State == null)
+        if (_container.State == null)
         {
           return TestcontainersStates.Undefined;
         }
 
         try
         {
-          return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), this.container.State.Status, true);
+          return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), _container.State.Status, true);
         }
         catch (Exception)
         {
@@ -182,19 +182,19 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        if (this.container.State == null)
+        if (_container.State == null)
         {
           return TestcontainersHealthStatus.Undefined;
         }
 
-        if (this.container.State.Health == null)
+        if (_container.State.Health == null)
         {
           return TestcontainersHealthStatus.None;
         }
 
         try
         {
-          return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), this.container.State.Health.Status, true);
+          return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), _container.State.Health.Status, true);
         }
         catch (Exception)
         {
@@ -208,22 +208,22 @@ namespace DotNet.Testcontainers.Containers
     {
       get
       {
-        return ContainerHasHealthCheck.HasFlag(this.Health) ? this.container.State.Health.FailingStreak : 0;
+        return ContainerHasHealthCheck.HasFlag(Health) ? _container.State.Health.FailingStreak : 0;
       }
     }
 
     /// <inheritdoc />
     public ushort GetMappedPublicPort(int containerPort)
     {
-      return this.GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
+      return GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc />
     public ushort GetMappedPublicPort(string containerPort)
     {
-      this.ThrowIfResourceNotFound();
+      ThrowIfResourceNotFound();
 
-      if (this.container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.First().HostPort, out var publicPort))
+      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.First().HostPort, out var publicPort))
       {
         return publicPort;
       }
@@ -236,34 +236,34 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public Task<long> GetExitCodeAsync(CancellationToken ct = default)
     {
-      return this.client.GetContainerExitCodeAsync(this.Id, ct);
+      return _client.GetContainerExitCodeAsync(Id, ct);
     }
 
     /// <inheritdoc />
     public Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
-      return this.client.GetContainerLogsAsync(this.Id, since, until, timestampsEnabled, ct);
+      return _client.GetContainerLogsAsync(Id, since, until, timestampsEnabled, ct);
     }
 
     /// <inheritdoc />
     public virtual async Task StartAsync(CancellationToken ct = default)
     {
-      using (_ = this.AcquireLock())
+      using (_ = AcquireLock())
       {
         var futureResources = Array.Empty<IFutureResource>()
-          .Concat(this.configuration.Mounts)
-          .Concat(this.configuration.Networks);
+          .Concat(_configuration.Mounts)
+          .Concat(_configuration.Networks);
 
         await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
           .ConfigureAwait(false);
 
-        await Task.WhenAll(this.configuration.Containers.Select(resource => resource.StartAsync(ct)))
+        await Task.WhenAll(_configuration.Containers.Select(resource => resource.StartAsync(ct)))
           .ConfigureAwait(false);
 
-        await this.UnsafeCreateAsync(ct)
+        await UnsafeCreateAsync(ct)
           .ConfigureAwait(false);
 
-        await this.UnsafeStartAsync(ct)
+        await UnsafeStartAsync(ct)
           .ConfigureAwait(false);
       }
     }
@@ -271,9 +271,9 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public virtual async Task StopAsync(CancellationToken ct = default)
     {
-      using (_ = this.AcquireLock())
+      using (_ = AcquireLock())
       {
-        await this.UnsafeStopAsync(ct)
+        await UnsafeStopAsync(ct)
           .ConfigureAwait(false);
       }
     }
@@ -281,39 +281,39 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
     {
-      return this.client.CopyFileAsync(this.Id, filePath, fileContent, accessMode, userId, groupId, ct);
+      return _client.CopyFileAsync(Id, filePath, fileContent, accessMode, userId, groupId, ct);
     }
 
     /// <inheritdoc />
     public Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default)
     {
-      return this.client.ReadFileAsync(this.Id, filePath, ct);
+      return _client.ReadFileAsync(Id, filePath, ct);
     }
 
     /// <inheritdoc />
     public Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
-      return this.client.ExecAsync(this.Id, command, ct);
+      return _client.ExecAsync(Id, command, ct);
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     protected override async ValueTask DisposeAsyncCore()
     {
-      if (this.Disposed)
+      if (Disposed)
       {
         return;
       }
 
-      using (_ = this.AcquireLock())
+      using (_ = AcquireLock())
       {
-        if (Guid.Empty.Equals(this.configuration.SessionId))
+        if (Guid.Empty.Equals(_configuration.SessionId))
         {
-          await this.UnsafeStopAsync()
+          await UnsafeStopAsync()
             .ConfigureAwait(false);
         }
         else
         {
-          await this.UnsafeDeleteAsync()
+          await UnsafeDeleteAsync()
             .ConfigureAwait(false);
         }
       }
@@ -328,22 +328,22 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
-      if (this.Exists())
+      if (Exists())
       {
         return;
       }
 
-      this.Creating?.Invoke(this, EventArgs.Empty);
+      Creating?.Invoke(this, EventArgs.Empty);
 
-      var id = await this.client.RunAsync(this.configuration, ct)
+      var id = await _client.RunAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      this.container = await this.client.InspectContainerAsync(id, ct)
+      _container = await _client.InspectContainerAsync(id, ct)
         .ConfigureAwait(false);
 
-      this.Created?.Invoke(this, EventArgs.Empty);
+      Created?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
@@ -352,17 +352,17 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
-      if (!this.Exists())
+      if (!Exists())
       {
         return;
       }
 
-      await this.client.RemoveAsync(this.container.ID, ct)
+      await _client.RemoveAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      this.container = new ContainerInspectResponse();
+      _container = new ContainerInspectResponse();
     }
 
     /// <summary>
@@ -375,44 +375,44 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the container has been started.</returns>
     protected virtual async Task UnsafeStartAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
       async Task<bool> CheckPortBindings()
       {
-        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
+        _container = await _client.InspectContainerAsync(_container.ID, ct)
           .ConfigureAwait(false);
 
-        var boundPorts = this.container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
-        return this.configuration.PortBindings == null || /* IPv4 or IPv6 */ this.configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * this.configuration.PortBindings.Count == boundPorts;
+        var boundPorts = _container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
+        return _configuration.PortBindings == null || /* IPv4 or IPv6 */ _configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * _configuration.PortBindings.Count == boundPorts;
       }
 
       async Task<bool> CheckWaitStrategy(IWaitUntil wait)
       {
-        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
+        _container = await _client.InspectContainerAsync(_container.ID, ct)
           .ConfigureAwait(false);
 
         return await wait.UntilAsync(this)
           .ConfigureAwait(false);
       }
 
-      await this.client.StartAsync(this.container.ID, ct)
+      await _client.StartAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
       await WaitStrategy.WaitUntilAsync(CheckPortBindings, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15), ct)
         .ConfigureAwait(false);
 
-      this.Starting?.Invoke(this, EventArgs.Empty);
+      Starting?.Invoke(this, EventArgs.Empty);
 
-      await this.configuration.StartupCallback(this, ct)
+      await _configuration.StartupCallback(this, ct)
         .ConfigureAwait(false);
 
-      foreach (var waitStrategy in this.configuration.WaitStrategies)
+      foreach (var waitStrategy in _configuration.WaitStrategies)
       {
         await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategy(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
           .ConfigureAwait(false);
       }
 
-      this.Started?.Invoke(this, EventArgs.Empty);
+      Started?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -425,35 +425,35 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the container has been stopped.</returns>
     protected virtual async Task UnsafeStopAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
-      if (!this.Exists())
+      if (!Exists())
       {
         return;
       }
 
-      this.Stopping?.Invoke(this, EventArgs.Empty);
+      Stopping?.Invoke(this, EventArgs.Empty);
 
-      await this.client.StopAsync(this.container.ID, ct)
+      await _client.StopAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
       try
       {
-        this.container = await this.client.InspectContainerAsync(this.container.ID, ct)
+        _container = await _client.InspectContainerAsync(_container.ID, ct)
           .ConfigureAwait(false);
       }
       catch (DockerContainerNotFoundException)
       {
-        this.container = new ContainerInspectResponse();
+        _container = new ContainerInspectResponse();
       }
 
-      this.Stopped?.Invoke(this, EventArgs.Empty);
+      Stopped?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return ContainerHasBeenCreatedStates.HasFlag(this.State);
+      return ContainerHasBeenCreatedStates.HasFlag(State);
     }
   }
 }

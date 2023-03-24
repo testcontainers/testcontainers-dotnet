@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IResourceMapping" />
   internal class BinaryResourceMapping : FileResourceMapping
   {
-    private readonly byte[] resourceContent;
+    private readonly byte[] _resourceContent;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BinaryResourceMapping" /> class.
@@ -16,13 +16,13 @@ namespace DotNet.Testcontainers.Configurations
     public BinaryResourceMapping(byte[] resourceContent, string containerPath)
       : base(string.Empty, containerPath)
     {
-      this.resourceContent = resourceContent;
+      _resourceContent = resourceContent;
     }
 
     /// <inheritdoc />
     public override Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
     {
-      return Task.FromResult(this.resourceContent);
+      return Task.FromResult(_resourceContent);
     }
   }
 }

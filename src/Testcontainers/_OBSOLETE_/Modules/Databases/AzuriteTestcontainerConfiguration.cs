@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Configurations
 
     private const int DefaultTablePort = 10002;
 
-    private AzuriteServices enabledServices = AzuriteServices.All;
+    private AzuriteServices _enabledServices = AzuriteServices.All;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteTestcontainerConfiguration" /> class.
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="image">The Docker image.</param>
     public AzuriteTestcontainerConfiguration(string image)
     {
-      this.Image = image;
+      Image = image;
     }
 
     /// <summary>
@@ -88,9 +88,9 @@ namespace DotNet.Testcontainers.Configurations
       get
       {
         var waitStrategy = Wait.ForUnixContainer();
-        waitStrategy = this.enabledServices.HasFlag(AzuriteServices.Blob) ? waitStrategy.UntilPortIsAvailable(this.BlobContainerPort) : waitStrategy;
-        waitStrategy = this.enabledServices.HasFlag(AzuriteServices.Queue) ? waitStrategy.UntilPortIsAvailable(this.QueueContainerPort) : waitStrategy;
-        waitStrategy = this.enabledServices.HasFlag(AzuriteServices.Table) ? waitStrategy.UntilPortIsAvailable(this.TableContainerPort) : waitStrategy;
+        waitStrategy = _enabledServices.HasFlag(AzuriteServices.Blob) ? waitStrategy.UntilPortIsAvailable(BlobContainerPort) : waitStrategy;
+        waitStrategy = _enabledServices.HasFlag(AzuriteServices.Queue) ? waitStrategy.UntilPortIsAvailable(QueueContainerPort) : waitStrategy;
+        waitStrategy = _enabledServices.HasFlag(AzuriteServices.Table) ? waitStrategy.UntilPortIsAvailable(TableContainerPort) : waitStrategy;
         return waitStrategy;
       }
     }
@@ -122,12 +122,12 @@ namespace DotNet.Testcontainers.Configurations
     {
       get
       {
-        return AzuriteServices.Blob.Equals(this.enabledServices);
+        return AzuriteServices.Blob.Equals(_enabledServices);
       }
 
       set
       {
-        this.enabledServices = value ? AzuriteServices.Blob : AzuriteServices.All;
+        _enabledServices = value ? AzuriteServices.Blob : AzuriteServices.All;
       }
     }
 
@@ -158,12 +158,12 @@ namespace DotNet.Testcontainers.Configurations
     {
       get
       {
-        return AzuriteServices.Queue.Equals(this.enabledServices);
+        return AzuriteServices.Queue.Equals(_enabledServices);
       }
 
       set
       {
-        this.enabledServices = value ? AzuriteServices.Queue : AzuriteServices.All;
+        _enabledServices = value ? AzuriteServices.Queue : AzuriteServices.All;
       }
     }
 
@@ -194,12 +194,12 @@ namespace DotNet.Testcontainers.Configurations
     {
       get
       {
-        return AzuriteServices.Table.Equals(this.enabledServices);
+        return AzuriteServices.Table.Equals(_enabledServices);
       }
 
       set
       {
-        this.enabledServices = value ? AzuriteServices.Table : AzuriteServices.All;
+        _enabledServices = value ? AzuriteServices.Table : AzuriteServices.All;
       }
     }
 
@@ -211,7 +211,7 @@ namespace DotNet.Testcontainers.Configurations
     {
       get
       {
-        return AzuriteServices.All.Equals(this.enabledServices);
+        return AzuriteServices.All.Equals(_enabledServices);
       }
     }
 

@@ -18,14 +18,14 @@ namespace DotNet.Testcontainers.Clients
 
     public ContainerConfigurationConverter(IContainerConfiguration configuration)
     {
-      this.Entrypoint = new ToCollection().Convert(configuration.Entrypoint)?.ToList();
-      this.Command = new ToCollection().Convert(configuration.Command)?.ToList();
-      this.Environments = new ToMappedList().Convert(configuration.Environments)?.ToList();
-      this.Labels = new ToDictionary().Convert(configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
-      this.ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
-      this.PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
-      this.Mounts = new ToMounts().Convert(configuration.Mounts)?.ToList();
-      this.Networks = new ToNetworks(configuration).Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
+      Entrypoint = new ToCollection().Convert(configuration.Entrypoint)?.ToList();
+      Command = new ToCollection().Convert(configuration.Command)?.ToList();
+      Environments = new ToMappedList().Convert(configuration.Environments)?.ToList();
+      Labels = new ToDictionary().Convert(configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
+      ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
+      PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
+      Mounts = new ToMounts().Convert(configuration.Mounts)?.ToList();
+      Networks = new ToNetworks(configuration).Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
     }
 
     public IList<string> Entrypoint { get; }
@@ -81,17 +81,17 @@ namespace DotNet.Testcontainers.Clients
 
     private sealed class ToNetworks : CollectionConverter<INetwork, KeyValuePair<string, EndpointSettings>>
     {
-      private readonly IContainerConfiguration configuration;
+      private readonly IContainerConfiguration _configuration;
 
       public ToNetworks(IContainerConfiguration configuration)
         : base(nameof(ToNetworks))
       {
-        this.configuration = configuration;
+        _configuration = configuration;
       }
 
       public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert([CanBeNull] IEnumerable<INetwork> source)
       {
-        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { Aliases = this.configuration.NetworkAliases?.ToList() }));
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { Aliases = _configuration.NetworkAliases?.ToList() }));
       }
     }
 

@@ -2,16 +2,16 @@
 
 public sealed class Neo4jContainerTest : IAsyncLifetime
 {
-    private readonly Neo4jContainer _neo4jContainer = new Neo4jBuilder().Build();
+    private readonly Neo4jContainer _neo4JContainer = new Neo4jBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _neo4jContainer.StartAsync();
+        return _neo4JContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _neo4jContainer.DisposeAsync().AsTask();
+        return _neo4JContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public sealed class Neo4jContainerTest : IAsyncLifetime
         // Given
         const string database = "neo4j";
 
-        using var driver = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
+        using var driver = GraphDatabase.Driver(_neo4JContainer.GetConnectionString());
 
         // When
         using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase("neo4j"));

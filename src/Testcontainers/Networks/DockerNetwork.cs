@@ -13,11 +13,11 @@ namespace DotNet.Testcontainers.Networks
   [PublicAPI]
   internal sealed class DockerNetwork : Resource, INetwork
   {
-    private readonly IDockerNetworkOperations dockerNetworkOperations;
+    private readonly IDockerNetworkOperations _dockerNetworkOperations;
 
-    private readonly INetworkConfiguration configuration;
+    private readonly INetworkConfiguration _configuration;
 
-    private NetworkResponse network = new NetworkResponse();
+    private NetworkResponse _network = new NetworkResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerNetwork" /> class.
@@ -26,8 +26,8 @@ namespace DotNet.Testcontainers.Networks
     /// <param name="logger">The logger.</param>
     public DockerNetwork(INetworkConfiguration configuration, ILogger logger)
     {
-      this.dockerNetworkOperations = new DockerNetworkOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
-      this.configuration = configuration;
+      _dockerNetworkOperations = new DockerNetworkOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _configuration = configuration;
     }
 
     /// <inheritdoc />
@@ -35,17 +35,17 @@ namespace DotNet.Testcontainers.Networks
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.network.Name;
+        ThrowIfResourceNotFound();
+        return _network.Name;
       }
     }
 
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using (_ = this.AcquireLock())
+      using (_ = AcquireLock())
       {
-        await this.UnsafeCreateAsync(ct)
+        await UnsafeCreateAsync(ct)
           .ConfigureAwait(false);
       }
     }
@@ -53,9 +53,9 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using (_ = this.AcquireLock())
+      using (_ = AcquireLock())
       {
-        await this.UnsafeDeleteAsync(ct)
+        await UnsafeDeleteAsync(ct)
           .ConfigureAwait(false);
       }
     }
@@ -63,14 +63,14 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-      if (this.Disposed)
+      if (Disposed)
       {
         return;
       }
 
-      if (!Guid.Empty.Equals(this.configuration.SessionId))
+      if (!Guid.Empty.Equals(_configuration.SessionId))
       {
-        await this.DeleteAsync()
+        await DeleteAsync()
           .ConfigureAwait(false);
       }
 
@@ -81,40 +81,40 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return !string.IsNullOrEmpty(this.network.ID);
+      return !string.IsNullOrEmpty(_network.ID);
     }
 
     /// <inheritdoc />
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
-      if (this.Exists())
+      if (Exists())
       {
         return;
       }
 
-      var id = await this.dockerNetworkOperations.CreateAsync(this.configuration, ct)
+      var id = await _dockerNetworkOperations.CreateAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      this.network = await this.dockerNetworkOperations.ByIdAsync(id, ct)
+      _network = await _dockerNetworkOperations.ByIdAsync(id, ct)
         .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
-      this.ThrowIfLockNotAcquired();
+      ThrowIfLockNotAcquired();
 
-      if (!this.Exists())
+      if (!Exists())
       {
         return;
       }
 
-      await this.dockerNetworkOperations.DeleteAsync(this.network.ID, ct)
+      await _dockerNetworkOperations.DeleteAsync(_network.ID, ct)
         .ConfigureAwait(false);
 
-      this.network = new NetworkResponse();
+      _network = new NetworkResponse();
     }
   }
 }

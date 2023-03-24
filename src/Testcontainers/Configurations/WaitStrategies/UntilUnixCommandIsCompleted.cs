@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Configurations
 
   internal class UntilUnixCommandIsCompleted : IWaitUntil
   {
-    private readonly string[] command;
+    private readonly string[] _command;
 
     public UntilUnixCommandIsCompleted(string command)
       : this("/bin/sh", "-c", command)
@@ -14,12 +14,12 @@ namespace DotNet.Testcontainers.Configurations
 
     public UntilUnixCommandIsCompleted(params string[] command)
     {
-      this.command = command;
+      _command = command;
     }
 
     public virtual async Task<bool> UntilAsync(IContainer container)
     {
-      var execResult = await container.ExecAsync(this.command)
+      var execResult = await container.ExecAsync(_command)
         .ConfigureAwait(false);
 
       return 0L.Equals(execResult.ExitCode);
