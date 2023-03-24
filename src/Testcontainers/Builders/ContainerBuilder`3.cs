@@ -52,6 +52,24 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(INetwork network)
+    {
+      return this.WithNetwork(network);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(IVolume volume, string destination)
+    {
+      return this.WithVolumeMount(volume, destination);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity DependsOn(IVolume volume, string destination, AccessMode accessMode)
+    {
+      return this.WithVolumeMount(volume, destination, accessMode);
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithImage(string image)
     {
       return this.WithImage(new DockerImage(image));

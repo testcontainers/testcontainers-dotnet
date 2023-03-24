@@ -1,6 +1,6 @@
 ﻿namespace Testcontainers.Tests;
 
-public sealed class DependsOnTests : IAsyncLifetime
+public sealed class DependsOnTest : IAsyncLifetime
 {
     private const string DependsOnKey = "org.testcontainers.depends-on";
 
@@ -17,10 +17,10 @@ public sealed class DependsOnTests : IAsyncLifetime
             .WithImage(CommonImages.Alpine)
             .WithLabel(DependsOnKey, DependsOnValue)
             .Build())
-        .WithNetwork(new NetworkBuilder()
+        .DependsOn(new NetworkBuilder()
             .WithLabel(DependsOnKey, DependsOnValue)
             .Build())
-        .WithVolumeMount(new VolumeBuilder()
+        .DependsOn(new VolumeBuilder()
             .WithLabel(DependsOnKey, DependsOnValue)
             .Build(), "/workdir")
         .WithImage(CommonImages.Alpine)
