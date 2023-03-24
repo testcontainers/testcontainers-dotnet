@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="type">The mount type.</param>
     private MountType(string type)
     {
-      this.Type = type;
+      Type = type;
     }
 
     /// <summary>

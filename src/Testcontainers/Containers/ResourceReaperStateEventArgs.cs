@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Containers
+namespace DotNet.Testcontainers.Containers
 {
   using System;
   using JetBrains.Annotations;
@@ -16,8 +16,8 @@
     /// <param name="resourceReaperState">The Resource Reaper state.</param>
     public ResourceReaperStateEventArgs(ResourceReaper resourceReaper, ResourceReaperState resourceReaperState)
     {
-      this.Instance = resourceReaper;
-      this.State = resourceReaperState;
+      Instance = resourceReaper;
+      State = resourceReaperState;
     }
 
     /// <summary>

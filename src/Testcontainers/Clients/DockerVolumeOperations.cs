@@ -11,17 +11,17 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerVolumeOperations : DockerApiClient, IDockerVolumeOperations
   {
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     public DockerVolumeOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig)
     {
-      this.logger = logger;
+      _logger = logger;
     }
 
     public async Task<IEnumerable<VolumeResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return (await this.Docker.Volumes.ListAsync(ct)
+      return (await Docker.Volumes.ListAsync(ct)
         .ConfigureAwait(false)).Volumes.ToArray();
     }
 
@@ -32,7 +32,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)
     {
-      return (await this.GetAllAsync(ct)
+      return (await GetAllAsync(ct)
         .ConfigureAwait(false)).FirstOrDefault(volume => volume.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
@@ -43,13 +43,13 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await this.ByIdAsync(id, ct)
+      return await ByIdAsync(id, ct)
         .ConfigureAwait(false) != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
-      return await this.ByNameAsync(name, ct)
+      return await ByNameAsync(name, ct)
         .ConfigureAwait(false) != null;
     }
 
@@ -69,17 +69,17 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      var createVolumeResponse = await this.Docker.Volumes.CreateAsync(createParameters, ct)
+      var createVolumeResponse = await Docker.Volumes.CreateAsync(createParameters, ct)
         .ConfigureAwait(false);
 
-      this.logger.DockerVolumeCreated(createVolumeResponse.Name);
+      _logger.DockerVolumeCreated(createVolumeResponse.Name);
       return createVolumeResponse.Name;
     }
 
     public Task DeleteAsync(string name, CancellationToken ct = default)
     {
-      this.logger.DeleteDockerVolume(name);
-      return this.Docker.Volumes.RemoveAsync(name, false, ct);
+      _logger.DeleteDockerVolume(name);
+      return Docker.Volumes.RemoveAsync(name, false, ct);
     }
   }
 }

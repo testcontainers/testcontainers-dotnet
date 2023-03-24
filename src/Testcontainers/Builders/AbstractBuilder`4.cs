@@ -26,7 +26,7 @@
     protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration)
     {
       _ = TestcontainersSettings.SettingsInitialized.WaitOne(TimeSpan.FromSeconds(5));
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <summary>
@@ -37,44 +37,44 @@
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithDockerEndpoint(string endpoint)
     {
-      return this.WithDockerEndpoint(new Uri(endpoint));
+      return WithDockerEndpoint(new Uri(endpoint));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithDockerEndpoint(Uri endpoint)
     {
-      return this.WithDockerEndpoint(new DockerEndpointAuthenticationConfiguration(endpoint));
+      return WithDockerEndpoint(new DockerEndpointAuthenticationConfiguration(endpoint));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      return this.Clone(new ResourceConfiguration<TCreateResourceEntity>(dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig));
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithCleanUp(bool cleanUp)
     {
-      return this.WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
+      return WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithLabel(string name, string value)
     {
-      return this.WithLabel(new Dictionary<string, string> { { name, value } });
+      return WithLabel(new Dictionary<string, string> { { name, value } });
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithLabel(IReadOnlyDictionary<string, string> labels)
     {
-      return this.Clone(new ResourceConfiguration<TCreateResourceEntity>(labels: labels));
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(labels: labels));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithCreateParameterModifier(Action<TCreateResourceEntity> parameterModifier)
     {
       var parameterModifiers = new[] { parameterModifier };
-      return this.Clone(new ResourceConfiguration<TCreateResourceEntity>(parameterModifiers: parameterModifiers));
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(parameterModifiers: parameterModifiers));
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
@@ -87,7 +87,7 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
+      return WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <summary>
@@ -118,7 +118,7 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected virtual TBuilderEntity Init()
     {
-      return this.WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig).WithLabel(DefaultLabels.Instance);
+      return WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig).WithLabel(DefaultLabels.Instance);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@
     protected virtual void Validate()
     {
       const string message = "Cannot detect the Docker endpoint. Use either the environment variables or the ~/.testcontainers.properties file to customize your configuration:\nhttps://dotnet.testcontainers.org/custom_configuration/";
-      _ = Guard.Argument(this.DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
+      _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
         .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
     }
 

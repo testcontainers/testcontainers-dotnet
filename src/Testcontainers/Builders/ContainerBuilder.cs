@@ -34,7 +34,7 @@
     public ContainerBuilder()
       : this(new ContainerConfiguration())
     {
-      this.DockerResourceConfiguration = this.Init().DockerResourceConfiguration;
+      DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -44,7 +44,7 @@
     protected ContainerBuilder(IContainerConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -53,8 +53,8 @@
     /// <inheritdoc />
     public override IContainer Build()
     {
-      this.Validate();
-      return new DockerContainer(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
+      Validate();
+      return new DockerContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -66,13 +66,13 @@
     /// <inheritdoc />
     protected override ContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
     protected override ContainerBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />

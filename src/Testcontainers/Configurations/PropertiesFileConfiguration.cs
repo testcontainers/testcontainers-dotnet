@@ -60,84 +60,84 @@ namespace DotNet.Testcontainers.Configurations
     public string GetDockerConfig()
     {
       const string propertyName = "docker.config";
-      return this.GetDockerConfig(propertyName);
+      return GetDockerConfig(propertyName);
     }
 
     /// <inheritdoc />
     public Uri GetDockerHost()
     {
       const string propertyName = "docker.host";
-      return this.GetDockerHost(propertyName);
+      return GetDockerHost(propertyName);
     }
 
     /// <inheritdoc />
     public string GetDockerHostOverride()
     {
       const string propertyName = "host.override";
-      return this.GetDockerHostOverride(propertyName);
+      return GetDockerHostOverride(propertyName);
     }
 
     /// <inheritdoc />
     public string GetDockerSocketOverride()
     {
       const string propertyName = "docker.socket.override";
-      return this.GetDockerSocketOverride(propertyName);
+      return GetDockerSocketOverride(propertyName);
     }
 
     /// <inheritdoc />
     public JsonDocument GetDockerAuthConfig()
     {
       const string propertyName = "docker.auth.config";
-      return this.GetDockerAuthConfig(propertyName);
+      return GetDockerAuthConfig(propertyName);
     }
 
     /// <inheritdoc />
     public string GetDockerCertPath()
     {
       const string propertyName = "docker.cert.path";
-      return this.GetDockerCertPath(propertyName);
+      return GetDockerCertPath(propertyName);
     }
 
     /// <inheritdoc />
     public bool GetDockerTls()
     {
       const string propertyName = "docker.tls";
-      return this.GetDockerTls(propertyName);
+      return GetDockerTls(propertyName);
     }
 
     /// <inheritdoc />
     public bool GetDockerTlsVerify()
     {
       const string propertyName = "docker.tls.verify";
-      return this.GetDockerTlsVerify(propertyName);
+      return GetDockerTlsVerify(propertyName);
     }
 
     /// <inheritdoc />
     public bool GetRyukDisabled()
     {
       const string propertyName = "ryuk.disabled";
-      return this.GetRyukDisabled(propertyName);
+      return GetRyukDisabled(propertyName);
     }
 
     /// <inheritdoc />
     public bool GetRyukContainerPrivileged()
     {
       const string propertyName = "ryuk.container.privileged";
-      return this.GetRyukContainerPrivileged(propertyName);
+      return GetRyukContainerPrivileged(propertyName);
     }
 
     /// <inheritdoc />
     public IImage GetRyukContainerImage()
     {
       const string propertyName = "ryuk.container.image";
-      return this.GetRyukContainerImage(propertyName);
+      return GetRyukContainerImage(propertyName);
     }
 
     /// <inheritdoc />
     public string GetHubImageNamePrefix()
     {
       const string propertyName = "hub.image.name.prefix";
-      return this.GetHubImageNamePrefix(propertyName);
+      return GetHubImageNamePrefix(propertyName);
     }
   }
 }

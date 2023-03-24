@@ -10,13 +10,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class WaitUntilMessageIsLoggedTest : IAsyncLifetime, IDisposable
   {
-    private readonly CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+    private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-    private readonly IContainer container;
+    private readonly IContainer _container;
 
     public WaitUntilMessageIsLoggedTest()
     {
-      this.container = new ContainerBuilder()
+      _container = new ContainerBuilder()
         .WithImage(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("echo \"Started\" | tee /dev/stderr && trap : TERM INT; sleep infinity & wait")
@@ -26,23 +26,23 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public Task InitializeAsync()
     {
-      return this.container.StartAsync(this.cts.Token);
+      return _container.StartAsync(_cts.Token);
     }
 
     public Task DisposeAsync()
     {
-      return this.container.StartAsync();
+      return _container.StartAsync();
     }
 
     public void Dispose()
     {
-      this.cts.Dispose();
+      _cts.Dispose();
     }
 
     [Fact]
     public void ContainerIsRunning()
     {
-      Assert.Equal(TestcontainersStates.Running, this.container.State);
+      Assert.Equal(TestcontainersStates.Running, _container.State);
     }
   }
 }

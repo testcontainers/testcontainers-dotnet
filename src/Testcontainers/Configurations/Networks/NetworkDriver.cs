@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using JetBrains.Annotations;
 
@@ -26,7 +26,7 @@
     /// <param name="value">The network driver.</param>
     private NetworkDriver(string value)
     {
-      this.Value = value;
+      Value = value;
     }
 
     /// <summary>

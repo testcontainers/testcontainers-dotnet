@@ -11,9 +11,9 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private const string AliasSuffix = "-alias";
 
-    private readonly IContainer testcontainer1;
+    private readonly IContainer _testcontainer1;
 
-    private readonly IContainer testcontainer2;
+    private readonly IContainer _testcontainer2;
 
     public TestcontainersNetworkTest(NetworkFixture networkFixture)
     {
@@ -22,33 +22,33 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithEntrypoint(CommonCommands.SleepInfinity)
         .WithNetwork(networkFixture.Network.Name);
 
-      this.testcontainer1 = testcontainersBuilder
-        .WithHostname(nameof(this.testcontainer1))
-        .WithNetworkAliases(nameof(this.testcontainer1) + AliasSuffix)
+      _testcontainer1 = testcontainersBuilder
+        .WithHostname(nameof(_testcontainer1))
+        .WithNetworkAliases(nameof(_testcontainer1) + AliasSuffix)
         .Build();
 
-      this.testcontainer2 = testcontainersBuilder
-        .WithHostname(nameof(this.testcontainer2))
-        .WithNetworkAliases(nameof(this.testcontainer2) + AliasSuffix)
+      _testcontainer2 = testcontainersBuilder
+        .WithHostname(nameof(_testcontainer2))
+        .WithNetworkAliases(nameof(_testcontainer2) + AliasSuffix)
         .Build();
     }
 
     public Task InitializeAsync()
     {
-      return Task.WhenAll(this.testcontainer1.StartAsync(), this.testcontainer2.StartAsync());
+      return Task.WhenAll(_testcontainer1.StartAsync(), _testcontainer2.StartAsync());
     }
 
     public Task DisposeAsync()
     {
-      return Task.WhenAll(this.testcontainer1.DisposeAsync().AsTask(), this.testcontainer2.DisposeAsync().AsTask());
+      return Task.WhenAll(_testcontainer1.DisposeAsync().AsTask(), _testcontainer2.DisposeAsync().AsTask());
     }
 
     [Theory]
-    [InlineData(nameof(testcontainer2))]
-    [InlineData(nameof(testcontainer2) + AliasSuffix)]
+    [InlineData(nameof(_testcontainer2))]
+    [InlineData(nameof(_testcontainer2) + AliasSuffix)]
     public async Task PingContainer(string destination)
     {
-      var execResult = await this.testcontainer1.ExecAsync(new[] { "ping", "-c", "4", destination });
+      var execResult = await _testcontainer1.ExecAsync(new[] { "ping", "-c", "4", destination });
       Assert.Equal(0, execResult.ExitCode);
     }
   }

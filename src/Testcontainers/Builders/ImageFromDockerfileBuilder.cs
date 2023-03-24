@@ -33,7 +33,7 @@
     public ImageFromDockerfileBuilder()
       : this(new ImageFromDockerfileConfiguration())
     {
-      this.DockerResourceConfiguration = this.Init().DockerResourceConfiguration;
+      DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@
     private ImageFromDockerfileBuilder(IImageFromDockerfileConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -52,52 +52,52 @@
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(string name)
     {
-      return this.WithName(new DockerImage(name));
+      return WithName(new DockerImage(name));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(IImage name)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfile));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfile));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory)
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithBuildArgument(string name, string value)
     {
       var buildArguments = new Dictionary<string, string> { { name, value } };
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(buildArguments: buildArguments));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(buildArguments: buildArguments));
     }
 
     /// <inheritdoc />
     public override IFutureDockerImage Build()
     {
-      this.Validate();
-      return new FutureDockerImage(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
+      Validate();
+      return new FutureDockerImage(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -109,7 +109,7 @@
     /// <inheritdoc />
     protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration<ImageBuildParameters> resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />

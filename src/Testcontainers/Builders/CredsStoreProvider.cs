@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System.Text.Json;
   using DotNet.Testcontainers.Configurations;
@@ -8,9 +8,9 @@
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class CredsStoreProvider : IDockerRegistryAuthenticationProvider
   {
-    private readonly JsonElement rootElement;
+    private readonly JsonElement _rootElement;
 
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CredsStoreProvider" /> class.
@@ -31,27 +31,27 @@
     [PublicAPI]
     public CredsStoreProvider(JsonElement jsonElement, ILogger logger)
     {
-      this.rootElement = jsonElement.TryGetProperty("credsStore", out var credsStore) ? credsStore : default;
-      this.logger = logger;
+      _rootElement = jsonElement.TryGetProperty("credsStore", out var credsStore) ? credsStore : default;
+      _logger = logger;
     }
 
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(this.rootElement) && !string.IsNullOrEmpty(this.rootElement.GetString());
+      return !default(JsonElement).Equals(_rootElement) && !string.IsNullOrEmpty(_rootElement.GetString());
     }
 
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration GetAuthConfig(string hostname)
     {
-      this.logger.SearchingDockerRegistryCredential("CredsStore");
+      _logger.SearchingDockerRegistryCredential("CredsStore");
 
-      if (!this.IsApplicable(hostname))
+      if (!IsApplicable(hostname))
       {
         return null;
       }
 
-      var credentialProviderOutput = DockerCredentialProcess.Get(this.rootElement.GetString(), hostname);
+      var credentialProviderOutput = DockerCredentialProcess.Get(_rootElement.GetString(), hostname);
       if (string.IsNullOrEmpty(credentialProviderOutput))
       {
         return null;
@@ -68,7 +68,7 @@
         return null;
       }
 
-      this.logger.DockerRegistryCredentialFound(hostname);
+      _logger.DockerRegistryCredentialFound(hostname);
       return new DockerRegistryAuthenticationConfiguration(hostname, credential);
     }
   }

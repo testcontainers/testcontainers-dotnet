@@ -25,11 +25,11 @@
       IReadOnlyDictionary<string, string> buildArguments = null,
       bool? deleteIfExists = null)
     {
-      this.Dockerfile = dockerfile;
-      this.DockerfileDirectory = dockerfileDirectory;
-      this.Image = image;
-      this.BuildArguments = buildArguments;
-      this.DeleteIfExists = deleteIfExists;
+      Dockerfile = dockerfile;
+      DockerfileDirectory = dockerfileDirectory;
+      Image = image;
+      BuildArguments = buildArguments;
+      DeleteIfExists = deleteIfExists;
     }
 
     /// <summary>
@@ -58,11 +58,11 @@
     public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
       : base(oldValue, newValue)
     {
-      this.Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
-      this.DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
-      this.Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
-      this.BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
-      this.DeleteIfExists = (oldValue.DeleteIfExists.HasValue && oldValue.DeleteIfExists.Value) || (newValue.DeleteIfExists.HasValue && newValue.DeleteIfExists.Value);
+      Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
+      DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
+      Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
+      BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
+      DeleteIfExists = (oldValue.DeleteIfExists.HasValue && oldValue.DeleteIfExists.Value) || (newValue.DeleteIfExists.HasValue && newValue.DeleteIfExists.Value);
     }
 
     /// <inheritdoc />

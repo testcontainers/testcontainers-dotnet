@@ -15,7 +15,7 @@
   {
     private const ushort HttpPort = 80;
 
-    private readonly IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
       .WithCommand($"echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}")
@@ -34,19 +34,19 @@
 
     public Task InitializeAsync()
     {
-      return this.container.StartAsync();
+      return _container.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.container.DisposeAsync().AsTask();
+      return _container.DisposeAsync().AsTask();
     }
 
     [Theory]
     [MemberData(nameof(GetHttpWaitStrategies))]
     public async Task HttpWaitStrategyReceivesStatusCode(HttpWaitStrategy httpWaitStrategy)
     {
-      var succeeded = await httpWaitStrategy.UntilAsync(this.container)
+      var succeeded = await httpWaitStrategy.UntilAsync(_container)
         .ConfigureAwait(false);
 
       Assert.True(succeeded);
@@ -65,13 +65,13 @@
       var httpWaitStrategy = new HttpWaitStrategy().WithBasicAuthentication(username, password).WithHeaders(httpHeaders);
 
       // When
-      var succeeded = await httpWaitStrategy.UntilAsync(this.container)
+      var succeeded = await httpWaitStrategy.UntilAsync(_container)
         .ConfigureAwait(false);
 
       await Task.Delay(TimeSpan.FromSeconds(1))
         .ConfigureAwait(false);
 
-      var (stdout, _) = await this.container.GetLogsAsync()
+      var (stdout, _) = await _container.GetLogsAsync()
         .ConfigureAwait(false);
 
       // Then

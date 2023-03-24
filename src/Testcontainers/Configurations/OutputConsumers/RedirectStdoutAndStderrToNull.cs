@@ -10,9 +10,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public RedirectStdoutAndStderrToNull()
     {
-      this.Enabled = false;
-      this.Stdout = Stream.Null;
-      this.Stderr = Stream.Null;
+      Enabled = false;
+      Stdout = Stream.Null;
+      Stderr = Stream.Null;
     }
 
     /// <inheritdoc />
@@ -27,8 +27,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public void Dispose()
     {
-      this.Stdout.Dispose();
-      this.Stderr.Dispose();
+      Stdout.Dispose();
+      Stderr.Dispose();
     }
   }
 }

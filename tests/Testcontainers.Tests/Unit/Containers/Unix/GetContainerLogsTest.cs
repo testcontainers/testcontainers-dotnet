@@ -8,7 +8,7 @@
 
   public sealed class GetContainerLogsTest : IAsyncLifetime
   {
-    private readonly IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _container = new TestcontainersBuilder<TestcontainersContainer>()
       .WithImage("amazon/dynamodb-local:1.20.0")
       .WithWaitStrategy(Wait.ForUnixContainer()
         .UntilPortIsAvailable(8000))
@@ -17,7 +17,7 @@
     [Fact]
     public async Task GetLogsShouldNotBeEmpty()
     {
-      var (stdout, _) = await this.container.GetLogsAsync()
+      var (stdout, _) = await _container.GetLogsAsync()
         .ConfigureAwait(false);
 
       Assert.NotEmpty(stdout);
@@ -26,7 +26,7 @@
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenSinceIsOutOfDateRage()
     {
-      var (stdout, stderr) = await this.container.GetLogsAsync(since: DateTime.Now.AddDays(1))
+      var (stdout, stderr) = await _container.GetLogsAsync(since: DateTime.Now.AddDays(1))
         .ConfigureAwait(false);
 
       Assert.Empty(stdout);
@@ -36,7 +36,7 @@
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenUntilIsOutOfDateRage()
     {
-      var (stdout, stderr) = await this.container.GetLogsAsync(until: DateTime.Now.AddDays(-1))
+      var (stdout, stderr) = await _container.GetLogsAsync(until: DateTime.Now.AddDays(-1))
         .ConfigureAwait(false);
 
       Assert.Empty(stdout);
@@ -45,12 +45,12 @@
 
     public Task InitializeAsync()
     {
-      return this.container.StartAsync();
+      return _container.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.container.DisposeAsync().AsTask();
+      return _container.DisposeAsync().AsTask();
     }
   }
 }

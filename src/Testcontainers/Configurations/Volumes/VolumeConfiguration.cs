@@ -15,7 +15,7 @@
     public VolumeConfiguration(
       string name = null)
     {
-      this.Name = name;
+      Name = name;
     }
 
     /// <summary>
@@ -44,7 +44,7 @@
     public VolumeConfiguration(IVolumeConfiguration oldValue, IVolumeConfiguration newValue)
       : base(oldValue, newValue)
     {
-      this.Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
+      Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
     }
 
     /// <inheritdoc />

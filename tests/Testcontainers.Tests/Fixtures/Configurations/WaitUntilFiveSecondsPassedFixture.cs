@@ -7,11 +7,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class WaitUntilFiveSecondsPassedFixture : IWaitUntil
   {
-    private readonly long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+    private readonly long _timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
     public Task<bool> UntilAsync(IContainer container)
     {
-      return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > this.timestamp + 5);
+      return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > _timestamp + 5);
     }
   }
 }

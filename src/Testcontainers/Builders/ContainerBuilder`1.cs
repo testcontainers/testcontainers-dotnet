@@ -22,9 +22,9 @@
     public ContainerBuilder()
       : this(new ContainerConfiguration())
     {
-      var defaultConfiguration = this.Init();
-      this.DockerResourceConfiguration = defaultConfiguration.DockerResourceConfiguration;
-      this.ModuleConfiguration = defaultConfiguration.ModuleConfiguration;
+      var defaultConfiguration = Init();
+      DockerResourceConfiguration = defaultConfiguration.DockerResourceConfiguration;
+      ModuleConfiguration = defaultConfiguration.ModuleConfiguration;
     }
 
     /// <summary>
@@ -34,13 +34,13 @@
     private ContainerBuilder(IContainerConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     private ContainerBuilder(IContainerConfiguration dockerResourceConfiguration, Action<TContainerEntity> moduleConfiguration)
       : this(dockerResourceConfiguration)
     {
-      this.ModuleConfiguration = moduleConfiguration;
+      ModuleConfiguration = moduleConfiguration;
     }
 
     /// <inheritdoc />
@@ -53,16 +53,16 @@
     /// <inheritdoc />
     public override TContainerEntity Build()
     {
-      this.Validate();
-      var container = (TContainerEntity)Activator.CreateInstance(typeof(TContainerEntity), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this.DockerResourceConfiguration, TestcontainersSettings.Logger }, null);
-      this.ModuleConfiguration.Invoke(container);
+      Validate();
+      var container = (TContainerEntity)Activator.CreateInstance(typeof(TContainerEntity), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { DockerResourceConfiguration, TestcontainersSettings.Logger }, null);
+      ModuleConfiguration.Invoke(container);
       return container;
     }
 
     /// <inheritdoc />
     public override ContainerBuilder<TContainerEntity> ConfigureContainer(Action<TContainerEntity> moduleConfiguration)
     {
-      return new ContainerBuilder<TContainerEntity>(this.DockerResourceConfiguration, moduleConfiguration ?? this.ModuleConfiguration);
+      return new ContainerBuilder<TContainerEntity>(DockerResourceConfiguration, moduleConfiguration ?? ModuleConfiguration);
     }
 
     /// <inheritdoc />
@@ -74,19 +74,19 @@
     /// <inheritdoc />
     protected override ContainerBuilder<TContainerEntity> Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
     protected override ContainerBuilder<TContainerEntity> Clone(IContainerConfiguration resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
     protected override ContainerBuilder<TContainerEntity> Merge(IContainerConfiguration oldValue, IContainerConfiguration newValue)
     {
-      return new ContainerBuilder<TContainerEntity>(new ContainerConfiguration(oldValue, newValue), this.ModuleConfiguration);
+      return new ContainerBuilder<TContainerEntity>(new ContainerConfiguration(oldValue, newValue), ModuleConfiguration);
     }
   }
 }

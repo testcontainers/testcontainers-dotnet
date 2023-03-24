@@ -6,9 +6,9 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IOutputConsumer" />
   internal sealed class RedirectStdoutAndStderrToStream : IOutputConsumer
   {
-    private readonly StreamWriter stdout;
+    private readonly StreamWriter _stdout;
 
-    private readonly StreamWriter stderr;
+    private readonly StreamWriter _stderr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedirectStdoutAndStderrToStream" /> class.
@@ -25,11 +25,11 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="stderr">The stderr stream.</param>
     public RedirectStdoutAndStderrToStream(Stream stdout, Stream stderr)
     {
-      this.Enabled = stdout.CanWrite || stderr.CanWrite;
-      this.stdout = new StreamWriter(stdout);
-      this.stdout.AutoFlush = true;
-      this.stderr = new StreamWriter(stderr);
-      this.stderr.AutoFlush = true;
+      Enabled = stdout.CanWrite || stderr.CanWrite;
+      _stdout = new StreamWriter(stdout);
+      _stdout.AutoFlush = true;
+      _stderr = new StreamWriter(stderr);
+      _stderr.AutoFlush = true;
     }
 
     /// <inheritdoc />
@@ -37,17 +37,17 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public Stream Stdout
-      => this.stdout.BaseStream;
+      => _stdout.BaseStream;
 
     /// <inheritdoc />
     public Stream Stderr
-      => this.stderr.BaseStream;
+      => _stderr.BaseStream;
 
     /// <inheritdoc />
     public void Dispose()
     {
-      this.stdout.Dispose();
-      this.stderr.Dispose();
+      _stdout.Dispose();
+      _stderr.Dispose();
     }
   }
 }

@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Configurations
     [PublicAPI]
     public Unix(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      this.DockerEndpointAuthConfig = dockerEndpointAuthConfig;
+      DockerEndpointAuthConfig = dockerEndpointAuthConfig;
     }
 
     /// <inheritdoc />

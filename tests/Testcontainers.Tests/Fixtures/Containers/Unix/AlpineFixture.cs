@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public Task DisposeAsync()
     {
-      return this.Container.DisposeAsync().AsTask();
+      return Container.DisposeAsync().AsTask();
     }
   }
 }

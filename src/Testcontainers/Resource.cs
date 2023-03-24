@@ -12,19 +12,19 @@
   [PublicAPI]
   public abstract class Resource : IAsyncDisposable
   {
-    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
-    private int disposed;
+    private int _disposed;
 
     /// <summary>
     /// Gets a value indicating whether the resource has been disposed or not.
     /// </summary>
-    protected bool Disposed => 1.Equals(Interlocked.CompareExchange(ref this.disposed, 1, 0));
+    protected bool Disposed => 1.Equals(Interlocked.CompareExchange(ref _disposed, 1, 0));
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-      await this.DisposeAsyncCore()
+      await DisposeAsyncCore()
         .ConfigureAwait(false);
 
       GC.SuppressFinalize(this);
@@ -53,7 +53,7 @@
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     protected virtual ValueTask DisposeAsyncCore()
     {
-      this.semaphoreSlim.Dispose();
+      _semaphoreSlim.Dispose();
       return default;
     }
 
@@ -63,7 +63,7 @@
     /// <returns>An <see cref="IDisposable" /> that releases the lock on <see cref="IDisposable.Dispose" />.</returns>
     protected virtual IDisposable AcquireLock()
     {
-      return new Lock(this.semaphoreSlim);
+      return new Lock(_semaphoreSlim);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@
     protected virtual void ThrowIfResourceNotFound()
     {
       const string message = "Could not find resource '{0}'. Please create the resource by calling StartAsync(CancellationToken) or CreateAsync(CancellationToken).";
-      _ = Guard.Argument(this, this.GetType().Name)
+      _ = Guard.Argument(this, GetType().Name)
         .ThrowIf(argument => !argument.Value.Exists(), argument => new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, message, argument.Name)));
     }
 
@@ -84,7 +84,7 @@
     protected virtual void ThrowIfLockNotAcquired()
     {
       const string message = "Unsafe method call requires lock.";
-      _ = Guard.Argument(this.semaphoreSlim, nameof(this.semaphoreSlim))
+      _ = Guard.Argument(_semaphoreSlim, nameof(_semaphoreSlim))
         .ThrowIf(argument => argument.Value.CurrentCount > 0, _ => new InvalidOperationException(message));
     }
 
@@ -93,7 +93,7 @@
     /// </summary>
     private sealed class Lock : IDisposable
     {
-      private readonly SemaphoreSlim semaphoreSlim;
+      private readonly SemaphoreSlim _semaphoreSlim;
 
       /// <summary>
       /// Initializes a new instance of the <see cref="Lock" /> class.
@@ -101,13 +101,13 @@
       /// <param name="semaphoreSlim">The semaphore slim to synchronize threads.</param>
       public Lock(SemaphoreSlim semaphoreSlim)
       {
-        this.semaphoreSlim = semaphoreSlim;
-        this.semaphoreSlim.Wait();
+        _semaphoreSlim = semaphoreSlim;
+        _semaphoreSlim.Wait();
       }
 
       public void Dispose()
       {
-        this.semaphoreSlim.Release();
+        _semaphoreSlim.Release();
       }
     }
   }

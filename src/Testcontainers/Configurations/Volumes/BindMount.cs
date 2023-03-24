@@ -14,10 +14,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public BindMount(string hostPath, string containerPath, AccessMode accessMode)
     {
-      this.Type = MountType.Bind;
-      this.Source = hostPath;
-      this.Target = containerPath;
-      this.AccessMode = accessMode;
+      Type = MountType.Bind;
+      Source = hostPath;
+      Target = containerPath;
+      AccessMode = accessMode;
     }
 
     public MountType Type { get; }

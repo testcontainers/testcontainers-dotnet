@@ -9,11 +9,11 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
 
   public sealed class WaitUntilContainerIsHealthyTest : IClassFixture<HealthCheckFixture>
   {
-    private readonly IImage image;
+    private readonly IImage _image;
 
     public WaitUntilContainerIsHealthyTest(HealthCheckFixture image)
     {
-      this.image = image;
+      _image = image;
     }
 
     [Fact]
@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     {
       // Given
       var container = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage(this.image)
+        .WithImage(_image)
         .WithEnvironment("START_HEALTHY", bool.TrueString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
         .Build();
@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     {
       // Given
       var container = new TestcontainersBuilder<TestcontainersContainer>()
-        .WithImage(this.image)
+        .WithImage(_image)
         .WithEnvironment("START_HEALTHY", bool.FalseString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
         .Build();

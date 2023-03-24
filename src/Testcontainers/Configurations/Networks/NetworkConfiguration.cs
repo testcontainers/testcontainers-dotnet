@@ -20,9 +20,9 @@
       NetworkDriver driver = default,
       IReadOnlyDictionary<string, string> options = null)
     {
-      this.Name = name;
-      this.Driver = driver;
-      this.Options = options;
+      Name = name;
+      Driver = driver;
+      Options = options;
     }
 
     /// <summary>
@@ -51,9 +51,9 @@
     public NetworkConfiguration(INetworkConfiguration oldValue, INetworkConfiguration newValue)
       : base(oldValue, newValue)
     {
-      this.Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
-      this.Driver = BuildConfiguration.Combine(oldValue.Driver, newValue.Driver);
-      this.Options = BuildConfiguration.Combine(oldValue.Options, newValue.Options);
+      Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
+      Driver = BuildConfiguration.Combine(oldValue.Driver, newValue.Driver);
+      Options = BuildConfiguration.Combine(oldValue.Options, newValue.Options);
     }
 
     /// <inheritdoc />

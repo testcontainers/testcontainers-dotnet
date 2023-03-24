@@ -18,21 +18,21 @@
 
     private const ushort TlsPort = 2376;
 
-    private readonly string hostCertsDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"), CertsDirectoryName);
+    private readonly string _hostCertsDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"), CertsDirectoryName);
 
-    private readonly string containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
+    private readonly string _containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
-    private readonly IImage image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
+    private readonly IImage _image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
 
-    private readonly IContainer container;
+    private readonly IContainer _container;
 
     protected ProtectDockerDaemonSocket(ContainerBuilder<TestcontainersContainer> containerConfiguration)
     {
-      this.container = containerConfiguration
-        .WithImage(this.image)
+      _container = containerConfiguration
+        .WithImage(_image)
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
-        .WithBindMount(this.hostCertsDirectoryPath, this.containerCertsDirectoryPath, AccessMode.ReadWrite)
+        .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)
         .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new UntilListenOn()))
         .Build();
     }
@@ -42,8 +42,8 @@
       get
       {
         var customProperties = new List<string>();
-        customProperties.Add($"docker.host={this.TcpEndpoint}");
-        customProperties.Add($"docker.cert.path={Path.Combine(this.hostCertsDirectoryPath, "client")}");
+        customProperties.Add($"docker.host={TcpEndpoint}");
+        customProperties.Add($"docker.cert.path={Path.Combine(_hostCertsDirectoryPath, "client")}");
         return customProperties;
       }
     }
@@ -52,19 +52,19 @@
     {
       get
       {
-        return new UriBuilder("tcp", this.container.Hostname, this.container.GetMappedPublicPort(TlsPort)).Uri;
+        return new UriBuilder("tcp", _container.Hostname, _container.GetMappedPublicPort(TlsPort)).Uri;
       }
     }
 
     public Task InitializeAsync()
     {
-      _ = Directory.CreateDirectory(this.hostCertsDirectoryPath);
-      return this.container.StartAsync();
+      _ = Directory.CreateDirectory(_hostCertsDirectoryPath);
+      return _container.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.container.DisposeAsync().AsTask();
+      return _container.DisposeAsync().AsTask();
     }
 
     private sealed class UntilListenOn : IWaitUntil

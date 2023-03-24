@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="value">The volume access mode.</param>
     private AccessMode(string value)
     {
-      this.Value = value;
+      Value = value;
     }
 
     /// <summary>

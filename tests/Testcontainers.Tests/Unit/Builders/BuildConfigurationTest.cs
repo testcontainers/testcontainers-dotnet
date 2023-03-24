@@ -48,11 +48,11 @@
     {
       public EnumerableCombinationTestData()
       {
-        this.Add(new object[] { null, null, Array.Empty<string>() });
-        this.Add(new object[] { null, new[] { "2" }, new[] { "2" } });
-        this.Add(new object[] { new[] { "1" }, null, new[] { "1" } });
-        this.Add(new object[] { new[] { "1" }, new[] { "2" }, new[] { "1", "2" } });
-        this.Add(new object[] { new[] { "1", "2", "3" }, new[] { "2", "3", "4" }, new[] { "1", "2", "2", "3", "3", "4" } });
+        Add(new object[] { null, null, Array.Empty<string>() });
+        Add(new object[] { null, new[] { "2" }, new[] { "2" } });
+        Add(new object[] { new[] { "1" }, null, new[] { "1" } });
+        Add(new object[] { new[] { "1" }, new[] { "2" }, new[] { "1", "2" } });
+        Add(new object[] { new[] { "1", "2", "3" }, new[] { "2", "3", "4" }, new[] { "1", "2", "2", "3", "3", "4" } });
       }
     }
 
@@ -60,11 +60,11 @@
     {
       public ReadOnlyListCombinationTestData()
       {
-        this.Add(new object[] { null, null, Array.Empty<string>() });
-        this.Add(new object[] { null, new[] { "2" }, new[] { "2" } });
-        this.Add(new object[] { new[] { "1" }, null, new[] { "1" } });
-        this.Add(new object[] { new[] { "1" }, new[] { "2" }, new[] { "1", "2" } });
-        this.Add(new object[] { new[] { "1", "2", "3" }, new[] { "2", "3", "4" }, new[] { "1", "2", "3", "2", "3", "4" } });
+        Add(new object[] { null, null, Array.Empty<string>() });
+        Add(new object[] { null, new[] { "2" }, new[] { "2" } });
+        Add(new object[] { new[] { "1" }, null, new[] { "1" } });
+        Add(new object[] { new[] { "1" }, new[] { "2" }, new[] { "1", "2" } });
+        Add(new object[] { new[] { "1", "2", "3" }, new[] { "2", "3", "4" }, new[] { "1", "2", "3", "2", "3", "4" } });
       }
     }
 
@@ -72,10 +72,10 @@
     {
       public DictionaryCombinationTestData()
       {
-        this.Add(new object[] { null, null, new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()) });
-        this.Add(new object[] { new Dictionary<string, string> { { "A", "A" } }, null, new Dictionary<string, string> { { "A", "A" } } });
-        this.Add(new object[] { null, new Dictionary<string, string> { { "B", "B" } }, new Dictionary<string, string> { { "B", "B" } } });
-        this.Add(new object[] { new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }, new Dictionary<string, string> { ["A"] = "new" }, new Dictionary<string, string> { ["A"] = "new", ["B"] = "B" } });
+        Add(new object[] { null, null, new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()) });
+        Add(new object[] { new Dictionary<string, string> { { "A", "A" } }, null, new Dictionary<string, string> { { "A", "A" } } });
+        Add(new object[] { null, new Dictionary<string, string> { { "B", "B" } }, new Dictionary<string, string> { { "B", "B" } } });
+        Add(new object[] { new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }, new Dictionary<string, string> { ["A"] = "new" }, new Dictionary<string, string> { ["A"] = "new", ["B"] = "B" } });
       }
     }
   }

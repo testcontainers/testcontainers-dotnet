@@ -40,10 +40,10 @@ namespace DotNet.Testcontainers.Builders
 
     private TlsEndpointAuthenticationProvider(ICustomConfiguration customConfiguration)
     {
-      this.TlsEnabled = customConfiguration.GetDockerTls() || customConfiguration.GetDockerTlsVerify();
-      this.TlsVerifyEnabled = customConfiguration.GetDockerTlsVerify();
-      this.CertificatesDirectoryPath = customConfiguration.GetDockerCertPath() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
-      this.DockerEngine = customConfiguration.GetDockerHost() ?? new Uri("tcp://localhost:2376");
+      TlsEnabled = customConfiguration.GetDockerTls() || customConfiguration.GetDockerTlsVerify();
+      TlsVerifyEnabled = customConfiguration.GetDockerTlsVerify();
+      CertificatesDirectoryPath = customConfiguration.GetDockerCertPath() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
+      DockerEngine = customConfiguration.GetDockerHost() ?? new Uri("tcp://localhost:2376");
     }
 
     protected bool TlsEnabled { get; }
@@ -57,15 +57,15 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public override bool IsApplicable()
     {
-      return this.TlsEnabled;
+      return TlsEnabled;
     }
 
     /// <inheritdoc />
     public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
       var credentials = new TlsCredentials();
-      credentials.ServerCertificateValidationCallback = this.ServerCertificateValidationCallback;
-      return new DockerEndpointAuthenticationConfiguration(this.DockerEngine, credentials);
+      credentials.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+      return new DockerEndpointAuthenticationConfiguration(DockerEngine, credentials);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>The root certificate authority (CA).</returns>
     protected virtual X509Certificate2 GetCaCertificate()
     {
-      return new X509Certificate2(Path.Combine(this.CertificatesDirectoryPath, CaCertificateFileName));
+      return new X509Certificate2(Path.Combine(CertificatesDirectoryPath, CaCertificateFileName));
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ namespace DotNet.Testcontainers.Builders
           return false;
         case SslPolicyErrors.RemoteCertificateChainErrors:
         default:
-          using (var caCertificate = this.GetCaCertificate())
+          using (var caCertificate = GetCaCertificate())
           {
             var validationChain = new X509Chain();
             validationChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;

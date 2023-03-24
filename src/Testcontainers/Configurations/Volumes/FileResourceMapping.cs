@@ -14,10 +14,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="containerPath">The absolute path of a file to map in the container.</param>
     public FileResourceMapping(string hostPath, string containerPath)
     {
-      this.Type = MountType.Bind;
-      this.Source = hostPath;
-      this.Target = containerPath;
-      this.AccessMode = AccessMode.ReadOnly;
+      Type = MountType.Bind;
+      Source = hostPath;
+      Target = containerPath;
+      AccessMode = AccessMode.ReadOnly;
     }
 
     /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public virtual Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
     {
-      return Task.FromResult(File.ReadAllBytes(this.Source));
+      return Task.FromResult(File.ReadAllBytes(Source));
     }
   }
 }
