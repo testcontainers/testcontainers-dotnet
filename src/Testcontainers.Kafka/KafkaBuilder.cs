@@ -79,7 +79,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
                 startupScript.Append(lf);
                 startupScript.Append("zookeeper-server-start zookeeper.properties &");
                 startupScript.Append(lf);
-                startupScript.Append("export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaPort) + ",BROKER://" + container.Hostname + ":" + BrokerPort);
+                startupScript.Append("export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaPort) + ",BROKER://" + container.IpAddress + ":" + BrokerPort);
                 startupScript.Append(lf);
                 startupScript.Append("echo '' > /etc/confluent/docker/ensure");
                 startupScript.Append(lf);
