@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
   using DotNet.Testcontainers.Volumes;
 
   /// <inheritdoc cref="IMount" />
@@ -7,7 +9,7 @@ namespace DotNet.Testcontainers.Configurations
   {
     // Do not set the volume name immediately in the constructor. This may raise an InvalidOperationException too early.
     // Depending on when the developer passes the instance to VolumeMount it may not exist yet.
-    private readonly IVolume volume;
+    private readonly IVolume _volume;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeMount" /> struct.
@@ -17,10 +19,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public VolumeMount(IVolume volume, string containerPath, AccessMode accessMode)
     {
-      this.volume = volume;
-      this.Type = MountType.Volume;
-      this.Target = containerPath;
-      this.AccessMode = accessMode;
+      _volume = volume;
+      Type = MountType.Volume;
+      Target = containerPath;
+      AccessMode = accessMode;
     }
 
     /// <inheritdoc />
@@ -30,9 +32,21 @@ namespace DotNet.Testcontainers.Configurations
     public AccessMode AccessMode { get; }
 
     /// <inheritdoc />
-    public string Source => this.volume.Name;
+    public string Source => _volume.Name;
 
     /// <inheritdoc />
     public string Target { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return _volume.CreateAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return _volume.DeleteAsync(ct);
+    }
   }
 }

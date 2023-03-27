@@ -20,18 +20,18 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
     public sealed class MTls : IClassFixture<DockerMTlsFixture>
     {
-      private readonly IDockerEndpointAuthenticationConfiguration authConfig;
+      private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public MTls(DockerMTlsFixture dockerMTlsFixture)
       {
-        this.authConfig = GetAuthConfig(dockerMTlsFixture);
+        _authConfig = GetAuthConfig(dockerMTlsFixture);
       }
 
       [Fact]
       public async Task GetVersionReturnsVersion()
       {
         // Given
-        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, this.authConfig, NullLogger.Instance);
+        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
         var version = await dockerSystemOperations.GetVersionAsync()
@@ -44,18 +44,18 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
     public sealed class Tls : IClassFixture<DockerTlsFixture>
     {
-      private readonly IDockerEndpointAuthenticationConfiguration authConfig;
+      private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public Tls(DockerTlsFixture dockerTlsFixture)
       {
-        this.authConfig = GetAuthConfig(dockerTlsFixture);
+        _authConfig = GetAuthConfig(dockerTlsFixture);
       }
 
       [Fact]
       public async Task GetVersionReturnsVersion()
       {
         // Given
-        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, this.authConfig, NullLogger.Instance);
+        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
         var version = await dockerSystemOperations.GetVersionAsync()

@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.IO;
@@ -21,7 +21,7 @@
     [PublicAPI]
     public CommonDirectoryPath(string directoryPath)
     {
-      this.DirectoryPath = directoryPath;
+      DirectoryPath = directoryPath;
     }
 
     /// <summary>

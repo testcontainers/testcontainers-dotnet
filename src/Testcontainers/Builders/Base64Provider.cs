@@ -11,9 +11,9 @@
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal sealed class Base64Provider : IDockerRegistryAuthenticationProvider
   {
-    private readonly JsonElement rootElement;
+    private readonly JsonElement _rootElement;
 
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Base64Provider" /> class.
@@ -34,8 +34,8 @@
     [PublicAPI]
     public Base64Provider(JsonElement jsonElement, ILogger logger)
     {
-      this.rootElement = jsonElement.TryGetProperty("auths", out var auths) ? auths : default;
-      this.logger = logger;
+      _rootElement = jsonElement.TryGetProperty("auths", out var auths) ? auths : default;
+      _logger = logger;
     }
 
     /// <summary>
@@ -47,20 +47,20 @@
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(this.rootElement) && !JsonValueKind.Null.Equals(this.rootElement.ValueKind) && this.rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
+      return !default(JsonElement).Equals(_rootElement) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
     }
 
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration GetAuthConfig(string hostname)
     {
-      this.logger.SearchingDockerRegistryCredential("Auths");
+      _logger.SearchingDockerRegistryCredential("Auths");
 
-      if (!this.IsApplicable(hostname))
+      if (!IsApplicable(hostname))
       {
         return null;
       }
 
-      var authProperty = this.rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryKey(property, hostname));
+      var authProperty = _rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryKey(property, hostname));
 
       if (!JsonValueKind.Object.Equals(authProperty.Value.ValueKind))
       {
@@ -100,7 +100,7 @@
         return null;
       }
 
-      this.logger.DockerRegistryCredentialFound(hostname);
+      _logger.DockerRegistryCredentialFound(hostname);
       return new DockerRegistryAuthenticationConfiguration(authProperty.Name, credential[0], credential[1]);
     }
   }

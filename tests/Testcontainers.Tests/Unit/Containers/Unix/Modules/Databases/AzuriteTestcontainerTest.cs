@@ -93,34 +93,34 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public sealed class CommonContainerPorts : IClassFixture<AzuriteFixture.AzuriteDefaultFixture>
       {
-        private readonly AzuriteFixture.AzuriteDefaultFixture commonContainerPorts;
+        private readonly AzuriteFixture.AzuriteDefaultFixture _commonContainerPorts;
 
         public CommonContainerPorts(AzuriteFixture.AzuriteDefaultFixture commonContainerPorts)
         {
-          this.commonContainerPorts = commonContainerPorts;
+          _commonContainerPorts = commonContainerPorts;
         }
 
         [Fact]
         public async Task ConnectionEstablished()
         {
-          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(this.commonContainerPorts))
+          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(_commonContainerPorts))
             .ConfigureAwait(false));
         }
       }
 
       public sealed class CustomContainerPorts : IClassFixture<AzuriteFixture.AzuriteWithCustomContainerPortsFixture>
       {
-        private readonly AzuriteFixture.AzuriteDefaultFixture customContainerPorts;
+        private readonly AzuriteFixture.AzuriteDefaultFixture _customContainerPorts;
 
         public CustomContainerPorts(AzuriteFixture.AzuriteWithCustomContainerPortsFixture customContainerPorts)
         {
-          this.customContainerPorts = customContainerPorts;
+          _customContainerPorts = customContainerPorts;
         }
 
         [Fact]
         public async Task ConnectionEstablished()
         {
-          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(this.customContainerPorts))
+          Assert.Null(await Record.ExceptionAsync(() => EstablishConnection(_customContainerPorts))
             .ConfigureAwait(false));
         }
       }
@@ -128,28 +128,28 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class BlobServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithBlobOnlyFixture>
     {
-      private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
+      private readonly AzuriteFixture.AzuriteDefaultFixture _azurite;
 
       public BlobServiceEnabled(AzuriteFixture.AzuriteWithBlobOnlyFixture azurite)
       {
-        this.azurite = azurite;
+        _azurite = azurite;
       }
 
       [Fact]
       public async Task ConnectionEstablished()
       {
         // Given
-        var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
+        var blobServiceClient = new BlobServiceClient(_azurite.Container.ConnectionString);
 
-        var queueServiceClient = new QueueServiceClient(this.azurite.Container.ConnectionString);
+        var queueServiceClient = new QueueServiceClient(_azurite.Container.ConnectionString);
 
-        var tableServiceClient = new TableServiceClient(this.azurite.Container.ConnectionString);
+        var tableServiceClient = new TableServiceClient(_azurite.Container.ConnectionString);
 
         // When
         var blobProperties = await blobServiceClient.GetPropertiesAsync()
           .ConfigureAwait(false);
 
-        var execResult = await this.azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
+        var execResult = await _azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
           .ConfigureAwait(false);
 
         // Then
@@ -170,28 +170,28 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class QueueServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithQueueOnlyFixture>
     {
-      private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
+      private readonly AzuriteFixture.AzuriteDefaultFixture _azurite;
 
       public QueueServiceEnabled(AzuriteFixture.AzuriteWithQueueOnlyFixture azurite)
       {
-        this.azurite = azurite;
+        _azurite = azurite;
       }
 
       [Fact]
       public async Task ConnectionEstablished()
       {
         // Given
-        var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
+        var blobServiceClient = new BlobServiceClient(_azurite.Container.ConnectionString);
 
-        var queueServiceClient = new QueueServiceClient(this.azurite.Container.ConnectionString);
+        var queueServiceClient = new QueueServiceClient(_azurite.Container.ConnectionString);
 
-        var tableServiceClient = new TableServiceClient(this.azurite.Container.ConnectionString);
+        var tableServiceClient = new TableServiceClient(_azurite.Container.ConnectionString);
 
         // When
         var queueProperties = await queueServiceClient.GetPropertiesAsync()
           .ConfigureAwait(false);
 
-        var execResult = await this.azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
+        var execResult = await _azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
           .ConfigureAwait(false);
 
         // Then
@@ -212,28 +212,28 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class TableServiceEnabled : IClassFixture<AzuriteFixture.AzuriteWithTableOnlyFixture>
     {
-      private readonly AzuriteFixture.AzuriteDefaultFixture azurite;
+      private readonly AzuriteFixture.AzuriteDefaultFixture _azurite;
 
       public TableServiceEnabled(AzuriteFixture.AzuriteWithTableOnlyFixture azurite)
       {
-        this.azurite = azurite;
+        _azurite = azurite;
       }
 
       [Fact]
       public async Task ConnectionEstablished()
       {
         // Given
-        var blobServiceClient = new BlobServiceClient(this.azurite.Container.ConnectionString);
+        var blobServiceClient = new BlobServiceClient(_azurite.Container.ConnectionString);
 
-        var queueServiceClient = new QueueServiceClient(this.azurite.Container.ConnectionString);
+        var queueServiceClient = new QueueServiceClient(_azurite.Container.ConnectionString);
 
-        var tableServiceClient = new TableServiceClient(this.azurite.Container.ConnectionString);
+        var tableServiceClient = new TableServiceClient(_azurite.Container.ConnectionString);
 
         // When
         var tableProperties = await tableServiceClient.GetPropertiesAsync()
           .ConfigureAwait(false);
 
-        var execResult = await this.azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
+        var execResult = await _azurite.Container.ExecAsync(new List<string> { "ls", AzuriteTestcontainerConfiguration.DefaultWorkspaceDirectoryPath })
           .ConfigureAwait(false);
 
         // Then
@@ -254,19 +254,19 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class CustomLocation : IClassFixture<AzuriteFixture.AzuriteWithCustomWorkspaceFixture>
     {
-      private readonly IEnumerable<string> dataFiles;
+      private readonly IEnumerable<string> _dataFiles;
 
       public CustomLocation(AzuriteFixture.AzuriteWithCustomWorkspaceFixture azurite)
       {
-        this.dataFiles = Directory.Exists(azurite.Configuration.Location) ? Directory.EnumerateFiles(azurite.Configuration.Location, "*", SearchOption.TopDirectoryOnly).Select(Path.GetFileName) : Array.Empty<string>();
+        _dataFiles = Directory.Exists(azurite.Configuration.Location) ? Directory.EnumerateFiles(azurite.Configuration.Location, "*", SearchOption.TopDirectoryOnly).Select(Path.GetFileName) : Array.Empty<string>();
       }
 
       [Fact]
       public void ShouldGetDataFiles()
       {
-        Assert.Contains(BlobServiceDataFileName, this.dataFiles);
-        Assert.Contains(QueueServiceDataFileName, this.dataFiles);
-        Assert.Contains(TableServiceDataFileName, this.dataFiles);
+        Assert.Contains(BlobServiceDataFileName, _dataFiles);
+        Assert.Contains(QueueServiceDataFileName, _dataFiles);
+        Assert.Contains(TableServiceDataFileName, _dataFiles);
       }
     }
   }

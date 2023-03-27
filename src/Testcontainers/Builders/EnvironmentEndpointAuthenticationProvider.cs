@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Builders
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   internal sealed class EnvironmentEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
-    private readonly Uri dockerEngine;
+    private readonly Uri _dockerEngine;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EnvironmentEndpointAuthenticationProvider" /> class.
@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="customConfigurations">A list of custom configurations.</param>
     public EnvironmentEndpointAuthenticationProvider(params ICustomConfiguration[] customConfigurations)
     {
-      this.dockerEngine = customConfigurations
+      _dockerEngine = customConfigurations
         .Select(customConfiguration => customConfiguration.GetDockerHost())
         .FirstOrDefault(dockerHost => dockerHost != null);
     }
@@ -31,13 +31,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public override bool IsApplicable()
     {
-      return this.dockerEngine != null;
+      return _dockerEngine != null;
     }
 
     /// <inheritdoc />
     public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
-      return new DockerEndpointAuthenticationConfiguration(this.dockerEngine);
+      return new DockerEndpointAuthenticationConfiguration(_dockerEngine);
     }
   }
 }

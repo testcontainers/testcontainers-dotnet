@@ -6,16 +6,16 @@ namespace DotNet.Testcontainers.Configurations
 
   internal class UntilFilesExists : IWaitUntil
   {
-    private readonly string file;
+    private readonly string _file;
 
     public UntilFilesExists(string file)
     {
-      this.file = file;
+      _file = file;
     }
 
     public Task<bool> UntilAsync(IContainer container)
     {
-      return Task.FromResult(File.Exists(this.file));
+      return Task.FromResult(File.Exists(_file));
     }
   }
 }

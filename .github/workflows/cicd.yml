@@ -58,7 +58,7 @@ jobs:
         run: dotnet cake --target=Build
 
       - name: Run Tests
-        run: dotnet cake --target=Tests --test-filter=FullyQualifiedName~${{ startsWith(matrix.os, 'ubuntu') && 'Testcontainers' || 'DotNet.Testcontainers.Tests.Unit.Containers.Windows' }}
+        run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3

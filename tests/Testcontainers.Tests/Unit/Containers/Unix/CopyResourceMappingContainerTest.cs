@@ -13,39 +13,39 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
   {
     private const string ResourceMappingContent = "👋";
 
-    private readonly string resourceMappingSourceFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+    private readonly string _resourceMappingSourceFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
 
-    private readonly string resourceMappingFileDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingFileDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
 
-    private readonly string resourceMappingBytesDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingBytesDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
 
-    private readonly IDockerContainer container;
+    private readonly IContainer _container;
 
     public CopyResourceMappingContainerTest()
     {
-      this.container = new TestcontainersBuilder<TestcontainersContainer>()
+      _container = new TestcontainersBuilder<TestcontainersContainer>()
         .WithImage("alpine")
-        .WithResourceMapping(this.resourceMappingSourceFilePath, this.resourceMappingFileDestinationFilePath)
-        .WithResourceMapping(Encoding.Default.GetBytes(ResourceMappingContent), this.resourceMappingBytesDestinationFilePath)
+        .WithResourceMapping(_resourceMappingSourceFilePath, _resourceMappingFileDestinationFilePath)
+        .WithResourceMapping(Encoding.Default.GetBytes(ResourceMappingContent), _resourceMappingBytesDestinationFilePath)
         .Build();
     }
 
     public Task InitializeAsync()
     {
-      File.WriteAllText(this.resourceMappingSourceFilePath, ResourceMappingContent);
-      return this.container.StartAsync();
+      File.WriteAllText(_resourceMappingSourceFilePath, ResourceMappingContent);
+      return _container.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.container.DisposeAsync().AsTask();
+      return _container.DisposeAsync().AsTask();
     }
 
     public void Dispose()
     {
-      if (File.Exists(this.resourceMappingSourceFilePath))
+      if (File.Exists(_resourceMappingSourceFilePath))
       {
-        File.Delete(this.resourceMappingSourceFilePath);
+        File.Delete(_resourceMappingSourceFilePath);
       }
     }
 
@@ -53,8 +53,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
     public async Task ReadExistingFile()
     {
       // Given
-      var resourceMappingBytes = await Task.WhenAll(new[] { this.resourceMappingFileDestinationFilePath, this.resourceMappingBytesDestinationFilePath }
-          .Select(resourceMappingFilePath => this.container.ReadFileAsync(resourceMappingFilePath)))
+      var resourceMappingBytes = await Task.WhenAll(new[] { _resourceMappingFileDestinationFilePath, _resourceMappingBytesDestinationFilePath }
+          .Select(resourceMappingFilePath => _container.ReadFileAsync(resourceMappingFilePath)))
         .ConfigureAwait(false);
 
       // When

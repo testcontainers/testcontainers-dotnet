@@ -30,6 +30,7 @@
     /// <param name="exposedPorts">A dictionary of exposed ports.</param>
     /// <param name="portBindings">A dictionary of port bindings.</param>
     /// <param name="resourceMappings">A dictionary of resource mappings.</param>
+    /// <param name="containers">A list of containers.</param>
     /// <param name="mounts">A list of mounts.</param>
     /// <param name="networks">A list of networks.</param>
     /// <param name="networkAliases">A list of network-scoped aliases.</param>
@@ -51,6 +52,7 @@
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IReadOnlyDictionary<string, IResourceMapping> resourceMappings = null,
+      IEnumerable<IContainer> containers = null,
       IEnumerable<IMount> mounts = null,
       IEnumerable<INetwork> networks = null,
       IEnumerable<string> networkAliases = null,
@@ -60,26 +62,27 @@
       bool? autoRemove = null,
       bool? privileged = null)
     {
-      this.AutoRemove = autoRemove;
-      this.Privileged = privileged;
-      this.Image = image;
-      this.ImagePullPolicy = imagePullPolicy;
-      this.Name = name;
-      this.Hostname = hostname;
-      this.MacAddress = macAddress;
-      this.WorkingDirectory = workingDirectory;
-      this.Entrypoint = entrypoint;
-      this.Command = command;
-      this.Environments = environments;
-      this.ExposedPorts = exposedPorts;
-      this.PortBindings = portBindings;
-      this.ResourceMappings = resourceMappings;
-      this.Mounts = mounts;
-      this.Networks = networks;
-      this.NetworkAliases = networkAliases;
-      this.OutputConsumer = outputConsumer;
-      this.WaitStrategies = waitStrategies;
-      this.StartupCallback = startupCallback;
+      AutoRemove = autoRemove;
+      Privileged = privileged;
+      Image = image;
+      ImagePullPolicy = imagePullPolicy;
+      Name = name;
+      Hostname = hostname;
+      MacAddress = macAddress;
+      WorkingDirectory = workingDirectory;
+      Entrypoint = entrypoint;
+      Command = command;
+      Environments = environments;
+      ExposedPorts = exposedPorts;
+      PortBindings = portBindings;
+      ResourceMappings = resourceMappings;
+      Containers = containers;
+      Mounts = mounts;
+      Networks = networks;
+      NetworkAliases = networkAliases;
+      OutputConsumer = outputConsumer;
+      WaitStrategies = waitStrategies;
+      StartupCallback = startupCallback;
     }
 
     /// <summary>
@@ -108,26 +111,27 @@
     public ContainerConfiguration(IContainerConfiguration oldValue, IContainerConfiguration newValue)
       : base(oldValue, newValue)
     {
-      this.Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
-      this.ImagePullPolicy = BuildConfiguration.Combine(oldValue.ImagePullPolicy, newValue.ImagePullPolicy);
-      this.Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
-      this.Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
-      this.MacAddress = BuildConfiguration.Combine(oldValue.MacAddress, newValue.MacAddress);
-      this.WorkingDirectory = BuildConfiguration.Combine(oldValue.WorkingDirectory, newValue.WorkingDirectory);
-      this.Entrypoint = BuildConfiguration.Combine(oldValue.Entrypoint, newValue.Entrypoint);
-      this.Command = BuildConfiguration.Combine(oldValue.Command, newValue.Command);
-      this.Environments = BuildConfiguration.Combine(oldValue.Environments, newValue.Environments);
-      this.ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
-      this.PortBindings = BuildConfiguration.Combine(oldValue.PortBindings, newValue.PortBindings);
-      this.ResourceMappings = BuildConfiguration.Combine(oldValue.ResourceMappings, newValue.ResourceMappings);
-      this.Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
-      this.Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
-      this.NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
-      this.OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
-      this.WaitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(oldValue.WaitStrategies, newValue.WaitStrategies);
-      this.StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
-      this.AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
-      this.Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
+      Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
+      ImagePullPolicy = BuildConfiguration.Combine(oldValue.ImagePullPolicy, newValue.ImagePullPolicy);
+      Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
+      Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
+      MacAddress = BuildConfiguration.Combine(oldValue.MacAddress, newValue.MacAddress);
+      WorkingDirectory = BuildConfiguration.Combine(oldValue.WorkingDirectory, newValue.WorkingDirectory);
+      Entrypoint = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.Entrypoint, newValue.Entrypoint);
+      Command = BuildConfiguration.Combine(oldValue.Command, newValue.Command);
+      Environments = BuildConfiguration.Combine(oldValue.Environments, newValue.Environments);
+      ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
+      PortBindings = BuildConfiguration.Combine(oldValue.PortBindings, newValue.PortBindings);
+      ResourceMappings = BuildConfiguration.Combine(oldValue.ResourceMappings, newValue.ResourceMappings);
+      Containers = BuildConfiguration.Combine(oldValue.Containers, newValue.Containers);
+      Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
+      Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
+      NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
+      OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
+      WaitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(oldValue.WaitStrategies, newValue.WaitStrategies);
+      StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
+      AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
+      Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
 
     /// <inheritdoc />
@@ -171,6 +175,9 @@
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
+
+    /// <inheritdoc />
+    public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
     public IEnumerable<IMount> Mounts { get; }

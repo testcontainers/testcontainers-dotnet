@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Builders
     public override HttpMessageHandler GetHandler(HttpMessageHandler innerHandler)
     {
       var handler = (ManagedHandler)innerHandler;
-      handler.ServerCertificateValidationCallback = this.ServerCertificateValidationCallback ?? ServicePointManager.ServerCertificateValidationCallback;
+      handler.ServerCertificateValidationCallback = ServerCertificateValidationCallback ?? ServicePointManager.ServerCertificateValidationCallback;
       return handler;
     }
   }

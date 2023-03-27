@@ -30,7 +30,7 @@
     public NetworkBuilder()
       : this(new NetworkConfiguration())
     {
-      this.DockerResourceConfiguration = this.Init().DockerResourceConfiguration;
+      DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -40,7 +40,7 @@
     protected NetworkBuilder(INetworkConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -49,27 +49,27 @@
     /// <inheritdoc />
     public NetworkBuilder WithName(string name)
     {
-      return this.Merge(this.DockerResourceConfiguration, new NetworkConfiguration(name: name));
+      return Merge(DockerResourceConfiguration, new NetworkConfiguration(name: name));
     }
 
     /// <inheritdoc />
     public NetworkBuilder WithDriver(NetworkDriver driver)
     {
-      return this.Merge(this.DockerResourceConfiguration, new NetworkConfiguration(driver: driver));
+      return Merge(DockerResourceConfiguration, new NetworkConfiguration(driver: driver));
     }
 
     /// <inheritdoc />
     public NetworkBuilder WithOption(string name, string value)
     {
       var options = new Dictionary<string, string> { { name, value } };
-      return this.Merge(this.DockerResourceConfiguration, new NetworkConfiguration(options: options));
+      return Merge(DockerResourceConfiguration, new NetworkConfiguration(options: options));
     }
 
     /// <inheritdoc />
     public override INetwork Build()
     {
-      this.Validate();
-      return new DockerNetwork(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
+      Validate();
+      return new DockerNetwork(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -83,7 +83,7 @@
     {
       base.Validate();
 
-      _ = Guard.Argument(this.DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
+      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
         .NotNull()
         .NotEmpty();
     }
@@ -91,7 +91,7 @@
     /// <inheritdoc />
     protected override NetworkBuilder Clone(IResourceConfiguration<NetworksCreateParameters> resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new NetworkConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new NetworkConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />

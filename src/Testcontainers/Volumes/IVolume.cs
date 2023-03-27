@@ -7,7 +7,7 @@
   /// A volume instance.
   /// </summary>
   [PublicAPI]
-  public interface IVolume : IFutureResource
+  public interface IVolume : IFutureResource, IAsyncDisposable
   {
     /// <summary>
     /// Gets the name.

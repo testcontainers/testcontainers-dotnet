@@ -12,11 +12,11 @@
   [PublicAPI]
   internal sealed class FutureDockerImage : Resource, IFutureDockerImage
   {
-    private readonly IDockerImageOperations dockerImageOperations;
+    private readonly IDockerImageOperations _dockerImageOperations;
 
-    private readonly IImageFromDockerfileConfiguration configuration;
+    private readonly IImageFromDockerfileConfiguration _configuration;
 
-    private ImagesListResponse image = new ImagesListResponse();
+    private ImagesListResponse _image = new ImagesListResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FutureDockerImage" /> class.
@@ -25,8 +25,8 @@
     /// <param name="logger">The logger.</param>
     public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
     {
-      this.dockerImageOperations = new DockerImageOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
-      this.configuration = configuration;
+      _dockerImageOperations = new DockerImageOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _configuration = configuration;
     }
 
     /// <inheritdoc />
@@ -34,8 +34,8 @@
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.configuration.Image.Repository;
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Repository;
       }
     }
 
@@ -44,8 +44,8 @@
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.configuration.Image.Name;
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Name;
       }
     }
 
@@ -54,8 +54,8 @@
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.configuration.Image.Tag;
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Tag;
       }
     }
 
@@ -64,41 +64,75 @@
     {
       get
       {
-        this.ThrowIfResourceNotFound();
-        return this.configuration.Image.FullName;
+        ThrowIfResourceNotFound();
+        return _configuration.Image.FullName;
       }
     }
 
     /// <inheritdoc />
     public string GetHostname()
     {
-      this.ThrowIfResourceNotFound();
-      return this.configuration.Image.GetHostname();
+      ThrowIfResourceNotFound();
+      return _configuration.Image.GetHostname();
     }
 
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      _ = await this.dockerImageOperations.BuildAsync(this.configuration, ct)
-        .ConfigureAwait(false);
-
-      this.image = await this.dockerImageOperations.ByNameAsync(this.configuration.Image.FullName, ct)
-        .ConfigureAwait(false);
+      using (_ = AcquireLock())
+      {
+        await UnsafeCreateAsync(ct)
+          .ConfigureAwait(false);
+      }
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      await this.dockerImageOperations.DeleteAsync(this.configuration.Image, ct)
-        .ConfigureAwait(false);
-
-      this.image = new ImagesListResponse();
+      using (_ = AcquireLock())
+      {
+        await UnsafeDeleteAsync(ct)
+          .ConfigureAwait(false);
+      }
     }
 
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return !string.IsNullOrEmpty(this.image.ID);
+      return !string.IsNullOrEmpty(_image.ID);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (Exists())
+      {
+        return;
+      }
+
+      _ = await _dockerImageOperations.BuildAsync(_configuration, ct)
+        .ConfigureAwait(false);
+
+      _image = await _dockerImageOperations.ByNameAsync(_configuration.Image.FullName, ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      await _dockerImageOperations.DeleteAsync(_configuration.Image, ct)
+        .ConfigureAwait(false);
+
+      _image = new ImagesListResponse();
     }
   }
 }

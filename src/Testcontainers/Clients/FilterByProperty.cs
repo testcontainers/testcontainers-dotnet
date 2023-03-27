@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Clients
+namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Concurrent;
   using System.Collections.Generic;
@@ -7,7 +7,7 @@
   {
     public void Add(string property, string value)
     {
-      var values = this.GetOrAdd(property, _ => new Dictionary<string, bool>());
+      var values = GetOrAdd(property, _ => new Dictionary<string, bool>());
       values[value] = true;
     }
   }

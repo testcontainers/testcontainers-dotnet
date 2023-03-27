@@ -19,12 +19,12 @@
 
     public Task InitializeAsync()
     {
-      return this.Network.CreateAsync();
+      return Network.CreateAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.Network.DeleteAsync();
+      return Network.DeleteAsync();
     }
   }
 }

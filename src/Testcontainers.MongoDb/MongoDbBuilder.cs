@@ -114,7 +114,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, stderr) = await container.GetLogs(timestampsEnabled: false)
+            var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return 2.Equals(Array.Empty<string>()

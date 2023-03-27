@@ -21,10 +21,10 @@
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null)
     {
-      this.SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
-      this.DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
-      this.Labels = labels;
-      this.ParameterModifiers = parameterModifiers;
+      SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
+      DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
+      Labels = labels;
+      ParameterModifiers = parameterModifiers;
     }
 
     /// <summary>

@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Clients
           }
         }));
 
-      this.Docker = lazyDockerClient.Value;
+      Docker = lazyDockerClient.Value;
     }
 
     protected IDockerClient Docker { get; }

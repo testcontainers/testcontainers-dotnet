@@ -28,7 +28,7 @@
     public VolumeBuilder()
       : this(new VolumeConfiguration())
     {
-      this.DockerResourceConfiguration = this.Init().DockerResourceConfiguration;
+      DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@
     protected VolumeBuilder(IVolumeConfiguration dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-      this.DockerResourceConfiguration = dockerResourceConfiguration;
+      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -47,14 +47,14 @@
     /// <inheritdoc />
     public VolumeBuilder WithName(string name)
     {
-      return this.Merge(this.DockerResourceConfiguration, new VolumeConfiguration(name: name));
+      return Merge(DockerResourceConfiguration, new VolumeConfiguration(name: name));
     }
 
     /// <inheritdoc />
     public override IVolume Build()
     {
-      this.Validate();
-      return new DockerVolume(this.DockerResourceConfiguration, TestcontainersSettings.Logger);
+      Validate();
+      return new DockerVolume(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -68,7 +68,7 @@
     {
       base.Validate();
 
-      _ = Guard.Argument(this.DockerResourceConfiguration.Name, nameof(IVolumeConfiguration.Name))
+      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(IVolumeConfiguration.Name))
         .NotNull()
         .NotEmpty();
     }
@@ -76,7 +76,7 @@
     /// <inheritdoc />
     protected override VolumeBuilder Clone(IResourceConfiguration<VolumesCreateParameters> resourceConfiguration)
     {
-      return this.Merge(this.DockerResourceConfiguration, new VolumeConfiguration(resourceConfiguration));
+      return Merge(DockerResourceConfiguration, new VolumeConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />

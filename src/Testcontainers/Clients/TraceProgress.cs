@@ -6,11 +6,11 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class TraceProgress : IProgress<JSONMessage>
   {
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     public TraceProgress(ILogger logger)
     {
-      this.logger = logger;
+      _logger = logger;
     }
 
     public void Report(JSONMessage value)
@@ -19,22 +19,22 @@ namespace DotNet.Testcontainers.Clients
 
       if (!string.IsNullOrWhiteSpace(value.Status))
       {
-        this.logger.LogTrace(value.Status);
+        _logger.LogTrace(value.Status);
       }
 
       if (!string.IsNullOrWhiteSpace(value.Stream))
       {
-        this.logger.LogTrace(value.Stream);
+        _logger.LogTrace(value.Stream);
       }
 
       if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
       {
-        this.logger.LogTrace(value.ProgressMessage);
+        _logger.LogTrace(value.ProgressMessage);
       }
 
       if (!string.IsNullOrWhiteSpace(value.ErrorMessage))
       {
-        this.logger.LogError(value.ErrorMessage);
+        _logger.LogError(value.ErrorMessage);
       }
 
 #pragma warning restore CA1848, CA2254

@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
 
   internal class UntilMessageIsLogged : IWaitUntil
   {
-    private readonly Regex pattern;
+    private readonly Regex _pattern;
 
     public UntilMessageIsLogged(string pattern)
       : this(new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(5)))
@@ -16,7 +16,7 @@ namespace DotNet.Testcontainers.Configurations
 
     public UntilMessageIsLogged(Regex pattern)
     {
-      this.pattern = pattern;
+      _pattern = pattern;
     }
 
     public async Task<bool> UntilAsync(IContainer container)
@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Configurations
       var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
         .ConfigureAwait(false);
 
-      return this.pattern.IsMatch(stdout) || this.pattern.IsMatch(stderr);
+      return _pattern.IsMatch(stdout) || _pattern.IsMatch(stderr);
     }
   }
 }

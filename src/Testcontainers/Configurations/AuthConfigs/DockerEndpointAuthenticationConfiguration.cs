@@ -17,8 +17,8 @@
     /// <param name="credentials">The Docker API authentication credentials.</param>
     public DockerEndpointAuthenticationConfiguration(Uri endpoint, Credentials credentials = null)
     {
-      this.Credentials = credentials;
-      this.Endpoint = endpoint;
+      Credentials = credentials;
+      Endpoint = endpoint;
     }
 
     /// <inheritdoc />
@@ -31,7 +31,7 @@
     public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
     {
       var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "x-tc-sid", sessionId.ToString("D") } });
-      return new DockerClientConfiguration(this.Endpoint, this.Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
+      return new DockerClientConfiguration(Endpoint, Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }
 }

@@ -1,5 +1,8 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
+
   /// <inheritdoc cref="IMount" />
   internal readonly struct BindMount : IMount
   {
@@ -11,10 +14,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="accessMode">The Docker volume access mode.</param>
     public BindMount(string hostPath, string containerPath, AccessMode accessMode)
     {
-      this.Type = MountType.Bind;
-      this.Source = hostPath;
-      this.Target = containerPath;
-      this.AccessMode = accessMode;
+      Type = MountType.Bind;
+      Source = hostPath;
+      Target = containerPath;
+      AccessMode = accessMode;
     }
 
     public MountType Type { get; }
@@ -27,5 +30,17 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public AccessMode AccessMode { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
   }
 }

@@ -20,7 +20,7 @@
     /// <inheritdoc />
     public virtual bool IsAvailable()
     {
-      var authConfig = this.GetAuthConfig();
+      var authConfig = GetAuthConfig();
 
       if (authConfig == null)
       {

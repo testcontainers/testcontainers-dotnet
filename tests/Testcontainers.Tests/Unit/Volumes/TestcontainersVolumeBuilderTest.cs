@@ -21,11 +21,11 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
 
-    private readonly IVolume volume;
+    private readonly IVolume _volume;
 
     public TestcontainersVolumeBuilderTest(DockerVolume volume)
     {
-      this.volume = volume;
+      _volume = volume;
     }
 
     [Fact]
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameReturnsVolumeName()
     {
-      Assert.Equal(VolumeName, this.volume.Name);
+      Assert.Equal(VolumeName, _volume.Name);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       IDockerVolumeOperations volumeOperations = new DockerVolumeOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var volumeResponse = await volumeOperations.ByNameAsync(this.volume.Name)
+      var volumeResponse = await volumeOperations.ByNameAsync(_volume.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [UsedImplicitly]
     public sealed class DockerVolume : IVolume, IAsyncLifetime
     {
-      private readonly IVolume volume = new VolumeBuilder()
+      private readonly IVolume _volume = new VolumeBuilder()
         .WithName(VolumeName)
         .WithLabel(Label.Key, Label.Value)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
@@ -71,28 +71,34 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         get
         {
-          return this.volume.Name;
+          return _volume.Name;
         }
       }
 
       public Task InitializeAsync()
       {
-        return this.CreateAsync();
+        return CreateAsync();
       }
 
       public Task DisposeAsync()
       {
-        return this.DeleteAsync();
+        IAsyncDisposable asyncDisposable = this;
+        return asyncDisposable.DisposeAsync().AsTask();
       }
 
       public Task CreateAsync(CancellationToken ct = default)
       {
-        return this.volume.CreateAsync(ct);
+        return _volume.CreateAsync(ct);
       }
 
       public Task DeleteAsync(CancellationToken ct = default)
       {
-        return this.volume.DeleteAsync(ct);
+        return _volume.DeleteAsync(ct);
+      }
+
+      ValueTask IAsyncDisposable.DisposeAsync()
+      {
+        return _volume.DisposeAsync();
       }
     }
   }

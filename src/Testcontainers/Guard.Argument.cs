@@ -36,8 +36,8 @@ namespace DotNet.Testcontainers
       /// <param name="name">The name.</param>
       public ArgumentInfo(TType value, string name)
       {
-        this.Value = value;
-        this.Name = name;
+        Value = value;
+        Name = name;
       }
 
       /// <summary>
@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers
       /// <returns>True if the argument has a value; otherwise, false.</returns>
       public bool HasValue()
       {
-        return this.Value != null;
+        return Value != null;
       }
     }
   }

@@ -23,11 +23,11 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
 
-    private readonly INetwork network;
+    private readonly INetwork _network;
 
     public TestcontainerNetworkBuilderTest(DockerNetwork network)
     {
-      this.network = network;
+      _network = network;
     }
 
     [Fact]
@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameReturnsNetworkName()
     {
-      Assert.Equal(NetworkName, this.network.Name);
+      Assert.Equal(NetworkName, _network.Name);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       IDockerNetworkOperations networkOperations = new DockerNetworkOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await networkOperations.ByNameAsync(this.network.Name)
+      var networkResponse = await networkOperations.ByNameAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -65,7 +65,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       IDockerNetworkOperations networkOperations = new DockerNetworkOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await networkOperations.ByNameAsync(this.network.Name)
+      var networkResponse = await networkOperations.ByNameAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [UsedImplicitly]
     public sealed class DockerNetwork : INetwork, IAsyncLifetime
     {
-      private readonly INetwork network = new NetworkBuilder()
+      private readonly INetwork _network = new NetworkBuilder()
         .WithName(NetworkName)
         .WithOption(Option.Key, Option.Value)
         .WithLabel(Label.Key, Label.Value)
@@ -87,28 +87,34 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         get
         {
-          return this.network.Name;
+          return _network.Name;
         }
       }
 
       public Task InitializeAsync()
       {
-        return this.CreateAsync();
+        return CreateAsync();
       }
 
       public Task DisposeAsync()
       {
-        return this.DeleteAsync();
+        IAsyncDisposable asyncDisposable = this;
+        return asyncDisposable.DisposeAsync().AsTask();
       }
 
       public Task CreateAsync(CancellationToken ct = default)
       {
-        return this.network.CreateAsync(ct);
+        return _network.CreateAsync(ct);
       }
 
       public Task DeleteAsync(CancellationToken ct = default)
       {
-        return this.network.DeleteAsync(ct);
+        return _network.DeleteAsync(ct);
+      }
+
+      ValueTask IAsyncDisposable.DisposeAsync()
+      {
+        return _network.DisposeAsync();
       }
     }
   }

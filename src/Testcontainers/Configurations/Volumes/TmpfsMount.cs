@@ -1,5 +1,8 @@
 ﻿namespace DotNet.Testcontainers.Configurations
 {
+  using System.Threading;
+  using System.Threading.Tasks;
+
   /// <inheritdoc cref="IMount" />
   internal readonly struct TmpfsMount : IMount
   {
@@ -10,10 +13,10 @@
     /// <param name="accessMode">The Docker volume access mode.</param>
     public TmpfsMount(string containerPath, AccessMode accessMode)
     {
-      this.Type = MountType.Tmpfs;
-      this.Source = string.Empty;
-      this.Target = containerPath;
-      this.AccessMode = accessMode;
+      Type = MountType.Tmpfs;
+      Source = string.Empty;
+      Target = containerPath;
+      AccessMode = accessMode;
     }
 
     /// <inheritdoc />
@@ -27,5 +30,17 @@
 
     /// <inheritdoc />
     public string Target { get; }
+
+    /// <inheritdoc />
+    public Task CreateAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task DeleteAsync(CancellationToken ct = default)
+    {
+      return Task.CompletedTask;
+    }
   }
 }

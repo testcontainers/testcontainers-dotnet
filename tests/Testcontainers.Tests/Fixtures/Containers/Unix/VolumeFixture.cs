@@ -17,12 +17,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public Task InitializeAsync()
     {
-      return this.Volume.CreateAsync();
+      return Volume.CreateAsync();
     }
 
     public Task DisposeAsync()
     {
-      return this.Volume.DeleteAsync();
+      return Volume.DeleteAsync();
     }
   }
 }
