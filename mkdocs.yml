@@ -32,7 +32,7 @@ nav:
   - api/wait_strategies.md
   - api/best_practices.md
   - Examples:
-    - examples/compose.md
+    - examples/dind.md
     - examples/aspnet.md
   - Modules:
     - modules/index.md
