@@ -61,7 +61,6 @@ namespace DotNet.Testcontainers.Containers
         .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
-        .WithExposedPort(RyukPort)
         .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
         .WithMount(dockerSocket)
         .Build();

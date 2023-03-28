@@ -1,6 +1,16 @@
-# Compose
+# Running inside another container
 
 ## Docker Desktop
+
+### Sibling containers
+
+If you choose to run your tests in a Docker Wormhole configuration, which involves using sibling containers, it is necessary to mount Docker's raw socket `/var/run/docker.sock.raw`. You find more information and an explanation of the Docker bug in this [comment](https://github.com/docker/for-mac/issues/5588#issuecomment-934600089).
+
+```console
+docker run -v /var/run/docker.sock.raw:/var/run/docker.sock $IMAGE dotnet test
+```
+
+### Compose
 
 To use Docker's Compose tool to build and run a Testcontainers environment in a Docker Desktop Wormhole configuration,
 it is necessary to override Testcontainers' Docker host resolution and set the environment variable `TESTCONTAINERS_HOST_OVERRIDE` to `host.docker.internal`.

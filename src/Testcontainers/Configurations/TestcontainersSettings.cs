@@ -140,6 +140,7 @@ namespace DotNet.Testcontainers.Configurations
     /// - https://github.com/docker/for-win/issues/11584.
     /// </remarks>
     [NotNull]
+    [Obsolete("The Resource Reaper will use Docker's assigned random host port. This property is no longer supported. For DinD configurations see: https://dotnet.testcontainers.org/examples/dind/.")]
     public static Func<IDockerEndpointAuthenticationConfiguration, ushort> ResourceReaperPublicHostPort { get; set; }
       = _ => 0;
 

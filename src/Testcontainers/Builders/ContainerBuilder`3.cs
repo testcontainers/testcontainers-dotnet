@@ -182,6 +182,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithPortBinding(string hostPort, string containerPort)
     {
+      // Remove this together with TestcontainersSettings.ResourceReaperPublicHostPort.
+      hostPort = "0".Equals(hostPort, StringComparison.OrdinalIgnoreCase) ? string.Empty : hostPort;
+
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
       return Clone(new ContainerConfiguration(portBindings: portBindings)).WithExposedPort(containerPort);
     }
