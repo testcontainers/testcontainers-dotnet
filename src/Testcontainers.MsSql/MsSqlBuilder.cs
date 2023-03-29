@@ -48,6 +48,34 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithEnvironment("SQLCMDPASSWORD", password);
     }
 
+    /// <summary>
+    /// Sets the MsSql database.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the database.
+    /// </remarks>
+    /// <param name="database">The MsSql database.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    public MsSqlBuilder WithDatabase(string database)
+    {
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
+            .WithEnvironment("SQLCMDDBNAME", database);
+    }
+
+    /// <summary>
+    /// Sets the MsSql username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The MsSql username.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    public MsSqlBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
+            .WithEnvironment("SQLCMDUSER", username);
+    }
+
     /// <inheritdoc />
     public override MsSqlContainer Build()
     {
@@ -94,34 +122,6 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     protected override MsSqlBuilder Merge(MsSqlConfiguration oldValue, MsSqlConfiguration newValue)
     {
         return new MsSqlBuilder(new MsSqlConfiguration(oldValue, newValue));
-    }
-
-    /// <summary>
-    /// Sets the MsSql database.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
-    /// <param name="database">The MsSql database.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithDatabase(string database)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
-            .WithEnvironment("SQLCMDDBNAME", database);
-    }
-
-    /// <summary>
-    /// Sets the MsSql username.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
-    /// <param name="username">The MsSql username.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithUsername(string username)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
-            .WithEnvironment("SQLCMDUSER", username);
     }
 
     /// <inheritdoc cref="IWaitUntil" />
