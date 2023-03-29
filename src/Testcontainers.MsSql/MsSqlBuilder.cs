@@ -131,7 +131,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" };
+        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-d", "master", "-Q", "SELECT 1;" };
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
