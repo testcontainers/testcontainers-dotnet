@@ -4,7 +4,7 @@ namespace Testcontainers.Dapr;
 [PublicAPI]
 public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, DaprConfiguration>
 {
-    public const string DaprImage = "daprio/daprd:1.10.";
+    public const string DaprImage = "daprio/daprd:1.10.4";
 
     public const string AppId = "";
 

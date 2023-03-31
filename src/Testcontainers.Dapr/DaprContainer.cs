@@ -34,12 +34,12 @@ public sealed class DaprContainer : DockerContainer
 
     public int DaprHttpPort
     {
-        get { return GetPublicMappedPort(_configuration.DaprHttpPort); }
+        get { return GetMappedPublicPort(_configuration.DaprHttpPort); }
     }
 
     public int DaprGrpcPort
     {
-        get { return GetPublicMappedPort(_configuration.DaprGrpcPort); }
+        get { return GetMappedPublicPort(_configuration.DaprGrpcPort); }
     }
 
     /// <summary>

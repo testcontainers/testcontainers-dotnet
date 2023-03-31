@@ -1,4 +1,6 @@
 ﻿using Dapr.Client;
+using System;
+
 
 namespace Testcontainers.Dapr;
 
@@ -8,10 +10,9 @@ public sealed class DaprContainerTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var c = await _daprContainer.StartAsync();
+        await _daprContainer.StartAsync();
         Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", _daprContainer.DaprHttpPort.ToString());
         Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", _daprContainer.DaprHttpPort.ToString());
-        return c;
     }
 
     public Task DisposeAsync()
