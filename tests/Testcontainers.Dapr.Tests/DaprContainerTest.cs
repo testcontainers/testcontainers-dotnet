@@ -8,11 +8,9 @@ public sealed class DaprContainerTest : IAsyncLifetime
 {
     private readonly DaprContainer _daprContainer = new DaprBuilder().Build();
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        await _daprContainer.StartAsync();
-        Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", _daprContainer.DaprHttpPort.ToString());
-        Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", _daprContainer.DaprHttpPort.ToString());
+        return _daprContainer.StartAsync();
     }
 
     public Task DisposeAsync()
@@ -24,10 +22,23 @@ public sealed class DaprContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CheckDaprSideCarIsHealthy()
     {
+        await Task.Delay(5000);
+            
+        Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", _daprContainer.DaprHttpPort.ToString());
+        Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", _daprContainer.DaprGrpcPort.ToString());
+
+        var logs = await _daprContainer.GetLogsAsync();
+
+
+        Assert.Equal(3500, _daprContainer.DaprHttpPort);
+
+        // Assert.Equal("",)
+
         var _daprClient = new DaprClientBuilder().Build();
 
-        var healthy = await _daprClient.CheckHealthAsync().ConfigureAwait(false);
+        var healthy = await _daprClient.CheckHealthAsync();
 
-        Assert.True(healthy);
+        Assert.True(healthy, "status : " + healthy);
+        //Assert.True(true);
     }
 }

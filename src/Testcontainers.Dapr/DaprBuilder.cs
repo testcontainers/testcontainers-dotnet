@@ -6,8 +6,6 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
 {
     public const string DaprImage = "daprio/daprd:1.10.4";
 
-    public const string AppId = "";
-
     public const int AppPort = 80;
 
     public const int DaprHttpPort = 3500;
@@ -46,62 +44,62 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
             .WithCommand("--app-id", appId);
     }
 
-    public DaprBuilder WithAppPort(int appPort)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(appPort: appPort))
-            .WithCommand("--app-port", appPort.ToString())
-            .WithPortBinding(appPort, true);
-    }
+    // public DaprBuilder WithAppPort(int appPort)
+    // {
+    //     return Merge(DockerResourceConfiguration, new DaprConfiguration(appPort: appPort))
+    //         .WithCommand("--app-port", appPort.ToString())
+    //         .WithPortBinding(appPort, true);
+    // }
 
     public DaprBuilder WithDaprHttpPort(int daprHttpPort)
     {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(daprHttpPort: daprHttpPort))
+
+        return Merge(DockerResourceConfiguration, new DaprConfiguration())
             .WithCommand("--dapr-http-port", daprHttpPort.ToString())
             .WithPortBinding(daprHttpPort, true);
+            //.WithExposedPort(daprHttpPort);
     }
 
     public DaprBuilder WithDaprGrpcPort(int daprGrpcPort)
     {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(daprGrpcPort: daprGrpcPort))
+        return Merge(DockerResourceConfiguration, new DaprConfiguration())
             .WithCommand("--dapr-grpc-port", daprGrpcPort.ToString())
             .WithPortBinding(daprGrpcPort, true);
+            //.WithExposedPort(daprGrpcPort);
     }
 
-    public DaprBuilder WithLogLevel(string logLevel)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
-            .WithCommand("--log-level", logLevel);
-    }
+    // public DaprBuilder WithLogLevel(string logLevel)
+    // {
+    //     return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
+    //         .WithCommand("--log-level", logLevel);
+    // }
 
     /// <inheritdoc />
     public override DaprContainer Build()
     {
         Validate();
 
-        var daprBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 
-        ? this 
-        : WithWaitStrategy(
-                Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(request =>  
-                request.ForPort(DaprHttpPort)
-                    .ForPath("/v1.0/healthz")
-                    .ForStatusCode(System.Net.HttpStatusCode.NoContent)));
+        // var daprBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 
+        // ? this 
+        // : WithWaitStrategy(
+        //         Wait.ForUnixContainer()
+        //         .UntilHttpRequestIsSucceeded(request =>  
+        //         request.ForPort(DaprHttpPort)
+        //             .ForPath("/v1.0/healthz")
+        //             .ForStatusCode(System.Net.HttpStatusCode.NoContent)));
 
-        return new DaprContainer(daprBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
-        // return new DaprContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new DaprContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
     protected override DaprBuilder Init()
-    {
+    {       
         return base.Init()
             .WithImage(DaprImage)
             .WithCommand("./daprd")
-            .WithAppId(AppId)
-            .WithAppPort(AppPort)
-            .WithDaprHttpPort(DaprHttpPort)
-            .WithDaprGrpcPort(DaprGrpcPort)
-            .WithLogLevel(LogLevel);
+            .WithPortBinding(DaprHttpPort, true)
+            .WithPortBinding(DaprGrpcPort, true);
+            //.WithLogLevel(LogLevel);
     }
 
     /// <inheritdoc />

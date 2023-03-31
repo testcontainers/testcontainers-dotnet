@@ -4,19 +4,11 @@ namespace Testcontainers.Dapr;
 [PublicAPI]
 public sealed class DaprConfiguration : ContainerConfiguration
 {
-  
-    public DaprConfiguration(
-        string appId = null,
-        int appPort = 0,
-        int daprHttpPort = 0,
-        int daprGrpcPort = 0,
-        string logLevel = null)
-    {
+
+ 
+    public DaprConfiguration(string appId = null)
+    { 
         AppId = appId;
-        AppPort = appPort;
-        DaprHttpPort = daprHttpPort;
-        DaprGrpcPort = daprGrpcPort;
-        LogLevel = logLevel;
     }
     
 
@@ -42,19 +34,7 @@ public sealed class DaprConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
         AppId = BuildConfiguration.Combine(oldValue.AppId, newValue.AppId);
-        AppPort = BuildConfiguration.Combine(oldValue.AppPort, newValue.AppPort);
-        DaprHttpPort = BuildConfiguration.Combine(oldValue.DaprHttpPort, newValue.DaprHttpPort);
-        DaprGrpcPort = BuildConfiguration.Combine(oldValue.DaprGrpcPort, newValue.DaprGrpcPort);
-        LogLevel = BuildConfiguration.Combine(oldValue.LogLevel, newValue.LogLevel);
     }
 
     public string AppId { get; }
-
-    public int AppPort { get; }
-
-    public int DaprHttpPort { get; }
-
-    public int DaprGrpcPort { get; set; }
-
-    public string LogLevel { get; set; }
 }
