@@ -19,7 +19,7 @@ await new ImageFromDockerfileBuilder()
 
     The `Dockerfile` must be part of the build context, otherwise the build fails.
 
-It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure:
+It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure, the build context is `/Users/testcontainers/WeatherForecast/`.
 
     /
     └── Users/
@@ -37,7 +37,7 @@ It is essential to take into account and comprehend the build context to enable 
                 ├── Dockerfile
                 └── WeatherForecast.sln
 
-The build context is `/Users/testcontainers/WeatherForecast/`. Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree:
+Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree:
 
 ```csharp
 _ = new ImageFromDockerfileBuilder()
