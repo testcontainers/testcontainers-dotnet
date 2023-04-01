@@ -46,11 +46,11 @@ _ = new ImageFromDockerfileBuilder()
   .Build();
 ```
 
-Since Testcontainers creates a tarball based on the content of `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
+As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
 
 !!!tip
 
-    To improve the build time and to reduce the size of the image, it is recommended only to include necessary files. Exclude unnecessary such as `bin/`, `obj/` and `tests/`.
+    To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
 
 ```Dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0
