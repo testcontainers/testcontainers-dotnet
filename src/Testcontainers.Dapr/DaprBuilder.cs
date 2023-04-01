@@ -4,7 +4,6 @@ namespace Testcontainers.Dapr;
 public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, DaprConfiguration>
 {
     public const string DaprImage = "daprio/daprd:1.10.4";
-    public const int AppPort = 80;
     public const int DaprHttpPort = 3500;
     public const int DaprGrpcPort = 50001;
     public const string LogLevel = "info";
@@ -26,19 +25,19 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
     public DaprBuilder WithAppId(string appId)
     {
         return Merge(DockerResourceConfiguration, new DaprConfiguration(appId: appId))
-            .WithCommand("--app-id", appId);
+            .WithCommand("-app-id", appId);
     }
 
     public DaprBuilder WithAppPort(int appPort)
     {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(appPort: appPort))
-            .WithCommand("--app-port", appPort.ToString());
+        return Merge(DockerResourceConfiguration, new DaprConfiguration())
+            .WithCommand("-app-port", appPort.ToString());
     }
 
     public DaprBuilder WithLogLevel(string logLevel)
     {
         return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
-            .WithCommand("--log-level", logLevel);
+            .WithCommand("-log-level", logLevel);
     }
 
     public override DaprContainer Build()
@@ -53,11 +52,17 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
         return base.Init()
             .WithImage(DaprImage)
             .WithEntrypoint("./daprd")
-            .WithCommand("--dapr-http-port", DaprHttpPort.ToString())
-            .WithCommand("--dapr-grpc-port", DaprGrpcPort.ToString())
+            .WithCommand("-dapr-http-port", DaprHttpPort.ToString())
+            .WithCommand("-dapr-grpc-port", DaprGrpcPort.ToString())
             .WithPortBinding(DaprHttpPort, true)
             .WithPortBinding(DaprGrpcPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntilLogIsFound()));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(request =>  
+                request
+                    .ForPort(DaprHttpPort)
+                    .ForPath("/v1.0/healthz")
+                    .ForStatusCode(System.Net.HttpStatusCode.NoContent)));
     }
 
     protected override void Validate()
@@ -82,18 +87,6 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
     protected override DaprBuilder Merge(DaprConfiguration oldValue, DaprConfiguration newValue)
     {
         return new DaprBuilder(new DaprConfiguration(oldValue, newValue));
-    }
-
-    private sealed class WaitUntilLogIsFound : IWaitUntil
-    {    
-        // this is horrific, but it works for now...
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("dapr initialized. Status: Running");
-        }
     }
 }
 

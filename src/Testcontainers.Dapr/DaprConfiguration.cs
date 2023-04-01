@@ -4,11 +4,10 @@ namespace Testcontainers.Dapr;
 [PublicAPI]
 public sealed class DaprConfiguration : ContainerConfiguration
 {
-    public DaprConfiguration(string appId = null, string logLevel = null, int appPort = 0)
+    public DaprConfiguration(string appId = null, string logLevel = null)
     { 
         AppId = appId;
         LogLevel = logLevel;
-        appPort = appPort;
     }
     
     public DaprConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -37,5 +36,4 @@ public sealed class DaprConfiguration : ContainerConfiguration
 
     public string AppId { get; }
     public string LogLevel { get; }
-    public int AppPort { get; set; }
 }
