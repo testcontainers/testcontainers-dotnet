@@ -32,22 +32,7 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
     public DaprBuilder WithAppPort(int appPort)
     {
         return Merge(DockerResourceConfiguration, new DaprConfiguration(appPort: appPort))
-            .WithCommand("--app-port", appPort.ToString())
-            .WithPortBinding(appPort, true);
-    }
-
-    public DaprBuilder WithDaprHttpPort(int daprHttpPort)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration())
-            .WithCommand("--dapr-http-port", daprHttpPort.ToString())
-            .WithPortBinding(daprHttpPort, true);
-    }
-
-    public DaprBuilder WithDaprGrpcPort(int daprGrpcPort)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration())
-            .WithCommand("--dapr-grpc-port", daprGrpcPort.ToString())
-            .WithPortBinding(daprGrpcPort, true);
+            .WithCommand("--app-port", appPort.ToString());
     }
 
     public DaprBuilder WithLogLevel(string logLevel)
@@ -67,11 +52,12 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
     {       
         return base.Init()
             .WithImage(DaprImage)
-            .WithCommand("./daprd")
+            .WithEntrypoint("./daprd")
+            .WithCommand("--dapr-http-port", DaprHttpPort.ToString())
+            .WithCommand("--dapr-grpc-port", DaprGrpcPort.ToString())
             .WithPortBinding(DaprHttpPort, true)
             .WithPortBinding(DaprGrpcPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntilLogIsFound()))
-            .WithLogLevel(LogLevel);
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntilLogIsFound()));
     }
 
     protected override void Validate()
