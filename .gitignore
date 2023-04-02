@@ -357,3 +357,6 @@ test-coverage/
 
 # SonarQube
 .sonarqube/
+
+# Visual Studio Code
+.vscode/
