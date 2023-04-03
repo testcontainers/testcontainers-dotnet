@@ -4,26 +4,24 @@ namespace Testcontainers.Dapr;
 [PublicAPI]
 public sealed class DaprContainer : DockerContainer
 {
-    private readonly DaprConfiguration _configuration;
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="Daprontainer" /> class.
+    /// Initializes a new instance of the <see cref="DaprContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
     public DaprContainer(DaprConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _configuration = configuration;
     }
 
-    public int DaprHttpPort
+    // TODO: I am not sure about the names, maybe we find better ones
+    public string GetHttpAddress()
     {
-        get { return GetMappedPublicPort(DaprBuilder.DaprHttpPort); }
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DaprBuilder.DaprHttpPort)).ToString();
     }
 
-    public int DaprGrpcPort
+    public string GetGrpcAddress()
     {
-        get { return GetMappedPublicPort(DaprBuilder.DaprGrpcPort); }
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DaprBuilder.DaprGrpcPort)).ToString();
     }
 }

@@ -3,6 +3,7 @@ azurecr
 azurite
 capi
 creds
+dapr
 dind
 dvcm
 enumerables

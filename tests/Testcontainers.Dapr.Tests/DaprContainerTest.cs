@@ -1,22 +1,37 @@
-﻿using Dapr.Client;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using DotNet.Testcontainers.Networks;
-using System;
+﻿namespace Testcontainers.Dapr;
 
-namespace Testcontainers.Dapr;
-
-public sealed class SmokeTest : IAsyncLifetime
+public sealed class DaprContainerTest : IAsyncLifetime
 {
-    private DaprContainer _daprContainer;
+    private readonly DaprContainer _daprContainer;
+
+    public DaprContainerTest()
+    {
+        var network = new NetworkBuilder()
+            .Build();
+
+        var nginxContainer = new ContainerBuilder()
+            .WithImage(CommonImages.Nginx)
+            .WithNetwork(network)
+            .WithNetworkAliases("nginx")
+            .Build();
+
+        _daprContainer = new DaprBuilder()
+            .DependsOn(nginxContainer)
+
+            // TODO: Doesn't Dapr establishes a connection to the container via its network alias? How does the Compose configuration work: https://docs.dapr.io/operations/hosting/self-hosted/self-hosted-with-docker/#run-using-docker-compose?
+            .WithCommand("--app-id", "nginx")
+
+            // TODO: This line prevents daprd from starting, it says:
+            // application protocol: http. waiting on port 80.  This will block until the app is listening on that port." app_id=nginx instance=1a23cb66e7f5 scope=dapr.runtime type=log ver=1.10.4
+            // .WithCommand("--app-port", "80")
+
+            .WithNetwork(network)
+            .WithNetworkAliases("daprd")
+            .Build();
+    }
 
     public Task InitializeAsync()
     {
-        _daprContainer = new DaprBuilder()
-            .WithAppId("testicorns")
-            .WithLogLevel("debug")
-            .Build();
-
         return _daprContainer.StartAsync();
     }
 
@@ -27,84 +42,19 @@ public sealed class SmokeTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task CheckDaprSideCarIsHealthy()
-    {            
-        Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", _daprContainer.DaprHttpPort.ToString());
-        Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", _daprContainer.DaprGrpcPort.ToString());
-
-        var _daprClient = new DaprClientBuilder().Build();
-        var healthy = await _daprClient.CheckHealthAsync();
-
-        Assert.True(healthy);
-    }
-}
-
-public sealed class AppPortTests : IAsyncLifetime
-{
-    private DaprContainer _daprContainer;
-
-    private IContainer _appContainer;
-
-    private INetwork _network;
-
-    public async Task InitializeAsync()
+    public async Task CheckHealthReturnsTrue()
     {
-        _network = new NetworkBuilder()
-            .WithName(Guid.NewGuid().ToString("D"))
+        // Given
+        using var client = new DaprClientBuilder()
+            .UseHttpEndpoint(_daprContainer.GetHttpAddress())
+            .UseGrpcEndpoint(_daprContainer.GetGrpcAddress())
             .Build();
 
-        await _network.CreateAsync().ConfigureAwait(false);
+        // When
+        var healthy = await client.CheckHealthAsync()
+            .ConfigureAwait(false);
 
-        const ushort appPort = 80;
-        _appContainer = new ContainerBuilder()
-            .WithName(Guid.NewGuid().ToString("D"))
-            .WithNetwork(_network)
-            .WithImage("nginx")
-            .WithCommand("nginx-debug", "-g", "daemon off;")
-            .WithPortBinding(appPort, true)
-            .Build();
-
-        // const ushort appPort = 3000;
-        // _appContainer = new ContainerBuilder()
-        //     .WithName(Guid.NewGuid().ToString("D"))
-        //     .WithNetwork(_network)
-        //     .WithImage("simplewebserver:latest")
-        //     .WithPortBinding(appPort, true)
-        //     .Build();
-
-        await _appContainer.StartAsync().ConfigureAwait(false);
-
-        _daprContainer = new DaprBuilder()
-            .WithAppId("testicorns")
-            .WithAppPort(_appContainer.GetMappedPublicPort(appPort))
-            .WithLogLevel("debug")
-            .WithNetwork(_network)
-            .DependsOn(_appContainer)
-            .Build();
-
-        await _daprContainer.StartAsync().ConfigureAwait(false);
-        // this never completes. Dapr is blocking while waiting for the app-port to be ready. Not sure why dapr can't communicate with it.
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _daprContainer.DisposeAsync().ConfigureAwait(false);
-        await _appContainer.DisposeAsync().ConfigureAwait(false);
-        await _network.DeleteAsync().ConfigureAwait(false);
-    }
-
-    // Disable this test from running CI automatically, as it will just hang forever.
-    //[Fact]
-    //[Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task AppPortCanBeReached()
-    {            
-
-        Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", _daprContainer.DaprHttpPort.ToString());
-        Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", _daprContainer.DaprGrpcPort.ToString());
-
-        var _daprClient = new DaprClientBuilder().Build();
-        var healthy = await _daprClient.CheckHealthAsync();
-
+        // Then
         Assert.True(healthy);
     }
 }

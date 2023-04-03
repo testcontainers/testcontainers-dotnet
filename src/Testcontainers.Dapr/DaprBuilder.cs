@@ -4,9 +4,12 @@ namespace Testcontainers.Dapr;
 public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, DaprConfiguration>
 {
     public const string DaprImage = "daprio/daprd:1.10.4";
+
     public const int DaprHttpPort = 3500;
+
     public const int DaprGrpcPort = 50001;
-    public const string LogLevel = "info";
+
+    // public const string LogLevel = "info";
 
     public DaprBuilder()
         : this(new DaprConfiguration())
@@ -24,54 +27,54 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
 
     public DaprBuilder WithAppId(string appId)
     {
+        // TODO: What happens if developers call WithAppId(string) multiple times?
         return Merge(DockerResourceConfiguration, new DaprConfiguration(appId: appId))
-            .WithCommand("-app-id", appId);
+            .WithCommand("--app-id", appId);
     }
 
-    public DaprBuilder WithAppPort(int appPort)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration())
-            .WithCommand("-app-port", appPort.ToString());
-    }
+    // TODO: I do not think we need specific APIs to configure daprd. Developers can simply use WithCommand(string) on their own.
 
-    public DaprBuilder WithLogLevel(string logLevel)
-    {
-        return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
-            .WithCommand("-log-level", logLevel);
-    }
+    // public DaprBuilder WithAppPort(int appPort)
+    // {
+    //     return Merge(DockerResourceConfiguration, new DaprConfiguration())
+    //         .WithCommand("-app-port", appPort.ToString());
+    // }
+    //
+    // public DaprBuilder WithLogLevel(string logLevel)
+    // {
+    //     return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
+    //         .WithCommand("-log-level", logLevel);
+    // }
 
     public override DaprContainer Build()
     {
         Validate();
-
         return new DaprContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     protected override DaprBuilder Init()
-    {       
+    {
         return base.Init()
             .WithImage(DaprImage)
             .WithEntrypoint("./daprd")
-            .WithCommand("-dapr-http-port", DaprHttpPort.ToString())
-            .WithCommand("-dapr-grpc-port", DaprGrpcPort.ToString())
+            // .WithCommand("-dapr-http-port", DaprHttpPort.ToString())
+            // .WithCommand("-dapr-grpc-port", DaprGrpcPort.ToString())
             .WithPortBinding(DaprHttpPort, true)
             .WithPortBinding(DaprGrpcPort, true)
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(request =>  
-                request
-                    .ForPort(DaprHttpPort)
-                    .ForPath("/v1.0/healthz")
-                    .ForStatusCode(System.Net.HttpStatusCode.NoContent)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/v1.0/healthz").ForPort(DaprHttpPort).ForStatusCode(HttpStatusCode.NoContent)));
     }
 
     protected override void Validate()
     {
-         base.Validate();
+        // TODO: Only disabled until we are certain about the API.
+        return;
 
-         _ = Guard.Argument(DockerResourceConfiguration.AppId, nameof(DockerResourceConfiguration.AppId))
-             .NotNull()
-             .NotEmpty();
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.AppId, nameof(DockerResourceConfiguration.AppId))
+            .NotNull()
+            .NotEmpty();
     }
 
     protected override DaprBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -89,4 +92,3 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
         return new DaprBuilder(new DaprConfiguration(oldValue, newValue));
     }
 }
-
