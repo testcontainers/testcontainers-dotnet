@@ -1,15 +1,20 @@
 namespace Testcontainers.LocalStack;
 
-public sealed class LocalStackContainerTest : IAsyncLifetime
+public abstract class LocalStackContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
 
-    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder().Build();
+    private readonly LocalStackContainer _localStackContainer;
 
     static LocalStackContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
+    }
+
+    private LocalStackContainerTest(LocalStackContainer localStackContainer)
+    {
+        _localStackContainer = localStackContainer;
     }
 
     public Task InitializeAsync()
@@ -141,5 +146,23 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
+    }
+
+    [UsedImplicitly]
+    public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
+    {
+        public LocalStackDefaultConfiguration()
+            : base(new LocalStackBuilder().Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class LocalStackV1Configuration : LocalStackContainerTest
+    {
+        public LocalStackV1Configuration()
+            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+        {
+        }
     }
 }
