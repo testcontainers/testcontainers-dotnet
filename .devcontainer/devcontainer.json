@@ -1,0 +1,31 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "containerEnv": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "true",
+    "DOTNET_NOLOGO": "true",
+    "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "true",
+    "DOTNET_USE_POLLING_FILE_WATCHER": "true",
+    "NUGET_XMLDOC_MODE": "skip"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/git-lfs:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/dotnet:1": {
+      "version": "6.0.405",
+      "installUsingApt": false
+    }
+  },
+  "extensions": [
+    "formulahendry.dotnet-test-explorer",
+    "ms-azuretools.vscode-docker",
+    "ms-dotnettools.csharp"
+  ],
+  "settings": {
+    "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
+  },
+  "postCreateCommand": ["git", "lfs", "pull"],
+  "postStartCommand": ["dotnet", "build"]
+}
