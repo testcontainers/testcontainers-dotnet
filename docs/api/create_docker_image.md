@@ -37,7 +37,7 @@ It is essential to take into account and comprehend the build context to enable 
                 ├── Dockerfile
                 └── WeatherForecast.sln
 
-Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree:
+Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree from the executing assembly:
 
 ```csharp
 _ = new ImageFromDockerfileBuilder()
