@@ -4,12 +4,11 @@ Testcontainers for .NET uses the builder design pattern to configure, create and
 
 ## Examples
 
-Builds and tags a new container image. The `Dockerfile` is located inside the `src` directory in the solution (`.sln`) directory.
+Builds and tags a new container image. The Dockerfile is located inside the solution (`.sln`) directory.
 
 ```csharp
 await new ImageFromDockerfileBuilder()
-  .WithName(Guid.NewGuid().ToString("D"))
-  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "src")
+  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
   .WithDockerfile("Dockerfile")
   .Build()
   .CreateAsync()
@@ -19,6 +18,48 @@ await new ImageFromDockerfileBuilder()
 !!!tip
 
     The `Dockerfile` must be part of the build context, otherwise the build fails.
+
+It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure, the build context is `/Users/testcontainers/WeatherForecast/`.
+
+    /
+    └── Users/
+        └── testcontainers/
+            └── WeatherForecast/
+                ├── src/
+                │   ├── WeatherForecast.Entities/
+                │   │   └── WeatherForecast.Entities.csproj
+                │   └── WeatherForecast/
+                │       └── WeatherForecast.csproj
+                ├── tests/
+                │   └── WeatherForecast.Tests/
+                │       └── WeatherForecast.Tests.csproj
+                ├── .dockerignore
+                ├── Dockerfile
+                └── WeatherForecast.sln
+
+Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree from the executing assembly:
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+  .WithDockerfile("Dockerfile")
+  .Build();
+```
+
+As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
+
+!!!tip
+
+    To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
+
+```Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+ARG SLN_FILE_PATH="WeatherForecast.sln"
+COPY . .
+RUN dotnet restore $SLN_FILE_PATH
+RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --output app
+ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
+```
 
 ## Supported commands
 
