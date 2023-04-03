@@ -64,14 +64,6 @@ public sealed class AppPortTests : IAsyncLifetime
             .WithPortBinding(appPort, true)
             .Build();
 
-        // const ushort appPort = 3000;
-        // _appContainer = new ContainerBuilder()
-        //     .WithName(Guid.NewGuid().ToString("D"))
-        //     .WithNetwork(_network)
-        //     .WithImage("simplewebserver:latest")
-        //     .WithPortBinding(appPort, true)
-        //     .Build();
-
         await _appContainer.StartAsync().ConfigureAwait(false);
 
         _daprContainer = new DaprBuilder()
