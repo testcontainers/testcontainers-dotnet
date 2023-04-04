@@ -61,9 +61,9 @@ RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --o
 ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
 ```
 
-##
+## Delete multi-stage intermediate layers
 
-A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers'  Resource Reaper is unable to automatically delete these layers after test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To remove the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
+A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers' Resource Reaper is unable to automatically delete these layers after the test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To delete the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
 
 The following Dockerfile assigns the `org.testcontainers.resource-reaper-session` label to each stage.
 
