@@ -17,7 +17,7 @@ await new ImageFromDockerfileBuilder()
 
 !!!tip
 
-    The `Dockerfile` must be part of the build context, otherwise the build fails.
+    The Dockerfile must be part of the build context, otherwise the build fails.
 
 It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure, the build context is `/Users/testcontainers/WeatherForecast/`.
 
@@ -37,7 +37,7 @@ It is essential to take into account and comprehend the build context to enable 
                 ├── Dockerfile
                 └── WeatherForecast.sln
 
-Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree from the executing assembly:
+Testcontainers offers convenient features to detect common directories in .NET projects. The build configuration below resolves the directory containing the solution file by traversing up the directory tree from the executing assembly.
 
 ```csharp
 _ = new ImageFromDockerfileBuilder()
@@ -59,6 +59,29 @@ COPY . .
 RUN dotnet restore $SLN_FILE_PATH
 RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --output app
 ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
+```
+
+##
+
+A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers'  Resource Reaper is unable to automatically delete these layers after test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To remove the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
+
+The following Dockerfile assigns the `org.testcontainers.resource-reaper-session` label to each stage.
+
+```Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env-1
+ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
+LABEL "org.testcontainers.resource-reaper-session"=$RESOURCE_REAPER_SESSION_ID
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env-2
+ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
+LABEL "org.testcontainers.resource-reaper-session"=$RESOURCE_REAPER_SESSION_ID
+```
+
+The `ImageFromDockerfileBuilder` provides a `WithBuildArgument(string, string)` member that passes a key-value to the Docker image build. We can leverage this mechanism to pass the appropriate Resource Reaper session to the build.
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"));
 ```
 
 ## Supported commands
