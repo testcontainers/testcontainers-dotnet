@@ -1,5 +1,5 @@
 .idea
 .vs
-build
-bin
-obj
+**/bin
+**/obj
+tests
