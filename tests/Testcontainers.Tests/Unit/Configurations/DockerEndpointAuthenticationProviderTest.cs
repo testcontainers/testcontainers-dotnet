@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new object[] { new TlsEndpointAuthenticationProvider(DockerTlsHostConfiguration).GetAuthConfig(), new Uri(DockerTlsHost) });
         Add(new object[] { new EnvironmentEndpointAuthenticationProvider(DockerHostConfiguration).GetAuthConfig(), new Uri(DockerHost) });
         Add(new object[] { new NpipeEndpointAuthenticationProvider().GetAuthConfig(), new Uri("npipe://./pipe/docker_engine") });
-        Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:/var/run/docker.sock") });
+        Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:///var/run/docker.sock") });
       }
     }
   }

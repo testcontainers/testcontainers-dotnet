@@ -3,8 +3,10 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Linq;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  [PublicAPI]
   internal sealed class EnvironmentEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
     private readonly Uri _dockerEngine;
