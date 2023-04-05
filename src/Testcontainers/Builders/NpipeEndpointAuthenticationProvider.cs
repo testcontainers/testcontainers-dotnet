@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Runtime.InteropServices;
@@ -6,18 +6,14 @@
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  [PublicAPI]
   internal sealed class NpipeEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
-#pragma warning disable S1075
-
     /// <summary>
     /// Gets the named pipe Docker Engine endpoint.
     /// </summary>
-    [PublicAPI]
     public static Uri DockerEngine { get; }
       = new Uri("npipe://./pipe/docker_engine");
-
-#pragma warning restore S1075
 
     /// <inheritdoc />
     public override bool IsApplicable()

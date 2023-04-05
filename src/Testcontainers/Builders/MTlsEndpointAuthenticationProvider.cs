@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Security.Cryptography.X509Certificates;
   using Docker.DotNet.X509;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
   using Org.BouncyCastle.Crypto;
   using Org.BouncyCastle.OpenSsl;
   using Org.BouncyCastle.Pkcs;
@@ -13,6 +14,7 @@ namespace DotNet.Testcontainers.Builders
   using Org.BouncyCastle.X509;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  [PublicAPI]
   internal sealed class MTlsEndpointAuthenticationProvider : TlsEndpointAuthenticationProvider
   {
     private static readonly X509CertificateParser CertificateParser = new X509CertificateParser();

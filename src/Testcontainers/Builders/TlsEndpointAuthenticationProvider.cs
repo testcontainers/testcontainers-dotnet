@@ -7,8 +7,10 @@ namespace DotNet.Testcontainers.Builders
   using System.Net.Security;
   using System.Security.Cryptography.X509Certificates;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  [PublicAPI]
   internal class TlsEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
     protected const string CaCertificateFileName = "ca.pem";
