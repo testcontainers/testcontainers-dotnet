@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Builders
 
     private static string GetSocketPathFromRunDir()
     {
-      var uid = 0;
+      ushort uid = 0;
 
       if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
       {

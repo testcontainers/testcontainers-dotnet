@@ -29,6 +29,7 @@ namespace DotNet.Testcontainers.Configurations
           new EnvironmentEndpointAuthenticationProvider(),
           new NpipeEndpointAuthenticationProvider(),
           new UnixEndpointAuthenticationProvider(),
+          new RootlessUnixEndpointAuthenticationProvider(),
         }
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())
