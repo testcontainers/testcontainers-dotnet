@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Fixtures
+namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;

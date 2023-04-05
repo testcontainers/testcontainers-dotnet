@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Commons;
+namespace DotNet.Testcontainers.Commons;
 
 [PublicAPI]
 public static class CommonImages

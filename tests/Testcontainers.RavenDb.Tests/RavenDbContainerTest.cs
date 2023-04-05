@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.RavenDb;
+namespace Testcontainers.RavenDb;
 
 public sealed class RavenDbContainerTest : IAsyncLifetime
 {

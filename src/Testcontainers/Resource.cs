@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers
+namespace DotNet.Testcontainers
 {
   using System;
   using System.Globalization;

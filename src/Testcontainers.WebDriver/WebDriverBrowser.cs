@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.WebDriver;
+namespace Testcontainers.WebDriver;
 
 /// <summary>
 /// Web Driver browser configuration.

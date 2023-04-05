@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;

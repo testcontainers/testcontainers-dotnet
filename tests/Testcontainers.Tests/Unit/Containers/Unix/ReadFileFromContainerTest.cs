@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
+namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
   using System.IO;

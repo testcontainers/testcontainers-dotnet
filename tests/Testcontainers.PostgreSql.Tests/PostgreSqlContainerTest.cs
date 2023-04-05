@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.PostgreSql;
+namespace Testcontainers.PostgreSql;
 
 public sealed class PostgreSqlContainerTest : IAsyncLifetime
 {

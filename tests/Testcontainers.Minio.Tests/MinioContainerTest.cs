@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Minio;
+namespace Testcontainers.Minio;
 
 public sealed class MinioContainerTest : IAsyncLifetime
 {

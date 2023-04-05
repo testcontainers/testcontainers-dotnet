@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Couchbase;
+namespace Testcontainers.Couchbase;
 
 public sealed class CouchbaseContainerTest : IAsyncLifetime
 {

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.MsSql;
+namespace Testcontainers.MsSql;
 
 public sealed class MsSqlContainerTest : IAsyncLifetime
 {
