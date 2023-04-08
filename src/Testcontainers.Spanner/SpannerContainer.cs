@@ -11,14 +11,12 @@ namespace Testcontainers.Spanner;
 [PublicAPI]
 public sealed class SpannerContainer : DockerContainer, IDisposable
 {
-  internal const int InternalGrpcPort = 9010;
-  internal const int InternalRestPort = 9020;
   private const string EnvironmentVariableEmulatorHost = "SPANNER_EMULATOR_HOST";
   private readonly SpannerConfiguration _configuration;
   private readonly HttpClient _webClient = new();
 
-  public int GrpcPort => GetMappedPublicPort(InternalGrpcPort);
-  public int RestPort => GetMappedPublicPort(InternalRestPort);
+  public int GrpcPort => GetMappedPublicPort(SpannerBuilder.InternalGrpcPort);
+  public int RestPort => GetMappedPublicPort(SpannerBuilder.InternalRestPort);
 
   public string ConnectionString
   {

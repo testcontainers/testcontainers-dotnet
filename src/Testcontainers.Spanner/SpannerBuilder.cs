@@ -7,7 +7,11 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
   private const string DefaultProjectId = "my-project";
   private const string DefaultInstanceId = "my-instance";
   private const string DefaultDatabaseId = "my-database";
-  private const string SpannerEmulatorImage = "gcr.io/cloud-spanner-emulator/emulator";
+  private const string SpannerEmulatorImage = "gcr.io/cloud-spanner-emulator/emulator:1.5.3";
+
+  
+  internal const int InternalGrpcPort = 9010;
+  internal const int InternalRestPort = 9020;
 
 
   /// <summary>
@@ -71,8 +75,8 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
   {
     return base.Init()
       .WithImage(SpannerEmulatorImage)
-      .WithPortBinding(SpannerContainer.InternalGrpcPort, true)
-      .WithPortBinding(SpannerContainer.InternalRestPort, true)
+      .WithPortBinding(InternalGrpcPort, true)
+      .WithPortBinding(InternalRestPort, true)
       .WithProjectId(DefaultProjectId)
       .WithInstanceId(DefaultInstanceId)
       .WithDatabaseId(DefaultDatabaseId)
@@ -80,8 +84,8 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
         Wait
           .ForUnixContainer()
           // The default wait for port implementation keeps waiting untill the test times out, therefor now using this custom flavor of the same concept
-          .UntilMessageIsLogged($".+REST server listening at 0.0.0.0:{SpannerContainer.InternalRestPort}")
-          .UntilMessageIsLogged($".+gRPC server listening at 0.0.0.0:{SpannerContainer.InternalGrpcPort}")
+          .UntilMessageIsLogged($".+REST server listening at 0.0.0.0:{InternalRestPort}")
+          .UntilMessageIsLogged($".+gRPC server listening at 0.0.0.0:{InternalGrpcPort}")
         );
 
   }
