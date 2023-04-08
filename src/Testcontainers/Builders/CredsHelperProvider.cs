@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System.Linq;
   using System.Text.Json;

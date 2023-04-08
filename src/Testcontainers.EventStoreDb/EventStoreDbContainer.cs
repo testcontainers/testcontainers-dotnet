@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.EventStoreDb;
+namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]

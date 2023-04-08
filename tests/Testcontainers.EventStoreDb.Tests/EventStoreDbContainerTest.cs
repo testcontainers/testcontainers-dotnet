@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.EventStoreDb;
+namespace Testcontainers.EventStoreDb;
 
 public sealed class EventStoreDbContainerTest : IAsyncLifetime
 {

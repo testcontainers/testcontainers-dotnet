@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.DynamoDb;
+namespace Testcontainers.DynamoDb;
 
 public sealed class DynamoDbContainerTest : IAsyncLifetime
 {

@@ -1,4 +1,4 @@
-﻿#pragma warning disable SA1402, SA1403
+#pragma warning disable SA1402, SA1403
 
 namespace DotNet.Testcontainers
 {

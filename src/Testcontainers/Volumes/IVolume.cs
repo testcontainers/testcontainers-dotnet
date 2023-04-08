@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Volumes
+namespace DotNet.Testcontainers.Volumes
 {
   using System;
   using JetBrains.Annotations;

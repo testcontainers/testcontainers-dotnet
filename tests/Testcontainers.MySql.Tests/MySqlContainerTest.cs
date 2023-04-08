@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.MySql;
+namespace Testcontainers.MySql;
 
 public abstract class MySqlContainerTest : IAsyncLifetime
 {

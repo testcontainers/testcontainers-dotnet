@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.Collections.Generic;
   using System.IO;

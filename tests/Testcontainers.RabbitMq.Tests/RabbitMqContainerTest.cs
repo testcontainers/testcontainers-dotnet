@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.RabbitMq;
+namespace Testcontainers.RabbitMq;
 
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {

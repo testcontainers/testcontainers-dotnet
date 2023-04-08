@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Redis;
+namespace Testcontainers.Redis;
 
 public sealed class RedisContainerTest : IAsyncLifetime
 {

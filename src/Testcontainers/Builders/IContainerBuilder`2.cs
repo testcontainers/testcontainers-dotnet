@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
@@ -153,7 +153,7 @@
     TBuilderEntity WithEnvironment(IReadOnlyDictionary<string, string> environments);
 
     /// <summary>
-    /// Exposes the port without publishing it to the host system’s interfaces.
+    /// Exposes the port without publishing it to the host system's interfaces.
     /// </summary>
     /// <param name="port">The port.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -161,7 +161,7 @@
     TBuilderEntity WithExposedPort(int port);
 
     /// <summary>
-    /// Exposes the port without publishing it to the host system’s interfaces.
+    /// Exposes the port without publishing it to the host system's interfaces.
     /// </summary>
     /// <param name="port">The port.</param>
     /// <remarks>Append /tcp|udp|sctp to <paramref name="port" /> to change the protocol e.g. "53/udp".</remarks>
