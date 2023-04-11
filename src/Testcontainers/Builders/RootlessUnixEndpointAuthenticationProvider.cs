@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
     /// </summary>
     public RootlessUnixEndpointAuthenticationProvider()
-      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeDir(), GetSocketPathFromRunDir())
+      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeDesktopDir(), GetSocketPathFromHomeRunDir(), GetSocketPathFromRunDir())
     {
     }
 
@@ -52,7 +52,12 @@ namespace DotNet.Testcontainers.Builders
       return string.Join("/", xdgRuntimeDir, "docker.sock");
     }
 
-    private static string GetSocketPathFromHomeDir()
+    private static string GetSocketPathFromHomeDesktopDir()
+    {
+      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "desktop", "docker.sock");
+    }
+
+    private static string GetSocketPathFromHomeRunDir()
     {
       return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "run", "docker.sock");
     }
