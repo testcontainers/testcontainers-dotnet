@@ -7,8 +7,7 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Azurite config.</param>
-    public AzuriteConfiguration(object config = null)
+    public AzuriteConfiguration()
     {
     }
 

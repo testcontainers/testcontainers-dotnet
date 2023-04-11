@@ -62,9 +62,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             waitStrategy = waitStrategy.UntilMessageIsLogged("Table service is successfully listening");
         }
 
-        var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1
-            ? this
-            : WithWaitStrategy(waitStrategy);
+        var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
         return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
