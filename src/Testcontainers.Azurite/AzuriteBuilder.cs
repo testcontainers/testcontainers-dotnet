@@ -12,6 +12,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const ushort TablePort = 10002;
 
+    private readonly ISet<AzuriteService> _enabledServices = new HashSet<AzuriteService>();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
     /// </summary>
@@ -19,6 +21,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         : this(new AzuriteConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
+
+        _enabledServices.Add(AzuriteService.Blob);
+        _enabledServices.Add(AzuriteService.Queue);
+        _enabledServices.Add(AzuriteService.Table);
     }
 
     /// <summary>
@@ -38,7 +44,28 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     public override AzuriteContainer Build()
     {
         Validate();
-        return new AzuriteContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        var waitStrategy = Wait.ForUnixContainer();
+
+        if (_enabledServices.Contains(AzuriteService.Blob))
+        {
+            waitStrategy = waitStrategy.UntilMessageIsLogged("Blob service is successfully listening");
+        }
+
+        if (_enabledServices.Contains(AzuriteService.Queue))
+        {
+            waitStrategy = waitStrategy.UntilMessageIsLogged("Queue service is successfully listening");
+        }
+
+        if (_enabledServices.Contains(AzuriteService.Table))
+        {
+            waitStrategy = waitStrategy.UntilMessageIsLogged("Table service is successfully listening");
+        }
+
+        var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1
+            ? this
+            : WithWaitStrategy(waitStrategy);
+        return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -48,8 +75,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             .WithImage(AzuriteImage)
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
-            .WithPortBinding(TablePort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithPortBinding(TablePort, true);
     }
 
     /// <inheritdoc />
@@ -68,27 +94,5 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     protected override AzuriteBuilder Merge(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
     {
         return new AzuriteBuilder(new AzuriteConfiguration(oldValue, newValue));
-    }
-    
-    /// <inheritdoc cref="IWaitUntil" />
-    public class WaitUntil : IWaitUntil
-    {
-        private static readonly IList<string> EnabledServiceLogMessages = new List<string>();
-
-        static WaitUntil()
-        {
-            EnabledServiceLogMessages.Add("Blob service is successfully listening");
-            EnabledServiceLogMessages.Add("Queue service is successfully listening");
-            EnabledServiceLogMessages.Add("Table service is successfully listening");
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return EnabledServiceLogMessages.All(stdout.Contains);
-        }
     }
 }

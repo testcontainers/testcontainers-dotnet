@@ -10,8 +10,6 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     /// <param name="config">The Azurite config.</param>
     public AzuriteConfiguration(object config = null)
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
     }
 
     /// <summary>
@@ -52,12 +50,5 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     public AzuriteConfiguration(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-
-    // /// <summary>
-    // /// Gets the Azurite config.
-    // /// </summary>
-    // public object Config { get; }
 }
