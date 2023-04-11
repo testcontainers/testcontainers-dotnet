@@ -9,6 +9,9 @@
         <PackageReference Include="coverlet.collector" Version="3.2.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
         <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="Azure.Data.Tables" Version="12.8.0"/>
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.15.1"/>
+        <PackageReference Include="Azure.Storage.Queues" Version="12.13.1"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
