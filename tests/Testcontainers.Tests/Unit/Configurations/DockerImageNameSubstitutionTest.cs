@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         TestcontainersSettings.HubImageNamePrefix = hubImageNamePrefix;
 
         // When
-        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new ContainerBuilder()
           .WithImage(imageName)
           .Build();
 
@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         IImage image = new DockerImage(imageName);
 
         // When
-        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new ContainerBuilder()
           .WithImage(image)
           .Build();
 
@@ -85,7 +85,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         const string imageName = "bar:latest";
 
         // When
-        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new ContainerBuilder()
           .WithImage(imageName)
           .Build();
 
@@ -102,7 +102,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         IImage image = new DockerImage(imageName);
 
         // When
-        IContainer container = new TestcontainersBuilder<TestcontainersContainer>()
+        IContainer container = new ContainerBuilder()
           .WithImage(image)
           .Build();
 

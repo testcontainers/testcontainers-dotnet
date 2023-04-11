@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task QueryContainerInformationOfCreatedContainer()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx");
 
         // When
@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task QueryContainerInformationOfNotCreatedContainer()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx");
 
         // When
