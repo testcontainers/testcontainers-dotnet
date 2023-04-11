@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     public async Task ContainerHealthCheckShouldBeHealthy()
     {
       // Given
-      var container = new TestcontainersBuilder<TestcontainersContainer>()
+      var container = new ContainerBuilder()
         .WithImage(_image)
         .WithEnvironment("START_HEALTHY", bool.TrueString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
     public async Task ContainerHealthCheckShouldBeUnhealthy()
     {
       // Given
-      var container = new TestcontainersBuilder<TestcontainersContainer>()
+      var container = new ContainerBuilder()
         .WithImage(_image)
         .WithEnvironment("START_HEALTHY", bool.FalseString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))

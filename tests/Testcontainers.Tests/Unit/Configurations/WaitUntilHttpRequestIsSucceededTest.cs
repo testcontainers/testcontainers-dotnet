@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Configurations
   {
     private const ushort HttpPort = 80;
 
-    private readonly IContainer _container = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _container = new ContainerBuilder()
       .WithImage(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
       .WithCommand($"echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}")

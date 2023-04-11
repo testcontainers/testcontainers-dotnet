@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private readonly IContainer _container;
 
-    protected ProtectDockerDaemonSocket(ContainerBuilder<TestcontainersContainer> containerConfiguration)
+    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration)
     {
       _container = containerConfiguration
         .WithImage(_image)

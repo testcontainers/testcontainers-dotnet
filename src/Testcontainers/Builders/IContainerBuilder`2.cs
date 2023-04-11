@@ -21,14 +21,6 @@ namespace DotNet.Testcontainers.Builders
   public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
     /// <summary>
-    /// Sets the module configuration of the container to override custom properties.
-    /// </summary>
-    /// <param name="moduleConfiguration">The module configuration action.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration);
-
-    /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
     /// <param name="container">The dependent container.</param>

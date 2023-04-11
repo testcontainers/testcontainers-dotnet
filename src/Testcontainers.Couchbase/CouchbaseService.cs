@@ -8,32 +8,32 @@ internal readonly struct CouchbaseService
     /// <summary>
     /// Gets the Data service.
     /// </summary>
-    public static readonly CouchbaseService Data = new("kv", 256);
+    public static readonly CouchbaseService Data = new CouchbaseService("kv", 256);
 
     /// <summary>
     /// Gets the Index service.
     /// </summary>
-    public static readonly CouchbaseService Index = new("index", 256);
+    public static readonly CouchbaseService Index = new CouchbaseService("index", 256);
 
     /// <summary>
     /// Gets the Query service.
     /// </summary>
-    public static readonly CouchbaseService Query = new("n1ql", 0);
+    public static readonly CouchbaseService Query = new CouchbaseService("n1ql", 0);
 
     /// <summary>
     /// Gets the Search service.
     /// </summary>
-    public static readonly CouchbaseService Search = new("fts", 256);
+    public static readonly CouchbaseService Search = new CouchbaseService("fts", 256);
 
     /// <summary>
     /// Gets the Analytics service.
     /// </summary>
-    public static readonly CouchbaseService Analytics = new("cbas", 1024);
+    public static readonly CouchbaseService Analytics = new CouchbaseService("cbas", 1024);
 
     /// <summary>
     /// Gets the Eventing service.
     /// </summary>
-    public static readonly CouchbaseService Eventing = new("eventing", 256);
+    public static readonly CouchbaseService Eventing = new CouchbaseService("eventing", 256);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseService" /> struct.

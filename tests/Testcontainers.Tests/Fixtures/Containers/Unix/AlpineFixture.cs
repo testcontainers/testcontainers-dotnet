@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   public sealed class AlpineFixture : IAsyncLifetime
   {
     public IContainer Container { get; }
-      = new TestcontainersBuilder<TestcontainersContainer>()
+      = new ContainerBuilder()
         .WithImage("alpine")
         .WithCommand(CommonCommands.SleepInfinity)
         .WithCleanUp(false)

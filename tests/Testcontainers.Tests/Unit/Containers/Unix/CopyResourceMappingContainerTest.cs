@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
     public CopyResourceMappingContainerTest()
     {
-      _container = new TestcontainersBuilder<TestcontainersContainer>()
+      _container = new ContainerBuilder()
         .WithImage("alpine")
         .WithResourceMapping(_resourceMappingSourceFilePath, _resourceMappingFileDestinationFilePath)
         .WithResourceMapping(Encoding.Default.GetBytes(ResourceMappingContent), _resourceMappingBytesDestinationFilePath)
