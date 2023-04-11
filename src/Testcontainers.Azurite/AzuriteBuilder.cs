@@ -4,22 +4,21 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
+    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.23.0";
+
+    public const ushort BlobPort = 10000;
+
+    public const ushort QueuePort = 10001;
+
+    public const ushort TablePort = 10002;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
     /// </summary>
     public AzuriteBuilder()
         : this(new AzuriteConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "AzuriteBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "AzuriteBuilder WithAzuriteConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable AzuriteConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,23 +28,11 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     private AzuriteBuilder(AzuriteConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override AzuriteConfiguration DockerResourceConfiguration { get; }
-
-    // /// <summary>
-    // /// Sets the Azurite config.
-    // /// </summary>
-    // /// <param name="config">The Azurite config.</param>
-    // /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
-    // public AzuriteBuilder WithAzuriteConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in AzuriteConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new AzuriteConfiguration(config: config));
-    // }
+    /// <inheritdoc />
+    protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
     public override AzuriteContainer Build()
@@ -54,17 +41,16 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         return new AzuriteContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    // /// <inheritdoc />
-    // protected override AzuriteBuilder Init()
-    // {
-    //     return base.Init();
-    // }
-
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+    /// <inheritdoc />
+    protected override AzuriteBuilder Init()
+    {
+        return base.Init()
+            .WithImage(AzuriteImage)
+            .WithPortBinding(BlobPort, true)
+            .WithPortBinding(QueuePort, true)
+            .WithPortBinding(TablePort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+    }
 
     /// <inheritdoc />
     protected override AzuriteBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,5 +68,27 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     protected override AzuriteBuilder Merge(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
     {
         return new AzuriteBuilder(new AzuriteConfiguration(oldValue, newValue));
+    }
+    
+    /// <inheritdoc cref="IWaitUntil" />
+    public class WaitUntil : IWaitUntil
+    {
+        private static readonly IList<string> EnabledServiceLogMessages = new List<string>();
+
+        static WaitUntil()
+        {
+            EnabledServiceLogMessages.Add("Blob service is successfully listening");
+            EnabledServiceLogMessages.Add("Queue service is successfully listening");
+            EnabledServiceLogMessages.Add("Table service is successfully listening");
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
+            return EnabledServiceLogMessages.All(stdout.Contains);
+        }
     }
 }
