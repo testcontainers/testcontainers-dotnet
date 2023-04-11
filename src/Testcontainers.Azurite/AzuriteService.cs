@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Azurite;
+namespace Testcontainers.Azurite;
 
 /// <summary>
 /// An Azurite service.
