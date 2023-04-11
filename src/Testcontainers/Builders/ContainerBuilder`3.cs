@@ -35,15 +35,6 @@ namespace DotNet.Testcontainers.Builders
     {
     }
 
-    [Obsolete("Required for extension method module backwards compatibility.")]
-    protected virtual Action<TContainerEntity> ModuleConfiguration { get; }
-
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
-    public virtual TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration)
-    {
-      throw new NotImplementedException();
-    }
-
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity DependsOn(IContainer container)
     {
