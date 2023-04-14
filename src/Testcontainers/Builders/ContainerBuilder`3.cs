@@ -288,6 +288,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity WithExtraHost(string hostname, string ipAddress)
+    {
+      var extraHosts = new[] { string.Join(":", hostname, ipAddress) };
+      return Clone(new ContainerConfiguration(extraHosts: extraHosts));
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithAutoRemove(bool autoRemove)
     {
       return Clone(new ContainerConfiguration(autoRemove: autoRemove));
