@@ -1,13 +1,17 @@
 ﻿namespace DotNet.Testcontainers.Containers
 {
+  using System;
   using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
+  using System.Threading;
+  using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
+  using Renci.SshNet;
 
   /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
   [PublicAPI]
@@ -81,10 +85,10 @@
       return base.Init()
         .WithImage(SshdImage)
         .WithPortBinding(SshdPort, true)
-        .WithUsername("root")
-        .WithPassword("root")
         .WithEntrypoint("/bin/sh", "-c")
-        .WithCommand(Command);
+        .WithCommand(Command)
+        .WithUsername("root")
+        .WithPassword("root");
     }
 
     /// <inheritdoc />
@@ -211,9 +215,49 @@
   [PublicAPI]
   public sealed class PortForwardingContainer : DockerContainer
   {
-    public PortForwardingContainer(IContainerConfiguration configuration, ILogger logger)
+    private readonly IList<IDisposable> _disposables = new List<IDisposable>();
+
+    private readonly PortForwardingConfiguration _configuration;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PortForwardingContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="logger">The logger.</param>
+    public PortForwardingContainer(PortForwardingConfiguration configuration, ILogger logger)
       : base(configuration, logger)
     {
+      _configuration = configuration;
+    }
+
+    /// <inheritdoc />
+    protected override ValueTask DisposeAsyncCore()
+    {
+      foreach (var disposable in _disposables)
+      {
+        disposable.Dispose();
+      }
+
+      return base.DisposeAsyncCore();
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeStartAsync(CancellationToken ct = default)
+    {
+      const string host = "127.0.0.1";
+
+      await base.UnsafeStartAsync(ct)
+        .ConfigureAwait(false);
+
+      var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
+      sshClient.Connect();
+
+      var exposedHostPorts = _configuration.ExposedHostPorts.Select(ushort.Parse).Select(exposedHostPort => new ForwardedPortRemote(exposedHostPort, host, exposedHostPort)).ToList();
+      exposedHostPorts.ForEach(sshClient.AddForwardedPort);
+      exposedHostPorts.ForEach(exposedHostPort => exposedHostPort.Start());
+
+      exposedHostPorts.ForEach(_disposables.Add);
+      _disposables.Add(sshClient);
     }
   }
 }

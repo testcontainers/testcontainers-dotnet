@@ -20,6 +20,7 @@ namespace DotNet.Testcontainers.Clients
     {
       Entrypoint = new ToCollection().Convert(configuration.Entrypoint)?.ToList();
       Command = new ToCollection().Convert(configuration.Command)?.ToList();
+      ExtraHosts = new ToCollection().Convert(configuration.ExtraHosts)?.ToList();
       Environments = new ToMappedList().Convert(configuration.Environments)?.ToList();
       Labels = new ToDictionary().Convert(configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
       ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
@@ -31,6 +32,8 @@ namespace DotNet.Testcontainers.Clients
     public IList<string> Entrypoint { get; }
 
     public IList<string> Command { get; }
+
+    public IList<string> ExtraHosts { get; }
 
     public IList<string> Environments { get; }
 

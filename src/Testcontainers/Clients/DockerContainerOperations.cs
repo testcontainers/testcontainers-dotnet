@@ -174,6 +174,7 @@ namespace DotNet.Testcontainers.Clients
       {
         AutoRemove = configuration.AutoRemove.HasValue && configuration.AutoRemove.Value,
         Privileged = configuration.Privileged.HasValue && configuration.Privileged.Value,
+        ExtraHosts = converter.ExtraHosts,
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
       };
