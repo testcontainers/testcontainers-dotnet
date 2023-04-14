@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace Testcontainers.Tests;
+﻿namespace Testcontainers.Tests;
 
 [UsedImplicitly]
 public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
@@ -13,10 +11,8 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
 
     public PortForwardingTest()
     {
-        // The TCP listener represents a service running on the test host.
         _tcpListener.Start();
 
-        // The port forwarding container exposes the test host port to the container.
         _portForwardingContainer = new PortForwardingBuilder()
             .WithExposedHostPort(Port)
             .Build();
@@ -66,15 +62,13 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
 
         public MyClass(PortForwardingTest fixture)
         {
-            TestcontainersSettings.Logger.LogInformation(fixture._portForwardingContainer.IpAddress);
-
-            // The container connects through the extra host entry "host.testcontainers.internal" to the test host.
             _container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithExtraHost(fixture.Host, fixture._portForwardingContainer.IpAddress)
+                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build();
         }
 
@@ -92,19 +86,22 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesHostConnection()
         {
-            var (stdout, stderr) = await _container.GetLogsAsync(timestampsEnabled: false)
+            var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             var exitCode = await _container.GetExitCodeAsync()
                 .ConfigureAwait(false);
 
-            TestcontainersSettings.Logger.LogInformation(string.Join(" ", Encoding.Default.GetBytes(stdout)));
-            TestcontainersSettings.Logger.LogInformation(stdout);
-            TestcontainersSettings.Logger.LogInformation(stderr);
-            TestcontainersSettings.Logger.LogInformation(exitCode.ToString());
-
-            // Assert.Equal(bool.TrueString, stdout);
+            Assert.Equal(bool.TrueString, stdout);
             Assert.Equal(0, exitCode);
+        }
+
+        private sealed class WaitUntil : IWaitUntil
+        {
+            public Task<bool> UntilAsync(IContainer container)
+            {
+                return Task.FromResult(TestcontainersStates.Exited.Equals(container.State));
+            }
         }
     }
 }
