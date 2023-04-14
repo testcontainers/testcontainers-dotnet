@@ -88,7 +88,8 @@
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand(Command)
         .WithUsername("root")
-        .WithPassword("root");
+        .WithPassword("root")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(SshdPort));
     }
 
     /// <inheritdoc />
