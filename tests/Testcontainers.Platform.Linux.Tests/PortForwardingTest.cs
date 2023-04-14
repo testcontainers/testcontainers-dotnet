@@ -1,4 +1,6 @@
-﻿namespace Testcontainers.Tests;
+﻿using Microsoft.Extensions.Logging;
+
+namespace Testcontainers.Tests;
 
 [UsedImplicitly]
 public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
@@ -64,6 +66,8 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
 
         public MyClass(PortForwardingTest fixture)
         {
+            TestcontainersSettings.Logger.LogInformation(fixture._portForwardingContainer.IpAddress);
+            
             // The container connects through the extra host entry "host.testcontainers.internal" to the test host.
             _container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
@@ -88,11 +92,15 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesHostConnection()
         {
-            var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
+            var (stdout, stderr) = await _container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             var exitCode = await _container.GetExitCodeAsync()
                 .ConfigureAwait(false);
+
+            TestcontainersSettings.Logger.LogInformation(stdout);
+            TestcontainersSettings.Logger.LogInformation(stderr);
+            TestcontainersSettings.Logger.LogInformation(exitCode.ToString());
 
             // Assert.Equal(bool.TrueString, stdout);
             Assert.Equal(0, exitCode);
