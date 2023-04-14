@@ -67,7 +67,7 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
         public MyClass(PortForwardingTest fixture)
         {
             TestcontainersSettings.Logger.LogInformation(fixture._portForwardingContainer.IpAddress);
-            
+
             // The container connects through the extra host entry "host.testcontainers.internal" to the test host.
             _container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
@@ -98,6 +98,7 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
             var exitCode = await _container.GetExitCodeAsync()
                 .ConfigureAwait(false);
 
+            TestcontainersSettings.Logger.LogInformation(string.Join(" ", Encoding.Default.GetBytes(stdout)));
             TestcontainersSettings.Logger.LogInformation(stdout);
             TestcontainersSettings.Logger.LogInformation(stderr);
             TestcontainersSettings.Logger.LogInformation(exitCode.ToString());

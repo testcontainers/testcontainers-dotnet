@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
+  using System.Net;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -245,15 +246,17 @@
     /// <inheritdoc />
     protected override async Task UnsafeStartAsync(CancellationToken ct = default)
     {
-      const string host = "127.0.0.1";
-
       await base.UnsafeStartAsync(ct)
         .ConfigureAwait(false);
 
       var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
       sshClient.Connect();
 
-      var exposedHostPorts = _configuration.ExposedHostPorts.Select(ushort.Parse).Select(exposedHostPort => new ForwardedPortRemote(exposedHostPort, host, exposedHostPort)).ToList();
+      var exposedHostPorts = _configuration.ExposedHostPorts
+        .Select(ushort.Parse)
+        .Select(exposedHostPort => new ForwardedPortRemote(IPAddress.Loopback, exposedHostPort, IPAddress.Loopback, exposedHostPort))
+        .ToList();
+
       exposedHostPorts.ForEach(sshClient.AddForwardedPort);
       exposedHostPorts.ForEach(exposedHostPort => exposedHostPort.Start());
 
