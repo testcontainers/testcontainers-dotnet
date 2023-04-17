@@ -10,5 +10,7 @@ namespace DotNet.Testcontainers.Clients
     Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default);
 
     Task DeleteAsync(string id, CancellationToken ct = default);
+
+    Task ConnectAsync(string networkId, string containerId, CancellationToken ct = default);
   }
 }

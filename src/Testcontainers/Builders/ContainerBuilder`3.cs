@@ -348,8 +348,8 @@ namespace DotNet.Testcontainers.Builders
 
     private TBuilderEntity WithPortForwarding()
     {
-      var extraHosts = PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State) ? new[] { string.Join(":", "host.testcontainers.internal", PortForwardingContainer.Instance.IpAddress) } : null;
-      return Clone(new ContainerConfiguration(extraHosts: extraHosts));
+      const string hostname = "host.testcontainers.internal";
+      return PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State) ? WithExtraHost(hostname, PortForwardingContainer.Instance.IpAddress) : Clone(new ContainerConfiguration());
     }
 
     /// <inheritdoc cref="NetworkBuilder" />

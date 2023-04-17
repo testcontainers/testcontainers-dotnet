@@ -8,12 +8,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="RedirectStdoutAndStderrToNull" /> class.
     /// </summary>
-    public RedirectStdoutAndStderrToNull()
+    private RedirectStdoutAndStderrToNull()
     {
       Enabled = false;
       Stdout = Stream.Null;
       Stderr = Stream.Null;
     }
+
+    /// <summary>
+    /// Gets the <see cref="IOutputConsumer" /> instance.
+    /// </summary>
+    public static IOutputConsumer Instance { get; }
+      = new RedirectStdoutAndStderrToNull();
 
     /// <inheritdoc />
     public bool Enabled { get; }

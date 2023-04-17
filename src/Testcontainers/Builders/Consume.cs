@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     public static IOutputConsumer DoNotConsumeStdoutAndStderr()
     {
-      return new RedirectStdoutAndStderrToNull();
+      return RedirectStdoutAndStderrToNull.Instance;
     }
 
     /// <summary>
