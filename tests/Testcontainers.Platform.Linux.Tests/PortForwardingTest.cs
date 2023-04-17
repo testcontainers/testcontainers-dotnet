@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Tests;
+namespace Testcontainers.Tests;
 
 [UsedImplicitly]
 public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
@@ -86,14 +86,14 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesHostConnection()
         {
-            var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
             var exitCode = await _container.GetExitCodeAsync()
                 .ConfigureAwait(false);
 
-            Assert.Equal(bool.TrueString, stdout);
+            var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
             Assert.Equal(0, exitCode);
+            Assert.Equal(bool.TrueString, stdout);
         }
 
         private sealed class WaitUntil : IWaitUntil
