@@ -1,100 +1,116 @@
 namespace Testcontainers.Tests;
 
-[UsedImplicitly]
-public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
+public abstract class PortForwardingTest : IAsyncLifetime
 {
-    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly IContainer _container;
 
-    private readonly TcpListener _tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, 0));
-
-    public PortForwardingTest()
+    private PortForwardingTest(IContainer container)
     {
-        _tcpListener.Start();
-
-        _ = Task.Run(async () =>
-        {
-            while (!_cancellationTokenSource.IsCancellationRequested)
-            {
-                var sendBytes = Encoding.Default.GetBytes(bool.TrueString);
-
-                using var socket = await _tcpListener.AcceptSocketAsync(_cancellationTokenSource.Token)
-                    .ConfigureAwait(false);
-
-                _ = await socket.SendAsync(sendBytes, SocketFlags.None, _cancellationTokenSource.Token)
-                    .ConfigureAwait(false);
-
-                await socket.DisconnectAsync(false, _cancellationTokenSource.Token)
-                    .ConfigureAwait(false);
-            }
-        });
+        _container = container;
     }
-
-    private string Host => "host.testcontainers.internal";
-
-    private ushort Port => Convert.ToUInt16(((IPEndPoint)_tcpListener.LocalEndpoint).Port);
 
     public Task InitializeAsync()
     {
-        return TestcontainersSettings.ExposeHostPortsAsync(Port);
+        return _container.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return Task.CompletedTask;
+        return _container.DisposeAsync().AsTask();
     }
 
-    public void Dispose()
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task EstablishesHostConnection()
     {
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-        _tcpListener.Stop();
+        var exitCode = await _container.GetExitCodeAsync()
+            .ConfigureAwait(false);
+
+        var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
+            .ConfigureAwait(false);
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(bool.TrueString, stdout);
     }
 
-    public sealed class MyClass : IClassFixture<PortForwardingTest>, IAsyncLifetime
+    [UsedImplicitly]
+    public sealed class PortForwardingDefaultConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
-        private readonly IContainer _container;
-
-        public MyClass(PortForwardingTest fixture)
-        {
-            _container = new ContainerBuilder()
+        public PortForwardingDefaultConfiguration(HostedService fixture)
+            : base(new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
-                .Build();
+                .Build())
+        {
         }
+    }
+
+    [UsedImplicitly]
+    public sealed class PortForwardingNetworkConfiguration : PortForwardingTest, IClassFixture<HostedService>
+    {
+        public PortForwardingNetworkConfiguration(HostedService fixture)
+            : base(new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithAutoRemove(false)
+                .WithEntrypoint("nc")
+                .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
+                .WithNetwork(new NetworkBuilder().Build())
+                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class HostedService : IAsyncLifetime
+    {
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+        private readonly TcpListener _tcpListener = new(new IPEndPoint(IPAddress.Any, 0));
+
+        public HostedService()
+        {
+            _tcpListener.Start();
+        }
+
+        public string Host => "host.testcontainers.internal";
+
+        public ushort Port => Convert.ToUInt16(((IPEndPoint)_tcpListener.LocalEndpoint).Port);
 
         public Task InitializeAsync()
         {
-            return _container.StartAsync();
+            return Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync());
         }
 
         public Task DisposeAsync()
         {
-            return _container.DisposeAsync().AsTask();
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _tcpListener.Stop();
+
+            return Task.CompletedTask;
         }
 
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task EstablishesHostConnection()
+        private async Task AcceptSocketAsync()
         {
-            var exitCode = await _container.GetExitCodeAsync()
+            var sendBytes = Encoding.Default.GetBytes(bool.TrueString);
+
+            using var socket = await _tcpListener.AcceptSocketAsync(_cancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
+            _ = await socket.SendAsync(sendBytes, SocketFlags.None, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
-
-            Assert.Equal(0, exitCode);
-            Assert.Equal(bool.TrueString, stdout);
         }
+    }
 
-        private sealed class WaitUntil : IWaitUntil
+    private sealed class WaitUntil : IWaitUntil
+    {
+        public Task<bool> UntilAsync(IContainer container)
         {
-            public Task<bool> UntilAsync(IContainer container)
-            {
-                return Task.FromResult(TestcontainersStates.Exited.Equals(container.State));
-            }
+            return Task.FromResult(TestcontainersStates.Exited.Equals(container.State));
         }
     }
 }
