@@ -7,15 +7,9 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
 
     private readonly TcpListener _tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, 0));
 
-    private readonly IContainer _portForwardingContainer;
-
     public PortForwardingTest()
     {
         _tcpListener.Start();
-
-        _portForwardingContainer = new PortForwardingBuilder()
-            .WithExposedHostPort(Port)
-            .Build();
 
         _ = Task.Run(async () =>
         {
@@ -41,12 +35,12 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
 
     public Task InitializeAsync()
     {
-        return _portForwardingContainer.StartAsync();
+        return TestcontainersSettings.ExposeHostPortsAsync(Port);
     }
 
     public Task DisposeAsync()
     {
-        return _portForwardingContainer.DisposeAsync().AsTask();
+        return Task.CompletedTask;
     }
 
     public void Dispose()
@@ -67,7 +61,6 @@ public sealed class PortForwardingTest : IAsyncLifetime, IDisposable
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithExtraHost(fixture.Host, fixture._portForwardingContainer.IpAddress)
                 .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build();
         }

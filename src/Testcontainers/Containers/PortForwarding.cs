@@ -30,6 +30,7 @@ namespace DotNet.Testcontainers.Containers
     private PortForwardingContainer(PortForwardingConfiguration configuration, ILogger logger)
       : base(configuration, logger)
     {
+      _configuration = configuration;
     }
 
     /// <summary>
@@ -39,16 +40,16 @@ namespace DotNet.Testcontainers.Containers
       = new PortForwardingBuilder().Build();
 
     /// <summary>
-    /// Exposes the host ports to containers.
+    /// Exposes the host ports using SSH port forwarding.
     /// </summary>
-    /// <param name="exposedHostPorts">The host ports.</param>
-    /// <returns>A task that completes when the ports are exposed.</returns>
-    public Task ExposeHostPortAsync(params ushort[] exposedHostPorts)
+    /// <param name="ports">The host ports to forward.</param>
+    /// <returns>A task that completes when the host ports are forwarded.</returns>
+    public Task ExposeHostPortsAsync(params ushort[] ports)
     {
       var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
       sshClient.Connect();
 
-      foreach (var forwardedPort in exposedHostPorts.Select(exposedHostPort => new ForwardedPortRemote(IPAddress.Loopback, exposedHostPort, IPAddress.Loopback, exposedHostPort)))
+      foreach (var forwardedPort in ports.Select(port => new ForwardedPortRemote(IPAddress.Loopback, port, IPAddress.Loopback, port)))
       {
         sshClient.AddForwardedPort(forwardedPort);
         forwardedPort.Start();
@@ -97,13 +98,13 @@ namespace DotNet.Testcontainers.Containers
       protected override PortForwardingConfiguration DockerResourceConfiguration { get; }
 
       /// <summary>
-      /// Exposes the host ports to containers in the same network.
+      /// Exposes the host ports using SSH port forwarding.
       /// </summary>
-      /// <param name="exposedHostPorts">The host ports.</param>
+      /// <param name="ports">The host ports to forward.</param>
       /// <returns>A configured instance of <see cref="PortForwardingBuilder" />.</returns>
-      public PortForwardingBuilder WithExposedHostPort(params int[] exposedHostPorts)
+      public PortForwardingBuilder WithExposedHostPort(params int[] ports)
       {
-        return WithExposedHostPort(exposedHostPorts.Select(exposedHostPort => exposedHostPort.ToString(CultureInfo.InvariantCulture)).ToArray());
+        return WithExposedHostPort(ports.Select(port => port.ToString(CultureInfo.InvariantCulture)).ToArray());
       }
 
       /// <summary>

@@ -175,5 +175,15 @@ namespace DotNet.Testcontainers.Configurations
     [NotNull]
     public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
+
+    /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
+    public static async Task ExposeHostPortsAsync(params ushort[] ports)
+    {
+      await PortForwardingContainer.Instance.StartAsync()
+        .ConfigureAwait(false);
+
+      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports)
+        .ConfigureAwait(false);
+    }
   }
 }

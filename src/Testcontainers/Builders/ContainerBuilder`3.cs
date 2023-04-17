@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
   public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>
+    where TBuilderEntity : ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
   {
@@ -327,7 +327,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
+      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
@@ -345,6 +345,12 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected abstract TBuilderEntity Clone(IContainerConfiguration resourceConfiguration);
+
+    private TBuilderEntity WithPortForwarding()
+    {
+      var extraHosts = PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State) ? new[] { string.Join(":", "host.testcontainers.internal", PortForwardingContainer.Instance.IpAddress) } : null;
+      return Clone(new ContainerConfiguration(extraHosts: extraHosts));
+    }
 
     /// <inheritdoc cref="NetworkBuilder" />
     private sealed class FromExistingNetwork : NetworkBuilder
