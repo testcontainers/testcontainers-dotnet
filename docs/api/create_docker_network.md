@@ -64,7 +64,21 @@ It is common to connect to a container from your test process running on your te
 
 ## Exposing host ports to the container
 
-\-
+Sometimes containerized tests require access to services running on the test host. Setting up this connection can be very complex. Fortunately, Testcontainers simplifies the configuration to a bare minimum. It utilizing SSH and setting up an encrypted connection that forwards requests from a container to the test host.
+
+In order to expose ports of services that are running on the test host to containers, we need to configure Testcontainers first. It is important to set up this configuration before configuring any container resources, otherwise, we are not able to forward traffic properly.
+
+```csharp title="Exposing the host port 8080"
+await TestcontainersSettings.ExposeHostPortsAsync(8080)
+  .ConfigureAwait(false);
+```
+
+From the perspective of a container, the test host is available through the hostname `host.testcontainers.internal`. Ports are forwarded one-to-one.
+
+```csharp title="Sending a GET request to the test host"
+_ = await curlContainer.ExecAsync(new[] { "curl", "http://host.testcontainers.internal:8080" })
+  .ConfigureAwait(false);
+```
 
 ## Supported commands
 
