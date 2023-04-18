@@ -107,6 +107,11 @@ namespace DotNet.Testcontainers.Configurations
     IEnumerable<string> NetworkAliases { get; }
 
     /// <summary>
+    /// Gets a list of extra hosts.
+    /// </summary>
+    IEnumerable<string> ExtraHosts { get; }
+
+    /// <summary>
     /// Gets the output consumer.
     /// </summary>
     IOutputConsumer OutputConsumer { get; }

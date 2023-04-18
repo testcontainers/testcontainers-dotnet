@@ -34,6 +34,9 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
       = LoggerMessage.Define<Type, string>(LogLevel.Information, default, "Attach {OutputConsumer} at Docker container {Id}");
 
+    private static readonly Action<ILogger, string, string, Exception> _ConnectToDockerNetwork
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Connect Docker container {ContainerId} to Docker network {NetworkId}");
+
     private static readonly Action<ILogger, string, string, Exception> _ExecuteCommandInDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Execute \"{Command}\" at Docker container {Id}");
 
@@ -119,6 +122,11 @@ namespace DotNet.Testcontainers
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
     {
       _AttachToDockerContainer(logger, type, id, null);
+    }
+
+    public static void ConnectToDockerNetwork(this ILogger logger, string networkId, string containerId)
+    {
+      _ConnectToDockerNetwork(logger, containerId, networkId, null);
     }
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)

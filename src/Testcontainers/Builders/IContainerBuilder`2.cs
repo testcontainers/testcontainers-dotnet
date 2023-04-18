@@ -339,6 +339,15 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithNetworkAliases(IEnumerable<string> networkAliases);
 
     /// <summary>
+    /// Adds the extra host to "/etc/hosts" respectively "%WINDIR%\\system32\\drivers\\etc\\hosts".
+    /// </summary>
+    /// <param name="hostname">The hostname.</param>
+    /// <param name="ipAddress">The IP address.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithExtraHost(string hostname, string ipAddress);
+
+    /// <summary>
     /// Cleans up the container after it exits.
     /// </summary>
     /// <remarks>

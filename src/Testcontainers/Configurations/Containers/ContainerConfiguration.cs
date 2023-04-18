@@ -34,6 +34,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="mounts">A list of mounts.</param>
     /// <param name="networks">A list of networks.</param>
     /// <param name="networkAliases">A list of network-scoped aliases.</param>
+    /// <param name="extraHosts">A list of extra hosts.</param>
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
@@ -56,6 +57,7 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<IMount> mounts = null,
       IEnumerable<INetwork> networks = null,
       IEnumerable<string> networkAliases = null,
+      IEnumerable<string> extraHosts = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
@@ -80,6 +82,7 @@ namespace DotNet.Testcontainers.Configurations
       Mounts = mounts;
       Networks = networks;
       NetworkAliases = networkAliases;
+      ExtraHosts = extraHosts;
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
@@ -127,6 +130,7 @@ namespace DotNet.Testcontainers.Configurations
       Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
       Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
       NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
+      ExtraHosts = BuildConfiguration.Combine(oldValue.ExtraHosts, newValue.ExtraHosts);
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
       WaitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
@@ -187,6 +191,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IEnumerable<string> NetworkAliases { get; }
+
+    /// <inheritdoc />
+    public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />
     public IOutputConsumer OutputConsumer { get; }

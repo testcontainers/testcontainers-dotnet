@@ -30,6 +30,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly IDockerImageOperations _images;
 
+    private readonly IDockerNetworkOperations _network;
+
     private readonly IDockerSystemOperations _system;
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
@@ -55,6 +57,7 @@ namespace DotNet.Testcontainers.Clients
       : this(
         new DockerContainerOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger),
+        new DockerNetworkOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerRegistryAuthenticationProvider(logger))
     {
@@ -63,11 +66,13 @@ namespace DotNet.Testcontainers.Clients
     private TestcontainersClient(
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
+      IDockerNetworkOperations networkOperations,
       IDockerSystemOperations systemOperations,
       DockerRegistryAuthenticationProvider registryAuthenticationProvider)
     {
       _containers = containerOperations;
       _images = imageOperations;
+      _network = networkOperations;
       _system = systemOperations;
       _registryAuthenticationProvider = registryAuthenticationProvider;
     }
@@ -252,7 +257,7 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
-      async Task CopyResourceMapping(string containerId, IResourceMapping resourceMapping)
+      async Task CopyResourceMappingAsync(string containerId, IResourceMapping resourceMapping)
       {
         var resourceMappingContent = await resourceMapping.GetAllBytesAsync(ct)
           .ConfigureAwait(false);
@@ -291,9 +296,15 @@ namespace DotNet.Testcontainers.Clients
       var id = await _containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
 
-      if (configuration.ResourceMappings != null)
+      if (configuration.Networks.Any() && PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State))
       {
-        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMapping(id, resourceMapping)))
+        await _network.ConnectAsync("bridge", id, ct)
+          .ConfigureAwait(false);
+      }
+
+      if (configuration.ResourceMappings.Any())
+      {
+        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMappingAsync(id, resourceMapping)))
           .ConfigureAwait(false);
       }
 

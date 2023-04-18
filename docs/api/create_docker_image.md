@@ -86,17 +86,17 @@ _ = new ImageFromDockerfileBuilder()
 
 ## Supported commands
 
-| Builder method                | Description                                                                                                |
-|-------------------------------|------------------------------------------------------------------------------------------------------------|
-| `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                                               |
-| `WithCleanUp`                 | Will remove the image automatically after all tests have been run.                                         |
-| `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`.                               |
-| `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.                                             |
-| `WithDockerfile`              | Sets the name of the `Dockerfile`.                                                                         |
-| `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).                                    |
-| `WithDeleteIfExists`          | Will remove the image if it already exists.                                                                |
-| `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.                                             |
-| `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.                                        |
+| Builder method                | Description                                                                  |
+|-------------------------------|------------------------------------------------------------------------------|
+| `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                 |
+| `WithCleanUp`                 | Will remove the image automatically after all tests have been run.           |
+| `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`. |
+| `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
+| `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
+| `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).      |
+| `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
+| `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
+| `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
 
 !!!tip
 
