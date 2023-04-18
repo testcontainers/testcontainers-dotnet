@@ -89,7 +89,7 @@ namespace DotNet.Testcontainers.Clients
     public Task ConnectAsync(string networkId, string containerId, CancellationToken ct = default)
     {
       _logger.ConnectToDockerNetwork(networkId, containerId);
-      return Docker.Networks.ConnectNetworkAsync(networkId, new NetworkConnectParameters { Container = containerId}, ct);
+      return Docker.Networks.ConnectNetworkAsync(networkId, new NetworkConnectParameters { Container = containerId }, ct);
     }
   }
 }
