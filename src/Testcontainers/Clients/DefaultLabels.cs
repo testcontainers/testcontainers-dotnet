@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Clients
         { TestcontainersClient.TestcontainersLabel, bool.TrueString.ToLowerInvariant() },
         { TestcontainersClient.TestcontainersLangLabel, "dotnet" },
         { TestcontainersClient.TestcontainersVersionLabel, typeof(DefaultLabels).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion },
+        { TestcontainersClient.TestcontainersSessionIdLabel, ResourceReaper.DefaultSessionId.ToString("D") },
         { ResourceReaper.ResourceReaperSessionLabel, ResourceReaper.DefaultSessionId.ToString("D") },
       })
     {
