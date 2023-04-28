@@ -24,6 +24,8 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersVersionLabel = TestcontainersLabel + ".version";
 
+    public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
+
     private readonly string _osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly IDockerContainerOperations _containers;
