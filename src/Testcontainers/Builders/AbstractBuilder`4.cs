@@ -26,13 +26,12 @@ namespace DotNet.Testcontainers.Builders
     protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration)
     {
       _ = TestcontainersSettings.SettingsInitialized.WaitOne(TimeSpan.FromSeconds(5));
-      DockerResourceConfiguration = dockerResourceConfiguration;
     }
 
     /// <summary>
     /// Gets the Docker resource configuration.
     /// </summary>
-    protected virtual TConfigurationEntity DockerResourceConfiguration { get; }
+    protected abstract TConfigurationEntity DockerResourceConfiguration { get; }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
     public TBuilderEntity WithDockerEndpoint(string endpoint)

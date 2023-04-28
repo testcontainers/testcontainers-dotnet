@@ -67,9 +67,9 @@ public abstract class PortForwardingTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class HostedService : IAsyncLifetime
     {
-        private readonly CancellationTokenSource _cancellationTokenSource = new();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private readonly TcpListener _tcpListener = new(new IPEndPoint(IPAddress.Any, 0));
+        private readonly TcpListener _tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, 0));
 
         public HostedService()
         {

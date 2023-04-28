@@ -1,7 +1,5 @@
 namespace DotNet.Testcontainers.Containers
 {
-  using System.Collections.Generic;
-  using System.Globalization;
   using System.Linq;
   using System.Net;
   using System.Threading.Tasks;
@@ -97,26 +95,6 @@ namespace DotNet.Testcontainers.Containers
       /// <inheritdoc />
       protected override PortForwardingConfiguration DockerResourceConfiguration { get; }
 
-      /// <summary>
-      /// Exposes the host ports using SSH port forwarding.
-      /// </summary>
-      /// <param name="ports">The host ports to forward.</param>
-      /// <returns>A configured instance of <see cref="PortForwardingBuilder" />.</returns>
-      public PortForwardingBuilder WithExposedHostPort(params int[] ports)
-      {
-        return WithExposedHostPort(ports.Select(port => port.ToString(CultureInfo.InvariantCulture)).ToArray());
-      }
-
-      /// <summary>
-      /// Exposes the host ports to containers in the same network.
-      /// </summary>
-      /// <param name="exposedHostPorts">The host ports.</param>
-      /// <returns>A configured instance of <see cref="PortForwardingBuilder" />.</returns>
-      public PortForwardingBuilder WithExposedHostPort(params string[] exposedHostPorts)
-      {
-        return Merge(DockerResourceConfiguration, new PortForwardingConfiguration(exposedHostPorts: exposedHostPorts));
-      }
-
       /// <inheritdoc />
       public override PortForwardingContainer Build()
       {
@@ -187,15 +165,12 @@ namespace DotNet.Testcontainers.Containers
       /// </summary>
       /// <param name="username">The OpenSSH daemon username.</param>
       /// <param name="password">The OpenSSH daemon password.</param>
-      /// <param name="exposedHostPorts">A list of exposed host ports.</param>
       public PortForwardingConfiguration(
         string username = null,
-        string password = null,
-        IEnumerable<string> exposedHostPorts = null)
+        string password = null)
       {
         Username = username;
         Password = password;
-        ExposedHostPorts = exposedHostPorts;
       }
 
       /// <summary>
@@ -238,7 +213,6 @@ namespace DotNet.Testcontainers.Containers
       {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        ExposedHostPorts = BuildConfiguration.Combine(oldValue.ExposedHostPorts, newValue.ExposedHostPorts);
       }
 
       /// <summary>
@@ -250,11 +224,6 @@ namespace DotNet.Testcontainers.Containers
       /// Gets the OpenSSH daemon password.
       /// </summary>
       public string Password { get; }
-
-      /// <summary>
-      /// Gets a list of exposed host ports.
-      /// </summary>
-      public IEnumerable<string> ExposedHostPorts { get; }
     }
   }
 }
