@@ -29,8 +29,7 @@ namespace DotNet.Testcontainers.Builders
     {
       _dockerEngine = socketPaths
         .Where(File.Exists)
-        .Select(socketPath => new UriBuilder("unix", socketPath))
-        .Select(uriBuilder => uriBuilder.Uri)
+        .Select(socketPath => new Uri("unix://" + socketPath))
         .FirstOrDefault();
     }
 
