@@ -13,6 +13,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Dapr/Testcontainers.Dapr.csproj"/>
+        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
     <ItemGroup>

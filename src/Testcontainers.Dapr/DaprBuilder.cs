@@ -50,6 +50,11 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
             .WithCommand("--app-channel-address", appChannelHost);
     }
 
+    public DaprBuilder WithResourcesPath(string resourcesPath){
+        return Merge(DockerResourceConfiguration, new DaprConfiguration(resourcesPath: resourcesPath))
+            .WithCommand("--resources-path", resourcesPath);
+    }
+
     public override DaprContainer Build()
     {
         Validate();
