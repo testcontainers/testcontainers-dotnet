@@ -3,7 +3,7 @@ namespace Testcontainers.Dapr;
 [PublicAPI]
 public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, DaprConfiguration>
 {
-    public const string DaprImage = "daprio/daprd:1.10.4";
+    public const string DaprImage = "daprio/daprd:nightly-2023-04-28";
     public const int DaprHttpPort = 3500;
     public const int DaprGrpcPort = 50001;
     public const string LogLevel = "info";
@@ -41,6 +41,13 @@ public sealed class DaprBuilder : ContainerBuilder<DaprBuilder, DaprContainer, D
         // TODO : Introduce an Enum for logLevel values.
         return Merge(DockerResourceConfiguration, new DaprConfiguration(logLevel: logLevel))
             .WithCommand("--log-level", logLevel);
+    }
+
+    public DaprBuilder WithAppChannelAddress(string appChannelHost)
+    {
+        // TODO : Introduce an Enum for logLevel values.
+        return Merge(DockerResourceConfiguration, new DaprConfiguration(appChannelAddress: appChannelHost))
+            .WithCommand("--app-channel-address", appChannelHost);
     }
 
     public override DaprContainer Build()

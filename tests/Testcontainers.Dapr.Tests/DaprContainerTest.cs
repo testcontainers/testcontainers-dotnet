@@ -1,4 +1,7 @@
-﻿namespace Testcontainers.Dapr;
+﻿using System.Net.Http;
+using System.Threading;
+
+namespace Testcontainers.Dapr;
 
 public sealed class SmokeTest : IAsyncLifetime
 {
@@ -54,26 +57,25 @@ public sealed class AppPortTests : IAsyncLifetime
         await _network.CreateAsync().ConfigureAwait(false);
 
         const ushort appPort = 80;
+        string appAlias = $"nginx-{Guid.NewGuid().ToString("D")}";
         _appContainer = new ContainerBuilder()
-            .WithName(Guid.NewGuid().ToString("D"))
+            .WithName(appAlias)
             .WithNetwork(_network)
+            .WithNetworkAliases(appAlias)
             .WithImage("nginx")
-            .WithPortBinding(appPort, true)
             .Build();
 
         await _appContainer.StartAsync().ConfigureAwait(false);
 
         _daprContainer = new DaprBuilder()
             .WithAppId("testicorns")
-            .WithAppPort(_appContainer.GetMappedPublicPort(appPort))
-            .WithLogLevel("debug")
+            .WithAppChannelAddress(appAlias)
+            .WithAppPort(appPort)
             .WithNetwork(_network)
             .DependsOn(_appContainer)
             .Build();
 
         await _daprContainer.StartAsync().ConfigureAwait(false);
-        // this never completes. Dapr is blocking while waiting for the app-port to be ready on 127.0.0.1. 
-        // Will be fixed by https://github.com/dapr/dapr/issues/6177
     }
 
     public async Task DisposeAsync()
@@ -83,7 +85,7 @@ public sealed class AppPortTests : IAsyncLifetime
         await _network.DeleteAsync().ConfigureAwait(false);
     }
 
-    [Fact(Skip = "Disable this test from running CI automatically, as it will just hang forever")]
+    [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task AppPortCanBeReached()
     {            
@@ -98,5 +100,80 @@ public sealed class AppPortTests : IAsyncLifetime
 
         // Then
         Assert.True(healthy);
+    }
+}
+
+public sealed class ServiceInvocationTests : IAsyncLifetime
+{
+    private DaprContainer _receiverDaprContainer;
+    private DaprContainer _senderDaprContainer;
+    private IContainer _receiverAppContainer;
+    private INetwork _network;
+    private string _daprAppId = "receiver";
+    public async Task InitializeAsync()
+    {
+        _network = new NetworkBuilder()
+            .WithName(Guid.NewGuid().ToString("D"))
+            .Build();
+        await _network.CreateAsync().ConfigureAwait(false);
+
+        const ushort receiverAppPort = 80;
+        string receiverAppNetworkAlias = "receiver-app";
+        _receiverAppContainer = new ContainerBuilder()
+            .WithName("receiver-app")
+            .WithNetwork(_network)
+            .WithNetworkAliases(receiverAppNetworkAlias)
+            .WithImage("nginx")
+            .WithExposedPort(receiverAppPort)
+            .WithResourceMapping($"nginx/nginx.conf", "/etc/nginx/nginx.conf")
+            .Build();
+        await _receiverAppContainer.StartAsync().ConfigureAwait(false);
+
+        _receiverDaprContainer = new DaprBuilder()
+            .WithName("receiver-dapr")
+            .WithAppId(_daprAppId)
+            .WithAppChannelAddress(receiverAppNetworkAlias)
+            .WithAppPort(receiverAppPort)
+            .WithNetwork(_network)
+            .DependsOn(_receiverAppContainer)
+            .Build();
+        await _receiverDaprContainer.StartAsync().ConfigureAwait(false);
+
+        _senderDaprContainer = new DaprBuilder()
+            .WithName("sender-dapr")
+            .WithAppId("sender")
+            .WithNetwork(_network)
+            .DependsOn(_receiverDaprContainer)
+            .Build();
+        await _senderDaprContainer.StartAsync().ConfigureAwait(false);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _senderDaprContainer.DisposeAsync().ConfigureAwait(false);
+        await _receiverDaprContainer.DisposeAsync().ConfigureAwait(false);
+        await _receiverAppContainer.DisposeAsync().ConfigureAwait(false);
+        await _network.DeleteAsync().ConfigureAwait(false);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ServiceCanBeCalled()
+    {            
+        // Given
+        using var client = new DaprClientBuilder()
+            .UseHttpEndpoint(_senderDaprContainer.GetHttpAddress())
+            .UseGrpcEndpoint(_senderDaprContainer.GetGrpcAddress())
+            .Build();
+
+        // When
+        var healthy = await client.CheckHealthAsync();
+        var cts = new CancellationTokenSource();
+        var method_A_result = await client.InvokeMethodAsync<string>(HttpMethod.Get, _daprAppId, "method-a", cts.Token);
+        var method_B_result = await client.InvokeMethodAsync<string>(HttpMethod.Get, _daprAppId, "method-b", cts.Token);
+
+        // Then
+        Assert.Equal("method-a-response", method_A_result);
+        Assert.Equal("method-b-response", method_B_result);
     }
 }

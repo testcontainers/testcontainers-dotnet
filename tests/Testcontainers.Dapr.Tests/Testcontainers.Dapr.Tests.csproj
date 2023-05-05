@@ -15,4 +15,7 @@
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Dapr/Testcontainers.Dapr.csproj"/>
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Include="nginx\**" CopyToOutputDirectory="PreserveNewest" LinkBase="nginx\" />
+    </ItemGroup>
 </Project>
