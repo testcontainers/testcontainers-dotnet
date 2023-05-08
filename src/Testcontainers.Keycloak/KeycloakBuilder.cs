@@ -42,8 +42,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(username: username))
-            .WithEnvironment("KEYCLOAK_ADMIN", username)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(KeycloakPort).AddCustomWaitStrategy(new WaitUntil(username)));
+            .WithEnvironment("KEYCLOAK_ADMIN", username);
     }
 
     /// <summary>
@@ -70,9 +69,12 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         return base.Init()
             .WithImage(KeycloakImage)
             .WithCommand("start-dev")
+            .WithCommand("--health-enabled", "true")
             .WithPortBinding(KeycloakPort, true)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health/ready").ForPort(KeycloakPort)));
     }
 
     /// <inheritdoc />
@@ -105,23 +107,5 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     protected override KeycloakBuilder Merge(KeycloakConfiguration oldValue, KeycloakConfiguration newValue)
     {
         return new KeycloakBuilder(new KeycloakConfiguration(oldValue, newValue));
-    }
-
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly string _pattern;
-
-        public WaitUntil(string username)
-        {
-            _pattern = $"Added user '{username}' to realm 'master'";
-        }
-
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains(_pattern);
-        }
     }
 }
