@@ -2,42 +2,44 @@ namespace Testcontainers.Keycloak.Tests;
 
 public sealed class KeycloakContainerTest : IAsyncLifetime
 {
-	private readonly KeycloakContainer _keycloakContainer = new KeycloakBuilder().Build();
+    private readonly KeycloakContainer _keycloakContainer = new KeycloakBuilder().Build();
 
-	public Task InitializeAsync()
-	{
-		return _keycloakContainer.StartAsync();
-	}
+    public Task InitializeAsync()
+    {
+        return _keycloakContainer.StartAsync();
+    }
 
-	public Task DisposeAsync()
-	{
-		return _keycloakContainer.DisposeAsync().AsTask();
-	}
+    public Task DisposeAsync()
+    {
+        return _keycloakContainer.DisposeAsync().AsTask();
+    }
 
-	[Fact]
-	public async Task GetBaseAddressReturnsValidAddress()
-	{
-		// Given
-		using var httpClient = new HttpClient { BaseAddress = _keycloakContainer.GetBaseAddress() };
+    [Fact]
+    public async Task GetOpenIdEndpointReturnsHttpStatusCodeOk()
+    {
+        // Given
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
-		// When
-		using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration");
+        // When
+        using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
+            .ConfigureAwait(false);
 
-		// Then
-		Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-	}
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 
-	[Fact]
-	public async Task MasterRealmIsCreatedAndEnabled()
-	{
-		// Given
-		var baseAddress = _keycloakContainer.GetBaseAddress().AbsoluteUri;
-		var keycloakClient = new KeycloakClient(baseAddress, KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+    [Fact]
+    public async Task MasterRealmIsEnabled()
+    {
+        // Given
+        var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
 
-		// When
-		var masterRealm = await keycloakClient.GetRealmAsync("master");
+        // When
+        var masterRealm = await keycloakClient.GetRealmAsync("master")
+            .ConfigureAwait(false);
 
-		// Then
-		Assert.True(masterRealm.Enabled);
-	}
+        // Then
+        Assert.True(masterRealm.Enabled);
+    }
 }
