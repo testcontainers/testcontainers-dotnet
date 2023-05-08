@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Collections.Generic;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Images;
@@ -30,6 +31,11 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the image.
     /// </summary>
     IImage Image { get; }
+
+    /// <summary>
+    /// Gets the image build policy.
+    /// </summary>
+    Func<ImagesListResponse, bool> ImageBuildPolicy { get; }
 
     /// <summary>
     /// Gets a list of build arguments.

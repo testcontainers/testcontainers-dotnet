@@ -81,6 +81,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithImageBuildPolicy(Func<ImagesListResponse, bool> imageBuildPolicy)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(imageBuildPolicy: imageBuildPolicy));
+    }
+
+    /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists));
@@ -103,7 +109,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected sealed override ImageFromDockerfileBuilder Init()
     {
-      return base.Init().WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty));
+      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty));
     }
 
     /// <inheritdoc />
