@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Runtime.InteropServices;
@@ -6,14 +6,14 @@
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  [PublicAPI]
   internal sealed class UnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
     /// <summary>
     /// Gets the Unix socket Docker Engine endpoint.
     /// </summary>
-    [NotNull]
     public static Uri DockerEngine { get; }
-      = new Uri("unix:/var/run/docker.sock");
+      = new Uri("unix:///var/run/docker.sock");
 
     /// <inheritdoc />
     public override bool IsApplicable()

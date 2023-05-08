@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
@@ -20,14 +20,6 @@
   [PublicAPI]
   public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
-    /// <summary>
-    /// Sets the module configuration of the container to override custom properties.
-    /// </summary>
-    /// <param name="moduleConfiguration">The module configuration action.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration);
-
     /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
@@ -153,7 +145,7 @@
     TBuilderEntity WithEnvironment(IReadOnlyDictionary<string, string> environments);
 
     /// <summary>
-    /// Exposes the port without publishing it to the host system’s interfaces.
+    /// Exposes the port without publishing it to the host system's interfaces.
     /// </summary>
     /// <param name="port">The port.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -161,7 +153,7 @@
     TBuilderEntity WithExposedPort(int port);
 
     /// <summary>
-    /// Exposes the port without publishing it to the host system’s interfaces.
+    /// Exposes the port without publishing it to the host system's interfaces.
     /// </summary>
     /// <param name="port">The port.</param>
     /// <remarks>Append /tcp|udp|sctp to <paramref name="port" /> to change the protocol e.g. "53/udp".</remarks>
@@ -345,6 +337,15 @@
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithNetworkAliases(IEnumerable<string> networkAliases);
+
+    /// <summary>
+    /// Adds the extra host to "/etc/hosts" respectively "%WINDIR%\\system32\\drivers\\etc\\hosts".
+    /// </summary>
+    /// <param name="hostname">The hostname.</param>
+    /// <param name="ipAddress">The IP address.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithExtraHost(string hostname, string ipAddress);
 
     /// <summary>
     /// Cleans up the container after it exits.

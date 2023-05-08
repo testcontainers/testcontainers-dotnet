@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.MongoDb;
+namespace Testcontainers.MongoDb;
 
 public abstract class MongoDbContainerTest : IAsyncLifetime
 {

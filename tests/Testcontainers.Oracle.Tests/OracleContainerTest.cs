@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Oracle;
+namespace Testcontainers.Oracle;
 
 public sealed class OracleContainerTest : IAsyncLifetime
 {

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Elasticsearch;
+namespace Testcontainers.Elasticsearch;
 
 public sealed class ElasticsearchContainerTest : IAsyncLifetime
 {

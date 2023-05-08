@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Tests;
+namespace Testcontainers.Tests;
 
 public sealed class DependsOnTest : IAsyncLifetime
 {

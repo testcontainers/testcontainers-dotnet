@@ -29,6 +29,7 @@ namespace DotNet.Testcontainers.Configurations
           new EnvironmentEndpointAuthenticationProvider(),
           new NpipeEndpointAuthenticationProvider(),
           new UnixEndpointAuthenticationProvider(),
+          new RootlessUnixEndpointAuthenticationProvider(),
         }
         .Where(authProvider => authProvider.IsApplicable())
         .Where(authProvider => authProvider.IsAvailable())
@@ -174,5 +175,15 @@ namespace DotNet.Testcontainers.Configurations
     [NotNull]
     public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
+
+    /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
+    public static async Task ExposeHostPortsAsync(params ushort[] ports)
+    {
+      await PortForwardingContainer.Instance.StartAsync()
+        .ConfigureAwait(false);
+
+      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports)
+        .ConfigureAwait(false);
+    }
   }
 }

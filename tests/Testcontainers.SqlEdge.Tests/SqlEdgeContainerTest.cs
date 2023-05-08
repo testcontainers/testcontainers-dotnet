@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.SqlEdge;
+namespace Testcontainers.SqlEdge;
 
 public sealed class SqlEdgeContainerTest : IAsyncLifetime
 {

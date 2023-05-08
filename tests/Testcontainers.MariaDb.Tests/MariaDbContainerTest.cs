@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.MariaDb;
+namespace Testcontainers.MariaDb;
 
 public abstract class MariaDbContainerTest : IAsyncLifetime
 {

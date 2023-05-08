@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Couchbase;
+namespace Testcontainers.Couchbase;
 
 /// <summary>
 /// A Couchbase bucket.

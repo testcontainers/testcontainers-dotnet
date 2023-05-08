@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.ResourceReaper.Tests
+namespace DotNet.Testcontainers.ResourceReaper.Tests
 {
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -30,7 +30,7 @@
     public async Task ContainerCleanUpStartsDefaultResourceReaper(bool resourceReaperEnabled)
     {
       // Given
-      var container = new TestcontainersBuilder<TestcontainersContainer>()
+      var container = new ContainerBuilder()
         .WithImage(CommonImages.Alpine)
         .WithEntrypoint(CommonCommands.SleepInfinity)
         .WithAutoRemove(true)

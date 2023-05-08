@@ -28,14 +28,14 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       [Fact]
       public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
       {
-        Assert.Throws<ArgumentException>(() => _ = new TestcontainersBuilder<TestcontainersContainer>().Build());
+        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder().Build());
       }
 
       [Fact]
       public async Task GeneratedContainerName()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var name = Guid.NewGuid().ToString("D");
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithName(name);
@@ -75,7 +75,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         const string hostname = "alpine";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null")
           .WithHostname(hostname);
@@ -95,7 +95,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         const string macAddress = "92:95:5e:30:fe:6d";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithMacAddress(macAddress);
@@ -112,7 +112,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task WorkingDirectory()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
           .WithWorkingDirectory("/tmp");
@@ -130,7 +130,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task Entrypoint()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint("/bin/sh", "-c", "exit 255");
 
@@ -147,7 +147,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task ExposedPorts()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithExposedPort(80);
@@ -167,7 +167,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task PortBindingsHttpAndHttps(int hostPort, int containerPort)
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx")
           .WithPortBinding(hostPort, containerPort)
           .WithWaitStrategy(Wait.ForUnixContainer()
@@ -193,7 +193,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task RandomHostPortBindings()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithPortBinding(80, true);
@@ -216,7 +216,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         const string file = "hostname";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx")
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file} && tail -f /dev/null")
@@ -244,13 +244,12 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("nginx")
           .WithNetworkAliases("Foo")
           .WithEntrypoint("/bin/sh", "-c", $"printf $dayOfWeek > /{target}/{file} && tail -f /dev/null")
           .WithEnvironment("dayOfWeek", dayOfWeek)
           .WithBindMount(TempPath, $"/{target}")
-          .ConfigureContainer(_ => { }) // https://github.com/testcontainers/testcontainers-dotnet/issues/507.
           .WithWaitStrategy(Wait.ForUnixContainer()
             .UntilFileExists(Path.Combine(TempPath, file)));
 
@@ -267,7 +266,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task DockerEndpoint()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
@@ -293,7 +292,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task HostnameShouldMatchDockerGatewayAddress(string expectedHostname, string endpoint)
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithDockerEndpoint(endpoint);
 
@@ -309,7 +308,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task WaitStrategy()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithWaitStrategy(Wait.ForUnixContainer()
@@ -328,7 +327,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task ExecCommandInRunningContainer()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
@@ -346,7 +345,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task ExecCommandInRunningContainerWithStdout()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
@@ -364,7 +363,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task ExecCommandInRunningContainerWithStderr()
       {
         // Given
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
@@ -386,7 +385,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
         var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity);
 
@@ -407,7 +406,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // Given
         string testcontainerId;
 
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithAutoRemove(false)
           .WithCleanUp(false)
@@ -458,7 +457,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         var name = Guid.NewGuid().ToString("D");
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage("alpine")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithCreateParameterModifier(parameterModifier => parameterModifier.Name = "placeholder")
@@ -481,7 +480,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         const string uncachedImage = "alpine:edge";
 
         // When
-        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        var testcontainersBuilder = new ContainerBuilder()
           .WithImage(uncachedImage)
           .WithImagePullPolicy(PullPolicy.Never);
 

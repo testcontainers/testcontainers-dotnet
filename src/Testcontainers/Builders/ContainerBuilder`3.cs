@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
   public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>
+    where TBuilderEntity : ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
   {
@@ -33,15 +33,6 @@ namespace DotNet.Testcontainers.Builders
     protected ContainerBuilder(TConfigurationEntity dockerResourceConfiguration)
       : base(dockerResourceConfiguration)
     {
-    }
-
-    [Obsolete("Required for extension method module backwards compatibility.")]
-    protected virtual Action<TContainerEntity> ModuleConfiguration { get; }
-
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
-    public virtual TBuilderEntity ConfigureContainer(Action<TContainerEntity> moduleConfiguration)
-    {
-      throw new NotImplementedException();
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
@@ -297,6 +288,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    public TBuilderEntity WithExtraHost(string hostname, string ipAddress)
+    {
+      var extraHosts = new[] { string.Join(":", hostname, ipAddress) };
+      return Clone(new ContainerConfiguration(extraHosts: extraHosts));
+    }
+
+    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
     public TBuilderEntity WithAutoRemove(bool autoRemove)
     {
       return Clone(new ContainerConfiguration(autoRemove: autoRemove));
@@ -329,7 +327,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
+      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
     }
 
     /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
@@ -347,6 +345,12 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected abstract TBuilderEntity Clone(IContainerConfiguration resourceConfiguration);
+
+    private TBuilderEntity WithPortForwarding()
+    {
+      const string hostname = "host.testcontainers.internal";
+      return PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State) ? WithExtraHost(hostname, PortForwardingContainer.Instance.IpAddress) : Clone(new ContainerConfiguration());
+    }
 
     /// <inheritdoc cref="NetworkBuilder" />
     private sealed class FromExistingNetwork : NetworkBuilder

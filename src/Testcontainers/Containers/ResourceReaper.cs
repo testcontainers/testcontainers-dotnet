@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.IO;
+  using System.Linq;
   using System.Net.Sockets;
   using System.Text;
   using System.Threading;
@@ -32,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.3.4");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.4.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -238,6 +239,7 @@ namespace DotNet.Testcontainers.Containers
       {
         await resourceReaper.DisposeAsync()
           .ConfigureAwait(false);
+
         throw;
       }
 
@@ -416,44 +418,6 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
-    private sealed class NamedPipeSocketMount : IMount
-    {
-      private const string DockerSocketFilePath = "\\\\.\\pipe\\docker_engine";
-
-      static NamedPipeSocketMount()
-      {
-      }
-
-      private NamedPipeSocketMount()
-      {
-      }
-
-      public static IMount Instance { get; }
-        = new NamedPipeSocketMount();
-
-      public MountType Type
-        => MountType.NamedPipe;
-
-      public AccessMode AccessMode
-        => AccessMode.ReadWrite;
-
-      public string Source
-        => TestcontainersSettings.DockerSocketOverride ?? DockerSocketFilePath;
-
-      public string Target
-        => DockerSocketFilePath;
-
-      public Task CreateAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
-      }
-
-      public Task DeleteAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
-      }
-    }
-
     private sealed class UnixSocketMount : IMount
     {
       private const string DockerSocketFilePath = "/var/run/docker.sock";
@@ -476,7 +440,7 @@ namespace DotNet.Testcontainers.Containers
         => AccessMode.ReadOnly;
 
       public string Source
-        => TestcontainersSettings.DockerSocketOverride ?? DockerSocketFilePath;
+        => TestcontainersSettings.DockerSocketOverride ?? GetSocketPath();
 
       public string Target
         => DockerSocketFilePath;
@@ -489,6 +453,12 @@ namespace DotNet.Testcontainers.Containers
       public Task DeleteAsync(CancellationToken ct = default)
       {
         return Task.CompletedTask;
+      }
+
+      private static string GetSocketPath()
+      {
+        var dockerEndpoints = new[] { TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint, UnixEndpointAuthenticationProvider.DockerEngine };
+        return dockerEndpoints.First(dockerEndpoint => "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase)).AbsolutePath;
       }
     }
   }

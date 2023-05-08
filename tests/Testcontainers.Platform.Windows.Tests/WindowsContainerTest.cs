@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Platform.Windows.Tests;
+namespace Testcontainers.Tests;
 
 public abstract class WindowsContainerTest : IAsyncLifetime
 {

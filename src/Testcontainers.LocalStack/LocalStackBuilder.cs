@@ -4,7 +4,7 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
-    public const string LocalStackImage = "localstack/localstack:1.4";
+    public const string LocalStackImage = "localstack/localstack:2.0";
 
     public const ushort LocalStackPort = 4566;
 

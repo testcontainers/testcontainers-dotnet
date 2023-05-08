@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
@@ -105,6 +105,11 @@
     /// Gets a list of network-scoped aliases.
     /// </summary>
     IEnumerable<string> NetworkAliases { get; }
+
+    /// <summary>
+    /// Gets a list of extra hosts.
+    /// </summary>
+    IEnumerable<string> ExtraHosts { get; }
 
     /// <summary>
     /// Gets the output consumer.
