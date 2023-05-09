@@ -21,10 +21,10 @@ namespace DotNet.Testcontainers.Configurations
   {
     private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
 
-    private static readonly DockerEndpointAuthenticationProvider DockerEndpointAuthConfig =
-      new DockerEndpointAuthenticationProvider[]
+    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider =
+      new IDockerEndpointAuthenticationProvider[]
         {
-          new TestcontainersHostEndpointAuthenticationProvider(),
+          new TestcontainersCloudEndpointAuthenticationProvider(),
           new MTlsEndpointAuthenticationProvider(),
           new TlsEndpointAuthenticationProvider(),
           new EnvironmentEndpointAuthenticationProvider(),
@@ -33,9 +33,10 @@ namespace DotNet.Testcontainers.Configurations
           new RootlessUnixEndpointAuthenticationProvider(),
         }
         .Where(authProvider => authProvider.IsApplicable())
-        .Where(authProvider => authProvider.IsAvailable())
-        //.Select(authProvider => authProvider.GetAuthConfig())
-        .FirstOrDefault();
+        .FirstOrDefault(authProvider => authProvider.IsAvailable());
+
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
+      DockerEndpointAuthProvider.GetAuthConfig();
 
     static TestcontainersSettings()
     {
@@ -45,7 +46,7 @@ namespace DotNet.Testcontainers.Configurations
 
         if (DockerEndpointAuthConfig != null)
         {
-          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetAuthConfig().GetDockerClientConfiguration())
+          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
           {
             using (var dockerClient = dockerClientConfiguration.CreateClient())
             {
@@ -104,16 +105,16 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [CanBeNull]
     public static string DockerHostOverride { get; set; }
-      = DockerEndpointAuthConfig is ICustomConfiguration c ? c.GetDockerHostOverride() : PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
-      // = PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerHostOverride() : PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
     [CanBeNull]
     public static string DockerSocketOverride { get; set; }
-      = DockerEndpointAuthConfig is ICustomConfiguration c ? c.GetDockerSocketOverride() : PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
-      // = PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerSocketOverride() : PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -170,7 +171,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig.GetAuthConfig()) : new Unix(DockerEndpointAuthConfig.GetAuthConfig());
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <summary>
     /// Gets the wait handle that signals settings initialized.

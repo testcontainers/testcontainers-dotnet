@@ -6,18 +6,26 @@
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
-  /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
+  /// <summary>
+  /// When configuring the endpoint for a container runtime, the `DOCKER_HOST`
+  /// environment variable is commonly used. This approach can become messy due to
+  /// the variety of alternative container runtimes. Even though Testcontainers logs
+  /// the container runtime that is being used, developers find it difficult to
+  /// determine which runtime is driving the tests on their environment. If multiple
+  /// container runtimes are present in a development environment, we prioritize
+  /// Testcontainers Cloud if it is running.
+  /// </summary>
   [PublicAPI]
-  internal sealed class TestcontainersHostEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
+  internal sealed class TestcontainersCloudEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
   {
-    private readonly ICustomConfiguration _customConfiguration = new TestcontainersHostConfiguration();
+    private readonly ICustomConfiguration _customConfiguration = new TestcontainersCloudConfiguration();
 
     private readonly Uri _dockerEngine;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestcontainersHostEndpointAuthenticationProvider" /> class.
+    /// Initializes a new instance of the <see cref="TestcontainersCloudEndpointAuthenticationProvider" /> class.
     /// </summary>
-    public TestcontainersHostEndpointAuthenticationProvider()
+    public TestcontainersCloudEndpointAuthenticationProvider()
     {
       _dockerEngine = GetDockerHost();
     }
@@ -106,7 +114,7 @@
       return _customConfiguration.GetHubImageNamePrefix();
     }
 
-    private sealed class TestcontainersHostConfiguration : PropertiesFileConfiguration
+    private sealed class TestcontainersCloudConfiguration : PropertiesFileConfiguration
     {
       protected override Uri GetDockerHost(string propertyName)
       {
