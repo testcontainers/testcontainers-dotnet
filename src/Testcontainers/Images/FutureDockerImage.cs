@@ -14,8 +14,6 @@ namespace DotNet.Testcontainers.Images
   {
     private readonly ITestcontainersClient _client;
 
-    private readonly IDockerImageOperations _dockerImageOperations;
-
     private readonly IImageFromDockerfileConfiguration _configuration;
 
     private ImagesListResponse _image = new ImagesListResponse();
@@ -28,7 +26,6 @@ namespace DotNet.Testcontainers.Images
     public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
-      _dockerImageOperations = new DockerImageOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
     }
 
@@ -118,7 +115,7 @@ namespace DotNet.Testcontainers.Images
       _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _image = await _dockerImageOperations.ByNameAsync(_configuration.Image.FullName, ct)
+      _image = await _client.Image.ByNameAsync(_configuration.Image.FullName, ct)
         .ConfigureAwait(false);
     }
 
@@ -132,7 +129,7 @@ namespace DotNet.Testcontainers.Images
         return;
       }
 
-      await _dockerImageOperations.DeleteAsync(_configuration.Image, ct)
+      await _client.Image.DeleteAsync(_configuration.Image, ct)
         .ConfigureAwait(false);
 
       _image = new ImagesListResponse();

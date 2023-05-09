@@ -47,10 +47,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateVolumeAssignsLabels()
     {
       // Given
-      IDockerVolumeOperations volumeOperations = new DockerVolumeOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var volumeResponse = await volumeOperations.ByNameAsync(_volume.Name)
+      var volumeResponse = await client.Volume.ByNameAsync(_volume.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -67,13 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
         .Build();
 
-      public string Name
-      {
-        get
-        {
-          return _volume.Name;
-        }
-      }
+      public string Name => _volume.Name;
 
       public Task InitializeAsync()
       {

@@ -31,10 +31,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task GetVersionReturnsVersion()
       {
         // Given
-        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, _authConfig, NullLogger.Instance);
+        var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await dockerSystemOperations.GetVersionAsync()
+        var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
 
         // Then
@@ -55,10 +55,10 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task GetVersionReturnsVersion()
       {
         // Given
-        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(Guid.Empty, _authConfig, NullLogger.Instance);
+        var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await dockerSystemOperations.GetVersionAsync()
+        var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
 
         // Then

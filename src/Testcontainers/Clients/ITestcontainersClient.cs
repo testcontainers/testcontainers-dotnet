@@ -14,6 +14,31 @@ namespace DotNet.Testcontainers.Clients
   internal interface ITestcontainersClient
   {
     /// <summary>
+    ///
+    /// </summary>
+    IDockerContainerOperations Container { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    IDockerImageOperations Image { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    IDockerNetworkOperations Network { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    IDockerVolumeOperations Volume { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    IDockerSystemOperations System { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the container is running inside another container or not.
     /// </summary>
     bool IsRunningInsideDocker { get; }
