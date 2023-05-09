@@ -12,61 +12,63 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class ResourcePropertiesTest
   {
+    private static readonly string ResourceIdOrName = Guid.NewGuid().ToString("D");
+
     private static readonly ITestcontainersClient Client = new TestcontainersClient(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
     [Fact]
     public async Task QueryNotExistingDockerContainerById()
     {
-      Assert.False(await Client.Container.ExistsWithIdAsync(string.Empty)
+      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageById()
     {
-      Assert.False(await Client.Image.ExistsWithIdAsync(string.Empty)
+      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkById()
     {
-      Assert.False(await Client.Network.ExistsWithIdAsync(string.Empty)
+      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeById()
     {
-      Assert.False(await Client.Volume.ExistsWithIdAsync(string.Empty)
+      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerContainerByName()
     {
-      Assert.False(await Client.Container.ExistsWithNameAsync(string.Empty)
+      Assert.False(await Client.Container.ExistsWithNameAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageByName()
     {
-      Assert.False(await Client.Image.ExistsWithNameAsync(string.Empty)
+      Assert.False(await Client.Image.ExistsWithNameAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkByName()
     {
-      Assert.False(await Client.Network.ExistsWithNameAsync(string.Empty)
+      Assert.False(await Client.Network.ExistsWithNameAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeByName()
     {
-      Assert.False(await Client.Volume.ExistsWithNameAsync(string.Empty)
+      Assert.False(await Client.Volume.ExistsWithNameAsync(ResourceIdOrName)
         .ConfigureAwait(false));
     }
 
@@ -75,7 +77,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       var container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+        .WithImage(CommonImages.Nginx)
         .Build();
 
       // When
@@ -95,7 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       var container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+        .WithImage(CommonImages.Nginx)
         .Build();
 
       // When
