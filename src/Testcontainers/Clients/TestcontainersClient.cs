@@ -314,9 +314,18 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      return _images.BuildAsync(configuration, ct);
+      var cachedImage = await _images.ByNameAsync(configuration.Image.FullName, ct)
+        .ConfigureAwait(false);
+
+      if (configuration.ImageBuildPolicy(cachedImage))
+      {
+        _ = await _images.BuildAsync(configuration, ct)
+          .ConfigureAwait(false);
+      }
+
+      return configuration.Image.FullName;
     }
   }
 }
