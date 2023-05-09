@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// Reads and maps the custom configurations from the Testcontainers properties file.
   /// </summary>
-  internal sealed class PropertiesFileConfiguration : CustomConfiguration, ICustomConfiguration
+  internal class PropertiesFileConfiguration : CustomConfiguration, ICustomConfiguration
   {
     static PropertiesFileConfiguration()
     {

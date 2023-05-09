@@ -14,27 +14,27 @@ namespace DotNet.Testcontainers.Configurations
       _properties = properties;
     }
 
-    protected string GetDockerConfig(string propertyName)
+    protected virtual string GetDockerConfig(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);
     }
 
-    protected Uri GetDockerHost(string propertyName)
+    protected virtual Uri GetDockerHost(string propertyName)
     {
       return _properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
     }
 
-    protected string GetDockerHostOverride(string propertyName)
+    protected virtual string GetDockerHostOverride(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);
     }
 
-    protected string GetDockerSocketOverride(string propertyName)
+    protected virtual string GetDockerSocketOverride(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);
     }
 
-    protected JsonDocument GetDockerAuthConfig(string propertyName)
+    protected virtual JsonDocument GetDockerAuthConfig(string propertyName)
     {
       _ = _properties.TryGetValue(propertyName, out var propertyValue);
 
@@ -53,32 +53,32 @@ namespace DotNet.Testcontainers.Configurations
       }
     }
 
-    protected string GetDockerCertPath(string propertyName)
+    protected virtual string GetDockerCertPath(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);
     }
 
-    protected bool GetDockerTls(string propertyName)
+    protected virtual bool GetDockerTls(string propertyName)
     {
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected bool GetDockerTlsVerify(string propertyName)
+    protected virtual bool GetDockerTlsVerify(string propertyName)
     {
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected bool GetRyukDisabled(string propertyName)
+    protected virtual bool GetRyukDisabled(string propertyName)
     {
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected bool GetRyukContainerPrivileged(string propertyName)
+    protected virtual bool GetRyukContainerPrivileged(string propertyName)
     {
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected IImage GetRyukContainerImage(string propertyName)
+    protected virtual IImage GetRyukContainerImage(string propertyName)
     {
       _ = _properties.TryGetValue(propertyName, out var propertyValue);
 
@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Configurations
       }
     }
 
-    protected string GetHubImageNamePrefix(string propertyName)
+    protected virtual string GetHubImageNamePrefix(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);
     }
