@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Clients
 
     public Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      return Task.FromResult<>(null);
+      return Task.FromResult<VolumeResponse>(null);
     }
 
     public Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)

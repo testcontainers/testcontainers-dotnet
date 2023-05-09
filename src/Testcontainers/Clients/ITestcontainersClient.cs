@@ -14,27 +14,27 @@ namespace DotNet.Testcontainers.Clients
   internal interface ITestcontainersClient
   {
     /// <summary>
-    ///
+    /// Gets the Docker container operations endpoint.
     /// </summary>
     IDockerContainerOperations Container { get; }
 
     /// <summary>
-    ///
+    /// Gets the Docker image operations endpoint.
     /// </summary>
     IDockerImageOperations Image { get; }
 
     /// <summary>
-    ///
+    /// Gets the Docker network operations endpoint.
     /// </summary>
     IDockerNetworkOperations Network { get; }
 
     /// <summary>
-    ///
+    /// Gets the Docker volume operations endpoint.
     /// </summary>
     IDockerVolumeOperations Volume { get; }
 
     /// <summary>
-    ///
+    /// Gets the Docker system operations endpoint.
     /// </summary>
     IDockerSystemOperations System { get; }
 
