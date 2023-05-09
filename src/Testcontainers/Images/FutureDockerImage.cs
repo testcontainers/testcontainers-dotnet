@@ -12,6 +12,8 @@ namespace DotNet.Testcontainers.Images
   [PublicAPI]
   internal sealed class FutureDockerImage : Resource, IFutureDockerImage
   {
+    private readonly ITestcontainersClient _client;
+
     private readonly IDockerImageOperations _dockerImageOperations;
 
     private readonly IImageFromDockerfileConfiguration _configuration;
@@ -25,6 +27,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="logger">The logger.</param>
     public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
     {
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _dockerImageOperations = new DockerImageOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
     }
@@ -112,7 +115,7 @@ namespace DotNet.Testcontainers.Images
         return;
       }
 
-      _ = await _dockerImageOperations.BuildAsync(_configuration, ct)
+      _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);
 
       _image = await _dockerImageOperations.ByNameAsync(_configuration.Image.FullName, ct)
