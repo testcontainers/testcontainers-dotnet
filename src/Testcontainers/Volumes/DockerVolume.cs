@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Volumes
   [PublicAPI]
   internal sealed class DockerVolume : Resource, IVolume
   {
-    private readonly IDockerVolumeOperations _dockerVolumeOperations;
+    private readonly ITestcontainersClient _client;
 
     private readonly IVolumeConfiguration _configuration;
 
@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Volumes
     /// <param name="logger">The logger.</param>
     public DockerVolume(IVolumeConfiguration configuration, ILogger logger)
     {
-      _dockerVolumeOperations = new DockerVolumeOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
     }
 
@@ -94,10 +94,10 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      var name = await _dockerVolumeOperations.CreateAsync(_configuration, ct)
+      var name = await _client.Volume.CreateAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _volume = await _dockerVolumeOperations.ByNameAsync(name, ct)
+      _volume = await _client.Volume.ByNameAsync(name, ct)
         .ConfigureAwait(false);
     }
 
@@ -111,7 +111,7 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      await _dockerVolumeOperations.DeleteAsync(Name, ct)
+      await _client.Volume.DeleteAsync(Name, ct)
         .ConfigureAwait(false);
 
       _volume = new VolumeResponse();
