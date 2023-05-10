@@ -118,7 +118,7 @@
     {
       protected override Uri GetDockerHost(string propertyName)
       {
-        return base.GetDockerHost("testcontainers.host");
+        return base.GetDockerHost("tcc.host");
       }
 
       protected override string GetDockerHostOverride(string propertyName)
