@@ -82,7 +82,7 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, CancellationToken)" />
+    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, bool, CancellationToken)" />
     /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
@@ -99,11 +99,17 @@ namespace DotNet.Testcontainers.Containers
     /// Starts and returns the default <see cref="ResourceReaper" /> instance.
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
+    /// <param name="isWindowsEngineEnabled">Determines whether the Windows engine is enabled or not.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
     {
+      if (isWindowsEngineEnabled)
+      {
+        return null;
+      }
+
       if (_defaultInstance != null && !_defaultInstance._disposed)
       {
         return _defaultInstance;
@@ -120,16 +126,6 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        IDockerSystemOperations dockerSystemOperations = new DockerSystemOperations(DefaultSessionId, dockerEndpointAuthConfig, null);
-
-        var isWindowsEngineEnabled = await dockerSystemOperations.GetIsWindowsEngineEnabled(ct)
-          .ConfigureAwait(false);
-
-        if (isWindowsEngineEnabled)
-        {
-          return null;
-        }
-
         var resourceReaperImage = TestcontainersSettings.ResourceReaperImage ?? RyukImage;
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;

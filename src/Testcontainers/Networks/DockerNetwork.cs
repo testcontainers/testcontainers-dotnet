@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Networks
   [PublicAPI]
   internal sealed class DockerNetwork : Resource, INetwork
   {
-    private readonly IDockerNetworkOperations _dockerNetworkOperations;
+    private readonly ITestcontainersClient _client;
 
     private readonly INetworkConfiguration _configuration;
 
@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Networks
     /// <param name="logger">The logger.</param>
     public DockerNetwork(INetworkConfiguration configuration, ILogger logger)
     {
-      _dockerNetworkOperations = new DockerNetworkOperations(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
     }
 
@@ -94,10 +94,10 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      var id = await _dockerNetworkOperations.CreateAsync(_configuration, ct)
+      var id = await _client.Network.CreateAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _network = await _dockerNetworkOperations.ByIdAsync(id, ct)
+      _network = await _client.Network.ByIdAsync(id, ct)
         .ConfigureAwait(false);
     }
 
@@ -111,7 +111,7 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      await _dockerNetworkOperations.DeleteAsync(_network.ID, ct)
+      await _client.Network.DeleteAsync(_network.ID, ct)
         .ConfigureAwait(false);
 
       _network = new NetworkResponse();

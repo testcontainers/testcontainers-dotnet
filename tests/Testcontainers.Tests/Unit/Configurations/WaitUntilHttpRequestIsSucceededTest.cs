@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Tests.Unit.Configurations
+namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Collections.Generic;
