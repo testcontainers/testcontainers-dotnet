@@ -5,8 +5,6 @@ namespace Testcontainers.Spanner;
 public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerContainer, SpannerConfiguration>
 {
   private const string DefaultProjectId = "my-project";
-  private const string DefaultInstanceId = "my-instance";
-  private const string DefaultDatabaseId = "my-database";
   private const string SpannerEmulatorImage = "gcr.io/cloud-spanner-emulator/emulator:1.5.3";
 
   
@@ -38,22 +36,6 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
   protected override SpannerConfiguration DockerResourceConfiguration { get; }
 
   /// <summary>
-  /// Sets the DatabaseId.
-  /// </summary>
-  /// <param name="databaseId">The DatabaseId.</param>
-  /// <returns>A configured instance of <see cref="SpannerBuilder" />.</returns>
-  public SpannerBuilder WithDatabaseId(string databaseId)
-    => Merge(DockerResourceConfiguration, new SpannerConfiguration(databaseId: databaseId));
-
-  /// <summary>
-  /// Sets the InstanceId.
-  /// </summary>
-  /// <param name="instanceId">The InstanceId.</param>
-  /// <returns>A configured instance of <see cref="SpannerBuilder" />.</returns>
-  public SpannerBuilder WithInstanceId(string instanceId)
-    => Merge(DockerResourceConfiguration, new SpannerConfiguration(instanceId: instanceId));
-
-  /// <summary>
   /// Sets the ProjectId.
   /// </summary>
   /// <param name="projectId">The ProjectId.</param>
@@ -78,8 +60,6 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
       .WithPortBinding(InternalGrpcPort, true)
       .WithPortBinding(InternalRestPort, true)
       .WithProjectId(DefaultProjectId)
-      .WithInstanceId(DefaultInstanceId)
-      .WithDatabaseId(DefaultDatabaseId)
       .WithWaitStrategy(
         Wait
           .ForUnixContainer()
@@ -99,15 +79,6 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
     _ = Guard.Argument(DockerResourceConfiguration.ProjectId, nameof(DockerResourceConfiguration.ProjectId))
       .NotNull()
       .NotEmpty();
-
-    _ = Guard.Argument(DockerResourceConfiguration.InstanceId, nameof(DockerResourceConfiguration.InstanceId))
-      .NotNull()
-      .NotEmpty();
-
-    _ = Guard.Argument(DockerResourceConfiguration.DatabaseId, nameof(DockerResourceConfiguration.DatabaseId))
-      .NotNull()
-      .NotEmpty();
-
   }
 
   /// <inheritdoc />

@@ -2,24 +2,17 @@ namespace Testcontainers.Spanner;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
-public sealed class SpannerConfiguration : ContainerConfiguration
+public class SpannerConfiguration : ContainerConfiguration
 {
   public string? ProjectId { get; }
-  public string? InstanceId { get; }
-  public string? DatabaseId { get; }
-
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SpannerConfiguration" /> class.
   /// </summary>
   /// <param name="projectId"></param>
-  /// <param name="instanceId"></param>
-  /// <param name="databaseId"></param>
-  public SpannerConfiguration(string? projectId = null, string? instanceId = null, string? databaseId = null)
+  public SpannerConfiguration(string? projectId = null)
   {
     ProjectId = projectId;
-    InstanceId = instanceId;
-    DatabaseId = databaseId;
   }
 
   /// <summary>
@@ -61,7 +54,5 @@ public sealed class SpannerConfiguration : ContainerConfiguration
       : base(oldValue, newValue)
   {
     ProjectId = BuildConfiguration.Combine(oldValue.ProjectId, newValue.ProjectId);
-    InstanceId = BuildConfiguration.Combine(oldValue.InstanceId, newValue.InstanceId);
-    DatabaseId = BuildConfiguration.Combine(oldValue.DatabaseId, newValue.DatabaseId);
   }
 }
