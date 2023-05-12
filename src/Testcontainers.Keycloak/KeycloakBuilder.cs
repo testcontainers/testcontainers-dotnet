@@ -4,7 +4,7 @@ namespace Testcontainers.Keycloak;
 [PublicAPI]
 public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
 {
-    public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1.1";
+    public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1";
 
     public const ushort KeycloakPort = 8080;
 
