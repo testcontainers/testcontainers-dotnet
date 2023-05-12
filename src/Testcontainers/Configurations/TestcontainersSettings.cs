@@ -21,6 +21,7 @@ namespace DotNet.Testcontainers.Configurations
   {
     private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
 
+    [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider =
       new IDockerEndpointAuthenticationProvider[]
         {
@@ -35,8 +36,9 @@ namespace DotNet.Testcontainers.Configurations
         .Where(authProvider => authProvider.IsApplicable())
         .FirstOrDefault(authProvider => authProvider.IsAvailable());
 
+    [CanBeNull]
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
-      DockerEndpointAuthProvider.GetAuthConfig();
+      DockerEndpointAuthProvider?.GetAuthConfig();
 
     static TestcontainersSettings()
     {
