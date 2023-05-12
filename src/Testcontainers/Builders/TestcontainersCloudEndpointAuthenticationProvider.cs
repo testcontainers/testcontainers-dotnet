@@ -16,16 +16,16 @@
   /// Testcontainers Cloud if it is running.
   /// </summary>
   [PublicAPI]
-  internal sealed class TestcontainersCloudEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
+  internal sealed class TestcontainersHostEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
   {
-    private readonly ICustomConfiguration _customConfiguration = new TestcontainersCloudConfiguration();
+    private readonly ICustomConfiguration _customConfiguration = new TestcontainersHostConfiguration();
 
     private readonly Uri _dockerEngine;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestcontainersCloudEndpointAuthenticationProvider" /> class.
+    /// Initializes a new instance of the <see cref="TestcontainersHostEndpointAuthenticationProvider" /> class.
     /// </summary>
-    public TestcontainersCloudEndpointAuthenticationProvider()
+    public TestcontainersHostEndpointAuthenticationProvider()
     {
       _dockerEngine = GetDockerHost();
     }
@@ -114,11 +114,11 @@
       return _customConfiguration.GetHubImageNamePrefix();
     }
 
-    private sealed class TestcontainersCloudConfiguration : PropertiesFileConfiguration
+    private sealed class TestcontainersHostConfiguration : PropertiesFileConfiguration
     {
       protected override Uri GetDockerHost(string propertyName)
       {
-        return base.GetDockerHost("tcc.host");
+        return base.GetDockerHost("tc.host");
       }
 
       protected override string GetDockerHostOverride(string propertyName)
