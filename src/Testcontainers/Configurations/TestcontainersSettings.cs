@@ -21,9 +21,11 @@ namespace DotNet.Testcontainers.Configurations
   {
     private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
 
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
+    [CanBeNull]
+    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider =
       new IDockerEndpointAuthenticationProvider[]
         {
+          new TestcontainersHostEndpointAuthenticationProvider(),
           new MTlsEndpointAuthenticationProvider(),
           new TlsEndpointAuthenticationProvider(),
           new EnvironmentEndpointAuthenticationProvider(),
@@ -32,9 +34,11 @@ namespace DotNet.Testcontainers.Configurations
           new RootlessUnixEndpointAuthenticationProvider(),
         }
         .Where(authProvider => authProvider.IsApplicable())
-        .Where(authProvider => authProvider.IsAvailable())
-        .Select(authProvider => authProvider.GetAuthConfig())
-        .FirstOrDefault();
+        .FirstOrDefault(authProvider => authProvider.IsAvailable());
+
+    [CanBeNull]
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
+      DockerEndpointAuthProvider?.GetAuthConfig();
 
     static TestcontainersSettings()
     {
@@ -103,14 +107,16 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [CanBeNull]
     public static string DockerHostOverride { get; set; }
-      = PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerHostOverride() : PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
     [CanBeNull]
     public static string DockerSocketOverride { get; set; }
-      = PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerSocketOverride() : PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.

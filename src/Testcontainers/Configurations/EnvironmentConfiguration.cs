@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   /// <summary>
   /// Reads and maps the custom configurations from the environment variables.
   /// </summary>
-  internal sealed class EnvironmentConfiguration : CustomConfiguration, ICustomConfiguration
+  internal class EnvironmentConfiguration : CustomConfiguration, ICustomConfiguration
   {
     private const string DockerConfig = "DOCKER_CONFIG";
 

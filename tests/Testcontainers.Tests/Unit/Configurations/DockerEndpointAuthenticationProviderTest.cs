@@ -46,13 +46,30 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
+    public sealed class TestcontainersHostEndpointAuthenticationProviderTest
+    {
+      [Fact]
+      public void GetDockerHostOverrideReturnsNull()
+      {
+        ICustomConfiguration customConfiguration = new TestcontainersHostEndpointAuthenticationProvider("host.override=host.docker.internal");
+        Assert.Null(customConfiguration.GetDockerHostOverride());
+      }
+
+      [Fact]
+      public void GetDockerSocketOverrideReturnsNull()
+      {
+        ICustomConfiguration customConfiguration = new TestcontainersHostEndpointAuthenticationProvider("docker.socket.override=/var/run/docker.sock");
+        Assert.Null(customConfiguration.GetDockerSocketOverride());
+      }
+    }
+
     private sealed class AuthProviderTestData : List<object[]>
     {
       public AuthProviderTestData()
       {
         var defaultConfiguration = new PropertiesFileConfiguration(Array.Empty<string>());
-        var dockerTlsConfiguration = new PropertiesFileConfiguration("docker.tls=true", $"docker.cert.path={CertificatesDirectoryPath}");
-        var dockerMTlsConfiguration = new PropertiesFileConfiguration("docker.tls.verify=true", $"docker.cert.path={CertificatesDirectoryPath}");
+        var dockerTlsConfiguration = new PropertiesFileConfiguration("docker.tls=true", "docker.cert.path=" + CertificatesDirectoryPath);
+        var dockerMTlsConfiguration = new PropertiesFileConfiguration("docker.tls.verify=true", "docker.cert.path=" + CertificatesDirectoryPath);
         Add(new object[] { new MTlsEndpointAuthenticationProvider(defaultConfiguration), false });
         Add(new object[] { new MTlsEndpointAuthenticationProvider(dockerMTlsConfiguration), true });
         Add(new object[] { new MTlsEndpointAuthenticationProvider(Array.Empty<ICustomConfiguration>()), false });
@@ -67,6 +84,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new object[] { new EnvironmentEndpointAuthenticationProvider(defaultConfiguration, DockerHostConfiguration), true });
         Add(new object[] { new NpipeEndpointAuthenticationProvider(), RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
         Add(new object[] { new UnixEndpointAuthenticationProvider(), !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
+        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider(string.Empty), false });
+        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider("tc.host=" + DockerHost), true });
       }
     }
 
@@ -78,6 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new object[] { new EnvironmentEndpointAuthenticationProvider(DockerHostConfiguration).GetAuthConfig(), new Uri(DockerHost) });
         Add(new object[] { new NpipeEndpointAuthenticationProvider().GetAuthConfig(), new Uri("npipe://./pipe/docker_engine") });
         Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:///var/run/docker.sock") });
+        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider("tc.host=" + DockerHost).GetAuthConfig(), new Uri(DockerHost) });
       }
     }
   }
