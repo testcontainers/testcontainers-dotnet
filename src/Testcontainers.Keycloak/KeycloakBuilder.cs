@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Keycloak;
+namespace Testcontainers.Keycloak;
 
 /// <inheritdoc />
 [PublicAPI]
