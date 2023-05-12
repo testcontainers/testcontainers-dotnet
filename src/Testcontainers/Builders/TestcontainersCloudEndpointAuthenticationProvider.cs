@@ -18,7 +18,7 @@
   [PublicAPI]
   internal sealed class TestcontainersHostEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
   {
-    private readonly ICustomConfiguration _customConfiguration = new TestcontainersHostConfiguration();
+    private readonly ICustomConfiguration _customConfiguration;
 
     private readonly Uri _dockerEngine;
 
@@ -27,6 +27,17 @@
     /// </summary>
     public TestcontainersHostEndpointAuthenticationProvider()
     {
+      _customConfiguration = new TestcontainersHostConfiguration();
+      _dockerEngine = GetDockerHost();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestcontainersHostEndpointAuthenticationProvider" /> class.
+    /// </summary>
+    /// <param name="lines">A list of Java properties file lines.</param>
+    public TestcontainersHostEndpointAuthenticationProvider(params string[] lines)
+    {
+      _customConfiguration = new TestcontainersHostConfiguration(lines);
       _dockerEngine = GetDockerHost();
     }
 
@@ -116,6 +127,15 @@
 
     private sealed class TestcontainersHostConfiguration : PropertiesFileConfiguration
     {
+      public TestcontainersHostConfiguration()
+      {
+      }
+
+      public TestcontainersHostConfiguration(params string[] lines)
+        : base(lines)
+      {
+      }
+
       protected override Uri GetDockerHost(string propertyName)
       {
         return base.GetDockerHost("tc.host");

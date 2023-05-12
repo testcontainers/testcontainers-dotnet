@@ -4,8 +4,6 @@ namespace Testcontainers.Keycloak;
 [PublicAPI]
 public sealed class KeycloakContainer : DockerContainer
 {
-    private readonly KeycloakConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="KeycloakContainer" /> class.
     /// </summary>
@@ -14,7 +12,6 @@ public sealed class KeycloakContainer : DockerContainer
     public KeycloakContainer(KeycloakConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _configuration = configuration;
     }
 
     /// <summary>
