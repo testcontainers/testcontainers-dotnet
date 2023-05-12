@@ -69,10 +69,10 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         return base.Init()
             .WithImage(KeycloakImage)
             .WithCommand("start-dev")
-            .WithCommand("--health-enabled", "true")
             .WithPortBinding(KeycloakPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithEnvironment("KC_HEALTH_ENABLED", "true")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health/ready").ForPort(KeycloakPort)));
     }

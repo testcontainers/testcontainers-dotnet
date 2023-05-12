@@ -48,10 +48,11 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task CreateNetworkAssignsOptions()
     {
-      IDockerNetworkOperations networkOperations = new DockerNetworkOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      // Given
+      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await networkOperations.ByNameAsync(_network.Name)
+      var networkResponse = await client.Network.ByNameAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -62,10 +63,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateNetworkAssignsLabels()
     {
       // Given
-      IDockerNetworkOperations networkOperations = new DockerNetworkOperations(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await networkOperations.ByNameAsync(_network.Name)
+      var networkResponse = await client.Network.ByNameAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -83,13 +84,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
         .Build();
 
-      public string Name
-      {
-        get
-        {
-          return _network.Name;
-        }
-      }
+      public string Name => _network.Name;
 
       public Task InitializeAsync()
       {

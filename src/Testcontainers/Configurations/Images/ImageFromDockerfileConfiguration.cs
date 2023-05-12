@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
   using System.Collections.Generic;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
@@ -16,18 +17,21 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="image">The image.</param>
+    /// <param name="imageBuildPolicy">The image build policy.</param>
     /// <param name="buildArguments">A list of build arguments.</param>
     /// <param name="deleteIfExists">A value indicating whether Testcontainers removes an existing image or not.</param>
     public ImageFromDockerfileConfiguration(
       string dockerfile = null,
       string dockerfileDirectory = null,
       IImage image = null,
+      Func<ImagesListResponse, bool> imageBuildPolicy = null,
       IReadOnlyDictionary<string, string> buildArguments = null,
       bool? deleteIfExists = null)
     {
       Dockerfile = dockerfile;
       DockerfileDirectory = dockerfileDirectory;
       Image = image;
+      ImageBuildPolicy = imageBuildPolicy;
       BuildArguments = buildArguments;
       DeleteIfExists = deleteIfExists;
     }
@@ -61,6 +65,7 @@ namespace DotNet.Testcontainers.Configurations
       Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
       DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
+      ImageBuildPolicy = BuildConfiguration.Combine(oldValue.ImageBuildPolicy, newValue.ImageBuildPolicy);
       BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
       DeleteIfExists = (oldValue.DeleteIfExists.HasValue && oldValue.DeleteIfExists.Value) || (newValue.DeleteIfExists.HasValue && newValue.DeleteIfExists.Value);
     }
@@ -76,6 +81,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IImage Image { get; }
+
+    /// <inheritdoc />
+    public Func<ImagesListResponse, bool> ImageBuildPolicy { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> BuildArguments { get; }

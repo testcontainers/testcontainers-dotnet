@@ -27,18 +27,19 @@ namespace DotNet.Testcontainers.Clients
 
     public Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      throw new NotImplementedException();
+      return Task.FromResult<VolumeResponse>(null);
     }
 
-    public async Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)
+    public Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)
     {
-      return (await GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(volume => volume.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+      return ByPropertyAsync("name", name, ct);
     }
 
-    public Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      throw new NotImplementedException();
+      var filters = new FilterByProperty { { property, value } };
+      return (await Docker.Volumes.ListAsync(new VolumesListParameters { Filters = filters }, ct)
+        .ConfigureAwait(false)).Volumes.FirstOrDefault();
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)

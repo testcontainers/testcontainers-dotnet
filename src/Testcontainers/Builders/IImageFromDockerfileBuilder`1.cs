@@ -1,5 +1,7 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -50,6 +52,14 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
+
+    /// <summary>
+    /// Sets the image build policy.
+    /// </summary>
+    /// <param name="imageBuildPolicy">The image build policy.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithImageBuildPolicy(Func<ImagesListResponse, bool> imageBuildPolicy);
 
     /// <summary>
     /// Removes an existing image before building it again.

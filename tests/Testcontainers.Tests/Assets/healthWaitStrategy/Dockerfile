@@ -1,5 +1,5 @@
-FROM alpine
-ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
+FROM alpine:3.17
+LABEL "maintainer"="9199345+HofmeisterAn@users.noreply.github.com"
 HEALTHCHECK --interval=1s CMD test -e /healthcheck
 COPY docker-entrypoint.sh docker-entrypoint.sh
 RUN chmod +x docker-entrypoint.sh
