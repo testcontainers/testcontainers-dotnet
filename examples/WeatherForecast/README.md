@@ -9,4 +9,4 @@ cd ./testcontainers-dotnet/examples/WeatherForecast/
 dotnet test WeatherForecast.sln --configuration=Release
 ```
 
-_*) One unit test depends on Seleium and requires Chrome in version 106._
+_*) One unit test depends on Selenium and requires Chrome in version 106._
