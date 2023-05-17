@@ -2,33 +2,6 @@
 
 ![Testcontainers Banner](banner.png)
 
-<p style="text-align:center">
-  <strong>Not using .NET? Here are other supported languages!</strong>
-</p>
-<div class="card-grid">
-  <a class="card-grid-item" href="https://www.testcontainers.org">
-    <img src="language-logos/java.svg" />Java
-  </a>
-  <a class="card-grid-item" href="https://golang.testcontainers.org">
-    <img src="language-logos/go.svg" />Go
-  </a>
-  <a class="card-grid-item">
-    <img src="language-logos/dotnet.svg" />.NET
-  </a>
-  <a class="card-grid-item" href="https://node.testcontainers.org">
-    <img src="language-logos/nodejs.svg" />Node.js
-  </a>
-  <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
-    <img src="language-logos/python.svg" />Python
-  </a>
-  <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
-    <img src="language-logos/rust.svg" />Rust
-  </a>
-  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
-    <img src="language-logos/haskell.svg"/>Haskell
-  </a>
-</div>
-
 ```console title="Install the NuGet dependency"
 dotnet add package Testcontainers
 ```
@@ -60,11 +33,40 @@ var guid = await httpClient.GetStringAsync(requestUri).ConfigureAwait(false);
 Debug.Assert(Guid.TryParse(guid, out _));
 ```
 
+<p style="text-align:center">
+  <strong>Not using .NET? Here are other supported languages!</strong>
+</p>
+<div class="card-grid">
+  <a class="card-grid-item" href="https://www.testcontainers.org">
+    <img src="language-logos/java.svg" />Java
+  </a>
+  <a class="card-grid-item" href="https://golang.testcontainers.org">
+    <img src="language-logos/go.svg" />Go
+  </a>
+  <a class="card-grid-item">
+    <img src="language-logos/dotnet.svg" />.NET
+  </a>
+  <a class="card-grid-item" href="https://node.testcontainers.org">
+    <img src="language-logos/nodejs.svg" />Node.js
+  </a>
+  <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
+    <img src="language-logos/python.svg" />Python
+  </a>
+  <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
+    <img src="language-logos/rust.svg" />Rust
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
+    <img src="language-logos/haskell.svg"/>Haskell
+  </a>
+</div>
+
 ## About
 
 Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.
+
+For more detailed instructions and guidance, please refer to the Testcontainers' [Getting Started](https://testcontainers.com/guides/introducing-testcontainers/) guide. If you are specifically interested in using Testcontainers for .NET, you find a dedicated follow-up guide [here](https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet/). These resources will provide you with comprehensive information to help you get started and make the most out of Testcontainers.
 
 ## Supported operating systems
 
