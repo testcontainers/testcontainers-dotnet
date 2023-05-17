@@ -29,6 +29,37 @@
   </a>
 </div>
 
+```console title="Install the NuGet dependency"
+dotnet add package Testcontainers
+```
+
+```csharp title="Run the Hello World container"
+// Create a new instance of a container.
+var container = new ContainerBuilder()
+  // Set the image for the container to "testcontainers/helloworld:1.1.0".
+  .WithImage("testcontainers/helloworld:1.1.0")
+  // Bind port 8080 of the container to a random port on the host.
+  .WithPortBinding(8080, true)
+  // Build the container configuration.
+  .Build();
+
+// Start the container.
+await container.StartAsync()
+  .ConfigureAwait(false);
+
+// Create a new instance of HttpClient to send HTTP requests.
+var httpClient = new HttpClient();
+
+// Construct the request URI by specifying the scheme, hostname, assigned random host port, and the endpoint "uuid".
+var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").ToString();
+
+// Send an HTTP GET request to the specified URI and retrieve the response as a string.
+var guid = await httpClient.GetStringAsync(requestUri).ConfigureAwait(false);
+
+// Ensure that the retrieved UUID is a valid GUID.
+Debug.Assert(Guid.TryParse(guid, out _));
+```
+
 ## About
 
 Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
