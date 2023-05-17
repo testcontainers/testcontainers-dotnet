@@ -7,11 +7,12 @@ Testcontainers for .NET uses the builder design pattern to configure, create and
 Builds and tags a new container image. The Dockerfile is located inside the solution (`.sln`) directory.
 
 ```csharp
-await new ImageFromDockerfileBuilder()
+var futureImage = new ImageFromDockerfileBuilder()
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
   .WithDockerfile("Dockerfile")
-  .Build()
-  .CreateAsync()
+  .Build();
+
+await futureImage.CreateAsync()
   .ConfigureAwait(false);
 ```
 
@@ -42,8 +43,7 @@ Testcontainers offers convenient features to detect common directories in .NET p
 ```csharp
 _ = new ImageFromDockerfileBuilder()
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-  .WithDockerfile("Dockerfile")
-  .Build();
+  .WithDockerfile("Dockerfile");
 ```
 
 As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.

@@ -2,6 +2,37 @@
 
 ![Testcontainers Banner](banner.png)
 
+```console title="Install the NuGet dependency"
+dotnet add package Testcontainers
+```
+
+```csharp title="Run the Hello World container"
+// Create a new instance of a container.
+var container = new ContainerBuilder()
+  // Set the image for the container to "testcontainers/helloworld:1.1.0".
+  .WithImage("testcontainers/helloworld:1.1.0")
+  // Bind port 8080 of the container to a random port on the host.
+  .WithPortBinding(8080, true)
+  // Build the container configuration.
+  .Build();
+
+// Start the container.
+await container.StartAsync()
+  .ConfigureAwait(false);
+
+// Create a new instance of HttpClient to send HTTP requests.
+var httpClient = new HttpClient();
+
+// Construct the request URI by specifying the scheme, hostname, assigned random host port, and the endpoint "uuid".
+var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").ToString();
+
+// Send an HTTP GET request to the specified URI and retrieve the response as a string.
+var guid = await httpClient.GetStringAsync(requestUri).ConfigureAwait(false);
+
+// Ensure that the retrieved UUID is a valid GUID.
+Debug.Assert(Guid.TryParse(guid, out _));
+```
+
 <p style="text-align:center">
   <strong>Not using .NET? Here are other supported languages!</strong>
 </p>
@@ -34,6 +65,8 @@
 Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.
+
+For more detailed instructions and guidance, please refer to the Testcontainers' [Getting Started](https://testcontainers.com/guides/introducing-testcontainers/) guide. If you are specifically interested in using Testcontainers for .NET, you find a dedicated follow-up guide [here](https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet/). These resources will provide you with comprehensive information to help you get started and make the most out of Testcontainers.
 
 ## Supported operating systems
 
