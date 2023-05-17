@@ -4,7 +4,7 @@ To use Testcontainers in your CI/CD environment, you only require Docker install
 
 ## Azure Pipelines
 
-[Microsoft-hosted agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops) come with Docker pre-installed, there is no need for any additional configuration. It is important to note that Windows agents use the Docker Windows engine and cannot run Linux containers. If you are using Windows agents, ensure that the image you are using matches the agent's architecture and operating system version [^1)^](https://docs.docker.com/build/building/multi-platform/) [^2)^](https://learn.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility).
+[Microsoft-hosted agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops) come with Docker pre-installed, there is no need for any additional configuration. It is important to note that Windows agents use the Docker Windows engine and cannot run Linux containers. If you are using Windows agents, ensure that the image you are using matches the agent's architecture and operating system version [1)](https://docs.docker.com/build/building/multi-platform/) [2)](https://learn.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility).
 
 ## GitHub Actions
 
