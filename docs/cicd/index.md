@@ -14,7 +14,7 @@ GitHub-hosted runners have the same configuration as Microsoft-hosted agents. Th
 
 To configure the Docker service in GitLab CI ([Docker-in-Docker](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker)), you need to define the service in your `.gitlab-ci.yml` file and expose the Docker host address `docker:2375` by setting the `DOCKER_HOST` environment variable.
 
-```yml
+```yml title=".gitlab-ci.yml file"
 services:
   - docker:dind
 variables:
