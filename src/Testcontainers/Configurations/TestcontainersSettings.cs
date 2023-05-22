@@ -108,7 +108,7 @@ namespace DotNet.Testcontainers.Configurations
     [CanBeNull]
     public static string DockerHostOverride { get; set; }
       = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerHostOverride() : PropertiesFileConfiguration.Instance.GetDockerHostOverride() ?? EnvironmentConfiguration.Instance.GetDockerHostOverride();
+        ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
@@ -116,26 +116,26 @@ namespace DotNet.Testcontainers.Configurations
     [CanBeNull]
     public static string DockerSocketOverride { get; set; }
       = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerSocketOverride() : PropertiesFileConfiguration.Instance.GetDockerSocketOverride() ?? EnvironmentConfiguration.Instance.GetDockerSocketOverride();
+        ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
     public static bool ResourceReaperEnabled { get; set; }
-      = !PropertiesFileConfiguration.Instance.GetRyukDisabled() && !EnvironmentConfiguration.Instance.GetRyukDisabled();
+      = !EnvironmentConfiguration.Instance.GetRyukDisabled() && !PropertiesFileConfiguration.Instance.GetRyukDisabled();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() || EnvironmentConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [CanBeNull]
     public static IImage ResourceReaperImage { get; set; }
-      = PropertiesFileConfiguration.Instance.GetRyukContainerImage() ?? EnvironmentConfiguration.Instance.GetRyukContainerImage();
+      = EnvironmentConfiguration.Instance.GetRyukContainerImage() ?? PropertiesFileConfiguration.Instance.GetRyukContainerImage();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> public host port.
@@ -159,7 +159,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </remarks>
     [CanBeNull]
     public static string HubImageNamePrefix { get; set; }
-      = PropertiesFileConfiguration.Instance.GetHubImageNamePrefix() ?? EnvironmentConfiguration.Instance.GetHubImageNamePrefix();
+      = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
     /// Gets or sets the logger.

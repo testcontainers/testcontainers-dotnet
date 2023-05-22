@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="MTlsEndpointAuthenticationProvider" /> class.
     /// </summary>
     public MTlsEndpointAuthenticationProvider()
-      : this(PropertiesFileConfiguration.Instance, EnvironmentConfiguration.Instance)
+      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
     {
     }
 
