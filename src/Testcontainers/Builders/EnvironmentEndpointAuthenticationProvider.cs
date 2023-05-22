@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="EnvironmentEndpointAuthenticationProvider" /> class.
     /// </summary>
     public EnvironmentEndpointAuthenticationProvider()
-      : this(PropertiesFileConfiguration.Instance, EnvironmentConfiguration.Instance)
+      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
     {
     }
 

@@ -70,13 +70,13 @@ namespace DotNet.Testcontainers.Builders
 
     private static string GetDefaultDockerConfigFilePath()
     {
-      var dockerConfigDirectoryPath = PropertiesFileConfiguration.Instance.GetDockerConfig() ?? EnvironmentConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
+      var dockerConfigDirectoryPath = EnvironmentConfiguration.Instance.GetDockerConfig() ?? PropertiesFileConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
       return Path.Combine(dockerConfigDirectoryPath, "config.json");
     }
 
     private static JsonDocument GetDefaultDockerAuthConfig()
     {
-      return PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? EnvironmentConfiguration.Instance.GetDockerAuthConfig() ?? JsonDocument.Parse("{}");
+      return EnvironmentConfiguration.Instance.GetDockerAuthConfig() ?? PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? JsonDocument.Parse("{}");
     }
 
     private IDockerRegistryAuthenticationConfiguration GetUncachedAuthConfig(string hostname)
