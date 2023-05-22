@@ -24,10 +24,11 @@ await container.StartAsync()
 var httpClient = new HttpClient();
 
 // Construct the request URI by specifying the scheme, hostname, assigned random host port, and the endpoint "uuid".
-var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").ToString();
+var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").Uri;
 
 // Send an HTTP GET request to the specified URI and retrieve the response as a string.
-var guid = await httpClient.GetStringAsync(requestUri).ConfigureAwait(false);
+var guid = await httpClient.GetStringAsync(requestUri)
+  .ConfigureAwait(false);
 
 // Ensure that the retrieved UUID is a valid GUID.
 Debug.Assert(Guid.TryParse(guid, out _));

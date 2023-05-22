@@ -14,7 +14,7 @@ Testcontainers supports various configurations to set up your test environment. 
 | `docker.socket.override`    | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`    | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`      |
 | `ryuk.disabled`             | `TESTCONTAINERS_RYUK_DISABLED`             | Disables Ryuk (resource reaper).                                                                                          | `false`                     |
 | `ryuk.container.privileged` | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED` | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `false`                     |
-| `ryuk.container.image`      | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`      | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.3.4` |
+| `ryuk.container.image`      | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`      | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.5.1` |
 | `hub.image.name.prefix`     | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`     | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
 
 ## Configure remote container runtime
