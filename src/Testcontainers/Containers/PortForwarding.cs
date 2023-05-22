@@ -98,8 +98,13 @@ namespace DotNet.Testcontainers.Containers
       /// <inheritdoc />
       public override PortForwardingContainer Build()
       {
-        Validate();
-        return new PortForwardingContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        // The port forwarding container only works in conjunction with the Docker host
+        // auto-discovery. It does not support configuring individual Docker hosts. If
+        // Testcontainers cannot detect a Docker host configuration, do not create an
+        // instance of the port forwarding container. To improve the user experience, it
+        // is preferable to stop supporting `WithDockerEndpoint(string)` and instead rely
+        // on the environment variables or the properties file custom configurations.
+        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
       }
 
       /// <inheritdoc />
