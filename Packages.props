@@ -2,8 +2,8 @@
 <Project>
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" />
-    <PackageReference Update="Docker.DotNet" Version="3.125.13" />
-    <PackageReference Update="Docker.DotNet.X509" Version="3.125.13" />
+    <PackageReference Update="Docker.DotNet" Version="3.125.15" />
+    <PackageReference Update="Docker.DotNet.X509" Version="3.125.15" />
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
     <PackageReference Update="Portable.BouncyCastle" Version="1.9.0" />
