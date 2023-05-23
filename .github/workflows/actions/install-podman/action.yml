@@ -1,0 +1,5 @@
+runs:
+  using: composite
+  steps:
+    - shell: sh
+      run: ${{ github.action_path }}/install.sh

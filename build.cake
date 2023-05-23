@@ -83,7 +83,7 @@ Task("Tests")
     Loggers = new[] { "trx" },
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-    ArgumentCustomization = args => args
+    ArgumentCustomization = args => args.Append("/m:1")
   });
 });
 

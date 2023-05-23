@@ -14,7 +14,16 @@ public sealed class K3sContainerTest : IAsyncLifetime
         return _k3sConainter.DisposeAsync().AsTask();
     }
 
-    [Fact]
+    // Failed to load kernel module br_netfilter with modprobe
+    // Failed to load kernel module iptable_nat with modprobe
+    // Failed to load kernel module iptable_filter with modprobe
+    // Failed to set sysctl: open /proc/sys/net/bridge/bridge-nf-call-iptables: no such file or directory
+    // Failed to set sysctl: open /proc/sys/net/netfilter/nf_conntrack_max: permission denied
+    // Failed to ApplyOOMScoreAdj" err="write /proc/self/oom_score_adj: permission denied
+    // Failed to set rlimit on max file handles" err="operation not permitted
+    // Failed to get the info of the filesystem with mountpoint" err="unable to find data in memory cache" mountpoint="/var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs
+    // Failed to start ContainerManager" err="[open /proc/sys/vm/overcommit_memory: permission denied, open /proc/sys/kernel/panic: permission denied, open /proc/sys/kernel/panic_on_oops: permission denied]
+    [Fact(Skip = "Container does not start running on Podman")]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateNamespaceReturnsHttpStatusCodeCreated()
     {

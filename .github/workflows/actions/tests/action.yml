@@ -1,0 +1,12 @@
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-dotnet@v3
+    - shell: bash
+      run: dotnet tool restore
+    - shell: bash
+      run: dotnet cake --target=Restore-NuGet-Packages
+    - shell: bash
+      run: dotnet cake --target=Build
+    - shell: bash
+      run: dotnet cake --target=Tests

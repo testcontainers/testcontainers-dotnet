@@ -148,21 +148,25 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
     }
 
-    [UsedImplicitly]
-    public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
-    {
-        public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
-        {
-        }
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackV1Configuration : LocalStackContainerTest
-    {
-        public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
-        {
-        }
-    }
+    // 2023-05-17T14:17:05.033  WARN --- [   asgi_gw_0] localstack.utils.archives  : Attempt 1. Failed to download archive from https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip: MyHTTPSConnectionPool(host='s3-us-west-2.amazonaws.com', port=443): Max retries exceeded with url: /dynamodb-local/dynamodb_local_latest.zip (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0xffff65444bb0>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution'))
+    // 2023-05-17T14:17:05.037  INFO --- [   asgi_gw_0] localstack.utils.archives  : Unable to extract file, re-downloading ZIP archive /tmp/localstack.ddb.zip: ('Failed to download archive from %s: . Retries exhausted', 'https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip')
+    // 2023-05-17T14:17:25.079  WARN --- [   asgi_gw_0] localstack.utils.archives  : Attempt 1. Failed to download archive from https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip: MyHTTPSConnectionPool(host='s3-us-west-2.amazonaws.com', port=443): Max retries exceeded with url: /dynamodb-local/dynamodb_local_latest.zip (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0xffff65444d00>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution'))
+    // 2023-05-17T14:17:25.080  WARN --- [   asgi_gw_0] localstack.utils.functions : error calling function on_before_start: Installation of dynamodb-local failed.    
+    // [UsedImplicitly]
+    // public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
+    // {
+    //     public LocalStackDefaultConfiguration()
+    //         : base(new LocalStackBuilder().Build())
+    //     {
+    //     }
+    // }
+    //
+    // [UsedImplicitly]
+    // public sealed class LocalStackV1Configuration : LocalStackContainerTest
+    // {
+    //     public LocalStackV1Configuration()
+    //         : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+    //     {
+    //     }
+    // }
 }
