@@ -16,7 +16,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 {
   private static readonly X509Certificate Certificate = new X509Certificate2(WeatherForecastImage.CertificateFilePath, WeatherForecastImage.CertificatePassword);
 
-  private static readonly WeatherForecastImage Image = new();
+  private static readonly WeatherForecastImage Image = new WeatherForecastImage();
 
   private readonly INetwork _weatherForecastNetwork;
 
@@ -57,7 +57,6 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   public async Task InitializeAsync()
   {
-    // It is not necessary to clean up resources immediately (still good practice). The Resource Reaper will take care of orphaned resources.
     await Image.InitializeAsync()
       .ConfigureAwait(false);
 
@@ -73,6 +72,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   public async Task DisposeAsync()
   {
+    // It is not necessary to clean up resources immediately (still good practice). The Resource Reaper will take care of orphaned resources.
     await Image.DisposeAsync()
       .ConfigureAwait(false);
 

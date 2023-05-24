@@ -52,7 +52,7 @@ public static class WeatherForecastTest
 
   public sealed class Web : IClassFixture<WeatherForecastContainer>
   {
-    private static readonly ChromeOptions ChromeOptions = new();
+    private static readonly ChromeOptions ChromeOptions = new ChromeOptions();
 
     private readonly WeatherForecastContainer _weatherForecastContainer;
 

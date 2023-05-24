@@ -18,7 +18,7 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 
   public const string CertificatePassword = "password";
 
-  private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
+  private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
   private readonly IImage _image = new DockerImage("localhost/testcontainers", "weather-forecast", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
 
