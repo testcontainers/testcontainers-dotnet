@@ -13,10 +13,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   {
     public IContainer Container { get; }
       = new ContainerBuilder()
-        .WithImage("alpine")
+        .WithImage(CommonImages.Alpine)
         .WithCommand(CommonCommands.SleepInfinity)
-        .WithCleanUp(false)
-        .WithAutoRemove(true)
         .WithStartupCallback((_, ct) => Task.Delay(TimeSpan.FromMinutes(1), ct))
         .Build();
 

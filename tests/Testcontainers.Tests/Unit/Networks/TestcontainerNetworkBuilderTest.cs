@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private static readonly string NetworkName = Guid.NewGuid().ToString("D");
 
-    private static readonly KeyValuePair<string, string> Option = new KeyValuePair<string, string>("com.docker.network.driver.mtu", "1350");
+    private static readonly KeyValuePair<string, string> Option = new KeyValuePair<string, string>("mtu", "1350");
 
     private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".network.test", Guid.NewGuid().ToString("D"));
 

@@ -442,7 +442,7 @@ namespace DotNet.Testcontainers.Containers
         _container = await _client.InspectContainerAsync(_container.ID, ct)
           .ConfigureAwait(false);
       }
-      catch (DockerContainerNotFoundException)
+      catch (DockerApiException)
       {
         _container = new ContainerInspectResponse();
       }
