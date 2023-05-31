@@ -7,12 +7,15 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IWaitStrategyOption" />
   internal sealed class WaitStrategyOption : IWaitStrategyOption, IWaitUntil
   {
+    private readonly IWaitUntil _waitUntil;
+
     /// <summary>
     ///
     /// </summary>
     /// <param name="waitUntil"></param>
     public WaitStrategyOption(IWaitUntil waitUntil)
     {
+      _waitUntil = waitUntil;
       _ = WithRetries(1);
       _ = WithInterval(TimeSpan.FromSeconds(1));
       _ = WithInterval(TimeSpan.FromMinutes(1));
@@ -51,7 +54,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public Task<bool> UntilAsync(IContainer container)
     {
-      return Task.FromResult(true);
+      return _waitUntil.UntilAsync(container);
     }
   }
 }
