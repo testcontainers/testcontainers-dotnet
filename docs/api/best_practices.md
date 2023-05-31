@@ -8,4 +8,4 @@ At times, configuring and launching disposable Docker resources for testing purp
 4. When setting up a container-to-container communication, use network aliases `_builder.WithNetworkAliases(string)` to connect to the container. Access the service running inside the container through its container port.
 5. Avoid mounting local host paths to containers. Instead, use `_container.WithResourceMapping(string, string)` or one of its overloaded members to copy dependent files to the container before it starts.
 6. In rare cases, it may be necessary to access the underlying Docker API to configure specific properties that are not exposed by Testcontainers' own API. To get access to all Docker API properties required to create a resource, use `_builder.WithCreateParameterModifier(Action<TCreateResourceEntity>)`.
-7. Do not disable the Resource Reaper, as it cleans up remaining test resources. Disabling it may mess up the test environment.
+7. Do not disable the Resource Reaper, as it cleans up remaining test resources. Disabling it may clutter up the test environment.
