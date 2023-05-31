@@ -10,9 +10,9 @@ namespace DotNet.Testcontainers.Configurations
     private readonly IWaitUntil _waitUntil;
 
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="WaitStrategyOption" /> class.
     /// </summary>
-    /// <param name="waitUntil"></param>
+    /// <param name="waitUntil">The wait strategy to run.</param>
     public WaitStrategyOption(IWaitUntil waitUntil)
     {
       _waitUntil = waitUntil;

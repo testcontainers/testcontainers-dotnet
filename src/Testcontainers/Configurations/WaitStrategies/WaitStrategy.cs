@@ -8,16 +8,16 @@ namespace DotNet.Testcontainers.Configurations
   public static class WaitStrategy
   {
     /// <summary>
-    /// Blocks while condition is true or timeout occurs.
+    /// Waits asynchronously until the specified condition returns false or until a timeout occurs.
     /// </summary>
-    /// <param name="wait">Function to block execution.</param>
-    /// <param name="frequency">The frequency in milliseconds to check the condition.</param>
-    /// <param name="timeout">Timeout in milliseconds.</param>
-    /// <param name="ct">Propagates notification that operations should be canceled.</param>
+    /// <param name="wait">A function that represents the asynchronous condition to wait for.</param>
+    /// <param name="interval">The time interval between consecutive evaluations of the condition.</param>
+    /// <param name="timeout">The maximum duration to wait for the condition to become false.</param>
+    /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan frequency, TimeSpan timeout, CancellationToken ct = default)
+    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, CancellationToken ct = default)
     {
       async Task WhileAsync()
       {
@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers.Configurations
             break;
           }
 
-          await Task.Delay(frequency, ct)
+          await Task.Delay(interval, ct)
             .ConfigureAwait(false);
         }
       }
@@ -54,16 +54,16 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Blocks until condition is true or timeout occurs.
+    /// Waits asynchronously until the specified condition returns true or until a timeout occurs.
     /// </summary>
-    /// <param name="wait">Function to block execution.</param>
-    /// <param name="frequency">The frequency in milliseconds to check the condition.</param>
-    /// <param name="timeout">The timeout in milliseconds.</param>
-    /// <param name="ct">Propagates notification that operations should be canceled.</param>
+    /// <param name="wait">A function that represents the asynchronous condition to wait for.</param>
+    /// <param name="interval">The time interval between consecutive evaluations of the condition.</param>
+    /// <param name="timeout">The maximum duration to wait for the condition to become true.</param>
+    /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown as soon as the timeout expires.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan frequency, TimeSpan timeout, CancellationToken ct = default)
+    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, CancellationToken ct = default)
     {
       async Task UntilAsync()
       {
@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Configurations
             break;
           }
 
-          await Task.Delay(frequency, ct)
+          await Task.Delay(interval, ct)
             .ConfigureAwait(false);
         }
       }
