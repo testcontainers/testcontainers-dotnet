@@ -1,24 +1,26 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
+
   /// <inheritdoc cref="IWaitForContainerOS" />
   internal sealed class WaitForContainerWindows : WaitForContainerOS
   {
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilCommandIsCompleted(string command)
+    public override IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategyOption> waitStrategyOptionModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
+      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command), waitStrategyOptionModifier);
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilCommandIsCompleted(params string[] command)
+    public override IWaitForContainerOS UntilCommandIsCompleted(Action<IWaitStrategyOption> waitStrategyOptionModifier = null, params string[] command)
     {
-      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command));
+      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command), waitStrategyOptionModifier);
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilPortIsAvailable(int port)
+    public override IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategyOption> waitStrategyOptionModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilWindowsPortIsAvailable(port));
+      return AddCustomWaitStrategy(new UntilWindowsPortIsAvailable(port), waitStrategyOptionModifier);
     }
   }
 }
