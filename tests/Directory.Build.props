@@ -3,5 +3,14 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
+  <ItemGroup Condition="$(MSBuildProjectName) != 'Testcontainers.Commons'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.1"/>
+    <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
+    <PackageReference Include="xunit" Version="2.4.2"/>
+    <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+  </ItemGroup>
 </Project>

@@ -12,6 +12,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-7694-4BB9-ABD4-136D6C13634E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Azurite", "src\Testcontainers.Azurite\Testcontainers.Azurite.csproj", "{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F}"
 EndProject
