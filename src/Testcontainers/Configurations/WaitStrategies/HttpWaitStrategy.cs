@@ -198,7 +198,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Defines a custom <see cref="HttpClientHandler"/> to pass to the internal <see cref="HttpClient"/>.
+    /// Defines a custom <see cref="HttpClientHandler"/> which should be used by the internal <see cref="HttpClient"/>.
     /// </summary>
     /// <param name="handler">The handler to pass to the <see cref="HttpClient"/> when it is created.</param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
