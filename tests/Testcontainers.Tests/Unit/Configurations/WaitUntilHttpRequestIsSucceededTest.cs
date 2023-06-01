@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Collections.Generic;
   using System.Linq;
   using System.Net;
+  using System.Net.Http;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
@@ -80,6 +81,34 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Contains("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", stdout);
       Assert.Contains(httpHeaders.First().Key, stdout);
       Assert.Contains(httpHeaders.First().Value, stdout);
+    }
+
+    [Fact]
+    public async Task HttpWaitStrategyUsesCustomHttpClientHandler()
+    {
+      // Given
+      var cookieContainer = new CookieContainer();
+      cookieContainer.Add(new Cookie("Key1", "Value1", "/", _container.Hostname));
+
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpClientHandler(new HttpClientHandler
+      {
+        CookieContainer = cookieContainer
+      });
+
+      // When
+      var succeeded = await httpWaitStrategy.UntilAsync(_container)
+        .ConfigureAwait(false);
+
+      await Task.Delay(TimeSpan.FromSeconds(1))
+        .ConfigureAwait(false);
+
+      var (stdout, _) = await _container.GetLogsAsync()
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.True(succeeded);
+      Assert.Contains("Cookie", stdout);
+      Assert.Contains("Key1=Value1", stdout);
     }
   }
 }
