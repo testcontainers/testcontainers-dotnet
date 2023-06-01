@@ -1,10 +1,8 @@
 namespace Testcontainers.LocalStack;
 
-public abstract class LocalStackContainerTest : IAsyncLifetime
+public abstract class LocalStackContainerTest : ContainerTest<LocalStackBuilder, LocalStackContainer>
 {
     private const string AwsService = "Service";
-
-    private readonly LocalStackContainer _localStackContainer;
 
     static LocalStackContainerTest()
     {
@@ -12,19 +10,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
     }
 
-    private LocalStackContainerTest(LocalStackContainer localStackContainer)
+    protected LocalStackContainerTest(Action<LocalStackBuilder> configure = null) : base(configure)
     {
-        _localStackContainer = localStackContainer;
-    }
-
-    public Task InitializeAsync()
-    {
-        return _localStackContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _localStackContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -34,7 +21,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonCloudWatchLogsConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonCloudWatchLogsClient(config);
 
@@ -59,7 +46,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         var tableName = Guid.NewGuid().ToString("D");
 
         var config = new AmazonDynamoDBConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonDynamoDBClient(config);
 
@@ -98,7 +85,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonS3Config();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonS3Client(config);
 
@@ -117,7 +104,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonSimpleNotificationServiceConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
@@ -136,7 +123,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonSQSConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonSQSClient(config);
 
@@ -151,17 +138,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
-        public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
-        {
-        }
     }
 
     [UsedImplicitly]
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+            : base(builder => builder.WithImage("localstack/localstack:1.4"))
         {
         }
     }

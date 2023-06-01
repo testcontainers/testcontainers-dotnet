@@ -1,19 +1,7 @@
 namespace Testcontainers.Azurite;
 
-public abstract class AzuriteContainerTest : IAsyncLifetime
+public abstract class AzuriteContainerTest : ContainerTest<AzuriteBuilder, AzuriteContainer>
 {
-    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _azuriteContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _azuriteContainer.DisposeAsync().AsTask();
-    }
-
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
     {
         using (var rawResponse = response.GetRawResponse())
@@ -29,7 +17,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new BlobServiceClient(Container.GetConnectionString());
 
             // When
             var properties = await client.GetPropertiesAsync()
@@ -47,7 +35,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new QueueServiceClient(Container.GetConnectionString());
 
             // When
             var properties = await client.GetPropertiesAsync()
@@ -65,7 +53,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new TableServiceClient(Container.GetConnectionString());
 
             // When
             var properties = await client.GetPropertiesAsync()

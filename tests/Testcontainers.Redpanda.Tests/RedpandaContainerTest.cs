@@ -1,19 +1,7 @@
 namespace Testcontainers.Redpanda;
 
-public sealed class RedpandaContainerTest : IAsyncLifetime
+public sealed class RedpandaContainerTest : ContainerTest<RedpandaBuilder, RedpandaContainer>
 {
-    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _redpandaContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _redpandaContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReturnsProducerMessage()
@@ -21,7 +9,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
-        var bootstrapServer = _redpandaContainer.GetBootstrapAddress();
+        var bootstrapServer = Container.GetBootstrapAddress();
 
         var producerConfig = new ProducerConfig();
         producerConfig.BootstrapServers = bootstrapServer;

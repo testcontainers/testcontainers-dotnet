@@ -1,23 +1,11 @@
 namespace Testcontainers.DynamoDb;
 
-public sealed class DynamoDbContainerTest : IAsyncLifetime
+public sealed class DynamoDbContainerTest : ContainerTest<DynamoDbBuilder, DynamoDbContainer>
 {
-    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder().Build();
-
     static DynamoDbContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
-    }
-
-    public Task InitializeAsync()
-    {
-        return _dynamoDbContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _dynamoDbContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -26,7 +14,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonDynamoDBConfig();
-        config.ServiceURL = _dynamoDbContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonDynamoDBClient(config);
 
@@ -48,7 +36,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         var tableName = Guid.NewGuid().ToString("D");
 
         var config = new AmazonDynamoDBConfig();
-        config.ServiceURL = _dynamoDbContainer.GetConnectionString();
+        config.ServiceURL = Container.GetConnectionString();
 
         using var client = new AmazonDynamoDBClient(config);
 

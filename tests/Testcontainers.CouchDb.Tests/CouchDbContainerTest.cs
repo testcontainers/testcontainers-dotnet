@@ -1,25 +1,13 @@
 namespace Testcontainers.CouchDb;
 
-public sealed class CouchDbContainerTest : IAsyncLifetime
+public sealed class CouchDbContainerTest : ContainerTest<CouchDbBuilder, CouchDbContainer>
 {
-    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _couchDbContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _couchDbContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task PutDatabaseReturnsHttpStatusCodeCreated()
     {
         // Given
-        using var client = new MyCouchClient(_couchDbContainer.GetConnectionString(), "db");
+        using var client = new MyCouchClient(Container.GetConnectionString(), "db");
 
         // When
         var database = await client.Database.PutAsync()

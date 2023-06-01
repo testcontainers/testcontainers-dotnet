@@ -1,24 +1,12 @@
 namespace Testcontainers.Redis;
 
-public sealed class RedisContainerTest : IAsyncLifetime
+public sealed class RedisContainerTest : ContainerTest<RedisBuilder, RedisContainer>
 {
-    private readonly RedisContainer _redisContainer = new RedisBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _redisContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _redisContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
-        using var connection = ConnectionMultiplexer.Connect(_redisContainer.GetConnectionString());
+        using var connection = ConnectionMultiplexer.Connect(Container.GetConnectionString());
         Assert.True(connection.IsConnected);
     }
 
@@ -30,7 +18,7 @@ public sealed class RedisContainerTest : IAsyncLifetime
         const string scriptContent = "return 'Hello, scripting!'";
 
         // When
-        var execResult = await _redisContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When

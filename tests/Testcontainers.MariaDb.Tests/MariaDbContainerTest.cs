@@ -1,22 +1,9 @@
 namespace Testcontainers.MariaDb;
 
-public abstract class MariaDbContainerTest : IAsyncLifetime
+public abstract class MariaDbContainerTest : ContainerTest<MariaDbBuilder, MariaDbContainer>
 {
-    private readonly MariaDbContainer _mariaDbContainer;
-
-    protected MariaDbContainerTest(MariaDbContainer mariaDbContainer)
+    protected MariaDbContainerTest(Action<MariaDbBuilder> configure = null) : base(configure)
     {
-        _mariaDbContainer = mariaDbContainer;
-    }
-
-    public Task InitializeAsync()
-    {
-        return _mariaDbContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _mariaDbContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -24,7 +11,7 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new MySqlConnection(_mariaDbContainer.GetConnectionString());
+        using DbConnection connection = new MySqlConnection(Container.GetConnectionString());
 
         // When
         connection.Open();
@@ -41,7 +28,7 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _mariaDbContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When
@@ -51,17 +38,13 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class MariaDbUserConfiguration : MariaDbContainerTest
     {
-        public MariaDbUserConfiguration()
-            : base(new MariaDbBuilder().Build())
-        {
-        }
     }
 
     [UsedImplicitly]
     public sealed class MariaDbRootConfiguration : MariaDbContainerTest
     {
         public MariaDbRootConfiguration()
-            : base(new MariaDbBuilder().WithUsername("root").Build())
+            : base(builder => builder.WithUsername("root"))
         {
         }
     }

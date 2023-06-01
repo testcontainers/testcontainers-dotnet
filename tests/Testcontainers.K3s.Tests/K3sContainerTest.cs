@@ -1,19 +1,7 @@
 namespace Testcontainers.K3s;
 
-public sealed class K3sContainerTest : IAsyncLifetime
+public sealed class K3sContainerTest : ContainerTest<K3sBuilder, K3sContainer>
 {
-    private readonly K3sContainer _k3sConainter = new K3sBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _k3sConainter.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _k3sConainter.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateNamespaceReturnsHttpStatusCodeCreated()
@@ -21,7 +9,7 @@ public sealed class K3sContainerTest : IAsyncLifetime
         // Given
         using var kubeconfigStream = new MemoryStream();
 
-        var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
+        var kubeconfig = await Container.GetKubeconfigAsync()
             .ConfigureAwait(false);
 
         await kubeconfigStream.WriteAsync(Encoding.Default.GetBytes(kubeconfig))

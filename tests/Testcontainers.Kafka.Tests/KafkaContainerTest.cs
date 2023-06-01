@@ -1,19 +1,7 @@
 namespace Testcontainers.Kafka;
 
-public sealed class KafkaContainerTest : IAsyncLifetime
+public sealed class KafkaContainerTest : ContainerTest<KafkaBuilder, KafkaContainer>
 {
-    private readonly KafkaContainer _kafkaContainer = new KafkaBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _kafkaContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _kafkaContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReturnsProducerMessage()
@@ -21,7 +9,7 @@ public sealed class KafkaContainerTest : IAsyncLifetime
         // Given
         const string topic = "sample";
 
-        var bootstrapServer = _kafkaContainer.GetBootstrapAddress();
+        var bootstrapServer = Container.GetBootstrapAddress();
 
         var producerConfig = new ProducerConfig();
         producerConfig.BootstrapServers = bootstrapServer;

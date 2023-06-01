@@ -1,25 +1,13 @@
 namespace Testcontainers.Oracle;
 
-public sealed class OracleContainerTest : IAsyncLifetime
+public sealed class OracleContainerTest : ContainerTest<OracleBuilder, OracleContainer>
 {
-    private readonly OracleContainer _oracleContainer = new OracleBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _oracleContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _oracleContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new OracleConnection(_oracleContainer.GetConnectionString());
+        using DbConnection connection = new OracleConnection(Container.GetConnectionString());
 
         // When
         connection.Open();
@@ -36,7 +24,7 @@ public sealed class OracleContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1 FROM DUAL;";
 
         // When
-        var execResult = await _oracleContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When

@@ -1,25 +1,13 @@
 namespace Testcontainers.PostgreSql;
 
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
+public sealed class PostgreSqlContainerTest : ContainerTest<PostgreSqlBuilder, PostgreSqlContainer>
 {
-    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _postgreSqlContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _postgreSqlContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString());
+        using DbConnection connection = new NpgsqlConnection(Container.GetConnectionString());
 
         // When
         connection.Open();
@@ -36,7 +24,7 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _postgreSqlContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When

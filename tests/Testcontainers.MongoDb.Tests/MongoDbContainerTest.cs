@@ -1,22 +1,9 @@
 namespace Testcontainers.MongoDb;
 
-public abstract class MongoDbContainerTest : IAsyncLifetime
+public abstract class MongoDbContainerTest : ContainerTest<MongoDbBuilder, MongoDbContainer>
 {
-    private readonly MongoDbContainer _mongoDbContainer;
-
-    private MongoDbContainerTest(MongoDbContainer mongoDbContainer)
+    protected MongoDbContainerTest(Action<MongoDbBuilder> configure = null) : base(configure)
     {
-        _mongoDbContainer = mongoDbContainer;
-    }
-
-    public Task InitializeAsync()
-    {
-        return _mongoDbContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _mongoDbContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -24,7 +11,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        var client = new MongoClient(_mongoDbContainer.GetConnectionString());
+        var client = new MongoClient(Container.GetConnectionString());
 
         // When
         using var databases = client.ListDatabases();
@@ -41,7 +28,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         const string scriptContent = "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
 
         // When
-        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When
@@ -51,17 +38,13 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
-        public MongoDbDefaultConfiguration()
-            : base(new MongoDbBuilder().Build())
-        {
-        }
     }
 
     [UsedImplicitly]
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
     {
         public MongoDbV5Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:5.0").Build())
+            : base(builder => builder.WithImage("mongo:5.0"))
         {
         }
     }
@@ -70,7 +53,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build())
+            : base(builder => builder.WithImage("mongo:4.4"))
         {
         }
     }

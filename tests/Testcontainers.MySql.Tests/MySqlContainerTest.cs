@@ -1,22 +1,9 @@
 namespace Testcontainers.MySql;
 
-public abstract class MySqlContainerTest : IAsyncLifetime
+public abstract class MySqlContainerTest : ContainerTest<MySqlBuilder, MySqlContainer>
 {
-    private readonly MySqlContainer _mySqlContainer;
-
-    protected MySqlContainerTest(MySqlContainer mySqlContainer)
+    protected MySqlContainerTest(Action<MySqlBuilder> configure = null) : base(configure)
     {
-        _mySqlContainer = mySqlContainer;
-    }
-
-    public Task InitializeAsync()
-    {
-        return _mySqlContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _mySqlContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -24,7 +11,7 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new MySqlConnection(_mySqlContainer.GetConnectionString());
+        using DbConnection connection = new MySqlConnection(Container.GetConnectionString());
 
         // When
         connection.Open();
@@ -41,7 +28,7 @@ public abstract class MySqlContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _mySqlContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(false);
 
         // When
@@ -51,17 +38,13 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class MySqlUserConfiguration : MySqlContainerTest
     {
-        public MySqlUserConfiguration()
-            : base(new MySqlBuilder().Build())
-        {
-        }
     }
 
     [UsedImplicitly]
     public sealed class MySqlRootConfiguration : MySqlContainerTest
     {
         public MySqlRootConfiguration()
-            : base(new MySqlBuilder().WithUsername("root").Build())
+            : base(builder => builder.WithUsername("root"))
         {
         }
     }

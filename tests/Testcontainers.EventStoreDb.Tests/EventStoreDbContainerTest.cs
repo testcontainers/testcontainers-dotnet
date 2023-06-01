@@ -1,19 +1,7 @@
 namespace Testcontainers.EventStoreDb;
 
-public sealed class EventStoreDbContainerTest : IAsyncLifetime
+public sealed class EventStoreDbContainerTest : ContainerTest<EventStoreDbBuilder, EventStoreDbContainer>
 {
-    private readonly EventStoreDbContainer _eventStoreDbContainer = new EventStoreDbBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _eventStoreDbContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _eventStoreDbContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ReadStreamReturnsEvent()
@@ -23,7 +11,7 @@ public sealed class EventStoreDbContainerTest : IAsyncLifetime
 
         const string streamName = "some-stream";
 
-        var settings = EventStoreClientSettings.Create(_eventStoreDbContainer.GetConnectionString());
+        var settings = EventStoreClientSettings.Create(Container.GetConnectionString());
 
         using var client = new EventStoreClient(settings);
 
