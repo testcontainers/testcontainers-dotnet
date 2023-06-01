@@ -36,6 +36,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private ushort? _portNumber;
 
+    private HttpClientHandler _httpClientHandler;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
     /// </summary>
@@ -64,7 +66,7 @@ namespace DotNet.Testcontainers.Configurations
         return false;
       }
 
-      using (var httpClient = new HttpClient())
+      using (var httpClient = _httpClientHandler == null ? new HttpClient() : new HttpClient(_httpClientHandler))
       {
         using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, new UriBuilder(_schemeName, host, port, _pathValue).Uri))
         {
@@ -192,6 +194,17 @@ namespace DotNet.Testcontainers.Configurations
     public HttpWaitStrategy UsingTls(bool tlsEnabled = true)
     {
       _schemeName = tlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+      return this;
+    }
+
+    /// <summary>
+    /// Defines a custom <see cref="HttpClientHandler"/> to pass to the internal <see cref="HttpClient"/>.
+    /// </summary>
+    /// <param name="handler">The handler to pass to the <see cref="HttpClient"/> when it is created.</param>
+    /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
+    public HttpWaitStrategy UsingHttpClientHandler(HttpClientHandler handler)
+    {
+      _httpClientHandler = handler;
       return this;
     }
 
