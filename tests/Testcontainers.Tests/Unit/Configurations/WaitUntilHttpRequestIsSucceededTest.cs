@@ -90,7 +90,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var cookieContainer = new CookieContainer();
       cookieContainer.Add(new Cookie("Key1", "Value1", "/", _container.Hostname));
 
-      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpClientHandler(new HttpClientHandler
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(new HttpClientHandler
       {
         CookieContainer = cookieContainer
       });
