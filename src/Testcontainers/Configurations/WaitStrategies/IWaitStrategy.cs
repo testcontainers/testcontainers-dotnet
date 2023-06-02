@@ -8,21 +8,6 @@ namespace DotNet.Testcontainers.Configurations
   public interface IWaitStrategy
   {
     /// <summary>
-    /// Gets the number of retries for the wait strategy.
-    /// </summary>
-    ushort Retries { get; }
-
-    /// <summary>
-    /// Gets the interval between retries for the wait strategy.
-    /// </summary>
-    TimeSpan Interval { get; }
-
-    /// <summary>
-    /// Gets the timeout for the wait strategy.
-    /// </summary>
-    TimeSpan Timeout { get; }
-
-    /// <summary>
     /// Sets the number of retries for the wait strategy.
     /// </summary>
     /// <param name="retries">The number of retries.</param>

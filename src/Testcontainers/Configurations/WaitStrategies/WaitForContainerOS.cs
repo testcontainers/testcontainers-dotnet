@@ -15,72 +15,73 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     protected WaitForContainerOS()
     {
-      AddCustomWaitStrategy(new UntilContainerIsRunning());
+      _ = AddCustomWaitStrategy(new UntilContainerIsRunning());
     }
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyOptionModifier = null);
+    public abstract IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilCommandIsCompleted(Action<IWaitStrategy> waitStrategyOptionModifier = null, params string[] command);
+    public abstract IWaitForContainerOS UntilCommandIsCompleted(Action<IWaitStrategy> waitStrategyModifier = null, params string[] command);
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyOptionModifier = null);
+    public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitStrategy, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      var waitStrategyOption = new WaitStrategy(waitStrategy);
+      var waitStrategy = new WaitStrategy();
+      _ = waitStrategy.WithStrategy(waitUntil);
 
-      if (waitStrategyOptionModifier != null)
+      if (waitStrategyModifier != null)
       {
-        waitStrategyOptionModifier(waitStrategyOption);
+        waitStrategyModifier(waitStrategy);
       }
 
-      _waitStrategies.Add(waitStrategyOption);
+      _waitStrategies.Add(waitStrategy);
       return this;
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilFileExists(string file, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilFileExists(string file, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilFilesExists(file), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilFilesExists(file), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilMessageIsLogged(string pattern, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilMessageIsLogged(string pattern, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(message), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilMessageIsLogged(message), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilOperationIsSucceeded(operation, maxCallCount), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilOperationIsSucceeded(operation, maxCallCount), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyOptionModifier = null)
+    public IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyOptionModifier);
+      return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyModifier);
     }
 
     /// <inheritdoc />

@@ -15,12 +15,12 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Adds a custom wait strategy to the wait strategies collection.
     /// </summary>
-    /// <param name="waitStrategy">The wait strategy until the container is ready.</param>
+    /// <param name="waitUntil">The wait strategy until the container is ready.</param>
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <remarks>Already contains <see cref="UntilContainerIsRunning" /> as default wait strategy.</remarks>
     [PublicAPI]
-    IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitStrategy, Action<IWaitStrategy> waitStrategyOptionModifier = null);
+    IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the command is completed successfully.

@@ -9,34 +9,49 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IWaitStrategy" />
   public class WaitStrategy : IWaitStrategy
   {
-    private readonly IWaitUntil _waitUntil;
+    private IWaitWhile _waitWhile;
+
+    private IWaitUntil _waitUntil;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
+    /// Gets the number of retries.
     /// </summary>
-    /// <param name="waitUntil">The wait condition to run.</param>
-    public WaitStrategy(IWaitUntil waitUntil)
-      : this()
+    public ushort Retries { get; private set; }
+      = 1;
+
+    /// <summary>
+    /// Gets the interval between retries.
+    /// </summary>
+    public TimeSpan Interval { get; private set; }
+      = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// Gets the timeout.
+    /// </summary>
+    public TimeSpan Timeout { get; private set; }
+      = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Sets the wait while condition.
+    /// </summary>
+    /// <param name="waitWhile">The wait while condition to be used in the strategy.</param>
+    /// <returns>The updated instance of the wait strategy.</returns>
+    public WaitStrategy WithStrategy(IWaitWhile waitWhile)
+    {
+      _waitWhile = waitWhile;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the wait until condition.
+    /// </summary>
+    /// <param name="waitUntil">The wait until condition to be used in the strategy.</param>
+    /// <returns>The updated instance of the wait strategy.</returns>
+    public WaitStrategy WithStrategy(IWaitUntil waitUntil)
     {
       _waitUntil = waitUntil;
+      return this;
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
-    /// </summary>
-    private WaitStrategy()
-    {
-      _ = WithRetries(1).WithInterval(TimeSpan.FromSeconds(1)).WithTimeout(TimeSpan.FromMinutes(5));
-    }
-
-    /// <inheritdoc />
-    public ushort Retries { get; private set; }
-
-    /// <inheritdoc />
-    public TimeSpan Interval { get; private set; }
-
-    /// <inheritdoc />
-    public TimeSpan Timeout { get; private set; }
 
     /// <inheritdoc />
     public IWaitStrategy WithRetries(ushort retries)
@@ -67,7 +82,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A task representing the asynchronous operation, returning false if the container satisfies the condition; otherwise, true.</returns>
     public virtual Task<bool> WhileAsync(IContainer container, CancellationToken ct = default)
     {
-      throw new NotImplementedException();
+      return _waitWhile.WhileAsync(container);
     }
 
     /// <summary>
