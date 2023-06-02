@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <remarks>Already contains <see cref="UntilContainerIsRunning" /> as default wait strategy.</remarks>
     [PublicAPI]
-    IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitStrategy, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitStrategy, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the command is completed successfully.
@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <remarks>Invokes the operating system command shell. Expects the exit code to be 0.</remarks>
     [PublicAPI]
-    IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the command is completed successfully.
@@ -43,7 +43,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Normal shell processing does not happen. Expects the exit code to be 0.
     /// </remarks>
     [PublicAPI]
-    IWaitForContainerOS UntilCommandIsCompleted(Action<IWaitStrategyOption> waitStrategyOptionModifier = null, params string[] command);
+    IWaitForContainerOS UntilCommandIsCompleted(Action<IWaitStrategy> waitStrategyOptionModifier = null, params string[] command);
 
     /// <summary>
     /// Waits until the port is available.
@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the file exists.
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilFileExists(string file, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilFileExists(string file, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the message is logged.
@@ -70,7 +70,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilMessageIsLogged(string pattern, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilMessageIsLogged(string pattern, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the message is logged.
@@ -79,7 +79,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the message is logged in the steam.
@@ -90,7 +90,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
     [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IWaitForContainerOS.UntilMessageIsLogged(string) or IWaitForContainerOS.UntilMessageIsLogged(Regex) instead.")]
-    IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the operation is completed successfully.
@@ -101,7 +101,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="maxCallCount" />.</exception>
     [PublicAPI]
-    IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the http request is completed successfully.
@@ -110,7 +110,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyOptionModifier">The wait strategy option modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Waits until the container is healthy.
@@ -120,13 +120,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
-    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategyOption> waitStrategyOptionModifier = null);
+    IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyOptionModifier = null);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.
     /// </summary>
     /// <returns>List with all configured wait strategies.</returns>
     [PublicAPI]
-    IEnumerable<IWaitUntil> Build();
+    IEnumerable<WaitStrategy> Build();
   }
 }

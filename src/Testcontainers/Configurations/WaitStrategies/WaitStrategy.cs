@@ -3,10 +3,84 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
-  public static class WaitStrategy
+  /// <inheritdoc cref="IWaitStrategy" />
+  public class WaitStrategy : IWaitStrategy
   {
+    private readonly IWaitUntil _waitUntil;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
+    /// </summary>
+    /// <param name="waitUntil">The wait condition to run.</param>
+    public WaitStrategy(IWaitUntil waitUntil)
+      : this()
+    {
+      _waitUntil = waitUntil;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
+    /// </summary>
+    private WaitStrategy()
+    {
+      _ = WithRetries(1).WithInterval(TimeSpan.FromSeconds(1)).WithTimeout(TimeSpan.FromMinutes(5));
+    }
+
+    /// <inheritdoc />
+    public ushort Retries { get; private set; }
+
+    /// <inheritdoc />
+    public TimeSpan Interval { get; private set; }
+
+    /// <inheritdoc />
+    public TimeSpan Timeout { get; private set; }
+
+    /// <inheritdoc />
+    public IWaitStrategy WithRetries(ushort retries)
+    {
+      Retries = retries;
+      return this;
+    }
+
+    /// <inheritdoc />
+    public IWaitStrategy WithInterval(TimeSpan interval)
+    {
+      Interval = interval;
+      return this;
+    }
+
+    /// <inheritdoc />
+    public IWaitStrategy WithTimeout(TimeSpan timeout)
+    {
+      Timeout = timeout;
+      return this;
+    }
+
+    /// <summary>
+    /// Executes the wait strategy while the container satisfies the condition.
+    /// </summary>
+    /// <param name="container">The container to check the condition for.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation, returning false if the container satisfies the condition; otherwise, true.</returns>
+    public virtual Task<bool> WhileAsync(IContainer container, CancellationToken ct = default)
+    {
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Executes the wait strategy until the container satisfies the condition.
+    /// </summary>
+    /// <param name="container">The container to check the condition for.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation, returning true if the container satisfies the condition; otherwise, false.</returns>
+    public virtual Task<bool> UntilAsync(IContainer container, CancellationToken ct = default)
+    {
+      return _waitUntil.UntilAsync(container);
+    }
+
     /// <summary>
     /// Waits asynchronously until the specified condition returns false or until a timeout occurs.
     /// </summary>

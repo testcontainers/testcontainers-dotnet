@@ -119,7 +119,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the wait strategies.
     /// </summary>
-    IEnumerable<IWaitUntil> WaitStrategies { get; }
+    IEnumerable<WaitStrategy> WaitStrategies { get; }
 
     /// <summary>
     /// Gets the startup callback.

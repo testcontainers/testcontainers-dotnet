@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<string> networkAliases = null,
       IEnumerable<string> extraHosts = null,
       IOutputConsumer outputConsumer = null,
-      IEnumerable<IWaitUntil> waitStrategies = null,
+      IEnumerable<WaitStrategy> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
       bool? privileged = null)
@@ -132,7 +132,7 @@ namespace DotNet.Testcontainers.Configurations
       NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
       ExtraHosts = BuildConfiguration.Combine(oldValue.ExtraHosts, newValue.ExtraHosts);
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
-      WaitStrategies = BuildConfiguration.Combine<IEnumerable<IWaitUntil>>(oldValue.WaitStrategies, newValue.WaitStrategies);
+      WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
@@ -199,7 +199,7 @@ namespace DotNet.Testcontainers.Configurations
     public IOutputConsumer OutputConsumer { get; }
 
     /// <inheritdoc />
-    public IEnumerable<IWaitUntil> WaitStrategies { get; }
+    public IEnumerable<WaitStrategy> WaitStrategies { get; }
 
     /// <inheritdoc />
     public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
