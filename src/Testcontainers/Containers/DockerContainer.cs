@@ -223,7 +223,7 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfResourceNotFound();
 
-      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.ElementAt(0).HostPort, out var publicPort))
+      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
       {
         return publicPort;
       }

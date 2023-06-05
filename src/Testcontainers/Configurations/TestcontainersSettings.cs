@@ -81,7 +81,7 @@ namespace DotNet.Testcontainers.Configurations
                 runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
                 runtimeInfo.Append("  Total Memory: ");
-                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits.Last());
+                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
               }
               catch
               {
