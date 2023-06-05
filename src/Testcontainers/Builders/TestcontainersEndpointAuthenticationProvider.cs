@@ -16,28 +16,28 @@
   /// Testcontainers Cloud if it is running.
   /// </summary>
   [PublicAPI]
-  internal sealed class TestcontainersHostEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
+  internal sealed class TestcontainersEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
   {
     private readonly ICustomConfiguration _customConfiguration;
 
     private readonly Uri _dockerEngine;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestcontainersHostEndpointAuthenticationProvider" /> class.
+    /// Initializes a new instance of the <see cref="TestcontainersEndpointAuthenticationProvider" /> class.
     /// </summary>
-    public TestcontainersHostEndpointAuthenticationProvider()
+    public TestcontainersEndpointAuthenticationProvider()
     {
-      _customConfiguration = new TestcontainersHostConfiguration();
+      _customConfiguration = new TestcontainersConfiguration();
       _dockerEngine = GetDockerHost();
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestcontainersHostEndpointAuthenticationProvider" /> class.
+    /// Initializes a new instance of the <see cref="TestcontainersEndpointAuthenticationProvider" /> class.
     /// </summary>
     /// <param name="lines">A list of Java properties file lines.</param>
-    public TestcontainersHostEndpointAuthenticationProvider(params string[] lines)
+    public TestcontainersEndpointAuthenticationProvider(params string[] lines)
     {
-      _customConfiguration = new TestcontainersHostConfiguration(lines);
+      _customConfiguration = new TestcontainersConfiguration(lines);
       _dockerEngine = GetDockerHost();
     }
 
@@ -125,13 +125,13 @@
       return _customConfiguration.GetHubImageNamePrefix();
     }
 
-    private sealed class TestcontainersHostConfiguration : PropertiesFileConfiguration
+    private sealed class TestcontainersConfiguration : PropertiesFileConfiguration
     {
-      public TestcontainersHostConfiguration()
+      public TestcontainersConfiguration()
       {
       }
 
-      public TestcontainersHostConfiguration(params string[] lines)
+      public TestcontainersConfiguration(params string[] lines)
         : base(lines)
       {
       }
