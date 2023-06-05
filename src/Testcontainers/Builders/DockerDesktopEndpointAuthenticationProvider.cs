@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Runtime.InteropServices;
@@ -46,6 +46,11 @@
     /// <inheritdoc />
     public string GetDockerSocketOverride()
     {
+      // Docker Desktop for Linux and macOS executes containers within a virtual
+      // machine. It is important to note that the socket path inside the VM differs
+      // from the socket path on the test host. In order to properly mount the
+      // appropriate socket to the Resource Reaper, we need to override it specifically
+      // for Docker Desktop.
       return "/var/run/docker.sock";
     }
 

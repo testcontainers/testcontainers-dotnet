@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Builders
+namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Text.Json;
@@ -26,9 +26,8 @@
     /// Initializes a new instance of the <see cref="TestcontainersEndpointAuthenticationProvider" /> class.
     /// </summary>
     public TestcontainersEndpointAuthenticationProvider()
+      : this(new TestcontainersConfiguration())
     {
-      _customConfiguration = new TestcontainersConfiguration();
-      _dockerEngine = GetDockerHost();
     }
 
     /// <summary>
@@ -36,9 +35,14 @@
     /// </summary>
     /// <param name="lines">A list of Java properties file lines.</param>
     public TestcontainersEndpointAuthenticationProvider(params string[] lines)
+      : this(new TestcontainersConfiguration(lines))
     {
-      _customConfiguration = new TestcontainersConfiguration(lines);
-      _dockerEngine = GetDockerHost();
+    }
+
+    private TestcontainersEndpointAuthenticationProvider(ICustomConfiguration customConfiguration)
+    {
+      _customConfiguration = customConfiguration;
+      _dockerEngine = customConfiguration.GetDockerHost();
     }
 
     /// <inheritdoc />
