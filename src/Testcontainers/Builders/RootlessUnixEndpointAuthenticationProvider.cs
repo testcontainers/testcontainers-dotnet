@@ -9,15 +9,13 @@ namespace DotNet.Testcontainers.Builders
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   [PublicAPI]
-  internal sealed class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
+  internal class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
-    private readonly Uri _dockerEngine;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
     /// </summary>
     public RootlessUnixEndpointAuthenticationProvider()
-      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeDesktopDir(), GetSocketPathFromHomeRunDir(), GetSocketPathFromRunDir())
+      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeRunDir(), GetSocketPathFromRunDir())
     {
     }
 
@@ -27,41 +25,46 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="socketPaths">A list of socket paths.</param>
     public RootlessUnixEndpointAuthenticationProvider(params string[] socketPaths)
     {
-      _dockerEngine = socketPaths
+      DockerEngine = socketPaths
         .Where(File.Exists)
         .Select(socketPath => new Uri("unix://" + socketPath))
         .FirstOrDefault();
     }
 
+    /// <summary>
+    /// Gets the Unix socket Docker Engine endpoint.
+    /// </summary>
+    protected Uri DockerEngine { get; }
+
     /// <inheritdoc />
     public override bool IsApplicable()
     {
-      return _dockerEngine != null;
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && DockerEngine != null;
     }
 
     /// <inheritdoc />
     public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
     {
-      return new DockerEndpointAuthenticationConfiguration(_dockerEngine);
+      return new DockerEndpointAuthenticationConfiguration(DockerEngine);
     }
 
-    private static string GetSocketPathFromEnv()
+    protected static string GetSocketPathFromEnv()
     {
       var xdgRuntimeDir = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR");
       return string.Join("/", xdgRuntimeDir, "docker.sock");
     }
 
-    private static string GetSocketPathFromHomeDesktopDir()
+    protected static string GetSocketPathFromHomeDesktopDir()
     {
       return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "desktop", "docker.sock");
     }
 
-    private static string GetSocketPathFromHomeRunDir()
+    protected static string GetSocketPathFromHomeRunDir()
     {
       return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "run", "docker.sock");
     }
 
-    private static string GetSocketPathFromRunDir()
+    protected static string GetSocketPathFromRunDir()
     {
       ushort uid = 0;
 
