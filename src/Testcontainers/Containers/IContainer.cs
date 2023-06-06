@@ -165,9 +165,11 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
 
-    Task CopyAsync(FileInfo source, string target, CancellationToken ct = default);
+    Task CopyAsync(string source, string target, CancellationToken ct = default);
 
     Task CopyAsync(DirectoryInfo source, string target, CancellationToken ct = default);
+
+    Task CopyAsync(FileInfo source, string target, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.
