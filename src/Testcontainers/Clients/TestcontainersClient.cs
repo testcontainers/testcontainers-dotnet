@@ -26,7 +26,9 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
 
-    private readonly string _osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+    private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+
+    private static readonly IOperatingSystem OS = new Unix(dockerEndpointAuthConfig: null);
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
@@ -79,7 +81,7 @@ namespace DotNet.Testcontainers.Clients
     public IDockerSystemOperations System { get; }
 
     /// <inheritdoc />
-    public bool IsRunningInsideDocker => File.Exists(Path.Combine(_osRootDirectory, ".dockerenv"));
+    public bool IsRunningInsideDocker => File.Exists(Path.Combine(OSRootDirectory, ".dockerenv"));
 
     /// <inheritdoc />
     public Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default)
@@ -163,10 +165,35 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public async Task CopyAsync(string id, FileInfo source, string target, CancellationToken ct = default)
+    {
+      using (var tarOutputStream1 = new TarOutputStream1(source))
+      {
+        tarOutputStream1.Tar();
+        tarOutputStream1.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, target, tarOutputStream1, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, CancellationToken ct = default)
+    {
+      using (var tarOutputStream1 = new TarOutputStream1(source))
+      {
+        tarOutputStream1.Tar();
+        tarOutputStream1.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, target, tarOutputStream1, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
-      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
-      var containerPath = os.NormalizePath(filePath);
+      var containerPath = OS.NormalizePath(filePath);
 
       using (var tarOutputMemStream = new MemoryStream())
       {
@@ -210,8 +237,7 @@ namespace DotNet.Testcontainers.Clients
     {
       Stream tarStream;
 
-      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
-      var containerPath = os.NormalizePath(filePath);
+      var containerPath = OS.NormalizePath(filePath);
 
       try
       {
@@ -322,6 +348,41 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return configuration.Image.FullName;
+    }
+
+    private sealed class TarOutputStream1 : MemoryStream
+    {
+      private readonly string _rootDirectoryPath;
+
+      private readonly TarEntry _tarEntry;
+
+      public TarOutputStream1(FileInfo fileSystemInfo)
+        : this(fileSystemInfo.Directory)
+      {
+        _tarEntry = TarEntry.CreateEntryFromFile(fileSystemInfo.FullName);
+      }
+
+      public TarOutputStream1(FileSystemInfo fileSystemInfo)
+        : this(fileSystemInfo.FullName)
+      {
+        _tarEntry = TarEntry.CreateEntryFromFile(fileSystemInfo.FullName);
+      }
+
+      private TarOutputStream1(string rootDirectoryPath)
+      {
+        _rootDirectoryPath = OS.NormalizePath(rootDirectoryPath.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+      }
+
+      public void Tar()
+      {
+        using (var tarArchive = TarArchive.CreateOutputTarArchive(this))
+        {
+          tarArchive.IsStreamOwner = false;
+          tarArchive.RootPath = _rootDirectoryPath;
+          tarArchive.WriteEntry(_tarEntry, true);
+          tarArchive.Close();
+        }
+      }
     }
   }
 }

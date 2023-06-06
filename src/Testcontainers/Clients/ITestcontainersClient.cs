@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -102,6 +103,10 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
+
+    Task CopyAsync(string id, FileInfo source, string target, CancellationToken ct = default);
+
+    Task CopyAsync(string id, DirectoryInfo source, string target, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.

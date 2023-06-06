@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Containers
   using System;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -276,6 +277,18 @@ namespace DotNet.Testcontainers.Containers
         await UnsafeStopAsync(ct)
           .ConfigureAwait(false);
       }
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(FileInfo source, string target, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, source, target, ct);
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(DirectoryInfo source, string target, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, source, target, ct);
     }
 
     /// <inheritdoc />

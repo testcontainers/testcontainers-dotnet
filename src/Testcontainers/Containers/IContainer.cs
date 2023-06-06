@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Images;
@@ -163,6 +164,10 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
+
+    Task CopyAsync(FileInfo source, string target, CancellationToken ct = default);
+
+    Task CopyAsync(DirectoryInfo source, string target, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.
