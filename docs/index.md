@@ -38,7 +38,7 @@ Debug.Assert(Guid.TryParse(guid, out _));
   <strong>Not using .NET? Here are other supported languages!</strong>
 </p>
 <div class="card-grid">
-  <a class="card-grid-item" href="https://www.testcontainers.org">
+  <a class="card-grid-item" href="https://java.testcontainers.org">
     <img src="language-logos/java.svg" />Java
   </a>
   <a class="card-grid-item" href="https://golang.testcontainers.org">
@@ -98,5 +98,5 @@ Join our [Slack workspace][slack-workspace] | [Testcontainers OSS][testcontainer
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/
 [slack-workspace]: https://slack.testcontainers.org/
-[testcontainers-oss]: https://www.testcontainers.org/
+[testcontainers-oss]: https://java.testcontainers.org/
 [testcontainers-cloud]: https://www.testcontainers.cloud/
