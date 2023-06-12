@@ -169,7 +169,12 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(source, target))
       {
-        await tarOutputMemStream.TarAsync();
+        await tarOutputMemStream.TarAsync(ct)
+          .ConfigureAwait(false);
+
+        // var dd = File.Open("C:/temp/ffff.tar", FileMode.Create);
+        // tarOutputMemStream.CopyTo(dd);
+        // dd.Dispose();
 
         await Container.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), tarOutputMemStream, ct)
           .ConfigureAwait(false);
@@ -181,7 +186,8 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(source, target))
       {
-        await tarOutputMemStream.TarAsync();
+        await tarOutputMemStream.TarAsync(ct)
+          .ConfigureAwait(false);
 
         await Container.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), tarOutputMemStream, ct)
           .ConfigureAwait(false);
@@ -350,60 +356,95 @@ namespace DotNet.Testcontainers.Clients
 
     private sealed class TarOutputMemoryStream : MemoryStream
     {
-        private readonly string _rootDirectoryPath;
+      private readonly string _rootDirectoryPath;
 
-        private readonly string _sourceFilePath;
+      private readonly string _sourceFilePath;
 
-        private readonly string _targetFilePath;
+      private readonly string _targetFilePath;
 
-        public TarOutputMemoryStream(FileInfo fileSystemInfo, string targetFilePath)
-            : this(fileSystemInfo.Directory, targetFilePath)
+      private readonly TarOutputStream _tarOutputStream;
+
+      public TarOutputMemoryStream(FileInfo sourceFilePath, string targetFilePath)
+        : this(sourceFilePath.Directory, targetFilePath)
+      {
+      }
+
+      public TarOutputMemoryStream(FileSystemInfo sourceDirectoryPath, string targetFilePath)
+        : this(sourceDirectoryPath.FullName, targetFilePath)
+      {
+        _rootDirectoryPath = OS.NormalizePath(sourceDirectoryPath.FullName.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+      }
+
+      private TarOutputMemoryStream(string sourceFilePath, string targetFilePath)
+        : this()
+      {
+        _sourceFilePath = sourceFilePath;
+        _targetFilePath = targetFilePath;
+      }
+
+      private TarOutputMemoryStream()
+      {
+        _tarOutputStream = new TarOutputStream(this, Encoding.Default);
+        _tarOutputStream.IsStreamOwner = false;
+      }
+
+      public async Task TarAsync(CancellationToken ct = default)
+      {
+        if ((File.GetAttributes(_sourceFilePath) & FileAttributes.Directory) == FileAttributes.Directory)
         {
-            _sourceFilePath = fileSystemInfo.FullName;
+          await AddAsync(new DirectoryInfo(_sourceFilePath), ct)
+            .ConfigureAwait(false);
+        }
+        else
+        {
+          await AddAsync(new FileInfo(_sourceFilePath), ct)
+            .ConfigureAwait(false);
+        }
+        _tarOutputStream.Close();
+        Seek(0, SeekOrigin.Begin);
+      }
+
+      protected override void Dispose(bool disposing)
+      {
+        _tarOutputStream.Dispose();
+        base.Dispose(disposing);
+      }
+
+      private async Task AddAsync(DirectoryInfo source, CancellationToken ct = default)
+      {
+        foreach (var file in source.GetFiles())
+        {
+          await AddAsync(file, ct)
+            .ConfigureAwait(false);
         }
 
-        public TarOutputMemoryStream(FileSystemInfo fileSystemInfo, string targetFilePath)
-            : this(fileSystemInfo.FullName)
+        foreach (var directory in source.GetDirectories())
         {
-            _sourceFilePath = fileSystemInfo.FullName;
-            _targetFilePath = targetFilePath;
+          await AddAsync(directory, ct)
+            .ConfigureAwait(false);
         }
+      }
 
-        private TarOutputMemoryStream(string rootDirectoryPath)
+      private async Task AddAsync(FileSystemInfo source, CancellationToken ct = default)
+      {
+        using (var inputStream = new FileStream(source.FullName, FileMode.Open, FileAccess.Read))
         {
-            _rootDirectoryPath = OS.NormalizePath(rootDirectoryPath.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+          var relativeFilePath = source.FullName.Substring(_rootDirectoryPath.Length + 1);
+          relativeFilePath = OS.NormalizePath(Path.Combine(_targetFilePath, relativeFilePath));
+
+          var entry = TarEntry.CreateTarEntry(relativeFilePath);
+          entry.Size = inputStream.Length;
+
+          await _tarOutputStream.PutNextEntryAsync(entry, default)
+            .ConfigureAwait(false);
+
+          await inputStream.CopyToAsync(_tarOutputStream, 4096, default)
+            .ConfigureAwait(false);
+
+          await _tarOutputStream.CloseEntryAsync(default)
+            .ConfigureAwait(false);
         }
-
-        public async Task TarAsync()
-        {
-            using (var tarOutputStream = new TarOutputStream(this, Encoding.Default))
-            {
-                tarOutputStream.IsStreamOwner = false;
-
-                foreach (var file in Directory.GetFiles(_sourceFilePath))
-                {
-                    using (var inputStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                    {
-                        var relativeFilePath = file.Substring(_sourceFilePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length + 1);
-                        relativeFilePath = OS.NormalizePath(Path.Combine(_targetFilePath, relativeFilePath));
-
-                        var entry = TarEntry.CreateTarEntry(relativeFilePath);
-                        entry.Size = inputStream.Length;
-
-                        await tarOutputStream.PutNextEntryAsync(entry, default)
-                            .ConfigureAwait(false);
-
-                        await inputStream.CopyToAsync(tarOutputStream, 4096, default)
-                            .ConfigureAwait(false);
-
-                        await tarOutputStream.CloseEntryAsync(default)
-                            .ConfigureAwait(false);
-                    }
-                }
-            }
-
-            Seek(0, SeekOrigin.Begin);
-        }
+      }
     }
   }
 }
