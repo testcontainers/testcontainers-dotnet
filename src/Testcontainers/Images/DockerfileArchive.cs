@@ -105,7 +105,7 @@ namespace DotNet.Testcontainers.Images
                 await tarOutputStream.PutNextEntryAsync(entry, ct)
                   .ConfigureAwait(false);
 
-                await inputStream.CopyToAsync(tarOutputStream, 4096, ct)
+                await inputStream.CopyToAsync(tarOutputStream, 81920, ct)
                   .ConfigureAwait(false);
 
                 await tarOutputStream.CloseEntryAsync(ct)
