@@ -1,25 +1,35 @@
 # RabbitMQ
 
-Here is an example of a pre-configured RabbitMQ [module](https://www.nuget.org/packages/Testcontainers.RabbitMq;).
+Here is an example of a pre-configured RabbitMQ [module](https://www.nuget.org/packages/Testcontainers.RabbitMq).
 In this example, Testcontainers is utilized to launch a RabbitMQ server within an [xUnit.net][xunit] test. The purpose
 is to establish a connection to the server, send a message, and subsequently validate the successful transmission and
 consumption of the message. The process also ensures that the received message corresponds accurately to the
 originally sent message.
 
-```csharp
-using RabbitMQ.Client;
+Before running the test, make sure to install the required dependencies:
+
+```console title="Install the NuGet dependencies"
+dotnet add package Testcontainers.RabbitMq
+dotnet add package RabbitMQ.Client
+dotnet add package xunit
+```
+
+Copy and paste the following code into a new `.cs` test file:
+
+```csharp title="UnitTest.cs"
 using System.Text;
+using System.Threading;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using Testcontainers.RabbitMq;
 using Xunit;
 
-
-public class RabbitMqContainerTest : IAsyncLifetime
+public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
-  private RabbitMqContainer _rabbitMqContainer;
+  private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
 
   public Task InitializeAsync()
   {
-    _rabbitMqContainer = new RabbitMqBuilder().Build();
     return _rabbitMqContainer.StartAsync();
   }
 
@@ -29,43 +39,49 @@ public class RabbitMqContainerTest : IAsyncLifetime
   }
 
   [Fact]
-  public void UnitTest()
+  public void ConsumeMessageFromQueue()
   {
-    // Create connection
+    const string queue = "hello";
+
+    const string message = "Hello World!";
+
+    string actualMessage = null;
+
+    // Signal the completion of message reception.
+    EventWaitHandle waitHandle = new ManualResetEvent(false);
+
+    // Create and establish a connection.
     var connectionFactory = new ConnectionFactory();
     connectionFactory.Uri = new Uri(_rabbitMqContainer.GetConnectionString());
-
     using var connection = connectionFactory.CreateConnection();
 
-    Assert.True(connection.IsOpen);
+    // Send a message to the channel.
+    using var channel = connection.CreateModel();
+    channel.QueueDeclare(queue, false, false, false, null);
+    channel.BasicPublish(string.Empty, queue, null, Encoding.Default.GetBytes(message));
 
-    // Send message
-    var channel = connection.CreateModel();
-    var queueName = "my_queue";
-    var message = "Hello, RabbitMQ!";
-
-    channel.QueueDeclare(queueName, false, false, false, null);
-    channel.BasicPublish("", queueName, null, Encoding.UTF8.GetBytes(message));
-
-    // Consume message
-    var consumer = new RabbitMQ.Client.Events.EventingBasicConsumer(channel);
-    var receivedMessage = "";
-
+    // Consume a message from the channel.
+    var consumer = new EventingBasicConsumer(channel);
     consumer.Received += (_, eventArgs) =>
     {
-        var body = eventArgs.Body.ToArray();
-        receivedMessage = Encoding.UTF8.GetString(body);
+      actualMessage = Encoding.Default.GetString(eventArgs.Body.ToArray());
+      waitHandle.Set();
     };
 
-    channel.BasicConsume(queueName, true, consumer);
-    Thread.Sleep(1000); // to avoid race condition
-    Assert.Equal(message, receivedMessage);
-  }
+    channel.BasicConsume(queue, true, consumer);
+    waitHandle.WaitOne(TimeSpan.FromSeconds(1));
 
+    Assert.Equal(message, actualMessage);
+  }
 }
 ```
 
-Make sure to install the [RabbitMQ.Client](https://www.nuget.org/packages/RabbitMQ.Client) package to be able to connect to RabbitMQ.
+You can run the test from the terminal:
+
+```console title="Run RabbitMQ test"
+dotnet test
+```
+
 Read more about the usage of RabbitMQ and .NET [here](https://www.rabbitmq.com/tutorials/tutorial-one-dotnet.html).
 
 
