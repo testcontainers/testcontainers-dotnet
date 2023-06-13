@@ -35,38 +35,38 @@ namespace DotNet.Testcontainers.Builders
     {
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(IContainer container)
     {
       var containers = new[] { container };
       return Clone(new ContainerConfiguration(containers: containers));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(INetwork network)
     {
       return WithNetwork(network);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(IVolume volume, string destination)
     {
       return WithVolumeMount(volume, destination);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(IVolume volume, string destination, AccessMode accessMode)
     {
       return WithVolumeMount(volume, destination, accessMode);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithImage(string image)
     {
       return WithImage(new DockerImage(image));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithImage(IImage image)
     {
       if (string.IsNullOrEmpty(TestcontainersSettings.HubImageNamePrefix))
@@ -82,87 +82,87 @@ namespace DotNet.Testcontainers.Builders
       return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix)));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy)
     {
       return Clone(new ContainerConfiguration(imagePullPolicy: imagePullPolicy));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithName(string name)
     {
       return Clone(new ContainerConfiguration(name: name));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithHostname(string hostname)
     {
       return Clone(new ContainerConfiguration(hostname: hostname));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithMacAddress(string macAddress)
     {
       return Clone(new ContainerConfiguration(macAddress: macAddress));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithWorkingDirectory(string workingDirectory)
     {
       return Clone(new ContainerConfiguration(workingDirectory: workingDirectory));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithEntrypoint(params string[] entrypoint)
     {
       return Clone(new ContainerConfiguration(entrypoint: entrypoint));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithCommand(params string[] command)
     {
       return Clone(new ContainerConfiguration(command: command));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithEnvironment(string name, string value)
     {
       var environments = new Dictionary<string, string> { { name, value } };
       return Clone(new ContainerConfiguration(environments: environments));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithEnvironment(IReadOnlyDictionary<string, string> environments)
     {
       return Clone(new ContainerConfiguration(environments: environments));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithExposedPort(int port)
     {
       return WithExposedPort(port.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithExposedPort(string port)
     {
       var exposedPorts = new Dictionary<string, string> { { port, port } };
       return Clone(new ContainerConfiguration(exposedPorts: exposedPorts));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithPortBinding(int port, bool assignRandomHostPort = false)
     {
       return WithPortBinding(port.ToString(CultureInfo.InvariantCulture), assignRandomHostPort);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithPortBinding(int hostPort, int containerPort)
     {
       return WithPortBinding(hostPort.ToString(CultureInfo.InvariantCulture), containerPort.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithPortBinding(string port, bool assignRandomHostPort = false)
     {
       // Use an empty string instead of "0": https://github.com/docker/for-mac/issues/5588#issuecomment-934600089.
@@ -170,7 +170,7 @@ namespace DotNet.Testcontainers.Builders
       return WithPortBinding(hostPort, port);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithPortBinding(string hostPort, string containerPort)
     {
       // Remove this together with TestcontainersSettings.ResourceReaperPublicHostPort.
@@ -180,157 +180,157 @@ namespace DotNet.Testcontainers.Builders
       return Clone(new ContainerConfiguration(portBindings: portBindings)).WithExposedPort(containerPort);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(string source, string destination)
     {
       return WithResourceMapping(new FileResourceMapping(source, destination));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(byte[] resourceContent, string destination)
     {
       return WithResourceMapping(new BinaryResourceMapping(resourceContent, destination));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping)
     {
       var resourceMappings = new Dictionary<string, IResourceMapping> { { resourceMapping.Target, resourceMapping } };
       return Clone(new ContainerConfiguration(resourceMappings: resourceMappings));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithMount(IMount mount)
     {
       var mounts = new[] { mount };
       return Clone(new ContainerConfiguration(mounts: mounts));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithBindMount(string source, string destination)
     {
       return WithBindMount(source, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithBindMount(string source, string destination, AccessMode accessMode)
     {
       return WithMount(new BindMount(source, destination, accessMode));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithVolumeMount(string source, string destination)
     {
       return WithVolumeMount(source, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithVolumeMount(string source, string destination, AccessMode accessMode)
     {
       var volume = new FromExistingVolume().WithName(source).Build();
       return WithVolumeMount(volume, destination, accessMode);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithVolumeMount(IVolume volume, string destination)
     {
       return WithVolumeMount(volume, destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithVolumeMount(IVolume volume, string destination, AccessMode accessMode)
     {
       return WithMount(new VolumeMount(volume, destination, accessMode));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithTmpfsMount(string destination)
     {
       return WithTmpfsMount(destination, AccessMode.ReadWrite);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithTmpfsMount(string destination, AccessMode accessMode)
     {
       return WithMount(new TmpfsMount(destination, accessMode));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithNetwork(string id, string name)
     {
       return WithNetwork(name);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithNetwork(string name)
     {
       var network = new FromExistingNetwork().WithName(name).Build();
       return WithNetwork(network);
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithNetwork(INetwork network)
     {
       var networks = new[] { network };
       return Clone(new ContainerConfiguration(networks: networks));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithNetworkAliases(params string[] networkAliases)
     {
       return WithNetworkAliases(networkAliases.AsEnumerable());
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithNetworkAliases(IEnumerable<string> networkAliases)
     {
       return Clone(new ContainerConfiguration(networkAliases: networkAliases));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithExtraHost(string hostname, string ipAddress)
     {
       var extraHosts = new[] { string.Join(":", hostname, ipAddress) };
       return Clone(new ContainerConfiguration(extraHosts: extraHosts));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithAutoRemove(bool autoRemove)
     {
       return Clone(new ContainerConfiguration(autoRemove: autoRemove));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithPrivileged(bool privileged)
     {
       return Clone(new ContainerConfiguration(privileged: privileged));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Clone(new ContainerConfiguration(outputConsumer: outputConsumer));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithWaitStrategy(IWaitForContainerOS waitStrategy)
     {
       return Clone(new ContainerConfiguration(waitStrategies: waitStrategy.Build()));
     }
 
-    /// <inheritdoc cref="IContainerBuilder{TBuilderEntity, TContainerEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback)
     {
       return Clone(new ContainerConfiguration(startupCallback: startupCallback));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
       return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     protected override void Validate()
     {
       base.Validate();
