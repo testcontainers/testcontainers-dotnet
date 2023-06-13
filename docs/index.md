@@ -38,7 +38,7 @@ Debug.Assert(Guid.TryParse(guid, out _));
   <strong>Not using .NET? Here are other supported languages!</strong>
 </p>
 <div class="card-grid">
-  <a class="card-grid-item" href="https://www.testcontainers.org">
+  <a class="card-grid-item" href="https://java.testcontainers.org">
     <img src="language-logos/java.svg" />Java
   </a>
   <a class="card-grid-item" href="https://golang.testcontainers.org">
