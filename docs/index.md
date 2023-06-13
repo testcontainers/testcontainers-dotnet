@@ -98,5 +98,5 @@ Join our [Slack workspace][slack-workspace] | [Testcontainers OSS][testcontainer
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/
 [slack-workspace]: https://slack.testcontainers.org/
-[testcontainers-oss]: https://java.testcontainers.org/
+[testcontainers-oss]: https://www.testcontainers.org/
 [testcontainers-cloud]: https://www.testcontainers.cloud/
