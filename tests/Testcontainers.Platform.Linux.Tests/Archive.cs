@@ -90,12 +90,12 @@ public sealed class Archive : MemoryStream
 
 public sealed class TarOutputMemoryStreamTest
 {
-  [Fact(Skip = "Do not run on CI")]
-  public async Task Test()
+  [Fact]
+    public async Task Test()
   {
     using var tarball = new Archive("/tmp/foo/bar/baz");
-    await tarball.AddAsync(new FileInfo(string.Empty));
-    await tarball.AddAsync(new DirectoryInfo(string.Empty));
+    // await tarball.AddAsync(new FileInfo(string.Empty));
+    await tarball.AddAsync(new DirectoryInfo("C:\\Users\\andre.hofmeister\\Desktop"));
     await tarball.TarAsync();
     using var fs = File.Open(Path.Combine("C:", "Temp", Guid.NewGuid().ToString("D")) + ".tar", FileMode.Create);
     await tarball.CopyToAsync(fs);
