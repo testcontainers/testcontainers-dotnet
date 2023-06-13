@@ -1,10 +1,6 @@
 # RabbitMQ
 
-Here is an example of a pre-configured RabbitMQ [module](https://www.nuget.org/packages/Testcontainers.RabbitMq).
-In this example, Testcontainers is utilized to launch a RabbitMQ server within an [xUnit.net][xunit] test. The purpose
-is to establish a connection to the server, send a message, and subsequently validate the successful transmission and
-consumption of the message. The process also ensures that the received message corresponds accurately to the
-originally sent message.
+Here is an example of a pre-configured RabbitMQ [module](https://www.nuget.org/packages/Testcontainers.RabbitMq). In this example, Testcontainers is utilized to launch a RabbitMQ server within an [xUnit.net](https://xunit.net/) test. The purpose is to establish a connection to the server, send a message, and subsequently validate the successful transmission and consumption of the message. The process also ensures that the received message corresponds accurately to the originally sent message.
 
 Before running the test, make sure to install the required dependencies:
 
@@ -16,7 +12,7 @@ dotnet add package xunit
 
 Copy and paste the following code into a new `.cs` test file:
 
-```csharp title="UnitTest.cs"
+```csharp
 using System.Text;
 using System.Threading;
 using RabbitMQ.Client;
@@ -76,13 +72,6 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
 }
 ```
 
-You can run the test from the terminal:
-
-```console title="Run RabbitMQ test"
-dotnet test
-```
+To execute the tests, use the command `dotnet test` from your terminal.
 
 Read more about the usage of RabbitMQ and .NET [here](https://www.rabbitmq.com/tutorials/tutorial-one-dotnet.html).
-
-
-[xunit]: https://xunit.net/
