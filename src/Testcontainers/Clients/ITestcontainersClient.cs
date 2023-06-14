@@ -104,6 +104,8 @@ namespace DotNet.Testcontainers.Clients
     /// <returns>Task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 
+    Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default);
+
     Task CopyAsync(string id, DirectoryInfo source, string target, CancellationToken ct = default);
 
     Task CopyAsync(string id, FileInfo source, string target, CancellationToken ct = default);

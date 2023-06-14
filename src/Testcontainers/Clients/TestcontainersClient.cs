@@ -165,11 +165,27 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public async Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default)
+    {
+      using (var tarOutputMemStream = new TarOutputMemoryStream())
+      {
+        await tarOutputMemStream.AddAsync(resourceMapping, ct)
+          .ConfigureAwait(false);
+
+        tarOutputMemStream.Close();
+        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
     public async Task CopyAsync(string id, DirectoryInfo source, string target, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, ct: ct)
+        await tarOutputMemStream.AddAsync(source, true, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -185,7 +201,7 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, ct: ct)
+        await tarOutputMemStream.AddAsync(source, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -284,21 +300,6 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
-      async Task CopyResourceMappingAsync(string containerId, IResourceMapping resourceMapping)
-      {
-        using (var tarOutputMemStream = new TarOutputMemoryStream(string.Empty))
-        {
-          await tarOutputMemStream.AddAsync(resourceMapping, ct)
-            .ConfigureAwait(false);
-
-          tarOutputMemStream.Close();
-          tarOutputMemStream.Seek(0, SeekOrigin.Begin);
-
-          await Container.ExtractArchiveToContainerAsync(containerId, "/", tarOutputMemStream, ct)
-            .ConfigureAwait(false);
-        }
-      }
-
       if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
@@ -340,7 +341,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ResourceMappings.Any())
       {
-        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMappingAsync(id, resourceMapping)))
+        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
           .ConfigureAwait(false);
       }
 
@@ -367,6 +368,8 @@ namespace DotNet.Testcontainers.Clients
     /// </summary>
     private sealed class TarOutputMemoryStream : TarOutputStream
     {
+      private const int TSVTX = 01000;
+
       private readonly string _targetDirectoryPath;
 
       /// <summary>
@@ -382,7 +385,7 @@ namespace DotNet.Testcontainers.Clients
       /// <summary>
       /// Initializes a new instance of the <see cref="TarOutputMemoryStream" /> class.
       /// </summary>
-      private TarOutputMemoryStream()
+      public TarOutputMemoryStream()
         : base(new MemoryStream(), Encoding.Default)
       {
         IsStreamOwner = false;
@@ -400,7 +403,7 @@ namespace DotNet.Testcontainers.Clients
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = resourceMapping.Target;
-        tarEntry.TarHeader.Mode = 01000;
+        tarEntry.TarHeader.Mode = TSVTX;
         tarEntry.TarHeader.ModTime = DateTime.UtcNow;
         tarEntry.Size = fileContent.Length;
 
@@ -461,7 +464,7 @@ namespace DotNet.Testcontainers.Clients
 
           var tarEntry = new TarEntry(new TarHeader());
           tarEntry.TarHeader.Name = targetFilePath;
-          tarEntry.TarHeader.Mode = 01000;
+          tarEntry.TarHeader.Mode = TSVTX;
           tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
           tarEntry.Size = stream.Length;
 
