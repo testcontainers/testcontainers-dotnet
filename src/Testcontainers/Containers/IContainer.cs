@@ -165,10 +165,31 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
 
+    /// <summary>
+    /// Copies a test host directory or file to the container.
+    /// </summary>
+    /// <param name="source">The source directory or file to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the directory or file has been copied.</returns>
     Task CopyAsync(string source, string target, CancellationToken ct = default);
 
+    /// <summary>
+    /// Copies a test host directory to the container.
+    /// </summary>
+    /// <param name="source">The source directory to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the directory has been copied.</returns>
     Task CopyAsync(DirectoryInfo source, string target, CancellationToken ct = default);
 
+    /// <summary>
+    /// Copies a test host file to the container.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the file has been copied.</returns>
     Task CopyAsync(FileInfo source, string target, CancellationToken ct = default);
 
     /// <summary>
