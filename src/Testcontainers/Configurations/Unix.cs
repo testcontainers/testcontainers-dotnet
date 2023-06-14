@@ -11,6 +11,31 @@ namespace DotNet.Testcontainers.Configurations
   public sealed class Unix : IOperatingSystem
   {
     /// <summary>
+    ///
+    /// </summary>
+    public const UnixFileMode FileMode644 = UnixFileMode.None;
+
+    /// <summary>
+    ///
+    /// </summary>
+    public const UnixFileMode FileMode666 = UnixFileMode.None;
+
+    /// <summary>
+    ///
+    /// </summary>
+    public const UnixFileMode FileMode700 = UnixFileMode.None;
+
+    /// <summary>
+    ///
+    /// </summary>
+    public const UnixFileMode FileMode755 = UnixFileMode.None;
+
+    /// <summary>
+    ///
+    /// </summary>
+    public const UnixFileMode FileMode777 = UnixFileMode.None;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Unix" /> class.
     /// </summary>
     [PublicAPI]

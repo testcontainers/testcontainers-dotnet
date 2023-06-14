@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
@@ -24,7 +25,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public CopyResourceMappingContainerTest()
     {
       _container = new ContainerBuilder()
-        .WithImage("alpine")
+        .WithImage(CommonImages.Alpine)
         .WithResourceMapping(_resourceMappingSourceFilePath, _resourceMappingFileDestinationFilePath)
         .WithResourceMapping(Encoding.Default.GetBytes(ResourceMappingContent), _resourceMappingBytesDestinationFilePath)
         .Build();

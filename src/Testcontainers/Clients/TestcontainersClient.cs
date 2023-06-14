@@ -185,7 +185,7 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, true, ct)
+        await tarOutputMemStream.AddAsync(source, true, Unix.FileMode644, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -201,7 +201,7 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, ct)
+        await tarOutputMemStream.AddAsync(source, Unix.FileMode644, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -368,8 +368,6 @@ namespace DotNet.Testcontainers.Clients
     /// </summary>
     private sealed class TarOutputMemoryStream : TarOutputStream
     {
-      private const int TSVTX = 01000;
-
       private readonly string _targetDirectoryPath;
 
       /// <summary>
@@ -405,7 +403,7 @@ namespace DotNet.Testcontainers.Clients
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = targetFilePath;
-        tarEntry.TarHeader.Mode = TSVTX;
+        tarEntry.TarHeader.Mode = (int)resourceMapping.FileMode;
         tarEntry.TarHeader.ModTime = DateTime.UtcNow;
         tarEntry.Size = fileContent.Length;
 
@@ -428,11 +426,12 @@ namespace DotNet.Testcontainers.Clients
       /// Adds a file to the archive.
       /// </summary>
       /// <param name="file">The file to add to the archive.</param>
+      /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
       /// <returns>A task that completes when the file has been added to the archive.</returns>
-      public Task AddAsync(FileInfo file, CancellationToken ct = default)
+      public Task AddAsync(FileInfo file, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
       {
-        return AddAsync(file.Directory, file, ct);
+        return AddAsync(file.Directory, file, fileMode, ct);
       }
 
       /// <summary>
@@ -440,14 +439,15 @@ namespace DotNet.Testcontainers.Clients
       /// </summary>
       /// <param name="directory">The directory to add to the archive.</param>
       /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
+      /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
-      public async Task AddAsync(DirectoryInfo directory, bool recurse = true, CancellationToken ct = default)
+      public async Task AddAsync(DirectoryInfo directory, bool recurse = true, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
       {
         var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
         foreach (var file in directory.GetFiles("*", searchOption))
         {
-          await AddAsync(directory, file, ct)
+          await AddAsync(directory, file, fileMode, ct)
             .ConfigureAwait(false);
         }
       }
@@ -457,8 +457,9 @@ namespace DotNet.Testcontainers.Clients
       /// </summary>
       /// <param name="directory">The root directory of the file to add to the archive.</param>
       /// <param name="file">The file to add to the archive.</param>
+      /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
-      public async Task AddAsync(DirectoryInfo directory, FileInfo file, CancellationToken ct = default)
+      public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
       {
         using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
         {
@@ -466,7 +467,7 @@ namespace DotNet.Testcontainers.Clients
 
           var tarEntry = new TarEntry(new TarHeader());
           tarEntry.TarHeader.Name = targetFilePath;
-          tarEntry.TarHeader.Mode = TSVTX;
+          tarEntry.TarHeader.Mode = (int)fileMode;
           tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
           tarEntry.Size = stream.Length;
 
