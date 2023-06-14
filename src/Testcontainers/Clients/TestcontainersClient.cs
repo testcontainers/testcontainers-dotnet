@@ -392,7 +392,7 @@ namespace DotNet.Testcontainers.Clients
       }
 
       /// <summary>
-      /// Adds an implementation of <see cref="IResourceMapping" /> to the archive.
+      /// Adds the content of an implementation of <see cref="IResourceMapping" /> to the archive.
       /// </summary>
       /// <param name="resourceMapping">The resource mapping to add to the archive.</param>
       /// <param name="ct">Cancellation token.</param>
