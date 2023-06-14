@@ -15,9 +15,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private readonly string _resourceMappingSourceFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
 
-    private readonly string _resourceMappingFileDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingFileDestinationFilePath = string.Join("/", string.Empty, "tmp", Path.GetRandomFileName());
 
-    private readonly string _resourceMappingBytesDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingBytesDestinationFilePath = string.Join("/", string.Empty, "tmp", Path.GetRandomFileName());
 
     private readonly IContainer _container;
 
