@@ -398,7 +398,10 @@ namespace DotNet.Testcontainers.Clients
         var fileContent = await resourceMapping.GetAllBytesAsync(ct)
           .ConfigureAwait(false);
 
-        var tarEntry = TarEntry.CreateTarEntry(resourceMapping.Target);
+        var tarEntry = new TarEntry(new TarHeader());
+        tarEntry.TarHeader.Name = resourceMapping.Target;
+        tarEntry.TarHeader.Mode = 01000;
+        tarEntry.TarHeader.ModTime = DateTime.UtcNow;
         tarEntry.Size = fileContent.Length;
 
         await PutNextEntryAsync(tarEntry, ct)
@@ -456,7 +459,10 @@ namespace DotNet.Testcontainers.Clients
         {
           var targetFilePath = OS.NormalizePath(Path.Combine(_targetDirectoryPath, file.FullName.Substring(directory.FullName.Length + 1)));
 
-          var tarEntry = TarEntry.CreateTarEntry(targetFilePath);
+          var tarEntry = new TarEntry(new TarHeader());
+          tarEntry.TarHeader.Name = targetFilePath;
+          tarEntry.TarHeader.Mode = 01000;
+          tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
           tarEntry.Size = stream.Length;
 
           await PutNextEntryAsync(tarEntry, ct)
