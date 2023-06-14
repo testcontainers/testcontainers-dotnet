@@ -13,6 +13,8 @@ var container = new ContainerBuilder()
   .WithImage("testcontainers/helloworld:1.1.0")
   // Bind port 8080 of the container to a random port on the host.
   .WithPortBinding(8080, true)
+  // Wait until the HTTP endpoint of the container is available.
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(8080)))
   // Build the container configuration.
   .Build();
 
