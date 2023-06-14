@@ -362,20 +362,37 @@ namespace DotNet.Testcontainers.Clients
       return configuration.Image.FullName;
     }
 
+    /// <summary>
+    /// Represent a tar archive file.
+    /// </summary>
     private sealed class TarOutputMemoryStream : TarOutputStream
     {
       private readonly string _targetDirectoryPath;
 
-      public TarOutputMemoryStream(string targetDirectoryPath) : this()
+      /// <summary>
+      /// Initializes a new instance of the <see cref="TarOutputMemoryStream" /> class.
+      /// </summary>
+      /// <param name="targetDirectoryPath">The target directory path to extract the files to.</param>
+      public TarOutputMemoryStream(string targetDirectoryPath)
+        : this()
       {
         _targetDirectoryPath = targetDirectoryPath;
       }
 
-      private TarOutputMemoryStream() : base(new MemoryStream(), Encoding.Default)
+      /// <summary>
+      /// Initializes a new instance of the <see cref="TarOutputMemoryStream" /> class.
+      /// </summary>
+      private TarOutputMemoryStream()
+        : base(new MemoryStream(), Encoding.Default)
       {
         IsStreamOwner = false;
       }
 
+      /// <summary>
+      /// Adds an implementation of <see cref="IResourceMapping" /> to the archive.
+      /// </summary>
+      /// <param name="resourceMapping">The resource mapping to add to the archive.</param>
+      /// <param name="ct">Cancellation token.</param>
       public async Task AddAsync(IResourceMapping resourceMapping, CancellationToken ct = default)
       {
         var fileContent = await resourceMapping.GetAllBytesAsync(ct)
@@ -399,11 +416,23 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
+      /// <summary>
+      /// Adds a file to the archive.
+      /// </summary>
+      /// <param name="file">The file to add to the archive.</param>
+      /// <param name="ct">Cancellation token.</param>
+      /// <returns>A task that completes when the file has been added to the archive.</returns>
       public Task AddAsync(FileInfo file, CancellationToken ct = default)
       {
         return AddAsync(file.Directory, file, ct);
       }
 
+      /// <summary>
+      /// Adds a directory to the archive.
+      /// </summary>
+      /// <param name="directory">The directory to add to the archive.</param>
+      /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
+      /// <param name="ct">Cancellation token.</param>
       public async Task AddAsync(DirectoryInfo directory, bool recurse = true, CancellationToken ct = default)
       {
         var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
@@ -415,6 +444,12 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
+      /// <summary>
+      /// Adds a file to the archive.
+      /// </summary>
+      /// <param name="directory">The root directory of the file to add to the archive.</param>
+      /// <param name="file">The file to add to the archive.</param>
+      /// <param name="ct">Cancellation token.</param>
       public async Task AddAsync(DirectoryInfo directory, FileInfo file, CancellationToken ct = default)
       {
         using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
