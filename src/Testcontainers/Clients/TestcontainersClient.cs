@@ -401,8 +401,10 @@ namespace DotNet.Testcontainers.Clients
         var fileContent = await resourceMapping.GetAllBytesAsync(ct)
           .ConfigureAwait(false);
 
+        var targetFilePath = OS.NormalizePath(resourceMapping.Target);
+
         var tarEntry = new TarEntry(new TarHeader());
-        tarEntry.TarHeader.Name = resourceMapping.Target;
+        tarEntry.TarHeader.Name = targetFilePath;
         tarEntry.TarHeader.Mode = TSVTX;
         tarEntry.TarHeader.ModTime = DateTime.UtcNow;
         tarEntry.Size = fileContent.Length;

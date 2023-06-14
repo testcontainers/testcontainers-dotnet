@@ -166,6 +166,15 @@ namespace DotNet.Testcontainers.Containers
     Task StopAsync(CancellationToken ct = default);
 
     /// <summary>
+    /// Copies a test host file to the container.
+    /// </summary>
+    /// <param name="fileContent">The byte array content of the file.</param>
+    /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns></returns>
+    Task CopyAsync(byte[] fileContent, string filePath, CancellationToken ct = default);
+
+    /// <summary>
     /// Copies a test host directory or file to the container.
     /// </summary>
     /// <param name="source">The source directory or file to be copied.</param>
@@ -210,6 +219,7 @@ namespace DotNet.Testcontainers.Containers
     ///     <li>644 octal 🠒 110_100_100 binary 🠒 420 decimal</li>
     ///   </ul>
     /// </remarks>
+    [Obsolete("Use CopyAsync(byte[], string, CancellationToken) or one of its overloads.")]
     Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
 
     /// <summary>

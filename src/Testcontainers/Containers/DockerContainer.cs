@@ -280,9 +280,16 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public Task CopyAsync(byte[] fileContent, string filePath, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath), ct);
+    }
+
+    /// <inheritdoc />
     public Task CopyAsync(string source, string target, CancellationToken ct = default)
     {
       var fileAttributes = File.GetAttributes(source);
+
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
         return CopyAsync(new DirectoryInfo(source), target, ct);
