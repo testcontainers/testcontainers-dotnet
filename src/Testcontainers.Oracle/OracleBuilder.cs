@@ -111,12 +111,9 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Sets the Oracle username.
     /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
     /// <param name="username">The Oracle username.</param>
     /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
-    private OracleBuilder WithUsername(string username)
+    public OracleBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new OracleConfiguration(username: username))
             .WithEnvironment("APP_USER", username);
