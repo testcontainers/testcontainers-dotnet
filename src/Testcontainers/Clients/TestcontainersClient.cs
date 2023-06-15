@@ -149,7 +149,7 @@ namespace DotNet.Testcontainers.Clients
         catch (DockerApiException e)
         {
           // The Docker daemon may already start the progress to removes the container (AutoRemove):
-          // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
+          // https://docs.docker.com/engine/api/v1.43/#operation/ContainerCreate.
           if (!e.Message.Contains($"removal of container {id} is already in progress"))
           {
             throw;
@@ -429,7 +429,7 @@ namespace DotNet.Testcontainers.Clients
       /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
       /// <returns>A task that completes when the file has been added to the archive.</returns>
-      public Task AddAsync(FileInfo file, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+      public Task AddAsync(FileInfo file, UnixFileMode fileMode, CancellationToken ct = default)
       {
         return AddAsync(file.Directory, file, fileMode, ct);
       }
@@ -441,7 +441,7 @@ namespace DotNet.Testcontainers.Clients
       /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
       /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
-      public async Task AddAsync(DirectoryInfo directory, bool recurse = true, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+      public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileMode fileMode, CancellationToken ct = default)
       {
         var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
@@ -459,7 +459,7 @@ namespace DotNet.Testcontainers.Clients
       /// <param name="file">The file to add to the archive.</param>
       /// <param name="fileMode">The POSIX file mode permission.</param>
       /// <param name="ct">Cancellation token.</param>
-      public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+      public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileMode fileMode, CancellationToken ct = default)
       {
         using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
         {
