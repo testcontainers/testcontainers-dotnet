@@ -181,11 +181,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, DirectoryInfo source, string target, CancellationToken ct = default)
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, true, Unix.FileMode644, ct)
+        await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -197,11 +197,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, FileInfo source, string target, CancellationToken ct = default)
+    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
-        await tarOutputMemStream.AddAsync(source, Unix.FileMode644, ct)
+        await tarOutputMemStream.AddAsync(source, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();

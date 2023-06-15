@@ -280,36 +280,36 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(byte[] fileContent, string filePath, CancellationToken ct = default)
+    public Task CopyAsync(byte[] fileContent, string filePath, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath), ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(string source, string target, CancellationToken ct = default)
+    public Task CopyAsync(string source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return CopyAsync(new DirectoryInfo(source), target, ct);
+        return CopyAsync(new DirectoryInfo(source), target, fileMode, ct);
       }
       else
       {
-        return CopyAsync(new FileInfo(source), target, ct);
+        return CopyAsync(new FileInfo(source), target, fileMode, ct);
       }
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(FileInfo source, string target, CancellationToken ct = default)
+    public Task CopyAsync(FileInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, ct);
+      return _client.CopyAsync(Id, source, target, fileMode, ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(DirectoryInfo source, string target, CancellationToken ct = default)
+    public Task CopyAsync(DirectoryInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, ct);
+      return _client.CopyAsync(Id, source, target, fileMode, ct);
     }
 
     /// <inheritdoc />
