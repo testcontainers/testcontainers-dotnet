@@ -17,8 +17,6 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly IOperatingSystem OS = new Unix(dockerEndpointAuthConfig: null);
-
     private readonly DirectoryInfo _dockerfileDirectory;
 
     private readonly FileInfo _dockerfile;
@@ -69,9 +67,9 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     public async Task<string> Tar(CancellationToken ct = default)
     {
-      var dockerfileDirectoryPath = OS.NormalizePath(_dockerfileDirectory.FullName);
+      var dockerfileDirectoryPath = Unix.Instance.NormalizePath(_dockerfileDirectory.FullName);
 
-      var dockerfileFilePath = OS.NormalizePath(_dockerfile.ToString());
+      var dockerfileFilePath = Unix.Instance.NormalizePath(_dockerfile.ToString());
 
       var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
@@ -133,7 +131,7 @@ namespace DotNet.Testcontainers.Images
       return Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
         .AsParallel()
         .Select(Path.GetFullPath)
-        .Select(OS.NormalizePath)
+        .Select(Unix.Instance.NormalizePath)
         .ToArray();
     }
   }

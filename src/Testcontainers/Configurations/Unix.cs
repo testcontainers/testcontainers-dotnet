@@ -103,6 +103,12 @@ namespace DotNet.Testcontainers.Configurations
       DockerEndpointAuthConfig = dockerEndpointAuthConfig;
     }
 
+    /// <summary>
+    /// Gets the <see cref="IOperatingSystem" /> instance.
+    /// </summary>
+    public static IOperatingSystem Instance { get; }
+      = new Unix(dockerEndpointAuthConfig: null);
+
     /// <inheritdoc />
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
