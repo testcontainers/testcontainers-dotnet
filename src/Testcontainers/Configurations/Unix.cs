@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Configurations
       UnixFileMode.OtherRead;
 
     /// <summary>
-    /// Represents the Unix file mode 666, which grants read and write permissions to the user and group, and read and write permissions to others.
+    /// Represents the Unix file mode 666, which grants read and write permissions to the user, group, and others.```
     /// </summary>
     public const UnixFileMode FileMode666 =
       UnixFileMode.UserRead |
