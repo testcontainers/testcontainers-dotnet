@@ -12,5 +12,6 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
+global using ICSharpCode.SharpZipLib.Tar;
 global using JetBrains.Annotations;
 global using Xunit;

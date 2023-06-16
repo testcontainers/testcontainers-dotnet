@@ -2,24 +2,34 @@ namespace Testcontainers.Tests;
 
 public abstract class TarOutputMemoryStreamTest
 {
-    protected const string TargetDirectoryPath = "/tmp";
+    private const string TargetDirectoryPath = "/tmp";
+
+    private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath);
+
+    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
 
     protected TarOutputMemoryStreamTest()
     {
-        using var fileStream = TestFile.Create();
+        using var fileStream = _testFile.Create();
         fileStream.WriteByte(13);
     }
 
-    protected TarOutputMemoryStream TarOutputMemoryStream { get; }
-        = new TarOutputMemoryStream(TargetDirectoryPath);
-
-    protected FileInfo TestFile { get; }
-        = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
-
     [Fact]
-    public Task TarFileContainsTestFile()
+    public void TarFileContainsTestFile()
     {
-        return Task.CompletedTask;
+        // Given
+        IList<string> actual = new List<string>();
+
+        _tarOutputMemoryStream.Close();
+        _tarOutputMemoryStream.Seek(0, SeekOrigin.Begin);
+
+        // When
+        using var tarIn = TarArchive.CreateInputTarArchive(_tarOutputMemoryStream, Encoding.Default);
+        tarIn.ProgressMessageEvent += (_, entry, _) => actual.Add(entry.Name);
+        tarIn.ListContents();
+
+        // Then
+        Assert.Contains(actual, file => file.EndsWith(_testFile.Name));
     }
 
     [UsedImplicitly]
@@ -35,14 +45,14 @@ public abstract class TarOutputMemoryStreamTest
             => string.Empty;
 
         public string Target
-            => string.Join("/", TargetDirectoryPath, TestFile.Name);
+            => string.Join("/", TargetDirectoryPath, _testFile.Name);
 
         public UnixFileMode FileMode
             => Unix.FileMode644;
 
         public Task InitializeAsync()
         {
-            return TarOutputMemoryStream.AddAsync(this);
+            return _tarOutputMemoryStream.AddAsync(this);
         }
 
         public Task DisposeAsync()
@@ -52,7 +62,7 @@ public abstract class TarOutputMemoryStreamTest
 
         public void Dispose()
         {
-            TarOutputMemoryStream.Dispose();
+            _tarOutputMemoryStream.Dispose();
         }
 
         public Task CreateAsync(CancellationToken ct = default)
@@ -67,7 +77,7 @@ public abstract class TarOutputMemoryStreamTest
 
         public Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
         {
-            return File.ReadAllBytesAsync(TestFile.FullName, ct);
+            return File.ReadAllBytesAsync(_testFile.FullName, ct);
         }
     }
 
@@ -76,7 +86,7 @@ public abstract class TarOutputMemoryStreamTest
     {
         public Task InitializeAsync()
         {
-            return TarOutputMemoryStream.AddAsync(TestFile, Unix.FileMode644);
+            return _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644);
         }
 
         public Task DisposeAsync()
@@ -86,7 +96,7 @@ public abstract class TarOutputMemoryStreamTest
 
         public void Dispose()
         {
-            TarOutputMemoryStream.Dispose();
+            _tarOutputMemoryStream.Dispose();
         }
     }
 
@@ -95,7 +105,7 @@ public abstract class TarOutputMemoryStreamTest
     {
         public Task InitializeAsync()
         {
-            return TarOutputMemoryStream.AddAsync(TestFile.Directory, true, Unix.FileMode644);
+            return _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644);
         }
 
         public Task DisposeAsync()
@@ -105,7 +115,7 @@ public abstract class TarOutputMemoryStreamTest
 
         public void Dispose()
         {
-            TarOutputMemoryStream.Dispose();
+            _tarOutputMemoryStream.Dispose();
         }
     }
 
