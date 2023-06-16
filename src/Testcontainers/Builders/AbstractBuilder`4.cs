@@ -33,50 +33,50 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     protected abstract TConfigurationEntity DockerResourceConfiguration { get; }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithDockerEndpoint(string endpoint)
     {
       return WithDockerEndpoint(new Uri(endpoint));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithDockerEndpoint(Uri endpoint)
     {
       return WithDockerEndpoint(new DockerEndpointAuthenticationConfiguration(endpoint));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
       return Clone(new ResourceConfiguration<TCreateResourceEntity>(dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithCleanUp(bool cleanUp)
     {
       return WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithLabel(string name, string value)
     {
       return WithLabel(new Dictionary<string, string> { { name, value } });
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithLabel(IReadOnlyDictionary<string, string> labels)
     {
       return Clone(new ResourceConfiguration<TCreateResourceEntity>(labels: labels));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public TBuilderEntity WithCreateParameterModifier(Action<TCreateResourceEntity> parameterModifier)
     {
       var parameterModifiers = new[] { parameterModifier };
       return Clone(new ResourceConfiguration<TCreateResourceEntity>(parameterModifiers: parameterModifiers));
     }
 
-    /// <inheritdoc cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}" />
+    /// <inheritdoc />
     public abstract TResourceEntity Build();
 
     /// <summary>
