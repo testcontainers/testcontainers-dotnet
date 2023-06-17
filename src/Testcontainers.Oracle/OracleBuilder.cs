@@ -37,6 +37,17 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
+    /// Sets the Oracle username.
+    /// </summary>
+    /// <param name="username">The Oracle username.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    public OracleBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(username: username))
+            .WithEnvironment("APP_USER", username);
+    }
+
+    /// <summary>
     /// Sets the Oracle password.
     /// </summary>
     /// <param name="password">The Oracle password.</param>
@@ -106,20 +117,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     private OracleBuilder WithDatabase(string database)
     {
         return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
-    }
-
-    /// <summary>
-    /// Sets the Oracle username.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
-    /// <param name="username">The Oracle username.</param>
-    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
-    private OracleBuilder WithUsername(string username)
-    {
-        return Merge(DockerResourceConfiguration, new OracleConfiguration(username: username))
-            .WithEnvironment("APP_USER", username);
     }
 
     /// <inheritdoc cref="IWaitUntil" />

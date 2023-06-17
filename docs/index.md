@@ -13,6 +13,8 @@ var container = new ContainerBuilder()
   .WithImage("testcontainers/helloworld:1.1.0")
   // Bind port 8080 of the container to a random port on the host.
   .WithPortBinding(8080, true)
+  // Wait until the HTTP endpoint of the container is available.
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(8080)))
   // Build the container configuration.
   .Build();
 
@@ -38,7 +40,7 @@ Debug.Assert(Guid.TryParse(guid, out _));
   <strong>Not using .NET? Here are other supported languages!</strong>
 </p>
 <div class="card-grid">
-  <a class="card-grid-item" href="https://www.testcontainers.org">
+  <a class="card-grid-item" href="https://java.testcontainers.org">
     <img src="language-logos/java.svg" />Java
   </a>
   <a class="card-grid-item" href="https://golang.testcontainers.org">
