@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="hostPath">The absolute path of a file to map on the host system.</param>
     /// <param name="containerPath">The absolute path of a file to map in the container.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
-    public FileResourceMapping(string hostPath, string containerPath, UnixFileMode fileMode = Unix.FileMode644)
+    public FileResourceMapping(string hostPath, string containerPath, UnixFileModes fileMode = Unix.FileMode644)
     {
       Type = MountType.Bind;
       Source = hostPath;
@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Configurations
     public string Target { get; }
 
     /// <inheritdoc />
-    public UnixFileMode FileMode { get; }
+    public UnixFileModes FileMode { get; }
 
     /// <inheritdoc />
     public Task CreateAsync(CancellationToken ct = default)

@@ -174,7 +174,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns></returns>
-    Task CopyAsync(byte[] fileContent, string filePath, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host directory or file to the container.
@@ -184,7 +184,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory or file has been copied.</returns>
-    Task CopyAsync(string source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(string source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host directory to the container.
@@ -194,7 +194,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
-    Task CopyAsync(DirectoryInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host file to the container.
@@ -204,7 +204,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>
-    Task CopyAsync(FileInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.
