@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   [PublicAPI]
   [Flags]
-  public enum UnixFileMode
+  public enum UnixFileModes
   {
     /// <summary>
     /// No permissions.

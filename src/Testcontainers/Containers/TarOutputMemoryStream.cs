@@ -74,7 +74,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been added to the archive.</returns>
-    public Task AddAsync(FileInfo file, UnixFileMode fileMode, CancellationToken ct = default)
+    public Task AddAsync(FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
     {
       return AddAsync(file.Directory, file, fileMode, ct);
     }
@@ -86,7 +86,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileMode fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileModes fileMode, CancellationToken ct = default)
     {
       var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
@@ -104,7 +104,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="file">The file to add to the archive.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileMode fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
       {

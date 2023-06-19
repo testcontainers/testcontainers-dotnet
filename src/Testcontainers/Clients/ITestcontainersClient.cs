@@ -122,7 +122,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
-    Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default);
+    Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host file to the container.
@@ -133,7 +133,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>
-    Task CopyAsync(string id, FileInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default);
+    Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.

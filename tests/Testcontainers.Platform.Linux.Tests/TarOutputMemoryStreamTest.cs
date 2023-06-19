@@ -15,7 +15,7 @@ public abstract class TarOutputMemoryStreamTest
     }
 
     [Fact]
-    public void TarFileContainsTestFile()
+    public void TestFileExistsInTarFile()
     {
         // Given
         IList<string> actual = new List<string>();
@@ -47,7 +47,7 @@ public abstract class TarOutputMemoryStreamTest
         public string Target
             => string.Join("/", TargetDirectoryPath, _testFile.Name);
 
-        public UnixFileMode FileMode
+        public UnixFileModes FileMode
             => Unix.FileMode644;
 
         public Task InitializeAsync()
@@ -63,14 +63,15 @@ public abstract class TarOutputMemoryStreamTest
         public void Dispose()
         {
             _tarOutputMemoryStream.Dispose();
+            _testFile.Delete();
         }
 
-        public Task CreateAsync(CancellationToken ct = default)
+        Task IFutureResource.CreateAsync(CancellationToken ct)
         {
             return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(CancellationToken ct = default)
+        Task IFutureResource.DeleteAsync(CancellationToken ct)
         {
             return Task.CompletedTask;
         }
@@ -78,6 +79,49 @@ public abstract class TarOutputMemoryStreamTest
         public Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
         {
             return File.ReadAllBytesAsync(_testFile.FullName, ct);
+        }
+
+        [Fact]
+        public async Task TestFileExistsInContainer()
+        {
+            // Given
+            var targetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+
+            var targetDirectoryPath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+
+            var targetDirectoryPath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+
+            IList<string> targetFilePaths = new List<string>();
+            targetFilePaths.Add(targetFilePath);
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath1, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath2, _testFile.Name));
+
+            await using var container = new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithEntrypoint(CommonCommands.SleepInfinity)
+                .Build();
+
+            // When
+            var fileContent = await GetAllBytesAsync()
+                .ConfigureAwait(false);
+
+            await container.StartAsync()
+                .ConfigureAwait(false);
+
+            await container.CopyAsync(fileContent, targetFilePath)
+                .ConfigureAwait(false);
+
+            await container.CopyAsync(_testFile, targetDirectoryPath1)
+                .ConfigureAwait(false);
+
+            await container.CopyAsync(_testFile.Directory, targetDirectoryPath2)
+                .ConfigureAwait(false);
+
+            // Then
+            var execResults = await Task.WhenAll(targetFilePaths.Select(targetFilePath => container.ExecAsync(new[] { "test", "-f", targetFilePath })))
+                .ConfigureAwait(false);
+
+            Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
         }
     }
 
@@ -97,6 +141,7 @@ public abstract class TarOutputMemoryStreamTest
         public void Dispose()
         {
             _tarOutputMemoryStream.Dispose();
+            _testFile.Delete();
         }
     }
 
@@ -116,6 +161,7 @@ public abstract class TarOutputMemoryStreamTest
         public void Dispose()
         {
             _tarOutputMemoryStream.Dispose();
+            _testFile.Delete();
         }
     }
 
@@ -127,7 +173,7 @@ public abstract class TarOutputMemoryStreamTest
         [InlineData(Unix.FileMode700, "700")]
         [InlineData(Unix.FileMode755, "755")]
         [InlineData(Unix.FileMode777, "777")]
-        public void UnixFileModeResolvesToPosixFilePermission(UnixFileMode fileMode, string posixFilePermission)
+        public void UnixFileModeResolvesToPosixFilePermission(UnixFileModes fileMode, string posixFilePermission)
         {
             Assert.Equal(Convert.ToInt32(posixFilePermission, 8), Convert.ToInt32(fileMode));
         }
