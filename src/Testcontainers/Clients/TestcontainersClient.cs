@@ -179,7 +179,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {
@@ -195,7 +195,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target))
       {

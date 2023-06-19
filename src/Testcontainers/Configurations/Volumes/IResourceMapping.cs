@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the Unix file mode.
     /// </summary>
-    UnixFileMode FileMode { get; }
+    UnixFileModes FileMode { get; }
 
     /// <summary>
     /// Gets the byte array content of the resource mapping.

@@ -13,56 +13,56 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Represents the Unix file mode 644, which grants read and write permissions to the user and read permissions to the group and others.
     /// </summary>
-    public const UnixFileMode FileMode644 =
-      UnixFileMode.UserRead |
-      UnixFileMode.UserWrite |
-      UnixFileMode.GroupRead |
-      UnixFileMode.OtherRead;
+    public const UnixFileModes FileMode644 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite |
+      UnixFileModes.GroupRead |
+      UnixFileModes.OtherRead;
 
     /// <summary>
     /// Represents the Unix file mode 666, which grants read and write permissions to the user, group, and others.
     /// </summary>
-    public const UnixFileMode FileMode666 =
-      UnixFileMode.UserRead |
-      UnixFileMode.UserWrite |
-      UnixFileMode.GroupRead |
-      UnixFileMode.GroupWrite |
-      UnixFileMode.OtherRead |
-      UnixFileMode.OtherWrite;
+    public const UnixFileModes FileMode666 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite |
+      UnixFileModes.GroupRead |
+      UnixFileModes.GroupWrite |
+      UnixFileModes.OtherRead |
+      UnixFileModes.OtherWrite;
 
     /// <summary>
     /// Represents the Unix file mode 700, which grants read, write, and execute permissions to the user, and no permissions to the group and others.
     /// </summary>
-    public const UnixFileMode FileMode700 =
-      UnixFileMode.UserRead |
-      UnixFileMode.UserWrite |
-      UnixFileMode.UserExecute;
+    public const UnixFileModes FileMode700 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite |
+      UnixFileModes.UserExecute;
 
     /// <summary>
     /// Represents the Unix file mode 755, which grants read, write, and execute permissions to the user, and read and execute permissions to the group and others.
     /// </summary>
-    public const UnixFileMode FileMode755 =
-      UnixFileMode.UserRead |
-      UnixFileMode.UserWrite |
-      UnixFileMode.UserExecute |
-      UnixFileMode.GroupRead |
-      UnixFileMode.GroupExecute |
-      UnixFileMode.OtherRead |
-      UnixFileMode.OtherExecute;
+    public const UnixFileModes FileMode755 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite |
+      UnixFileModes.UserExecute |
+      UnixFileModes.GroupRead |
+      UnixFileModes.GroupExecute |
+      UnixFileModes.OtherRead |
+      UnixFileModes.OtherExecute;
 
     /// <summary>
     /// Represents the Unix file mode 777, which grants read, write, and execute permissions to the user, group, and others.
     /// </summary>
-    public const UnixFileMode FileMode777 =
-      UnixFileMode.UserRead |
-      UnixFileMode.UserWrite |
-      UnixFileMode.UserExecute |
-      UnixFileMode.GroupRead |
-      UnixFileMode.GroupWrite |
-      UnixFileMode.GroupExecute |
-      UnixFileMode.OtherRead |
-      UnixFileMode.OtherWrite |
-      UnixFileMode.OtherExecute;
+    public const UnixFileModes FileMode777 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite |
+      UnixFileModes.UserExecute |
+      UnixFileModes.GroupRead |
+      UnixFileModes.GroupWrite |
+      UnixFileModes.GroupExecute |
+      UnixFileModes.OtherRead |
+      UnixFileModes.OtherWrite |
+      UnixFileModes.OtherExecute;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Unix" /> class.
