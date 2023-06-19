@@ -282,7 +282,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public Task CopyAsync(byte[] fileContent, string filePath, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath), ct);
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
     }
 
     /// <inheritdoc />
