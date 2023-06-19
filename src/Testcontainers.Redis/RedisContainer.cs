@@ -33,7 +33,7 @@ public sealed class RedisContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyFileAsync(scriptFilePath, Encoding.Default.GetBytes(scriptContent), 493, 0, 0, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "redis-cli", "--eval", scriptFilePath, "0" }, ct)

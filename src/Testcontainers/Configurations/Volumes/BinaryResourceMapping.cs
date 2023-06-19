@@ -13,8 +13,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="resourceContent">The byte array content to map in the container.</param>
     /// <param name="containerPath">The absolute path of a file to map in the container.</param>
-    public BinaryResourceMapping(byte[] resourceContent, string containerPath)
-      : base(string.Empty, containerPath)
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    public BinaryResourceMapping(byte[] resourceContent, string containerPath, UnixFileMode fileMode = Unix.FileMode644)
+      : base(string.Empty, containerPath, fileMode)
     {
       _resourceContent = resourceContent;
     }

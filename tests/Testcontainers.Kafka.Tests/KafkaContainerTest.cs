@@ -31,10 +31,8 @@ public sealed class KafkaContainerTest : IAsyncLifetime
         consumerConfig.GroupId = "sample-consumer";
         consumerConfig.AutoOffsetReset = AutoOffsetReset.Earliest;
 
-        var message = new Message<string, string>
-        {
-            Value = Guid.NewGuid().ToString("D"),
-        };
+        var message = new Message<string, string>();
+        message.Value = Guid.NewGuid().ToString("D");
 
         // When
         ConsumeResult<string, string> result;
