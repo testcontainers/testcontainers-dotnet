@@ -17,7 +17,7 @@ await moduleNameContainer.StartAsync();
 
 !!! note
 
-    We will be add module-specific documentations soon.
+    We will add module-specific documentations soon.
 
 | Module          | Image                                                           | NuGet                                                                | Source                                                                                                          |
 |-----------------|-----------------------------------------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|

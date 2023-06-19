@@ -1,6 +1,7 @@
 global using System;
 global using System.Collections.Generic;
 global using System.Globalization;
+global using System.IO;
 global using System.Net;
 global using System.Net.Sockets;
 global using System.Text;
@@ -11,5 +12,6 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
+global using ICSharpCode.SharpZipLib.Tar;
 global using JetBrains.Annotations;
 global using Xunit;

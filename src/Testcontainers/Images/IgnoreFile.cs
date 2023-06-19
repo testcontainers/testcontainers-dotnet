@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Images
         // Check if the pattern contains an optional prefix ("!"), which negates the pattern.
         .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
         {
-          switch (line.First())
+          switch (line[0])
           {
             case '!':
               lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
@@ -133,7 +133,7 @@ namespace DotNet.Testcontainers.Images
     public bool Accepts(string file)
     {
       var matches = _ignorePatterns.AsParallel().Where(ignorePattern => ignorePattern.Key.IsMatch(file)).ToArray();
-      return !matches.Any() || matches.Last().Value;
+      return !matches.Any() || matches[matches.Length - 1].Value;
     }
 
     /// <summary>

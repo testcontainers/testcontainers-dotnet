@@ -374,7 +374,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         await container.StartAsync()
           .ConfigureAwait(false);
 
-        await container.CopyFileAsync(dayOfWeekFilePath, Encoding.Default.GetBytes(dayOfWeek))
+        await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath)
           .ConfigureAwait(false);
 
         var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath })

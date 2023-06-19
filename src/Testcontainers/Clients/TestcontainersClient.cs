@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
 
-    private readonly string _osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+    private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
@@ -79,7 +79,7 @@ namespace DotNet.Testcontainers.Clients
     public IDockerSystemOperations System { get; }
 
     /// <inheritdoc />
-    public bool IsRunningInsideDocker => File.Exists(Path.Combine(_osRootDirectory, ".dockerenv"));
+    public bool IsRunningInsideDocker => File.Exists(Path.Combine(OSRootDirectory, ".dockerenv"));
 
     /// <inheritdoc />
     public Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default)
@@ -147,7 +147,7 @@ namespace DotNet.Testcontainers.Clients
         catch (DockerApiException e)
         {
           // The Docker daemon may already start the progress to removes the container (AutoRemove):
-          // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
+          // https://docs.docker.com/engine/api/v1.43/#operation/ContainerCreate.
           if (!e.Message.Contains($"removal of container {id} is already in progress"))
           {
             throw;
@@ -163,10 +163,57 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public async Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default)
+    {
+      using (var tarOutputMemStream = new TarOutputMemoryStream())
+      {
+        await tarOutputMemStream.AddAsync(resourceMapping, ct)
+          .ConfigureAwait(false);
+
+        tarOutputMemStream.Close();
+        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
+    {
+      using (var tarOutputMemStream = new TarOutputMemoryStream(target))
+      {
+        await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
+          .ConfigureAwait(false);
+
+        tarOutputMemStream.Close();
+        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default)
+    {
+      using (var tarOutputMemStream = new TarOutputMemoryStream(target))
+      {
+        await tarOutputMemStream.AddAsync(source, fileMode, ct)
+          .ConfigureAwait(false);
+
+        tarOutputMemStream.Close();
+        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
+
+        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
     public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
     {
-      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
-      var containerPath = os.NormalizePath(filePath);
+      var containerPath = Unix.Instance.NormalizePath(filePath);
 
       using (var tarOutputMemStream = new MemoryStream())
       {
@@ -200,7 +247,7 @@ namespace DotNet.Testcontainers.Clients
 
         tarOutputMemStream.Seek(0, SeekOrigin.Begin);
 
-        await Container.ExtractArchiveToContainerAsync(id, Path.AltDirectorySeparatorChar.ToString(), tarOutputMemStream, ct)
+        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
           .ConfigureAwait(false);
       }
     }
@@ -210,8 +257,7 @@ namespace DotNet.Testcontainers.Clients
     {
       Stream tarStream;
 
-      IOperatingSystem os = new Unix(dockerEndpointAuthConfig: null);
-      var containerPath = os.NormalizePath(filePath);
+      var containerPath = Unix.Instance.NormalizePath(filePath);
 
       try
       {
@@ -252,15 +298,6 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
-      async Task CopyResourceMappingAsync(string containerId, IResourceMapping resourceMapping)
-      {
-        var resourceMappingContent = await resourceMapping.GetAllBytesAsync(ct)
-          .ConfigureAwait(false);
-
-        await CopyFileAsync(containerId, resourceMapping.Target, resourceMappingContent, 420, 0, 0, ct)
-          .ConfigureAwait(false);
-      }
-
       if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
@@ -302,7 +339,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ResourceMappings.Any())
       {
-        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyResourceMappingAsync(id, resourceMapping)))
+        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
           .ConfigureAwait(false);
       }
 

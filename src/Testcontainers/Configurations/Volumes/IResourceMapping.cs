@@ -11,6 +11,11 @@ namespace DotNet.Testcontainers.Configurations
   public interface IResourceMapping : IMount
   {
     /// <summary>
+    /// Gets the Unix file mode.
+    /// </summary>
+    UnixFileMode FileMode { get; }
+
+    /// <summary>
     /// Gets the byte array content of the resource mapping.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>

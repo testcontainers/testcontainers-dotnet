@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -102,6 +103,37 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
+
+    /// <summary>
+    /// Copies the content of an implementation of <see cref="IResourceMapping" /> to the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="resourceMapping">The resource mapping to add to the archive.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the content has been copied.</returns>
+    Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default);
+
+    /// <summary>
+    /// Copies a test host directory to the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="source">The source directory to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the directory has been copied.</returns>
+    Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default);
+
+    /// <summary>
+    /// Copies a test host file to the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the file has been copied.</returns>
+    Task CopyAsync(string id, FileInfo source, string target, UnixFileMode fileMode, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a file to the container.

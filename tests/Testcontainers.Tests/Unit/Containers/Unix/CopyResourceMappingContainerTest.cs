@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
@@ -15,16 +16,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private readonly string _resourceMappingSourceFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
 
-    private readonly string _resourceMappingFileDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingFileDestinationFilePath = string.Join("/", string.Empty, "tmp", Path.GetRandomFileName());
 
-    private readonly string _resourceMappingBytesDestinationFilePath = Path.Combine("/tmp", Path.GetTempFileName());
+    private readonly string _resourceMappingBytesDestinationFilePath = string.Join("/", string.Empty, "tmp", Path.GetRandomFileName());
 
     private readonly IContainer _container;
 
     public CopyResourceMappingContainerTest()
     {
       _container = new ContainerBuilder()
-        .WithImage("alpine")
+        .WithImage(CommonImages.Alpine)
         .WithResourceMapping(_resourceMappingSourceFilePath, _resourceMappingFileDestinationFilePath)
         .WithResourceMapping(Encoding.Default.GetBytes(ResourceMappingContent), _resourceMappingBytesDestinationFilePath)
         .Build();

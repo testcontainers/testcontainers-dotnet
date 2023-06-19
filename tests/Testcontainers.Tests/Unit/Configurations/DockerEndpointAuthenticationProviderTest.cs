@@ -51,14 +51,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Fact]
       public void GetDockerHostOverrideReturnsNull()
       {
-        ICustomConfiguration customConfiguration = new TestcontainersHostEndpointAuthenticationProvider("host.override=host.docker.internal");
+        ICustomConfiguration customConfiguration = new TestcontainersEndpointAuthenticationProvider("host.override=host.docker.internal");
         Assert.Null(customConfiguration.GetDockerHostOverride());
       }
 
       [Fact]
       public void GetDockerSocketOverrideReturnsNull()
       {
-        ICustomConfiguration customConfiguration = new TestcontainersHostEndpointAuthenticationProvider("docker.socket.override=/var/run/docker.sock");
+        ICustomConfiguration customConfiguration = new TestcontainersEndpointAuthenticationProvider("docker.socket.override=/var/run/docker.sock");
         Assert.Null(customConfiguration.GetDockerSocketOverride());
       }
     }
@@ -84,8 +84,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new object[] { new EnvironmentEndpointAuthenticationProvider(defaultConfiguration, DockerHostConfiguration), true });
         Add(new object[] { new NpipeEndpointAuthenticationProvider(), RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
         Add(new object[] { new UnixEndpointAuthenticationProvider(), !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) });
-        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider(string.Empty), false });
-        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider("tc.host=" + DockerHost), true });
+        Add(new object[] { new TestcontainersEndpointAuthenticationProvider(string.Empty), false });
+        Add(new object[] { new TestcontainersEndpointAuthenticationProvider("tc.host=" + DockerHost), true });
       }
     }
 
@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new object[] { new EnvironmentEndpointAuthenticationProvider(DockerHostConfiguration).GetAuthConfig(), new Uri(DockerHost) });
         Add(new object[] { new NpipeEndpointAuthenticationProvider().GetAuthConfig(), new Uri("npipe://./pipe/docker_engine") });
         Add(new object[] { new UnixEndpointAuthenticationProvider().GetAuthConfig(), new Uri("unix:///var/run/docker.sock") });
-        Add(new object[] { new TestcontainersHostEndpointAuthenticationProvider("tc.host=" + DockerHost).GetAuthConfig(), new Uri(DockerHost) });
+        Add(new object[] { new TestcontainersEndpointAuthenticationProvider("tc.host=" + DockerHost).GetAuthConfig(), new Uri(DockerHost) });
       }
     }
   }

@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Containers
   using System;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -223,7 +224,7 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfResourceNotFound();
 
-      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings.First().HostPort, out var publicPort))
+      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
       {
         return publicPort;
       }
@@ -276,6 +277,39 @@ namespace DotNet.Testcontainers.Containers
         await UnsafeStopAsync(ct)
           .ConfigureAwait(false);
       }
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(byte[] fileContent, string filePath, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(string source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+    {
+      var fileAttributes = File.GetAttributes(source);
+
+      if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
+      {
+        return CopyAsync(new DirectoryInfo(source), target, fileMode, ct);
+      }
+      else
+      {
+        return CopyAsync(new FileInfo(source), target, fileMode, ct);
+      }
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(FileInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, source, target, fileMode, ct);
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(DirectoryInfo source, string target, UnixFileMode fileMode = Unix.FileMode644, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, source, target, fileMode, ct);
     }
 
     /// <inheritdoc />
