@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Wait for Docker container {Id} to complete readiness checks");
 
     private static readonly Action<ILogger, string, Exception> _CompleteReadinessCheck
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} is ready");
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} ready");
 
     private static readonly Action<ILogger, string, string, Exception> _ExtractArchiveToDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" at Docker container {Id}");

@@ -451,6 +451,20 @@ namespace DotNet.Testcontainers.Containers
       Logger.CompleteReadinessCheck(_container.ID);
 
       Started?.Invoke(this, EventArgs.Empty);
+
+      if (TestcontainersStates.Exited.Equals(State))
+      {
+        var exitCode = await GetExitCodeAsync(ct)
+          .ConfigureAwait(false);
+
+        if (exitCode > 0)
+        {
+          var (_, stderr) = await GetLogsAsync(timestampsEnabled: false, ct: ct)
+            .ConfigureAwait(false);
+
+          Logger.LogError(stderr);
+        }
+      }
     }
 
     /// <summary>
