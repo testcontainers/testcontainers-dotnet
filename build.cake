@@ -132,9 +132,11 @@ Task("Create-NuGet-Packages")
     NoRestore = true,
     NoBuild = true,
     IncludeSymbols = true,
+    SymbolPackageFormat = "snupkg",
     OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
     ArgumentCustomization = args => args
-      .Append("/p:SymbolPackageFormat=snupkg")
+      .Append("/p:ContinuousIntegrationBuild=true")
+      .Append("/p:EmbedUntrackedSources=true")
       .Append($"/p:Version={param.Version}")
   });
 });
