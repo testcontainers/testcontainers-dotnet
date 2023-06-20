@@ -440,11 +440,15 @@ namespace DotNet.Testcontainers.Containers
       await _configuration.StartupCallback(this, ct)
         .ConfigureAwait(false);
 
+      Logger.StartReadinessCheck(_container.ID);
+
       foreach (var waitStrategy in _configuration.WaitStrategies)
       {
         await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategyAsync(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
           .ConfigureAwait(false);
       }
+
+      Logger.CompleteReadinessCheck(_container.ID);
 
       Started?.Invoke(this, EventArgs.Empty);
     }

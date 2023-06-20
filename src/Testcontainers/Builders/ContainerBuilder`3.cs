@@ -256,12 +256,6 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithNetwork(string id, string name)
-    {
-      return WithNetwork(name);
-    }
-
-    /// <inheritdoc />
     public TBuilderEntity WithNetwork(string name)
     {
       var network = new FromExistingNetwork().WithName(name).Build();
