@@ -102,13 +102,13 @@ namespace DotNet.Testcontainers.Clients
 
     public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
     {
-      _logger.ExtractArchiveToDockerContainer(id, path);
+      _logger.CopyArchiveToDockerContainer(id, path);
       return Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
     }
 
     public async Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default)
     {
-      _logger.GetArchiveFromDockerContainer(id, path);
+      _logger.ReadArchiveFromDockerContainer(id, path);
 
       var tarResponse = await Docker.Containers.GetArchiveFromContainerAsync(id, new GetArchiveFromContainerParameters { Path = path }, false, ct)
         .ConfigureAwait(false);

@@ -2,9 +2,8 @@ namespace DotNet.Testcontainers
 {
   using System;
   using System.Diagnostics;
-  using System.Globalization;
-  using System.IO;
   using System.Runtime.InteropServices;
+  using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
   /// <summary>
@@ -55,11 +54,14 @@ namespace DotNet.Testcontainers
   ///   }
   /// </code>
   /// </example>
-  internal sealed class Logger : ILogger, IDisposable
+  [PublicAPI]
+  public sealed class ConsoleLogger : ILogger, IDisposable
   {
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
-    public Logger()
+    private LogLevel _minLogLevel = LogLevel.Information;
+
+    private ConsoleLogger()
     {
       if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected && !Console.IsErrorRedirected)
       {
@@ -67,42 +69,50 @@ namespace DotNet.Testcontainers
       }
     }
 
-    public void Dispose()
-    {
-      // The default logger does not support scopes. We return itself as IDisposable implementation.
-    }
+    /// <summary>
+    /// Gets the <see cref="ConsoleLogger" /> instance.
+    /// </summary>
+    public static ConsoleLogger Instance { get; }
+      = new ConsoleLogger();
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    /// <summary>
+    /// Gets a value indicating whether the debug log level is enabled or not.
+    /// </summary>
+    public bool DebugLogLevelEnabled
     {
-      TextWriter console;
-
-      switch (logLevel)
+      get
       {
-        case LogLevel.Information:
-          console = Console.Out;
-          break;
-        case LogLevel.Warning:
-          console = Console.Out;
-          break;
-        case LogLevel.Error:
-          console = Console.Error;
-          break;
-        case LogLevel.Critical:
-          console = Console.Error;
-          break;
-        default:
-          return;
+        return LogLevel.Debug.Equals(_minLogLevel);
       }
 
-      var message = string.Format(CultureInfo.CurrentCulture, "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, formatter.Invoke(state, exception));
-      console.WriteLine(message);
+      set
+      {
+        _minLogLevel = value ? LogLevel.Debug : LogLevel.Information;
+      }
     }
 
+    /// <inheritdoc />
+    public void Dispose()
+    {
+      // The default console logger does not support scopes. We return itself as IDisposable implementation.
+    }
+
+    /// <inheritdoc />
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    {
+      if (IsEnabled(logLevel))
+      {
+        Console.Out.WriteLine("[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, formatter.Invoke(state, exception));
+      }
+    }
+
+    /// <inheritdoc />
     public bool IsEnabled(LogLevel logLevel)
     {
-      return true;
+      return logLevel >= _minLogLevel;
     }
 
+    /// <inheritdoc />
     public IDisposable BeginScope<TState>(TState state)
     {
       return this;

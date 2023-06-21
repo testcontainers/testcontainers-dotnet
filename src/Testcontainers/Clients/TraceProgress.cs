@@ -19,17 +19,17 @@ namespace DotNet.Testcontainers.Clients
 
       if (!string.IsNullOrWhiteSpace(value.Status))
       {
-        _logger.LogTrace(value.Status);
+        _logger.LogDebug(value.Status);
       }
 
       if (!string.IsNullOrWhiteSpace(value.Stream))
       {
-        _logger.LogTrace(value.Stream);
+        _logger.LogDebug(value.Stream);
       }
 
       if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
       {
-        _logger.LogTrace(value.ProgressMessage);
+        _logger.LogDebug(value.ProgressMessage);
       }
 
       if (!string.IsNullOrWhiteSpace(value.ErrorMessage))

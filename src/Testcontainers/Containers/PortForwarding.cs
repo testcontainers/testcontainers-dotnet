@@ -1,7 +1,9 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using System.Collections.Generic;
   using System.Linq;
   using System.Net;
+  using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
@@ -41,8 +43,9 @@ namespace DotNet.Testcontainers.Containers
     /// Exposes the host ports using SSH port forwarding.
     /// </summary>
     /// <param name="ports">The host ports to forward.</param>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the host ports are forwarded.</returns>
-    public Task ExposeHostPortsAsync(params ushort[] ports)
+    public Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
     {
       var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
       sshClient.Connect();

@@ -25,10 +25,16 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _DeleteDockerContainer
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker container {Id}");
 
-    private static readonly Action<ILogger, string, string, Exception> _ExtractArchiveToDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" at Docker container {Id}");
+    private static readonly Action<ILogger, string, Exception> _StartReadinessCheck
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Wait for Docker container {Id} to complete readiness checks");
 
-    private static readonly Action<ILogger, string, string, Exception> _GetArchiveFromDockerContainer
+    private static readonly Action<ILogger, string, Exception> _CompleteReadinessCheck
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} ready");
+
+    private static readonly Action<ILogger, string, string, Exception> _CopyArchiveToDockerContainer
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" to Docker container {Id}");
+
+    private static readonly Action<ILogger, string, string, Exception> _ReadArchiveFromDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read \"{Path}\" from Docker container {Id}");
 
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
@@ -91,47 +97,57 @@ namespace DotNet.Testcontainers
 
     public static void DockerContainerCreated(this ILogger logger, string id)
     {
-      _DockerContainerCreated(logger, id, null);
+      _DockerContainerCreated(logger, TruncId(id), null);
     }
 
     public static void StartDockerContainer(this ILogger logger, string id)
     {
-      _StartDockerContainer(logger, id, null);
+      _StartDockerContainer(logger, TruncId(id), null);
     }
 
     public static void StopDockerContainer(this ILogger logger, string id)
     {
-      _StopDockerContainer(logger, id, null);
+      _StopDockerContainer(logger, TruncId(id), null);
     }
 
     public static void DeleteDockerContainer(this ILogger logger, string id)
     {
-      _DeleteDockerContainer(logger, id, null);
+      _DeleteDockerContainer(logger, TruncId(id), null);
     }
 
-    public static void ExtractArchiveToDockerContainer(this ILogger logger, string id, string path)
+    public static void StartReadinessCheck(this ILogger logger, string id)
     {
-      _ExtractArchiveToDockerContainer(logger, path, id, null);
+      _StartReadinessCheck(logger, TruncId(id), null);
     }
 
-    public static void GetArchiveFromDockerContainer(this ILogger logger, string id, string path)
+    public static void CompleteReadinessCheck(this ILogger logger, string id)
     {
-      _GetArchiveFromDockerContainer(logger, path, id, null);
+      _CompleteReadinessCheck(logger, TruncId(id), null);
+    }
+
+    public static void CopyArchiveToDockerContainer(this ILogger logger, string id, string path)
+    {
+      _CopyArchiveToDockerContainer(logger, path, TruncId(id), null);
+    }
+
+    public static void ReadArchiveFromDockerContainer(this ILogger logger, string id, string path)
+    {
+      _ReadArchiveFromDockerContainer(logger, path, TruncId(id), null);
     }
 
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
     {
-      _AttachToDockerContainer(logger, type, id, null);
+      _AttachToDockerContainer(logger, type, TruncId(id), null);
     }
 
     public static void ConnectToDockerNetwork(this ILogger logger, string networkId, string containerId)
     {
-      _ConnectToDockerNetwork(logger, containerId, networkId, null);
+      _ConnectToDockerNetwork(logger, TruncId(containerId), TruncId(networkId), null);
     }
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)
     {
-      _ExecuteCommandInDockerContainer(logger, string.Join(" ", command), id, null);
+      _ExecuteCommandInDockerContainer(logger, string.Join(" ", command), TruncId(id), null);
     }
 
     public static void DockerImageCreated(this ILogger logger, IImage image)
@@ -151,12 +167,12 @@ namespace DotNet.Testcontainers
 
     public static void DockerNetworkCreated(this ILogger logger, string id)
     {
-      _DockerNetworkCreated(logger, id, null);
+      _DockerNetworkCreated(logger, TruncId(id), null);
     }
 
     public static void DeleteDockerNetwork(this ILogger logger, string id)
     {
-      _DeleteDockerNetwork(logger, id, null);
+      _DeleteDockerNetwork(logger, TruncId(id), null);
     }
 
     public static void DockerVolumeCreated(this ILogger logger, string name)
@@ -204,6 +220,11 @@ namespace DotNet.Testcontainers
     public static void DockerRegistryCredentialFound(this ILogger logger, string dockerRegistry)
     {
       _DockerRegistryCredentialFound(logger, dockerRegistry, null);
+    }
+
+    private static string TruncId(string id)
+    {
+      return id.Substring(0, Math.Min(12, id.Length));
     }
   }
 }
