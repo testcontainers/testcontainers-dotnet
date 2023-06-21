@@ -450,8 +450,6 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      Started?.Invoke(this, EventArgs.Empty);
-
       if (TestcontainersStates.Exited.Equals(State))
       {
         var exitCode = await GetExitCodeAsync(ct)
@@ -464,7 +462,11 @@ namespace DotNet.Testcontainers.Containers
 
           Logger.LogError(stderr);
         }
+
+        return;
       }
+
+      Started?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
