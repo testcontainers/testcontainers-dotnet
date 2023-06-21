@@ -167,7 +167,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static ILogger Logger { get; set; }
-      = new Logger();
+      = ConsoleLogger.Instance;
 
     /// <summary>
     /// Gets or sets the host operating system.

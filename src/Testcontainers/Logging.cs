@@ -31,10 +31,10 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _CompleteReadinessCheck
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} ready");
 
-    private static readonly Action<ILogger, string, string, Exception> _ExtractArchiveToDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" at Docker container {Id}");
+    private static readonly Action<ILogger, string, string, Exception> _CopyArchiveToDockerContainer
+      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" to Docker container {Id}");
 
-    private static readonly Action<ILogger, string, string, Exception> _GetArchiveFromDockerContainer
+    private static readonly Action<ILogger, string, string, Exception> _ReadArchiveFromDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read \"{Path}\" from Docker container {Id}");
 
     private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
@@ -125,14 +125,14 @@ namespace DotNet.Testcontainers
       _CompleteReadinessCheck(logger, TruncResourceId(id), null);
     }
 
-    public static void ExtractArchiveToDockerContainer(this ILogger logger, string id, string path)
+    public static void CopyArchiveToDockerContainer(this ILogger logger, string id, string path)
     {
-      _ExtractArchiveToDockerContainer(logger, path, TruncResourceId(id), null);
+      _CopyArchiveToDockerContainer(logger, path, TruncResourceId(id), null);
     }
 
-    public static void GetArchiveFromDockerContainer(this ILogger logger, string id, string path)
+    public static void ReadArchiveFromDockerContainer(this ILogger logger, string id, string path)
     {
-      _GetArchiveFromDockerContainer(logger, path, TruncResourceId(id), null);
+      _ReadArchiveFromDockerContainer(logger, path, TruncResourceId(id), null);
     }
 
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
