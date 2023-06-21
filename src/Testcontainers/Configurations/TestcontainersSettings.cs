@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
+  using System.Collections.Generic;
   using System.Globalization;
   using System.Linq;
   using System.Runtime.InteropServices;
@@ -184,12 +185,16 @@ namespace DotNet.Testcontainers.Configurations
       => ManualResetEvent.WaitHandle;
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
-    public static async Task ExposeHostPortsAsync(params ushort[] ports)
+    public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
+      => ExposeHostPortsAsync(new[] { port }, ct);
+
+    /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
+    public static async Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
     {
-      await PortForwardingContainer.Instance.StartAsync()
+      await PortForwardingContainer.Instance.StartAsync(ct)
         .ConfigureAwait(false);
 
-      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports)
+      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports, ct)
         .ConfigureAwait(false);
     }
   }
