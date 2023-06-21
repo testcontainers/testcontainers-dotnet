@@ -1,4 +1,5 @@
 site_name: Testcontainers for .NET
+site_url: https://dotnet.testcontainers.org
 repo_name: testcontainers-dotnet
 repo_url: https://github.com/testcontainers/testcontainers-dotnet
 edit_uri: edit/develop/docs/
