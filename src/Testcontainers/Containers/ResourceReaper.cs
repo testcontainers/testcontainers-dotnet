@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.IO;
-  using System.Linq;
   using System.Net.Sockets;
   using System.Text;
   using System.Threading;
@@ -130,7 +129,7 @@ namespace DotNet.Testcontainers.Containers
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
 
-        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, UnixSocketMount.Instance, requiresPrivilegedMode, ct: ct)
+        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, new UnixSocketMount(dockerEndpointAuthConfig.Endpoint), requiresPrivilegedMode, ct: ct)
           .ConfigureAwait(false);
 
         return _defaultInstance;
@@ -418,16 +417,15 @@ namespace DotNet.Testcontainers.Containers
     {
       private const string DockerSocketFilePath = "/var/run/docker.sock";
 
-      static UnixSocketMount()
+      public UnixSocketMount([NotNull] Uri dockerEndpoint)
       {
-      }
+        // If the Docker endpoint is a Unix socket, extract the socket path from the URI; otherwise, fallback to the default Unix socket path.
+        Source = "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase) ? dockerEndpoint.AbsolutePath : DockerSocketFilePath;
 
-      private UnixSocketMount()
-      {
+        // If the user has overridden the Docker socket path, use the user-specified path; otherwise, keep the previously determined source.
+        Source = !string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride) ? TestcontainersSettings.DockerSocketOverride : Source;
+        Target = DockerSocketFilePath;
       }
-
-      public static IMount Instance { get; }
-        = new UnixSocketMount();
 
       public MountType Type
         => MountType.Bind;
@@ -435,11 +433,9 @@ namespace DotNet.Testcontainers.Containers
       public AccessMode AccessMode
         => AccessMode.ReadOnly;
 
-      public string Source
-        => TestcontainersSettings.DockerSocketOverride ?? GetSocketPath();
+      public string Source { get; }
 
-      public string Target
-        => DockerSocketFilePath;
+      public string Target { get; }
 
       public Task CreateAsync(CancellationToken ct = default)
       {
@@ -449,12 +445,6 @@ namespace DotNet.Testcontainers.Containers
       public Task DeleteAsync(CancellationToken ct = default)
       {
         return Task.CompletedTask;
-      }
-
-      private static string GetSocketPath()
-      {
-        var dockerEndpoints = new[] { TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint, UnixEndpointAuthenticationProvider.DockerEngine };
-        return dockerEndpoints.First(dockerEndpoint => "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase)).AbsolutePath;
       }
     }
   }
