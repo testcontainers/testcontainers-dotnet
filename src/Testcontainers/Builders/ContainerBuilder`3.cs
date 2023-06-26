@@ -213,6 +213,19 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      using (var fileStream = File.Open(source.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      {
+        using (var streamReader = new BinaryReader(fileStream))
+        {
+          var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
+          return WithResourceMapping(new BinaryResourceMapping(resourceContent, target.ToString(), fileMode));
+        }
+      }
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithMount(IMount mount)
     {
       var mounts = new[] { mount };

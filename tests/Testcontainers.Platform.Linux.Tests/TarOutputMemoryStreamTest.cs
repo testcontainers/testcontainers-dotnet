@@ -85,7 +85,9 @@ public abstract class TarOutputMemoryStreamTest
         public async Task TestFileExistsInContainer()
         {
             // Given
-            var targetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+
+            var targetFilePath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
 
             var targetDirectoryPath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
 
@@ -96,7 +98,8 @@ public abstract class TarOutputMemoryStreamTest
             var targetDirectoryPath4 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
 
             IList<string> targetFilePaths = new List<string>();
-            targetFilePaths.Add(targetFilePath);
+            targetFilePaths.Add(targetFilePath1);
+            targetFilePaths.Add(targetFilePath2);
             targetFilePaths.Add(string.Join("/", targetDirectoryPath1, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath2, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath3, _testFile.Name));
@@ -105,6 +108,7 @@ public abstract class TarOutputMemoryStreamTest
             await using var container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
+                .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
                 .WithResourceMapping(_testFile, targetDirectoryPath1)
                 .WithResourceMapping(_testFile.Directory, targetDirectoryPath2)
                 .Build();
@@ -116,7 +120,7 @@ public abstract class TarOutputMemoryStreamTest
             await container.StartAsync()
                 .ConfigureAwait(false);
 
-            await container.CopyAsync(fileContent, targetFilePath)
+            await container.CopyAsync(fileContent, targetFilePath2)
                 .ConfigureAwait(false);
 
             await container.CopyAsync(_testFile, targetDirectoryPath3)

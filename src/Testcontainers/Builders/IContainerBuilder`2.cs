@@ -205,6 +205,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="resourceMapping">The resource mapping.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
     TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping);
 
     /// <summary>
@@ -246,6 +247,16 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.
