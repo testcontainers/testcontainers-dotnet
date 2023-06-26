@@ -211,28 +211,41 @@ namespace DotNet.Testcontainers.Builders
     /// Copies the byte array content to the created container before it starts.
     /// </summary>
     /// <param name="resourceContent">The byte array content of the resource mapping.</param>
-    /// <param name="target">An absolute path as destination in the container.</param>
+    /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, string target);
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
     /// </summary>
     /// <param name="source">The source directory or file to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(string source, string target);
+    TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
     /// </summary>
-    /// <param name="source">The source directory or file to be copied.</param>
+    /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(FileSystemInfo source, string target);
+    TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.

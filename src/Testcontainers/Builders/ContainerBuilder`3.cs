@@ -189,21 +189,27 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string target)
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, target));
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(string source, string target)
+    public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source, target));
+      return WithResourceMapping(new FileResourceMapping(source, target, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(FileSystemInfo source, string target)
+    public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(source.FullName, target);
+      return WithResourceMapping(source.FullName, target, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(source.FullName, target, fileMode);
     }
 
     /// <inheritdoc />
