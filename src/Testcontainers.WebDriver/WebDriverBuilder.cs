@@ -64,7 +64,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationFromTomlFile(string configTomlFilePath)
     {
-        return WithResourceMapping(configTomlFilePath, "/opt/bin/config.toml");
+        return WithResourceMapping(File.ReadAllBytes(configTomlFilePath), "/opt/bin/config.toml");
     }
 
     /// <summary>
