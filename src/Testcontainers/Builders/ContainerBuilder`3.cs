@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -181,22 +182,28 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(string source, string destination)
-    {
-      return WithResourceMapping(new FileResourceMapping(source, destination));
-    }
-
-    /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string destination)
-    {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, destination));
-    }
-
-    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping)
     {
       var resourceMappings = new Dictionary<string, IResourceMapping> { { resourceMapping.Target, resourceMapping } };
       return Clone(new ContainerConfiguration(resourceMappings: resourceMappings));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string target)
+    {
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, target));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(string source, string target)
+    {
+      return WithResourceMapping(new FileResourceMapping(source, target));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileSystemInfo source, string target)
+    {
+      return WithResourceMapping(source.FullName, target);
     }
 
     /// <inheritdoc />

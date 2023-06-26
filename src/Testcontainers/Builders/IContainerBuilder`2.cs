@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -200,29 +201,38 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithPortBinding(string hostPort, string containerPort);
 
     /// <summary>
-    /// Copies the source file to the created container before it starts.
-    /// </summary>
-    /// <param name="source">An absolute path or a name value within the host machine.</param>
-    /// <param name="destination">An absolute path as destination in the container.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    TBuilderEntity WithResourceMapping(string source, string destination);
-
-    /// <summary>
-    /// Copies the byte array content to the created container before it starts.
-    /// </summary>
-    /// <param name="resourceContent">The byte array content of the resource mapping.</param>
-    /// <param name="destination">An absolute path as destination in the container.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, string destination);
-
-    /// <summary>
     /// Copies the byte array content of the resource mapping to the created container before it starts.
     /// </summary>
     /// <param name="resourceMapping">The resource mapping.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping);
+
+    /// <summary>
+    /// Copies the byte array content to the created container before it starts.
+    /// </summary>
+    /// <param name="resourceContent">The byte array content of the resource mapping.</param>
+    /// <param name="target">An absolute path as destination in the container.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, string target);
+
+    /// <summary>
+    /// Copies a test host directory or file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source directory or file to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(string source, string target);
+
+    /// <summary>
+    /// Copies a test host directory or file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source directory or file to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FileSystemInfo source, string target);
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.

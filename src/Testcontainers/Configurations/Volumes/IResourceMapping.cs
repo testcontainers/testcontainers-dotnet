@@ -13,6 +13,9 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the Unix file mode.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="Unix" /> class provides access to common constant POSIX file mode permissions.
+    /// </remarks>
     UnixFileModes FileMode { get; }
 
     /// <summary>
