@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -181,22 +182,47 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(string source, string destination)
-    {
-      return WithResourceMapping(new FileResourceMapping(source, destination));
-    }
-
-    /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string destination)
-    {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, destination));
-    }
-
-    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping)
     {
       var resourceMappings = new Dictionary<string, IResourceMapping> { { resourceMapping.Target, resourceMapping } };
       return Clone(new ContainerConfiguration(resourceMappings: resourceMappings));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, fileMode));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new FileResourceMapping(source, target, fileMode));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(source.FullName, target, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(source.FullName, target, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      using (var fileStream = File.Open(source.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      {
+        using (var streamReader = new BinaryReader(fileStream))
+        {
+          var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
+          return WithResourceMapping(new BinaryResourceMapping(resourceContent, target.ToString(), fileMode));
+        }
+      }
     }
 
     /// <inheritdoc />

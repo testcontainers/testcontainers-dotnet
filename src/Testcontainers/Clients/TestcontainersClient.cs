@@ -165,6 +165,22 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default)
     {
+      if (Directory.Exists(resourceMapping.Source))
+      {
+        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+          .ConfigureAwait(false);
+
+        return;
+      }
+
+      if (File.Exists(resourceMapping.Source))
+      {
+        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+          .ConfigureAwait(false);
+
+        return;
+      }
+
       using (var tarOutputMemStream = new TarOutputMemoryStream())
       {
         await tarOutputMemStream.AddAsync(resourceMapping, ct)
