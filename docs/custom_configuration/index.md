@@ -1,6 +1,6 @@
 # Custom Configuration
 
-Testcontainers supports various configurations to set up your test environment. It automatically discovers the Docker environment and applies the configuration. You can set or override the default values either with the Testcontainers [properties file][properties-file-format] (`~/testcontainers.properties`) or with environment variables. The following configurations are available:
+Testcontainers supports various configurations to set up your test environment. It automatically discovers the Docker environment and applies the configuration. You can set or override the default values either with the Testcontainers [properties file][properties-file-format] (`~/.testcontainers.properties`) or with environment variables. The following configurations are available:
 
 | Properties File             | Environment Variable                       | Description                                                                                                               | Default                     |
 |-----------------------------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------|
