@@ -10,7 +10,7 @@ public abstract class TarOutputMemoryStreamTest
 
     protected TarOutputMemoryStreamTest()
     {
-        using var fileStream = _testFile.Create();
+        using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
         fileStream.WriteByte(13);
     }
 

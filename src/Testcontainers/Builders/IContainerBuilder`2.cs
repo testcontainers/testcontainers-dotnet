@@ -406,7 +406,6 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="outputConsumer">The output consumer.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
     TBuilderEntity WithOutputConsumer(IOutputConsumer outputConsumer);
 
     /// <summary>

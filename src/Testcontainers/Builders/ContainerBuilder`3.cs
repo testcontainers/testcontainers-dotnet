@@ -195,32 +195,33 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("The next release will change how this member behaves. The target argument, which used to be a file path, will be a directory path where the file will be copied to, similar to WithResourceMapping(DirectoryInfo, string) and WithResourceMapping(FileInfo, string).\nTo retain the old behavior, use WithResourceMapping(FileInfo, FileInfo) instead.")]
     public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source, target, fileMode));
+      return WithResourceMapping(new FileInfo(source), new FileInfo(target), fileMode);
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(source.FullName, target, fileMode);
+      return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(source.FullName, target, fileMode);
+      return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      using (var fileStream = File.Open(source.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      using (var fileStream = source.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       {
         using (var streamReader = new BinaryReader(fileStream))
         {
           var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
-          return WithResourceMapping(new BinaryResourceMapping(resourceContent, target.ToString(), fileMode));
+          return WithResourceMapping(resourceContent, target.ToString(), fileMode);
         }
       }
     }
@@ -327,6 +328,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
     public TBuilderEntity WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Clone(new ContainerConfiguration(outputConsumer: outputConsumer));

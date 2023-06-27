@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       var resourceContent = Encoding.Default.GetBytes(ResourceMappingContent);
 
-      using var fileStream = _sourceFilePath.Create();
+      using var fileStream = _sourceFilePath.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
       fileStream.Write(resourceContent);
 
       _bytesTargetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _sourceFilePath.Name);
