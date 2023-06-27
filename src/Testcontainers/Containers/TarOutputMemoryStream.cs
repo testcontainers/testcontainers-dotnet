@@ -56,8 +56,8 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
 
 #if NETSTANDARD2_1_OR_GREATER
-        await WriteAsync(fileContent, ct)
-          .ConfigureAwait(false);
+      await WriteAsync(fileContent, ct)
+        .ConfigureAwait(false);
 #else
       await WriteAsync(fileContent, 0, fileContent.Length, ct)
         .ConfigureAwait(false);

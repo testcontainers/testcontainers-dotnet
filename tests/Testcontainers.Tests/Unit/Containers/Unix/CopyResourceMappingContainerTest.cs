@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private const string ResourceMappingContent = "👋";
 
-    private readonly FileInfo _sourceFilePath = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
+    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
 
     private readonly string _bytesTargetFilePath;
 
@@ -27,17 +27,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       var resourceContent = Encoding.Default.GetBytes(ResourceMappingContent);
 
-      using var fileStream = _sourceFilePath.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+      using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
       fileStream.Write(resourceContent);
 
-      _bytesTargetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _sourceFilePath.Name);
+      _bytesTargetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
 
       _fileTargetFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
 
       _container = new ContainerBuilder()
         .WithImage(CommonImages.Alpine)
         .WithResourceMapping(resourceContent, _bytesTargetFilePath)
-        .WithResourceMapping(_sourceFilePath, _fileTargetFilePath)
+        .WithResourceMapping(_testFile, _fileTargetFilePath)
         .Build();
     }
 
@@ -53,7 +53,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public void Dispose()
     {
-      _sourceFilePath.Delete();
+      _testFile.Delete();
     }
 
     [Fact]
@@ -62,7 +62,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       IList<string> targetFilePaths = new List<string>();
       targetFilePaths.Add(_bytesTargetFilePath);
-      targetFilePaths.Add(string.Join("/", _fileTargetFilePath, _sourceFilePath.Name));
+      targetFilePaths.Add(string.Join("/", _fileTargetFilePath, _testFile.Name));
 
       // When
       var resourceContents = await Task.WhenAll(targetFilePaths.Select(containerFilePath => _container.ReadFileAsync(containerFilePath)))
