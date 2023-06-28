@@ -207,27 +207,6 @@ namespace DotNet.Testcontainers.Containers
     Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
-    /// Copies a file to the container.
-    /// </summary>
-    /// <param name="filePath">An absolute path as destination in the container.</param>
-    /// <param name="fileContent">The byte array content of the file.</param>
-    /// <param name="accessMode">The access mode for the file (default: 0600).</param>
-    /// <param name="userId">The owner of the file.</param>
-    /// <param name="groupId">The group of the file.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the file has been copied.</returns>
-    /// <remarks>
-    ///   <paramref name="accessMode" /> is a decimal value. Covert chmod (octal) to decimal.
-    ///   <ul>
-    ///     <li>777 octal 🠒 111_111_111 binary 🠒 511 decimal</li>
-    ///     <li>755 octal 🠒 111_101_101 binary 🠒 493 decimal</li>
-    ///     <li>644 octal 🠒 110_100_100 binary 🠒 420 decimal</li>
-    ///   </ul>
-    /// </remarks>
-    [Obsolete("Use CopyAsync(byte[], string, UnixFileMode, CancellationToken) or one of its overloads.")]
-    Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default);
-
-    /// <summary>
     /// Reads a file from the container.
     /// </summary>
     /// <param name="filePath">An absolute path or a name value within the container.</param>

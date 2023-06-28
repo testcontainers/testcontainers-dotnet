@@ -136,19 +136,6 @@ namespace DotNet.Testcontainers.Clients
     Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
 
     /// <summary>
-    /// Copies a file to the container.
-    /// </summary>
-    /// <param name="id">The container id.</param>
-    /// <param name="filePath">The path to the file in the container.</param>
-    /// <param name="fileContent">The content of the file as bytes.</param>
-    /// <param name="accessMode">The access mode for the file.</param>
-    /// <param name="userId">The owner of the file.</param>
-    /// <param name="groupId">The group of the file.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the file has been copied.</returns>
-    Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default);
-
-    /// <summary>
     /// Reads a file from the container.
     /// </summary>
     /// <param name="id">The container id.</param>

@@ -313,12 +313,6 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task CopyFileAsync(string filePath, byte[] fileContent, int accessMode = 384, int userId = 0, int groupId = 0, CancellationToken ct = default)
-    {
-      return _client.CopyFileAsync(Id, filePath, fileContent, accessMode, userId, groupId, ct);
-    }
-
-    /// <inheritdoc />
     public Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default)
     {
       return _client.ReadFileAsync(Id, filePath, ct);
