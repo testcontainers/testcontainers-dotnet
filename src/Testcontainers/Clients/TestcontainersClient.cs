@@ -227,48 +227,6 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyFileAsync(string id, string filePath, byte[] fileContent, int accessMode, int userId, int groupId, CancellationToken ct = default)
-    {
-      var containerPath = Unix.Instance.NormalizePath(filePath);
-
-      using (var tarOutputMemStream = new MemoryStream())
-      {
-        using (var tarOutputStream = new TarOutputStream(tarOutputMemStream, Encoding.Default))
-        {
-          tarOutputStream.IsStreamOwner = false;
-
-          var header = new TarHeader();
-          header.Name = containerPath;
-          header.UserId = userId;
-          header.GroupId = groupId;
-          header.Mode = accessMode;
-          header.Size = fileContent.Length;
-
-          var entry = new TarEntry(header);
-
-          await tarOutputStream.PutNextEntryAsync(entry, ct)
-            .ConfigureAwait(false);
-
-#if NETSTANDARD2_1_OR_GREATER
-          await tarOutputStream.WriteAsync(fileContent, ct)
-            .ConfigureAwait(false);
-#else
-          await tarOutputStream.WriteAsync(fileContent, 0, fileContent.Length, ct)
-            .ConfigureAwait(false);
-#endif
-
-          await tarOutputStream.CloseEntryAsync(ct)
-            .ConfigureAwait(false);
-        }
-
-        tarOutputMemStream.Seek(0, SeekOrigin.Begin);
-
-        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
-          .ConfigureAwait(false);
-      }
-    }
-
-    /// <inheritdoc />
     public async Task<byte[]> ReadFileAsync(string id, string filePath, CancellationToken ct = default)
     {
       Stream tarStream;
