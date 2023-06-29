@@ -108,7 +108,7 @@ namespace DotNet.Testcontainers.Containers
     {
       using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
       {
-        var targetFilePath = Unix.Instance.NormalizePath(Path.Combine(_targetDirectoryPath, file.FullName.Substring(directory.FullName.Length + 1)));
+        var targetFilePath = Unix.Instance.NormalizePath(Path.Combine(_targetDirectoryPath, file.FullName.Substring(directory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1)));
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = targetFilePath;
