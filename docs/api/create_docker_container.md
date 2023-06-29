@@ -34,6 +34,27 @@ _ = new ContainerBuilder()
 
 `WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file into the container. Note, this does not follow our best practices. Host paths differ between environments and may not be available on every system or Docker setup, e.g. CI.
 
+## Copying directories or files to the container
+
+Sometimes it is necessary to copy files into the container to configure the services running inside the container in advance, like the `appsettings.json` or an SSL certificate. The container builder API provides a member `WithResourceMapping(string, string)`, including several overloads to copy directories or individual files to a container's directory.
+
+```csharp title="Copying a directory"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new DirectoryInfo("."), "/app/");
+```
+
+```csharp title="Copying a file"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/");
+```
+
+Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
+
+```csharp title="Copying a byte array"
+_ = new ContainerBuilder()
+  .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
+```
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
