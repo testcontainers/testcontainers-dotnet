@@ -135,7 +135,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MariaDbConfiguration configuration)
         {
-            _command = new List<string> { "mysql", "--protocol=TCP", $"--port={MariaDbPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string> { "mariadb", "--protocol=TCP", $"--port={MariaDbPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
         }
 
         /// <inheritdoc />
