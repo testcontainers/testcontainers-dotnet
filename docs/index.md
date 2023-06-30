@@ -1,6 +1,4 @@
-# Testcontainers
-
-![Testcontainers Banner](banner.png)
+# Testcontainers for .NET
 
 ```console title="Install the NuGet dependency"
 dotnet add package Testcontainers
@@ -61,6 +59,7 @@ Debug.Assert(Guid.TryParse(guid, out _));
   <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
     <img src="language-logos/haskell.svg"/>Haskell
   </a>
+  <a href="https://github.com/testcontainers/testcontainers-ruby/" class="card-grid-item" ><img src="language-logos/ruby.svg"/>Ruby</a>
 </div>
 
 ## About
