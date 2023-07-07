@@ -72,6 +72,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
+            .WithEnvironment("ingest.geoip.downloader.enabled", "false")
             .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }

@@ -45,6 +45,10 @@ jobs:
           key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Build.props') }}
           path: ~/.nuget/packages
 
+      - name: Free Disk Space
+        run: Remove-Item -Recurse -Force '/usr/local/lib/android' -ErrorAction SilentlyContinue # TODO: Split module tests across multiple runners (the Docker images require too much disk space)
+        shell: pwsh
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
 
@@ -150,7 +154,7 @@ jobs:
       - name: Publish NuGet Package
         run: dotnet cake --target=Publish
 
-      - uses: release-drafter/release-drafter@6df64e4ba4842c203c604c1f45246c5863410adb
+      - uses: release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772
         with:
           version: ${{ env.semVer }} # Cake sets the semVer environment variable
         env:
