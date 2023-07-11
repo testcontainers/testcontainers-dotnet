@@ -85,14 +85,12 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
             .WithImage(ClickHouseImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(NativePort, true)
+            .WithEnvironment("CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT", "1")
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithEnvironment("CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT", "1")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(HttpPort)
-                    .ForStatusCode(HttpStatusCode.OK)
-                    .ForResponseMessageMatching(IsNodeReadyAsync)));
+                request.ForPort(HttpPort).ForResponseMessageMatching(IsNodeReadyAsync)));
     }
 
     /// <inheritdoc />
@@ -125,7 +123,9 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
 
     private async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
     {
-        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return content.Contains("Ok.");
+        var content = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        return "Ok.\n".Equals(content, StringComparison.OrdinalIgnoreCase);
     }
 }
