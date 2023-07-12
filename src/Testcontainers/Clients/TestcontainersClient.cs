@@ -90,7 +90,11 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
-      var unixEpoch = new DateTime(1970, 1, 1);
+#if NETSTANDARD2_1_OR_GREATER
+      var unixEpoch = DateTime.UnixEpoch;
+#else
+      var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+#endif
 
       if (default(DateTime).Equals(since))
       {
