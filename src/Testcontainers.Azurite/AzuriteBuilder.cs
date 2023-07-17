@@ -4,7 +4,7 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
-    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.23.0";
+    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.24.0";
 
     public const ushort BlobPort = 10000;
 
