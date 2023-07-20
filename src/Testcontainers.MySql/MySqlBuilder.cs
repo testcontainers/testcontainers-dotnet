@@ -8,7 +8,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
 
     public const ushort MySqlPort = 3306;
 
-    public const string DefaultDatabase = "mysql";
+    public const string DefaultDatabase = "test";
 
     public const string DefaultUsername = "mysql";
 
