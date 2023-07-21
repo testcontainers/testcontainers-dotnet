@@ -13,5 +13,7 @@ namespace DotNet.Testcontainers.Clients
     Task DeleteAsync(IImage image, CancellationToken ct = default);
 
     Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+
+    Task<IDockerRegistryAuthenticationConfiguration> GetAuthConfig(string aDockerRegistryServerAddress, CancellationToken ct = default);
   }
 }

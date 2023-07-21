@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Clients
     public TestcontainersClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : this(
         new DockerContainerOperations(sessionId, dockerEndpointAuthConfig, logger),
-        new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger),
+        new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger, new DockerRegistryAuthenticationProvider(logger), new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger)),
         new DockerNetworkOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerVolumeOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
@@ -292,15 +292,7 @@ namespace DotNet.Testcontainers.Clients
       {
         var dockerRegistryServerAddress = configuration.Image.GetHostname();
 
-        if (dockerRegistryServerAddress == null)
-        {
-          var info = await System.GetInfoAsync(ct)
-            .ConfigureAwait(false);
-
-          dockerRegistryServerAddress = info.IndexServerAddress;
-        }
-
-        var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
+        var authConfig = await Image.GetAuthConfig(dockerRegistryServerAddress, ct);
 
         await Image.CreateAsync(configuration.Image, authConfig, ct)
           .ConfigureAwait(false);
