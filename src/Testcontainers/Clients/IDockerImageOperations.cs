@@ -14,6 +14,6 @@ namespace DotNet.Testcontainers.Clients
 
     Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
 
-    Task<IDockerRegistryAuthenticationConfiguration> GetAuthConfig(string aDockerRegistryServerAddress, CancellationToken ct = default);
+    Task<IDockerRegistryAuthenticationConfiguration> GetAuthConfigAsync(string dockerRegistryServerAddress, CancellationToken ct = default);
   }
 }

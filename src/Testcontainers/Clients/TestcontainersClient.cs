@@ -292,7 +292,7 @@ namespace DotNet.Testcontainers.Clients
       {
         var dockerRegistryServerAddress = configuration.Image.GetHostname();
 
-        var authConfig = await Image.GetAuthConfig(dockerRegistryServerAddress, ct);
+        var authConfig = await Image.GetAuthConfigAsync(dockerRegistryServerAddress, ct);
 
         await Image.CreateAsync(configuration.Image, authConfig, ct)
           .ConfigureAwait(false);
