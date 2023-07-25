@@ -319,22 +319,24 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
+      var dockerfileFilePath = Path.Combine(configuration.DockerfileDirectory, configuration.Dockerfile);
+
       var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
-      if (configuration.ImageBuildPolicy(cachedImage))
+      if (File.Exists(dockerfileFilePath))
       {
-        var pullDependedImageTasks = File.ReadAllLines(Path.Combine(configuration.DockerfileDirectory, configuration.Dockerfile))
+        await Task.WhenAll(File.ReadAllLines(dockerfileFilePath)
           .Select(line => FromLinePattern.Match(line))
           .Where(match => match.Success)
           .Select(match => match.Groups["image"])
           .Select(group => group.Value)
           .Select(image => new DockerImage(image))
-          .Select(image => PullImageAsync(image, ct));
+          .Select(image => PullImageAsync(image, ct)));
+      }
 
-        await Task.WhenAll(pullDependedImageTasks)
-          .ConfigureAwait(false);
-
+      if (configuration.ImageBuildPolicy(cachedImage))
+      {
         _ = await Image.BuildAsync(configuration, ct)
           .ConfigureAwait(false);
       }
