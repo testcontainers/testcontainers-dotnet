@@ -43,7 +43,7 @@ namespace DotNet.Testcontainers.Clients
     public TestcontainersClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : this(
         new DockerContainerOperations(sessionId, dockerEndpointAuthConfig, logger),
-        new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger, new DockerRegistryAuthenticationProvider(logger), new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger)),
+        new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerNetworkOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerVolumeOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
