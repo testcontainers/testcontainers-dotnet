@@ -4,11 +4,9 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Net;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
@@ -19,17 +17,11 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly TraceProgress _traceProgress;
 
-    private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
-
-    private IDockerSystemOperations _systemOperations;
-
-    public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger, DockerRegistryAuthenticationProvider registryAuthenticationProvider, IDockerSystemOperations systemOperations)
+    public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig)
     {
       _logger = logger;
       _traceProgress = new TraceProgress(logger);
-      _registryAuthenticationProvider = registryAuthenticationProvider;
-      _systemOperations = systemOperations;
     }
 
     public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(CancellationToken ct = default)
@@ -84,8 +76,6 @@ namespace DotNet.Testcontainers.Clients
         IdentityToken = dockerRegistryAuthConfig.IdentityToken,
       };
 
-      _logger.LogInformation($"{authConfig.ServerAddress}: {authConfig.IdentityToken}");
-
       await Docker.Images.CreateImageAsync(createParameters, authConfig, _traceProgress, ct)
         .ConfigureAwait(false);
 
@@ -103,14 +93,6 @@ namespace DotNet.Testcontainers.Clients
       var image = configuration.Image;
 
       ITarArchive dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, _logger);
-      var images = await GetDependentImagesAsync( configuration, ct );
-
-      foreach ( var dockerImage in images )
-      {
-        _logger.LogInformation("Registry Hostname: " + dockerImage.GetHostname());
-        var authConfig = await GetAuthConfigAsync(dockerImage.GetHostname(), ct);
-        await CreateAsync(dockerImage, authConfig, ct);
-      }
 
       var imageExists = await ExistsWithNameAsync(image.FullName, ct)
         .ConfigureAwait(false);
@@ -166,141 +148,6 @@ namespace DotNet.Testcontainers.Clients
 
       _logger.DockerImageBuilt(image);
       return image.FullName;
-    }
-
-    private async Task<IEnumerable<DockerImage>> GetDependentImagesAsync( IImageFromDockerfileConfiguration configuration, CancellationToken ct = default )
-    {
-      var list = new List<DockerImage>();
-
-      using (var streamReader = File.OpenText(
-               Path.Combine(configuration.DockerfileDirectory, configuration.Dockerfile)))
-      {
-        string line;
-        while ((line = await streamReader.ReadLineAsync()) != null)
-        {
-          if (line.StartsWith("FROM"))
-          {
-            var imageUrl = GetDockerImageUrl(line);
-
-            ParseDockerImageUrl(imageUrl, out var repository, out var image, out var tag);
-
-            list.Add(new DockerImage(repository, image, tag));
-          }
-        }
-      }
-      return list;
-    }
-
-    private static void ParseDockerImageUrl(string imageUrl, out string repository, out string image, out string tag)
-    {
-      repository = "";
-
-      // Split the image URL by "/"
-      var parts = imageUrl.Split('/');
-
-      // Check if the image URL contains at least one "/" (indicating a repository)
-      if (parts.Length >= 2)
-      {
-        // Check if the last part contains a ":" (indicating a tag)
-        var lastPart = parts[parts.Length - 1];
-
-        ParseTag(lastPart, out image, out tag);
-
-        // determine if first part ist url or everything is part of the image
-        var firstPart = parts[0];
-
-        if (ValidateHostname(firstPart))
-        {
-          repository = firstPart;
-          var firstPartImage = string.Join("/", parts, 1, parts.Length - 2);
-
-          if (!string.IsNullOrEmpty(firstPartImage))
-          {
-            image = firstPartImage + "/" + image;
-          }
-        }
-        else
-        {
-          var firstPartImage = string.Join("/", parts, 0, parts.Length - 1);
-          if (!string.IsNullOrEmpty(firstPartImage))
-          {
-            image = firstPartImage + "/" + image;
-          }
-        }
-      }
-      // If there's no "/", consider the whole URL as the image name
-      else
-      {
-        ParseTag(imageUrl, out image, out tag);
-      }
-    }
-
-    private static bool ValidateHostname(string hostname)
-    {
-      try
-      {
-        // Try to get IP addresses for the hostname
-        IPAddress[] addresses = Dns.GetHostAddresses(hostname);
-        return true;
-      }
-      catch (Exception)
-      {
-        // If an exception is thrown, the hostname is not reachable in network
-        // but if it contains a . or a : it might just be temporarily unreachable
-        return hostname.Contains('.') || hostname.Contains(':');
-      }
-    }
-
-    private static void ParseTag(string input, out string image, out string tag)
-    {
-      // Check if the input contains a ":" (indicating a tag)
-      tag = "";
-
-      var tagSeparatorIndex = input.IndexOf(':');
-
-      if (tagSeparatorIndex != -1)
-      {
-        image = input.Substring(0, tagSeparatorIndex);
-        tag = input.Substring(tagSeparatorIndex + 1);
-      }
-      else
-      {
-        image = input;
-      }
-    }
-
-    private static string GetDockerImageUrl(string inputLine)
-    {
-      // remove everything except docker image url from line
-      var line = inputLine.ToLower();
-      line = line.Replace("from", string.Empty); // remove FROM at beginning from line
-
-      var asIndex = line.LastIndexOf("as", StringComparison.Ordinal ); // remove all after AS in line
-      if (asIndex != -1)
-      {
-        line = line.Substring(0, asIndex);
-      }
-
-      line = line.Trim();
-      return line;
-    }
-
-    /// <inheritdoc />
-    public async Task<IDockerRegistryAuthenticationConfiguration> GetAuthConfigAsync(
-      string dockerRegistryServerAddress,
-      CancellationToken ct = default)
-    {
-      if (dockerRegistryServerAddress == null)
-      {
-        var info = await _systemOperations.GetInfoAsync(ct)
-          .ConfigureAwait(false);
-
-        dockerRegistryServerAddress = info.IndexServerAddress;
-      }
-
-      var authConfig = _registryAuthenticationProvider.GetAuthConfig( dockerRegistryServerAddress );
-      
-      return authConfig;
     }
   }
 }
