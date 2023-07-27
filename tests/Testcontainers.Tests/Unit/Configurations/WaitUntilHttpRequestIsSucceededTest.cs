@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     private readonly IContainer _container = new ContainerBuilder()
       .WithImage(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
-      .WithCommand($"echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}")
+      .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
       .WithPortBinding(HttpPort, true)
       .Build();
 
@@ -109,6 +109,23 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.True(succeeded);
       Assert.Contains("Cookie", stdout);
       Assert.Contains("Key1=Value1", stdout);
+    }
+
+    [Fact]
+    public async Task HttpWaitStrategyCanReuseCustomHttpClientHandler()
+    {
+      // Given
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(new HttpClientHandler());
+
+      // When
+      await httpWaitStrategy.UntilAsync(_container)
+        .ConfigureAwait(false);
+
+      var exceptionOnSubsequentCall = await Record.ExceptionAsync(() => httpWaitStrategy.UntilAsync(_container))
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Null(exceptionOnSubsequentCall);
     }
   }
 }

@@ -82,7 +82,7 @@ namespace DotNet.Testcontainers.Configurations
             httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
               .ConfigureAwait(false);
           }
-          catch
+          catch (HttpRequestException)
           {
             return false;
           }
