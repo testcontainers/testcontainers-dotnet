@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Configurations
         return false;
       }
 
-      using (var httpClient = new HttpClient(_httpMessageHandler ?? new HttpClientHandler()))
+      using (var httpClient = new HttpClient(_httpMessageHandler ?? new HttpClientHandler(), disposeHandler: _httpMessageHandler == null))
       {
         using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, new UriBuilder(_schemeName, host, port, _pathValue).Uri))
         {
