@@ -280,6 +280,37 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task OutputConsumer()
+      {
+        // Given
+        var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        using var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
+
+        // When
+        var containerBuilder = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint("/bin/sh", "-c", $"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+          .WithOutputConsumer(consumer)
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilMessageIsLogged(unixTimeInMilliseconds)
+            .UntilMessageIsLogged(unixTimeInMilliseconds));
+
+        await using (var container = containerBuilder.Build())
+          await container.StartAsync();
+
+        consumer.Stdout.Seek(0, SeekOrigin.Begin);
+        consumer.Stderr.Seek(0, SeekOrigin.Begin);
+
+        // Then
+        using (var streamReader = new StreamReader(consumer.Stdout, leaveOpen: true))
+          Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
+
+        using (var streamReader = new StreamReader(consumer.Stderr, leaveOpen: true))
+          Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
+      }
+
+      [Fact]
       public async Task WaitStrategy()
       {
         // Given
