@@ -116,7 +116,7 @@ Assert.Equal(MagicNumber, magicNumber);
 ## Supported commands
 
 | Builder method                | Description                                                                                                                                                                          |
-|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `DependsOn`                   | Sets the dependent resource to resolve and create or start before starting this container configuration.                                                                             |
 | `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                                                                                                                         |
 | `WithAutoRemove`              | Will remove the stopped container automatically, similar to `--rm`.                                                                                                                  |
@@ -141,6 +141,7 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithNetworkAliases`          | Assigns a network-scoped aliases to the container e.g. `--network-alias "alias"`.                                                                                                    |
 | `WithExtraHost`               | Adds a custom host-to-IP mapping to the container's `/etc/hosts` respectively `%WINDIR%\\system32\\drivers\\etc\\hosts` e.g. `--add-host "host.testcontainers.internal:172.17.0.2"`. |
 | `WithPrivileged`              | Sets the `--privileged` flag.                                                                                                                                                        |
+| `WithOutputConsumer`          | Redirects `stdout` and `stderr` to capture the container output.                                                                                                                     |
 | `WithWaitStrategy`            | Sets the wait strategy to complete the container start and indicates when it is ready.                                                                                               |
 | `WithStartupCallback`         | Sets the startup callback to invoke after the container start.                                                                                                                       |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker container create parameter.                                                                                                             |
