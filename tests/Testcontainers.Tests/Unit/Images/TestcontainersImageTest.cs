@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       Assert.Throws<ArgumentException>(() => new DockerImage((string)null));
       Assert.Throws<ArgumentException>(() => new DockerImage(null, null, null));
-      Assert.Throws<ArgumentException>(() => new DockerImage("fedora", null, null));
+      Assert.Throws<ArgumentException>(() => new DockerImage(null, "fedora", null));
     }
 
     [Fact]
@@ -54,8 +54,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       IImage dockerImage = new DockerImage(fullName);
 
       // Then
+      Assert.Equal(expected.Registry, dockerImage.Registry);
       Assert.Equal(expected.Repository, dockerImage.Repository);
-      Assert.Equal(expected.Name, dockerImage.Name);
       Assert.Equal(expected.Tag, dockerImage.Tag);
       Assert.Equal(expected.FullName, dockerImage.FullName);
     }

@@ -1,36 +1,24 @@
 namespace DotNet.Testcontainers.Images
 {
-  using System;
-  using System.Linq;
+  using System.Text.RegularExpressions;
 
   internal static class MatchImage
   {
+    private static readonly Regex _imagePattern = new Regex(@"^((?<registry>[^\.\/\:]+(\.[^\.\/\:]*)+(\:[^\/]+)?|[^\:\/]+(\:[^\/]+)|localhost)\/)?(?<repository>[^\:\n]*)(\:(?<tag>.+)?)?$", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
     public static IImage Match(string image)
     {
       _ = Guard.Argument(image, nameof(image))
         .NotNull()
         .NotEmpty();
 
-      var imageComponents = image
-        .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+      var match = _imagePattern.Match(image);
 
-      var repository = string.Join("/", imageComponents
-        .Take(imageComponents.Length - 1));
+      var registry = match.Groups[1].Value;
+      var repository = match.Groups[2].Value;
+      var tag = match.Groups[3].Value;
 
-      var name = imageComponents
-        .Last()
-        .Split(':')
-        .DefaultIfEmpty(string.Empty)
-        .First();
-
-      var tag = imageComponents
-        .Last()
-        .Split(':')
-        .Skip(1)
-        .DefaultIfEmpty(string.Empty)
-        .First();
-
-      return new DockerImage(repository, name, tag);
+      return new DockerImage(registry, repository, tag);
     }
   }
 }

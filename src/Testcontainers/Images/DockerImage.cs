@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     /// <param name="image">The image.</param>
     public DockerImage(IImage image)
-      : this(image.Repository, image.Name, image.Tag)
+      : this(image.Registry, image.Repository, image.Tag)
     {
     }
 
@@ -35,39 +35,39 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
+    /// <param name="registry">The registry.</param>
     /// <param name="repository">The repository.</param>
-    /// <param name="name">The name.</param>
     /// <param name="tag">The tag.</param>
     /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
     /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
-    /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    /// <example>"docker.io/fedora/httpd:version1.0" where "docker.io" is the registry, "fedora/httpd" is the repository and "version1.0" the tag.</example>
     public DockerImage(
+      string registry,
       string repository,
-      string name,
       string tag,
       string hubImageNamePrefix = null)
     {
-      _ = Guard.Argument(repository, nameof(repository))
+      _ = Guard.Argument(registry, nameof(registry))
         .NotNull()
         .NotUppercase();
 
-      _ = Guard.Argument(name, nameof(name))
+      _ = Guard.Argument(repository, nameof(repository))
         .NotNull()
         .NotEmpty()
         .NotUppercase();
 
       _hubImageNamePrefix = hubImageNamePrefix;
 
+      Registry = registry;
       Repository = repository;
-      Name = name;
       Tag = string.IsNullOrEmpty(tag) ? "latest" : tag;
     }
 
     /// <inheritdoc />
-    public string Repository { get; }
+    public string Registry { get; }
 
     /// <inheritdoc />
-    public string Name { get; }
+    public string Repository { get; }
 
     /// <inheritdoc />
     public string Tag { get; }
@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Images
     {
       get
       {
-        var imageComponents = new[] { _hubImageNamePrefix, Repository, Name }
+        var imageComponents = new[] { _hubImageNamePrefix, Registry, Repository }
           .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
           .Select(imageComponent => imageComponent.Trim('/', ':'))
           .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
@@ -88,8 +88,8 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     public string GetHostname()
     {
-      var firstSegmentOfRepository = (string.IsNullOrEmpty(_hubImageNamePrefix) ? Repository : _hubImageNamePrefix).Split('/')[0];
-      return firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRepository : null;
+      var firstSegmentOfRegistry = (string.IsNullOrEmpty(_hubImageNamePrefix) ? Registry : _hubImageNamePrefix).Split('/')[0];
+      return firstSegmentOfRegistry.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRegistry : null;
     }
   }
 }

@@ -14,9 +14,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       .WithDockerfileDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy"))
       .Build();
 
-    public string Repository => _image.Repository;
+    public string Registry => _image.Registry;
 
-    public string Name => _image.Name;
+    public string Repository => _image.Repository;
 
     public string Tag => _image.Tag;
 

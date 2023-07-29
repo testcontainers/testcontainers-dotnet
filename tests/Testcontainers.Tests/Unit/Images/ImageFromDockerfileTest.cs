@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task DockerfileArchiveTar()
     {
       // Given
-      var image = new DockerImage("testcontainers", "test", "0.1.0");
+      var image = new DockerImage(string.Empty, "testcontainers/test", "0.1.0");
 
       var expected = new SortedSet<string> { ".dockerignore", "Dockerfile", "setup/setup.sh" };
 
@@ -84,9 +84,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task BuildsDockerImage()
     {
       // Given
-      IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag1 = new DockerImage("localhost", $"testcontainers/{Guid.NewGuid():D}", string.Empty);
 
-      IImage tag2 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag2 = new DockerImage("localhost", $"testcontainers/{Guid.NewGuid():D}", string.Empty);
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
@@ -106,8 +106,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Then
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag2.FullName));
+      Assert.NotNull(imageFromDockerfileBuilder.Registry);
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
