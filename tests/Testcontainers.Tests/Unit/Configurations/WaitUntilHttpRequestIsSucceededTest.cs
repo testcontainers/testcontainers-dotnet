@@ -90,10 +90,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var cookieContainer = new CookieContainer();
       cookieContainer.Add(new Cookie("Key1", "Value1", "/", _container.Hostname));
 
-      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(new HttpClientHandler
-      {
-        CookieContainer = cookieContainer
-      });
+      using var httpMessageHandler = new HttpClientHandler();
+      httpMessageHandler.CookieContainer = cookieContainer;
+
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
@@ -115,7 +115,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task HttpWaitStrategyCanReuseCustomHttpClientHandler()
     {
       // Given
-      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(new HttpClientHandler());
+      using var httpMessageHandler = new HttpClientHandler();
+
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
 
       // When
       await httpWaitStrategy.UntilAsync(_container)

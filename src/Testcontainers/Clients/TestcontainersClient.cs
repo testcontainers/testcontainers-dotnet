@@ -165,6 +165,12 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
+    {
+      return Container.AttachAsync(id, outputConsumer, ct);
+    }
+
+    /// <inheritdoc />
     public Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       return Container.ExecAsync(id, command, ct);

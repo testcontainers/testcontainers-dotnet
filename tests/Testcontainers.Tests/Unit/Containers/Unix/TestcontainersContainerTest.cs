@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Globalization;
   using System.IO;
   using System.Net;
   using System.Net.Sockets;
@@ -283,31 +284,36 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task OutputConsumer()
       {
         // Given
-        var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
-
         using var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
 
-        // When
-        var containerBuilder = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
-          .WithEntrypoint("/bin/sh", "-c", $"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
-          .WithOutputConsumer(consumer)
-          .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilMessageIsLogged(unixTimeInMilliseconds)
-            .UntilMessageIsLogged(unixTimeInMilliseconds));
+        var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
 
-        await using (var container = containerBuilder.Build())
-          await container.StartAsync();
+        // When
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint("/bin/sh", "-c")
+          .WithCommand($"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+          .WithOutputConsumer(consumer)
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds))
+          .Build();
+
+        await container.StartAsync()
+          .ConfigureAwait(false);
 
         consumer.Stdout.Seek(0, SeekOrigin.Begin);
         consumer.Stderr.Seek(0, SeekOrigin.Begin);
 
-        // Then
-        using (var streamReader = new StreamReader(consumer.Stdout, leaveOpen: true))
-          Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
+        using var stdoutReader = new StreamReader(consumer.Stdout, leaveOpen: true);
+        var stdout = await stdoutReader.ReadToEndAsync()
+          .ConfigureAwait(false);
 
-        using (var streamReader = new StreamReader(consumer.Stderr, leaveOpen: true))
-          Assert.Equal(unixTimeInMilliseconds, await streamReader.ReadToEndAsync());
+        using var stderrReader = new StreamReader(consumer.Stdout, leaveOpen: true);
+        var stderr = await stderrReader.ReadToEndAsync()
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(unixTimeInMilliseconds, stdout);
+        Assert.Equal(unixTimeInMilliseconds, stderr);
       }
 
       [Fact]
