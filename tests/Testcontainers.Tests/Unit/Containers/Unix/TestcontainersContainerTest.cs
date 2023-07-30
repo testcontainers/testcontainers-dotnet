@@ -307,7 +307,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var stdout = await stdoutReader.ReadToEndAsync()
           .ConfigureAwait(false);
 
-        using var stderrReader = new StreamReader(consumer.Stdout, leaveOpen: true);
+        using var stderrReader = new StreamReader(consumer.Stderr, leaveOpen: true);
         var stderr = await stderrReader.ReadToEndAsync()
           .ConfigureAwait(false);
 
