@@ -328,7 +328,6 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    [Obsolete("It is no longer necessary to assign an output consumer to read the container's log messages.\nUse IContainer.GetLogsAsync(DateTime, DateTime, bool, CancellationToken) instead.")]
     public TBuilderEntity WithOutputConsumer(IOutputConsumer outputConsumer)
     {
       return Clone(new ContainerConfiguration(outputConsumer: outputConsumer));
