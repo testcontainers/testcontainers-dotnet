@@ -195,10 +195,18 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    [Obsolete("The next release will change how this member behaves. The target argument, which used to be a file path, will be a directory path where the file will be copied to, similar to WithResourceMapping(DirectoryInfo, string) and WithResourceMapping(FileInfo, string).\nTo retain the old behavior, use WithResourceMapping(FileInfo, FileInfo) instead.")]
     public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileInfo(source), new FileInfo(target), fileMode);
+      var fileAttributes = File.GetAttributes(source);
+
+      if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
+      {
+        return WithResourceMapping(new DirectoryInfo(source), target, fileMode);
+      }
+      else
+      {
+        return WithResourceMapping(new FileInfo(source), target, fileMode);
+      }
     }
 
     /// <inheritdoc />
