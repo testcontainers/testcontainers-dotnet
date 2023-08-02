@@ -423,6 +423,9 @@ namespace DotNet.Testcontainers.Containers
           .ConfigureAwait(false);
       }
 
+      await _client.AttachAsync(_container.ID, _configuration.OutputConsumer, ct)
+        .ConfigureAwait(false);
+
       await _client.StartAsync(_container.ID, ct)
         .ConfigureAwait(false);
 

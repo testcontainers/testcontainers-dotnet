@@ -96,6 +96,15 @@ namespace DotNet.Testcontainers.Clients
     Task RemoveAsync(string id, CancellationToken ct = default);
 
     /// <summary>
+    /// Attaches to the container and copies the output to the <see cref="IOutputConsumer" />.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="outputConsumer">The stdout and stderr consumer.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container's stdout and stderr has been copied to the consumer.</returns>
+    Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
+
+    /// <summary>
     /// Executes a command in the container.
     /// </summary>
     /// <param name="id">The container id.</param>

@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using System.IO;
   using System.Linq;
   using System.Text;
+  using System.Text.RegularExpressions;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
@@ -12,6 +13,7 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
 
@@ -27,6 +29,8 @@ namespace DotNet.Testcontainers.Clients
     public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
 
     private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+
+    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--[^\\s]+\\s)*(?<image>[^\\s]+).*", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
@@ -161,6 +165,12 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
+    {
+      return Container.AttachAsync(id, outputConsumer, ct);
+    }
+
+    /// <inheritdoc />
     public Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
     {
       return Container.ExecAsync(id, command, ct);
@@ -290,19 +300,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImagePullPolicy(cachedImage))
       {
-        var dockerRegistryServerAddress = configuration.Image.GetHostname();
-
-        if (dockerRegistryServerAddress == null)
-        {
-          var info = await System.GetInfoAsync(ct)
-            .ConfigureAwait(false);
-
-          dockerRegistryServerAddress = info.IndexServerAddress;
-        }
-
-        var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
-
-        await Image.CreateAsync(configuration.Image, authConfig, ct)
+        await PullImageAsync(configuration.Image, ct)
           .ConfigureAwait(false);
       }
 
@@ -327,8 +325,21 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
+      var dockerfileFilePath = Path.Combine(configuration.DockerfileDirectory, configuration.Dockerfile);
+
       var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
+
+      if (File.Exists(dockerfileFilePath))
+      {
+        await Task.WhenAll(File.ReadAllLines(dockerfileFilePath)
+          .Select(line => FromLinePattern.Match(line))
+          .Where(match => match.Success)
+          .Select(match => match.Groups["image"])
+          .Select(group => group.Value)
+          .Select(image => new DockerImage(image))
+          .Select(image => PullImageAsync(image, ct)));
+      }
 
       if (configuration.ImageBuildPolicy(cachedImage))
       {
@@ -337,6 +348,29 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return configuration.Image.FullName;
+    }
+
+    /// <summary>
+    /// Pulls an image from a registry.
+    /// </summary>
+    /// <param name="image">The image to pull.</param>
+    /// <param name="ct">Cancellation token.</param>
+    private async Task PullImageAsync(IImage image, CancellationToken ct = default)
+    {
+      var dockerRegistryServerAddress = image.GetHostname();
+
+      if (dockerRegistryServerAddress == null)
+      {
+        var info = await System.GetInfoAsync(ct)
+          .ConfigureAwait(false);
+
+        dockerRegistryServerAddress = info.IndexServerAddress;
+      }
+
+      var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
+
+      await Image.CreateAsync(image, authConfig, ct)
+        .ConfigureAwait(false);
     }
   }
 }

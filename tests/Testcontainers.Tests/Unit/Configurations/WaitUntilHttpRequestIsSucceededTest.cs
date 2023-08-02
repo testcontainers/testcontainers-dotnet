@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     private readonly IContainer _container = new ContainerBuilder()
       .WithImage(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
-      .WithCommand($"echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}")
+      .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
       .WithPortBinding(HttpPort, true)
       .Build();
 
@@ -90,10 +90,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var cookieContainer = new CookieContainer();
       cookieContainer.Add(new Cookie("Key1", "Value1", "/", _container.Hostname));
 
-      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(new HttpClientHandler
-      {
-        CookieContainer = cookieContainer
-      });
+      using var httpMessageHandler = new HttpClientHandler();
+      httpMessageHandler.CookieContainer = cookieContainer;
+
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
@@ -109,6 +109,25 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.True(succeeded);
       Assert.Contains("Cookie", stdout);
       Assert.Contains("Key1=Value1", stdout);
+    }
+
+    [Fact]
+    public async Task HttpWaitStrategyCanReuseCustomHttpClientHandler()
+    {
+      // Given
+      using var httpMessageHandler = new HttpClientHandler();
+
+      var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
+
+      // When
+      await httpWaitStrategy.UntilAsync(_container)
+        .ConfigureAwait(false);
+
+      var exceptionOnSubsequentCall = await Record.ExceptionAsync(() => httpWaitStrategy.UntilAsync(_container))
+        .ConfigureAwait(false);
+
+      // Then
+      Assert.Null(exceptionOnSubsequentCall);
     }
   }
 }

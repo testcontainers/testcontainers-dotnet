@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Text.RegularExpressions;
 
   /// <inheritdoc cref="IWaitForContainerOS" />
@@ -50,12 +49,6 @@ namespace DotNet.Testcontainers.Configurations
     public IWaitForContainerOS UntilMessageIsLogged(Regex pattern)
     {
       return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern));
-    }
-
-    /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilMessageIsLogged(Stream stream, string message)
-    {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(message));
     }
 
     /// <inheritdoc />

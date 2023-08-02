@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Globalization;
   using System.IO;
   using System.Net;
   using System.Net.Sockets;
@@ -277,6 +278,42 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         Assert.Equal(expectedHostname, container.Hostname);
+      }
+
+      [Fact]
+      public async Task OutputConsumer()
+      {
+        // Given
+        using var consumer = Consume.RedirectStdoutAndStderrToStream(new MemoryStream(), new MemoryStream());
+
+        var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
+
+        // When
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint("/bin/sh", "-c")
+          .WithCommand($"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
+          .WithOutputConsumer(consumer)
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds))
+          .Build();
+
+        await container.StartAsync()
+          .ConfigureAwait(false);
+
+        consumer.Stdout.Seek(0, SeekOrigin.Begin);
+        consumer.Stderr.Seek(0, SeekOrigin.Begin);
+
+        using var stdoutReader = new StreamReader(consumer.Stdout, leaveOpen: true);
+        var stdout = await stdoutReader.ReadToEndAsync()
+          .ConfigureAwait(false);
+
+        using var stderrReader = new StreamReader(consumer.Stderr, leaveOpen: true);
+        var stderr = await stderrReader.ReadToEndAsync()
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(unixTimeInMilliseconds, stdout);
+        Assert.Equal(unixTimeInMilliseconds, stderr);
       }
 
       [Fact]

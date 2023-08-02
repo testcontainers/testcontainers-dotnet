@@ -96,7 +96,7 @@ namespace DotNet.Testcontainers.Images
           return new KeyValuePair<string, bool>(key, value);
         })
 
-        // Compile and cache regular expression to increase the performance.
+        // Cache regular expression to increase the performance.
         .Select(ignorePattern =>
         {
           var key = ignorePattern.Key;
