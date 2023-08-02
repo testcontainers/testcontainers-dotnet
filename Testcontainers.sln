@@ -93,7 +93,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Kafka.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Keycloak.Tests", "tests\Testcontainers.Keycloak.Tests\Testcontainers.Keycloak.Tests.csproj", "{4827D606-89D5-4E00-8341-47A6E95817BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Kusto.Tests", "tests\Testcontainers.Kusto.Tests\Testcontainers.Kusto.Tests.csproj", "{FA59D75A-8D3A-412C-92E6-4A56033162DD}
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Kusto.Tests", "tests\Testcontainers.Kusto.Tests\Testcontainers.Kusto.Tests.csproj", "{FA59D75A-8D3A-412C-92E6-4A56033162DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.LocalStack.Tests", "tests\Testcontainers.LocalStack.Tests\Testcontainers.LocalStack.Tests.csproj", "{728CBE16-1D52-4F84-AF01-7229E6013512}"
 EndProject
