@@ -33,7 +33,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
+    /// <inheritdoc />
     protected override KustoConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
