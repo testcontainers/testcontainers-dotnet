@@ -20,6 +20,6 @@ public sealed class KustoContainer : DockerContainer
     /// <returns>The Kusto connection string.</returns>
     public string GetConnectionString()
     {
-        return $"http://{Hostname}:{GetMappedPublicPort(KustoBuilder.KustoPort)}";
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(KustoBuilder.KustoPort)).ToString();
     }
 }
