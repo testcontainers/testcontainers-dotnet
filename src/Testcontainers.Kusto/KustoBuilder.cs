@@ -2,8 +2,8 @@ namespace Testcontainers.Kusto;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 /// <remarks>
-/// Builds a container running the "Azure Data Explorer Kusto emulator":
-/// https://learn.microsoft.com/en-us/azure/data-explorer/kusto-emulator-overview
+/// Builds a container running the Azure Data Explorer Kusto emulator:
+/// https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview.
 /// </remarks>
 [PublicAPI]
 public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
@@ -48,12 +48,11 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
             .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(request => request
-                    .ForPort(KustoPort)
-                    .ForPath("/v1/rest/mgmt")
-                    .WithMethod(HttpMethod.Post)
-                    .WithContent(new StringContent("{\"csl\":\".show cluster\"}", Encoding.UTF8, "application/json"))));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request
+                .WithMethod(HttpMethod.Post)
+                .ForPort(KustoPort)
+                .ForPath("/v1/rest/mgmt")
+                .WithContent(new StringContent("{\"csl\":\".show cluster\"}", Encoding.UTF8, "application/json"))));
     }
 
     /// <inheritdoc />

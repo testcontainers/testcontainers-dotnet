@@ -202,9 +202,9 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Defines a custom <see cref="HttpMessageHandler"/> which should be used by the internal <see cref="HttpClient"/>.
+    /// Defines a custom <see cref="HttpMessageHandler" /> which should be used by the internal <see cref="HttpClient"/>.
     /// </summary>
-    /// <param name="handler">The handler to pass to the <see cref="HttpClient"/> when it is created.</param>
+    /// <param name="handler">The handler to pass to the <see cref="HttpClient" /> when it is created.</param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy UsingHttpMessageHandler(HttpMessageHandler handler)
     {
@@ -260,9 +260,9 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Sets the content (body) of the HTTP request.
+    /// Sets the HTTP message body of the HTTP request.
     /// </summary>
-    /// <param name="content">The content. Use a derived type like <see cref="StringContent" />.</param>
+    /// <param name="content">The HTTP message body.</param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy WithContent(HttpContent content)
     {

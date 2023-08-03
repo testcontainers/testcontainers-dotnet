@@ -1,17 +1,17 @@
 namespace Testcontainers.Kusto.Tests;
 
-public class KustoContainerTest : IAsyncLifetime
+public sealed class KustoContainerTest : IAsyncLifetime
 {
-    private readonly KustoContainer _kustainer = new KustoBuilder().Build();
+    private readonly KustoContainer _kustoContainer = new KustoBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _kustainer.StartAsync();
+        return _kustoContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _kustainer.DisposeAsync().AsTask();
+        return _kustoContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -19,10 +19,12 @@ public class KustoContainerTest : IAsyncLifetime
     public async Task ShowDatabaseReturnsDefaultDbInformation()
     {
         // Given
-        using var client = KustoClientFactory.CreateCslAdminProvider(new KustoConnectionStringBuilder(_kustainer.GetConnectionString()));
+        using var client = KustoClientFactory.CreateCslAdminProvider(new KustoConnectionStringBuilder(_kustoContainer.GetConnectionString()));
 
         // When
-        var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand());
+        var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand())
+            .ConfigureAwait(false);
+
         dataReader.Read();
 
         // Then
