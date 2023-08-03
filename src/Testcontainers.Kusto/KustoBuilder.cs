@@ -1,7 +1,5 @@
 namespace Testcontainers.Kusto;
 
-using System.Threading.Tasks;
-
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 /// <remarks>
 /// Builds a container running the "Azure Data Explorer Kusto emulator":
