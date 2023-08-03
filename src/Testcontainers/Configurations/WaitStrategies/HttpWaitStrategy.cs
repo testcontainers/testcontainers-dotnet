@@ -38,6 +38,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
+    private HttpContent _content;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
     /// </summary>
@@ -74,6 +76,8 @@ namespace DotNet.Testcontainers.Configurations
           {
             httpRequestMessage.Headers.Add(httpHeader.Key, httpHeader.Value);
           }
+
+          httpRequestMessage.Content = _content;
 
           HttpResponseMessage httpResponseMessage;
 
@@ -253,6 +257,17 @@ namespace DotNet.Testcontainers.Configurations
     public HttpWaitStrategy WithHeaders(IReadOnlyDictionary<string, string> headers)
     {
       return headers.Aggregate(this, (httpWaitStrategy, header) => httpWaitStrategy.WithHeader(header.Key, header.Value));
+    }
+
+    /// <summary>
+    /// Sets the content (body) of the HTTP request.
+    /// </summary>
+    /// <param name="content">The content. Use a derived type like <see cref="StringContent" />.</param>
+    /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
+    public HttpWaitStrategy WithContent(HttpContent content)
+    {
+      _content = content;
+      return this;
     }
   }
 }
