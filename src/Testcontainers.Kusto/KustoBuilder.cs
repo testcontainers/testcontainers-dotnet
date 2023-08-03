@@ -48,7 +48,12 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
             .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(request => request
+                    .ForPort(KustoPort)
+                    .ForPath("/v1/rest/mgmt")
+                    .WithMethod(HttpMethod.Post)
+                    .WithContent(new StringContent("{\"csl\":\".show cluster\"}", Encoding.UTF8, "application/json"))));
     }
 
     /// <inheritdoc />
@@ -67,32 +72,5 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     protected override KustoBuilder Merge(KustoConfiguration oldValue, KustoConfiguration newValue)
     {
         return new KustoBuilder(new KustoConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly string[] _command =
-        {
-            "curl",
-            "-X",
-            "POST",
-            "-i",
-            "-H",
-            "Content-Type: application/json",
-            "-d",
-            "{\"csl\":\".show cluster\"}",
-            "http://localhost:8080/v1/rest/mgmt"
-        };
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
-
-            return execResult.ExitCode == 0 &&
-                execResult.Stdout.Contains("200 OK");
-        }
     }
 }
