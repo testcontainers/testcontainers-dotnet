@@ -19,13 +19,13 @@ public sealed class KustoContainerTest : IAsyncLifetime
     public async Task ShowDatabaseReturnsDefaultDbInformation()
     {
         // Given
-        using var client = KustoClientFactory.CreateCslAdminProvider(new KustoConnectionStringBuilder(_kustoContainer.GetConnectionString()));
+        using var client = KustoClientFactory.CreateCslAdminProvider(_kustoContainer.GetConnectionString());
 
         // When
-        var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand())
+        using var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand())
             .ConfigureAwait(false);
 
-        dataReader.Read();
+        _ = dataReader.Read();
 
         // Then
         Assert.Equal("DatabaseName", dataReader.GetName(0));
