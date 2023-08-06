@@ -1,4 +1,4 @@
-namespace Testcontainers.Kusto.Tests;
+namespace Testcontainers.Kusto;
 
 public sealed class KustoContainerTest : IAsyncLifetime
 {
