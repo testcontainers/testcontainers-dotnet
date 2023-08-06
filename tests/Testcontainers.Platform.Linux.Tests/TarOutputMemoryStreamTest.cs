@@ -109,8 +109,8 @@ public abstract class TarOutputMemoryStreamTest
                 .WithImage(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
-                .WithResourceMapping(_testFile, targetDirectoryPath1)
-                .WithResourceMapping(_testFile.Directory, targetDirectoryPath2)
+                .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
+                .WithResourceMapping(_testFile.Directory.FullName, targetDirectoryPath2)
                 .Build();
 
             // When
@@ -123,10 +123,10 @@ public abstract class TarOutputMemoryStreamTest
             await container.CopyAsync(fileContent, targetFilePath2)
                 .ConfigureAwait(false);
 
-            await container.CopyAsync(_testFile, targetDirectoryPath3)
+            await container.CopyAsync(_testFile.FullName, targetDirectoryPath3)
                 .ConfigureAwait(false);
 
-            await container.CopyAsync(_testFile.Directory, targetDirectoryPath4)
+            await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath4)
                 .ConfigureAwait(false);
 
             // Then
