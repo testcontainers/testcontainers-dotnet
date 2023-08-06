@@ -158,7 +158,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         await using var container = new ContainerBuilder()
           .WithImage(CommonImages.Nginx)
           .WithPortBinding(hostPort, containerPort)
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(containerPort))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+            request.ForPort(containerPort)))
           .Build();
 
         // When
@@ -178,7 +179,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         await using var container = new ContainerBuilder()
           .WithImage(CommonImages.Nginx)
           .WithPortBinding(containerPort, true)
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(containerPort))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+            request.ForPort(containerPort)))
           .Build();
 
         // When
@@ -187,6 +189,24 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // Then
         Assert.NotEqual(containerPort, container.GetMappedPublicPort(containerPort));
+      }
+
+      [Fact]
+      public async Task UnboundPortBindingThrowsException()
+      {
+        // Given
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(80, true)
+          .Build();
+
+        // When
+        await container.StartAsync()
+          .ConfigureAwait(false);
+
+        // Then
+        Assert.Throws<InvalidOperationException>(() => container.GetMappedPublicPort(443));
       }
 
       [Fact]
