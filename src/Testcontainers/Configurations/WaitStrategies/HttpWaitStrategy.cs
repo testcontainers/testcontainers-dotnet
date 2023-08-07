@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
-    private Func<HttpContent> _contentFactory;
+    private Func<HttpContent> _httpContentCallback;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Configurations
             httpRequestMessage.Headers.Add(httpHeader.Key, httpHeader.Value);
           }
 
-          using (httpRequestMessage.Content = _contentFactory())
+          using (httpRequestMessage.Content = _httpContentCallback())
           {
             HttpResponseMessage httpResponseMessage;
 
@@ -124,7 +124,7 @@ namespace DotNet.Testcontainers.Configurations
             finally
             {
               httpResponseMessage.Dispose();
-            } 
+            }
           }
         }
       }
@@ -263,14 +263,14 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Sets the HTTP message body of the HTTP request.
     /// </summary>
-    /// <param name="contentFactory">
-    /// A factory to create the desired content.
-    /// Make sure to provide a new instance on every call, because it will be disposed on retries.
-    /// </param>
+    /// <param name="httpContentCallback">The callback to invoke to create the HTTP message body.</param>
+    /// <remarks>
+    /// It is important to create a new instance of <see cref="HttpContent" /> within the callback, the HTTP client disposes the content after each call.
+    /// </remarks>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
-    public HttpWaitStrategy WithContent(Func<HttpContent> contentFactory)
+    public HttpWaitStrategy WithContent(Func<HttpContent> httpContentCallback)
     {
-      _contentFactory = contentFactory;
+      _httpContentCallback = httpContentCallback;
       return this;
     }
   }
