@@ -38,14 +38,14 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
-    private Func<HttpContent> _contentFactory = () => null;
+    private Func<HttpContent> _contentFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
     /// </summary>
     public HttpWaitStrategy()
     {
-      _ = WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true));
+      _ = WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true)).WithContent(() => null);
     }
 
     /// <inheritdoc />
