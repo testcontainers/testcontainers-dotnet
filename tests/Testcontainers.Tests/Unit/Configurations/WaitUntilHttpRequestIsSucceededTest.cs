@@ -112,7 +112,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task HttpWaitStrategyCanReuseCustomHttpClientHandler()
+    public async Task HttpWaitStrategyReusesCustomHttpClientHandler()
     {
       // Given
       using var httpMessageHandler = new HttpClientHandler();
