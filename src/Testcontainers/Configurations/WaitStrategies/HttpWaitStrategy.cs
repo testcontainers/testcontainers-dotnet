@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
-    private Func<HttpContent> _contentFactory;
+    private Func<HttpContent> _contentFactory = () => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
