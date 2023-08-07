@@ -52,7 +52,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
                 .WithMethod(HttpMethod.Post)
                 .ForPort(KustoPort)
                 .ForPath("/v1/rest/mgmt")
-                .WithContent(() => new StringContent("{\"csl\":\".show cluster\"}", Encoding.UTF8, "application/json"))));
+                .WithContent(() => new StringContent("{\"csl\":\".show cluster\"}", Encoding.Default, "application/json"))));
     }
 
     /// <inheritdoc />
