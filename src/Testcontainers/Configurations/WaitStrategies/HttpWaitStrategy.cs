@@ -38,12 +38,14 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
+    private Func<HttpContent> _httpContentCallback;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
     /// </summary>
     public HttpWaitStrategy()
     {
-      _ = WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true));
+      _ = WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true)).WithContent(() => null);
     }
 
     /// <inheritdoc />
@@ -75,51 +77,54 @@ namespace DotNet.Testcontainers.Configurations
             httpRequestMessage.Headers.Add(httpHeader.Key, httpHeader.Value);
           }
 
-          HttpResponseMessage httpResponseMessage;
+          using (httpRequestMessage.Content = _httpContentCallback())
+          {
+            HttpResponseMessage httpResponseMessage;
 
-          try
-          {
-            httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
-              .ConfigureAwait(false);
-          }
-          catch (HttpRequestException)
-          {
-            return false;
-          }
+            try
+            {
+              httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+                .ConfigureAwait(false);
+            }
+            catch (HttpRequestException)
+            {
+              return false;
+            }
 
-          Predicate<HttpStatusCode> predicate;
+            Predicate<HttpStatusCode> predicate;
 
-          if (!_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
-          {
-            predicate = statusCode => HttpStatusCode.OK.Equals(statusCode);
-          }
-          else if (_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
-          {
-            predicate = statusCode => _httpStatusCodes.Contains(statusCode);
-          }
-          else if (_httpStatusCodes.Any())
-          {
-            predicate = statusCode => _httpStatusCodes.Contains(statusCode) || _httpStatusCodePredicate.Invoke(statusCode);
-          }
-          else
-          {
-            predicate = _httpStatusCodePredicate;
-          }
+            if (!_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
+            {
+              predicate = statusCode => HttpStatusCode.OK.Equals(statusCode);
+            }
+            else if (_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
+            {
+              predicate = statusCode => _httpStatusCodes.Contains(statusCode);
+            }
+            else if (_httpStatusCodes.Any())
+            {
+              predicate = statusCode => _httpStatusCodes.Contains(statusCode) || _httpStatusCodePredicate.Invoke(statusCode);
+            }
+            else
+            {
+              predicate = _httpStatusCodePredicate;
+            }
 
-          try
-          {
-            var responseMessagePredicate = await _httpResponseMessagePredicate.Invoke(httpResponseMessage)
-              .ConfigureAwait(false);
+            try
+            {
+              var responseMessagePredicate = await _httpResponseMessagePredicate.Invoke(httpResponseMessage)
+                .ConfigureAwait(false);
 
-            return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
-          }
-          catch
-          {
-            return false;
-          }
-          finally
-          {
-            httpResponseMessage.Dispose();
+              return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
+            }
+            catch
+            {
+              return false;
+            }
+            finally
+            {
+              httpResponseMessage.Dispose();
+            }
           }
         }
       }
@@ -198,9 +203,9 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Defines a custom <see cref="HttpMessageHandler"/> which should be used by the internal <see cref="HttpClient"/>.
+    /// Defines a custom <see cref="HttpMessageHandler" /> which should be used by the internal <see cref="HttpClient"/>.
     /// </summary>
-    /// <param name="handler">The handler to pass to the <see cref="HttpClient"/> when it is created.</param>
+    /// <param name="handler">The handler to pass to the <see cref="HttpClient" /> when it is created.</param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy UsingHttpMessageHandler(HttpMessageHandler handler)
     {
@@ -253,6 +258,20 @@ namespace DotNet.Testcontainers.Configurations
     public HttpWaitStrategy WithHeaders(IReadOnlyDictionary<string, string> headers)
     {
       return headers.Aggregate(this, (httpWaitStrategy, header) => httpWaitStrategy.WithHeader(header.Key, header.Value));
+    }
+
+    /// <summary>
+    /// Sets the HTTP message body of the HTTP request.
+    /// </summary>
+    /// <param name="httpContentCallback">The callback to invoke to create the HTTP message body.</param>
+    /// <remarks>
+    /// It is important to create a new instance of <see cref="HttpContent" /> within the callback, the HTTP client disposes the content after each call.
+    /// </remarks>
+    /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
+    public HttpWaitStrategy WithContent(Func<HttpContent> httpContentCallback)
+    {
+      _httpContentCallback = httpContentCallback;
+      return this;
     }
   }
 }
