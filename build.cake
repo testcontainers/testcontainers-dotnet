@@ -142,7 +142,7 @@ Task("Create-NuGet-Packages")
 });
 
 Task("Sign-NuGet-Packages")
-  .WithCriteria(() => param.ShouldPublish)
+  .WithCriteria(() => param.ShouldPublish && false /* We do not have access to a valid code signing certificate anymore. */)
   .Does(() =>
 {
   StartProcess("dotnet", new ProcessSettings
