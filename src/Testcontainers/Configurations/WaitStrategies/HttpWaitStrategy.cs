@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Configurations
 
     private HttpMessageHandler _httpMessageHandler;
 
-    private HttpContent _content;
+    private Func<HttpContent> _contentFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpWaitStrategy" /> class.
@@ -77,53 +77,54 @@ namespace DotNet.Testcontainers.Configurations
             httpRequestMessage.Headers.Add(httpHeader.Key, httpHeader.Value);
           }
 
-          httpRequestMessage.Content = _content;
+          using (httpRequestMessage.Content = _contentFactory())
+          {
+            HttpResponseMessage httpResponseMessage;
 
-          HttpResponseMessage httpResponseMessage;
+            try
+            {
+              httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+                .ConfigureAwait(false);
+            }
+            catch (HttpRequestException)
+            {
+              return false;
+            }
 
-          try
-          {
-            httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
-              .ConfigureAwait(false);
-          }
-          catch (HttpRequestException)
-          {
-            return false;
-          }
+            Predicate<HttpStatusCode> predicate;
 
-          Predicate<HttpStatusCode> predicate;
+            if (!_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
+            {
+              predicate = statusCode => HttpStatusCode.OK.Equals(statusCode);
+            }
+            else if (_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
+            {
+              predicate = statusCode => _httpStatusCodes.Contains(statusCode);
+            }
+            else if (_httpStatusCodes.Any())
+            {
+              predicate = statusCode => _httpStatusCodes.Contains(statusCode) || _httpStatusCodePredicate.Invoke(statusCode);
+            }
+            else
+            {
+              predicate = _httpStatusCodePredicate;
+            }
 
-          if (!_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
-          {
-            predicate = statusCode => HttpStatusCode.OK.Equals(statusCode);
-          }
-          else if (_httpStatusCodes.Any() && _httpStatusCodePredicate == null)
-          {
-            predicate = statusCode => _httpStatusCodes.Contains(statusCode);
-          }
-          else if (_httpStatusCodes.Any())
-          {
-            predicate = statusCode => _httpStatusCodes.Contains(statusCode) || _httpStatusCodePredicate.Invoke(statusCode);
-          }
-          else
-          {
-            predicate = _httpStatusCodePredicate;
-          }
+            try
+            {
+              var responseMessagePredicate = await _httpResponseMessagePredicate.Invoke(httpResponseMessage)
+                .ConfigureAwait(false);
 
-          try
-          {
-            var responseMessagePredicate = await _httpResponseMessagePredicate.Invoke(httpResponseMessage)
-              .ConfigureAwait(false);
-
-            return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
-          }
-          catch
-          {
-            return false;
-          }
-          finally
-          {
-            httpResponseMessage.Dispose();
+              return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
+            }
+            catch
+            {
+              return false;
+            }
+            finally
+            {
+              httpResponseMessage.Dispose();
+            } 
           }
         }
       }
@@ -262,11 +263,14 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Sets the HTTP message body of the HTTP request.
     /// </summary>
-    /// <param name="content">The HTTP message body.</param>
+    /// <param name="contentFactory">
+    /// A factory to create the desired content.
+    /// Make sure to provide a new instance on every call, because it will be disposed on retries.
+    /// </param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
-    public HttpWaitStrategy WithContent(HttpContent content)
+    public HttpWaitStrategy WithContent(Func<HttpContent> contentFactory)
     {
-      _content = content;
+      _contentFactory = contentFactory;
       return this;
     }
   }
