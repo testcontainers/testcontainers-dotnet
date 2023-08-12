@@ -85,7 +85,6 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
             .WithImage(ClickHouseImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(NativePort, true)
-            .WithEnvironment("CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT", "1")
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
