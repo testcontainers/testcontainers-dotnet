@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
-  using System.Reflection;
   using DotNet.Testcontainers.Containers;
 
   internal sealed class DefaultLabels : ReadOnlyDictionary<string, string>
@@ -16,7 +15,7 @@ namespace DotNet.Testcontainers.Clients
       {
         { TestcontainersClient.TestcontainersLabel, bool.TrueString.ToLowerInvariant() },
         { TestcontainersClient.TestcontainersLangLabel, "dotnet" },
-        { TestcontainersClient.TestcontainersVersionLabel, typeof(DefaultLabels).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion },
+        { TestcontainersClient.TestcontainersVersionLabel, TestcontainersClient.Version },
         { TestcontainersClient.TestcontainersSessionIdLabel, ResourceReaper.DefaultSessionId.ToString("D") },
         { ResourceReaper.ResourceReaperSessionLabel, ResourceReaper.DefaultSessionId.ToString("D") },
       })

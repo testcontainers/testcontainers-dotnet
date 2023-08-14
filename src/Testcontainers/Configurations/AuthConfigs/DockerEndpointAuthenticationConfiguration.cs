@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using Docker.DotNet;
+  using DotNet.Testcontainers.Clients;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationConfiguration" />
@@ -30,7 +31,12 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
     {
-      var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "x-tc-sid", sessionId.ToString("D") } });
+      var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+      {
+        { "User-Agent", "tc-dotnet/" + TestcontainersClient.Version },
+        { "x-tc-sid", sessionId.ToString("D") },
+      });
+
       return new DockerClientConfiguration(Endpoint, Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }

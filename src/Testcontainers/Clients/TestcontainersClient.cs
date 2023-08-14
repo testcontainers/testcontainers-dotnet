@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
   using System.Text;
   using System.Text.RegularExpressions;
   using System.Threading;
@@ -27,6 +28,8 @@ namespace DotNet.Testcontainers.Clients
     public const string TestcontainersVersionLabel = TestcontainersLabel + ".version";
 
     public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
+
+    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
     private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
