@@ -1,12 +1,10 @@
-using System.Reflection;
-using DotNet.Testcontainers.Clients;
-
 namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using Docker.DotNet;
+  using DotNet.Testcontainers.Clients;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IDockerEndpointAuthenticationConfiguration" />
@@ -33,12 +31,12 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
     {
-      var testcontainersVersion = typeof(DefaultLabels).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
       var defaultHttpRequestHeaders = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
       {
+        { "User-Agent", "tc-dotnet/" + TestcontainersClient.Version },
         { "x-tc-sid", sessionId.ToString("D") },
-        { "User-Agent", "tc-dotnet/" + testcontainersVersion}
       });
+
       return new DockerClientConfiguration(Endpoint, Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }
