@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.InfluxDb;
+namespace Testcontainers.InfluxDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
@@ -9,7 +9,8 @@ public sealed class InfluxDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public InfluxDbContainer(InfluxDbConfiguration configuration, ILogger logger) : base(configuration, logger)
+    public InfluxDbContainer(InfluxDbConfiguration configuration, ILogger logger)
+        : base(configuration, logger)
     {
     }
 

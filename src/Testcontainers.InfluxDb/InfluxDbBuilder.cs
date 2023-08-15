@@ -1,8 +1,10 @@
-﻿namespace Testcontainers.InfluxDb;
+namespace Testcontainers.InfluxDb;
 
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+[PublicAPI]
 public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
 {
-    public const string InfluxDbImage = "influxdb:2.7.1";
+    public const string InfluxDbImage = "influxdb:2.7";
 
     public const ushort InfluxDbPort = 8086;
 
@@ -35,7 +37,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
 
     /// <inheritdoc />
     protected override InfluxDbConfiguration DockerResourceConfiguration { get; }
-    
+
     /// <summary>
     /// Sets the InfluxDb username.
     /// </summary>
@@ -109,7 +111,6 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
         return new InfluxDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-
     /// <inheritdoc />
     protected override InfluxDbBuilder Init()
     {
@@ -122,10 +123,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
             .WithOrganization(DefaultOrganization)
             .WithBucket(DefaultBucket)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request
-                .ForPort(InfluxDbPort)
-                .ForPath("/ping")
-                .ForStatusCodeMatching(statusCode => statusCode == System.Net.HttpStatusCode.NoContent)));
+                request.ForPort(InfluxDbPort).ForPath("/ping").ForStatusCode(HttpStatusCode.NoContent)));
     }
 
     /// <inheritdoc />
