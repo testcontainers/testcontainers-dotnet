@@ -135,6 +135,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.InfluxDb", "src\Testcontainers.InfluxDb\Testcontainers.InfluxDb.csproj", "{8F483B83-7BD4-4BD5-9F03-DFC26E1CE678}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.InfluxDb.Tests", "tests\Testcontainers.InfluxDb.Tests\Testcontainers.InfluxDb.Tests.csproj", "{B45B0EF2-5852-4ED3-904A-8FC62A3253D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -388,6 +390,10 @@ Global
 		{8F483B83-7BD4-4BD5-9F03-DFC26E1CE678}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F483B83-7BD4-4BD5-9F03-DFC26E1CE678}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F483B83-7BD4-4BD5-9F03-DFC26E1CE678}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B45B0EF2-5852-4ED3-904A-8FC62A3253D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45B0EF2-5852-4ED3-904A-8FC62A3253D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45B0EF2-5852-4ED3-904A-8FC62A3253D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45B0EF2-5852-4ED3-904A-8FC62A3253D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -451,5 +457,6 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{8F483B83-7BD4-4BD5-9F03-DFC26E1CE678} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{B45B0EF2-5852-4ED3-904A-8FC62A3253D7} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
