@@ -1,6 +1,4 @@
-﻿using InfluxDB.Client;
-
-namespace Testcontainers.InfluxDb.Tests;
+﻿namespace Testcontainers.InfluxDb.Tests;
 
 public sealed class InfluxDbContainerTest : IAsyncLifetime
 {
@@ -30,4 +28,3 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
         Assert.True(result);
     }
 }
-
