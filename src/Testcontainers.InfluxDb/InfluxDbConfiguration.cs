@@ -1,6 +1,6 @@
-﻿namespace Testcontainers.InfluxDb;
+namespace Testcontainers.InfluxDb;
 
-/// <inheritdoc cref="DockerContainer" />
+/// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
 public sealed class InfluxDbConfiguration : ContainerConfiguration
 {

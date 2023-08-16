@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.InfluxDb.Tests;
+namespace Testcontainers.InfluxDb;
 
 public sealed class InfluxDbContainerTest : IAsyncLifetime
 {
@@ -31,7 +31,8 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
         using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), Token);
 
         // When
-        var result = await client.PingAsync();
+        var result = await client.PingAsync()
+            .ConfigureAwait(false);
 
         // Then
         Assert.True(result);
