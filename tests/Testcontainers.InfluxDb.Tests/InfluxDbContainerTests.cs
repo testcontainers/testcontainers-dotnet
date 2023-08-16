@@ -59,8 +59,10 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
             .Timestamp(DateTime.UtcNow.AddSeconds(-10), WritePrecision.Ns);
 
         // When
-        await writeApi.WritePointAsync(point, Bucket, Organization);
-        var fluxTables = await queryApi.QueryAsync(query, Organization);
+        await writeApi.WritePointAsync(point, Bucket, Organization)
+            .ConfigureAwait(false);
+        var fluxTables = await queryApi.QueryAsync(query, Organization)
+            .ConfigureAwait(false);
 
         // Then
         var recordValues = fluxTables.SingleOrDefault()?.Records?.SingleOrDefault()?.Values;
