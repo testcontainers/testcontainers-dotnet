@@ -2,16 +2,9 @@ namespace Testcontainers.InfluxDb;
 
 public sealed class InfluxDbContainerTest : IAsyncLifetime
 {
-    private const string Token = "test_admin_token";
-    private const string Organization = "test_organization";
-    private const string Bucket = "test_bucket";
+    private const string AdminToken = "YOUR_API_TOKEN";
 
-    private readonly InfluxDbContainer _influxDbContainer =
-        new InfluxDbBuilder()
-            .WithAdminToken(Token)
-            .WithOrganization(Organization)
-            .WithBucket(Bucket)
-            .Build();
+    private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder().WithAdminToken(AdminToken).Build();
 
     public Task InitializeAsync()
     {
@@ -28,7 +21,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
     public async Task PingReturnsTrue()
     {
         // Given
-        using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), Token);
+        using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), AdminToken);
 
         // When
         var result = await client.PingAsync()
@@ -43,31 +36,35 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
     public async Task PointQueryReturnsWrittenPoint()
     {
         // Given
-        const string expectedLocationTag = "location";
-        const string expectedLocationTagValue = "west";
-        const double fieldValue = 55D;
-        const string query = $"from(bucket:\"{Bucket}\") |> range(start: 0)";
+        const string query = "from(bucket:\"" + InfluxDbBuilder.DefaultBucket + "\") |> range(start: 0)";
 
-        using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), Token);
-        var writeApi = client.GetWriteApiAsync();
+        const string regionTagName = "region";
+
+        const string regionTagValue = "eu-central-1";
+
+        const double temperature = 55d;
+
+        using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), AdminToken);
         var queryApi = client.GetQueryApi();
+        var writeApi = client.GetWriteApiAsync();
 
         var point = PointData
             .Measurement("temperature")
-            .Tag(expectedLocationTag, expectedLocationTagValue)
-            .Field("value", fieldValue)
-            .Timestamp(DateTime.UtcNow.AddSeconds(-10), WritePrecision.Ns);
+            .Field("value", temperature)
+            .Tag(regionTagName, regionTagValue)
+            .Timestamp(DateTime.UtcNow, WritePrecision.Ns);
 
         // When
-        await writeApi.WritePointAsync(point, Bucket, Organization)
-            .ConfigureAwait(false);
-        var fluxTables = await queryApi.QueryAsync(query, Organization)
+        await writeApi.WritePointAsync(point, InfluxDbBuilder.DefaultBucket, InfluxDbBuilder.DefaultOrganization)
             .ConfigureAwait(false);
 
+        var fluxTables = await queryApi.QueryAsync(query, InfluxDbBuilder.DefaultOrganization)
+            .ConfigureAwait(false);
+
+        var recordValues = fluxTables.Single().Records.Single().Values;
+
         // Then
-        var recordValues = fluxTables.SingleOrDefault()?.Records?.SingleOrDefault()?.Values;
-        Assert.NotNull(recordValues);
-        Assert.Equal(expectedLocationTagValue, recordValues[expectedLocationTag]);
-        Assert.Equal(fieldValue, recordValues["_value"]);
+        Assert.Equal(regionTagValue, recordValues[regionTagName]);
+        Assert.Equal(temperature, recordValues["_value"]);
     }
 }
