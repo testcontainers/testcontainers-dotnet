@@ -17,6 +17,8 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
+    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.None, TimeSpan.FromSeconds(1));
+
     private readonly DirectoryInfo _dockerfileDirectory;
 
     private readonly FileInfo _dockerfile;
@@ -62,6 +64,52 @@ namespace DotNet.Testcontainers.Images
       _dockerfile = dockerfile;
       _image = image;
       _logger = logger;
+    }
+
+    /// <summary>
+    /// Gets a collection of base images.
+    /// </summary>
+    /// <remarks>
+    /// This method reads the Dockerfile and collects a list of base images. It
+    /// excludes stages that do not correspond to base images. For example, it will not include
+    /// the second line in the Dockerfile below:
+    /// <code>
+    ///   FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+    ///   FROM build
+    /// </code>
+    /// </remarks>
+    /// <returns>An <see cref="IEnumerable{T}" /> of <see cref="IImage" />.</returns>
+    public IEnumerable<IImage> GetBaseImages()
+    {
+      const string imageGroup = "image";
+
+      var lines = File.ReadAllLines(Path.Combine(_dockerfileDirectory.FullName, _dockerfile.ToString()))
+        .Select(line => line.Trim())
+        .Where(line => !string.IsNullOrEmpty(line))
+        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+        .Select(line => FromLinePattern.Match(line))
+        .Where(match => match.Success)
+        .Where(match => !match.Groups[imageGroup].Value.Contains('$'))
+        .Where(match => !match.Groups[imageGroup].Value.Any(char.IsUpper))
+        .ToArray();
+
+      var stages = lines
+        .Select(line => line.Value)
+        .Select(line => line.Split(new [] { " AS " }, StringSplitOptions.RemoveEmptyEntries))
+        .Where(substrings => substrings.Length > 1)
+        .Select(substrings => substrings[substrings.Length - 1])
+        .Distinct()
+        .ToArray();
+
+      var images = lines
+        .Select(match => match.Groups[imageGroup])
+        .Select(group => group.Value)
+        .Where(value => !stages.Contains(value))
+        .Distinct()
+        .Select(value => new DockerImage(value))
+        .ToArray();
+
+      return images;
     }
 
     /// <inheritdoc />

@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Reflection;
   using System.Text;
-  using System.Text.RegularExpressions;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
@@ -33,9 +32,9 @@ namespace DotNet.Testcontainers.Clients
 
     private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
-    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--[^\\s]+\\s)*(?<image>[^\\s]+).*", RegexOptions.None, TimeSpan.FromSeconds(1));
-
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
+
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersClient" /> class.
@@ -50,7 +49,8 @@ namespace DotNet.Testcontainers.Clients
         new DockerNetworkOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerVolumeOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
-        new DockerRegistryAuthenticationProvider(logger))
+        new DockerRegistryAuthenticationProvider(logger),
+        logger)
     {
     }
 
@@ -60,9 +60,11 @@ namespace DotNet.Testcontainers.Clients
       IDockerNetworkOperations networkOperations,
       IDockerVolumeOperations volumeOperations,
       IDockerSystemOperations systemOperations,
-      DockerRegistryAuthenticationProvider registryAuthenticationProvider)
+      DockerRegistryAuthenticationProvider registryAuthenticationProvider,
+      ILogger logger)
     {
       _registryAuthenticationProvider = registryAuthenticationProvider;
+      _logger = logger;
       Container = containerOperations;
       Image = imageOperations;
       Network = networkOperations;
@@ -328,25 +330,17 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var dockerfileFilePath = Path.Combine(configuration.DockerfileDirectory, configuration.Dockerfile);
-
       var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
-      if (File.Exists(dockerfileFilePath))
-      {
-        await Task.WhenAll(File.ReadAllLines(dockerfileFilePath)
-          .Select(line => FromLinePattern.Match(line))
-          .Where(match => match.Success)
-          .Select(match => match.Groups["image"])
-          .Select(group => group.Value)
-          .Select(image => new DockerImage(image))
-          .Select(image => PullImageAsync(image, ct)));
-      }
-
       if (configuration.ImageBuildPolicy(cachedImage))
       {
-        _ = await Image.BuildAsync(configuration, ct)
+        var dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, configuration.Image, _logger);
+
+        await Task.WhenAll(dockerfileArchive.GetBaseImages().Select(image => PullImageAsync(image, ct)))
+          .ConfigureAwait(false);
+
+        _ = await Image.BuildAsync(configuration, dockerfileArchive, ct)
           .ConfigureAwait(false);
       }
 

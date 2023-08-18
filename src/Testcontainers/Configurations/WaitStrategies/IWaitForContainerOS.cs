@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Returns a collection with all configured wait strategies.
     /// </summary>
-    /// <returns>List with all configured wait strategies.</returns>
+    /// <returns>Returns a list with all configured wait strategies.</returns>
     [PublicAPI]
     IEnumerable<IWaitUntil> Build();
   }

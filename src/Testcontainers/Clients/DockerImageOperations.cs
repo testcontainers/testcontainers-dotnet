@@ -88,11 +88,9 @@ namespace DotNet.Testcontainers.Clients
       return Docker.Images.DeleteImageAsync(image.FullName, new ImageDeleteParameters { Force = true }, ct);
     }
 
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default)
     {
       var image = configuration.Image;
-
-      ITarArchive dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, image, _logger);
 
       var imageExists = await ExistsWithNameAsync(image.FullName, ct)
         .ConfigureAwait(false);

@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Linq;
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -15,16 +16,31 @@ namespace DotNet.Testcontainers.Tests.Unit
   public sealed class ImageFromDockerfileTest
   {
     [Fact]
+    public void DockerfileArchiveGetBaseImages()
+    {
+      // Given
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      var dockerfileArchive = new DockerfileArchive("Assets//pullBaseImages/", "Dockerfile", image, NullLogger.Instance);
+
+      // When
+      var baseImages = dockerfileArchive.GetBaseImages();
+
+      // Then
+      Assert.Equal(3, baseImages.Count());
+    }
+
+    [Fact]
     public async Task DockerfileArchiveTar()
     {
       // Given
-      var image = new DockerImage("testcontainers", "test", "0.1.0");
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
 
       var expected = new SortedSet<string> { ".dockerignore", "Dockerfile", "setup/setup.sh" };
 
       var actual = new SortedSet<string>();
 
-      var dockerfileArchive = new DockerfileArchive("Assets", "Dockerfile", image, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar()
         .ConfigureAwait(false);
@@ -91,7 +107,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
         .WithDockerfile("Dockerfile")
-        .WithDockerfileDirectory("Assets")
+        .WithDockerfileDirectory("Assets/")
         .WithDeleteIfExists(true)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Tags.Add(tag2.FullName))
         .Build();

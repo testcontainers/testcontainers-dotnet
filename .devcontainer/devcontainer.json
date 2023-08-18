@@ -14,18 +14,20 @@
       "moby": true
     },
     "ghcr.io/devcontainers/features/dotnet:1": {
-      "version": "6.0.405",
+      "version": "6.0.413",
       "installUsingApt": false
     }
   },
-  "extensions": [
-    "formulahendry.dotnet-test-explorer",
-    "ms-azuretools.vscode-docker",
-    "ms-dotnettools.csharp"
-  ],
-  "settings": {
-    "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
+  "customizations": {
+    "extensions": [
+      "formulahendry.dotnet-test-explorer",
+      "ms-azuretools.vscode-docker",
+      "ms-dotnettools.csharp"
+    ],
+    "settings": {
+      "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
+    }
   },
-  "postCreateCommand": ["git", "lfs", "pull"],
+  "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && git lfs checkout",
   "postStartCommand": ["dotnet", "build"]
 }
