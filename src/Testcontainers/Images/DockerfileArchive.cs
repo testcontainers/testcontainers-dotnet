@@ -89,6 +89,8 @@ namespace DotNet.Testcontainers.Images
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
         .Select(line => FromLinePattern.Match(line))
         .Where(match => match.Success)
+        // Until now, we are unable to resolve variables within Dockerfiles. Ignore base
+        // images that utilize variables. Expect them to exist on the host.
         .Where(match => !match.Groups[imageGroup].Value.Contains('$'))
         .Where(match => !match.Groups[imageGroup].Value.Any(char.IsUpper))
         .ToArray();
