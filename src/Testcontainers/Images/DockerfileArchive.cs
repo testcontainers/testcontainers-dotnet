@@ -72,7 +72,7 @@ namespace DotNet.Testcontainers.Images
     /// <remarks>
     /// This method reads the Dockerfile and collects a list of base images. It
     /// excludes stages that do not correspond to base images. For example, it will not include
-    /// the second line in the Dockerfile below:
+    /// the second line from the following Dockerfile configuration:
     /// <code>
     ///   FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
     ///   FROM build
