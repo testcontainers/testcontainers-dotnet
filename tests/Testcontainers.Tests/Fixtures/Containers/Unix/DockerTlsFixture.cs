@@ -7,9 +7,10 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class DockerTlsFixture : ProtectDockerDaemonSocket
   {
+    public const string DockerVersion = "20.10.18";
     public DockerTlsFixture()
       : base(new ContainerBuilder()
-        .WithCommand("--tlsverify=false"))
+        .WithCommand("--tlsverify=false"), DockerVersion)
     {
     }
 

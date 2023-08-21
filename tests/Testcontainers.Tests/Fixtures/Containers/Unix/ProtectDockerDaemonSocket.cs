@@ -12,8 +12,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public abstract class ProtectDockerDaemonSocket : IAsyncLifetime
   {
-    public const string DockerVersion = "20.10.18";
-
     private const string CertsDirectoryName = "certs";
 
     private const ushort TlsPort = 2376;
@@ -22,14 +20,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private readonly string _containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
-    private readonly IImage _image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
-
     private readonly IContainer _container;
 
-    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration)
+    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
     {
       _container = containerConfiguration
-        .WithImage(_image)
+        .WithImage(DockerImage(dockerImageVersion))
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)
@@ -46,6 +42,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         customProperties.Add($"docker.cert.path={Path.Combine(_hostCertsDirectoryPath, "client")}");
         return customProperties;
       }
+    }
+
+    private static IImage DockerImage(string dockerImageVersion)
+    {
+      return new DockerImage(string.Empty, "docker", dockerImageVersion + "-dind");
     }
 
     private Uri TcpEndpoint

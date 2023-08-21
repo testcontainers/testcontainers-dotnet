@@ -18,11 +18,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       return new IDockerEndpointAuthenticationProvider[] { new MTlsEndpointAuthenticationProvider(customConfiguration), new TlsEndpointAuthenticationProvider(customConfiguration) }.First(authProvider => authProvider.IsApplicable()).GetAuthConfig();
     }
 
-    public sealed class MTls : IClassFixture<DockerMTlsFixture>
+    public sealed class MTlsOpenSsl1_1_1 : IClassFixture<OpenSsl1_1_1Fixture>
     {
       private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
-      public MTls(DockerMTlsFixture dockerMTlsFixture)
+      public MTlsOpenSsl1_1_1(OpenSsl1_1_1Fixture dockerMTlsFixture)
       {
         _authConfig = GetAuthConfig(dockerMTlsFixture);
       }
@@ -32,13 +32,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
-
         // When
         var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(ProtectDockerDaemonSocket.DockerVersion, version.Version);
+        Assert.Equal(OpenSsl1_1_1Fixture.DockerVersion, version.Version);
       }
     }
 
@@ -62,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(ProtectDockerDaemonSocket.DockerVersion, version.Version);
+        Assert.Equal(DockerTlsFixture.DockerVersion, version.Version);
       }
     }
   }
