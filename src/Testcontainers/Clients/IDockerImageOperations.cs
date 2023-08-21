@@ -12,6 +12,6 @@ namespace DotNet.Testcontainers.Clients
 
     Task DeleteAsync(IImage image, CancellationToken ct = default);
 
-    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default);
   }
 }
