@@ -126,8 +126,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .ConfigureAwait(false);
 
       // Then
+      Assert.Throws<InvalidOperationException>(() => image.Registry);
       Assert.Throws<InvalidOperationException>(() => image.Repository);
-      Assert.Throws<InvalidOperationException>(() => image.Name);
       Assert.Throws<InvalidOperationException>(() => image.Tag);
       Assert.Throws<InvalidOperationException>(() => image.FullName);
       Assert.Throws<InvalidOperationException>(() => image.GetHostname());

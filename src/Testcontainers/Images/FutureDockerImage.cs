@@ -30,22 +30,22 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
+    public string Registry
+    {
+      get
+      {
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Registry;
+      }
+    }
+
+    /// <inheritdoc />
     public string Repository
     {
       get
       {
         ThrowIfResourceNotFound();
         return _configuration.Image.Repository;
-      }
-    }
-
-    /// <inheritdoc />
-    public string Name
-    {
-      get
-      {
-        ThrowIfResourceNotFound();
-        return _configuration.Image.Name;
       }
     }
 

@@ -9,16 +9,16 @@ namespace DotNet.Testcontainers.Images
   public interface IImage
   {
     /// <summary>
+    /// Gets the registry.
+    /// </summary>
+    [NotNull]
+    string Registry { get; }
+
+    /// <summary>
     /// Gets the repository.
     /// </summary>
     [NotNull]
     string Repository { get; }
-
-    /// <summary>
-    /// Gets the name.
-    /// </summary>
-    [NotNull]
-    string Name { get; }
 
     /// <summary>
     /// Gets the tag.
