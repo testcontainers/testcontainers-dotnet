@@ -8,6 +8,8 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Tests.Fixtures;
   using Microsoft.Extensions.Logging.Abstractions;
+  using Org.BouncyCastle.Crypto;
+  using Org.BouncyCastle.Crypto.Parameters;
   using Xunit;
 
   public static class ProtectDockerDaemonSocketTest
@@ -20,10 +22,12 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class MTlsOpenSsl1_1_1 : IClassFixture<OpenSsl1_1_1Fixture>
     {
+      private readonly OpenSsl1_1_1Fixture _fixture;
       private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public MTlsOpenSsl1_1_1(OpenSsl1_1_1Fixture dockerMTlsFixture)
       {
+        _fixture = dockerMTlsFixture;
         _authConfig = GetAuthConfig(dockerMTlsFixture);
       }
 
@@ -35,9 +39,38 @@ namespace DotNet.Testcontainers.Tests.Unit
         // When
         var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
+        var key = _fixture.ClientCertificateKey();
 
         // Then
         Assert.Equal(OpenSsl1_1_1Fixture.DockerVersion, version.Version);
+        Assert.IsType<AsymmetricCipherKeyPair>(key);
+      }
+    }
+
+    public sealed class MTlsOpenSsl3_1 : IClassFixture<OpenSsl3_1Fixture>
+    {
+      private readonly OpenSsl3_1Fixture _fixture;
+      private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
+
+      public MTlsOpenSsl3_1(OpenSsl3_1Fixture dockerMTlsFixture)
+      {
+        _fixture = dockerMTlsFixture;
+        _authConfig = GetAuthConfig(dockerMTlsFixture);
+      }
+
+      [Fact]
+      public async Task GetVersionReturnsVersion()
+      {
+        // Given
+        var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
+        // When
+        var version = await client.System.GetVersionAsync()
+          .ConfigureAwait(false);
+        var key = _fixture.ClientCertificateKey();
+
+        // Then
+        Assert.Equal(OpenSsl3_1Fixture.DockerVersion, version.Version);
+        Assert.IsType<RsaPrivateCrtKeyParameters>(key);
       }
     }
 

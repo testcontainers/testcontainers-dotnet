@@ -16,11 +16,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private const ushort TlsPort = 2376;
 
-    private readonly string _hostCertsDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"), CertsDirectoryName);
-
     private readonly string _containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
     private readonly IContainer _container;
+
+    protected readonly string _hostCertsDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"), CertsDirectoryName);
 
     protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
     {
