@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Images
 
       var stages = lines
         .Select(line => line.Value)
-        .Select(line => line.Split(new [] { " AS " }, StringSplitOptions.RemoveEmptyEntries))
+        .Select(line => line.Split(new [] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
         .Where(substrings => substrings.Length > 1)
         .Select(substrings => substrings[substrings.Length - 1])
         .Distinct()
