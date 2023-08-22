@@ -15,6 +15,7 @@ theme:
   logo: logo.svg
 extra_css:
   - css/extra.css
+  - css/tc-header.css
 plugins:
   - codeinclude
   - markdownextradata
