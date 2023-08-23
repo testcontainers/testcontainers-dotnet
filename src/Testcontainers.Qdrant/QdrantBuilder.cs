@@ -105,10 +105,14 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
             var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
-            return 2.Equals(Array.Empty<string>()
+            var detectedLines = Array.Empty<string>()
                 .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Count(line => line.Contains("Access web UI at http")));
+                .Count(line => line.Contains("Access web UI at http")
+                               || line.Contains("Qdrant HTTP listening on")
+                               || line.Contains("starting in Actix runtime"));
+
+            return detectedLines >= 2;
         }
     }
 }
