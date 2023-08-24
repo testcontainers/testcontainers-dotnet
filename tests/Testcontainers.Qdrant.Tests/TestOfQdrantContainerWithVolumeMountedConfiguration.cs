@@ -1,11 +1,11 @@
 using DotNet.Testcontainers.Configurations;
 
-using FluentAssertions;
+using QdrantCSharp;
+using QdrantCSharp.Enums;
+using QdrantCSharp.Models;
 
-using System.Threading;
+using System.IO;
 using System.Threading.Tasks;
-
-using Testcontainers.Qdrant.Tests.QdrantClient;
 
 using Xunit.Abstractions;
 
@@ -21,14 +21,16 @@ public sealed class TestOfQdrantContainerWithVolumeMountedConfiguration : IAsync
 
   private const string CollectionName = "qdrant-test-collection";
   private const int VectorSize = 4;
-
+  private const string PathName = "./testcontainer_qdrant_storage";
   public TestOfQdrantContainerWithVolumeMountedConfiguration(ITestOutputHelper output)
   {
+    var path = Path.GetFullPath(PathName);
+    Directory.CreateDirectory(path);
     this.output = output;
     quadrantContainer = new QdrantBuilder()
-        .WithContainerName("qdrant-testcontainer")
-        .WithVolume("/temp/testcontainer_qdrant_storage", "/qdrant/storage", AccessMode.ReadWrite)
-        .Build();
+      .WithContainerName("qdrant-testcontainer")
+      .WithVolume(path, "/qdrant/storage", AccessMode.ReadWrite)
+      .Build();
   }
 
   public Task InitializeAsync()
@@ -40,28 +42,17 @@ public sealed class TestOfQdrantContainerWithVolumeMountedConfiguration : IAsync
   {
     return quadrantContainer.DisposeAsync().AsTask();
   }
-
   [Fact]
   public async Task CreateCollectionAndFindIt_UsingMountedVolumeOptions()
   {
-    var cancellationToken = CancellationToken.None;
-    var url = quadrantContainer.GetConnectionUrl();
-    var vectorParams = new VectorParams(VectorSize, Distance.DOT, true);
-    IQdrantVectorDbClient client = new QdrantVectorDbClient(url);
-
-    var response = await client.CreateCollection(CollectionName, vectorParams, cancellationToken);
-    response.Switch(
-        _ => output.WriteLine($"Created Collection {CollectionName}"),
-        error => throw new QdrantException(error.Error)
-    );
-    var result = await client.GetCollection(CollectionName, cancellationToken);
-    result.Switch(
-        collectionInfo =>
-        {
-          output.WriteLine($"Found Collection {CollectionName}");
-          collectionInfo.Should().NotBeNull();
-        },
-        error => throw new QdrantException(error.Error)
-    );
+    var client = new QdrantHttpClient(quadrantContainer.GetConnectionUrl(), string.Empty);
+    var response = await client.CreateCollection(CollectionName, new VectorParams(size: VectorSize, distance: Distance.DOT));
+    Assert.True(response.Result);
+    output.WriteLine($"Created Collection {CollectionName}");
+    var result = await client.GetCollection(CollectionName);
+    Assert.NotNull(result);
+    Assert.Equal("ok", result.Status);
+    output.WriteLine($"Verified Collection {CollectionName}");
   }
+
 }

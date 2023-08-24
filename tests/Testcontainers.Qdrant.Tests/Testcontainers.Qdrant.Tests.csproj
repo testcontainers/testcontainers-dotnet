@@ -9,8 +9,7 @@
     <PackageReference Include="coverlet.collector" Version="3.2.0"/>
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
     <PackageReference Include="xunit" Version="2.4.2"/>
-    <PackageReference Include="FluentAssertions" Version="6.11.0" />
-    <PackageReference Include="OneOf" Version="3.0.255" />
+    <PackageReference Include="Qdrant.Client" Version="0.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src/Testcontainers.Qdrant/Testcontainers.Qdrant.csproj"/>
