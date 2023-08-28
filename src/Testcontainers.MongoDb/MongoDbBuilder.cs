@@ -12,12 +12,15 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     public const string DefaultPassword = "mongo";
 
+    private readonly bool _useDefaultCredentials;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
-    public MongoDbBuilder()
+    public MongoDbBuilder(bool useDefaultCredentials = true)
         : this(new MongoDbConfiguration())
     {
+        _useDefaultCredentials = useDefaultCredentials;
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
@@ -66,12 +69,19 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <inheritdoc />
     protected override MongoDbBuilder Init()
     {
-        return base.Init()
+        var builder = base.Init()
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
-            .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+
+        if (_useDefaultCredentials)
+        {
+            builder = builder
+                .WithUsername(DefaultUsername)
+                .WithPassword(DefaultPassword);
+        }
+
+        return builder;
     }
 
     /// <inheritdoc />
