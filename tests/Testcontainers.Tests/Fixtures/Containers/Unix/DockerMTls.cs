@@ -2,13 +2,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
-  using JetBrains.Annotations;
 
-  [UsedImplicitly]
-  public sealed class DockerMTlsFixture : ProtectDockerDaemonSocket
+  public abstract class DockerMTls : ProtectDockerDaemonSocket
   {
-    public DockerMTlsFixture()
-      : base(new ContainerBuilder())
+    public DockerMTls(string dockerImageVersion)
+      : base(new ContainerBuilder(), dockerImageVersion)
     {
     }
 

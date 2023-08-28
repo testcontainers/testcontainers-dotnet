@@ -8,12 +8,11 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
+  using Org.BouncyCastle.OpenSsl;
   using Xunit;
 
   public abstract class ProtectDockerDaemonSocket : IAsyncLifetime
   {
-    public const string DockerVersion = "20.10.18";
-
     private const string CertsDirectoryName = "certs";
 
     private const ushort TlsPort = 2376;
@@ -22,14 +21,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private readonly string _containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
-    private readonly IImage _image = new DockerImage(string.Empty, "docker", DockerVersion + "-dind");
-
     private readonly IContainer _container;
 
-    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration)
+    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
     {
       _container = containerConfiguration
-        .WithImage(_image)
+        .WithImage(new DockerImage(string.Empty, "docker", dockerImageVersion + "-dind"))
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)
@@ -42,17 +39,28 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       get
       {
         var customProperties = new List<string>();
-        customProperties.Add($"docker.host={TcpEndpoint}");
+        customProperties.Add($"docker.host={new UriBuilder("tcp", _container.Hostname, _container.GetMappedPublicPort(TlsPort))}");
         customProperties.Add($"docker.cert.path={Path.Combine(_hostCertsDirectoryPath, "client")}");
         return customProperties;
       }
     }
 
-    private Uri TcpEndpoint
+    public IImage Image
     {
       get
       {
-        return new UriBuilder("tcp", _container.Hostname, _container.GetMappedPublicPort(TlsPort)).Uri;
+        return _container.Image;
+      }
+    }
+
+    public object TlsKey
+    {
+      get
+      {
+        using (var tlsKeyStream = new StreamReader(Path.Combine(_hostCertsDirectoryPath, "client", "key.pem")))
+        {
+          return new PemReader(tlsKeyStream).ReadObject();
+        }
       }
     }
 

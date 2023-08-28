@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Org.BouncyCastle.Crypto;
+  using Org.BouncyCastle.Crypto.Parameters;
   using Org.BouncyCastle.OpenSsl;
   using Org.BouncyCastle.Pkcs;
   using Org.BouncyCastle.Security;
@@ -79,11 +80,13 @@ namespace DotNet.Testcontainers.Builders
 
         var password = Guid.NewGuid().ToString("D");
 
-        var keyPair = (AsymmetricCipherKeyPair)new PemReader(keyPairStream).ReadObject();
+        var keyObject = new PemReader(keyPairStream).ReadObject();
 
         var certificateEntry = new X509CertificateEntry(certificate);
 
-        var keyEntry = new AsymmetricKeyEntry(keyPair.Private);
+        var keyParameter = ResolveKeyParameter(keyObject);
+
+        var keyEntry = new AsymmetricKeyEntry(keyParameter);
         store.SetKeyEntry(certificate.SubjectDN + "_key", keyEntry, new[] { certificateEntry });
 
         using (var certificateStream = new MemoryStream())
@@ -91,6 +94,19 @@ namespace DotNet.Testcontainers.Builders
           store.Save(certificateStream, password.ToCharArray(), new SecureRandom());
           return new X509Certificate2(Pkcs12Utilities.ConvertToDefiniteLength(certificateStream.ToArray()), password);
         }
+      }
+    }
+
+    private static AsymmetricKeyParameter ResolveKeyParameter(object keyObject)
+    {
+      switch (keyObject)
+      {
+        case AsymmetricCipherKeyPair ackp:
+          return ackp.Private;
+        case RsaPrivateCrtKeyParameters rpckp:
+          return rpckp;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(keyObject), $"Unsupported asymmetric key entry encountered while trying to resolve key from input object '{keyObject.GetType()}'.");
       }
     }
   }
