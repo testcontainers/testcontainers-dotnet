@@ -96,6 +96,7 @@ namespace DotNet.Testcontainers.Builders
         }
       }
     }
+
     private static AsymmetricKeyParameter ResolveKeyParameter(object keyObject)
     {
       switch (keyObject)
@@ -105,7 +106,7 @@ namespace DotNet.Testcontainers.Builders
         case RsaPrivateCrtKeyParameters rpckp:
           return rpckp;
         default:
-          throw new ArgumentOutOfRangeException(nameof(keyObject), "Unsupported type when reading key pem file");
+          throw new ArgumentOutOfRangeException(nameof(keyObject), $"Unsupported asymmetric key entry encountered while trying to resolve key from input object '{keyObject.GetType()}'.");
       }
     }
   }

@@ -22,7 +22,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class MTlsOpenSsl1_1_1 : IClassFixture<OpenSsl1_1_1Fixture>
     {
-      private readonly OpenSsl1_1_1Fixture _fixture;
+      private readonly ProtectDockerDaemonSocket _fixture;
+
       private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public MTlsOpenSsl1_1_1(OpenSsl1_1_1Fixture dockerMTlsFixture)
@@ -36,20 +37,21 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
+
         // When
         var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
-        var key = _fixture.ClientCertificateKey();
 
         // Then
-        Assert.Equal(OpenSsl1_1_1Fixture.DockerVersion, version.Version);
-        Assert.IsType<AsymmetricCipherKeyPair>(key);
+        Assert.StartsWith(version.Version, _fixture.Image.Tag);
+        Assert.IsType<AsymmetricCipherKeyPair>(_fixture.TlsKey);
       }
     }
 
     public sealed class MTlsOpenSsl3_1 : IClassFixture<OpenSsl3_1Fixture>
     {
-      private readonly OpenSsl3_1Fixture _fixture;
+      private readonly ProtectDockerDaemonSocket _fixture;
+
       private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public MTlsOpenSsl3_1(OpenSsl3_1Fixture dockerMTlsFixture)
@@ -63,23 +65,26 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         // Given
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
+
         // When
         var version = await client.System.GetVersionAsync()
           .ConfigureAwait(false);
-        var key = _fixture.ClientCertificateKey();
 
         // Then
-        Assert.Equal(OpenSsl3_1Fixture.DockerVersion, version.Version);
-        Assert.IsType<RsaPrivateCrtKeyParameters>(key);
+        Assert.StartsWith(version.Version, _fixture.Image.Tag);
+        Assert.IsType<RsaPrivateCrtKeyParameters>(_fixture.TlsKey);
       }
     }
 
     public sealed class Tls : IClassFixture<DockerTlsFixture>
     {
+      private readonly ProtectDockerDaemonSocket _fixture;
+
       private readonly IDockerEndpointAuthenticationConfiguration _authConfig;
 
       public Tls(DockerTlsFixture dockerTlsFixture)
       {
+        _fixture = dockerTlsFixture;
         _authConfig = GetAuthConfig(dockerTlsFixture);
       }
 
@@ -94,7 +99,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .ConfigureAwait(false);
 
         // Then
-        Assert.Equal(DockerTlsFixture.DockerVersion, version.Version);
+        Assert.StartsWith(version.Version, _fixture.Image.Tag);
       }
     }
   }
