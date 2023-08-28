@@ -25,8 +25,13 @@ public sealed class MongoDbContainer : DockerContainer
     {
         // The MongoDb documentation recommends to use percent-encoding for username and password: https://www.mongodb.com/docs/manual/reference/connection-string/.
         var endpoint = new UriBuilder("mongodb://", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
-        endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
-        endpoint.Password = Uri.EscapeDataString(_configuration.Password);
+
+        if (_configuration.Username != null && _configuration.Password != null)
+        {
+            endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
+            endpoint.Password = Uri.EscapeDataString(_configuration.Password);
+        }
+
         return endpoint.ToString();
     }
 

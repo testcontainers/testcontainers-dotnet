@@ -80,11 +80,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         base.Validate();
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
-            .NotNull()
             .NotEmpty();
 
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
-            .NotNull()
             .NotEmpty();
     }
 
