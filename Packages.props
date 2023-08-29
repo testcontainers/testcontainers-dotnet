@@ -6,7 +6,7 @@
     <PackageReference Update="Docker.DotNet.X509" Version="3.125.15" />
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />
-    <PackageReference Update="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Update="BouncyCastle.Cryptography" Version="2.2.1" />
     <PackageReference Update="SharpZipLib" Version="1.4.2" />
     <PackageReference Update="SSH.NET" Version="2020.0.2" />
     <PackageReference Update="System.Text.Json" Version="6.0.8" />
