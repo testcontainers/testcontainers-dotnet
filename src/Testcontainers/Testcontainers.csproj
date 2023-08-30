@@ -12,7 +12,7 @@
     <PackageReference Include="Docker.DotNet.X509" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Portable.BouncyCastle" />
+    <PackageReference Include="BouncyCastle.Cryptography" />
     <PackageReference Include="SharpZipLib" />
     <PackageReference Include="SSH.NET" />
     <PackageReference Include="System.Text.Json" />
