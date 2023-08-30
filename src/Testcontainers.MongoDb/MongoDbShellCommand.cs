@@ -5,8 +5,7 @@ namespace Testcontainers.MongoDb;
 /// </summary>
 internal sealed class MongoDbShellCommand : List<string>
 {
-    private const string AuthFormat = "{0} --username '{1}' --password '{2}' --quiet --eval '{3}'";
-    private const string NoAuthFormat = "{0} --quiet --eval '{1}'";
+    private const string Format = "{0} --username '{1}' --password '{2}' --quiet --eval '{3}'";
 
     private const string Sanitize = "'\"'\"'";
 
@@ -25,22 +24,11 @@ internal sealed class MongoDbShellCommand : List<string>
     public MongoDbShellCommand(string js, string username, string password)
     {
         var sanitizedJs = js.Replace("'", Sanitize);
-
-        if (username != null && password != null)
-        {
-            var sanitizedUsername = username.Replace("'", Sanitize);
-            var sanitizedPassword = password.Replace("'", Sanitize);
-            _mongoDbShellCommand.AppendFormat(AuthFormat, "mongosh", sanitizedUsername, sanitizedPassword, sanitizedJs);
-            _mongoDbShellCommand.Append(" || ");
-            _mongoDbShellCommand.AppendFormat(AuthFormat, "mongo", sanitizedUsername, sanitizedPassword, sanitizedJs);
-        }
-        else
-        {
-            _mongoDbShellCommand.AppendFormat(NoAuthFormat, "mongosh", sanitizedJs);
-            _mongoDbShellCommand.Append(" || ");
-            _mongoDbShellCommand.AppendFormat(NoAuthFormat, "mongo", sanitizedJs);
-        }
-
+        var sanitizedUsername = username.Replace("'", Sanitize);
+        var sanitizedPassword = password.Replace("'", Sanitize);
+        _mongoDbShellCommand.AppendFormat(Format, "mongosh", sanitizedUsername, sanitizedPassword, sanitizedJs);
+        _mongoDbShellCommand.Append(" || ");
+        _mongoDbShellCommand.AppendFormat(Format, "mongo", sanitizedUsername, sanitizedPassword, sanitizedJs);
         Add("/bin/sh");
         Add("-c");
         Add(_mongoDbShellCommand.ToString());
