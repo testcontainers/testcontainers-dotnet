@@ -17,7 +17,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
-    /// <param name="useDefaultCredentials">When set to <c>false</c>, mongodb will run without authentication unless you explicitly specify credentials</param>
+    /// <param name="useDefaultCredentials">When set to <c>false</c>, MongoDb will run without authentication unless you explicitly specify a username and password.</param>
     public MongoDbBuilder(bool useDefaultCredentials = true)
         : this(new MongoDbConfiguration())
     {
