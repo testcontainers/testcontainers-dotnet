@@ -70,19 +70,21 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <inheritdoc />
     protected override MongoDbBuilder Init()
     {
-        var builder = base.Init()
-            .WithImage(MongoDbImage)
-            .WithPortBinding(MongoDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+        string username = null;
+        string password = null;
 
         if (_useDefaultCredentials)
         {
-            builder = builder
-                .WithUsername(DefaultUsername)
-                .WithPassword(DefaultPassword);
+            username = DefaultUsername;
+            password = DefaultPassword;
         }
 
-        return builder;
+        return base.Init()
+            .WithImage(MongoDbImage)
+            .WithPortBinding(MongoDbPort, true)
+            .WithUsername(username)
+            .WithPassword(password)
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
