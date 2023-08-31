@@ -2,7 +2,7 @@ namespace Testcontainers.MongoDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MongoDbContainer : DockerContainer
+public sealed class MongoDbContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MongoDbConfiguration _configuration;
 

@@ -2,7 +2,7 @@ namespace Testcontainers.RabbitMq;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class RabbitMqContainer : DockerContainer
+public sealed class RabbitMqContainer : DockerContainer, IDatabaseContainer
 {
     private readonly RabbitMqConfiguration _configuration;
 

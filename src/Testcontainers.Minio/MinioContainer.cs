@@ -2,7 +2,7 @@ namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MinioContainer : DockerContainer
+public sealed class MinioContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MinioConfiguration _configuration;
 

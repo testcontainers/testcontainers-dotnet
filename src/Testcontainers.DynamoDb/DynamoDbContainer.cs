@@ -2,7 +2,7 @@ namespace Testcontainers.DynamoDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class DynamoDbContainer : DockerContainer
+public sealed class DynamoDbContainer : DockerContainer, IDatabaseContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDbContainer" /> class.

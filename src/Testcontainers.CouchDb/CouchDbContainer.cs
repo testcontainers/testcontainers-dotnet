@@ -2,7 +2,7 @@ namespace Testcontainers.CouchDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class CouchDbContainer : DockerContainer
+public sealed class CouchDbContainer : DockerContainer, IDatabaseContainer
 {
     private readonly CouchDbConfiguration _configuration;
 

@@ -2,7 +2,7 @@ namespace Testcontainers.Redis;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class RedisContainer : DockerContainer
+public sealed class RedisContainer : DockerContainer, IDatabaseContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisContainer" /> class.

@@ -2,7 +2,7 @@ namespace Testcontainers.WebDriver;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class WebDriverContainer : DockerContainer
+public sealed class WebDriverContainer : DockerContainer, IDatabaseContainer
 {
     private readonly WebDriverConfiguration _configuration;
 

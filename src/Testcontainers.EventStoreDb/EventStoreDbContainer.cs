@@ -2,7 +2,7 @@ namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class EventStoreDbContainer : DockerContainer
+public sealed class EventStoreDbContainer : DockerContainer, IDatabaseContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="EventStoreDbContainer" /> class.

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net6.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="7.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+        <PackageReference Include="coverlet.collector" Version="3.2.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
+        <PackageReference Include="xunit" Version="2.4.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)src/Testcontainers.*/Testcontainers.*.csproj" />
+    </ItemGroup>
+</Project>

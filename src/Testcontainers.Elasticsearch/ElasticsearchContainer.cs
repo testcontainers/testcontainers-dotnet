@@ -2,7 +2,7 @@ namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class ElasticsearchContainer : DockerContainer
+public sealed class ElasticsearchContainer : DockerContainer, IDatabaseContainer
 {
     private readonly ElasticsearchConfiguration _configuration;
 
