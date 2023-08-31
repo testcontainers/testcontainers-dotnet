@@ -126,7 +126,7 @@ namespace DotNet.Testcontainers.Builders
     /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     protected virtual void Validate()
     {
-      const string message = "Cannot detect the Docker endpoint. Use either the environment variables or the ~/.testcontainers.properties file to customize your configuration:\nhttps://dotnet.testcontainers.org/custom_configuration/";
+      const string message = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. The environment variables or the ~/.testcontainers.properties file can be used to customize your configuration:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
         .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
     }
