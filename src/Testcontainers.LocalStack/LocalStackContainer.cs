@@ -2,7 +2,7 @@ namespace Testcontainers.LocalStack;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class LocalStackContainer : DockerContainer, IDatabaseContainer
+public sealed class LocalStackContainer : DockerContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackContainer" /> class.

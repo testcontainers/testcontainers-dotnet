@@ -9,6 +9,14 @@ public sealed class DatabaseContainersTest
         Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)));
     }
 
+    private static readonly HashSet<Type> NotDatabaseContainerTypes = new()
+    {
+        typeof(LocalStack.LocalStackContainer),
+        typeof(WebDriver.WebDriverContainer),
+    };
+
+    private static bool IsDatabaseContainerType(Type containerType) => !NotDatabaseContainerTypes.Contains(containerType);
+
     public static IEnumerable<object[]> DatabaseContainersTheoryData
     {
         get
@@ -19,6 +27,7 @@ public sealed class DatabaseContainersTest
             return dependencyContext.RuntimeLibraries
                 .Where(library => library.Name.StartsWith("Testcontainers."))
                 .SelectMany(library => Assembly.Load(library.Name).GetExportedTypes().Where(HasGetConnectionStringMethod))
+                .Where(IsDatabaseContainerType)
                 .Select(type => new[] { type });
         }
     }
