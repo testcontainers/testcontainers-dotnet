@@ -142,6 +142,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Firestore.Tests", "tests\Testcontainers.Firestore.Tests\Testcontainers.Firestore.Tests.csproj", "{2F0D7CD6-7EA9-46FC-B8F2-25D55699525F}"
 EndProject
 Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
