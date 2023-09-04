@@ -403,9 +403,6 @@ Global
 		{2F0D7CD6-7EA9-46FC-B8F2-25D55699525F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F0D7CD6-7EA9-46FC-B8F2-25D55699525F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{B061A78E-536E-4CA1-8401-234D5FBFBAB7} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
