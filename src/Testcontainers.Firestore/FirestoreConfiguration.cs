@@ -52,5 +52,4 @@ public sealed class FirestoreConfiguration : ContainerConfiguration
     {
         // // Create an updated immutable copy of the module configuration.
     }
-
 }

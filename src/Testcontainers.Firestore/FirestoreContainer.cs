@@ -14,8 +14,4 @@ public sealed class FirestoreContainer : DockerContainer
     {
     }
 
-    public void SetEmulatorHost()
-    {
-        Environment.SetEnvironmentVariable("FIRESTORE_EMULATOR_HOST", $"{Hostname}:8080/");
-    }
 }

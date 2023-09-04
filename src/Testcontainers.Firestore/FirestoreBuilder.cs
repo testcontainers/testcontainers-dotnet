@@ -4,7 +4,7 @@ namespace Testcontainers.Firestore;
 [PublicAPI]
 public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
 {
-    const string Command = "gcloud beta emulators firestore start --host-port 0.0.0.0:8080";
+    const string FirestorePort = "8080";
     const string Image = "gcr.io/google.com/cloudsdktool/google-cloud-cli:441.0.0-emulators";
 
     /// <summary>
@@ -59,16 +59,11 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     {
         return base.Init()
           .WithImage(Image)
-          .WithPortBinding(8080)
+          .WithPortBinding(FirestorePort,true)
           .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("running"))
-          .WithCommand("/bin/sh", "-c", Command)          
+          .WithEntrypoint("gcloud")
+          .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort) 
           ;
-    }
-
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        base.Validate();
     }
 
 }

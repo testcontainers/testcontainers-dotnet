@@ -1,13 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DotNet.Testcontainers.Commons;
-using Google.Api.Gax;
-using Google.Apis.Http;
-using Google.Cloud.Firestore;
+using Grpc.Core;
 
 namespace Testcontainers.Firestore.Tests;
 
@@ -20,19 +11,20 @@ public class FirestoreContainerTests : IAsyncLifetime
   public async Task SaveAndReadDataTest()
   {
     const string collectionName = "test";
-    _firestoreContainer.SetEmulatorHost();
     var builder = new FirestoreDbBuilder()
     {
       ProjectId = "test",
-      EmulatorDetection = EmulatorDetection.EmulatorOrProduction,
+      Endpoint = $"{_firestoreContainer.Hostname}:{_firestoreContainer.GetMappedPublicPort(8080)}/",
+      ChannelCredentials = ChannelCredentials.Insecure
     };
 
     var firestore = builder.Build();
 
-    var testObject = new Dictionary<string, object>() {
-        { "name", "John" },
-        { "id", Guid.NewGuid().ToString() }
-      };
+    var testObject = new Dictionary<string, object>()
+    {
+      {"name", "John"},
+      {"id", Guid.NewGuid().ToString()}
+    };
 
     await firestore.Collection(collectionName).Document().SetAsync(testObject);
 
@@ -43,7 +35,6 @@ public class FirestoreContainerTests : IAsyncLifetime
     {
       Assert.Equal(v, receivedObject[k]);
     }
-
   }
 
   public Task InitializeAsync()
@@ -56,4 +47,3 @@ public class FirestoreContainerTests : IAsyncLifetime
     return _firestoreContainer.DisposeAsync().AsTask();
   }
 }
-
