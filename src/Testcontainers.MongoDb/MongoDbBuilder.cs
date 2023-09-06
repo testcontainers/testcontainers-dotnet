@@ -41,8 +41,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithUsername(string username)
     {
-        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(username: username))
-            .WithEnvironment("MONGO_INITDB_ROOT_USERNAME", username);
+        var initDbRootUsername = username ?? string.Empty;
+
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(username: initDbRootUsername))
+            .WithEnvironment("MONGO_INITDB_ROOT_USERNAME", initDbRootUsername);
     }
 
     /// <summary>
@@ -52,15 +54,22 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithPassword(string password)
     {
-        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(password: password))
-            .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", password);
+        var initDbRootPassword = password ?? string.Empty;
+
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(password: initDbRootPassword))
+            .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", initDbRootPassword);
     }
 
     /// <inheritdoc />
     public override MongoDbContainer Build()
     {
         Validate();
-        return new MongoDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        // The wait strategy relies on the configuration of MongoDb. If credentials are
+        // provided, the log message "Waiting for connections" appears twice.
+        // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
+        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -70,22 +79,24 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />
     protected override void Validate()
     {
+        const string message = "Missing username or password. Both must be specified for a user to be created.";
+
         base.Validate();
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
-            .NotNull()
-            .NotEmpty();
+            .NotNull();
 
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
-            .NotNull()
-            .NotEmpty();
+            .NotNull();
+
+        _ = Guard.Argument(DockerResourceConfiguration, "Credentials")
+            .ThrowIf(argument => 1.Equals(new[] { argument.Value.Username, argument.Value.Password }.Count(string.IsNullOrEmpty)), argument => new ArgumentException(message, argument.Name));
     }
 
     /// <inheritdoc />
@@ -111,13 +122,24 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     {
         private static readonly string[] LineEndings = { "\r\n", "\n" };
 
+        private readonly int _count;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(MongoDbConfiguration configuration)
+        {
+            _count = string.IsNullOrEmpty(configuration.Username) && string.IsNullOrEmpty(configuration.Password) ? 1 : 2;
+        }
+
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
             var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
-            return 2.Equals(Array.Empty<string>()
+            return _count.Equals(Array.Empty<string>()
                 .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Count(line => line.Contains("Waiting for connections")));
