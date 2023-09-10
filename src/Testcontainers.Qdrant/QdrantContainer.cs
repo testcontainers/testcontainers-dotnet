@@ -10,7 +10,7 @@ public class QdrantContainer : DockerContainer
 	{
 		_configuration = configuration;
 	}
-	
+    
 	public string GetHttpConnectionString()
 	{
 		var scheme = _configuration.Certificate != null ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;

@@ -36,6 +36,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var client = new HttpClient(httpMessageHandler)
         {
             BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString()),
+            DefaultRequestHeaders = { Host = "Testcontainers" },
         };
         
         client.DefaultRequestHeaders.Add("api-key", ApiKey);
@@ -57,6 +58,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var client = new HttpClient(httpMessageHandler)
         {
             BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString()),
+            DefaultRequestHeaders = { Host = "Testcontainers" },
         };
         
         var response = await client.GetAsync("/collections");
@@ -72,6 +74,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var client = new HttpClient
         {
             BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString()),
+            DefaultRequestHeaders = { Host = "Testcontainers" },
         };
         
         client.DefaultRequestHeaders.Add("api-key", ApiKey);
