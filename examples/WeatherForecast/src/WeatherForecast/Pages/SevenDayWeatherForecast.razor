@@ -11,7 +11,7 @@
 <FluentCard>
   <div style="padding: 0 10px 10px">
     <h1>Weather Forecast</h1>
-    <FluentDataGrid RowsData="@_weatherData.AsQueryable()">
+    <FluentDataGrid Items="@_weatherData.AsQueryable()">
       <PropertyColumn Title="Date" Property="@(item => item.Date.ToShortDateString())"/>
       <PropertyColumn Title="Avg °C" Property="@(item => item.Temperatures.Average(temperature => temperature.Value).ToString("0"))"/>
     </FluentDataGrid>

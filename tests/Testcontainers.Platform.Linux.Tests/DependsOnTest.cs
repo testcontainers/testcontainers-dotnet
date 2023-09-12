@@ -66,7 +66,7 @@ public sealed class DependsOnTest : IAsyncLifetime
 
         // Then
         Assert.Equal(3, containers.Count);
-        Assert.Equal(1, networks.Count);
-        Assert.Equal(1, volumesListResponse.Volumes.Count);
+        Assert.Single(networks);
+        Assert.Single(volumesListResponse.Volumes);
     }
 }
