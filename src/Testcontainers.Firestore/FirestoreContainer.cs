@@ -13,5 +13,4 @@ public sealed class FirestoreContainer : DockerContainer
         : base(configuration, logger)
     {
     }
-
 }

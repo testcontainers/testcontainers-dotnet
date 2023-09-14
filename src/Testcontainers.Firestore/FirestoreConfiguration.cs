@@ -7,7 +7,6 @@ public sealed class FirestoreConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The Firestore config.</param>
     public FirestoreConfiguration()
     {
     }
@@ -50,6 +49,5 @@ public sealed class FirestoreConfiguration : ContainerConfiguration
     public FirestoreConfiguration(FirestoreConfiguration oldValue, FirestoreConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
     }
 }

@@ -4,8 +4,9 @@ namespace Testcontainers.Firestore;
 [PublicAPI]
 public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
 {
-    const string FirestorePort = "8080";
-    const string Image = "gcr.io/google.com/cloudsdktool/google-cloud-cli:441.0.0-emulators";
+    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:441.0.0-emulators";
+
+    public const ushort FirestorePort = 8080;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreBuilder" /> class.
@@ -26,6 +27,7 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
         DockerResourceConfiguration = resourceConfiguration;
     }
 
+    /// <inheritdoc />
     protected override FirestoreConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
@@ -33,6 +35,17 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     {
         Validate();
         return new FirestoreContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+    }
+
+    /// <inheritdoc />
+    protected override FirestoreBuilder Init()
+    {
+        return base.Init()
+            .WithImage(GoogleCloudCliImage)
+            .WithPortBinding(FirestorePort, true)
+            .WithEntrypoint("gcloud")
+            .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*running.*$"));
     }
 
     /// <inheritdoc />
@@ -52,18 +65,4 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     {
         return new FirestoreBuilder(new FirestoreConfiguration(oldValue, newValue));
     }
-
-
-    /// <inheritdoc />
-    protected override FirestoreBuilder Init()
-    {
-        return base.Init()
-          .WithImage(Image)
-          .WithPortBinding(FirestorePort,true)
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("running"))
-          .WithEntrypoint("gcloud")
-          .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort) 
-          ;
-    }
-
 }
