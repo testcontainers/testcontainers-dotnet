@@ -58,6 +58,15 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    public sealed class MongoDbNoAuthConfiguration : MongoDbContainerTest
+    {
+        public MongoDbNoAuthConfiguration()
+            : base(new MongoDbBuilder().WithUsername(string.Empty).WithPassword(string.Empty).Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
     {
         public MongoDbV5Configuration()

@@ -11,9 +11,9 @@
     <PackageReference Update="SSH.NET" Version="2020.0.2" />
     <PackageReference Update="System.Text.Json" Version="6.0.8" />
     <!-- Unit and integration test dependencies: -->
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageReference Update="coverlet.collector" Version="6.0.0" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5" />
-    <PackageReference Update="xunit" Version="2.4.2" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0" />
+    <PackageReference Update="xunit" Version="2.5.0" />
   </ItemGroup>
 </Project>

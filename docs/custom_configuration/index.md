@@ -31,7 +31,7 @@ DOCKER_HOST=tcp://docker:2375
 
 ## Enable logging
 
-In .NET logging goes usually through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the right stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`) and `Debug`. The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation.
+In .NET logging usually goes through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the appropriate output stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`). The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation before creating a Docker resource, such as a container.
 
     [testcontainers.org 00:00:00.34] Connected to Docker:
       Host: tcp://127.0.0.1:60706/
@@ -52,6 +52,8 @@ In .NET logging goes usually through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:06.22] Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d created
     [testcontainers.org 00:00:06.26] Start Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
     [testcontainers.org 00:00:06.64] Delete Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
+
+To enable debug log messages in the default implementation, set the property `ConsoleLogger.Instance.DebugLogLevelEnabled` to `true`. This will forward messages related to building or pulling Docker images to the output stream.
 
 [properties-file-format]: https://en.wikipedia.org/wiki/.properties
 [use-statically-defined-credentials]: https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#use-statically-defined-credentials
