@@ -1,0 +1,11 @@
+global using System;
+global using System.Data.Common;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Configurations;
+global using DotNet.Testcontainers.Containers;
+global using DotNet.Testcontainers.Networks;
+global using JetBrains.Annotations;
+global using Npgsql;
+global using Testcontainers.PostgreSql;
+global using Xunit;
