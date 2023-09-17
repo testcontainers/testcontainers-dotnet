@@ -51,7 +51,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     public NatsBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new NatsConfiguration(username: username))
-            .WithCommand("-user", username);
+            .WithCommand("--user", username);
     }
 
     /// <summary>
