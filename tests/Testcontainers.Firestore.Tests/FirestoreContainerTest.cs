@@ -30,7 +30,7 @@ public sealed class FirestoreContainerTest : IAsyncLifetime
 
         var firestoreDbBuilder = new FirestoreDbBuilder();
         firestoreDbBuilder.ProjectId = projectId;
-        firestoreDbBuilder.Endpoint = new UriBuilder(Uri.UriSchemeHttp, _firestoreContainer.Hostname, _firestoreContainer.GetMappedPublicPort(FirestoreBuilder.FirestorePort)).ToString();
+        firestoreDbBuilder.Endpoint = _firestoreContainer.GetEmulatorEndpoint();
         firestoreDbBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         var firestoreDb = await firestoreDbBuilder.BuildAsync()

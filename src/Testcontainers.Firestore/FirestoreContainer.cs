@@ -13,4 +13,13 @@ public sealed class FirestoreContainer : DockerContainer
         : base(configuration, logger)
     {
     }
+
+    /// <summary>
+    /// Gets the Firestore emulator endpoint.
+    /// </summary>
+    /// <returns>The Firestore emulator endpoint.</returns>
+    public string GetEmulatorEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FirestoreBuilder.FirestorePort)).ToString();
+    }
 }

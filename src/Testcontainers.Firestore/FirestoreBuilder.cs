@@ -4,7 +4,7 @@ namespace Testcontainers.Firestore;
 [PublicAPI]
 public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
 {
-    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:441.0.0-emulators";
+    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort FirestorePort = 8080;
 
