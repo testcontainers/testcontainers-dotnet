@@ -54,20 +54,34 @@ public sealed class NatsContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task BuilderShouldBuildWithUserNameAndPassword()
     {
+        var encodedPassword = Uri.EscapeDataString("??&&testpass");
+        var encodedUsername = Uri.EscapeDataString("??&&test");
+
         var builder = new NatsBuilder()
-            .WithUsername("test")
-            .WithPassword("testpass");
+            .WithUsername("??&&test")
+            .WithPassword("??&&testpass");
         await using var container = builder.Build();
 
         await container.StartAsync();
 
         var uri = new Uri(container.GetConnectionString());
 
-        Assert.Equal("test:testpass", uri.UserInfo);
+        Assert.Equal($"{encodedUsername}:{encodedPassword}", uri.UserInfo);
 
         using var client = new ConnectionFactory()
             .CreateConnection(_natsContainer.GetConnectionString());
 
         Assert.Equal(ConnState.CONNECTED, client.State);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public void BuilderShouldFailWithOnlyUserNameOrPassword()
+    {
+        var builder = new NatsBuilder().WithUsername("??&&test");
+        Assert.Throws<ArgumentException>(() => builder.Build());
+        
+        builder = new NatsBuilder().WithPassword("??&&test");
+        Assert.Throws<ArgumentException>(() => builder.Build());
     }
 }

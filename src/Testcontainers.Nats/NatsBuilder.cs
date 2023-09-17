@@ -1,3 +1,5 @@
+using DotNet.Testcontainers;
+
 namespace Testcontainers.Nats;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -40,7 +42,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     public NatsBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new NatsConfiguration(password: password))
-            .WithCommand("-pass", password);
+            .WithCommand("--pass", password);
     }
 
     /// <summary>
@@ -51,19 +53,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     public NatsBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new NatsConfiguration(username: username))
-            .WithCommand("-user", username);
-    }
-
-    /// <summary>
-    /// Sets the Nats config.
-    /// </summary>
-    /// <param name="config">The Nats config.</param>
-    /// <returns>A configured instance of <see cref="NatsBuilder" />.</returns>
-    public NatsBuilder WithNatsConfig(NatsConfiguration config)
-    {
-        // Extends the ContainerBuilder capabilities and holds a custom configuration in NatsConfiguration.
-        // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-        return Merge(DockerResourceConfiguration, new NatsConfiguration(config));
+            .WithCommand("--user", username);
     }
 
     /// <inheritdoc />
@@ -71,6 +61,22 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     {
         Validate();
         return new NatsContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+    }
+
+    
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+        
+        if (DockerResourceConfiguration.Password != null || DockerResourceConfiguration.Username != null)
+        {
+            _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+                .NotNull();
+
+            _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+                .NotNull();
+        }
     }
 
     /// <inheritdoc />
@@ -81,9 +87,10 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
             .WithPortBinding(ClientPort, true)
             .WithPortBinding(MonitoringPort, true)
             .WithPortBinding(RoutingPort, true)
-            .WithCommand("-m", MonitoringPort.ToString()) // Enable monitoring endpoint.
-            .WithCommand("-js") // Enable JetStream functionality.
-            .WithCommand("-DV") // Enable both debug and protocol trace messages 
+            .WithCommand("--http_port", MonitoringPort.ToString()) // Enable monitoring endpoint.
+            .WithCommand("--jetstream") // Enable JetStream functionality.
+            .WithCommand("--debug") // Enable both debug 
+            .WithCommand("--trace") // Enable protocol trace messages 
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Listening for client connections on 0.0.0.0:4222"));
     }

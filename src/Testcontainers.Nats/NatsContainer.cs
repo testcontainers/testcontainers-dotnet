@@ -26,11 +26,16 @@ public sealed class NatsContainer : DockerContainer
     /// </remarks>
     public string GetConnectionString()
     {
-        return new UriBuilder("nats", Hostname, GetMappedPublicPort(NatsBuilder.ClientPort))
+        var endpoint = new UriBuilder("nats", Hostname, GetMappedPublicPort(NatsBuilder.ClientPort));
+
+        // Both should be set, or neither, this is validated in the builder.
+        if (_natsConfig.Password != null && _natsConfig.Username != null)
         {
-            UserName = _natsConfig.Username,
-            Password = _natsConfig.Password,
-        }.ToString();
+            endpoint.UserName = Uri.EscapeDataString(_natsConfig.Username);
+            endpoint.Password = Uri.EscapeDataString(_natsConfig.Password);
+        }
+
+        return endpoint.ToString();
     }
 
     /// <summary>
