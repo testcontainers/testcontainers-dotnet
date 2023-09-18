@@ -7,8 +7,8 @@ public sealed class NatsConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsConfiguration" /> class.
     /// </summary>
-    /// <param name="username">The nats server user name.</param>
-    /// <param name="password">The nats server password.</param>
+    /// <param name="username">The Nats username.</param>
+    /// <param name="password">The Nats password.</param>
     public NatsConfiguration(
         string username = null,
         string password = null)
@@ -55,18 +55,17 @@ public sealed class NatsConfiguration : ContainerConfiguration
     public NatsConfiguration(NatsConfiguration oldValue, NatsConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
     /// <summary>
-    /// The nats server user name.
+    /// The Nats username.
     /// </summary>
     public string Username { get; }
-    
+
     /// <summary>
-    /// The nats server password.
+    /// The Nats password.
     /// </summary>
     public string Password { get; }
 }

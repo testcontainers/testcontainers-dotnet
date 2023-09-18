@@ -1,5 +1,3 @@
-using DotNet.Testcontainers;
-
 namespace Testcontainers.Nats;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -8,9 +6,11 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
 {
     public const string NatsImage = "nats:2.9";
 
-    public const ushort ClientPort = 4222;
-    public const ushort RoutingPort = 6222;
-    public const ushort MonitoringPort = 8222;
+    public const ushort NatsClientPort = 4222;
+
+    public const ushort NatsRoutingPort = 6222;
+
+    public const ushort NatsMonitoringPort = 8222;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
@@ -35,25 +35,25 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     protected override NatsConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Sets the Nats Server password.
+    /// Sets the Nats username.
     /// </summary>
-    /// <param name="password">The Nats Server password.</param>
-    /// <returns>A configured instance of <see cref="NatsBuilder" />.</returns>
-    public NatsBuilder WithPassword(string password)
-    {
-        return Merge(DockerResourceConfiguration, new NatsConfiguration(password: password))
-            .WithCommand("--pass", password);
-    }
-
-    /// <summary>
-    /// Sets the Nats Server username.
-    /// </summary>
-    /// <param name="username">The Nats Server username.</param>
+    /// <param name="username">The Nats username.</param>
     /// <returns>A configured instance of <see cref="NatsBuilder" />.</returns>
     public NatsBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new NatsConfiguration(username: username))
             .WithCommand("--user", username);
+    }
+
+    /// <summary>
+    /// Sets the Nats password.
+    /// </summary>
+    /// <param name="password">The Nats password.</param>
+    /// <returns>A configured instance of <see cref="NatsBuilder" />.</returns>
+    public NatsBuilder WithPassword(string password)
+    {
+        return Merge(DockerResourceConfiguration, new NatsConfiguration(password: password))
+            .WithCommand("--pass", password);
     }
 
     /// <inheritdoc />
@@ -63,12 +63,27 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
         return new NatsContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
-    
+    /// <inheritdoc />
+    protected override NatsBuilder Init()
+    {
+        return base.Init()
+            .WithImage(NatsImage)
+            .WithPortBinding(NatsClientPort, true)
+            .WithPortBinding(NatsMonitoringPort, true)
+            .WithPortBinding(NatsRoutingPort, true)
+            .WithCommand("--http_port", NatsMonitoringPort.ToString())
+            .WithCommand("--jetstream")
+            .WithCommand("--debug")
+            .WithCommand("--trace")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilMessageIsLogged("Listening for client connections on 0.0.0.0:4222"));
+    }
+
     /// <inheritdoc />
     protected override void Validate()
     {
         base.Validate();
-        
+
         if (DockerResourceConfiguration.Password != null || DockerResourceConfiguration.Username != null)
         {
             _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
@@ -77,22 +92,6 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
             _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
                 .NotNull();
         }
-    }
-
-    /// <inheritdoc />
-    protected override NatsBuilder Init()
-    {
-        return base.Init()
-            .WithImage(NatsImage)
-            .WithPortBinding(ClientPort, true)
-            .WithPortBinding(MonitoringPort, true)
-            .WithPortBinding(RoutingPort, true)
-            .WithCommand("--http_port", MonitoringPort.ToString()) // Enable monitoring endpoint.
-            .WithCommand("--jetstream") // Enable JetStream functionality.
-            .WithCommand("--debug") // Enable both debug 
-            .WithCommand("--trace") // Enable protocol trace messages 
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Listening for client connections on 0.0.0.0:4222"));
     }
 
     /// <inheritdoc />

@@ -7,9 +7,9 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2"/>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="NATS.Client" Version="1.0.8" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0"/>
         <PackageReference Include="xunit" Version="2.5.0"/>
+        <PackageReference Include="NATS.Client" Version="1.0.8"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Nats/Testcontainers.Nats.csproj"/>

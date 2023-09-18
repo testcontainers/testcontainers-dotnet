@@ -25,7 +25,7 @@ public sealed class NatsContainerTest : IAsyncLifetime
         Assert.True(client.ServerInfo.JetStreamAvailable);
 
         using var monitorClient = new HttpClient();
-        monitorClient.BaseAddress = new Uri(_natsContainer.GetMonitorUrl());
+        monitorClient.BaseAddress = new Uri(_natsContainer.GetMonitoringEndpoint());
 
         using var response = await monitorClient.GetAsync("/healthz");
         var s = await response.Content.ReadAsStringAsync();
@@ -80,7 +80,7 @@ public sealed class NatsContainerTest : IAsyncLifetime
     {
         var builder = new NatsBuilder().WithUsername("??&&test");
         Assert.Throws<ArgumentException>(() => builder.Build());
-        
+
         builder = new NatsBuilder().WithPassword("??&&test");
         Assert.Throws<ArgumentException>(() => builder.Build());
     }

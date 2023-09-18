@@ -4,7 +4,7 @@ namespace Testcontainers.Nats;
 [PublicAPI]
 public sealed class NatsContainer : DockerContainer
 {
-    private readonly NatsConfiguration _natsConfig;
+    private readonly NatsConfiguration _configuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsContainer" /> class.
@@ -14,36 +14,36 @@ public sealed class NatsContainer : DockerContainer
     public NatsContainer(NatsConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
-        _natsConfig = configuration;
+        _configuration = configuration;
     }
 
     /// <summary>
-    /// Gets the nats connection string
+    /// Gets the Nats connection string.
     /// </summary>
-    /// <returns>A nats connection string in the form: nats://hostname:mappedPort/>.</returns>
     /// <remarks>
-    /// If either username or password is set, the connection string will contain the credentials.
+    /// If both username and password are set in the builder configuration, they will be included in the connection string.
     /// </remarks>
+    /// <returns>A Nats connection string in the format: <c>nats://hostname:port</c>.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("nats", Hostname, GetMappedPublicPort(NatsBuilder.ClientPort));
+        var endpoint = new UriBuilder("nats://", Hostname, GetMappedPublicPort(NatsBuilder.NatsClientPort));
 
         // Both should be set, or neither, this is validated in the builder.
-        if (_natsConfig.Password != null && _natsConfig.Username != null)
+        if (_configuration.Password != null && _configuration.Username != null)
         {
-            endpoint.UserName = Uri.EscapeDataString(_natsConfig.Username);
-            endpoint.Password = Uri.EscapeDataString(_natsConfig.Password);
+            endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
+            endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         }
 
         return endpoint.ToString();
     }
 
     /// <summary>
-    /// Gets the nats monitor url
+    /// Gets the Nats monitoring endpoint.
     /// </summary>
-    /// <returns>A url in the form: http://hostname:mappedPort/>.</returns>
-    public string GetMonitorUrl()
+    /// <returns>An HTTP address in the format: <c>http://hostname:port</c>.</returns>
+    public string GetMonitoringEndpoint()
     {
-        return new UriBuilder("http", Hostname, GetMappedPublicPort(NatsBuilder.MonitoringPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(NatsBuilder.NatsMonitoringPort)).ToString();
     }
 }
