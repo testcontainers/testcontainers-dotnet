@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Clients
 
     public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
-    private static readonly string _OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+    private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
@@ -88,7 +88,7 @@ namespace DotNet.Testcontainers.Clients
     public IDockerSystemOperations System { get; }
 
     /// <inheritdoc />
-    public bool IsRunningInsideDocker => File.Exists(Path.Combine(_OSRootDirectory, ".dockerenv"));
+    public bool IsRunningInsideDocker => File.Exists(Path.Combine(OSRootDirectory, ".dockerenv"));
 
     /// <inheritdoc />
     public Task<long> GetContainerExitCodeAsync(string id, CancellationToken ct = default)
