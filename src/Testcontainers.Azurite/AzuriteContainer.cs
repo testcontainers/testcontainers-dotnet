@@ -28,9 +28,27 @@ public sealed class AzuriteContainer : DockerContainer
         properties.Add("DefaultEndpointsProtocol", Uri.UriSchemeHttp);
         properties.Add("AccountName", AccountName);
         properties.Add("AccountKey", AccountKey);
-        properties.Add("BlobEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AccountName).ToString());
-        properties.Add("QueueEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AccountName).ToString());
-        properties.Add("TableEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AccountName).ToString());
+        properties.Add("BlobEndpoint", GetBlobEndpoint());
+        properties.Add("QueueEndpoint", GetQueueEndpoint());
+        properties.Add("TableEndpoint", GetTableEndpoint());
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
+
+    /// <summary>
+    /// Gets the Azurite blob endpoint.
+    /// </summary>
+    /// <returns>The Azurite blob endpoint.</returns>
+    public string GetBlobEndpoint() => new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AccountName).ToString();
+
+    /// <summary>
+    /// Gets the Azurite queue endpoint.
+    /// </summary>
+    /// <returns>The Azurite queue endpoint.</returns>
+    public string GetQueueEndpoint() => new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AccountName).ToString();
+
+    /// <summary>
+    /// Gets Azurite table endpoint.
+    /// </summary>
+    /// <returns>The Azurite table endpoint.</returns>
+    public string GetTableEndpoint() => new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AccountName).ToString();
 }
