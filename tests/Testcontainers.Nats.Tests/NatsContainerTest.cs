@@ -25,7 +25,7 @@ public sealed class NatsContainerTest : IAsyncLifetime
         Assert.True(client.ServerInfo.JetStreamAvailable);
 
         using var monitorClient = new HttpClient();
-        monitorClient.BaseAddress = new Uri(_natsContainer.GetMonitoringEndpoint());
+        monitorClient.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
 
         using var response = await monitorClient.GetAsync("/healthz");
         var s = await response.Content.ReadAsStringAsync();

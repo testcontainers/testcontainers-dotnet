@@ -8,9 +8,9 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
 
     public const ushort NatsClientPort = 4222;
 
-    public const ushort NatsRoutingPort = 6222;
+    public const ushort NatsClusterRoutingPort = 6222;
 
-    public const ushort NatsMonitoringPort = 8222;
+    public const ushort NatsHttpManagementPort = 8222;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
@@ -69,29 +69,32 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
         return base.Init()
             .WithImage(NatsImage)
             .WithPortBinding(NatsClientPort, true)
-            .WithPortBinding(NatsMonitoringPort, true)
-            .WithPortBinding(NatsRoutingPort, true)
-            .WithCommand("--http_port", NatsMonitoringPort.ToString())
+            .WithPortBinding(NatsHttpManagementPort, true)
+            .WithPortBinding(NatsClusterRoutingPort, true)
+            .WithUsername(string.Empty)
+            .WithPassword(string.Empty)
+            .WithCommand("--http_port", NatsHttpManagementPort.ToString())
             .WithCommand("--jetstream")
             .WithCommand("--debug")
             .WithCommand("--trace")
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Listening for client connections on 0.0.0.0:4222"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is ready"));
     }
 
     /// <inheritdoc />
     protected override void Validate()
     {
+        const string message = "Missing username or password. Both must be specified.";
+
         base.Validate();
 
-        if (DockerResourceConfiguration.Password != null || DockerResourceConfiguration.Username != null)
-        {
-            _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
-                .NotNull();
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull();
 
-            _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
-                .NotNull();
-        }
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull();
+
+        _ = Guard.Argument(DockerResourceConfiguration, "Credentials")
+            .ThrowIf(argument => 1.Equals(new[] { argument.Value.Username, argument.Value.Password }.Count(string.IsNullOrWhiteSpace)), argument => new ArgumentException(message, argument.Name));
     }
 
     /// <inheritdoc />

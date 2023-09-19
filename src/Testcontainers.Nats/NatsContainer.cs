@@ -27,14 +27,8 @@ public sealed class NatsContainer : DockerContainer
     public string GetConnectionString()
     {
         var endpoint = new UriBuilder("nats://", Hostname, GetMappedPublicPort(NatsBuilder.NatsClientPort));
-
-        // Both should be set, or neither, this is validated in the builder.
-        if (_configuration.Password != null && _configuration.Username != null)
-        {
-            endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
-            endpoint.Password = Uri.EscapeDataString(_configuration.Password);
-        }
-
+        endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
+        endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();
     }
 
@@ -42,8 +36,8 @@ public sealed class NatsContainer : DockerContainer
     /// Gets the Nats monitoring endpoint.
     /// </summary>
     /// <returns>An HTTP address in the format: <c>http://hostname:port</c>.</returns>
-    public string GetMonitoringEndpoint()
+    public string GetManagementEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(NatsBuilder.NatsMonitoringPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(NatsBuilder.NatsHttpManagementPort)).ToString();
     }
 }
