@@ -96,7 +96,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .NotNull();
 
         _ = Guard.Argument(DockerResourceConfiguration, "Credentials")
-            .ThrowIf(argument => 1.Equals(new[] { argument.Value.Username, argument.Value.Password }.Count(string.IsNullOrEmpty)), argument => new ArgumentException(message, argument.Name));
+            .ThrowIf(argument => 1.Equals(new[] { argument.Value.Username, argument.Value.Password }.Count(string.IsNullOrWhiteSpace)), argument => new ArgumentException(message, argument.Name));
     }
 
     /// <inheritdoc />
