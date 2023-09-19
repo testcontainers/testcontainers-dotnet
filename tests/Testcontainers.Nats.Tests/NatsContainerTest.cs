@@ -1,8 +1,13 @@
 namespace Testcontainers.Nats;
 
-public sealed class NatsContainerTest : IAsyncLifetime
+public abstract class NatsContainerTest : IAsyncLifetime
 {
-    private readonly NatsContainer _natsContainer = new NatsBuilder().Build();
+    private readonly NatsContainer _natsContainer;
+
+    private NatsContainerTest(NatsContainer natsContainer)
+    {
+        _natsContainer = natsContainer;
+    }
 
     public Task InitializeAsync()
     {
@@ -16,72 +21,73 @@ public sealed class NatsContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ContainerIsStartedWithCorrectParameters()
+    public async Task HealthcheckReturnsHttpStatusCodeOk()
     {
-        using var client = new ConnectionFactory()
-            .CreateConnection(_natsContainer.GetConnectionString());
+        // Given
+        using var client = new HttpClient();
+        client.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
 
-        Assert.Equal(ConnState.CONNECTED, client.State);
-        Assert.True(client.ServerInfo.JetStreamAvailable);
+        // When
+        using var response = await client.GetAsync("/healthz")
+            .ConfigureAwait(false);
 
-        using var monitorClient = new HttpClient();
-        monitorClient.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
+        var jsonStatusString = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
 
-        using var response = await monitorClient.GetAsync("/healthz");
-        var s = await response.Content.ReadAsStringAsync();
-        Assert.True(response.IsSuccessStatusCode);
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("{\"status\":\"ok\"}", jsonStatusString);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task PubSubSendsAndReturnsMessages()
+    public void GetStringReturnsPublishString()
     {
-        using var client = new ConnectionFactory()
-            .CreateConnection(_natsContainer.GetConnectionString());
+        // Given
+        var subject = Guid.NewGuid().ToString("D");
 
-        using ISyncSubscription subSync = client.SubscribeSync("greet.pam");
-        client.Publish("greet.pam", Encoding.UTF8.GetBytes("hello pam 1"));
+        var message = Guid.NewGuid().ToString("D");
 
-        var msg = subSync.NextMessage(1000);
-        var text = Encoding.UTF8.GetString(msg.Data);
+        using var client = new ConnectionFactory().CreateConnection(_natsContainer.GetConnectionString());
 
+        using var subscription = client.SubscribeSync(subject);
 
-        Assert.Equal("hello pam 1", text);
-        await client.DrainAsync();
+        // When
+        client.Publish(subject, Encoding.Default.GetBytes(message));
+
+        var actualMessage = Encoding.Default.GetString(subscription.NextMessage().Data);
+
+        // Then
+        Assert.Equal(message, actualMessage);
     }
 
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task BuilderShouldBuildWithUserNameAndPassword()
+    [UsedImplicitly]
+    public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
-        var encodedPassword = Uri.EscapeDataString("??&&testpass");
-        var encodedUsername = Uri.EscapeDataString("??&&test");
-
-        var builder = new NatsBuilder()
-            .WithUsername("??&&test")
-            .WithPassword("??&&testpass");
-        await using var container = builder.Build();
-
-        await container.StartAsync();
-
-        var uri = new Uri(container.GetConnectionString());
-
-        Assert.Equal($"{encodedUsername}:{encodedPassword}", uri.UserInfo);
-
-        using var client = new ConnectionFactory()
-            .CreateConnection(_natsContainer.GetConnectionString());
-
-        Assert.Equal(ConnState.CONNECTED, client.State);
+        public NatsDefaultConfiguration()
+            : base(new NatsBuilder().Build())
+        {
+        }
     }
 
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void BuilderShouldFailWithOnlyUserNameOrPassword()
+    [UsedImplicitly]
+    public sealed class NatsAuthConfiguration : NatsContainerTest
     {
-        var builder = new NatsBuilder().WithUsername("??&&test");
-        Assert.Throws<ArgumentException>(() => builder.Build());
+        public NatsAuthConfiguration()
+            : base(new NatsBuilder().WithUsername("%username!").WithPassword("?password&").Build())
+        {
+        }
 
-        builder = new NatsBuilder().WithPassword("??&&test");
-        Assert.Throws<ArgumentException>(() => builder.Build());
+        [Fact]
+        public void ThrowsExceptionIfUsernameIsMissing()
+        {
+            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
+        }
+
+        [Fact]
+        public void ThrowsExceptionIfPasswordIsMissing()
+        {
+            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());
+        }
     }
 }
