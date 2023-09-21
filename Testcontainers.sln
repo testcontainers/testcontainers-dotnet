@@ -145,6 +145,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Tests", "tests\Testcontainers.WebDriver.Tests\Testcontainers.WebDriver.Tests.csproj", "{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PubSub", "src\Testcontainers.PubSub\Testcontainers.PubSub.csproj", "{E6642255-667D-476B-B584-089AA5E6C0B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PubSub.Tests", "tests\Testcontainers.PubSub.Tests\Testcontainers.PubSub.Tests.csproj", "{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -418,6 +422,14 @@ Global
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6642255-667D-476B-B584-089AA5E6C0B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6642255-667D-476B-B584-089AA5E6C0B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6642255-667D-476B-B584-089AA5E6C0B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6642255-667D-476B-B584-089AA5E6C0B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -486,5 +498,7 @@ Global
 		{1A1983E6-5297-435F-B467-E8E1F11277D6} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{E6642255-667D-476B-B584-089AA5E6C0B1} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{0F86BCE8-62E1-4BFC-AA84-63C7514C90AC} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
