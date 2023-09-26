@@ -1,18 +1,17 @@
+using Azure.Storage;
+using System;
+
 namespace Testcontainers.Azurite;
 
-public abstract class AzuriteContainerTest : IAsyncLifetime
+public abstract class AzuriteContainerSharedKeyHttpTest : IAsyncLifetime
 {
-    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder().Build();
+    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder()
+        .WithAccountCredentials(TestValues.AccountName, TestValues.AccountKey)
+        .Build();
 
-    public Task InitializeAsync()
-    {
-        return _azuriteContainer.StartAsync();
-    }
+    public Task InitializeAsync() => _azuriteContainer.StartAsync();
 
-    public Task DisposeAsync()
-    {
-        return _azuriteContainer.DisposeAsync().AsTask();
-    }
+    public Task DisposeAsync() => _azuriteContainer.DisposeAsync().AsTask();
 
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
     {
@@ -22,14 +21,14 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
     }
 
-    public sealed class BlobService : AzuriteContainerTest
+    public sealed class BlobService : AzuriteContainerSharedKeyHttpTest
     {
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new BlobServiceClient(new Uri(_azuriteContainer.GetBlobEndpoint()), new StorageSharedKeyCredential(TestValues.AccountName, TestValues.AccountKey));
 
             // When
             var properties = await client.GetPropertiesAsync()
@@ -40,14 +39,14 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
     }
 
-    public sealed class QueueService : AzuriteContainerTest
+    public sealed class QueueService : AzuriteContainerSharedKeyHttpTest
     {
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new QueueServiceClient(new Uri(_azuriteContainer.GetQueueEndpoint()), new StorageSharedKeyCredential(TestValues.AccountName, TestValues.AccountKey));
 
             // When
             var properties = await client.GetPropertiesAsync()
@@ -58,14 +57,14 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
     }
 
-    public sealed class TableService : AzuriteContainerTest
+    public sealed class TableService : AzuriteContainerSharedKeyHttpTest
     {
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesConnection()
         {
             // Give
-            var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
+            var client = new TableServiceClient(new Uri(_azuriteContainer.GetTableEndpoint()), new TableSharedKeyCredential(TestValues.AccountName, TestValues.AccountKey));
 
             // When
             var properties = await client.GetPropertiesAsync()

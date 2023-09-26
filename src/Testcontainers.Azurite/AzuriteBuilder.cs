@@ -1,5 +1,7 @@
 namespace Testcontainers.Azurite;
 
+using System.IO;
+
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
@@ -66,6 +68,20 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
+    public AzuriteBuilder WithAccountCredentials(string accountName, string accountKey)
+    {
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(accountName: accountName, accountKey: accountKey))
+            .WithEnvironment("AZURITE_ACCOUNTS", $"{accountName}:{accountKey}");
+    }
+
+    public AzuriteBuilder WithPemCertificate(string certificatePath, string certificateKeyPath)
+    {
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(certificatePath: certificatePath, certificateKeyPath: certificateKeyPath))
+            .WithBindMount(Path.GetDirectoryName(GetType().Assembly.Location), "/internal")
+            .WithCommand("--oauth", "basic")
+            .WithCommand("--cert", CleanUpPaths(certificatePath), "--key", CleanUpPaths(certificateKeyPath));
+    }
+
     /// <inheritdoc />
     protected override AzuriteBuilder Init()
     {
@@ -73,7 +89,9 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             .WithImage(AzuriteImage)
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
-            .WithPortBinding(TablePort, true);
+            .WithPortBinding(TablePort, true)
+            // Default command, if not specified the command will be completely overwritten in case of a certificate.
+            .WithCommand("azurite", "--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0");
     }
 
     /// <inheritdoc />
@@ -92,5 +110,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     protected override AzuriteBuilder Merge(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
     {
         return new AzuriteBuilder(new AzuriteConfiguration(oldValue, newValue));
+    }
+
+    private static string CleanUpPaths(string value)
+    {
+        return value.StartsWith("/internal/", StringComparison.OrdinalIgnoreCase) ? value : $"/internal/{value}";
     }
 }

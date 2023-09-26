@@ -11,6 +11,15 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     {
     }
 
+    public AzuriteConfiguration(string accountName = null, string accountKey = null, string certificatePath = null, string certificatePassword = null, string certificateKeyPath = null)
+    {
+        AccountName = accountName;
+        AccountKey = accountKey;
+        CertificatePath = certificatePath;
+        CertificatePassword = certificatePassword;
+        CertificateKeyPath = certificateKeyPath;
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
     /// </summary>
@@ -49,5 +58,22 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     public AzuriteConfiguration(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
         : base(oldValue, newValue)
     {
+        AccountKey = BuildConfiguration.Combine(oldValue.AccountKey, newValue.AccountKey);
+        AccountName = BuildConfiguration.Combine(oldValue.AccountName, newValue.AccountName);
+        CertificatePath = BuildConfiguration.Combine(oldValue.CertificatePath, newValue.CertificatePath);
+        CertificatePassword = BuildConfiguration.Combine(oldValue.CertificatePassword, newValue.CertificatePassword);
+        CertificateKeyPath = BuildConfiguration.Combine(oldValue.CertificateKeyPath, newValue.CertificateKeyPath);
     }
+
+    public string AccountKey { get; }
+
+    public string AccountName { get; }
+
+    public string CertificatePath { get; }
+
+    public string CertificatePassword { get; }
+
+    public string CertificateKeyPath { get; }
+
+    public bool UseHttps => !string.IsNullOrEmpty(CertificatePath) && (!string.IsNullOrEmpty(CertificateKeyPath) || !string.IsNullOrEmpty(CertificatePassword));
 }
