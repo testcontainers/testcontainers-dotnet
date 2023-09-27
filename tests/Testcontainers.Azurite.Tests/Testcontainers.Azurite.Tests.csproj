@@ -19,7 +19,7 @@
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
     </ItemGroup>
 
-    <Target Name="GenerateTestCertificatePreBuild" BeforeTargets="PreBuildEvent">
+    <Target Name="GenerateTestCertificatePreBuild" BeforeTargets="PreBuildEvent" Condition=" $([MSBuild]::IsOSPlatform('Linux')) ">
         <Exec ContinueOnError="true" Command="mkcert" StandardOutputImportance="low" StandardErrorImportance="low">
             <Output TaskParameter="ExitCode" PropertyName="InstalledMkCert" />
         </Exec>
