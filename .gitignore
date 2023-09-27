@@ -357,3 +357,6 @@ test-coverage/
 
 # SonarQube
 .sonarqube/
+
+# Test certificates
+*.pem
