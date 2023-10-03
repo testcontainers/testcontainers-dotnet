@@ -45,8 +45,8 @@ public class ElasticsearchContainerTest : IAsyncLifetime
     public Task InitializeAsync()
         => elasticsearch.StartAsync();
 
-    public Task DisposeAsync() =>
-        elasticsearch.DisposeAsync().AsTask();
+    public Task DisposeAsync()
+        => elasticsearch.DisposeAsync().AsTask();
 }
 ```
 
