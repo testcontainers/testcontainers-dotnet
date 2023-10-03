@@ -24,7 +24,8 @@ namespace TestcontainersModules;
 public class MsSqlServerContainerTest : IAsyncLifetime
 {
     private readonly MsSqlContainer msSqlContainer
-        = new MsSqlBuilder().Build();
+        = new MsSqlBuilder()
+            .Build();
 
     [Fact]
     public async Task ReadFromMsSqlDatabase()
