@@ -24,8 +24,8 @@ namespace TestcontainersModules;
 
 public class ElasticsearchContainerTest : IAsyncLifetime
 {
-    private readonly ElasticsearchContainer elasticsearch =
-        new ElasticsearchBuilder()
+    private readonly ElasticsearchContainer elasticsearch
+        = new ElasticsearchBuilder()
             .Build();
 
     [Fact]
