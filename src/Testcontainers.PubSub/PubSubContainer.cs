@@ -14,5 +14,12 @@ public sealed class PubSubContainer : DockerContainer
     {
     }
 
-    public string GetEmulatorEndpoint() => new UriBuilder(Uri.UriSchemeHttp,Hostname,GetMappedPublicPort(PubSubBuilder.PubSubPort)).ToString();
+    /// <summary>
+    /// Gets the PubSub emulator endpoint.
+    /// </summary>
+    /// <returns>The PubSub emulator endpoint.</returns>
+    public string GetEmulatorEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(PubSubBuilder.PubSubPort)).ToString();
+    }
 }

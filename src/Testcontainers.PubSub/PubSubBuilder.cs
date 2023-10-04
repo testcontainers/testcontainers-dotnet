@@ -4,8 +4,8 @@ namespace Testcontainers.PubSub;
 [PublicAPI]
 public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
 {
-    public const string PubSubPort = "8085";
-    const string Image = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
+    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
+    public const ushort PubSubPort = 8085;
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
     /// </summary>
@@ -25,21 +25,6 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override PubSubConfiguration DockerResourceConfiguration { get; }
-
-    // /// <summary>
-    // /// Sets the PubSub config.
-    // /// </summary>
-    // /// <param name="config">The PubSub config.</param>
-    // /// <returns>A configured instance of <see cref="PubSubBuilder" />.</returns>
-    // public PubSubBuilder WithPubSubConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in PubSubConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new PubSubConfiguration(config: config));
-    // }
-
     protected override PubSubConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
@@ -48,18 +33,6 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
         Validate();
         return new PubSubContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
-
-    // /// <inheritdoc />
-    // protected override PubSubBuilder Init()
-    // {
-    //     return base.Init();
-    // }
-
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
 
     /// <inheritdoc />
     protected override PubSubBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -82,11 +55,10 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     protected override PubSubBuilder Init()
     {
         return base.Init()
-                .WithImage(Image)
-                .WithPortBinding(PubSubPort,true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("started."))
-                .WithEntrypoint("gcloud")
-                .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort) 
-            ;
+            .WithImage(GoogleCloudCliImage)
+            .WithPortBinding(PubSubPort, true)
+            .WithEntrypoint("gcloud")
+            .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*started.*$"));
     }
 }
