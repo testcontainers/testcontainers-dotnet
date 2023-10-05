@@ -20,19 +20,15 @@ using Elastic.Transport;
 using Testcontainers.Elasticsearch;
 using Xunit;
 
-namespace TestcontainersModules;
-
-public class ElasticsearchContainerTest : IAsyncLifetime
+public sealed class ElasticsearchContainerTest : IAsyncLifetime
 {
-    private readonly ElasticsearchContainer elasticsearch
-        = new ElasticsearchBuilder()
-            .Build();
+    private readonly ElasticsearchContainer _elasticsearch
+        = new ElasticsearchBuilder().Build();
 
     [Fact]
     public async Task ReadFromElasticsearch()
     {
-        var connectionString = elasticsearch.GetConnectionString();
-        var settings = new ElasticsearchClientSettings(new Uri(connectionString));
+        var settings = new ElasticsearchClientSettings(new Uri(_elasticsearch.GetConnectionString()));
         settings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
 
         var client = new ElasticsearchClient(settings);
@@ -43,10 +39,10 @@ public class ElasticsearchContainerTest : IAsyncLifetime
     }
 
     public Task InitializeAsync()
-        => elasticsearch.StartAsync();
+        => _elasticsearch.StartAsync();
 
     public Task DisposeAsync()
-        => elasticsearch.DisposeAsync().AsTask();
+        => _elasticsearch.DisposeAsync().AsTask();
 }
 ```
 
