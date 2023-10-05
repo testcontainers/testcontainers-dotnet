@@ -24,16 +24,15 @@ namespace TestcontainersModules;
 public class MongoDbContainerTest : IAsyncLifetime
 {
     private readonly MongoDbContainer mongoDbContainer =
-        new MongoDbBuilder().Build();
+        new MongoDbBuilder()
+            .Build();
 
     [Fact]
     public async Task ReadFromMongoDbDatabase()
     {
-        var client =
-            new MongoClient(mongoDbContainer.GetConnectionString());
+        var client = new MongoClient(mongoDbContainer.GetConnectionString());
 
-        using var databases =
-            await client.ListDatabasesAsync();
+        using var databases = await client.ListDatabasesAsync();
 
         Assert.True(await databases.AnyAsync());
     }
