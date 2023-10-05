@@ -23,27 +23,27 @@ namespace TestcontainersModules;
 
 public class Neo4jContainerTest : IAsyncLifetime
 {
-    private readonly Neo4jContainer neo4JContainer
-        = new Neo4jBuilder().Build();
+    private readonly Neo4jContainer neo4jContainer
+        = new Neo4jBuilder()
+            .Build();
 
     [Fact]
     public async Task CanReadNeo4jDatabase()
     {
         const string database = "neo4j";
-        var connectionString = neo4JContainer.GetConnectionString();
-        await using var client = GraphDatabase.Driver(connectionString);
 
-        await using var session =
-            client.AsyncSession(cfg => cfg.WithDatabase(database));
+        await using var client = GraphDatabase.Driver(neo4jContainer.GetConnectionString());
+
+        await using var session = client.AsyncSession(cfg => cfg.WithDatabase(database));
 
         Assert.Equal(database, session.SessionConfig.Database);
     }
 
     public Task InitializeAsync()
-        => neo4JContainer.StartAsync();
+        => neo4jContainer.StartAsync();
 
     public Task DisposeAsync()
-        => neo4JContainer.DisposeAsync().AsTask();
+        => neo4jContainer.DisposeAsync().AsTask();
 }
 ```
 
