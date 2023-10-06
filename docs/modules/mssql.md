@@ -21,30 +21,29 @@ using Xunit;
 
 namespace TestcontainersModules;
 
-public class MsSqlServerContainerTest : IAsyncLifetime
+public sealed class MsSqlServerContainerTest : IAsyncLifetime
 {
-    private readonly MsSqlContainer msSqlContainer
-        = new MsSqlBuilder()
-            .Build();
+    private readonly MsSqlContainer _msSqlContainer
+        = new MsSqlBuilder().Build();
 
     [Fact]
     public async Task ReadFromMsSqlDatabase()
     {
-        await using var connection = new SqlConnection(msSqlContainer.GetConnectionString());
+        await using var connection = new SqlConnection(_msSqlContainer.GetConnectionString());
         await connection.OpenAsync();
 
         await using var command = connection.CreateCommand();
-        command.CommandText = "Select 1;";
+        command.CommandText = "SELECT 1;";
 
         var actual = await command.ExecuteScalarAsync() as int?;
-        Assert.Equal(expected: 1, actual: actual.GetValueOrDefault());
+        Assert.Equal(1, actual.GetValueOrDefault());
     }
 
     public Task InitializeAsync()
-        => msSqlContainer.StartAsync();
+        => _msSqlContainer.StartAsync();
 
     public Task DisposeAsync()
-        => msSqlContainer.DisposeAsync().AsTask();
+        => _msSqlContainer.DisposeAsync().AsTask();
 }
 ```
 

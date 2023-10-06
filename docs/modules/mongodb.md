@@ -21,16 +21,15 @@ using Xunit;
 
 namespace TestcontainersModules;
 
-public class MongoDbContainerTest : IAsyncLifetime
+public sealed class MongoDbContainerTest : IAsyncLifetime
 {
-    private readonly MongoDbContainer mongoDbContainer =
-        new MongoDbBuilder()
-            .Build();
+    private readonly MongoDbContainer _mongoDbContainer =
+        new MongoDbBuilder().Build();
 
     [Fact]
     public async Task ReadFromMongoDbDatabase()
     {
-        var client = new MongoClient(mongoDbContainer.GetConnectionString());
+        var client = new MongoClient(_mongoDbContainer.GetConnectionString());
 
         using var databases = await client.ListDatabasesAsync();
 
@@ -38,10 +37,10 @@ public class MongoDbContainerTest : IAsyncLifetime
     }
 
     public Task InitializeAsync()
-        => mongoDbContainer.StartAsync();
+        => _mongoDbContainer.StartAsync();
 
     public Task DisposeAsync()
-        => mongoDbContainer.DisposeAsync().AsTask();
+        => _mongoDbContainer.DisposeAsync().AsTask();
 }
 ```
 

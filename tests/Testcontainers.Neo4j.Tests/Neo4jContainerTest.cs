@@ -24,7 +24,7 @@ public sealed class Neo4jContainerTest : IAsyncLifetime
         using var driver = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
 
         // When
-        using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase("neo4j"));
+        using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase(database));
 
         // Then
         Assert.Equal(database, session.SessionConfig.Database);

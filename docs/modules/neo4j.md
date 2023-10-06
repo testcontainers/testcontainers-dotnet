@@ -21,18 +21,17 @@ using Xunit;
 
 namespace TestcontainersModules;
 
-public class Neo4jContainerTest : IAsyncLifetime
+public sealed class Neo4jContainerTest : IAsyncLifetime
 {
-    private readonly Neo4jContainer neo4jContainer
-        = new Neo4jBuilder()
-            .Build();
+    private readonly Neo4jContainer _neo4jContainer
+        = new Neo4jBuilder().Build();
 
     [Fact]
     public async Task CanReadNeo4jDatabase()
     {
         const string database = "neo4j";
 
-        await using var client = GraphDatabase.Driver(neo4jContainer.GetConnectionString());
+        await using var client = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
 
         await using var session = client.AsyncSession(cfg => cfg.WithDatabase(database));
 
@@ -40,10 +39,10 @@ public class Neo4jContainerTest : IAsyncLifetime
     }
 
     public Task InitializeAsync()
-        => neo4jContainer.StartAsync();
+        => _neo4jContainer.StartAsync();
 
     public Task DisposeAsync()
-        => neo4jContainer.DisposeAsync().AsTask();
+        => _neo4jContainer.DisposeAsync().AsTask();
 }
 ```
 
