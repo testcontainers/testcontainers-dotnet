@@ -1,17 +1,18 @@
+using JetBrains.Annotations;
+
 namespace DotNet.Testcontainers.Containers
 {
-  using JetBrains.Annotations;
-
   /// <summary>
-  /// A database container instance.
+  /// Represents a database container instance.
   /// </summary>
   [PublicAPI]
   public interface IDatabaseContainer
   {
     /// <summary>
-    /// Gets the connection string for connecting to the database.
+    /// Gets the database connection string.
     /// </summary>
-    /// <returns>The connection string for connecting to the database.</returns>
+    /// <returns>The database connection string.</returns>
+    [NotNull]
     string GetConnectionString();
   }
 }
