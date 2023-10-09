@@ -119,12 +119,6 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default)
-    {
-      return Container.InspectAsync(id, ct);
-    }
-
-    /// <inheritdoc />
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
       if (await Container.ExistsWithIdAsync(id, ct)

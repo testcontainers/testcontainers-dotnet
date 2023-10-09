@@ -26,26 +26,29 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return (await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }, ct)
-        .ConfigureAwait(false)).ToArray();
+      return await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }, ct)
+        .ConfigureAwait(false);
     }
 
-    public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
+    public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default)
     {
-      return (await GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
+      return await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = filters }, ct)
+        .ConfigureAwait(false);
     }
 
-    public Task<ImagesListResponse> ByNameAsync(string name, CancellationToken ct = default)
+    public Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      return ByPropertyAsync("reference", name, ct);
+      return ByPropertyAsync("id", id, ct);
     }
 
-    public async Task<ImagesListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public Task<ImageInspectResponse> ByNameAsync(string name, CancellationToken ct = default)
     {
-      var filters = new FilterByProperty { { property, value } };
-      return (await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = filters }, ct)
-        .ConfigureAwait(false)).FirstOrDefault();
+      return ByPropertyAsync("name", name, ct);
+    }
+
+    public Task<ImageInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    {
+      return Docker.Images.InspectImageAsync(value, ct);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)

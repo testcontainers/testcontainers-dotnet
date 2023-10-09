@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the image build policy.
     /// </summary>
-    Func<ImagesListResponse, bool> ImageBuildPolicy { get; }
+    Func<ImageInspectResponse, bool> ImageBuildPolicy { get; }
 
     /// <summary>
     /// Gets a list of build arguments.

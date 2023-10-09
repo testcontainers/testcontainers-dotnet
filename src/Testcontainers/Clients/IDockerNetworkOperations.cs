@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
 
-  internal interface IDockerNetworkOperations : IHasListOperations<NetworkResponse>
+  internal interface IDockerNetworkOperations : IHasListOperations<NetworkResponse, NetworkResponse>
   {
     Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default);
 

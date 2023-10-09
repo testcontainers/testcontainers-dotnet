@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(
       IImage image = null,
-      Func<ImagesListResponse, bool> imagePullPolicy = null,
+      Func<ImageInspectResponse, bool> imagePullPolicy = null,
       string name = null,
       string hostname = null,
       string macAddress = null,
@@ -148,7 +148,7 @@ namespace DotNet.Testcontainers.Configurations
     public IImage Image { get; }
 
     /// <inheritdoc />
-    public Func<ImagesListResponse, bool> ImagePullPolicy { get; }
+    public Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
     public string Name { get; }
