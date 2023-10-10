@@ -5,6 +5,12 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
+		<None Include="..\server.*" LinkBase="cert">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Visible>false</Visible>
+		</None>
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0" />

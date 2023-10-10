@@ -52,18 +52,6 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
 
-      - name: Setup Homebrew
-        if: startsWith(matrix.os, 'ubuntu')
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Setup mkcert
-        if: startsWith(matrix.os, 'ubuntu')
-        shell: pwsh
-        run: |
-          sudo apt install libnss3-tools
-          brew install mkcert
-          mkcert -install
-
       - name: Restore .NET Tools
         run: dotnet tool restore
 
