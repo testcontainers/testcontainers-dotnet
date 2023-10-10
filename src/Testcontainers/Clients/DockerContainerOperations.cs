@@ -14,8 +14,6 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
   {
-    private static readonly ContainerInspectResponse NoSuchContainer = new ContainerInspectResponse();
-
     private readonly ILogger _logger;
 
     public DockerContainerOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
@@ -55,7 +53,7 @@ namespace DotNet.Testcontainers.Clients
       }
       catch (DockerApiException)
       {
-        return NoSuchContainer;
+        return null;
       }
     }
 
@@ -64,7 +62,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchContainer.Equals(response);
+      return response != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
@@ -72,7 +70,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchContainer.Equals(response);
+      return response != null;
     }
 
     public async Task<long> GetExitCodeAsync(string id, CancellationToken ct = default)

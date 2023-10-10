@@ -12,8 +12,6 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerVolumeOperations : DockerApiClient, IDockerVolumeOperations
   {
-    private static readonly VolumeResponse NoSuchVolume = new VolumeResponse();
-
     private readonly ILogger _logger;
 
     public DockerVolumeOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
@@ -57,7 +55,7 @@ namespace DotNet.Testcontainers.Clients
       }
       catch (DockerApiException)
       {
-        return NoSuchVolume;
+        return null;
       }
     }
 
@@ -66,7 +64,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchVolume.Equals(response);
+      return response != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
@@ -74,7 +72,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchVolume.Equals(response);
+      return response != null;
     }
 
     public async Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default)

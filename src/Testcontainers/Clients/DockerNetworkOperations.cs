@@ -12,8 +12,6 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerNetworkOperations : DockerApiClient, IDockerNetworkOperations
   {
-    private static readonly NetworkResponse NoSuchNetwork = new NetworkResponse();
-
     private readonly ILogger _logger;
 
     public DockerNetworkOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
@@ -53,7 +51,7 @@ namespace DotNet.Testcontainers.Clients
       }
       catch (DockerApiException)
       {
-        return NoSuchNetwork;
+        return null;
       }
     }
 
@@ -62,7 +60,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchNetwork.Equals(response);
+      return response != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
@@ -70,7 +68,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchNetwork.Equals(response);
+      return response != null;
     }
 
     public async Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default)

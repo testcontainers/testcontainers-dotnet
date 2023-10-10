@@ -18,8 +18,6 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly TraceProgress _traceProgress;
 
-    public static readonly ImageInspectResponse NoSuchImage = new ImageInspectResponse();
-
     public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig)
     {
@@ -58,7 +56,7 @@ namespace DotNet.Testcontainers.Clients
       }
       catch (DockerApiException)
       {
-        return NoSuchImage;
+        return null;
       }
     }
 
@@ -67,7 +65,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchImage.Equals(response);
+      return response != null;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
@@ -75,7 +73,7 @@ namespace DotNet.Testcontainers.Clients
       var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
-      return !NoSuchImage.Equals(response);
+      return response != null;
     }
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
