@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;

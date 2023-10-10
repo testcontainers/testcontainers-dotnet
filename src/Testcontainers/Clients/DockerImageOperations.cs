@@ -14,11 +14,11 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
-    private static readonly ImageInspectResponse NoSuchImage = new ImageInspectResponse();
-
     private readonly ILogger _logger;
 
     private readonly TraceProgress _traceProgress;
+
+    public static readonly ImageInspectResponse NoSuchImage = new ImageInspectResponse();
 
     public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig)
@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Clients
 
     public Task<ImageInspectResponse> ByNameAsync(string name, CancellationToken ct = default)
     {
-      return ByPropertyAsync("name", name, ct);
+      return ByPropertyAsync("reference", name, ct);
     }
 
     public async Task<ImageInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)

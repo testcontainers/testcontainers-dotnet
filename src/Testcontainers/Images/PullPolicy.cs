@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Images
 {
   using System;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Clients;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -28,7 +29,7 @@ namespace DotNet.Testcontainers.Images
     {
       get
       {
-        return cachedImage => cachedImage == null;
+        return cachedImage => DockerImageOperations.NoSuchImage.Equals(cachedImage);
       }
     }
 
