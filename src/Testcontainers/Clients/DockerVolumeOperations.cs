@@ -5,12 +5,15 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerVolumeOperations : DockerApiClient, IDockerVolumeOperations
   {
+    private static readonly VolumeResponse NoSuchVolume = new VolumeResponse();
+
     private readonly ILogger _logger;
 
     public DockerVolumeOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
@@ -45,21 +48,33 @@ namespace DotNet.Testcontainers.Clients
       return ByPropertyAsync("name", name, ct);
     }
 
-    public Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      return Docker.Volumes.InspectAsync(value, ct);
+      try
+      {
+        return await Docker.Volumes.InspectAsync(value, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        return NoSuchVolume;
+      }
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await ByIdAsync(id, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByIdAsync(id, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchVolume.Equals(response);
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
-      return await ByNameAsync(name, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByNameAsync(name, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchVolume.Equals(response);
     }
 
     public async Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default)

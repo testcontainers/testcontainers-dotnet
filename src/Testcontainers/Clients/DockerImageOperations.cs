@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -13,6 +14,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
+    private static readonly ImageInspectResponse NoSuchImage = new ImageInspectResponse();
+
     private readonly ILogger _logger;
 
     private readonly TraceProgress _traceProgress;
@@ -46,21 +49,33 @@ namespace DotNet.Testcontainers.Clients
       return ByPropertyAsync("name", name, ct);
     }
 
-    public Task<ImageInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<ImageInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      return Docker.Images.InspectImageAsync(value, ct);
+      try
+      {
+        return await Docker.Images.InspectImageAsync(value, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        return NoSuchImage;
+      }
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await ByIdAsync(id, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByIdAsync(id, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchImage.Equals(response);
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
-      return await ByNameAsync(name, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByNameAsync(name, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchImage.Equals(response);
     }
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)

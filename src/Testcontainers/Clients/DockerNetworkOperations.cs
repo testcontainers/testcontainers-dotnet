@@ -5,12 +5,15 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using Microsoft.Extensions.Logging;
 
   internal sealed class DockerNetworkOperations : DockerApiClient, IDockerNetworkOperations
   {
+    private static readonly NetworkResponse NoSuchNetwork = new NetworkResponse();
+
     private readonly ILogger _logger;
 
     public DockerNetworkOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
@@ -41,21 +44,33 @@ namespace DotNet.Testcontainers.Clients
       return ByPropertyAsync("name", name, ct);
     }
 
-    public Task<NetworkResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<NetworkResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
     {
-      return Docker.Networks.InspectNetworkAsync(value, ct);
+      try
+      {
+        return await Docker.Networks.InspectNetworkAsync(value, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        return NoSuchNetwork;
+      }
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await ByIdAsync(id, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByIdAsync(id, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchNetwork.Equals(response);
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
-      return await ByNameAsync(name, ct)
-        .ConfigureAwait(false) != null;
+      var response = await ByNameAsync(name, ct)
+        .ConfigureAwait(false);
+
+      return !NoSuchNetwork.Equals(response);
     }
 
     public async Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default)
