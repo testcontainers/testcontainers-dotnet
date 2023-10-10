@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Clients
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
 
-  internal interface IDockerVolumeOperations : IHasListOperations<VolumeResponse>
+  internal interface IDockerVolumeOperations : IHasListOperations<VolumeResponse, VolumeResponse>
   {
     Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default);
 

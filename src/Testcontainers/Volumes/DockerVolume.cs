@@ -94,10 +94,10 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      var name = await _client.Volume.CreateAsync(_configuration, ct)
+      var id = await _client.Volume.CreateAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _volume = await _client.Volume.ByNameAsync(name, ct)
+      _volume = await _client.Volume.ByIdAsync(id, ct)
         .ConfigureAwait(false);
     }
 

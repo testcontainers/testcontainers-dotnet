@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the image pull policy.
     /// </summary>
-    Func<ImagesListResponse, bool> ImagePullPolicy { get; }
+    Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <summary>
     /// Gets the name.
