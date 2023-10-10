@@ -84,7 +84,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy)
+    public TBuilderEntity WithImagePullPolicy(Func<ImageInspectResponse, bool> imagePullPolicy)
     {
       return Clone(new ContainerConfiguration(imagePullPolicy: imagePullPolicy));
     }

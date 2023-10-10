@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="imageBuildPolicy">The image build policy.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithImageBuildPolicy(Func<ImagesListResponse, bool> imageBuildPolicy);
+    TBuilderEntity WithImageBuildPolicy(Func<ImageInspectResponse, bool> imageBuildPolicy);
 
     /// <summary>
     /// Removes an existing image before building it again.

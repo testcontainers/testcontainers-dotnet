@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Gets the policy that never pulls images.
     /// </summary>
-    public static Func<ImagesListResponse, bool> Never
+    public static Func<ImageInspectResponse, bool> Never
     {
       get
       {
@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Gets the policy that pulls missing images (not cached).
     /// </summary>
-    public static Func<ImagesListResponse, bool> Missing
+    public static Func<ImageInspectResponse, bool> Missing
     {
       get
       {
@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Gets the policy that always pulls images.
     /// </summary>
-    public static Func<ImagesListResponse, bool> Always
+    public static Func<ImageInspectResponse, bool> Always
     {
       get
       {

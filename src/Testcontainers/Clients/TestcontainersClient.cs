@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -116,12 +115,6 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return Container.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default)
-    {
-      return Container.InspectAsync(id, ct);
     }
 
     /// <inheritdoc />

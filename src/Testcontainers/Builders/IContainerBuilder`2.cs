@@ -78,7 +78,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithImagePullPolicy(Func<ImagesListResponse, bool> imagePullPolicy);
+    TBuilderEntity WithImagePullPolicy(Func<ImageInspectResponse, bool> imagePullPolicy);
 
     /// <summary>
     /// Sets the name.
