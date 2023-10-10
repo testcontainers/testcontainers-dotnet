@@ -18,25 +18,4 @@
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Azurite/Testcontainers.Azurite.csproj" />
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
     </ItemGroup>
-
-    <Target Name="GenerateTestCertificatePreBuild" BeforeTargets="PreBuildEvent" Condition=" $([MSBuild]::IsOSPlatform('Linux')) ">
-        <Exec ContinueOnError="true" Command="mkcert" StandardOutputImportance="low" StandardErrorImportance="low">
-            <Output TaskParameter="ExitCode" PropertyName="InstalledMkCert" />
-        </Exec>
-
-        <PropertyGroup>
-            <IsInstalledMkCert>false</IsInstalledMkCert>
-            <IsInstalledMkCert Condition=" '$(InstalledMkCert)' == '0' ">true</IsInstalledMkCert>
-        </PropertyGroup>
-
-        <Error Condition=" '$(IsInstalledMkCert)' != 'true' " Text="mkcert not available. Please install mkcert and run `mkcert -install`." />
-
-        <MakeDir Directories="$(ProjectDir)cert" />
-        <Exec
-            Condition=" '$(IsInstalledMkCert)' == 'true' and !Exists('$(ProjectDir)cert\127.0.0.1.pem') "
-            Command="mkcert 127.0.0.1"
-            WorkingDirectory="$(ProjectDir)cert"
-            StandardOutputImportance="low"
-            StandardErrorImportance="low" />
-    </Target>
 </Project>
