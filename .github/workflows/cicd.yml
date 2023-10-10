@@ -55,6 +55,13 @@ jobs:
       - name: Restore .NET Tools
         run: dotnet tool restore
 
+      - name: Trust certificate
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo cp tests/server.cert /usr/local/share/ca-certificates/server.crt
+          sudo cp tests/server.key /usr/local/share/ca-certificates/server.key
+          sudo update-ca-certificates
+
       - name: Restore NuGet Packages
         run: dotnet cake --target=Restore-NuGet-Packages
 
