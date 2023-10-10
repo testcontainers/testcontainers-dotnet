@@ -79,7 +79,6 @@ namespace Testcontainers.PubSub.Tests
       return await subscriber.PullAsync(new PullRequest
       {
         SubscriptionAsSubscriptionName = subscription,
-        ReturnImmediately = true,
         MaxMessages = maxMessages,
       });
     }
