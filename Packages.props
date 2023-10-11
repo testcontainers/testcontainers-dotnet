@@ -8,7 +8,7 @@
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />
     <PackageReference Update="BouncyCastle.Cryptography" Version="2.2.1" />
     <PackageReference Update="SharpZipLib" Version="1.4.2" />
-    <PackageReference Update="SSH.NET" Version="2020.0.2" />
+    <PackageReference Update="SSH.NET" Version="2023.0.0" />
     <PackageReference Update="System.Text.Json" Version="6.0.8" />
     <!-- Unit and integration test dependencies: -->
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.7.2" />
