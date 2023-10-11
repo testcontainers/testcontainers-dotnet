@@ -2,7 +2,7 @@ namespace Testcontainers.RavenDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class RavenDbContainer : DockerContainer, IDatabaseContainer
+public sealed class RavenDbContainer : DockerContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RavenDbContainer" /> class.

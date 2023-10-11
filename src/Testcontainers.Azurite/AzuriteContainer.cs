@@ -2,7 +2,7 @@ namespace Testcontainers.Azurite;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class AzuriteContainer : DockerContainer, IDatabaseContainer
+public sealed class AzuriteContainer : DockerContainer
 {
     private const string AccountName = "devstoreaccount1";
 

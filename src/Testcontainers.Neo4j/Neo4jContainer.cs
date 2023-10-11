@@ -2,7 +2,7 @@ namespace Testcontainers.Neo4j;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class Neo4jContainer : DockerContainer, IDatabaseContainer
+public sealed class Neo4jContainer : DockerContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jContainer" /> class.

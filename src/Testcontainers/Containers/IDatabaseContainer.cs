@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 namespace DotNet.Testcontainers.Containers
 {
   /// <summary>
-  /// Represents a database container instance.
+  /// Represents a database container instance that can be accessed with an ADO.NET provider.
   /// </summary>
   [PublicAPI]
   public interface IDatabaseContainer

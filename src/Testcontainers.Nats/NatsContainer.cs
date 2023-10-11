@@ -2,7 +2,7 @@ namespace Testcontainers.Nats;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class NatsContainer : DockerContainer, IDatabaseContainer
+public sealed class NatsContainer : DockerContainer
 {
     private readonly NatsConfiguration _configuration;
 

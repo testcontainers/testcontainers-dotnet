@@ -2,7 +2,7 @@ namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class CosmosDbContainer : DockerContainer, IDatabaseContainer
+public sealed class CosmosDbContainer : DockerContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbContainer" /> class.

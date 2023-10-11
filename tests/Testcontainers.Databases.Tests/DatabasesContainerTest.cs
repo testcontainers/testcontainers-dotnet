@@ -3,32 +3,47 @@ namespace Testcontainers.Databases;
 public sealed class DatabaseContainersTest
 {
     [Theory]
-    [MemberData(nameof(DatabaseContainersTheoryData))]
-    public void ImplementsIDatabaseContainerInterface(Type type)
+    [MemberData(nameof(GetContainerTypes), parameters: true)]
+    public void ImplementsIDatabaseContainer(Type type)
     {
         Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)));
     }
 
-    private static readonly HashSet<Type> NotDatabaseContainerTypes = new()
+    [Theory]
+    [MemberData(nameof(GetContainerTypes), parameters: false)]
+    public void DoesNotImplementIDatabaseContainer(Type type)
     {
-        typeof(LocalStack.LocalStackContainer),
-        typeof(WebDriver.WebDriverContainer),
-    };
+        Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)));
+    }
 
-    private static bool IsDatabaseContainerType(Type containerType) => !NotDatabaseContainerTypes.Contains(containerType);
-
-    public static IEnumerable<object[]> DatabaseContainersTheoryData
+    public static IEnumerable<object[]> GetContainerTypes(bool adoNetContainers)
     {
-        get
+        foreach (var dll in Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly))
         {
-            static bool HasGetConnectionStringMethod(Type type) => type.IsAssignableTo(typeof(IContainer)) && type.GetMethod("GetConnectionString") != null;
-            var assembly = typeof(DatabaseContainersTest).Assembly;
-            var dependencyContext = DependencyContext.Load(assembly) ?? throw new InvalidOperationException($"DependencyContext.Load({assembly}) returned null");
-            return dependencyContext.RuntimeLibraries
-                .Where(library => library.Name.StartsWith("Testcontainers."))
-                .SelectMany(library => Assembly.Load(library.Name).GetExportedTypes().Where(HasGetConnectionStringMethod))
-                .Where(IsDatabaseContainerType)
-                .Select(type => new[] { type });
+            var referencedAssemblies = Assembly.LoadFrom(Path.GetFullPath(dll)).GetReferencedAssemblies().Select(Assembly.Load).ToList();
+            var hasAdoNetProvider = referencedAssemblies.Any(IsAdoNetProvider);
+            if (adoNetContainers ? hasAdoNetProvider : !hasAdoNetProvider)
+            {
+                var containerAssembly = referencedAssemblies.SingleOrDefault(IsTestcontainer);
+                if (containerAssembly != null)
+                {
+                    foreach (var containerType in containerAssembly.GetExportedTypes().Where(type => type.IsAssignableTo(typeof(IContainer))))
+                    {
+                        yield return new object[] { containerType };
+                    }
+                }
+            }
         }
+    }
+
+    private static bool IsAdoNetProvider(Assembly assembly)
+    {
+        return assembly.GetExportedTypes().Any(a => a.IsSubclassOf(typeof(DbProviderFactory)));
+    }
+
+    private static bool IsTestcontainer(Assembly assembly)
+    {
+        var name = assembly.GetName().Name ?? "";
+        return name.StartsWith("Testcontainers.") && name != "Testcontainers.Commons";
     }
 }

@@ -2,7 +2,7 @@ namespace Testcontainers.Kusto;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class KustoContainer : DockerContainer, IDatabaseContainer
+public sealed class KustoContainer : DockerContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="KustoContainer" /> class.
