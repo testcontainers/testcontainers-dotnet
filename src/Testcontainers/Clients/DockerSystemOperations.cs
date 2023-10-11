@@ -19,6 +19,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var version = await GetVersionAsync(ct)
         .ConfigureAwait(false);
+
       return version.Os.IndexOf("Windows", StringComparison.OrdinalIgnoreCase) > -1;
     }
 

@@ -115,7 +115,7 @@ namespace DotNet.Testcontainers.Images
       _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _image = await _client.Image.ByNameAsync(_configuration.Image.FullName, ct)
+      _image = await _client.Image.ByIdAsync(_configuration.Image.FullName, ct)
         .ConfigureAwait(false);
     }
 
