@@ -37,21 +37,11 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false);
     }
 
-    public Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("id", id, ct);
-    }
-
-    public Task<ImageInspectResponse> ByNameAsync(string name, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("reference", name, ct);
-    }
-
-    public async Task<ImageInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       try
       {
-        return await Docker.Images.InspectImageAsync(value, ct)
+        return await Docker.Images.InspectImageAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -63,14 +53,6 @@ namespace DotNet.Testcontainers.Clients
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
       var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return response != null;
-    }
-
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
-    {
-      var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
       return response != null;
@@ -108,7 +90,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var image = configuration.Image;
 
-      var imageExists = await ExistsWithNameAsync(image.FullName, ct)
+      var imageExists = await ExistsWithIdAsync(image.FullName, ct)
         .ConfigureAwait(false);
 
       if (imageExists && configuration.DeleteIfExists.HasValue && configuration.DeleteIfExists.Value)
@@ -143,7 +125,7 @@ namespace DotNet.Testcontainers.Clients
           await Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileArchiveStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), _traceProgress, ct)
             .ConfigureAwait(false);
 
-          var imageHasBeenCreated = await ExistsWithNameAsync(image.FullName, ct)
+          var imageHasBeenCreated = await ExistsWithIdAsync(image.FullName, ct)
             .ConfigureAwait(false);
 
           if (!imageHasBeenCreated)

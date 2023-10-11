@@ -5,32 +5,33 @@ namespace DotNet.Testcontainers.Images
 
   internal static class MatchImage
   {
+    private static readonly char[] SlashSeparator = { '/' };
+
+    private static readonly char[] ColonSeparator = { ':' };
+
     public static IImage Match(string image)
     {
       _ = Guard.Argument(image, nameof(image))
         .NotNull()
         .NotEmpty();
 
-      var imageComponents = image
-        .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+      var imageComponents = image.Split(SlashSeparator, StringSplitOptions.RemoveEmptyEntries);
 
-      var repository = string.Join("/", imageComponents
-        .Take(imageComponents.Length - 1));
+      var registry = string.Join("/", imageComponents.Take(imageComponents.Length - 1));
 
-      var name = imageComponents
-        .Last()
-        .Split(':')
-        .DefaultIfEmpty(string.Empty)
-        .First();
+      imageComponents = imageComponents[imageComponents.Length - 1].Split(ColonSeparator, StringSplitOptions.RemoveEmptyEntries);
 
-      var tag = imageComponents
-        .Last()
-        .Split(':')
-        .Skip(1)
-        .DefaultIfEmpty(string.Empty)
-        .First();
+      if (2.Equals(imageComponents.Length))
+      {
+        return new DockerImage(registry, imageComponents[0], imageComponents[1]);
+      }
 
-      return new DockerImage(repository, name, tag);
+      if (1.Equals(imageComponents.Length))
+      {
+        return new DockerImage(registry, imageComponents[0], string.Empty);
+      }
+
+      throw new ArgumentException("Cannot parse image: " + image, nameof(image));
     }
   }
 }

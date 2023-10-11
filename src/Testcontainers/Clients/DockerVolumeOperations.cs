@@ -36,21 +36,11 @@ namespace DotNet.Testcontainers.Clients
       return response.Volumes;
     }
 
-    public Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("id", id, ct);
-    }
-
-    public Task<VolumeResponse> ByNameAsync(string name, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("name", name, ct);
-    }
-
-    public async Task<VolumeResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       try
       {
-        return await Docker.Volumes.InspectAsync(value, ct)
+        return await Docker.Volumes.InspectAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -62,14 +52,6 @@ namespace DotNet.Testcontainers.Clients
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
       var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return response != null;
-    }
-
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
-    {
-      var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
       return response != null;

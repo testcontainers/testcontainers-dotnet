@@ -293,7 +293,7 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
+      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
       if (configuration.ImagePullPolicy(cachedImage))
@@ -323,7 +323,7 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
+      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
       if (configuration.ImageBuildPolicy(cachedImage))
