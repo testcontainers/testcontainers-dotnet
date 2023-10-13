@@ -32,7 +32,7 @@ public abstract class GCSContainerTest : IAsyncLifetime
             
             // When
             var bucket = await client.CreateBucketAsync(testProject, testBucket);
-            var buckets = await client.ListBucketsAsync(testProject).ToListAsync();
+            var buckets = client.ListBuckets(testProject);
 
             // Then
             Assert.True(bucket.Name == testBucket);
