@@ -1,52 +1,52 @@
-namespace Testcontainers.GCS;
+namespace Testcontainers.FakeGCSServer;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
-public sealed class GCSConfiguration : ContainerConfiguration
+public sealed class FakeGCSServerConfiguration : ContainerConfiguration
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GCSConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="FakeGCSServerConfiguration" /> class.
     /// </summary>
-    public GCSConfiguration()
+    public FakeGCSServerConfiguration()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GCSConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="FakeGCSServerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public GCSConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public FakeGCSServerConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GCSConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="FakeGCSServerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public GCSConfiguration(IContainerConfiguration resourceConfiguration)
+    public FakeGCSServerConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GCSConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="FakeGCSServerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public GCSConfiguration(GCSConfiguration resourceConfiguration)
-        : this(new GCSConfiguration(), resourceConfiguration)
+    public FakeGCSServerConfiguration(FakeGCSServerConfiguration resourceConfiguration)
+        : this(new FakeGCSServerConfiguration(), resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GCSConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="FakeGCSServerConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public GCSConfiguration(GCSConfiguration oldValue, GCSConfiguration newValue)
+    public FakeGCSServerConfiguration(FakeGCSServerConfiguration oldValue, FakeGCSServerConfiguration newValue)
         : base(oldValue, newValue)
     {
     }

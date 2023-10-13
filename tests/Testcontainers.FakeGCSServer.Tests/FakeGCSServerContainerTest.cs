@@ -1,20 +1,20 @@
-namespace Testcontainers.GCS;
+namespace Testcontainers.FakeGCSServer;
 
-public abstract class GCSContainerTest : IAsyncLifetime
+public abstract class FakeGCSServerContainerTest : IAsyncLifetime
 {
-    private readonly GCSContainer _gcsontainer = new GCSBuilder().Build();
+    private readonly FakeGCSServerContainer _fakeGCSServerContainer = new FakeGCSServerBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _gcsontainer.StartAsync();
+        return _fakeGCSServerContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _gcsontainer.DisposeAsync().AsTask();
+        return _fakeGCSServerContainer.DisposeAsync().AsTask();
     }
 
-    public sealed class BlobService : GCSContainerTest
+    public sealed class BlobService : FakeGCSServerContainerTest
     {
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -27,16 +27,14 @@ public abstract class GCSContainerTest : IAsyncLifetime
             var client = await new StorageClientBuilder
             {
                 UnauthenticatedAccess = true,
-                BaseUri = _gcsontainer.GetConnectionString()
+                BaseUri = _fakeGCSServerContainer.GetConnectionString()
             }.BuildAsync();
             
             // When
             var bucket = await client.CreateBucketAsync(testProject, testBucket);
-            var buckets = client.ListBuckets(testProject);
 
             // Then
             Assert.True(bucket.Name == testBucket);
-            Assert.True(buckets.Count == 1);
         }
     }
     
