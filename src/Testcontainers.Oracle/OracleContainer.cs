@@ -2,7 +2,7 @@ namespace Testcontainers.Oracle;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class OracleContainer : DockerContainer
+public sealed class OracleContainer : DockerContainer, IDatabaseContainer
 {
     private readonly OracleConfiguration _configuration;
 

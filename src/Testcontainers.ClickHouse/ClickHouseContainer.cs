@@ -2,7 +2,7 @@ namespace Testcontainers.ClickHouse;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class ClickHouseContainer : DockerContainer
+public sealed class ClickHouseContainer : DockerContainer, IDatabaseContainer
 {
     private readonly ClickHouseConfiguration _configuration;
 
