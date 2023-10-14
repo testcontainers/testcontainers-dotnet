@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await client.Network.ByNameAsync(_network.Name)
+      var networkResponse = await client.Network.ByIdAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then
@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await client.Network.ByNameAsync(_network.Name)
+      var networkResponse = await client.Network.ByIdAsync(_network.Name)
         .ConfigureAwait(false);
 
       // Then

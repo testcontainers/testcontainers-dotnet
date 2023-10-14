@@ -2,7 +2,7 @@ namespace Testcontainers.MariaDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MariaDbContainer : DockerContainer
+public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MariaDbConfiguration _configuration;
 

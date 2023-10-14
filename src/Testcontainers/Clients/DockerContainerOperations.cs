@@ -34,21 +34,11 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false);
     }
 
-    public Task<ContainerInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("id", id, ct);
-    }
-
-    public Task<ContainerInspectResponse> ByNameAsync(string name, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("name", name, ct);
-    }
-
-    public async Task<ContainerInspectResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<ContainerInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       try
       {
-        return await Docker.Containers.InspectContainerAsync(value, ct)
+        return await Docker.Containers.InspectContainerAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -65,18 +55,12 @@ namespace DotNet.Testcontainers.Clients
       return response != null;
     }
 
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
-    {
-      var response = await ByNameAsync(name, ct)
-        .ConfigureAwait(false);
-
-      return response != null;
-    }
-
     public async Task<long> GetExitCodeAsync(string id, CancellationToken ct = default)
     {
-      return (await Docker.Containers.WaitContainerAsync(id, ct)
-        .ConfigureAwait(false)).StatusCode;
+      var response = await Docker.Containers.WaitContainerAsync(id, ct)
+        .ConfigureAwait(false);
+
+      return response.StatusCode;
     }
 
     public async Task<(string Stdout, string Stderr)> GetLogsAsync(string id, TimeSpan since, TimeSpan until, bool timestampsEnabled = true, CancellationToken ct = default)

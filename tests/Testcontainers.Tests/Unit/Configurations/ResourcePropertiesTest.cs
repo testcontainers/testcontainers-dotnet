@@ -45,34 +45,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task QueryNotExistingDockerContainerByName()
-    {
-      Assert.False(await Client.Container.ExistsWithNameAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
-    }
-
-    [Fact]
-    public async Task QueryNotExistingDockerImageByName()
-    {
-      Assert.False(await Client.Image.ExistsWithNameAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
-    }
-
-    [Fact]
-    public async Task QueryNotExistingDockerNetworkByName()
-    {
-      Assert.False(await Client.Network.ExistsWithNameAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
-    }
-
-    [Fact]
-    public async Task QueryNotExistingDockerVolumeByName()
-    {
-      Assert.False(await Client.Volume.ExistsWithNameAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
-    }
-
-    [Fact]
     public async Task QueryContainerInformationOfCreatedContainer()
     {
       // Given

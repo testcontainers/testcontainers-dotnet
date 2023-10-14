@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Clients
 
     private static string GetQualifiedPort(string containerPort)
     {
-      return new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }.Any(portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)) ? containerPort.ToLowerInvariant() : containerPort + TcpPortSuffix;
+      return Array.Exists(new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)) ? containerPort.ToLowerInvariant() : containerPort + TcpPortSuffix;
     }
 
     private sealed class ToCollection : CollectionConverter<string, string>

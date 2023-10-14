@@ -32,21 +32,11 @@ namespace DotNet.Testcontainers.Clients
         .ConfigureAwait(false);
     }
 
-    public Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("id", id, ct);
-    }
-
-    public Task<NetworkResponse> ByNameAsync(string name, CancellationToken ct = default)
-    {
-      return ByPropertyAsync("name", name, ct);
-    }
-
-    public async Task<NetworkResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
+    public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
       try
       {
-        return await Docker.Networks.InspectNetworkAsync(value, ct)
+        return await Docker.Networks.InspectNetworkAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -58,14 +48,6 @@ namespace DotNet.Testcontainers.Clients
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
       var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return response != null;
-    }
-
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
-    {
-      var response = await ByNameAsync(name, ct)
         .ConfigureAwait(false);
 
       return response != null;

@@ -2,7 +2,7 @@ namespace Testcontainers.PostgreSql;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class PostgreSqlContainer : DockerContainer
+public sealed class PostgreSqlContainer : DockerContainer, IDatabaseContainer
 {
     private readonly PostgreSqlConfiguration _configuration;
 

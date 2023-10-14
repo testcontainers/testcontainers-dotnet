@@ -2,7 +2,7 @@ namespace Testcontainers.SqlEdge;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class SqlEdgeContainer : DockerContainer
+public sealed class SqlEdgeContainer : DockerContainer, IDatabaseContainer
 {
     private readonly SqlEdgeConfiguration _configuration;
 
