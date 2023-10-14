@@ -1,7 +1,7 @@
-using JetBrains.Annotations;
-
 namespace DotNet.Testcontainers.Containers
 {
+  using JetBrains.Annotations;
+
   /// <summary>
   /// Represents a database container instance that can be accessed with an ADO.NET provider.
   /// </summary>

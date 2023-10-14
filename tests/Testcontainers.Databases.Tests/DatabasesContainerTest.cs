@@ -3,47 +3,52 @@ namespace Testcontainers.Databases;
 public sealed class DatabaseContainersTest
 {
     [Theory]
-    [MemberData(nameof(GetContainerTypes), parameters: true)]
-    public void ImplementsIDatabaseContainer(Type type)
+    [MemberData(nameof(GetContainerImplementations), parameters: true)]
+    public void ShouldImplementIDatabaseContainer(Type type)
     {
-        Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)));
+        Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does not implement the database interface.");
     }
 
     [Theory]
-    [MemberData(nameof(GetContainerTypes), parameters: false)]
-    public void DoesNotImplementIDatabaseContainer(Type type)
+    [MemberData(nameof(GetContainerImplementations), parameters: false)]
+    public void ShouldNotImplementIDatabaseContainer(Type type)
     {
-        Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)));
+        Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does implement the database interface.");
     }
 
-    public static IEnumerable<object[]> GetContainerTypes(bool adoNetContainers)
+    public static IEnumerable<object[]> GetContainerImplementations(bool expectDataProvider)
     {
-        foreach (var dll in Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly))
+        var testAssemblies = Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFullPath)
+            .Select(Assembly.LoadFrom)
+            .ToDictionary(assembly => assembly, assembly => assembly.GetReferencedAssemblies()
+                .Where(referencedAssembly => referencedAssembly.Name != null)
+                .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("System"))
+                .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("xunit"))
+                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Microsoft.VisualStudio.TestPlatform.ObjectModel"))
+                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Docker.DotNet"))
+                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Testcontainers"))
+                .Select(Assembly.Load)
+                .SelectMany(referencedAssembly => referencedAssembly.ExportedTypes)
+                .ToImmutableList());
+
+        foreach (var testAssembly in testAssemblies)
         {
-            var referencedAssemblies = Assembly.LoadFrom(Path.GetFullPath(dll)).GetReferencedAssemblies().Select(Assembly.Load).ToList();
-            var hasAdoNetProvider = referencedAssemblies.Any(IsAdoNetProvider);
-            if (adoNetContainers ? hasAdoNetProvider : !hasAdoNetProvider)
+            // TODO: If a module contains multiple container implementations, it would require all container implementations to implement the interface.
+            foreach (var containerType in testAssembly.Value.Where(type => type.IsAssignableTo(typeof(IContainer))))
             {
-                var containerAssembly = referencedAssemblies.SingleOrDefault(IsTestcontainer);
-                if (containerAssembly != null)
+                var hasDataProvider = testAssembly.Value.Exists(type => type.IsSubclassOf(typeof(DbProviderFactory)));
+
+                if (expectDataProvider && hasDataProvider)
                 {
-                    foreach (var containerType in containerAssembly.GetExportedTypes().Where(type => type.IsAssignableTo(typeof(IContainer))))
-                    {
-                        yield return new object[] { containerType };
-                    }
+                    yield return new object[] { containerType };
+                }
+
+                if (!expectDataProvider && !hasDataProvider)
+                {
+                    yield return new object[] { containerType };
                 }
             }
         }
-    }
-
-    private static bool IsAdoNetProvider(Assembly assembly)
-    {
-        return assembly.GetExportedTypes().Any(a => a.IsSubclassOf(typeof(DbProviderFactory)));
-    }
-
-    private static bool IsTestcontainer(Assembly assembly)
-    {
-        var name = assembly.GetName().Name ?? "";
-        return name.StartsWith("Testcontainers.") && name != "Testcontainers.Commons";
     }
 }
