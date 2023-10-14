@@ -40,14 +40,14 @@ public sealed class FakeGCSServerBuilder : ContainerBuilder<FakeGCSServerBuilder
     protected override FakeGCSServerBuilder Init()
     {
         return base.Init()
-            .WithImage(GCSImage)
-            .WithPortBinding(GCSPort, GCSPort)
+            .WithImage(FakeGCSServerImage)
+            .WithPortBinding(FakeGCSServerPort, FakeGCSServerPort)
             .WithCommand("-scheme", "http")
             .WithCommand("-backend", "memory")
-            .WithCommand("-external-url", $"http://localhost:{GCSPort}")
-            .WithCommand("-port", GCSPort.ToString())
+            .WithCommand("-external-url", $"http://localhost:{FakeGCSServerPort}")
+            .WithCommand("-port", FakeGCSServerPort.ToString())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(GCSPort).ForStatusCode(HttpStatusCode.NotFound)));
+                request.ForPath("/").ForPort(FakeGCSServerPort).ForStatusCode(HttpStatusCode.NotFound)));
     }
 
     /// <inheritdoc />
