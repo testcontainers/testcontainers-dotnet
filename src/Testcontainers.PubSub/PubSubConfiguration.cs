@@ -7,11 +7,8 @@ public sealed class PubSubConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The PubSub config.</param>
-    public PubSubConfiguration(object config = null)
+    public PubSubConfiguration()
     {
-        // // Sets the custom builder methods property values.
-        // Config = config;
     }
 
     /// <summary>
@@ -52,12 +49,5 @@ public sealed class PubSubConfiguration : ContainerConfiguration
     public PubSubConfiguration(PubSubConfiguration oldValue, PubSubConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        // Config = BuildConfiguration.Combine(oldValue.Config, newValue.Config);
     }
-
-    // /// <summary>
-    // /// Gets the PubSub config.
-    // /// </summary>
-    // public object Config { get; }
 }

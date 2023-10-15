@@ -1,48 +1,70 @@
+namespace Testcontainers.PubSub;
 
-namespace Testcontainers.PubSub.Tests;
-
-public class PubSubContainerTests : IAsyncLifetime
+public sealed class PubSubContainerTests : IAsyncLifetime
 {
-  private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
+    private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
 
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task PublishSubscribeTest()
-  {
-    const string projectId = "testProj";
-    const string topicName = "testTopic";
-    const string subscriptionName = "test-sub";
+    public Task InitializeAsync()
+    {
+        return _pubSubContainer.StartAsync();
+    }
 
-    var (publisher, subscriber) = await _pubSubContainer.CreatePublisherAndSubscriber();
-    var (topic,subscription) = await PubSubHelper.EnsureTopicAndSubscription(publisher, subscriber, projectId, topicName, subscriptionName);
+    public Task DisposeAsync()
+    {
+        return _pubSubContainer.DisposeAsync().AsTask();
+    }
 
-    var dataToSent = new testData();
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task SubTopicReturnsPubMessage()
+    {
+        // Given
+        const string helloPubSub = "Hello, PubSub!";
 
-    await publisher.PublishAsync(topic, dataToSent.ToPubsubMessage().AsList());
+        const string projectId = "hello-pub-sub";
 
-    var messages = await subscriber.PullAsyncImmediatelly(subscription);
+        const string topicId = "hello-topic";
 
-    Assert.Single(messages.ReceivedMessages);
+        const string subscriptionId = "hello-subscription";
 
-    await subscriber.AcknowledgeAllMessages(subscription, messages.ReceivedMessages);
+        var topicName = new TopicName(projectId, topicId);
 
-    var receivedObject = messages.ReceivedMessages.FirstOrDefault().GetStringData().AsObject<testData>();
+        var subscriptionName = new SubscriptionName(projectId, subscriptionId);
 
-    Assert.Equal(receivedObject.Id,dataToSent.Id);
-  }
+        var message = new PubsubMessage();
+        message.Data = ByteString.CopyFromUtf8(helloPubSub);
 
-  public Task InitializeAsync()
-  {
-    return _pubSubContainer.StartAsync();
-  }
+        var publisherClientBuilder = new PublisherServiceApiClientBuilder();
+        publisherClientBuilder.Endpoint = _pubSubContainer.GetEmulatorEndpoint();
+        publisherClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
-  public Task DisposeAsync()
-  {
-    return _pubSubContainer.DisposeAsync().AsTask();
-  }
+        var subscriberClientBuilder = new SubscriberServiceApiClientBuilder();
+        subscriberClientBuilder.Endpoint = _pubSubContainer.GetEmulatorEndpoint();
+        subscriberClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
-  public class testData
-  {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-  }
+        // When
+        var publisher = await publisherClientBuilder.BuildAsync()
+            .ConfigureAwait(false);
+
+        _ = await publisher.CreateTopicAsync(topicName)
+            .ConfigureAwait(false);
+
+        var subscriber = await subscriberClientBuilder.BuildAsync()
+            .ConfigureAwait(false);
+
+        _ = await subscriber.CreateSubscriptionAsync(subscriptionName, topicName, null, 60)
+            .ConfigureAwait(false);
+
+        _ = await publisher.PublishAsync(topicName, new[] { message })
+            .ConfigureAwait(false);
+
+        var response = await subscriber.PullAsync(subscriptionName, 1)
+            .ConfigureAwait(false);
+
+        await subscriber.AcknowledgeAsync(subscriptionName, response.ReceivedMessages.Select(receivedMessage => receivedMessage.AckId))
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(helloPubSub, response.ReceivedMessages.Single().Message.Data.ToStringUtf8());
+    }
 }
