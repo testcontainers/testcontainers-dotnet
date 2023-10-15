@@ -5,7 +5,8 @@ namespace Testcontainers.FakeGCSServer;
 public sealed class FakeGCSServerBuilder : ContainerBuilder<FakeGCSServerBuilder, FakeGCSServerContainer, FakeGCSServerConfiguration>
 {
     public const string FakeGCSServerImage = "fsouza/fake-gcs-server:1.47.5";
-    public const ushort FakeGCSServerPort = 30000;
+    public const ushort FakeGCSServerPort = 4443;
+    public const string StartupScriptFilePath = "/testcontainers.sh";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGCSServerBuilder" /> class.
@@ -41,13 +42,20 @@ public sealed class FakeGCSServerBuilder : ContainerBuilder<FakeGCSServerBuilder
     {
         return base.Init()
             .WithImage(FakeGCSServerImage)
-            .WithPortBinding(FakeGCSServerPort, FakeGCSServerPort)
-            .WithCommand("-scheme", "http")
-            .WithCommand("-backend", "memory")
-            .WithCommand("-external-url", $"http://localhost:{FakeGCSServerPort}")
-            .WithCommand("-port", FakeGCSServerPort.ToString())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(FakeGCSServerPort).ForStatusCode(HttpStatusCode.NotFound)));
+            .WithPortBinding(FakeGCSServerPort, true)
+            .WithEntrypoint("/bin/sh", "-c")
+            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; sh {StartupScriptFilePath}")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(new Regex("server started at.*", RegexOptions.IgnoreCase)))
+            .WithStartupCallback((container, ct) =>
+            {
+                const char lf = '\n';
+                var startupScript = new StringBuilder();
+                startupScript.Append("#!/bin/bash");
+                startupScript.Append(lf);
+                startupScript.Append($"fake-gcs-server -backend memory -scheme http -port {FakeGCSServerPort} -external-url \"http://localhost:{container.GetMappedPublicPort(FakeGCSServerPort)}\"");
+                startupScript.Append(lf);
+                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
+            });
     }
 
     /// <inheritdoc />
