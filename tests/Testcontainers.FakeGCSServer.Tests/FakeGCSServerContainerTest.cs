@@ -22,7 +22,7 @@ public abstract class FakeGCSServerContainerTest : IAsyncLifetime
         {
             string testProject = "test-project";
             string testBucket = "test-bucket";
-            string content = "Hello Google Storage"'
+            string content = "Hello Google Storage";
             
             // Give
             var client = await new StorageClientBuilder
