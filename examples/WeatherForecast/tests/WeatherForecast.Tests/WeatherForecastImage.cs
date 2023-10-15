@@ -1,12 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using DotNet.Testcontainers.Images;
-using JetBrains.Annotations;
-using Xunit;
-
 namespace WeatherForecast.Tests;
 
 [UsedImplicitly]

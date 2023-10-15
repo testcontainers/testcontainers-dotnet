@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using WeatherForecast.Entities;
-using WeatherForecast.Interactors;
-using WeatherForecast.Interactors.SearchCityOrZipCode;
-
 namespace WeatherForecast.Controllers;
 
 [Route("api/[controller]")]

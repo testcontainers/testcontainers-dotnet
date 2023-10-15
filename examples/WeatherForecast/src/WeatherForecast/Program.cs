@@ -1,18 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Fast.Components.FluentUI;
-using WeatherForecast;
-using WeatherForecast.Contexts;
-using WeatherForecast.Interactors.SearchCityOrZipCode;
-using WeatherForecast.Repositories;
-
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddFluentUIComponents();
+builder.Services.AddHttpClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddHttpClient();
-builder.Services.AddFluentUIComponents();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -49,6 +39,9 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.Run();
 
-public sealed partial class Program
+namespace WeatherForecast
 {
+  public sealed class Program
+  {
+  }
 }

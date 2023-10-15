@@ -1,9 +1,3 @@
-@using System.Collections.Immutable
-@using System.Collections.ObjectModel
-@using System.Globalization
-@using WeatherForecast.Entities
-@using WeatherForecast.Interactors
-@using WeatherForecast.Interactors.SearchCityOrZipCode
 @implements IDisposable
 
 @inject ISearchCityOrZipCode SearchCityOrZipCode
@@ -12,8 +6,11 @@
   <div style="padding: 0 10px 10px">
     <h1>Weather Forecast</h1>
     <FluentDataGrid Items="@_weatherData.AsQueryable()">
-      <PropertyColumn Title="Date" Property="@(item => item.Date.ToShortDateString())"/>
-      <PropertyColumn Title="Avg °C" Property="@(item => item.Temperatures.Average(temperature => temperature.Value).ToString("0"))"/>
+      <ChildContent>
+        <PropertyColumn Title="Date" Property="@(item => item.Date.ToShortDateString())"/>
+        <PropertyColumn Title="Avg °C" Property="@(item => item.Temperatures.Average(temperature => temperature.Value).ToString("0"))"/>
+      </ChildContent>
+      <EmptyContent></EmptyContent>
     </FluentDataGrid>
 
     @{

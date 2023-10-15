@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-
 namespace WeatherForecast.Interactors;
 
 [PublicAPI]

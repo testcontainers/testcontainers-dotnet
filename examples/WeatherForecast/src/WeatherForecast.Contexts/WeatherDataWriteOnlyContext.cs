@@ -1,9 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using WeatherForecast.Entities;
-using WeatherForecast.Repositories;
-
 namespace WeatherForecast.Contexts;
 
 [PublicAPI]
