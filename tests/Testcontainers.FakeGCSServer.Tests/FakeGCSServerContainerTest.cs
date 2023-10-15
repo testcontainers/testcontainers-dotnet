@@ -1,3 +1,6 @@
+using System.Text;
+using System.IO;
+
 namespace Testcontainers.FakeGCSServer;
 
 public abstract class FakeGCSServerContainerTest : IAsyncLifetime
@@ -36,10 +39,7 @@ public abstract class FakeGCSServerContainerTest : IAsyncLifetime
             client.UploadObject(testBucket, "hello.txt", "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
             var ms = new MemoryStream();
             client.DownloadObject(testBucket, "hello.txt", ms);
-
             var blobContent = Encoding.UTF8.GetString(ms.ToArray());
-
-
 
             // Then
             Assert.True(content == blobContent);
