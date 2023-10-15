@@ -45,5 +45,4 @@ public abstract class FakeGCSServerContainerTest : IAsyncLifetime
             Assert.True(content == blobContent);
         }
     }
-    
 }
