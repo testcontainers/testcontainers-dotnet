@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -26,38 +27,35 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return (await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }, ct)
-        .ConfigureAwait(false)).ToArray();
+      return await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }, ct)
+        .ConfigureAwait(false);
     }
 
-    public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
+    public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default)
     {
-      return (await GetAllAsync(ct)
-        .ConfigureAwait(false)).FirstOrDefault(image => image.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
+      return await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = filters }, ct)
+        .ConfigureAwait(false);
     }
 
-    public Task<ImagesListResponse> ByNameAsync(string name, CancellationToken ct = default)
+    public async Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      return ByPropertyAsync("reference", name, ct);
-    }
-
-    public async Task<ImagesListResponse> ByPropertyAsync(string property, string value, CancellationToken ct = default)
-    {
-      var filters = new FilterByProperty { { property, value } };
-      return (await Docker.Images.ListImagesAsync(new ImagesListParameters { All = true, Filters = filters }, ct)
-        .ConfigureAwait(false)).FirstOrDefault();
+      try
+      {
+        return await Docker.Images.InspectImageAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        return null;
+      }
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      return await ByIdAsync(id, ct)
-        .ConfigureAwait(false) != null;
-    }
+      var response = await ByIdAsync(id, ct)
+        .ConfigureAwait(false);
 
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
-    {
-      return await ByNameAsync(name, ct)
-        .ConfigureAwait(false) != null;
+      return response != null;
     }
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
@@ -92,7 +90,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var image = configuration.Image;
 
-      var imageExists = await ExistsWithNameAsync(image.FullName, ct)
+      var imageExists = await ExistsWithIdAsync(image.FullName, ct)
         .ConfigureAwait(false);
 
       if (imageExists && configuration.DeleteIfExists.HasValue && configuration.DeleteIfExists.Value)
@@ -127,7 +125,7 @@ namespace DotNet.Testcontainers.Clients
           await Docker.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileArchiveStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), _traceProgress, ct)
             .ConfigureAwait(false);
 
-          var imageHasBeenCreated = await ExistsWithNameAsync(image.FullName, ct)
+          var imageHasBeenCreated = await ExistsWithIdAsync(image.FullName, ct)
             .ConfigureAwait(false);
 
           if (!imageHasBeenCreated)

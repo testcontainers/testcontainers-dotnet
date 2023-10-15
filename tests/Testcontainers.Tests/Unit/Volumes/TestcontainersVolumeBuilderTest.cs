@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var volumeResponse = await client.Volume.ByNameAsync(_volume.Name)
+      var volumeResponse = await client.Volume.ByIdAsync(_volume.Name)
         .ConfigureAwait(false);
 
       // Then

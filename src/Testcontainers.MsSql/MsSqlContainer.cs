@@ -2,7 +2,7 @@ namespace Testcontainers.MsSql;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MsSqlContainer : DockerContainer
+public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MsSqlConfiguration _configuration;
 

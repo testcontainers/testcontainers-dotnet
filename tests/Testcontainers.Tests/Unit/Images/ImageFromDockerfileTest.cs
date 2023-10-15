@@ -21,13 +21,17 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
 
-      var dockerfileArchive = new DockerfileArchive("Assets//pullBaseImages/", "Dockerfile", image, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive("Assets/pullBaseImages/", "Dockerfile", image, NullLogger.Instance);
 
       // When
-      var baseImages = dockerfileArchive.GetBaseImages();
+      var baseImages = dockerfileArchive.GetBaseImages().ToArray();
 
       // Then
-      Assert.Equal(3, baseImages.Count());
+      Assert.Equal(4, baseImages.Length);
+      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/sdk:6.0".Equals(item.FullName));
+      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/runtime:6.0".Equals(item.FullName));
+      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.21-jammy-amd64".Equals(item.FullName));
+      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.22-jammy-amd64".Equals(item.FullName));
     }
 
     [Fact]

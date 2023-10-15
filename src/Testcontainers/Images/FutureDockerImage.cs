@@ -16,7 +16,7 @@ namespace DotNet.Testcontainers.Images
 
     private readonly IImageFromDockerfileConfiguration _configuration;
 
-    private ImagesListResponse _image = new ImagesListResponse();
+    private ImageInspectResponse _image = new ImageInspectResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FutureDockerImage" /> class.
@@ -115,7 +115,7 @@ namespace DotNet.Testcontainers.Images
       _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);
 
-      _image = await _client.Image.ByNameAsync(_configuration.Image.FullName, ct)
+      _image = await _client.Image.ByIdAsync(_configuration.Image.FullName, ct)
         .ConfigureAwait(false);
     }
 
@@ -132,7 +132,7 @@ namespace DotNet.Testcontainers.Images
       await _client.Image.DeleteAsync(_configuration.Image, ct)
         .ConfigureAwait(false);
 
-      _image = new ImagesListResponse();
+      _image = new ImageInspectResponse();
     }
   }
 }

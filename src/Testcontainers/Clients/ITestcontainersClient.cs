@@ -5,7 +5,6 @@ namespace DotNet.Testcontainers.Clients
   using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
@@ -62,14 +61,6 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that gets the container logs.</returns>
     Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
-
-    /// <summary>
-    /// Gets the container low-level information object.
-    /// </summary>
-    /// <param name="id">The container id.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that gets the container low-level information object.</returns>
-    Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default);
 
     /// <summary>
     /// Starts the container.

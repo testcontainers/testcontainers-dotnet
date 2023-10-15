@@ -2,7 +2,7 @@ namespace Testcontainers.MySql;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class MySqlContainer : DockerContainer
+public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MySqlConfiguration _configuration;
 

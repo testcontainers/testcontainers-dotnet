@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Configurations
       string dockerfile = null,
       string dockerfileDirectory = null,
       IImage image = null,
-      Func<ImagesListResponse, bool> imageBuildPolicy = null,
+      Func<ImageInspectResponse, bool> imageBuildPolicy = null,
       IReadOnlyDictionary<string, string> buildArguments = null,
       bool? deleteIfExists = null)
     {
@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Configurations
     public IImage Image { get; }
 
     /// <inheritdoc />
-    public Func<ImagesListResponse, bool> ImageBuildPolicy { get; }
+    public Func<ImageInspectResponse, bool> ImageBuildPolicy { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> BuildArguments { get; }

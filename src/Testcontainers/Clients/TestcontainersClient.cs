@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
-  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -116,12 +115,6 @@ namespace DotNet.Testcontainers.Clients
       }
 
       return Container.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<ContainerInspectResponse> InspectContainerAsync(string id, CancellationToken ct = default)
-    {
-      return Container.InspectAsync(id, ct);
     }
 
     /// <inheritdoc />
@@ -300,7 +293,7 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
+      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
       if (configuration.ImagePullPolicy(cachedImage))
@@ -330,7 +323,7 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var cachedImage = await Image.ByNameAsync(configuration.Image.FullName, ct)
+      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false);
 
       if (configuration.ImageBuildPolicy(cachedImage))
