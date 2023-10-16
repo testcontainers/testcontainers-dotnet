@@ -26,6 +26,7 @@ public abstract class FakeGcsServerContainerTest : IAsyncLifetime
             string testProject = "test-project";
             string testBucket = "test-bucket";
             string content = "Hello Google Storage";
+            string fileName = "hello.txt";
             
             // Give
             var client = await new StorageClientBuilder
@@ -36,9 +37,9 @@ public abstract class FakeGcsServerContainerTest : IAsyncLifetime
             
             // When
             client.CreateBucket(testProject, testBucket);
-            client.UploadObject(testBucket, "hello.txt", "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
+            client.UploadObject(testBucket, fileName, "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
             using var ms = new MemoryStream();
-            client.DownloadObject(testBucket, "hello.txt", ms);
+            client.DownloadObject(testBucket, fileName, ms);
             var blobContent = Encoding.UTF8.GetString(ms.ToArray());
 
             // Then
