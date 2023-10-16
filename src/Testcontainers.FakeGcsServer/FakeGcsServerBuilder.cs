@@ -5,7 +5,7 @@ namespace Testcontainers.FakeGcsServer;
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47.5";
-    public const ushort FakeGcsServerPort = 4443;
+    public const ushort FakeGcsServerPort = 8080;
     public const string StartupScriptFilePath = "/testcontainers.sh";
 
     /// <summary>
