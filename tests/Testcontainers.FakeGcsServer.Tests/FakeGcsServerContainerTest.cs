@@ -36,10 +36,10 @@ public abstract class FakeGcsServerContainerTest : IAsyncLifetime
             }.BuildAsync();
             
             // When
-            client.CreateBucket(testProject, testBucket);
-            client.UploadObject(testBucket, fileName, "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
+            await client.CreateBucketAsync(testProject, testBucket);
+            await client.UploadObjectAsync(testBucket, fileName, "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
             using var ms = new MemoryStream();
-            client.DownloadObject(testBucket, fileName, ms);
+            await client.DownloadObjectAsync(testBucket, fileName, ms);
             var blobContent = Encoding.UTF8.GetString(ms.ToArray());
 
             // Then
