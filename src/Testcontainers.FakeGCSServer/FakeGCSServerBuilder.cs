@@ -1,6 +1,3 @@
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace Testcontainers.FakeGCSServer;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
