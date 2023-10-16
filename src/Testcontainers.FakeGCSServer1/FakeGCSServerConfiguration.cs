@@ -1,4 +1,4 @@
-namespace Testcontainers.FakeGCSServer;
+namespace Testcontainers.FakeGCSServer1;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]

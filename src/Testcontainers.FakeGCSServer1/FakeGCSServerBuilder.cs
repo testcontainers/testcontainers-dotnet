@@ -1,4 +1,4 @@
-namespace Testcontainers.FakeGCSServer;
+namespace Testcontainers.FakeGCSServer1;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -52,7 +52,7 @@ public sealed class FakeGCSServerBuilder : ContainerBuilder<FakeGCSServerBuilder
                 var startupScript = new StringBuilder();
                 startupScript.Append("#!/bin/bash");
                 startupScript.Append(lf);
-                startupScript.Append($"fake-gcs-server -backend memory -scheme http -port {FakeGCSServerPort} -external-url {new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FakeGCSServerPort)).ToString()}");
+                startupScript.Append($"fake-gcs-server -backend memory -scheme http -port {FakeGCSServerPort} -external-url {new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGCSServerPort))}");
                 startupScript.Append(lf);
                 return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
             });
