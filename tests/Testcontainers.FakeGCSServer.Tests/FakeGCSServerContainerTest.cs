@@ -42,7 +42,7 @@ public abstract class FakeGCSServerContainerTest : IAsyncLifetime
             var blobContent = Encoding.UTF8.GetString(ms.ToArray());
 
             // Then
-            Assert.True(content == blobContent);
+            Assert.Equal(content, blobContent);
         }
     }
 }
