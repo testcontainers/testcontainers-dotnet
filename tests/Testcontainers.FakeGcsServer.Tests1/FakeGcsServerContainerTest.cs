@@ -1,23 +1,23 @@
 using System.Text;
 using System.IO;
 
-namespace Testcontainers.FakeGCSServer;
+namespace Testcontainers.FakeGcsServer;
 
-public abstract class FakeGCSServerContainerTest : IAsyncLifetime
+public abstract class FakeGcsServerContainerTest : IAsyncLifetime
 {
-    private readonly FakeGCSServerContainer _fakeGCSServerContainer = new FakeGCSServerBuilder().Build();
+    private readonly FakeGcsServerContainer _FakeGcsServerContainer = new FakeGcsServerBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _fakeGCSServerContainer.StartAsync();
+        return _FakeGcsServerContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _fakeGCSServerContainer.DisposeAsync().AsTask();
+        return _FakeGcsServerContainer.DisposeAsync().AsTask();
     }
 
-    public sealed class BlobService : FakeGCSServerContainerTest
+    public sealed class BlobService : FakeGcsServerContainerTest
     {
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -31,7 +31,7 @@ public abstract class FakeGCSServerContainerTest : IAsyncLifetime
             var client = await new StorageClientBuilder
             {
                 UnauthenticatedAccess = true,
-                BaseUri = _fakeGCSServerContainer.GetConnectionString()
+                BaseUri = _FakeGcsServerContainer.GetConnectionString()
             }.BuildAsync();
             
             // When
