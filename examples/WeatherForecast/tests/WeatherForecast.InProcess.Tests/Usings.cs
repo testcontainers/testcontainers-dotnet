@@ -1,0 +1,14 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Net;
+global using System.Net.Http;
+global using System.Text.Json;
+global using System.Threading.Tasks;
+global using JetBrains.Annotations;
+global using Microsoft.AspNetCore.Mvc.Testing;
+global using Microsoft.Extensions.DependencyInjection;
+global using Testcontainers.SqlEdge;
+global using WeatherForecast.Entities;
+global using WeatherForecast.Repositories;
+global using Xunit;

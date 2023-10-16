@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using WeatherForecast.Entities;
-
 namespace WeatherForecast.Repositories;
 
 [PublicAPI]
 public sealed class WeatherDataReadOnlyRepository : IWeatherDataReadOnlyRepository
 {
-  private static readonly ThreadLocal<Random> Random = new(() => new Random());
+  private static readonly ThreadLocal<Random> Random = new ThreadLocal<Random>(() => new Random());
 
   public Task<IEnumerable<WeatherData>> GetAllAsync()
   {

@@ -1,19 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text.Json;
-using System.Threading.Tasks;
-using DotNet.Testcontainers.Builders;
+namespace WeatherForecast.Tests;
+
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using WeatherForecast.Entities;
-using Xunit;
-
-namespace WeatherForecast.Tests;
 
 public static class WeatherForecastTest
 {

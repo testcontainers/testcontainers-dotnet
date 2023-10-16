@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore;
-using WeatherForecast.Entities;
-
 namespace WeatherForecast.Contexts;
 
 [PublicAPI]

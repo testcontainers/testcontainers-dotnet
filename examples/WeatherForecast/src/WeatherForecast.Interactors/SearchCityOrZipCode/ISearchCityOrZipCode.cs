@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using WeatherForecast.Entities;
-
 namespace WeatherForecast.Interactors.SearchCityOrZipCode;
 
 [PublicAPI]

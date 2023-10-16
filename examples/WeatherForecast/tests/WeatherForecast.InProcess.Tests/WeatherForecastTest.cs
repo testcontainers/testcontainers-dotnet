@@ -1,18 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using Testcontainers.SqlEdge;
-using WeatherForecast.Entities;
-using WeatherForecast.Repositories;
-using Xunit;
-
 namespace WeatherForecast.InProcess.Tests;
 
 [UsedImplicitly]

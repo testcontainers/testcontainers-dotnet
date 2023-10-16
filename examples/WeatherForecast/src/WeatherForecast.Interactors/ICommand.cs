@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-
 namespace WeatherForecast.Interactors;
 
 [PublicAPI]

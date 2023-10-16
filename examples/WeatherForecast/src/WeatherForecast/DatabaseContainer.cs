@@ -1,8 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Testcontainers.SqlEdge;
-
 namespace WeatherForecast;
 
 public sealed class DatabaseContainer : IHostedService
