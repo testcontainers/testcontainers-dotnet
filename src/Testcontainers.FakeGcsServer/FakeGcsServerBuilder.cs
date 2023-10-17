@@ -5,7 +5,9 @@ namespace Testcontainers.FakeGcsServer;
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47.5";
-    public const ushort FakeGcsServerPort = 8080;
+
+    public const ushort FakeGcsServerPort = 4443;
+
     public const string StartupScriptFilePath = "/testcontainers.sh";
 
     /// <summary>
@@ -44,28 +46,33 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
             .WithImage(FakeGcsServerImage)
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; sh {StartupScriptFilePath}")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(new Regex("server started at.*", RegexOptions.IgnoreCase)))
+            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; /bin/sh " + StartupScriptFilePath)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("server started"))
             .WithStartupCallback((container, ct) =>
             {
                 const char lf = '\n';
                 var startupScript = new StringBuilder();
                 startupScript.Append("#!/bin/bash");
                 startupScript.Append(lf);
-                startupScript.Append($"fake-gcs-server -backend memory -scheme http -port {FakeGcsServerPort} -external-url {new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGcsServerPort))}");
-                startupScript.Append(lf);
+                startupScript.Append("fake-gcs-server ");
+                startupScript.Append("-backend memory ");
+                startupScript.Append("-scheme http ");
+                // If we do not remove the trailing slash, uploading an object will result in an
+                // error: HttpStatusCode.NotFound. The HTTP request appears incorrect. The
+                // container logs indicate the presence of an extra slash: `PUT //upload/storage/v1`.
+                startupScript.Append("-external-url " + new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGcsServerPort)).ToString().Trim('/'));
                 return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
             });
     }
 
     /// <inheritdoc />
-    protected override FakeGcsServerBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override FakeGcsServerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new FakeGcsServerConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override FakeGcsServerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override FakeGcsServerBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new FakeGcsServerConfiguration(resourceConfiguration));
     }

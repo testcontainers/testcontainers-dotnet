@@ -1,20 +1,17 @@
-using System.Text;
-using System.IO;
-
 namespace Testcontainers.FakeGcsServer;
 
 public abstract class FakeGcsServerContainerTest : IAsyncLifetime
 {
-    private readonly FakeGcsServerContainer _FakeGcsServerContainer = new FakeGcsServerBuilder().Build();
+    private readonly FakeGcsServerContainer _fakeGcsServerContainer = new FakeGcsServerBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _FakeGcsServerContainer.StartAsync();
+        return _fakeGcsServerContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _FakeGcsServerContainer.DisposeAsync().AsTask();
+        return _fakeGcsServerContainer.DisposeAsync().AsTask();
     }
 
     public sealed class BlobService : FakeGcsServerContainerTest
@@ -23,27 +20,38 @@ public abstract class FakeGcsServerContainerTest : IAsyncLifetime
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task EstablishesConnection()
         {
-            string testProject = "test-project";
-            string testBucket = "test-bucket";
-            string content = "Hello Google Storage";
-            string fileName = "hello.txt";
-            
-            // Give
-            var client = await new StorageClientBuilder
-            {
-                UnauthenticatedAccess = true,
-                BaseUri = _FakeGcsServerContainer.GetConnectionString()
-            }.BuildAsync();
-            
+            // Given
+            const string helloWorld = "Hello, World!";
+
+            using var writeStream = new MemoryStream(Encoding.Default.GetBytes(helloWorld));
+
+            using var readStream = new MemoryStream();
+
+            var project = Guid.NewGuid().ToString("D");
+
+            var bucket = Guid.NewGuid().ToString("D");
+
+            var fileName = Path.GetRandomFileName();
+
+            var storageClientBuilder = new StorageClientBuilder();
+            storageClientBuilder.UnauthenticatedAccess = true;
+            storageClientBuilder.BaseUri = _fakeGcsServerContainer.GetConnectionString();
+
             // When
-            await client.CreateBucketAsync(testProject, testBucket);
-            await client.UploadObjectAsync(testBucket, fileName, "text/plain", new MemoryStream(Encoding.UTF8.GetBytes(content)));
-            using var ms = new MemoryStream();
-            await client.DownloadObjectAsync(testBucket, fileName, ms);
-            var blobContent = Encoding.UTF8.GetString(ms.ToArray());
+            var client = await storageClientBuilder.BuildAsync()
+                .ConfigureAwait(false);
+
+            _ = await client.CreateBucketAsync(project, bucket)
+                .ConfigureAwait(false);
+
+            _ = await client.UploadObjectAsync(bucket, fileName, "text/plain", writeStream)
+                .ConfigureAwait(false);
+
+            _ = await client.DownloadObjectAsync(bucket, fileName, readStream)
+                .ConfigureAwait(false);
 
             // Then
-            Assert.Equal(content, blobContent);
+            Assert.Equal(helloWorld, Encoding.Default.GetString(readStream.ToArray()));
         }
     }
 }

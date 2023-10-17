@@ -20,7 +20,6 @@ public sealed class FakeGcsServerContainer : DockerContainer
     /// <returns>The FakeGcsServer connection string.</returns>
     public string GetConnectionString()
     {
-        var builder = new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FakeGcsServerBuilder.FakeGcsServerPort), "storage/v1/");
-        return builder.ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FakeGcsServerBuilder.FakeGcsServerPort), "/storage/v1/").ToString();
     }
 }
