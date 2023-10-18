@@ -46,13 +46,13 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
             .WithImage(FakeGcsServerImage)
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; /bin/sh " + StartupScriptFilePath)
+            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("server started"))
             .WithStartupCallback((container, ct) =>
             {
                 const char lf = '\n';
                 var startupScript = new StringBuilder();
-                startupScript.Append("#!/bin/bash");
+                startupScript.Append("#!/bin/sh");
                 startupScript.Append(lf);
                 startupScript.Append("fake-gcs-server ");
                 startupScript.Append("-backend memory ");

@@ -1,6 +1,6 @@
 namespace Testcontainers.FakeGcsServer;
 
-public abstract class FakeGcsServerContainerTest : IAsyncLifetime
+public sealed class FakeGcsServerContainerTest : IAsyncLifetime
 {
     private readonly FakeGcsServerContainer _fakeGcsServerContainer = new FakeGcsServerBuilder().Build();
 
