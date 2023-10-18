@@ -9,19 +9,19 @@ public sealed class ConsulContainerTest : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        return _ConsulContainer.StartAsync();
+        return _consulContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _ConsulContainer.DisposeAsync().AsTask();
+        return _consulContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConnectionStateReturnsOpen()
     {
-        using var consulClient = new ConsulClient(option => option.Address = new System.Uri($"http://{_ConsulContainer.GetConnectionString()}"));
+        using var consulClient = new ConsulClient(option => option.Address = new System.Uri($"http://{_consulContainer.GetConnectionString()}"));
         var putPair = new KVPair("hello")
         {
             Value = Encoding.UTF8.GetBytes("Hello Consul")
