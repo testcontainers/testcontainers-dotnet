@@ -20,6 +20,6 @@ public sealed class ConsulContainer : DockerContainer
     /// <returns>The Consul connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("http", Hostname, GetMappedPublicPort(ConsulBuilder.ConsulPort)).Uri.Authority;
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ConsulBuilder.ConsulPort)).ToString();
     }
 }
