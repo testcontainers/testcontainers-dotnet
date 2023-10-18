@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Testcontainers.Consul;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -6,7 +8,12 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
 {
     public const string ConsulImage = "consul:1.15";
 
-    public const ushort ConsulPort = 8500;
+    private const string IPC_LOCK = "IPC_LOCK";
+
+    public const int ConsulHttpPort = 8500;
+    public const int ConsulGrpcPort = 8502;
+
+    private string[] startConsulCmd = new string[] { "agent", "-dev", "-client", "0.0.0.0" };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
@@ -42,8 +49,13 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     {
         return base.Init()
             .WithImage(ConsulImage)
-            .WithPortBinding(ConsulPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithCreateParameterModifier(cmd => cmd.HostConfig.CapAdd = new string[] { IPC_LOCK })
+            .WithEnvironment("CONSUL_ADDR", "http://0.0.0.0:" + ConsulHttpPort)
+            .WithCommand(startConsulCmd)
+            .WithPortBinding(ConsulHttpPort, true)
+            .WithPortBinding(ConsulGrpcPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort).ForStatusCode(HttpStatusCode.OK)));
     }
 
     /// <inheritdoc />
@@ -62,20 +74,5 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     protected override ConsulBuilder Merge(ConsulConfiguration oldValue, ConsulConfiguration newValue)
     {
         return new ConsulBuilder(new ConsulConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly string[] _command = { "curl", "http://localhost:8500/v1/health/service/consul?pretty" };
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }

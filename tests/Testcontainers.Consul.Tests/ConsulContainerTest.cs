@@ -21,7 +21,7 @@ public sealed class ConsulContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConnectionStateReturnsOpen()
     {
-        using var consulClient = new ConsulClient(option => option.Address = new System.Uri($"http://{_consulContainer.GetConnectionString()}"));
+        using var consulClient = new ConsulClient(option => option.Address = new System.Uri(_consulContainer.GetConnectionString()));
         var putPair = new KVPair("hello")
         {
             Value = Encoding.UTF8.GetBytes("Hello Consul")
