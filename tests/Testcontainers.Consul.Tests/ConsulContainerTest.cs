@@ -5,7 +5,7 @@ namespace Testcontainers.Consul;
 
 public sealed class ConsulContainerTest : IAsyncLifetime
 {
-    private readonly ConsulContainer _ConsulContainer = new ConsulBuilder().Build();
+    private readonly ConsulContainer _consulContainer = new ConsulBuilder().Build();
 
     public Task InitializeAsync()
     {
