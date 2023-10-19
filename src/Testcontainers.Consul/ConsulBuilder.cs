@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Testcontainers.Consul;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -8,12 +6,9 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
 {
     public const string ConsulImage = "consul:1.15";
 
-    private const string IPC_LOCK = "IPC_LOCK";
-
     public const int ConsulHttpPort = 8500;
-    public const int ConsulGrpcPort = 8502;
 
-    private string[] startConsulCmd = new string[] { "agent", "-dev", "-client", "0.0.0.0" };
+    public const int ConsulGrpcPort = 8502;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
@@ -49,13 +44,12 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     {
         return base.Init()
             .WithImage(ConsulImage)
-            .WithCreateParameterModifier(cmd => cmd.HostConfig.CapAdd = new string[] { IPC_LOCK })
-            .WithEnvironment("CONSUL_ADDR", "http://0.0.0.0:" + ConsulHttpPort)
-            .WithCommand(startConsulCmd)
             .WithPortBinding(ConsulHttpPort, true)
             .WithPortBinding(ConsulGrpcPort, true)
+            .WithCommand("agent", "-dev", "-client", "0.0.0.0")
+            .WithCreateParameterModifier(cmd => cmd.HostConfig.CapAdd = new[] { "IPC_LOCK" })
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort).ForStatusCode(HttpStatusCode.OK)));
+                request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort)));
     }
 
     /// <inheritdoc />

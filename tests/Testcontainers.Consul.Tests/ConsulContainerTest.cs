@@ -1,6 +1,3 @@
-using System.Net;
-using System.Text;
-
 namespace Testcontainers.Consul;
 
 public sealed class ConsulContainerTest : IAsyncLifetime
@@ -19,15 +16,30 @@ public sealed class ConsulContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ConnectionStateReturnsOpen()
+    public async Task GetItemReturnsPutItem()
     {
-        using var consulClient = new ConsulClient(option => option.Address = new System.Uri(_consulContainer.GetConnectionString()));
-        var putPair = new KVPair("hello")
-        {
-            Value = Encoding.UTF8.GetBytes("Hello Consul")
-        };
-        await consulClient.KV.Put(putPair);
-        var result = await consulClient.KV.Get("hello");
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        // Given
+        const string helloWorld = "Hello, World!";
+
+        var key = Guid.NewGuid().ToString("D");
+
+        var expected = new KVPair(key);
+        expected.Value = Encoding.Default.GetBytes(helloWorld);
+
+        var consulClientConfiguration = new ConsulClientConfiguration();
+        consulClientConfiguration.Address = new Uri(_consulContainer.GetConnectionString());
+
+        using var consulClient = new ConsulClient(consulClientConfiguration);
+
+        // When
+        _ = await consulClient.KV.Put(expected)
+            .ConfigureAwait(false);
+
+        var actual = await consulClient.KV.Get(key)
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+        Assert.Equal(helloWorld, Encoding.Default.GetString(actual.Response.Value));
     }
 }
