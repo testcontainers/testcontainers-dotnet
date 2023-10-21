@@ -4,7 +4,7 @@ namespace Testcontainers.FakeGcsServer;
 [PublicAPI]
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
-    public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47.5";
+    public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47";
 
     public const ushort FakeGcsServerPort = 4443;
 
