@@ -15,10 +15,10 @@ public sealed class ConsulContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Consul connection string.
+    /// Gets the Consul base address.
     /// </summary>
-    /// <returns>The Consul connection string.</returns>
-    public string GetConnectionString()
+    /// <returns>The Consul base address.</returns>
+    public string GetBaseAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ConsulBuilder.ConsulHttpPort)).ToString();
     }

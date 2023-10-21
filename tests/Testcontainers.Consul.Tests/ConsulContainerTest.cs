@@ -27,7 +27,7 @@ public sealed class ConsulContainerTest : IAsyncLifetime
         expected.Value = Encoding.Default.GetBytes(helloWorld);
 
         var consulClientConfiguration = new ConsulClientConfiguration();
-        consulClientConfiguration.Address = new Uri(_consulContainer.GetConnectionString());
+        consulClientConfiguration.Address = new Uri(_consulContainer.GetBaseAddress());
 
         using var consulClient = new ConsulClient(consulClientConfiguration);
 
