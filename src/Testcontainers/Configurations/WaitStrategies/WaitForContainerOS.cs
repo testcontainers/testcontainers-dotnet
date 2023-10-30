@@ -34,9 +34,16 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilFileExists(string file)
+    public virtual IWaitForContainerOS UntilFileExists(string file, FileSystem fileSystem = FileSystem.Host)
     {
-      return AddCustomWaitStrategy(new UntilFilesExists(file));
+      switch (fileSystem)
+      {
+        case FileSystem.Container:
+          return AddCustomWaitStrategy(new UntilFilesExistsInContainer(file));
+        case FileSystem.Host:
+        default:
+          return AddCustomWaitStrategy(new UntilFilesExists(file));
+      }
     }
 
     /// <inheritdoc />

@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="file">The file to be checked.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilFileExists(string file);
+    IWaitForContainerOS UntilFileExists(string file, FileSystem fileSystem = FileSystem.Host);
 
     /// <summary>
     /// Waits until the message is logged.
