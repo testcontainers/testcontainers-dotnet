@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Configurations
   public enum FileSystem
   {
     /// <summary>
-    /// The file system of the host machine.
+    /// The test host file system.
     /// </summary>
     Host = 0,
 

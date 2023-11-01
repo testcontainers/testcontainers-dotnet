@@ -4,11 +4,11 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
 
-  internal class UntilFilesExistsInContainer : IWaitUntil
+  internal class UntilFileExistsInContainer : IWaitUntil
   {
     private readonly string _file;
 
-    public UntilFilesExistsInContainer(string file)
+    public UntilFileExistsInContainer(string file)
     {
       _file = file;
     }
@@ -17,7 +17,9 @@ namespace DotNet.Testcontainers.Configurations
     {
       try
       {
-        await container.ReadFileAsync(_file);
+        _ = await container.ReadFileAsync(_file)
+          .ConfigureAwait(false);
+
         return true;
       }
       catch (FileNotFoundException)
