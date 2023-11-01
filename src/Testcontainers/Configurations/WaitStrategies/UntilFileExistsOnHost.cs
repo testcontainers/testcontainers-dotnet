@@ -4,11 +4,11 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
 
-  internal class UntilFilesExists : IWaitUntil
+  internal class UntilFileExistsOnHost : IWaitUntil
   {
     private readonly string _file;
 
-    public UntilFilesExists(string file)
+    public UntilFileExistsOnHost(string file)
     {
       _file = file;
     }
