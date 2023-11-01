@@ -106,12 +106,12 @@ namespace DotNet.Testcontainers.Clients
 
       if (default(DateTime).Equals(since))
       {
-        since = DateTime.MinValue;
+        since = unixEpoch;
       }
 
       if (default(DateTime).Equals(until))
       {
-        until = DateTime.MaxValue;
+        until = unixEpoch;
       }
 
       return Container.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
