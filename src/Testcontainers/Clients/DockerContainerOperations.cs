@@ -69,8 +69,8 @@ namespace DotNet.Testcontainers.Clients
       {
         ShowStdout = true,
         ShowStderr = true,
-        Since = since.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
-        Until = until.TotalSeconds.ToString("0", CultureInfo.InvariantCulture),
+        Since = Math.Max(0, since.TotalSeconds).ToString("0", CultureInfo.InvariantCulture),
+        Until = Math.Max(0, until.TotalSeconds).ToString("0", CultureInfo.InvariantCulture),
         Timestamps = timestampsEnabled,
       };
 
