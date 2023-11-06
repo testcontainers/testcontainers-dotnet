@@ -42,8 +42,7 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
             {"score", BigQueryDbType.Int64}
         }.Build());
 
-        // Insert a single row. There are many other ways of inserting
-        // data into a table.
+        // Insert a single row. There are many other ways of inserting data into a table.
         await table.InsertRowAsync(new BigQueryInsertRow
         {
             {"player", "Bob"},
