@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 
@@ -26,10 +27,16 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         
         //When
         client.Send("test@test.com","recipient@test.com","Test","A test message");
-        await Task.Delay(25);
-
+        
         //Then
         var result = await _papercutContainer.GetMessages();
+
+        var startTimeout = Stopwatch.StartNew();
+        while (result.TotalMessageCount < 1 && startTimeout.Elapsed.TotalSeconds < 5)
+        {
+            result = await _papercutContainer.GetMessages();
+        }
+        
         Assert.Equal(1, result.TotalMessageCount);
         var message = await _papercutContainer.GetMessage(result.Messages.Single().Id);
         Assert.Equal("Test",message.Subject);
