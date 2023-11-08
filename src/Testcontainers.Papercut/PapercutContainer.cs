@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -34,6 +35,43 @@ public sealed class PapercutContainer : DockerContainer
         client.BaseAddress = new Uri(WebUrl);
         var messageText = await client.GetStringAsync($"/api/messages/{id}");
         return JsonConvert.DeserializeObject<PapercutMessage>(messageText);
+    }
+
+    public async Task<bool> DeleteMessages()
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(WebUrl);
+        var response = await client.DeleteAsync("/api/messages");
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> DeleteMessages(string id)
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(WebUrl);
+        var response = await client.DeleteAsync($"/api/messages/{id}");
+        return response.IsSuccessStatusCode;
+    }
+
+    public Task<HttpResponseMessage> DownloadRaw(string id)
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(WebUrl);
+        return client.GetAsync($"/api/messages/{id}/raw");
+    }
+
+    public Task<HttpResponseMessage> DownloadSection(string id, int index)
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(WebUrl);
+        return client.GetAsync($"/api/messages/{id}/sections/{index}");
+    }
+
+    public Task<HttpResponseMessage> DownloadSectionContent(string id, string contentId)
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(WebUrl);
+        return client.GetAsync($"/api/messages/{id}/contents/{contentId}");
     }
 
 }
