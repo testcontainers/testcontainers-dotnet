@@ -30,8 +30,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(4, baseImages.Length);
       Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/sdk:6.0".Equals(item.FullName));
       Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/runtime:6.0".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.21-jammy-amd64".Equals(item.FullName));
       Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.22-jammy-amd64".Equals(item.FullName));
+      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.23-jammy-amd64".Equals(item.FullName));
     }
 
     [Fact]

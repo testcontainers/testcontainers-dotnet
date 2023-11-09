@@ -8,9 +8,17 @@ namespace DotNet.Testcontainers.Images
   [PublicAPI]
   public sealed class DockerImage : IImage
   {
+    private const string LatestTag = "latest";
+
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
+    private static readonly char[] TrimChars = { ' ', ':', '/' };
+
     private readonly string _hubImageNamePrefix;
+
+    private readonly Lazy<string> _lazyFullName;
+
+    private readonly Lazy<string> _lazyHostname;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -44,7 +52,7 @@ namespace DotNet.Testcontainers.Images
     public DockerImage(
       string repository,
       string name,
-      string tag,
+      string tag = null,
       string hubImageNamePrefix = null)
     {
       _ = Guard.Argument(repository, nameof(repository))
@@ -56,11 +64,38 @@ namespace DotNet.Testcontainers.Images
         .NotEmpty()
         .NotUppercase();
 
-      _hubImageNamePrefix = hubImageNamePrefix;
+      _hubImageNamePrefix = TrimOrDefault(hubImageNamePrefix);
 
-      Repository = repository;
-      Name = name;
-      Tag = string.IsNullOrEmpty(tag) ? "latest" : tag;
+      Repository = TrimOrDefault(repository, repository);
+      Name = TrimOrDefault(name, name);
+      Tag = TrimOrDefault(tag, LatestTag);
+
+      _lazyFullName = new Lazy<string>(() =>
+      {
+        var imageComponents = new[] { _hubImageNamePrefix, Repository, Name }
+          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
+
+        return string.Join("/", imageComponents) + ":" + Tag;
+      });
+
+      _lazyHostname = new Lazy<string>(() =>
+      {
+        var firstSegmentOfRepository = new[] { _hubImageNamePrefix, Repository }
+          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
+          .DefaultIfEmpty(string.Empty)
+          .First()
+          .Split('/')
+          .First();
+
+        if (firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0)
+        {
+          return firstSegmentOfRepository;
+        }
+        else
+        {
+          return null;
+        }
+      });
     }
 
     /// <inheritdoc />
@@ -73,23 +108,14 @@ namespace DotNet.Testcontainers.Images
     public string Tag { get; }
 
     /// <inheritdoc />
-    public string FullName
-    {
-      get
-      {
-        var imageComponents = new[] { _hubImageNamePrefix, Repository, Name }
-          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
-          .Select(imageComponent => imageComponent.Trim('/', ':'))
-          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
-        return string.Join("/", imageComponents) + ":" + Tag;
-      }
-    }
+    public string FullName => _lazyFullName.Value;
 
     /// <inheritdoc />
-    public string GetHostname()
+    public string GetHostname() => _lazyHostname.Value;
+
+    private static string TrimOrDefault(string value, string defaultValue = default)
     {
-      var firstSegmentOfRepository = (string.IsNullOrEmpty(_hubImageNamePrefix) ? Repository : _hubImageNamePrefix).Split('/')[0];
-      return firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0 ? firstSegmentOfRepository : null;
+      return string.IsNullOrEmpty(value) ? defaultValue : value.Trim(TrimChars);
     }
   }
 }
