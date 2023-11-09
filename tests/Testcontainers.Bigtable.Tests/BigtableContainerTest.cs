@@ -2,16 +2,16 @@ namespace Testcontainers.Bigtable.Tests;
 
 public class BigtableContainerTest : IAsyncLifetime
 {
-  private readonly BigtableEmulatorContainer _bigtableEmulatorContainer = new BigtableEmulatorBuilder().Build();
+  private readonly BigtableContainer _bigtableContainer = new BigtableBuilder().Build();
 
   public Task InitializeAsync()
   {
-    return _bigtableEmulatorContainer.StartAsync();
+    return _bigtableContainer.StartAsync();
   }
 
   public Task DisposeAsync()
   {
-    return _bigtableEmulatorContainer.StopAsync();
+    return _bigtableContainer.StopAsync();
   }
 
   [Fact]
@@ -19,14 +19,14 @@ public class BigtableContainerTest : IAsyncLifetime
   public void AdminClientCanConnectAndCreateTable()
   {
     // Given
-    var adminClient = new BigtableTableAdminClientBuilder { ChannelCredentials = ChannelCredentials.Insecure, Endpoint = _bigtableEmulatorContainer.GetEndpoint() }.Build();
-    var instanceName = new InstanceName(_bigtableEmulatorContainer.ProjectId, _bigtableEmulatorContainer.InstanceId);
+    var adminClient = new BigtableTableAdminClientBuilder { ChannelCredentials = ChannelCredentials.Insecure, Endpoint = _bigtableContainer.GetEndpoint() }.Build();
+    var instanceName = new InstanceName(_bigtableContainer.ProjectId, _bigtableContainer.InstanceId);
     var createTable = new Table
     {
       Granularity = Table.Types.TimestampGranularity.Unspecified,
       ColumnFamilies = { { "test", new ColumnFamily { GcRule = new GcRule { MaxNumVersions = 1 } } } }
     };
-    var tableName = new TableName(_bigtableEmulatorContainer.ProjectId, _bigtableEmulatorContainer.InstanceId, "test-table");
+    var tableName = new TableName(_bigtableContainer.ProjectId, _bigtableContainer.InstanceId, "test-table");
     // When
     adminClient.CreateTable(instanceName, "test-table", createTable, CallSettings.FromCancellationToken(CancellationToken.None));
     var tableCreated = adminClient.GetTable(tableName);

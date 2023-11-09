@@ -2,12 +2,12 @@ namespace Testcontainers.Bigtable;
 
 /// <inheritdoc cref="DockerContainer"/>
 [PublicAPI]
-public class BigtableEmulatorContainer: DockerContainer
+public class BigtableContainer: DockerContainer
 {
   public readonly string ProjectId = "project-id";
 
   public readonly string InstanceId = "instance-id";
-  public BigtableEmulatorContainer(IContainerConfiguration configuration, ILogger logger) : base(configuration, logger)
+  public BigtableContainer(IContainerConfiguration configuration, ILogger logger) : base(configuration, logger)
   {
   }
 

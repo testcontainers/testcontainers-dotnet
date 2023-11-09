@@ -2,12 +2,12 @@ namespace Testcontainers.Bigtable;
 
 /// <inheritdoc cref="ContainerConfiguration"/>
 [PublicAPI]
-public class BigtableEmulatorConfiguration: ContainerConfiguration
+public class BigtableConfiguration: ContainerConfiguration
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
   /// </summary>
-  public BigtableEmulatorConfiguration()
+  public BigtableConfiguration()
   {
   }
 
@@ -15,7 +15,7 @@ public class BigtableEmulatorConfiguration: ContainerConfiguration
   /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
   /// </summary>
   /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-  public BigtableEmulatorConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+  public BigtableConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     : base(resourceConfiguration)
   {
     // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -25,7 +25,7 @@ public class BigtableEmulatorConfiguration: ContainerConfiguration
   /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
   /// </summary>
   /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-  public BigtableEmulatorConfiguration(IContainerConfiguration resourceConfiguration)
+  public BigtableConfiguration(IContainerConfiguration resourceConfiguration)
     : base(resourceConfiguration)
   {
     // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -35,8 +35,8 @@ public class BigtableEmulatorConfiguration: ContainerConfiguration
   /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
   /// </summary>
   /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-  public BigtableEmulatorConfiguration(BigtableEmulatorConfiguration resourceConfiguration)
-    : this(new BigtableEmulatorConfiguration(), resourceConfiguration)
+  public BigtableConfiguration(BigtableConfiguration resourceConfiguration)
+    : this(new BigtableConfiguration(), resourceConfiguration)
   {
     // Passes the configuration upwards to the base implementations to create an updated immutable copy.
   }
@@ -46,7 +46,7 @@ public class BigtableEmulatorConfiguration: ContainerConfiguration
   /// </summary>
   /// <param name="oldValue">The old Docker resource configuration.</param>
   /// <param name="newValue">The new Docker resource configuration.</param>
-  public BigtableEmulatorConfiguration(BigtableEmulatorConfiguration oldValue, BigtableEmulatorConfiguration newValue)
+  public BigtableConfiguration(BigtableConfiguration oldValue, BigtableConfiguration newValue)
     : base(oldValue, newValue)
   {
   }
