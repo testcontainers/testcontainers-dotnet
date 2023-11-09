@@ -27,6 +27,7 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         var bigQueryBuilder = new BigQueryClientBuilder();
         bigQueryBuilder.ProjectId = ProjectId;
         bigQueryBuilder.BaseUri = _bigQueryContainer.GetEmulatorEndpoint();
+        bigQueryBuilder.Credential = new EmptyCredentials();
 
         var client = await bigQueryBuilder.BuildAsync()
             .ConfigureAwait(false);
