@@ -15,5 +15,4 @@
       <ProjectReference Include="$(SolutionDir)src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj" />
       <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
     </ItemGroup>
-
 </Project>
