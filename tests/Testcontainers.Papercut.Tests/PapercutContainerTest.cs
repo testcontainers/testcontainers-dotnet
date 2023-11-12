@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Mail;
-
 namespace Testcontainers.Papercut;
 
 public sealed class PapercutContainerTest : IAsyncLifetime
@@ -23,22 +19,27 @@ public sealed class PapercutContainerTest : IAsyncLifetime
     public async Task SendingAnEmail()
     {
         //Given
-        var client = new SmtpClient(_papercutContainer.Hostname,_papercutContainer.GetMappedPublicPort(25));
+        var client = new SmtpClient(_papercutContainer.Hostname,_papercutContainer.PublicSmtpPort);
         
         //When
         client.Send("test@test.com","recipient@test.com","Test","A test message");
         
         //Then
-        var result = await _papercutContainer.GetMessages();
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_papercutContainer.WebUrl);
+        var messageText = await httpClient.GetStringAsync("/api/messages");
+        var result = JsonConvert.DeserializeObject<PapercutMessageCollection>(messageText);
 
         var startTimeout = Stopwatch.StartNew();
         while (result.TotalMessageCount < 1 && startTimeout.Elapsed.TotalSeconds < 5)
         {
-            result = await _papercutContainer.GetMessages();
+            messageText = await httpClient.GetStringAsync("/api/messages");
+            result = JsonConvert.DeserializeObject<PapercutMessageCollection>(messageText);
         }
         
         Assert.Equal(1, result.TotalMessageCount);
-        var message = await _papercutContainer.GetMessage(result.Messages.Single().Id);
+        messageText = await httpClient.GetStringAsync($"/api/messages/{result.Messages.Single().Id}");
+        var message = JsonConvert.DeserializeObject<PapercutMessage>(messageText);
         Assert.Equal("Test",message.Subject);
         Assert.Equal("A test message\n",message.TextBody);
         Assert.Equal("test@test.com",message.From.Single().Address);

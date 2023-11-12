@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
+
 namespace Testcontainers.Papercut
 {
     public class PapercutMessage

@@ -5,7 +5,8 @@
         <Authors>Liam Wilson, Andre Hofmeister and contributors</Authors>
         <Description>A testcontainer that setups Papercut SMTP
 
-Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions.</Description>
+            Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions.
+        </Description>
         <Copyright>Copyright (c) 2019 - 2023 Liam Wilson, Andre Hofmeister and other authors</Copyright>
     </PropertyGroup>
     <ItemGroup>

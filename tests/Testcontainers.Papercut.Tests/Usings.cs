@@ -1,3 +1,10 @@
-global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Commons;
+global using Newtonsoft.Json;
+global using System;
+global using System.Collections.Generic;
+global using System.Diagnostics;
+global using System.Linq;
+global using System.Net.Http;
+global using System.Net.Mail;
+global using System.Threading.Tasks;
 global using Xunit;
