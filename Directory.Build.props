@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>3.6.0</Version>
+    <Version>3.7.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
