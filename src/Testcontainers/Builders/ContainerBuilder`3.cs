@@ -184,7 +184,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(IResourceMapping resourceMapping)
     {
-      var resourceMappings = new Dictionary<string, IResourceMapping> { { resourceMapping.Target, resourceMapping } };
+      var resourceMappings = new[] { resourceMapping };
       return Clone(new ContainerConfiguration(resourceMappings: resourceMappings));
     }
 

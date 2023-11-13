@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// Represent a tar archive file.
@@ -15,12 +16,17 @@ namespace DotNet.Testcontainers.Containers
   {
     private readonly string _targetDirectoryPath;
 
+    private readonly ILogger _logger;
+
+    private long _contentLength;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TarOutputMemoryStream" /> class.
     /// </summary>
     /// <param name="targetDirectoryPath">The target directory path to extract the files to.</param>
-    public TarOutputMemoryStream(string targetDirectoryPath)
-      : this()
+    /// <param name="logger">The logger.</param>
+    public TarOutputMemoryStream(string targetDirectoryPath, ILogger logger)
+      : this(logger)
     {
       _targetDirectoryPath = targetDirectoryPath;
     }
@@ -28,11 +34,22 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Initializes a new instance of the <see cref="TarOutputMemoryStream" /> class.
     /// </summary>
-    public TarOutputMemoryStream()
+    /// <param name="logger">The logger.</param>
+    public TarOutputMemoryStream(ILogger logger)
       : base(new MemoryStream(), Encoding.Default)
     {
+      _logger = logger;
       IsStreamOwner = false;
     }
+
+    /// <summary>
+    /// Gets the content length.
+    /// </summary>
+    /// <remarks>
+    /// The initial tar output stream length is 10240 bytes (SharpZipLib). The stream
+    /// length does not correspond to the actual content's length.
+    /// </remarks>
+    public long ContentLength => _contentLength;
 
     /// <summary>
     /// Adds the content of an implementation of <see cref="IResourceMapping" /> to the archive.
@@ -52,6 +69,8 @@ namespace DotNet.Testcontainers.Containers
       tarEntry.TarHeader.ModTime = DateTime.UtcNow;
       tarEntry.Size = fileContent.Length;
 
+      _logger.LogInformation("Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\"", tarEntry.Size, targetFilePath);
+
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
 
@@ -65,6 +84,8 @@ namespace DotNet.Testcontainers.Containers
 
       await CloseEntryAsync(ct)
         .ConfigureAwait(false);
+
+      _ = Interlocked.Add(ref _contentLength, tarEntry.Size);
     }
 
     /// <summary>
@@ -116,6 +137,8 @@ namespace DotNet.Testcontainers.Containers
         tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
         tarEntry.Size = stream.Length;
 
+        _logger.LogInformation("Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\"", tarEntry.TarHeader.Name, targetFilePath);
+
         await PutNextEntryAsync(tarEntry, ct)
           .ConfigureAwait(false);
 
@@ -124,6 +147,8 @@ namespace DotNet.Testcontainers.Containers
 
         await CloseEntryAsync(ct)
           .ConfigureAwait(false);
+
+        _ = Interlocked.Add(ref _contentLength, tarEntry.Size);
       }
     }
   }
