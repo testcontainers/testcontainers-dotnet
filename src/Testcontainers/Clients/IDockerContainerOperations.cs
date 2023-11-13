@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Clients
 
     Task RemoveAsync(string id, CancellationToken ct = default);
 
-    Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default);
+    Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default);
 
     Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default);
 
