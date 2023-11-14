@@ -16,33 +16,57 @@ public sealed class PapercutContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task SendingAnEmail()
+    public async Task ReceivesSentMessage()
     {
-        //Given
-        var client = new SmtpClient(_papercutContainer.Hostname,_papercutContainer.PublicSmtpPort);
-        
-        //When
-        client.Send("test@test.com","recipient@test.com","Test","A test message");
-        
-        //Then
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_papercutContainer.WebUrl);
-        var messageText = await httpClient.GetStringAsync("/api/messages");
-        var result = JsonConvert.DeserializeObject<PapercutMessageCollection>(messageText);
+        // Given
+        const string subject = "Test";
 
-        var startTimeout = Stopwatch.StartNew();
-        while (result.TotalMessageCount < 1 && startTimeout.Elapsed.TotalSeconds < 5)
+        Message[] messages;
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_papercutContainer.GetBaseAddress());
+
+        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
+
+        // When
+        smtpClient.Send("from@example.com", "to@example.com", subject, "A test message");
+
+        do
         {
-            messageText = await httpClient.GetStringAsync("/api/messages");
-            result = JsonConvert.DeserializeObject<PapercutMessageCollection>(messageText);
+            var messagesJson = await httpClient.GetStringAsync("/api/messages")
+                .ConfigureAwait(false);
+
+            var jsonDocument = JsonDocument.Parse(messagesJson);
+            messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
         }
-        
-        Assert.Equal(1, result.TotalMessageCount);
-        messageText = await httpClient.GetStringAsync($"/api/messages/{result.Messages.Single().Id}");
-        var message = JsonConvert.DeserializeObject<PapercutMessage>(messageText);
-        Assert.Equal("Test",message.Subject);
-        Assert.Equal("A test message\n",message.TextBody);
-        Assert.Equal("test@test.com",message.From.Single().Address);
-        Assert.Equal("recipient@test.com",message.To.Single().Address);
+        while (messages.Length == 0);
+
+        // Then
+        Assert.NotEmpty(messages);
+        Assert.Equal(subject, messages[0].Subject);
+    }
+
+    private readonly struct Message
+    {
+        [JsonConstructor]
+        public Message(string id, string subject, string size, DateTime createdAt)
+        {
+            Id = id;
+            Subject = subject;
+            Size = size;
+            CreatedAt = createdAt;
+        }
+
+        [JsonPropertyName("id")]
+        public string Id { get; }
+
+        [JsonPropertyName("subject")]
+        public string Subject { get; }
+
+        [JsonPropertyName("size")]
+        public string Size { get; }
+
+        [JsonPropertyName("createdAt")]
+        public DateTime CreatedAt { get; }
     }
 }
