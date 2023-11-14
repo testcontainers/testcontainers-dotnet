@@ -62,7 +62,8 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
-      bool? privileged = null)
+      bool? privileged = null,
+      bool? reuse = null)
     {
       AutoRemove = autoRemove;
       Privileged = privileged;
@@ -86,6 +87,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
+      Reuse = reuse;
     }
 
     /// <summary>
@@ -136,10 +138,14 @@ namespace DotNet.Testcontainers.Configurations
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
+      Reuse = (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value);
     }
 
     /// <inheritdoc />
     public bool? AutoRemove { get; }
+
+    /// <inheritdoc />
+    public bool? Reuse { get; }
 
     /// <inheritdoc />
     public bool? Privileged { get; }

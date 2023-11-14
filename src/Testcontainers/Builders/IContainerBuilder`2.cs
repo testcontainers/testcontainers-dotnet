@@ -393,6 +393,14 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithAutoRemove(bool autoRemove);
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="reuse">TODO</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithReuse(bool reuse);
+
+    /// <summary>
     /// Sets the privileged flag.
     /// </summary>
     /// <param name="privileged">Determines whether the privileged flag is set or not.</param>

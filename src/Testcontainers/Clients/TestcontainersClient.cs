@@ -26,6 +26,7 @@ namespace DotNet.Testcontainers.Clients
     public const string TestcontainersVersionLabel = TestcontainersLabel + ".version";
 
     public const string TestcontainersSessionIdLabel = TestcontainersLabel + ".session-id";
+    public const string TestcontainersReuseHashLabel = TestcontainersLabel + ".reuse-hash";
 
     public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
