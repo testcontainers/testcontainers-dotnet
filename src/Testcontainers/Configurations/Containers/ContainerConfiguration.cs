@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="environments">A dictionary of environment variables.</param>
     /// <param name="exposedPorts">A dictionary of exposed ports.</param>
     /// <param name="portBindings">A dictionary of port bindings.</param>
-    /// <param name="resourceMappings">A dictionary of resource mappings.</param>
+    /// <param name="resourceMappings">A list of resource mappings.</param>
     /// <param name="containers">A list of containers.</param>
     /// <param name="mounts">A list of mounts.</param>
     /// <param name="networks">A list of networks.</param>
@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
-      IReadOnlyDictionary<string, IResourceMapping> resourceMappings = null,
+      IEnumerable<IResourceMapping> resourceMappings = null,
       IEnumerable<IContainer> containers = null,
       IEnumerable<IMount> mounts = null,
       IEnumerable<INetwork> networks = null,
@@ -178,7 +178,7 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
-    public IReadOnlyDictionary<string, IResourceMapping> ResourceMappings { get; }
+    public IEnumerable<IResourceMapping> ResourceMappings { get; }
 
     /// <inheritdoc />
     public IEnumerable<IContainer> Containers { get; }

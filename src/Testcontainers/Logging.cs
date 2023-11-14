@@ -31,8 +31,8 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _CompleteReadinessCheck
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} ready");
 
-    private static readonly Action<ILogger, string, string, Exception> _CopyArchiveToDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Copy tar archive to \"{Path}\" to Docker container {Id}");
+    private static readonly Action<ILogger, long, string, Exception> _CopyArchiveToDockerContainer
+      = LoggerMessage.Define<long, string>(LogLevel.Information, default, "Copy tar archive to container: Content length: {Length} byte(s), Docker container: {Id}");
 
     private static readonly Action<ILogger, string, string, Exception> _ReadArchiveFromDockerContainer
       = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read \"{Path}\" from Docker container {Id}");
@@ -125,9 +125,9 @@ namespace DotNet.Testcontainers
       _CompleteReadinessCheck(logger, TruncId(id), null);
     }
 
-    public static void CopyArchiveToDockerContainer(this ILogger logger, string id, string path)
+    public static void CopyArchiveToDockerContainer(this ILogger logger, string id, long length)
     {
-      _CopyArchiveToDockerContainer(logger, path, TruncId(id), null);
+      _CopyArchiveToDockerContainer(logger, length, TruncId(id), null);
     }
 
     public static void ReadArchiveFromDockerContainer(this ILogger logger, string id, string path)

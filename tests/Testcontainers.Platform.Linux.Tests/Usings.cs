@@ -16,4 +16,5 @@ global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
 global using ICSharpCode.SharpZipLib.Tar;
 global using JetBrains.Annotations;
+global using Microsoft.Extensions.Logging.Abstractions;
 global using Xunit;

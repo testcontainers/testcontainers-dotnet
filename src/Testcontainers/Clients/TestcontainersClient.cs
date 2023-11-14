@@ -193,7 +193,7 @@ namespace DotNet.Testcontainers.Clients
         return;
       }
 
-      using (var tarOutputMemStream = new TarOutputMemoryStream())
+      using (var tarOutputMemStream = new TarOutputMemoryStream(_logger))
       {
         await tarOutputMemStream.AddAsync(resourceMapping, ct)
           .ConfigureAwait(false);
@@ -209,7 +209,7 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
     {
-      using (var tarOutputMemStream = new TarOutputMemoryStream(target))
+      using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
         await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
           .ConfigureAwait(false);
@@ -225,7 +225,7 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
     {
-      using (var tarOutputMemStream = new TarOutputMemoryStream(target))
+      using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
         await tarOutputMemStream.AddAsync(source, fileMode, ct)
           .ConfigureAwait(false);
@@ -313,7 +313,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ResourceMappings.Any())
       {
-        await Task.WhenAll(configuration.ResourceMappings.Values.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
+        await Task.WhenAll(configuration.ResourceMappings.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
           .ConfigureAwait(false);
       }
 

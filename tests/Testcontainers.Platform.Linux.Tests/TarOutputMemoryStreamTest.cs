@@ -4,7 +4,7 @@ public abstract class TarOutputMemoryStreamTest
 {
     private const string TargetDirectoryPath = "/tmp";
 
-    private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath);
+    private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath, NullLogger.Instance);
 
     private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
 
