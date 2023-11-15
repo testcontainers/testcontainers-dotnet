@@ -30,5 +30,15 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets a list of low level modifications of the Docker.DotNet entity.
     /// </summary>
     IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool? Reuse { get; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string GetHash();
   }
 }

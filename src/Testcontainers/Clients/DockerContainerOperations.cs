@@ -4,9 +4,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
-  using System.Linq;
-  using System.Security.Cryptography;
-  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
@@ -211,41 +208,11 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      if (configuration.Reuse.HasValue && configuration.Reuse.Value)
-      {
-        var hash = CreateReuseHash(createParameters);
-        createParameters.Labels.Add(TestcontainersClient.TestcontainersReuseHashLabel, hash);
-
-        var containers = await Docker.Containers.ListContainersAsync(new ContainersListParameters()
-        {
-          Filters = new FilterByProperty {
-              { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={hash}" }
-            },
-          Limit = 1,
-        }, ct)
-          .ConfigureAwait(false);
-
-        var container = containers.FirstOrDefault();
-        if (container != default) {
-          return container.ID;
-        }
-      }
-
       var createContainerResponse = await Docker.Containers.CreateContainerAsync(createParameters, ct)
         .ConfigureAwait(false);
 
       _logger.DockerContainerCreated(createContainerResponse.ID);
       return createContainerResponse.ID;
-    }
-
-    static string CreateReuseHash(CreateContainerParameters createContainerParameters)
-    {
-      var createContainerParametersJson = System.Text.Json.JsonSerializer.Serialize(createContainerParameters);
-
-      using (var sha1 = SHA1.Create())
-      {
-        return Convert.ToBase64String(sha1.ComputeHash(Encoding.Default.GetBytes(createContainerParametersJson)));
-      }
     }
   }
 }

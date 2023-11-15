@@ -364,8 +364,22 @@ namespace DotNet.Testcontainers.Containers
 
       Creating?.Invoke(this, EventArgs.Empty);
 
-      var id = await _client.RunAsync(_configuration, ct)
+      string id = string.Empty;
+      if (_configuration.Reuse == true)
+      {
+        var reusableContainer = (await _client.Container.GetAllAsync(new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={_configuration.GetHash()}" } }, ct).ConfigureAwait(false)).FirstOrDefault();
+
+        if (reusableContainer != null)
+        {
+          id = reusableContainer.ID;
+        }
+      }
+
+      if (id == string.Empty)
+      {
+        id = await _client.RunAsync(_configuration, ct)
         .ConfigureAwait(false);
+      }
 
       _container = await _client.Container.ByIdAsync(id, ct)
         .ConfigureAwait(false);

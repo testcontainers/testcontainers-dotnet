@@ -2,14 +2,19 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
+  using System.Security.Cryptography;
+  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
+  using Newtonsoft.Json.Linq;
 
   /// <inheritdoc cref="IContainerConfiguration" />
   [PublicAPI]
@@ -62,8 +67,7 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
-      bool? privileged = null,
-      bool? reuse = null)
+      bool? privileged = null)
     {
       AutoRemove = autoRemove;
       Privileged = privileged;
@@ -87,7 +91,6 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
-      Reuse = reuse;
     }
 
     /// <summary>
@@ -138,14 +141,10 @@ namespace DotNet.Testcontainers.Configurations
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
-      Reuse = (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value);
     }
 
     /// <inheritdoc />
     public bool? AutoRemove { get; }
-
-    /// <inheritdoc />
-    public bool? Reuse { get; }
 
     /// <inheritdoc />
     public bool? Privileged { get; }
@@ -209,5 +208,43 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+
+    public override string GetHash()
+    {
+      var fingerprint = new
+      {
+        AutoRemove = AutoRemove,
+        Privileged = Privileged,
+        ExtraHosts = ExtraHosts,
+        PortBindings = PortBindings,
+        Mounts = Mounts,
+
+        Networks = Networks,
+
+        Image = Image,
+        Name = Name,
+        Hostname = Hostname,
+        MacAddress = MacAddress,
+        WorkingDir = WorkingDirectory,
+        Entrypoint = Entrypoint,
+        Cmd = Command,
+        Env = Environments,
+        Labels = Labels,
+        ExposedPorts = ExposedPorts,
+
+        ParameterModifiers = ParameterModifiers.Select(parameterModifier => parameterModifier.GetHashCode()),
+      };
+
+      var fingerprintJObject = JObject.FromObject(fingerprint);
+      fingerprintJObject.SelectToken($"$.Labels.['{TestcontainersClient.TestcontainersSessionIdLabel}']")?.Parent.Remove();
+      fingerprintJObject.SelectToken($"$.Labels.['{ResourceReaper.ResourceReaperSessionLabel}']")?.Parent.Remove();
+      fingerprintJObject.SelectToken($"$.Labels.['{TestcontainersClient.TestcontainersReuseHashLabel}']")?.Parent.Remove();
+
+      var fingerprintJson = fingerprintJObject.ToString();
+      using (var sha1 = SHA1.Create())
+      {
+        return Convert.ToBase64String(sha1.ComputeHash(Encoding.Default.GetBytes(fingerprintJson)));
+      }
+    }
   }
 }

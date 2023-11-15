@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Volumes
 {
   using System;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -94,8 +95,22 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      var id = await _client.Volume.CreateAsync(_configuration, ct)
-        .ConfigureAwait(false);
+      string id = string.Empty;
+      if (_configuration.Reuse == true)
+      {
+        var reusableVolume = (await _client.Volume.GetAllAsync(new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={_configuration.GetHash()}" } }, ct).ConfigureAwait(false)).FirstOrDefault();
+
+        if (reusableVolume != null)
+        {
+          id = reusableVolume.Name;
+        }
+      }
+
+      if (id == string.Empty)
+      {
+        id = await _client.Volume.CreateAsync(_configuration, ct)
+          .ConfigureAwait(false);
+      }
 
       _volume = await _client.Volume.ByIdAsync(id, ct)
         .ConfigureAwait(false);

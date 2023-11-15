@@ -60,6 +60,14 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithCleanUp(bool cleanUp);
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="reuse">TODO</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithReuse(bool reuse);
+
+    /// <summary>
     /// Adds user-defined metadata to the Docker resource.
     /// </summary>
     /// <param name="name">The label name.</param>

@@ -58,6 +58,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithReuse(bool reuse)
+    {
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, labels: new Dictionary<string, string> { { TestcontainersClient.TestcontainersReuseHashLabel, DockerResourceConfiguration.GetHash() } }));
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithLabel(string name, string value)
     {
       return WithLabel(new Dictionary<string, string> { { name, value } });
@@ -129,6 +135,10 @@ namespace DotNet.Testcontainers.Builders
       const string message = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
         .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
+
+      // TODO: Validate WithReuse(), WithAutoRemove() and WithCleanUp() combinations.
+      Guard.Argument(DockerResourceConfiguration.Reuse, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
+        .ThrowIf(argument => DockerResourceConfiguration.Labels.ContainsKey(TestcontainersClient.TestcontainersReuseHashLabel) && DockerResourceConfiguration.Labels[TestcontainersClient.TestcontainersReuseHashLabel] != DockerResourceConfiguration.GetHash(), argument => new ArgumentException("ResoureConfiguration hash mismatch, WithReuse(true) must be the last called builder method", argument.Name));
     }
 
     /// <summary>

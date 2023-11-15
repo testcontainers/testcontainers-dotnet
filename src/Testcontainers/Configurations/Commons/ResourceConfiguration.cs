@@ -19,12 +19,14 @@ namespace DotNet.Testcontainers.Configurations
     public ResourceConfiguration(
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IReadOnlyDictionary<string, string> labels = null,
-      IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null)
+      IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null,
+      bool? reuse = null)
     {
       SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
       DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
       Labels = labels;
       ParameterModifiers = parameterModifiers;
+      Reuse = reuse;
     }
 
     /// <summary>
@@ -45,7 +47,8 @@ namespace DotNet.Testcontainers.Configurations
       : this(
         dockerEndpointAuthenticationConfiguration: BuildConfiguration.Combine(oldValue.DockerEndpointAuthConfig, newValue.DockerEndpointAuthConfig),
         parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
-        labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels))
+        labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels),
+        reuse: BuildConfiguration.Combine(oldValue.Reuse, newValue.Reuse))
     {
     }
 
@@ -60,5 +63,11 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
+
+    public bool? Reuse { get; }
+
+    public virtual string GetHash() {
+      throw new NotImplementedException();
+    }
   }
 }

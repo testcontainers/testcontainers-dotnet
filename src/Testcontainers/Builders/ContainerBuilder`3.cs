@@ -8,7 +8,6 @@ namespace DotNet.Testcontainers.Builders
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
@@ -328,16 +327,6 @@ namespace DotNet.Testcontainers.Builders
     public TBuilderEntity WithAutoRemove(bool autoRemove)
     {
       return Clone(new ContainerConfiguration(autoRemove: autoRemove));
-    }
-
-    /// <inheritdoc />
-    public TBuilderEntity WithReuse(bool reuse)
-    {
-      return Clone(new ContainerConfiguration(reuse: reuse)).WithCreateParameterModifier(createContainerParameters =>
-      {
-        createContainerParameters.Labels.Remove(TestcontainersClient.TestcontainersSessionIdLabel);
-        createContainerParameters.Labels.Remove(ResourceReaper.ResourceReaperSessionLabel);
-      });
     }
 
     /// <inheritdoc />

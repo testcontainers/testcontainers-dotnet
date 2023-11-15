@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="BouncyCastle.Cryptography" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="SharpZipLib" />
     <PackageReference Include="SSH.NET" />
     <PackageReference Include="System.Text.Json" />

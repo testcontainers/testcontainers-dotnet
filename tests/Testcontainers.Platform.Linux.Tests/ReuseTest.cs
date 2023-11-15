@@ -15,9 +15,9 @@ public sealed class ReuseTest : IAsyncLifetime
             .WithLabel(LabelKey, LabelValue)
             .WithAutoRemove(false)
             .WithCleanUp(false)
-            .WithReuse(true)
             .WithEntrypoint("sleep")
             .WithCommand("infinity")
+            .WithReuse(true)
             .Build();
     }
 
@@ -59,5 +59,15 @@ public sealed class ReuseTest : IAsyncLifetime
 
         // Then
         Assert.Single(containers);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public void ThrowsIfWithReuseIsNotLastCalledMethod()
+    {
+        Assert.Throws<ArgumentException>(() => new ContainerBuilder()
+            .WithReuse(true)
+            .WithImage(CommonImages.Alpine)
+            .Build());
     }
 }

@@ -22,11 +22,6 @@ namespace DotNet.Testcontainers.Configurations
     bool? AutoRemove { get; }
 
     /// <summary>
-    /// TODO
-    /// </summary>
-    bool? Reuse { get; }
-
-    /// <summary>
     /// Gets a value indicating whether the privileged flag is set or not.
     /// </summary>
     bool? Privileged { get; }

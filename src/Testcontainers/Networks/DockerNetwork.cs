@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Networks
 {
   using System;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -94,8 +95,22 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      var id = await _client.Network.CreateAsync(_configuration, ct)
+      string id = string.Empty;
+      if (_configuration.Reuse == true)
+      {
+        var reusableNetwork = (await _client.Network.GetAllAsync(new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={_configuration.GetHash()}" } }, ct).ConfigureAwait(false)).FirstOrDefault();
+
+        if (reusableNetwork != null)
+        {
+          id = reusableNetwork.Name;
+        }
+      }
+
+      if (id == string.Empty)
+      {
+        id = await _client.Network.CreateAsync(_configuration, ct)
         .ConfigureAwait(false);
+      }
 
       _network = await _client.Network.ByIdAsync(id, ct)
         .ConfigureAwait(false);
