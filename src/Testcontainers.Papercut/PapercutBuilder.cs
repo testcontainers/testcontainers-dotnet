@@ -46,7 +46,7 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
             .WithImage(PapercutImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(SmtpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(HttpPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Now listening on"));
     }
 
     /// <inheritdoc />
