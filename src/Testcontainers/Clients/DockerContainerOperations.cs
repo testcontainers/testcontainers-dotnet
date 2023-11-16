@@ -100,9 +100,9 @@ namespace DotNet.Testcontainers.Clients
       return Docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
     }
 
-    public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
+    public Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default)
     {
-      _logger.CopyArchiveToDockerContainer(id, path);
+      _logger.CopyArchiveToDockerContainer(id, tarStream.ContentLength);
       return Docker.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
     }
 
