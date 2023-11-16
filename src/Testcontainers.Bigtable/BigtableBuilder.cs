@@ -4,11 +4,9 @@ namespace Testcontainers.Bigtable;
 [PublicAPI]
 public class BigtableBuilder: ContainerBuilder<BigtableBuilder, BigtableContainer, BigtableConfiguration>
 {
-  public const string GCloudCliDockerImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli";
+  public const string GCloudCliDockerImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
   public const ushort BigtablePort = 9000;
-
-  public const string CMD = "gcloud beta emulators bigtable start --host-port 0.0.0.0:9000";
 
   /// <summary>
   /// Initializes a new instance of the <see cref="BigtableBuilder" /> class.
@@ -41,7 +39,8 @@ public class BigtableBuilder: ContainerBuilder<BigtableBuilder, BigtableContaine
       .WithImage(GCloudCliDockerImage)
       .WithPortBinding(BigtablePort, true)
       .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*running.*$").UntilPortIsAvailable(BigtablePort))
-      .WithCommand("/bin/sh", "-c", CMD);
+      .WithEntrypoint("gcloud")
+      .WithCommand("beta", "emulators", "bigtable", "start", "--host-port", "0.0.0.0:" + BigtablePort);
   }
 
   protected override BigtableBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)

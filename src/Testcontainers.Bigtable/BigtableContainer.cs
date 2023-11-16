@@ -4,9 +4,6 @@ namespace Testcontainers.Bigtable;
 [PublicAPI]
 public class BigtableContainer: DockerContainer
 {
-  public readonly string ProjectId = "project-id";
-
-  public readonly string InstanceId = "instance-id";
   public BigtableContainer(IContainerConfiguration configuration, ILogger logger) : base(configuration, logger)
   {
   }

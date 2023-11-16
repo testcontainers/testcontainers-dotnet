@@ -2,6 +2,9 @@ namespace Testcontainers.Bigtable.Tests;
 
 public class BigtableContainerTest : IAsyncLifetime
 {
+  private const string InstanceId = "instance-id";
+  private const string ProjectId = "project-id";
+  private const string TestTable = "test-table";
   private readonly BigtableContainer _bigtableContainer = new BigtableBuilder().Build();
 
   public Task InitializeAsync()
@@ -20,15 +23,15 @@ public class BigtableContainerTest : IAsyncLifetime
   {
     // Given
     var adminClient = new BigtableTableAdminClientBuilder { ChannelCredentials = ChannelCredentials.Insecure, Endpoint = _bigtableContainer.GetEndpoint() }.Build();
-    var instanceName = new InstanceName(_bigtableContainer.ProjectId, _bigtableContainer.InstanceId);
+    var instanceName = new InstanceName(ProjectId, InstanceId);
     var createTable = new Table
     {
       Granularity = Table.Types.TimestampGranularity.Unspecified,
       ColumnFamilies = { { "test", new ColumnFamily { GcRule = new GcRule { MaxNumVersions = 1 } } } }
     };
-    var tableName = new TableName(_bigtableContainer.ProjectId, _bigtableContainer.InstanceId, "test-table");
+    var tableName = new TableName(ProjectId, InstanceId, TestTable);
     // When
-    adminClient.CreateTable(instanceName, "test-table", createTable, CallSettings.FromCancellationToken(CancellationToken.None));
+    adminClient.CreateTable(instanceName, TestTable, createTable, CallSettings.FromCancellationToken(CancellationToken.None));
     var tableCreated = adminClient.GetTable(tableName);
 
     // Then
