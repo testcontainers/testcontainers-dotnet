@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net6.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Consul" Version="1.6.10.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0" />
         <PackageReference Include="xunit" Version="2.5.0" />
+        <PackageReference Include="Consul" Version="1.6.10.9" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Consul/Testcontainers.Consul.csproj" />
