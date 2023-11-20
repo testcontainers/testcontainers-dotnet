@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.13.1
+#tool nuget:?package=dotnet-sonarscanner&version=5.14.0
 
 #addin nuget:?package=Cake.Sonar&version=1.1.32
 
@@ -94,7 +94,7 @@ Task("Sonar-Begin")
   {
     Url = param.SonarQubeCredentials.Url,
     Key = param.SonarQubeCredentials.Key,
-    Login = param.SonarQubeCredentials.Token,
+    Token = param.SonarQubeCredentials.Token,
     Organization = param.SonarQubeCredentials.Organization,
     Branch = param.IsPullRequest ? null : param.Branch, // A pull request analysis cannot have the branch analysis parameter 'sonar.branch.name'.
     UseCoreClr = true,
@@ -116,7 +116,7 @@ Task("Sonar-End")
 {
   SonarEnd(new SonarEndSettings
   {
-    Login = param.SonarQubeCredentials.Token,
+    Token = param.SonarQubeCredentials.Token,
     UseCoreClr = true
   });
 });
