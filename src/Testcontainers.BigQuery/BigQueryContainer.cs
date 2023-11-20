@@ -13,11 +13,11 @@ public sealed class BigQueryContainer : DockerContainer
         : base(configuration, logger)
     {
     }
-    
+
     /// <summary>
-    /// Gets the Firestore emulator endpoint.
+    /// Gets the BigQuery emulator endpoint.
     /// </summary>
-    /// <returns>The Firestore emulator endpoint.</returns>
+    /// <returns>The BigQuery emulator endpoint.</returns>
     public string GetEmulatorEndpoint()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(BigQueryBuilder.BigQueryPort)).ToString();

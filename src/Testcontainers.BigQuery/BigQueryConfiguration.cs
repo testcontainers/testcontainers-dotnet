@@ -7,11 +7,8 @@ public sealed class BigQueryConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryConfiguration" /> class.
     /// </summary>
-    /// <param name="config">The BigQuery config.</param>
-    public BigQueryConfiguration(string project = null)
+    public BigQueryConfiguration()
     {
-        // // Sets the custom builder methods property values.
-        Project = project;
     }
 
     /// <summary>
@@ -52,17 +49,5 @@ public sealed class BigQueryConfiguration : ContainerConfiguration
     public BigQueryConfiguration(BigQueryConfiguration oldValue, BigQueryConfiguration newValue)
         : base(oldValue, newValue)
     {
-        // // Create an updated immutable copy of the module configuration.
-        Project = BuildConfiguration.Combine(oldValue.Project, newValue.Project);
     }
-    
-    /// <summary>
-    /// Project
-    /// </summary>
-    public string Project { get; }
-
-    // /// <summary>
-    // /// Gets the BigQuery config.
-    // /// </summary>
-    // public object Config { get; }
 }

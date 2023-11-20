@@ -4,9 +4,12 @@ namespace Testcontainers.BigQuery;
 [PublicAPI]
 public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
-    public const string Image = "ghcr.io/goccy/bigquery-emulator";
+    public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
+
     public const ushort BigQueryPort = 9050;
-    private string DefaultProjectId = "test";
+
+    public const string DefaultProjectId = "default";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
@@ -26,13 +29,34 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
         DockerResourceConfiguration = resourceConfiguration;
     }
 
+    /// <inheritdoc />
     protected override BigQueryConfiguration DockerResourceConfiguration { get; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
+    public BigQueryBuilder WithProject(string projectId)
+    {
+        return WithCommand("--project", projectId);
+    }
 
     /// <inheritdoc />
     public override BigQueryContainer Build()
     {
         Validate();
         return new BigQueryContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+    }
+
+    /// <inheritdoc />
+    protected override BigQueryBuilder Init()
+    {
+        return base.Init()
+            .WithImage(BigQueryImage)
+            .WithPortBinding(BigQueryPort, true)
+            .WithProject(DefaultProjectId)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));
     }
 
     /// <inheritdoc />
@@ -51,21 +75,5 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     protected override BigQueryBuilder Merge(BigQueryConfiguration oldValue, BigQueryConfiguration newValue)
     {
         return new BigQueryBuilder(new BigQueryConfiguration(oldValue, newValue));
-    }
-    
-    public BigQueryBuilder WithProject(string project)
-    {
-        return Merge(DockerResourceConfiguration, new BigQueryConfiguration(project))
-            .WithCommand("--project",project);
-    }
-
-    protected override BigQueryBuilder Init()
-    {
-        return base.Init()
-            .WithProject(DefaultProjectId)
-            .WithImage(Image)
-            .WithPortBinding(BigQueryPort, true)
-            .WithCommand("--project",DefaultProjectId)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));
     }
 }

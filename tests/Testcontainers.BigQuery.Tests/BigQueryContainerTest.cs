@@ -2,8 +2,7 @@ namespace Testcontainers.BigQuery;
 
 public sealed class BigQueryContainerTest : IAsyncLifetime
 {
-    const string ProjectId = "test-test";
-    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder().WithProject(ProjectId).Build();
+    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder().Build();
 
     public Task InitializeAsync()
     {
@@ -17,47 +16,63 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task GetSnapshotReturnsSetDocument()
+    public async Task ExecuteQueryReturnsInsertRow()
     {
-        string dataSetName = "mydata";
-        string dataTableName = "scores";
-        
-        var firstDate = new DateTime(2000, 1, 14, 10, 30, 0, DateTimeKind.Utc);
+        // Given
+        var utcNow = DateTime.UtcNow;
 
-        var bigQueryBuilder = new BigQueryClientBuilder();
-        bigQueryBuilder.ProjectId = ProjectId;
-        bigQueryBuilder.BaseUri = _bigQueryContainer.GetEmulatorEndpoint();
-        bigQueryBuilder.Credential = new EmptyCredentials();
+        // Storing DateTime.UtcNow in BigQuery loses precision. The query result differs
+        // in the last digit. Truncating milliseconds prevents running into this issue.
+        var utcNowWithoutMilliseconds = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second, DateTimeKind.Utc);
 
-        var client = await bigQueryBuilder.BuildAsync()
+        var bigQueryClientBuilder = new BigQueryClientBuilder();
+        bigQueryClientBuilder.BaseUri = _bigQueryContainer.GetEmulatorEndpoint();
+        bigQueryClientBuilder.ProjectId = BigQueryBuilder.DefaultProjectId;
+        bigQueryClientBuilder.Credential = new Credential();
+
+        var tableSchemaBuilder = new TableSchemaBuilder();
+        tableSchemaBuilder.Add("player", BigQueryDbType.String);
+        tableSchemaBuilder.Add("gameStarted", BigQueryDbType.DateTime);
+        tableSchemaBuilder.Add("score", BigQueryDbType.Int64);
+        var tableSchema = tableSchemaBuilder.Build();
+
+        var expectedRow = new BigQueryInsertRow();
+        expectedRow.Add("player", "Bob");
+        expectedRow.Add("gameStarted", utcNowWithoutMilliseconds);
+        expectedRow.Add("score", 85L);
+
+        using var bigQueryClient = await bigQueryClientBuilder.BuildAsync()
             .ConfigureAwait(false);
 
-        // Create the dataset if it doesn't exist.
-        BigQueryDataset dataset = await client.GetOrCreateDatasetAsync(dataSetName);
+        var dataset = await bigQueryClient.GetOrCreateDatasetAsync("mydata")
+            .ConfigureAwait(false);
 
-        // Create the table if it doesn't exist.
-        BigQueryTable table = await dataset.GetOrCreateTableAsync(dataTableName, new TableSchemaBuilder
+        // When
+        var table = await dataset.CreateTableAsync("scores", tableSchema)
+            .ConfigureAwait(false);
+
+        _ = await table.InsertRowAsync(expectedRow)
+            .ConfigureAwait(false);
+
+        var results = await bigQueryClient.ExecuteQueryAsync($"SELECT * FROM {table}", null)
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.Single(results);
+        Assert.Equal(expectedRow["player"], results.Single()["player"]);
+        Assert.Equal(expectedRow["gameStarted"], results.Single()["gameStarted"]);
+        Assert.Equal(expectedRow["score"], results.Single()["score"]);
+    }
+
+    private sealed class Credential : ICredential
+    {
+        public void Initialize(ConfigurableHttpClient httpClient)
         {
-            {"player", BigQueryDbType.String},
-            {"gameStarted", BigQueryDbType.Timestamp},
-            {"score", BigQueryDbType.Int64}
-        }.Build());
+        }
 
-        // Insert a single row. There are many other ways of inserting data into a table.
-        await table.InsertRowAsync(new BigQueryInsertRow
+        public Task<string> GetAccessTokenForRequestAsync(string authUri, CancellationToken cancellationToken)
         {
-            {"player", "Bob"},
-            {"score", 85},
-            {"gameStarted", firstDate}
-        });
-
-
-        var data = await client.ExecuteQueryAsync($"select * from {ProjectId}.{dataSetName}.{dataTableName}",new BigQueryParameter[]{});
-        
-        Assert.Single(data);
-        Assert.Equal(data.FirstOrDefault()!["player"],"Bob");
-        Assert.Equal(data.FirstOrDefault()!["score"],(long)85);
-        Assert.Equal(data.FirstOrDefault()!["gameStarted"],firstDate);
-       
+            return Task.FromResult(string.Empty);
+        }
     }
 }
