@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <ItemGroup>
-    <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="all"/>
+    <PackageReference Update="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all"/>
     <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.23"/>
     <PackageReference Update="Microsoft.EntityFrameworkCore" Version="6.0.23"/>
     <PackageReference Update="Microsoft.Fast.Components.FluentUI" Version="3.2.0"/>
     <PackageReference Update="Testcontainers.SqlEdge" Version="3.5.0"/>
     <PackageReference Update="System.ComponentModel.Annotations" Version="5.0.0"/>
-    <PackageReference Update="System.Text.Json" Version="6.0.8"/>
+    <PackageReference Update="System.Text.Json" Version="6.0.9"/>
     <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.23"/>
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.7.2"/>
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
     <PackageReference Update="Selenium.WebDriver.ChromeDriver" Version="106.0.5249.6100"/>
     <PackageReference Update="Selenium.WebDriver" Version="4.9.1"/>
     <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0"/>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
     <ItemGroup>
-        <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="all"/>
+        <PackageReference Update="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all"/>
         <PackageReference Update="Testcontainers.PostgreSql" Version="3.5.0"/>
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.7.2"/>
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0"/>
         <PackageReference Update="xunit" Version="2.5.0"/>
         <PackageReference Update="Npgsql" Version="6.0.10"/>
