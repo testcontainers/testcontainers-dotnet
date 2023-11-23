@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Linq;
   using System.Security.Cryptography;
   using System.Text;
+  using System.Text.Json;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -14,7 +15,6 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
-  using Newtonsoft.Json.Linq;
 
   /// <inheritdoc cref="IContainerConfiguration" />
   [PublicAPI]
@@ -213,34 +213,35 @@ namespace DotNet.Testcontainers.Configurations
     {
       var fingerprint = new
       {
-        AutoRemove = AutoRemove,
-        Privileged = Privileged,
-        ExtraHosts = ExtraHosts,
-        PortBindings = PortBindings,
-        Mounts = Mounts,
+        AutoRemove,
+        Privileged,
+        ExtraHosts,
+        PortBindings,
+        Mounts,
 
-        Networks = Networks,
+        Networks,
 
-        Image = Image,
-        Name = Name,
-        Hostname = Hostname,
-        MacAddress = MacAddress,
-        WorkingDir = WorkingDirectory,
-        Entrypoint = Entrypoint,
-        Cmd = Command,
-        Env = Environments,
-        Labels = Labels,
-        ExposedPorts = ExposedPorts,
+        Image,
+        Name,
+        Hostname,
+        MacAddress,
+        WorkingDirectory,
+        Entrypoint,
+        Command,
+        Environments,
+        Labels,
+        ExposedPorts,
 
         ParameterModifiers = ParameterModifiers.Select(parameterModifier => parameterModifier.GetHashCode()),
       };
 
-      var fingerprintJObject = JObject.FromObject(fingerprint);
-      fingerprintJObject.SelectToken($"$.Labels.['{TestcontainersClient.TestcontainersSessionIdLabel}']")?.Parent.Remove();
-      fingerprintJObject.SelectToken($"$.Labels.['{ResourceReaper.ResourceReaperSessionLabel}']")?.Parent.Remove();
-      fingerprintJObject.SelectToken($"$.Labels.['{TestcontainersClient.TestcontainersReuseHashLabel}']")?.Parent.Remove();
+      var fingerPrintJsonNode = JsonSerializer.SerializeToNode(fingerprint);
+      var labelsJsonObject = fingerPrintJsonNode["Labels"].AsObject();
+      labelsJsonObject.Remove(TestcontainersClient.TestcontainersSessionIdLabel);
+      labelsJsonObject.Remove(ResourceReaper.ResourceReaperSessionLabel);
+      labelsJsonObject.Remove(TestcontainersClient.TestcontainersReuseHashLabel);
 
-      var fingerprintJson = fingerprintJObject.ToString();
+      var fingerprintJson = fingerPrintJsonNode.ToJsonString();
       using (var sha1 = SHA1.Create())
       {
         return Convert.ToBase64String(sha1.ComputeHash(Encoding.Default.GetBytes(fingerprintJson)));
