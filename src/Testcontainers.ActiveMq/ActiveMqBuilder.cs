@@ -7,8 +7,8 @@ public sealed class ActiveMqBuilder : ContainerBuilder<ActiveMqBuilder, ActiveMq
     public const string ActiveMqImage = "apache/activemq-artemis:2.31.2";
     public const ushort ActiveMqMainPort = 61616;
     public const ushort ActiveMqConsolePort = 8161;
-    public const string DefaultUsername = "activemq";
-    public const string DefaultPassword = "activemq";
+    public const string DefaultUsername = "artemis";
+    public const string DefaultPassword = "artemis";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ActiveMqBuilder" /> class.
