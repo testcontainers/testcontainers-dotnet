@@ -9,10 +9,10 @@
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0"/>
         <PackageReference Include="xunit" Version="2.5.0"/>
-        <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="11.3.3"/>
-  </ItemGroup>
-  <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
+        <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.4.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
         <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-  </ItemGroup>
+    </ItemGroup>
 </Project>

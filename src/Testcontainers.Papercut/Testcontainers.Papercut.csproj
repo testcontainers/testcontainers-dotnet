@@ -7,8 +7,8 @@
         <Description>A Testcontainers Papercut module for testing SMTP clients and sending emails.</Description>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj"/>
