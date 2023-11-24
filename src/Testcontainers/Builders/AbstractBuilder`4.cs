@@ -60,7 +60,15 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithReuse(bool reuse)
     {
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, labels: new Dictionary<string, string> { { TestcontainersClient.TestcontainersReuseHashLabel, DockerResourceConfiguration.GetHash() } }));
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, parameterModifiers: new List<Action<TCreateResourceEntity>>()
+        {
+          parameter => {
+            var labelsProperty = parameter.GetType().GetProperty("Labels");
+            var labels = (IDictionary<string, string>)labelsProperty.GetValue(parameter);
+            labels[TestcontainersClient.TestcontainersReuseHashLabel] = DockerResourceConfiguration.GetHash();
+          }
+        })
+      );
     }
 
     /// <inheritdoc />
@@ -137,8 +145,6 @@ namespace DotNet.Testcontainers.Builders
         .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
 
       // TODO: Validate WithReuse(), WithAutoRemove() and WithCleanUp() combinations.
-      Guard.Argument(DockerResourceConfiguration.Reuse, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
-        .ThrowIf(argument => DockerResourceConfiguration.Labels.ContainsKey(TestcontainersClient.TestcontainersReuseHashLabel) && DockerResourceConfiguration.Labels[TestcontainersClient.TestcontainersReuseHashLabel] != DockerResourceConfiguration.GetHash(), argument => new ArgumentException("ResoureConfiguration hash mismatch, WithReuse(true) must be the last called builder method", argument.Name));
     }
 
     /// <summary>
