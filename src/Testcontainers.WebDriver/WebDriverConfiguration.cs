@@ -27,7 +27,8 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="WebDriverConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public WebDriverConfiguration(IContainerConfiguration resourceConfiguration) : base(resourceConfiguration)
+    public WebDriverConfiguration(IContainerConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
@@ -47,8 +48,8 @@ public sealed class WebDriverConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue) : base(oldValue,
-        newValue)
+    public WebDriverConfiguration(WebDriverConfiguration oldValue, WebDriverConfiguration newValue)
+        : base(oldValue, newValue)
     {
         FFmpegContainer = BuildConfiguration.Combine(oldValue.FFmpegContainer, newValue.FFmpegContainer);
     }

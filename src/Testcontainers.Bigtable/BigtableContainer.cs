@@ -2,11 +2,24 @@ namespace Testcontainers.Bigtable;
 
 /// <inheritdoc cref="DockerContainer"/>
 [PublicAPI]
-public class BigtableContainer: DockerContainer
+public sealed class BigtableContainer : DockerContainer
 {
-  public BigtableContainer(IContainerConfiguration configuration, ILogger logger) : base(configuration, logger)
-  {
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BigtableContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="logger">The logger.</param>
+    public BigtableContainer(IContainerConfiguration configuration, ILogger logger)
+        : base(configuration, logger)
+    {
+    }
 
-  public string GetEndpoint() => $"127.0.0.1:{GetMappedPublicPort(9000)}";
+    /// <summary>
+    /// Gets the Bigtable emulator endpoint.
+    /// </summary>
+    /// <returns>The Bigtable emulator endpoint.</returns>
+    public string GetEmulatorEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(BigtableBuilder.BigtablePort)).ToString();
+    }
 }
