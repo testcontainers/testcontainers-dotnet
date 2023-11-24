@@ -2,6 +2,9 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Security.Cryptography;
+  using System.Text.Json;
+  using System.Text.Json.Serialization;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
@@ -53,21 +56,33 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public Guid SessionId { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
     /// <inheritdoc />
+    [JsonConverter(typeof(ExcludeDynamicLabelsConverter))]
     public IReadOnlyDictionary<string, string> Labels { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
 
+    [JsonIgnore]
     public bool? Reuse { get; }
 
-    public virtual string GetHash() {
-      throw new NotImplementedException();
+    public virtual string GetHash()
+    {
+      var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
+
+      using (var sha1 = SHA1.Create())
+      {
+        var json = JsonSerializer.Serialize(this, GetType());
+        return Convert.ToBase64String(sha1.ComputeHash(jsonUtf8Bytes));
+      }
     }
   }
 }

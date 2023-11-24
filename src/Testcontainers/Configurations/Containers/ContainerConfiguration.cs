@@ -2,15 +2,11 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
-  using System.Security.Cryptography;
-  using System.Text;
-  using System.Text.Json;
+  using System.Text.Json.Serialization;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
@@ -153,6 +149,7 @@ namespace DotNet.Testcontainers.Configurations
     public IImage Image { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
@@ -183,9 +180,11 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IResourceMapping> ResourceMappings { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
@@ -201,51 +200,15 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IOutputConsumer OutputConsumer { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IWaitUntil> WaitStrategies { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
-
-    public override string GetHash()
-    {
-      var fingerprint = new
-      {
-        AutoRemove,
-        Privileged,
-        ExtraHosts,
-        PortBindings,
-        Mounts,
-
-        Networks,
-
-        Image,
-        Name,
-        Hostname,
-        MacAddress,
-        WorkingDirectory,
-        Entrypoint,
-        Command,
-        Environments,
-        Labels,
-        ExposedPorts,
-
-        ParameterModifiers = ParameterModifiers.Select(parameterModifier => parameterModifier.GetHashCode()),
-      };
-
-      var fingerPrintJsonNode = JsonSerializer.SerializeToNode(fingerprint);
-      var labelsJsonObject = fingerPrintJsonNode["Labels"].AsObject();
-      labelsJsonObject.Remove(TestcontainersClient.TestcontainersSessionIdLabel);
-      labelsJsonObject.Remove(ResourceReaper.ResourceReaperSessionLabel);
-      labelsJsonObject.Remove(TestcontainersClient.TestcontainersReuseHashLabel);
-
-      var fingerprintJson = fingerPrintJsonNode.ToJsonString();
-      using (var sha1 = SHA1.Create())
-      {
-        return Convert.ToBase64String(sha1.ComputeHash(Encoding.Default.GetBytes(fingerprintJson)));
-      }
-    }
   }
 }
