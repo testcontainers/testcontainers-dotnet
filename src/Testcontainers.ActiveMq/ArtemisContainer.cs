@@ -2,16 +2,16 @@ namespace Testcontainers.ActiveMq;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class ActiveMqContainer : DockerContainer
+public sealed class ArtemisContainer : DockerContainer
 {
     private readonly ActiveMqConfiguration _configuration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ActiveMqContainer" /> class.
+    /// Initializes a new instance of the <see cref="ArtemisContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
-    public ActiveMqContainer(ActiveMqConfiguration configuration, ILogger logger)
+    public ArtemisContainer(ActiveMqConfiguration configuration, ILogger logger)
         : base(configuration, logger)
     {
         _configuration = configuration;
@@ -23,7 +23,7 @@ public sealed class ActiveMqContainer : DockerContainer
     /// <returns>The broker address.</returns>
     public string GetBrokerAddress()
     {
-        return new UriBuilder("tcp://", Hostname, GetMappedPublicPort(ActiveMqBuilder.ActiveMqMainPort))
+        return new UriBuilder("tcp://", Hostname, GetMappedPublicPort(ArtemisBuilder.ArtemisMainPort))
         {
             UserName = Uri.EscapeDataString(_configuration.Username),
             Password = Uri.EscapeDataString(_configuration.Password)

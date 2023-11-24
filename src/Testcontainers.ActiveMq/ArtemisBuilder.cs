@@ -2,28 +2,28 @@ namespace Testcontainers.ActiveMq;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ActiveMqBuilder : ContainerBuilder<ActiveMqBuilder, ActiveMqContainer, ActiveMqConfiguration>
+public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
 {
-    public const string ActiveMqImage = "apache/activemq-artemis:2.31.2";
-    public const ushort ActiveMqMainPort = 61616;
-    public const ushort ActiveMqConsolePort = 8161;
+    public const string ArtemisImage = "apache/activemq-artemis:2.31.2";
+    public const ushort ArtemisMainPort = 61616;
+    public const ushort ArtemisConsolePort = 8161;
     public const string DefaultUsername = "artemis";
     public const string DefaultPassword = "artemis";
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ActiveMqBuilder" /> class.
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
     /// </summary>
-    public ActiveMqBuilder()
+    public ArtemisBuilder()
         : this(new ActiveMqConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ActiveMqBuilder" /> class.
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private ActiveMqBuilder(ActiveMqConfiguration resourceConfiguration)
+    private ArtemisBuilder(ActiveMqConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
         DockerResourceConfiguration = resourceConfiguration;
@@ -33,41 +33,41 @@ public sealed class ActiveMqBuilder : ContainerBuilder<ActiveMqBuilder, ActiveMq
     protected override ActiveMqConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Sets the ActiveMq username.
+    /// Sets the Artemis username.
     /// </summary>
-    /// <param name="username">The ActiveMq username.</param>
-    /// <returns>A configured instance of <see cref="ActiveMqBuilder" />.</returns>
-    public ActiveMqBuilder WithUsername(string username)
+    /// <param name="username">The Artemis username.</param>
+    /// <returns>A configured instance of <see cref="ArtemisBuilder" />.</returns>
+    public ArtemisBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new ActiveMqConfiguration(username: username))
             .WithEnvironment("ARTEMIS_USER", username);
     }
 
     /// <summary>
-    /// Sets the ActiveMq password.
+    /// Sets the Artemis password.
     /// </summary>
-    /// <param name="password">The ActiveMq password.</param>
-    /// <returns>A configured instance of <see cref="ActiveMqBuilder" />.</returns>
-    public ActiveMqBuilder WithPassword(string password)
+    /// <param name="password">The Artemis password.</param>
+    /// <returns>A configured instance of <see cref="ArtemisBuilder" />.</returns>
+    public ArtemisBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new ActiveMqConfiguration(password: password))
             .WithEnvironment("ARTEMIS_PASSWORD", password);
     }
 
     /// <inheritdoc />
-    public override ActiveMqContainer Build()
+    public override ArtemisContainer Build()
     {
         Validate();
-        return new ActiveMqContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ArtemisContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
-    protected override ActiveMqBuilder Init()
+    protected override ArtemisBuilder Init()
     {
         return base.Init()
-            .WithImage(ActiveMqImage)
-            .WithPortBinding(ActiveMqMainPort, true)
-            .WithPortBinding(ActiveMqConsolePort, true)
+            .WithImage(ArtemisImage)
+            .WithPortBinding(ArtemisMainPort, true)
+            .WithPortBinding(ArtemisConsolePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
@@ -88,21 +88,21 @@ public sealed class ActiveMqBuilder : ContainerBuilder<ActiveMqBuilder, ActiveMq
     }
 
     /// <inheritdoc />
-    protected override ActiveMqBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ArtemisBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new ActiveMqConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override ActiveMqBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override ArtemisBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new ActiveMqConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override ActiveMqBuilder Merge(ActiveMqConfiguration oldValue, ActiveMqConfiguration newValue)
+    protected override ArtemisBuilder Merge(ActiveMqConfiguration oldValue, ActiveMqConfiguration newValue)
     {
-        return new ActiveMqBuilder(new ActiveMqConfiguration(oldValue, newValue));
+        return new ArtemisBuilder(new ActiveMqConfiguration(oldValue, newValue));
     }
 
     private sealed class WaitUntil : IWaitUntil
