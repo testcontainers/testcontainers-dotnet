@@ -4,9 +4,15 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 {
     private readonly ArtemisContainer _artemisContainer;
 
-    protected ArtemisContainerTest(ArtemisContainer artemisContainer)
+    private readonly string _username;
+
+    private readonly string _password;
+
+    private ArtemisContainerTest(ArtemisContainer artemisContainer, string username, string password)
     {
         _artemisContainer = artemisContainer;
+        _username = username;
+        _password = password;
     }
 
     public Task InitializeAsync()
@@ -21,23 +27,19 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public abstract Task CanConnect();
-
-    private async Task AssertConnectionStarted(bool anonymousLogin = false)
+    public async Task EstablishesConnection()
     {
         // Given
-        var factory = new ConnectionFactory(_artemisContainer.GetBrokerAddress());
+        var connectionFactory = new ConnectionFactory(_artemisContainer.GetBrokerAddress());
+        connectionFactory.UserName = _username;
+        connectionFactory.Password = _password;
 
         // When
-        if (!anonymousLogin)
-        {
-            var userInfo = new Uri(_artemisContainer.GetBrokerAddress()).UserInfo.Split(":");
-            factory.UserName = userInfo[0];
-            factory.Password = userInfo[1];
-        }
+        using var connection = await connectionFactory.CreateConnectionAsync()
+            .ConfigureAwait(false);
 
-        var connection = await factory.CreateConnectionAsync();
-        await connection.StartAsync();
+        await connection.StartAsync()
+            .ConfigureAwait(false);
 
         // Then
         Assert.True(connection.IsStarted);
@@ -47,41 +49,30 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     public sealed class DefaultCredentialsConfiguration : ArtemisContainerTest
     {
         public DefaultCredentialsConfiguration()
-            : base(new ArtemisBuilder().Build())
+            : base(new ArtemisBuilder().Build(), ArtemisBuilder.DefaultUsername, ArtemisBuilder.DefaultPassword)
         {
-        }
-
-        public override async Task CanConnect()
-        {
-            await AssertConnectionStarted();
         }
     }
 
     [UsedImplicitly]
     public sealed class CustomCredentialsConfiguration : ArtemisContainerTest
     {
-        public CustomCredentialsConfiguration()
-            : base(new ArtemisBuilder().WithUsername("testcontainers").WithPassword("testcontainers").Build())
-        {
-        }
+        private static readonly string Username = Guid.NewGuid().ToString("D");
 
-        public override async Task CanConnect()
+        private static readonly string Password = Guid.NewGuid().ToString("D");
+
+        public CustomCredentialsConfiguration()
+            : base(new ArtemisBuilder().WithUsername(Username).WithPassword(Password).Build(), Username, Password)
         {
-            await AssertConnectionStarted();
         }
     }
 
     [UsedImplicitly]
-    public sealed class AnonymousLoginConfiguration : ArtemisContainerTest
+    public sealed class NoAuthCredentialsConfiguration : ArtemisContainerTest
     {
-        public AnonymousLoginConfiguration()
-            : base(new ArtemisBuilder().WithEnvironment("ANONYMOUS_LOGIN", "true").Build())
+        public NoAuthCredentialsConfiguration()
+            : base(new ArtemisBuilder().WithEnvironment("ANONYMOUS_LOGIN", bool.TrueString).Build(), string.Empty, string.Empty)
         {
-        }
-
-        public override async Task CanConnect()
-        {
-            await AssertConnectionStarted(true);
         }
     }
 }

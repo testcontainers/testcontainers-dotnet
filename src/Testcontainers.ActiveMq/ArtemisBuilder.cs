@@ -5,9 +5,13 @@ namespace Testcontainers.ActiveMq;
 public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
 {
     public const string ArtemisImage = "apache/activemq-artemis:2.31.2";
+
     public const ushort ArtemisMainPort = 61616;
+
     public const ushort ArtemisConsolePort = 8161;
+
     public const string DefaultUsername = "artemis";
+
     public const string DefaultPassword = "artemis";
 
     /// <summary>
@@ -29,7 +33,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // <inheritdoc />
+    /// <inheritdoc />
     protected override ActiveMqConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
@@ -70,7 +74,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
             .WithPortBinding(ArtemisConsolePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("HTTP Server started"));
     }
 
     /// <inheritdoc />
@@ -103,17 +107,5 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     protected override ArtemisBuilder Merge(ActiveMqConfiguration oldValue, ActiveMqConfiguration newValue)
     {
         return new ArtemisBuilder(new ActiveMqConfiguration(oldValue, newValue));
-    }
-
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("HTTP Server started");
-        }
     }
 }
