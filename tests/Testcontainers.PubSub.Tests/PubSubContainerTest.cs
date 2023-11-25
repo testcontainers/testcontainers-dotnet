@@ -1,6 +1,6 @@
 namespace Testcontainers.PubSub;
 
-public sealed class PubSubContainerTests : IAsyncLifetime
+public sealed class PubSubContainerTest : IAsyncLifetime
 {
     private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
 
