@@ -41,8 +41,31 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         await connection.StartAsync()
             .ConfigureAwait(false);
 
-        // Then
         Assert.True(connection.IsStarted);
+
+        // Then
+        using var session = await connection.CreateSessionAsync()
+            .ConfigureAwait(false);
+
+        using var queue = await session.CreateTemporaryQueueAsync()
+            .ConfigureAwait(false);
+
+        using var producer = await session.CreateProducerAsync(queue)
+            .ConfigureAwait(false);
+
+        using var consumer = await session.CreateConsumerAsync(queue)
+            .ConfigureAwait(false);
+
+        var producedMessage = await producer.CreateTextMessageAsync(Guid.NewGuid().ToString("D"))
+            .ConfigureAwait(false);
+
+        await producer.SendAsync(producedMessage)
+            .ConfigureAwait(false);
+
+        var receivedMessage = await consumer.ReceiveAsync()
+            .ConfigureAwait(false);
+
+        Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
 
     [UsedImplicitly]
