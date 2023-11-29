@@ -7,7 +7,6 @@
         <Description>A Testcontainers Papercut module for testing SMTP clients and sending emails.</Description>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
         <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
