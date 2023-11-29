@@ -6,7 +6,6 @@
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" VersionOverride="8.0.0" PrivateAssets="All" />
     <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All" />
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="Docker.DotNet.X509" />
