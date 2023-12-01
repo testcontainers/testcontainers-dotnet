@@ -1,6 +1,75 @@
-# ASP.NET Core Blazor
+# ASP.NET Core
 
-No matter if your tests require databases, message brokers, your own services or even a running instance of your entire application, leveraging Testcontainers in your tests means you can set up the infrastructure fast and reliably. You can also run tests in parallel against multiple lightweight or a single shared heavyweight instance, depending on the use case. xUnit.net's [shared context](https://xunit.net/docs/shared-context) offers several methods to access resources efficiently among different tests and scopes.
+No matter if your tests require databases, message brokers, your own services or even a running instance of your entire application, leveraging Testcontainers in your tests means you can set up the infrastructure fast and reliably. You can also run tests in parallel against multiple lightweight or a single shared heavyweight instance, depending on the use case. xUnit.net's [shared context](https://xunit.net/docs/shared-context) and other test frameworks offers several methods to access resources efficiently among different tests and scopes.
+
+## Utilizing WebApplicationFactory
+
+ASP.NET Core offers the `WebApplicationFactory<TEntryPoint>` class for bootstrapping and creating a [TestServer](https://learn.microsoft.com/aspnet/core/test/integration-tests) dedicated to integration tests. There are several methods to integrate Testcontainers and dependent app services into ASP.NET Core integration tests.
+
+One approach extends or overrides the application's configuration section to set up the [connection string](https://learn.microsoft.com/ef/core/miscellaneous/connection-strings) before creating the TestServer. This approach requires manually starting the dependent service in advance.
+
+```csharp title="Set Redis connection string"
+private sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
+{
+  protected override void ConfigureWebHost(IWebHostBuilder builder)
+  {
+    builder.UseSetting("ConnectionStrings:RedisCache", _redisContainer.GetConnectionString());
+  }
+}
+```
+
+A slightly more complex approach involves implementing the `IConfigurationSource` interface and the `ConfigurationProvider` class. This approach adds a new configuration source and automatically starts the dependent service before creating the TestServer.
+
+```csharp title="Add Redis configuration source"
+private sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
+{
+  protected override void ConfigureWebHost(IWebHostBuilder builder)
+  {
+    builder.ConfigureAppConfiguration(configure =>
+    {
+      configure.Add(new RedisConfigurationSource());
+    });
+  }
+}
+
+private sealed class RedisConfigurationSource : IConfigurationSource
+{
+  public IConfigurationProvider Build(IConfigurationBuilder builder)
+  {
+    return new RedisConfigurationProvider();
+  }
+}
+
+private sealed class RedisConfigurationProvider : ConfigurationProvider
+{
+  private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+  public override void Load()
+  {
+    // Until the asynchronous configuration provider is available,
+    // we use the TaskFactory to spin up a new task that handles the work:
+    // https://github.com/dotnet/runtime/issues/79193
+    // https://github.com/dotnet/runtime/issues/36018
+    TaskFactory.StartNew(LoadAsync)
+      .Unwrap()
+      .ConfigureAwait(false)
+      .GetAwaiter()
+      .GetResult();
+  }
+
+  public async Task LoadAsync()
+  {
+    var redisContainer = new RedisBuilder().Build();
+
+    await redisContainer.StartAsync()
+      .ConfigureAwait(false);
+
+    Set("ConnectionStrings:RedisCache", redisContainer.GetConnectionString());
+  }
+}
+```
+
+## WeatherForecast Example
 
 The following example adds tests to an ASP.NET Core Blazor application. The tests cover the web front-end including the REST API of a weather forecast application. Testcontainers builds and ships our app in a Docker image, runs it in a Docker container, orchestrates the necessary resources, and executes the tests against it. This setup includes a Microsoft SQL Server to persist data and covers a common use case among many productive .NET applications. You find the entire example in the [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/examples/WeatherForecast) repository.
 
