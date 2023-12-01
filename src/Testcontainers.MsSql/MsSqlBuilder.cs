@@ -65,7 +65,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;"));
     }
 
     /// <inheritdoc />
@@ -122,24 +122,5 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     {
         return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
             .WithEnvironment("SQLCMDUSER", username);
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
-    /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
-    /// </remarks>
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" };
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }

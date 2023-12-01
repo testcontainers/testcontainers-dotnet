@@ -77,7 +77,16 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
 
         // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
-        var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted(
+            "mysql",
+            "--protocol=TCP",
+            $"--port={MySqlPort}",
+            $"--user={DockerResourceConfiguration.Username}",
+            $"--password={DockerResourceConfiguration.Password}",
+            DockerResourceConfiguration.Database,
+            "--wait",
+            "--silent",
+            "--execute=SELECT 1;"));
         return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
@@ -122,29 +131,5 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     protected override MySqlBuilder Merge(MySqlConfiguration oldValue, MySqlConfiguration newValue)
     {
         return new MySqlBuilder(new MySqlConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly IList<string> _command;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
-        /// </summary>
-        /// <param name="configuration">The container configuration.</param>
-        public WaitUntil(MySqlConfiguration configuration)
-        {
-            _command = new List<string> { "mysql", "--protocol=TCP", $"--port={MySqlPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }

@@ -64,7 +64,7 @@ public sealed class SqlEdgeBuilder : ContainerBuilder<SqlEdgeBuilder, SqlEdgeCon
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Recovery is complete."));
     }
 
     /// <inheritdoc />
@@ -119,18 +119,5 @@ public sealed class SqlEdgeBuilder : ContainerBuilder<SqlEdgeBuilder, SqlEdgeCon
     private SqlEdgeBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new SqlEdgeConfiguration(username: username));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("Recovery is complete.");
-        }
     }
 }
