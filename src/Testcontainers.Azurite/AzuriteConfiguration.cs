@@ -61,7 +61,7 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     public bool InMemoryPersistence { get; }
 
     /// <summary>
-    /// Gets a
+    /// Gets the memory limit to use when in-memory persistence is enabled.
     /// </summary>
     public int? ExtentMemoryLimit { get; }
 }
