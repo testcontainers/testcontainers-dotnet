@@ -40,12 +40,46 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <inheritdoc />
     protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    /// Enables in-memory persistence.
+    /// </summary>
+    /// <param name="memoryLimit">An optional memory limit in megabytes.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder"/>.</returns>
+    public AzuriteBuilder WithInMemoryPersistence(int? memoryLimit = null)
+    {
+        var command = new List<string>
+        {
+            "azurite",
+            "--blobHost",
+            "0.0.0.0",
+            "--queueHost",
+            "0.0.0.0",
+            "--tableHost",
+            "0.0.0.0",
+            "--inMemoryPersistence"
+        };
+
+        if (memoryLimit.HasValue)
+        {
+            command.Add("--extentMemoryLimit");
+            command.Add(memoryLimit.ToString());
+        }
+
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(inMemoryPersistence: true, extentMemoryLimit: memoryLimit))
+            .WithCommand(command.ToArray());
+    }
+
     /// <inheritdoc />
     public override AzuriteContainer Build()
     {
         Validate();
 
         var waitStrategy = Wait.ForUnixContainer();
+
+        if (DockerResourceConfiguration.InMemoryPersistence)
+        {
+            waitStrategy = waitStrategy.UntilMessageIsLogged("In-memory extent storage is enabled");
+        }
 
         if (_enabledServices.Contains(AzuriteService.Blob))
         {

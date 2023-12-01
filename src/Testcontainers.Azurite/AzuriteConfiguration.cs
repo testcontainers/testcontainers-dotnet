@@ -7,8 +7,12 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
     /// </summary>
-    public AzuriteConfiguration()
+    /// <param name="inMemoryPersistence">Indicates whether in-memory persistence is enabled.</param>
+    /// <param name="extentMemoryLimit">Optional memory-limit when using in-memory persistence.</param>
+    public AzuriteConfiguration(bool inMemoryPersistence = false, int? extentMemoryLimit = null)
     {
+        InMemoryPersistence = inMemoryPersistence;
+        ExtentMemoryLimit = extentMemoryLimit;
     }
 
     /// <summary>
@@ -50,4 +54,14 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
     }
+
+    /// <summary>
+    /// Gets a value indicating whether in-memory persistence is enabled.
+    /// </summary>
+    public bool InMemoryPersistence { get; }
+
+    /// <summary>
+    /// Gets a
+    /// </summary>
+    public int? ExtentMemoryLimit { get; }
 }
