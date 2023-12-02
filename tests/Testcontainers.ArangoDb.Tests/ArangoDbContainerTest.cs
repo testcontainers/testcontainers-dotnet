@@ -20,7 +20,9 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
     {
         // Given
         var address = new Uri(_arangoDbContainer.GetTransportAddress());
-        using var transport = HttpApiTransport.UsingBasicAuth(address, "_system", ArangoDbBuilder.DefaultUsername, ArangoDbBuilder.DefaultPassword);
+
+        using var transport = HttpApiTransport.UsingBasicAuth(address, ArangoDbBuilder.DefaultUsername, ArangoDbBuilder.DefaultPassword);
+
         using var client = new ArangoDBClient(transport);
 
         // When

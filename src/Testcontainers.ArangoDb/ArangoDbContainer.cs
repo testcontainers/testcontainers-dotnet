@@ -20,6 +20,6 @@ public sealed class ArangoDbContainer : DockerContainer
     /// <returns>The transport address.</returns>
     public string GetTransportAddress()
     {
-        return new UriBuilder("http://", Hostname, GetMappedPublicPort(ArangoDbBuilder.ArangoDbPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ArangoDbBuilder.ArangoDbPort)).ToString();
     }
 }
