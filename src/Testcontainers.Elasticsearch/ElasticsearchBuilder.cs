@@ -74,7 +74,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithEnvironment("discovery.type", "single-node")
             .WithEnvironment("ingest.geoip.downloader.enabled", "false")
             .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("\"message\":\\s?\"started\"?"));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -116,5 +116,20 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     private ElasticsearchBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(username: username));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
+            return Pattern.Any(stdout.Contains);
+        }
     }
 }
