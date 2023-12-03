@@ -47,26 +47,9 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <returns>A configured instance of <see cref="AzuriteBuilder"/>.</returns>
     public AzuriteBuilder WithInMemoryPersistence(int? memoryLimit = null)
     {
-        var command = new List<string>
-        {
-            "azurite",
-            "--blobHost",
-            "0.0.0.0",
-            "--queueHost",
-            "0.0.0.0",
-            "--tableHost",
-            "0.0.0.0",
-            "--inMemoryPersistence"
-        };
-
-        if (memoryLimit.HasValue)
-        {
-            command.Add("--extentMemoryLimit");
-            command.Add(memoryLimit.ToString());
-        }
-
-        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(inMemoryPersistence: true, extentMemoryLimit: memoryLimit))
-            .WithCommand(command.ToArray());
+        return memoryLimit.HasValue 
+            ? WithCommand("--inMemoryPersistence", "--extentMemoryLimit", memoryLimit.ToString()) 
+            : WithCommand("--inMemoryPersistence");
     }
 
     /// <inheritdoc />
@@ -75,11 +58,6 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         Validate();
 
         var waitStrategy = Wait.ForUnixContainer();
-
-        if (DockerResourceConfiguration.InMemoryPersistence)
-        {
-            waitStrategy = waitStrategy.UntilMessageIsLogged("In-memory extent storage is enabled");
-        }
 
         if (_enabledServices.Contains(AzuriteService.Blob))
         {
@@ -105,6 +83,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     {
         return base.Init()
             .WithImage(AzuriteImage)
+            .WithEntrypoint("azurite")
+            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0")
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
             .WithPortBinding(TablePort, true);
