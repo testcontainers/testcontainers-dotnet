@@ -43,7 +43,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
         return base.Init()
             .WithImage(RavenDbImage)
             .WithPortBinding(RavenDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server started"));
     }
 
     /// <inheritdoc />
@@ -62,18 +62,5 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     protected override RavenDbBuilder Merge(RavenDbConfiguration oldValue, RavenDbConfiguration newValue)
     {
         return new RavenDbBuilder(new RavenDbConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("Server started");
-        }
     }
 }

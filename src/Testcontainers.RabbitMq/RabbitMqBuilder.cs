@@ -71,7 +71,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
             .WithPortBinding(RabbitMqPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server startup complete"));
     }
 
     /// <inheritdoc />
@@ -104,18 +104,5 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     protected override RabbitMqBuilder Merge(RabbitMqConfiguration oldValue, RabbitMqConfiguration newValue)
     {
         return new RabbitMqBuilder(new RabbitMqConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("Server startup complete");
-        }
     }
 }
