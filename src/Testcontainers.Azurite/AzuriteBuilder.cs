@@ -43,13 +43,21 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <summary>
     /// Enables in-memory persistence.
     /// </summary>
-    /// <param name="memoryLimit">An optional memory limit in megabytes.</param>
-    /// <returns>A configured instance of <see cref="AzuriteBuilder"/>.</returns>
-    public AzuriteBuilder WithInMemoryPersistence(int? memoryLimit = null)
+    /// <remarks>
+    /// By default, the in-memory is limited to 50% of the total memory on the container.
+    /// </remarks>
+    /// <param name="megabytes">An optional in-memory limit in megabytes.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
+    public AzuriteBuilder WithInMemoryPersistence(float? megabytes = null)
     {
-        return memoryLimit.HasValue 
-            ? WithCommand("--inMemoryPersistence", "--extentMemoryLimit", memoryLimit.ToString()) 
-            : WithCommand("--inMemoryPersistence");
+        if (megabytes.HasValue)
+        {
+            return WithCommand("--inMemoryPersistence", "--extentMemoryLimit", megabytes.ToString());
+        }
+        else
+        {
+            return WithCommand("--inMemoryPersistence");
+        }
     }
 
     /// <inheritdoc />
@@ -83,11 +91,11 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     {
         return base.Init()
             .WithImage(AzuriteImage)
-            .WithEntrypoint("azurite")
-            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0")
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
-            .WithPortBinding(TablePort, true);
+            .WithPortBinding(TablePort, true)
+            .WithEntrypoint("azurite")
+            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0");
     }
 
     /// <inheritdoc />
