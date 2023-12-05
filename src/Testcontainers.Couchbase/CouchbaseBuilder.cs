@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Testcontainers.Couchbase;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
