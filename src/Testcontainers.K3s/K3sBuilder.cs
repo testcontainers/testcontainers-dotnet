@@ -52,7 +52,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
             .WithTmpfsMount("/var/run")
             .WithCommand("server", "--disable=traefik")
             .WithCreateParameterModifier(parameterModifier => parameterModifier.HostConfig.CgroupnsMode = "host")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Node controller sync successful"));
     }
 
     /// <inheritdoc />
@@ -71,18 +71,5 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Merge(K3sConfiguration oldValue, K3sConfiguration newValue)
     {
         return new K3sBuilder(new K3sConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (_, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stderr.Contains("Node controller sync successful");
-        }
     }
 }
