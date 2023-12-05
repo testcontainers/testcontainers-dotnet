@@ -4,7 +4,7 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
-    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.24.0";
+    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.28.0";
 
     public const ushort BlobPort = 10000;
 
@@ -40,6 +40,18 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <inheritdoc />
     protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    /// Enables in-memory persistence.
+    /// </summary>
+    /// <param name="memoryLimit">An optional memory limit in megabytes.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder"/>.</returns>
+    public AzuriteBuilder WithInMemoryPersistence(int? memoryLimit = null)
+    {
+        return memoryLimit.HasValue 
+            ? WithCommand("--inMemoryPersistence", "--extentMemoryLimit", memoryLimit.ToString()) 
+            : WithCommand("--inMemoryPersistence");
+    }
+
     /// <inheritdoc />
     public override AzuriteContainer Build()
     {
@@ -71,6 +83,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     {
         return base.Init()
             .WithImage(AzuriteImage)
+            .WithEntrypoint("azurite")
+            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0")
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
             .WithPortBinding(TablePort, true);
