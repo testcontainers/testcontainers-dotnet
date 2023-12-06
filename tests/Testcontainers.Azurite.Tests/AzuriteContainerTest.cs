@@ -89,4 +89,31 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class AzuriteMemoryLimitConfiguration : AzuriteContainerTest
+    {
+        private const int MemoryLimitInMb = 64;
+
+        private static readonly string[] LineEndings = { "\r\n", "\n" };
+
+        public AzuriteMemoryLimitConfiguration()
+            : base(new AzuriteBuilder().WithInMemoryPersistence(MemoryLimitInMb).Build())
+        {
+        }
+
+        [Fact]
+        public async Task MemoryLimitIsConfigured()
+        {
+            // Given
+            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false)
+                .ConfigureAwait(false);
+
+            // When
+            var firstLine = stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries).First();
+
+            // Then
+            Assert.StartsWith(string.Format(CultureInfo.InvariantCulture, "In-memory extent storage is enabled with a limit of {0:F2} MB", MemoryLimitInMb), firstLine);
+        }
+    }
 }
