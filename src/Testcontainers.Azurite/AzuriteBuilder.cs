@@ -4,7 +4,7 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
-    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.24.0";
+    public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.28.0";
 
     public const ushort BlobPort = 10000;
 
@@ -12,7 +12,14 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const ushort TablePort = 10002;
 
-    private readonly ISet<AzuriteService> _enabledServices = new HashSet<AzuriteService>();
+    private static readonly ISet<AzuriteService> EnabledServices = new HashSet<AzuriteService>();
+
+    static AzuriteBuilder()
+    {
+        EnabledServices.Add(AzuriteService.Blob);
+        EnabledServices.Add(AzuriteService.Queue);
+        EnabledServices.Add(AzuriteService.Table);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
@@ -21,10 +28,6 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         : this(new AzuriteConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
-
-        _enabledServices.Add(AzuriteService.Blob);
-        _enabledServices.Add(AzuriteService.Queue);
-        _enabledServices.Add(AzuriteService.Table);
     }
 
     /// <summary>
@@ -40,6 +43,26 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <inheritdoc />
     protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    /// Enables in-memory persistence.
+    /// </summary>
+    /// <remarks>
+    /// By default, the in-memory is limited to 50% of the total memory on the container.
+    /// </remarks>
+    /// <param name="megabytes">An optional in-memory limit in megabytes.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
+    public AzuriteBuilder WithInMemoryPersistence(float? megabytes = null)
+    {
+        if (megabytes.HasValue)
+        {
+            return WithCommand("--inMemoryPersistence", "--extentMemoryLimit", megabytes.ToString());
+        }
+        else
+        {
+            return WithCommand("--inMemoryPersistence");
+        }
+    }
+
     /// <inheritdoc />
     public override AzuriteContainer Build()
     {
@@ -47,17 +70,17 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
         var waitStrategy = Wait.ForUnixContainer();
 
-        if (_enabledServices.Contains(AzuriteService.Blob))
+        if (EnabledServices.Contains(AzuriteService.Blob))
         {
             waitStrategy = waitStrategy.UntilMessageIsLogged("Blob service is successfully listening");
         }
 
-        if (_enabledServices.Contains(AzuriteService.Queue))
+        if (EnabledServices.Contains(AzuriteService.Queue))
         {
             waitStrategy = waitStrategy.UntilMessageIsLogged("Queue service is successfully listening");
         }
 
-        if (_enabledServices.Contains(AzuriteService.Table))
+        if (EnabledServices.Contains(AzuriteService.Table))
         {
             waitStrategy = waitStrategy.UntilMessageIsLogged("Table service is successfully listening");
         }
@@ -73,7 +96,9 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             .WithImage(AzuriteImage)
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
-            .WithPortBinding(TablePort, true);
+            .WithPortBinding(TablePort, true)
+            .WithEntrypoint("azurite")
+            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0");
     }
 
     /// <inheritdoc />
