@@ -541,15 +541,29 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         }
     }
 
+    /// <summary>
+    /// An HTTP retry handler that sends an HTTP request until it succeeds.
+    /// </summary>
+    /// <remarks>
+    /// Sending an HTTP request to Couchbase's API sometimes fails with the following
+    /// error: System.Net.Http.HttpIOException: The response ended prematurely (ResponseEnded).
+    /// The HTTP status code 504 indicates an issue with the Couchbase backend.
+    /// It is likely that the API is not yet ready to process HTTP requests.
+    /// Typically, trying it again resolves the issue.
+    /// </remarks>
     private sealed class RetryHandler : DelegatingHandler
     {
         private const int MaxRetries = 5;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RetryHandler" /> class.
+        /// </summary>
         public RetryHandler()
             : base(new HttpClientHandler())
         {
         }
 
+        /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             for (var _ = 0; _ < MaxRetries; _++)
