@@ -14,7 +14,7 @@
       "moby": true
     },
     "ghcr.io/devcontainers/features/dotnet:1": {
-      "version": "6.0.413",
+      "version": "8.0.100",
       "installUsingApt": false
     }
   },
