@@ -580,7 +580,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 }
             }
 
-            throw new Exception($"Unable to configure Couchbase. The HTTP request '{request.RequestUri}' did not complete successfully.");
+            throw new HttpRequestException($"Unable to configure Couchbase. The HTTP request '{request.RequestUri}' did not complete successfully.");
         }
     }
 }

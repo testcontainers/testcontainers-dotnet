@@ -1,5 +1,4 @@
 global using System;
-global using System.Threading.Tasks;
 global using Docker.DotNet.Models;
 global using DotNet.Testcontainers;
 global using DotNet.Testcontainers.Builders;
