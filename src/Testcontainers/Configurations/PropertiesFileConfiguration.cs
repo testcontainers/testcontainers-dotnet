@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.IO;
   using System.Linq;
   using System.Text.Json;
+  using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
 
   /// <summary>
@@ -11,6 +12,8 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   internal class PropertiesFileConfiguration : CustomConfiguration, ICustomConfiguration
   {
+    private static readonly Regex CommentSeparator = new Regex("(?<!\\\\)[!#]", RegexOptions.None, TimeSpan.FromSeconds(1));
+
     static PropertiesFileConfiguration()
     {
     }
@@ -42,11 +45,14 @@ namespace DotNet.Testcontainers.Configurations
       : base(lines
         .Select(line => line.Trim())
         .Where(line => !string.IsNullOrEmpty(line))
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
         .Where(line => !line.StartsWith("!", StringComparison.Ordinal))
+        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
         .Select(line => line.Split(new[] { '=', ':', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries))
         .Where(property => 2.Equals(property.Length))
-        .ToDictionary(property => property[0], property => property[1]))
+        .ToDictionary(property => property[0], property => CommentSeparator.Split(property[1])[0]
+          .Replace("\\!", "!")
+          .Replace("\\#", "#")
+          .Trim()))
     {
     }
 

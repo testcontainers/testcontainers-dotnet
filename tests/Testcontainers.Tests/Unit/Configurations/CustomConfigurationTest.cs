@@ -331,6 +331,20 @@ namespace DotNet.Testcontainers.Tests.Unit
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
       }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("!", null)]
+      [InlineData("#", null)]
+      [InlineData("docker.config=~/.docker/ ! The default configuration directory.", "~/.docker/")]
+      [InlineData("docker.config=~/.docker/ # The default configuration directory.", "~/.docker/")]
+      [InlineData("docker.config=~/.docker/\\!not_a_comment/", "~/.docker/!not_a_comment/")]
+      [InlineData("docker.config=~/.docker/\\#not_a_comment/", "~/.docker/#not_a_comment/")]
+      public void TrimCommentFromPropertiesFileProperty(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerConfig());
+      }
     }
   }
 }
