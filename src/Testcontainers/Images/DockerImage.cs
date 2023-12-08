@@ -84,8 +84,7 @@ namespace DotNet.Testcontainers.Images
           .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
           .DefaultIfEmpty(string.Empty)
           .First()
-          .Split('/')
-          .First();
+          .Split('/')[0];
 
         if (firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0)
         {
