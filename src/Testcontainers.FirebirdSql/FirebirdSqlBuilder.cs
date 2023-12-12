@@ -146,18 +146,18 @@ public class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdS
     /// Uses the isql Firebird Interactive SQL Utility to detect the readiness of the FirebirdSql container:
     /// https://www.firebirdsql.org/file/documentation/html/en/firebirddocs/isql/firebird-isql.html.
     /// </remarks>
-    private sealed class WaitUntil(FirebirdSqlConfiguration conf) : IWaitUntil
+    private sealed class WaitUntil(FirebirdSqlConfiguration configuration) : IWaitUntil
     {
         private readonly string[] checkDatabaseCommand =
         {
             "/usr/local/firebird/bin/isql",
             "-i",
             "/home/firebird_check.sql",
-            $"localhost:{conf.Database}",
+            $"localhost:{configuration.Database}",
             "-user",
-            conf.Username,
+            configuration.Username,
             "-pass",
-            conf.Password,
+            configuration.Password,
         };
 
         public async Task<bool> UntilAsync(IContainer container)
