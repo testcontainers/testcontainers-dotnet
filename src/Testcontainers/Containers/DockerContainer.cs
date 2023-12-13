@@ -677,5 +677,10 @@ namespace DotNet.Testcontainers.Containers
         return Task.FromResult(_parent._configuration.PortBindings == null || /* IPv4 or IPv6 */ _parent._configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * _parent._configuration.PortBindings.Count == boundPorts);
       }
     }
+
+    public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

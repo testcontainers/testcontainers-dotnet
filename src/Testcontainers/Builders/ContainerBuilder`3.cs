@@ -36,6 +36,11 @@ namespace DotNet.Testcontainers.Builders
     {
     }
 
+    public virtual TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider)
+    {
+      throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public TBuilderEntity DependsOn(IContainer container)
     {

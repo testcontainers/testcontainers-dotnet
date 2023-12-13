@@ -50,6 +50,11 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected override IContainerConfiguration DockerResourceConfiguration { get; }
 
+    public override ContainerBuilder WithConnectionStringProvider(IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider)
+    {
+      return this;
+    }
+
     /// <inheritdoc />
     public override IContainer Build()
     {

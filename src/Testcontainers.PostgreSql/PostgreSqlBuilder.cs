@@ -36,6 +36,11 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc />
     protected override PostgreSqlConfiguration DockerResourceConfiguration { get; }
 
+    public override PostgreSqlBuilder WithConnectionStringProvider(IConnectionStringProvider<PostgreSqlContainer, PostgreSqlConfiguration> connectionStringProvider)
+    {
+        return this;
+    }
+
     /// <summary>
     /// Sets the PostgreSql database.
     /// </summary>
