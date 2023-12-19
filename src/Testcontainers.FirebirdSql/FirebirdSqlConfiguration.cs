@@ -10,17 +10,14 @@ public class FirebirdSqlConfiguration : ContainerConfiguration
     /// <param name="database">The FirebirdSql database.</param>
     /// <param name="username">The FirebirdSql username.</param>
     /// <param name="password">The FirebirdSql password.</param>
-    /// <param name="sysdbaPassword">The FirebirdSql sysdba password.</param>
     public FirebirdSqlConfiguration(
         string? database = null,
         string? username = null,
-        string? password = null,
-        string? sysdbaPassword = null)
+        string? password = null)
     {
         Database = database;
         Username = username;
         Password = password;
-        SysdbaPassword = sysdbaPassword;
     }
 
     /// <summary>
@@ -64,7 +61,6 @@ public class FirebirdSqlConfiguration : ContainerConfiguration
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        SysdbaPassword = BuildConfiguration.Combine(oldValue.SysdbaPassword, newValue.SysdbaPassword);
     }
 
     /// <summary>
@@ -81,9 +77,4 @@ public class FirebirdSqlConfiguration : ContainerConfiguration
     /// Gets the FirebirdSql password.
     /// </summary>
     public string? Password { get; }
-
-    /// <summary>
-    /// Gets the FirebirdSql sysdba password.
-    /// </summary>
-    public string? SysdbaPassword { get; }
 }

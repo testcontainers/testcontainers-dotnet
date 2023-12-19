@@ -4,7 +4,7 @@ namespace Testcontainers.FirebirdSql;
 [PublicAPI]
 public class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
 {
-    public const string FirebirdSqlImage = "jacobalberty/firebird";
+    public const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
 
     public const ushort FirebirdSqlPort = 3050;
 
@@ -36,53 +36,27 @@ public class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdS
     /// <inheritdoc />
     protected override FirebirdSqlConfiguration DockerResourceConfiguration { get; }
 
-
     /// <summary>
     /// Sets the FirebirdSql username.
     /// </summary>
-    /// <remarks>
-    /// Can be set to 'sysdba'. In that case please use <see cref="WithSysdbaPassword" /> to set the password to connect with.
-    /// </remarks>
     /// <param name="username">The FirebirdSql username.</param>
     /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
     public FirebirdSqlBuilder WithUsername(string username)
     {
-        var builder = Merge(DockerResourceConfiguration, new(username: username));
-        if (username.ToLower() != FirebirdSysdba)
-        {
-            builder = builder
-                .WithEnvironment("FIREBIRD_USER", username);
-        }
-
-        return builder;
+        return Merge(DockerResourceConfiguration, new(username: username))
+            .WithEnvironment("FIREBIRD_USER", FirebirdSysdba.Equals(username, StringComparison.OrdinalIgnoreCase) ? string.Empty : username);
     }
 
     /// <summary>
     /// Sets the FirebirdSql password.
     /// </summary>
-    /// <remarks>
-    /// To authenticate with the configured user. If the user is 'sysdba' please use <see cref="WithSysdbaPassword" />
-    /// </remarks>
     /// <param name="password">The FirebirdSql password.</param>
     /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
     public FirebirdSqlBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new(password: password))
-            .WithEnvironment("FIREBIRD_PASSWORD", password);
-    }
-
-    /// <summary>
-    /// Sets the FirebirdSql sysdba password.
-    /// </summary>
-    /// <remarks>
-    /// To authenticate with the sysdba user. If the user is not 'sysdba' please use <see cref="WithPassword" />
-    /// </remarks>
-    /// <param name="sysdbaPassword">The FirebirdSql password.</param>
-    /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
-    public FirebirdSqlBuilder WithSysdbaPassword(string sysdbaPassword)
-    {
-        return Merge(DockerResourceConfiguration, new(sysdbaPassword: sysdbaPassword))
-            .WithEnvironment("ISC_PASSWORD", sysdbaPassword);
+            .WithEnvironment("FIREBIRD_PASSWORD", password)
+            .WithEnvironment("ISC_PASSWORD", password);
     }
 
     /// <summary>
@@ -116,7 +90,6 @@ public class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdS
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithSysdbaPassword(DefaultSysdbaPassword)
             .WithResourceMapping(Encoding.UTF8.GetBytes(FirebirdSqlContainer.TestQueryString), "/home/firebird_check.sql");
 
     /// <inheritdoc />

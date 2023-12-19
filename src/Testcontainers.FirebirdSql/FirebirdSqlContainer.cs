@@ -15,7 +15,7 @@ public class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
     /// <param name="logger">The logger.</param>
     public FirebirdSqlContainer(FirebirdSqlConfiguration configuration, ILogger logger) : base(configuration, logger)
     {
-        this._configuration = configuration;
+        _configuration = configuration;
     }
 
     private string GetDatabaseName()
@@ -47,21 +47,10 @@ public class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
     {
         var properties = new Dictionary<string, string>();
         properties.Add("User", _configuration.Username);
-        properties.Add("Password", _configuration.Username == FirebirdSqlBuilder.FirebirdSysdba
-            ? _configuration.SysdbaPassword
-            : _configuration.Password);
+        properties.Add("Password", _configuration.Password);
         properties.Add("Database", GetDatabaseName());
         properties.Add("DataSource", $"{Hostname}");
         properties.Add("Port", $"{GetMappedPublicPort(FirebirdSqlBuilder.FirebirdSqlPort)}");
-        properties.Add("Dialect", "3");
-        properties.Add("Charset", "utf8");
-        properties.Add("Role", "");
-        properties.Add("Connection lifetime", "15");
-        properties.Add("Pooling", "true");
-        properties.Add("MinPoolSize", "0");
-        properties.Add("MaxPoolSize", "50");
-        properties.Add("Packet Size", "8192");
-        properties.Add("ServerType", "0");
         return string.Join(";", properties.Select(p => $"{p.Key}={p.Value}"));
     }
 

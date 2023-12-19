@@ -68,8 +68,8 @@ public class Firebird40 : FirebirdSqlContainerTests
         new FirebirdSqlBuilder().WithImage("jacobalberty/firebird:v4.0").Build();
 }
 
-public class FirebirdDefault : FirebirdSqlContainerTests
+public class FirebirdSysdba : FirebirdSqlContainerTests
 {
     protected override FirebirdSqlContainer FirebirdSqlContainer { get; } =
-        new FirebirdSqlBuilder().Build();
+        new FirebirdSqlBuilder().WithUsername("sysdba").WithPassword("some-password").Build();
 }
