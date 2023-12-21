@@ -46,6 +46,7 @@ public abstract class FirebirdSqlContainerTest : IAsyncLifetime
 
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 
     [UsedImplicitly]

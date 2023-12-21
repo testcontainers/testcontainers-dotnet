@@ -23,21 +23,10 @@ public sealed class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
     /// <returns>The FirebirdSql connection string.</returns>
     public string GetConnectionString()
     {
-        string database;
-
-        if (_configuration.Image.Tag.StartsWith("2.5") || _configuration.Image.Tag.StartsWith("v2.5"))
-        {
-            database = string.Join("/", [_configuration.Environments.TryGetValue("DBPATH", out var dbPath) && !string.IsNullOrEmpty(dbPath) ? dbPath : "/firebird/data", _configuration.Database]);
-        }
-        else
-        {
-            database = _configuration.Database;
-        }
-
         var properties = new Dictionary<string, string>();
         properties.Add("DataSource", Hostname);
         properties.Add("Port", GetMappedPublicPort(FirebirdSqlBuilder.FirebirdSqlPort).ToString());
-        properties.Add("Database", database);
+        properties.Add("Database", _configuration.Database);
         properties.Add("User", _configuration.Username);
         properties.Add("Password", _configuration.Password);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
@@ -56,7 +45,7 @@ public sealed class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "/usr/local/firebird/bin/isql", "-i", scriptFilePath, $"localhost:{_configuration.Database}", "-user", _configuration.Username, "-pass", _configuration.Password }, ct)
+        return await ExecAsync(new[] { "/usr/local/firebird/bin/isql", "-i", scriptFilePath, "-user", _configuration.Username, "-pass", _configuration.Password, _configuration.Database }, ct)
             .ConfigureAwait(false);
     }
 }

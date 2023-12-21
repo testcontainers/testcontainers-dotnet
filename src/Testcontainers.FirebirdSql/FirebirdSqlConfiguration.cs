@@ -4,6 +4,8 @@ namespace Testcontainers.FirebirdSql;
 [PublicAPI]
 public sealed class FirebirdSqlConfiguration : ContainerConfiguration
 {
+    private readonly string _database;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FirebirdSqlConfiguration" /> class.
     /// </summary>
@@ -15,7 +17,7 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
         string username = null,
         string password = null)
     {
-        Database = database;
+        _database = database;
         Username = username;
         Password = password;
     }
@@ -58,7 +60,7 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     public FirebirdSqlConfiguration(FirebirdSqlConfiguration oldValue, FirebirdSqlConfiguration newValue)
         : base(oldValue, newValue)
     {
-        Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
+        _database = BuildConfiguration.Combine(oldValue._database, newValue._database);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
@@ -66,7 +68,7 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the FirebirdSql database.
     /// </summary>
-    public string Database { get; }
+    public string Database => Image.Tag.StartsWith("2.5") || Image.Tag.StartsWith("v2.5") ? string.Join("/", "/firebird/data", _database) : _database;
 
     /// <summary>
     /// Gets the FirebirdSql username.

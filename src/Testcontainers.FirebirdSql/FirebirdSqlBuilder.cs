@@ -79,12 +79,10 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     {
         Validate();
 
-        var compoundWaitStrategy = Wait.ForUnixContainer()
-            .UntilContainerIsHealthy()
-            .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration));
-        return new FirebirdSqlContainer(
-            WithWaitStrategy(compoundWaitStrategy).DockerResourceConfiguration,
-            TestcontainersSettings.Logger);
+        // By default, the base builder waits until the container is running. However, for FirebirdSql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
+        // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
+        // var firebirdSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new FirebirdSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -96,7 +94,8 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithResourceMapping(Encoding.UTF8.GetBytes(TestQueryString), "/home/firebird_check.sql");
+            .WithResourceMapping(Encoding.UTF8.GetBytes(TestQueryString), "/home/firebird_check.sql")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 
     /// <inheritdoc />
@@ -138,7 +137,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(FirebirdSqlConfiguration configuration)
         {
-            _command = new List<string> { "/usr/local/firebird/bin/isql", "-i", "/home/firebird_check.sql", $"localhost:{configuration.Database}", "-user", configuration.Username, "-pass", configuration.Password };
+            _command = new List<string> { "/usr/local/firebird/bin/isql", "-i", "/home/firebird_check.sql", "-user", configuration.Username, "-pass", configuration.Password, configuration.Database };
         }
 
         /// <inheritdoc />
