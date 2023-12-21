@@ -2,7 +2,7 @@ namespace Testcontainers.FirebirdSql;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
-public class FirebirdSqlConfiguration : ContainerConfiguration
+public sealed class FirebirdSqlConfiguration : ContainerConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FirebirdSqlConfiguration" /> class.
@@ -11,9 +11,9 @@ public class FirebirdSqlConfiguration : ContainerConfiguration
     /// <param name="username">The FirebirdSql username.</param>
     /// <param name="password">The FirebirdSql password.</param>
     public FirebirdSqlConfiguration(
-        string? database = null,
-        string? username = null,
-        string? password = null)
+        string database = null,
+        string username = null,
+        string password = null)
     {
         Database = database;
         Username = username;
@@ -66,15 +66,15 @@ public class FirebirdSqlConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the FirebirdSql database.
     /// </summary>
-    public string? Database { get; }
+    public string Database { get; }
 
     /// <summary>
     /// Gets the FirebirdSql username.
     /// </summary>
-    public string? Username { get; }
+    public string Username { get; }
 
     /// <summary>
     /// Gets the FirebirdSql password.
     /// </summary>
-    public string? Password { get; }
+    public string Password { get; }
 }
