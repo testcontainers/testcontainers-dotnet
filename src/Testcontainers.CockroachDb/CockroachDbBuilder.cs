@@ -4,7 +4,7 @@ namespace Testcontainers.CockroachDb;
 [PublicAPI]
 public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
-    public const string CockroachDbImage = "cockroachdb:23.1";
+    public const string CockroachDbImage = "cockroachdb/cockroach:v23.1.13";
 
     public const ushort CockroachDbPort = 26257;
 
