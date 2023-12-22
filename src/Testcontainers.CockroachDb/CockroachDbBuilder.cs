@@ -7,6 +7,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     public const string CockroachDbImage = "cockroachdb/cockroach:v23.1.13";
 
     public const ushort CockroachDbPort = 26257;
+    public const ushort CockroachDbRestPort = 8080;
 
     public const string DefaultDatabase = "defaultdb";
 
@@ -82,12 +83,14 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
         return base.Init()
             .WithImage(CockroachDbImage)
             .WithPortBinding(CockroachDbPort, true)
+            .WithPortBinding(CockroachDbRestPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithCommand("start-single-node")
             .WithCommand("--insecure")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health").ForPort(CockroachDbRestPort)));
     }
 
     /// <inheritdoc />
