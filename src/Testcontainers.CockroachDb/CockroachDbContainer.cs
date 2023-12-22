@@ -45,7 +45,7 @@ public sealed class CockroachDbContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "cockroach", "sql", "--file", scriptFilePath }, ct)
+        return await ExecAsync(new[] { "cockroach", "sql", "--insecure", "--file", scriptFilePath }, ct)
             .ConfigureAwait(false);
     }
 }
