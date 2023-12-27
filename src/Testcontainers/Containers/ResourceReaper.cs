@@ -308,10 +308,11 @@ namespace DotNet.Testcontainers.Containers
               {
 #if NETSTANDARD2_0
                 await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
+                  .ConfigureAwait(false);
 #else
                 await stream.WriteAsync(sendBytes, ct)
-#endif
                   .ConfigureAwait(false);
+#endif
 
                 await stream.FlushAsync(ct)
                   .ConfigureAwait(false);
@@ -322,10 +323,11 @@ namespace DotNet.Testcontainers.Containers
                 {
 #if NETSTANDARD2_0
                   var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+                    .ConfigureAwait(false);
 #else
                   var numberOfBytes = await stream.ReadAsync(readBytes, ct)
-#endif
                     .ConfigureAwait(false);
+#endif
 
                   if (numberOfBytes == 0)
                   {
@@ -367,10 +369,11 @@ namespace DotNet.Testcontainers.Containers
               // Keep the connection to Ryuk up.
 #if NETSTANDARD2_0
               _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
+                .ConfigureAwait(false);
 #else
               _ = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
-#endif
                 .ConfigureAwait(false);
+#endif
             }
           }
           catch (OperationCanceledException)

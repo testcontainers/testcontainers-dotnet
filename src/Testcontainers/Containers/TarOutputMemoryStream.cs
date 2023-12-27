@@ -76,10 +76,11 @@ namespace DotNet.Testcontainers.Containers
 
 #if NETSTANDARD2_0
       await WriteAsync(fileContent, 0, fileContent.Length, ct)
+        .ConfigureAwait(false);
 #else
       await WriteAsync(fileContent, ct)
-#endif
         .ConfigureAwait(false);
+#endif
 
       await CloseEntryAsync(ct)
         .ConfigureAwait(false);

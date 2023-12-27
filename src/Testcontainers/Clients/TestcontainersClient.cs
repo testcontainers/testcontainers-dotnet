@@ -271,10 +271,11 @@ namespace DotNet.Testcontainers.Clients
 
 #if NETSTANDARD2_0
         _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+          .ConfigureAwait(false);
 #else
         _ = await tarInputStream.ReadAsync(readBytes, ct)
-#endif
           .ConfigureAwait(false);
+#endif
 
         return readBytes;
       }
