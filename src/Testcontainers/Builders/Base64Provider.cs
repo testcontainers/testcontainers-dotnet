@@ -72,10 +72,19 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var authValue = JsonValueKind.String.Equals(auth.ValueKind) ? auth.GetString() : null;
+      var isValidKind = JsonValueKind.String.Equals(auth.ValueKind) || JsonValueKind.Null.Equals(auth.ValueKind);
+      var authValue = isValidKind ? auth.GetString() : null;
 
       if (string.IsNullOrEmpty(authValue))
       {
+        if (isValidKind)
+        {
+          _logger.DockerRegistryCredentialMissingAuth(hostname);
+        }
+        else
+        {
+          _logger.DockerRegistryCredentialInvalidAuth(hostname, auth.ValueKind);
+        }
         return null;
       }
 
@@ -83,6 +92,7 @@ namespace DotNet.Testcontainers.Builders
 
       if (credentialInBytes == null)
       {
+        _logger.DockerRegistryCredentialInvalidEncodedBase64(hostname);
         return null;
       }
 
@@ -90,6 +100,7 @@ namespace DotNet.Testcontainers.Builders
 
       if (credential.Length != 2)
       {
+        _logger.DockerRegistryCredentialInvalidDecodedBase64(hostname);
         return null;
       }
 

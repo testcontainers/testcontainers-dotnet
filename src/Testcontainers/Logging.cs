@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers
 {
   using System;
   using System.Collections.Generic;
+  using System.Text.Json;
   using System.Text.RegularExpressions;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
@@ -81,6 +82,18 @@ namespace DotNet.Testcontainers
 
     private static readonly Action<ILogger, string, Exception> _SearchingDockerRegistryCredential
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Searching Docker registry credential in {CredentialStore}");
+
+    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialMissingAuth
+      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry} is missing");
+
+    private static readonly Action<ILogger, string, JsonValueKind, Exception> _DockerRegistryCredentialInvalidAuth
+      = LoggerMessage.Define<string, JsonValueKind>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry} is invalid ({ValueKind} instead of String)");
+
+    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialInvalidEncodedBase64
+      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry} is not a valid base64 string");
+
+    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialInvalidDecodedBase64
+      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry}, once base64 decoded, should contain one and only one colon separating the user name and password");
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialNotFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} not found");
@@ -210,6 +223,26 @@ namespace DotNet.Testcontainers
     public static void SearchingDockerRegistryCredential(this ILogger logger, string credentialStore)
     {
       _SearchingDockerRegistryCredential(logger, credentialStore, null);
+    }
+
+    public static void DockerRegistryCredentialMissingAuth(this ILogger logger, string dockerRegistry)
+    {
+      _DockerRegistryCredentialMissingAuth(logger, dockerRegistry, null);
+    }
+
+    public static void DockerRegistryCredentialInvalidAuth(this ILogger logger, string dockerRegistry, JsonValueKind kind)
+    {
+      _DockerRegistryCredentialInvalidAuth(logger, dockerRegistry, kind, null);
+    }
+
+    public static void DockerRegistryCredentialInvalidEncodedBase64(this ILogger logger, string dockerRegistry)
+    {
+      _DockerRegistryCredentialInvalidEncodedBase64(logger, dockerRegistry, null);
+    }
+
+    public static void DockerRegistryCredentialInvalidDecodedBase64(this ILogger logger, string dockerRegistry)
+    {
+      _DockerRegistryCredentialInvalidDecodedBase64(logger, dockerRegistry, null);
     }
 
     public static void DockerRegistryCredentialNotFound(this ILogger logger, string dockerRegistry)
