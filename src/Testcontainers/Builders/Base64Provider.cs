@@ -72,12 +72,20 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      if (string.IsNullOrEmpty(auth.GetString()))
+      var authValue = JsonValueKind.String.Equals(auth.ValueKind) ? auth.GetString() : null;
+
+      if (string.IsNullOrEmpty(authValue))
       {
         return null;
       }
 
-      var credentialInBytes = Convert.FromBase64String(auth.GetString());
+      var credentialInBytes = DecodeBase64String(authValue);
+
+      if (credentialInBytes == null)
+      {
+        return null;
+      }
+
       var credential = Encoding.UTF8.GetString(credentialInBytes).Split(new[] { ':' }, 2);
 
       if (credential.Length != 2)
@@ -87,6 +95,19 @@ namespace DotNet.Testcontainers.Builders
 
       _logger.DockerRegistryCredentialFound(hostname);
       return new DockerRegistryAuthenticationConfiguration(authProperty.Name, credential[0], credential[1]);
+    }
+
+    [CanBeNull]
+    private static byte[] DecodeBase64String(string base64)
+    {
+      try
+      {
+        return Convert.FromBase64String(base64);
+      }
+      catch (FormatException)
+      {
+        return null;
+      }
     }
   }
 }
