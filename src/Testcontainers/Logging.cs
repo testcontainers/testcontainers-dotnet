@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry} is not a valid base64 string");
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialInvalidDecodedBase64
-      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry}, once base64 decoded, should contain one and only one colon separating the user name and password");
+      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" value for {DockerRegistry}, once base64 decoded, should contain one and only one colon separating the user name and the password");
 
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialNotFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} not found");

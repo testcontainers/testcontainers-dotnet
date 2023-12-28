@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using System.Runtime.InteropServices;
@@ -8,6 +9,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
@@ -79,26 +81,37 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("{}", false)]
-      [InlineData("{\"auths\":null}", false)]
-      [InlineData("{\"auths\":{}}", false)]
-      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true)]
-      public void ShouldGetNull(string jsonDocument, bool isApplicable)
+      [InlineData("{}", false, null)]
+      [InlineData("{\"auths\":null}", false, null)]
+      [InlineData("{\"auths\":{}}", false, null)]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true, "The \"auth\" value for https://index.docker.io/v1/ is missing")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true, "The \"auth\" value for https://index.docker.io/v1/ is missing")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}", true, "The \"auth\" value for https://index.docker.io/v1/ is invalid (Object instead of String)")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"not base64\"}}}", true, "The \"auth\" value for https://index.docker.io/v1/ is not a valid base64 string")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true, "The \"auth\" value for https://index.docker.io/v1/, once base64 decoded, should contain one and only one colon separating the user name and the password")]
+      public void ShouldGetNull(string jsonDocument, bool isApplicable, string warning)
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
+        var recorder = new LogRecorder();
 
         // When
-        var authenticationProvider = new Base64Provider(jsonElement, NullLogger.Instance);
+        var authenticationProvider = new Base64Provider(jsonElement, recorder);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
         Assert.Equal(isApplicable, authenticationProvider.IsApplicable(DockerRegistry));
         Assert.Null(authConfig);
+        if (warning == null)
+        {
+          Assert.Empty(recorder.Logs.Where(e => e.Level == LogLevel.Warning));
+        }
+        else
+        {
+          Assert.Equal(warning, Assert.Single(recorder.Logs.Where(e => e.Level == LogLevel.Warning).Select(e => e.Text)));
+        }
       }
 
       [Fact]
@@ -118,6 +131,22 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
         Assert.Equal("username", authConfig.Username);
         Assert.Equal("password", authConfig.Password);
+      }
+
+      private class LogRecorder : ILogger
+      {
+        private readonly List<(LogLevel Level, string Text)> _logs = new List<(LogLevel Level, string Text)>();
+
+        public IEnumerable<(LogLevel Level, string Text)> Logs => _logs;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+          _logs.Add((logLevel, formatter(state, exception)));
+        }
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable BeginScope<TState>(TState state) => null;
       }
     }
 
