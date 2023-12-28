@@ -74,11 +74,11 @@ namespace DotNet.Testcontainers.Containers
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
 
-#if NETSTANDARD2_1_OR_GREATER
-      await WriteAsync(fileContent, ct)
+#if NETSTANDARD2_0
+      await WriteAsync(fileContent, 0, fileContent.Length, ct)
         .ConfigureAwait(false);
 #else
-      await WriteAsync(fileContent, 0, fileContent.Length, ct)
+      await WriteAsync(fileContent, ct)
         .ConfigureAwait(false);
 #endif
 

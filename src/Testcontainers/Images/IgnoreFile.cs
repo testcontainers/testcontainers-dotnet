@@ -193,10 +193,10 @@ namespace DotNet.Testcontainers.Images
         }
 
         // Replace the last non recursive wildcard with a match-zero-or-one quantifier regular expression.
-#if NETSTANDARD2_1_OR_GREATER
-        if (input.Contains('*') && index >= 0)
-#else
+#if NETSTANDARD2_0
         if (input.Contains("*") && index >= 0)
+#else
+        if (input.Contains('*') && index >= 0)
 #endif
         {
           input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?");
