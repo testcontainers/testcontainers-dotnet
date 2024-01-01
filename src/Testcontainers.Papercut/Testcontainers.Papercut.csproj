@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
-        <Copyright>Copyright (c) 2019 - 2023 Liam Wilson, Andre Hofmeister and other authors</Copyright>
+        <Copyright>Copyright (c) 2019 - 2024 Liam Wilson, Andre Hofmeister and other authors</Copyright>
         <Authors>Liam Wilson, Andre Hofmeister and contributors</Authors>
         <Description>A Testcontainers Papercut module for testing SMTP clients and sending emails.</Description>
     </PropertyGroup>
