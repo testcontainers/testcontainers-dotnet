@@ -72,53 +72,42 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var isValidKind = JsonValueKind.String.Equals(auth.ValueKind) || JsonValueKind.Null.Equals(auth.ValueKind);
-      var authValue = isValidKind ? auth.GetString() : null;
+      if (!JsonValueKind.String.Equals(auth.ValueKind) && !JsonValueKind.Null.Equals(auth.ValueKind))
+      {
+        _logger.DockerRegistryAuthPropertyValueKindInvalid(hostname, auth.ValueKind);
+        return null;
+      }
+
+      var authValue = auth.GetString();
 
       if (string.IsNullOrEmpty(authValue))
       {
-        if (isValidKind)
-        {
-          _logger.DockerRegistryCredentialMissingAuth(hostname);
-        }
-        else
-        {
-          _logger.DockerRegistryCredentialInvalidAuth(hostname, auth.ValueKind);
-        }
+        _logger.DockerRegistryAuthPropertyValueNotFound(hostname);
         return null;
       }
 
-      var credentialInBytes = DecodeBase64String(authValue);
+      byte[] credentialInBytes;
 
-      if (credentialInBytes == null)
+      try
       {
-        _logger.DockerRegistryCredentialInvalidEncodedBase64(hostname);
+        credentialInBytes = Convert.FromBase64String(authValue);
+      }
+      catch (FormatException e)
+      {
+        _logger.DockerRegistryAuthPropertyValueInvalidBase64(hostname, e);
         return null;
       }
 
-      var credential = Encoding.UTF8.GetString(credentialInBytes).Split(new[] { ':' }, 2);
+      var credential = Encoding.Default.GetString(credentialInBytes).Split(new[] { ':' }, 2);
 
       if (credential.Length != 2)
       {
-        _logger.DockerRegistryCredentialInvalidDecodedBase64(hostname);
+        _logger.DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormat(hostname);
         return null;
       }
 
       _logger.DockerRegistryCredentialFound(hostname);
       return new DockerRegistryAuthenticationConfiguration(authProperty.Name, credential[0], credential[1]);
-    }
-
-    [CanBeNull]
-    private static byte[] DecodeBase64String(string base64)
-    {
-      try
-      {
-        return Convert.FromBase64String(base64);
-      }
-      catch (FormatException)
-      {
-        return null;
-      }
     }
   }
 }
