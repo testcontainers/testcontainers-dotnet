@@ -90,7 +90,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithResourceMapping(Encoding.UTF8.GetBytes(TestQueryString), "/home/firebird_check.sql")
+            .WithResourceMapping(Encoding.Default.GetBytes(TestQueryString), "/home/firebird_check.sql")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 
