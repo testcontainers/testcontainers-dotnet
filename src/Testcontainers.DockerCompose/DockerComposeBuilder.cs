@@ -120,4 +120,4 @@ public sealed class DockerComposeBuilder : ContainerBuilder<DockerComposeBuilder
                 .ConfigureAwait(false);
         }
     }
-}   
+}

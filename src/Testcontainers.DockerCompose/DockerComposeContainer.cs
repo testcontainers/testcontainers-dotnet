@@ -1,5 +1,6 @@
 ﻿namespace Testcontainers.DockerCompose;
 
+[PublicAPI]
 public class DockerComposeContainer : DockerContainer
 {
     private readonly IContainer _proxyContainer;
