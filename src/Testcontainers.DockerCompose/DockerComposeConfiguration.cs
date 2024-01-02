@@ -1,0 +1,71 @@
+namespace Testcontainers.DockerCompose;
+
+/// <inheritdoc cref="ContainerConfiguration" />
+[PublicAPI]
+public sealed class DockerComposeConfiguration : ContainerConfiguration
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
+    /// </summary>
+    /// <param name="composeFile">The fully qualified path to the compose file.</param>
+    /// <param name="localCompose">Whether the local compose will be used.</param>
+    public DockerComposeConfiguration(
+        string composeFile = null,
+        bool localCompose = false)
+    {
+        ComposeFile = composeFile;
+        LocalCompose = localCompose;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    public DockerComposeConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    public DockerComposeConfiguration(IContainerConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    public DockerComposeConfiguration(DockerComposeConfiguration resourceConfiguration)
+        : this(new DockerComposeConfiguration(), resourceConfiguration)
+    {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
+    /// </summary>
+    /// <param name="oldValue">The old Docker resource configuration.</param>
+    /// <param name="newValue">The new Docker resource configuration.</param>
+    public DockerComposeConfiguration(DockerComposeConfiguration oldValue, DockerComposeConfiguration newValue)
+        : base(oldValue, newValue)
+    {
+        ComposeFile = BuildConfiguration.Combine(oldValue.ComposeFile, newValue.ComposeFile);
+        LocalCompose = BuildConfiguration.Combine(oldValue.LocalCompose, newValue.LocalCompose);
+    }
+    
+    /// <summary>
+    /// Gets the path to the compose file.
+    /// </summary>
+    public string ComposeFile { get; }
+    
+    /// <summary>
+    /// Indicates whether local compose is enabled.
+    /// </summary>
+    public bool LocalCompose { get; }
+}
