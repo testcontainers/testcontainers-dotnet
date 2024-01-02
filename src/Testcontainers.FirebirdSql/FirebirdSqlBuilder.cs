@@ -78,10 +78,6 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     public override FirebirdSqlContainer Build()
     {
         Validate();
-
-        // By default, the base builder waits until the container is running. However, for FirebirdSql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
-        // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
-        // var firebirdSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new FirebirdSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
@@ -124,29 +120,5 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     protected override FirebirdSqlBuilder Merge(FirebirdSqlConfiguration oldValue, FirebirdSqlConfiguration newValue)
     {
         return new FirebirdSqlBuilder(new FirebirdSqlConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private readonly IList<string> _command;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
-        /// </summary>
-        /// <param name="configuration">The container configuration.</param>
-        public WaitUntil(FirebirdSqlConfiguration configuration)
-        {
-            _command = new List<string> { "/usr/local/firebird/bin/isql", "-i", "/home/firebird_check.sql", "-user", configuration.Username, "-pass", configuration.Password, configuration.Database };
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }
