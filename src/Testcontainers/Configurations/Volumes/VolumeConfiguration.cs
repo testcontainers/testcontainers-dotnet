@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Text.Json.Serialization;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
@@ -48,6 +49,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    [JsonPropertyName("Name")]
     public string Name { get; }
   }
 }

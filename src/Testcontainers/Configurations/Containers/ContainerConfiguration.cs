@@ -140,12 +140,15 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public bool? AutoRemove { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public bool? Privileged { get; }
 
     /// <inheritdoc />
+    [JsonPropertyName("Image")]
     public IImage Image { get; }
 
     /// <inheritdoc />
@@ -153,30 +156,39 @@ namespace DotNet.Testcontainers.Configurations
     public Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string Name { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string Hostname { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string MacAddress { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string WorkingDirectory { get; }
 
     /// <inheritdoc />
+    [JsonPropertyName("Entrypoint")]
     public IEnumerable<string> Entrypoint { get; }
 
     /// <inheritdoc />
+    [JsonPropertyName("Command")]
     public IEnumerable<string> Command { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IReadOnlyDictionary<string, string> Environments { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IReadOnlyDictionary<string, string> ExposedPorts { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
@@ -188,15 +200,19 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IMount> Mounts { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<INetwork> Networks { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<string> NetworkAliases { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />

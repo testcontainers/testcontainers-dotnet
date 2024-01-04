@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Networks
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -95,21 +96,31 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      string id = string.Empty;
-      if (_configuration.Reuse == true)
+      string id;
+
+      if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        var reusableNetwork = (await _client.Network.GetAllAsync(new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={_configuration.GetHash()}" } }, ct).ConfigureAwait(false)).FirstOrDefault();
+        var filters = new FilterByReuseHash(_configuration);
+
+        var reusableNetworks = await _client.Network.GetAllAsync(filters, ct)
+          .ConfigureAwait(false);
+
+        var reusableNetwork = reusableNetworks.SingleOrDefault();
 
         if (reusableNetwork != null)
         {
-          id = reusableNetwork.Name;
+          id = reusableNetwork.ID;
+        }
+        else
+        {
+          id = await _client.Network.CreateAsync(_configuration, ct)
+            .ConfigureAwait(false);
         }
       }
-
-      if (id == string.Empty)
+      else
       {
         id = await _client.Network.CreateAsync(_configuration, ct)
-        .ConfigureAwait(false);
+          .ConfigureAwait(false);
       }
 
       _network = await _client.Network.ByIdAsync(id, ct)
@@ -126,10 +137,18 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      await _client.Network.DeleteAsync(_network.ID, ct)
-        .ConfigureAwait(false);
-
-      _network = new NetworkResponse();
+      try
+      {
+        await _client.Network.DeleteAsync(_network.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+      }
+      finally
+      {
+        _network = new NetworkResponse();
+      }
     }
   }
 }

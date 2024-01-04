@@ -60,9 +60,16 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithCleanUp(bool cleanUp);
 
     /// <summary>
-    /// TODO
+    /// Reuses an existing Docker resource.
     /// </summary>
-    /// <param name="reuse">TODO</param>
+    /// <remarks>
+    /// If reuse is enabled, Testcontainers will label the resource with a hash value
+    /// according to the respective build/resource configuration. When Testcontainers finds a
+    /// matching resource, it will reuse this resource instead of creating a new one. Enabling
+    /// reuse will disable the resource reaper, meaning the resource will not be cleaned up
+    /// after the tests are finished.
+    /// </remarks>
+    /// <param name="reuse">Determines whether to reuse an existing resource configuration or not.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithReuse(bool reuse);

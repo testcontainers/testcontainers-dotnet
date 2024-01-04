@@ -65,6 +65,11 @@ namespace DotNet.Testcontainers.Clients
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
       };
 
+      if (configuration.Reuse.HasValue && configuration.Reuse.Value)
+      {
+        createParameters.Labels.Add(TestcontainersClient.TestcontainersReuseHashLabel, configuration.GetReuseHash());
+      }
+
       if (configuration.ParameterModifiers != null)
       {
         foreach (var parameterModifier in configuration.ParameterModifiers)

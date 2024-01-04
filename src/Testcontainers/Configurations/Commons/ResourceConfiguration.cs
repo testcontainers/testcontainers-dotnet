@@ -19,6 +19,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerEndpointAuthenticationConfiguration">The Docker endpoint authentication configuration.</param>
     /// <param name="labels">The test session id.</param>
     /// <param name="parameterModifiers">A list of low level modifications of the Docker.DotNet entity.</param>
+    /// <param name="reuse">A value indicating whether to reuse an existing resource configuration or not.</param>
     public ResourceConfiguration(
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IReadOnlyDictionary<string, string> labels = null,
@@ -49,9 +50,9 @@ namespace DotNet.Testcontainers.Configurations
     protected ResourceConfiguration(IResourceConfiguration<TCreateResourceEntity> oldValue, IResourceConfiguration<TCreateResourceEntity> newValue)
       : this(
         dockerEndpointAuthenticationConfiguration: BuildConfiguration.Combine(oldValue.DockerEndpointAuthConfig, newValue.DockerEndpointAuthConfig),
-        parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
         labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels),
-        reuse: BuildConfiguration.Combine(oldValue.Reuse, newValue.Reuse))
+        parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
+        reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value))
     {
     }
 
@@ -61,26 +62,27 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
+    public bool? Reuse { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
     /// <inheritdoc />
-    [JsonConverter(typeof(ExcludeDynamicLabelsConverter))]
+    [JsonConverter(typeof(JsonIgnoreRuntimeResourceLabels))]
     public IReadOnlyDictionary<string, string> Labels { get; }
 
     /// <inheritdoc />
     [JsonIgnore]
     public IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
 
-    [JsonIgnore]
-    public bool? Reuse { get; }
-
-    public virtual string GetHash()
+    /// <inheritdoc />
+    public virtual string GetReuseHash()
     {
       var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
 
       using (var sha1 = SHA1.Create())
       {
-        var json = JsonSerializer.Serialize(this, GetType());
         return Convert.ToBase64String(sha1.ComputeHash(jsonUtf8Bytes));
       }
     }

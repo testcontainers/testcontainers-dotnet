@@ -60,15 +60,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithReuse(bool reuse)
     {
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, parameterModifiers: new List<Action<TCreateResourceEntity>>()
-        {
-          parameter => {
-            var labelsProperty = parameter.GetType().GetProperty("Labels");
-            var labels = (IDictionary<string, string>)labelsProperty.GetValue(parameter);
-            labels[TestcontainersClient.TestcontainersReuseHashLabel] = DockerResourceConfiguration.GetHash();
-          }
-        })
-      );
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse));
     }
 
     /// <inheritdoc />

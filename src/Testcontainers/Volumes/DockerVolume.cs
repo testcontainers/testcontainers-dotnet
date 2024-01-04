@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Volumes
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -95,18 +96,28 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      string id = string.Empty;
-      if (_configuration.Reuse == true)
+      string id;
+
+      if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        var reusableVolume = (await _client.Volume.GetAllAsync(new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersReuseHashLabel}={_configuration.GetHash()}" } }, ct).ConfigureAwait(false)).FirstOrDefault();
+        var filters = new FilterByReuseHash(_configuration);
+
+        var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct)
+          .ConfigureAwait(false);
+
+        var reusableVolume = reusableVolumes.SingleOrDefault();
 
         if (reusableVolume != null)
         {
           id = reusableVolume.Name;
         }
+        else
+        {
+          id = await _client.Volume.CreateAsync(_configuration, ct)
+            .ConfigureAwait(false);
+        }
       }
-
-      if (id == string.Empty)
+      else
       {
         id = await _client.Volume.CreateAsync(_configuration, ct)
           .ConfigureAwait(false);
@@ -126,10 +137,18 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      await _client.Volume.DeleteAsync(Name, ct)
-        .ConfigureAwait(false);
-
-      _volume = new VolumeResponse();
+      try
+      {
+        await _client.Volume.DeleteAsync(Name, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+      }
+      finally
+      {
+        _volume = new VolumeResponse();
+      }
     }
   }
 }
