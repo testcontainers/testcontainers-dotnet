@@ -99,10 +99,10 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
     {
-#if NETSTANDARD2_1_OR_GREATER
-      var unixEpoch = DateTime.UnixEpoch;
-#else
+#if NETSTANDARD2_0
       var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+#else
+      var unixEpoch = DateTime.UnixEpoch;
 #endif
 
       if (default(DateTime).Equals(since))
@@ -270,11 +270,11 @@ namespace DotNet.Testcontainers.Clients
 
         var readBytes = new byte[entry.Size];
 
-#if NETSTANDARD2_1_OR_GREATER
-        _ = await tarInputStream.ReadAsync(new Memory<byte>(readBytes), ct)
+#if NETSTANDARD2_0
+        _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
           .ConfigureAwait(false);
 #else
-        _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+        _ = await tarInputStream.ReadAsync(readBytes, ct)
           .ConfigureAwait(false);
 #endif
 

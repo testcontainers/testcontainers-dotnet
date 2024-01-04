@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" />
     <PackageReference Update="Docker.DotNet" Version="3.125.15" />
     <PackageReference Update="Docker.DotNet.X509" Version="3.125.15" />
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
@@ -9,9 +8,9 @@
     <PackageReference Update="BouncyCastle.Cryptography" Version="2.2.1" />
     <PackageReference Update="SharpZipLib" Version="1.4.2" />
     <PackageReference Update="SSH.NET" Version="2023.0.0" />
-    <PackageReference Update="System.Text.Json" Version="6.0.8" />
+    <PackageReference Update="System.Text.Json" Version="6.0.9" />
     <!-- Unit and integration test dependencies: -->
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Update="coverlet.collector" Version="6.0.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageReference Update="xunit" Version="2.5.0" />

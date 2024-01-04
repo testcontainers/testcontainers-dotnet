@@ -75,7 +75,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("DATABASE IS READY TO USE!"));
     }
 
     /// <inheritdoc />
@@ -117,18 +117,5 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     private OracleBuilder WithDatabase(string database)
     {
         return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return stdout.Contains("DATABASE IS READY TO USE!");
-        }
     }
 }

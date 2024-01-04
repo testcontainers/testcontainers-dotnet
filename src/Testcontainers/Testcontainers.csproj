@@ -6,8 +6,7 @@
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" VersionOverride="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="JetBrains.Annotations" VersionOverride="2022.3.1" PrivateAssets="All" />
+    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All" />
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="Docker.DotNet.X509" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />

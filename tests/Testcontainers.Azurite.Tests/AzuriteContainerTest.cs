@@ -2,7 +2,12 @@ namespace Testcontainers.Azurite;
 
 public abstract class AzuriteContainerTest : IAsyncLifetime
 {
-    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder().Build();
+    private readonly AzuriteContainer _azuriteContainer;
+
+    private AzuriteContainerTest(AzuriteContainer azuriteContainer)
+    {
+        _azuriteContainer = azuriteContainer;
+    }
 
     public Task InitializeAsync()
     {
@@ -14,6 +19,51 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         return _azuriteContainer.DisposeAsync().AsTask();
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task EstablishesBlobServiceConnection()
+    {
+        // Give
+        var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
+
+        // When
+        var properties = await client.GetPropertiesAsync()
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.False(HasError(properties));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task EstablishesQueueServiceConnection()
+    {
+        // Give
+        var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
+
+        // When
+        var properties = await client.GetPropertiesAsync()
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.False(HasError(properties));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task EstablishesTableServiceConnection()
+    {
+        // Give
+        var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
+
+        // When
+        var properties = await client.GetPropertiesAsync()
+            .ConfigureAwait(false);
+
+        // Then
+        Assert.False(HasError(properties));
+    }
+
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
     {
         using (var rawResponse = response.GetRawResponse())
@@ -22,57 +72,48 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
     }
 
-    public sealed class BlobService : AzuriteContainerTest
+    [UsedImplicitly]
+    public sealed class AzuriteDefaultConfiguration : AzuriteContainerTest
     {
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task EstablishesConnection()
+        public AzuriteDefaultConfiguration()
+            : base(new AzuriteBuilder().Build())
         {
-            // Give
-            var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
-
-            // When
-            var properties = await client.GetPropertiesAsync()
-                .ConfigureAwait(false);
-
-            // Then
-            Assert.False(HasError(properties));
         }
     }
 
-    public sealed class QueueService : AzuriteContainerTest
+    [UsedImplicitly]
+    public sealed class AzuriteInMemoryConfiguration : AzuriteContainerTest
     {
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task EstablishesConnection()
+        public AzuriteInMemoryConfiguration()
+            : base(new AzuriteBuilder().WithInMemoryPersistence().Build())
         {
-            // Give
-            var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
-
-            // When
-            var properties = await client.GetPropertiesAsync()
-                .ConfigureAwait(false);
-
-            // Then
-            Assert.False(HasError(properties));
         }
     }
 
-    public sealed class TableService : AzuriteContainerTest
+    [UsedImplicitly]
+    public sealed class AzuriteMemoryLimitConfiguration : AzuriteContainerTest
     {
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task EstablishesConnection()
-        {
-            // Give
-            var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
+        private const int MemoryLimitInMb = 64;
 
-            // When
-            var properties = await client.GetPropertiesAsync()
+        private static readonly string[] LineEndings = { "\r\n", "\n" };
+
+        public AzuriteMemoryLimitConfiguration()
+            : base(new AzuriteBuilder().WithInMemoryPersistence(MemoryLimitInMb).Build())
+        {
+        }
+
+        [Fact]
+        public async Task MemoryLimitIsConfigured()
+        {
+            // Given
+            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false)
                 .ConfigureAwait(false);
 
+            // When
+            var firstLine = stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries).First();
+
             // Then
-            Assert.False(HasError(properties));
+            Assert.StartsWith(string.Format(CultureInfo.InvariantCulture, "In-memory extent storage is enabled with a limit of {0:F2} MB", MemoryLimitInMb), firstLine);
         }
     }
 }

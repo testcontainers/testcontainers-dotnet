@@ -186,7 +186,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         await WaitStrategy.WaitUntilAsync(() => WaitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
             .ConfigureAwait(false);
 
-        using (var httpClient = new HttpClient())
+        using (var httpClient = new HttpClient(new RetryHandler()))
         {
             httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MgmtPort)).Uri;
 
@@ -538,6 +538,49 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             content.Add("ramQuota", bucket.QuotaMiB.ToString());
             content.Add("replicaNumber", bucket.ReplicaNumber.ToString());
             Content = new FormUrlEncodedContent(content);
+        }
+    }
+
+    /// <summary>
+    /// An HTTP retry handler that sends an HTTP request until it succeeds.
+    /// </summary>
+    /// <remarks>
+    /// Sending an HTTP request to Couchbase's API sometimes fails with the following
+    /// error: System.Net.Http.HttpIOException: The response ended prematurely (ResponseEnded).
+    /// The HTTP status code 504 indicates an issue with the Couchbase backend.
+    /// It is likely that the API is not yet ready to process HTTP requests.
+    /// Typically, trying it again resolves the issue.
+    /// </remarks>
+    private sealed class RetryHandler : DelegatingHandler
+    {
+        private const int MaxRetries = 5;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RetryHandler" /> class.
+        /// </summary>
+        public RetryHandler()
+            : base(new HttpClientHandler())
+        {
+        }
+
+        /// <inheritdoc />
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            for (var _ = 0; _ < MaxRetries; _++)
+            {
+                try
+                {
+                    return await base.SendAsync(request, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (HttpRequestException)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+            }
+
+            throw new HttpRequestException($"Unable to configure Couchbase. The HTTP request '{request.RequestUri}' did not complete successfully.");
         }
     }
 }
