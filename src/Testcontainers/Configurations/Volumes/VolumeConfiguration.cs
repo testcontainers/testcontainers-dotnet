@@ -49,7 +49,6 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    [JsonPropertyName("Name")]
     public string Name { get; }
   }
 }

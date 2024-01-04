@@ -148,7 +148,6 @@ namespace DotNet.Testcontainers.Configurations
     public bool? Privileged { get; }
 
     /// <inheritdoc />
-    [JsonPropertyName("Image")]
     public IImage Image { get; }
 
     /// <inheritdoc />
@@ -172,11 +171,9 @@ namespace DotNet.Testcontainers.Configurations
     public string WorkingDirectory { get; }
 
     /// <inheritdoc />
-    [JsonPropertyName("Entrypoint")]
     public IEnumerable<string> Entrypoint { get; }
 
     /// <inheritdoc />
-    [JsonPropertyName("Command")]
     public IEnumerable<string> Command { get; }
 
     /// <inheritdoc />
