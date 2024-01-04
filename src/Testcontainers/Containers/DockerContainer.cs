@@ -377,10 +377,14 @@ namespace DotNet.Testcontainers.Containers
 
         if (reusableContainer != null)
         {
+          Logger.ReusableResourceFound();
+
           id = reusableContainer.ID;
         }
         else
         {
+          Logger.ReusableResourceNotFound();
+
           id = await _client.RunAsync(_configuration, ct)
             .ConfigureAwait(false);
         }

@@ -19,6 +19,8 @@ namespace DotNet.Testcontainers.Volumes
 
     private readonly IVolumeConfiguration _configuration;
 
+    private readonly ILogger _logger;
+
     private VolumeResponse _volume = new VolumeResponse();
 
     /// <summary>
@@ -30,6 +32,7 @@ namespace DotNet.Testcontainers.Volumes
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
+      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -109,10 +112,14 @@ namespace DotNet.Testcontainers.Volumes
 
         if (reusableVolume != null)
         {
+          _logger.ReusableResourceFound();
+
           id = reusableVolume.Name;
         }
         else
         {
+          _logger.ReusableResourceNotFound();
+
           id = await _client.Volume.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);
         }

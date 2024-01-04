@@ -101,6 +101,12 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
 
+    private static readonly Action<ILogger, Exception> _ReusableResourceFound
+      = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource found");
+
+    private static readonly Action<ILogger, Exception> _ReusableResourceNotFound
+      = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource not found, create resource");
+
 #pragma warning restore InconsistentNaming, SA1309
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
@@ -253,6 +259,16 @@ namespace DotNet.Testcontainers
     public static void DockerRegistryCredentialFound(this ILogger logger, string dockerRegistry)
     {
       _DockerRegistryCredentialFound(logger, dockerRegistry, null);
+    }
+
+    public static void ReusableResourceFound(this ILogger logger)
+    {
+      _ReusableResourceFound(logger, null);
+    }
+
+    public static void ReusableResourceNotFound(this ILogger logger)
+    {
+      _ReusableResourceNotFound(logger, null);
     }
 
     private static string TruncId(string id)

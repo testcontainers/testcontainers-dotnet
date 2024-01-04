@@ -19,6 +19,8 @@ namespace DotNet.Testcontainers.Networks
 
     private readonly INetworkConfiguration _configuration;
 
+    private readonly ILogger _logger;
+
     private NetworkResponse _network = new NetworkResponse();
 
     /// <summary>
@@ -30,6 +32,7 @@ namespace DotNet.Testcontainers.Networks
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
+      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -109,10 +112,14 @@ namespace DotNet.Testcontainers.Networks
 
         if (reusableNetwork != null)
         {
+          _logger.ReusableResourceFound();
+
           id = reusableNetwork.ID;
         }
         else
         {
+          _logger.ReusableResourceNotFound();
+
           id = await _client.Network.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);
         }
