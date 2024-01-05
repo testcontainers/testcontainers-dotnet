@@ -177,15 +177,12 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> Command { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public IReadOnlyDictionary<string, string> Environments { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public IReadOnlyDictionary<string, string> ExposedPorts { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
@@ -205,11 +202,9 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<INetwork> Networks { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public IEnumerable<string> NetworkAliases { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />
