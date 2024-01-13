@@ -34,7 +34,7 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         do
         {
             var messagesJson = await httpClient.GetStringAsync("/api/messages")
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             var jsonDocument = JsonDocument.Parse(messagesJson);
             messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();

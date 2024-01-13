@@ -39,10 +39,10 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
 
       // When
       await container.StartAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       await container.StopAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(resourceReaperEnabled, DockerCli.ResourceExists(DockerCli.DockerResource.Container, "testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D")));

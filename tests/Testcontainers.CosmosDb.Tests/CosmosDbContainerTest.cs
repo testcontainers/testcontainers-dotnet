@@ -29,7 +29,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
         // When
         var accountProperties = await cosmosClient.ReadAccountAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal("localhost", accountProperties.Id);

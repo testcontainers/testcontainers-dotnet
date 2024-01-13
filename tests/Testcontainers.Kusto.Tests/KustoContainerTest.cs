@@ -23,7 +23,7 @@ public sealed class KustoContainerTest : IAsyncLifetime
 
         // When
         using var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand())
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = dataReader.Read();
 

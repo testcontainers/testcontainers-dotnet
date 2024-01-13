@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var exception = await Assert.ThrowsAnyAsync<SystemException>(() => _alpineFixture.Container.StartAsync(cts.Token))
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Contains(exception.GetType(), expectedExceptions);

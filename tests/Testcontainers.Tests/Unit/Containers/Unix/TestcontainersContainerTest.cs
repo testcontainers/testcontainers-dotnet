@@ -35,7 +35,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.NotEmpty(container.Name);
@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.EndsWith(name, container.Name);
@@ -75,10 +75,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var exitCode = await container.GetExitCodeAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(0, exitCode);
@@ -98,7 +98,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(macAddress, container.MacAddress);
@@ -116,10 +116,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var exitCode = await container.GetExitCodeAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(0, exitCode);
@@ -136,10 +136,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var exitCode = await container.GetExitCodeAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(255, exitCode);
@@ -164,7 +164,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(hostPort, container.GetMappedPublicPort(containerPort));
@@ -185,7 +185,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.NotEqual(containerPort, container.GetMappedPublicPort(containerPort));
@@ -203,7 +203,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Throws<InvalidOperationException>(() => container.GetMappedPublicPort(443));
@@ -227,7 +227,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         var fileInfo = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, file));
@@ -256,7 +256,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         var fileInfo = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, file));
@@ -275,7 +275,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var exception = await Record.ExceptionAsync(() => container.StartAsync())
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Null(exception);
@@ -318,18 +318,18 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         consumer.Stdout.Seek(0, SeekOrigin.Begin);
         consumer.Stderr.Seek(0, SeekOrigin.Begin);
 
         using var stdoutReader = new StreamReader(consumer.Stdout, leaveOpen: true);
         var stdout = await stdoutReader.ReadToEndAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         using var stderrReader = new StreamReader(consumer.Stderr, leaveOpen: true);
         var stderr = await stderrReader.ReadToEndAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(unixTimeInMilliseconds, stdout);
@@ -348,7 +348,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var exception = await Record.ExceptionAsync(() => container.StartAsync())
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Null(exception);
@@ -365,10 +365,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" })
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(255, execResult.ExitCode);
@@ -385,10 +385,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.com" })
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Contains("PING google.com", execResult.Stdout);
@@ -405,10 +405,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.invalid" })
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Contains("ping: bad address 'google.invalid'", execResult.Stderr);
@@ -429,13 +429,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath)
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath })
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.Equal(0, execResult.ExitCode);
@@ -454,12 +454,12 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var id = container.Id;
 
         await Task.Delay(TimeSpan.FromSeconds(1))
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Container, id));
@@ -478,15 +478,15 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         var id = container.Id;
 
         await container.StopAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         await Task.Delay(TimeSpan.FromSeconds(1))
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.False(DockerCli.ResourceExists(DockerCli.DockerResource.Container, id));
@@ -507,7 +507,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         await container.StartAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.EndsWith(name, container.Name);
@@ -523,7 +523,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync())
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
       }
     }
   }

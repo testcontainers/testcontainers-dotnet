@@ -26,7 +26,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
         // When
         var buckets = await client.ListBucketsAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
@@ -51,13 +51,13 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
         // When
         _ = await client.PutBucketAsync(objectRequest.BucketName)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.PutObjectAsync(objectRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(byte.MaxValue, objectResponse.ContentLength);
