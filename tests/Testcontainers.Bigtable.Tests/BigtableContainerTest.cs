@@ -43,13 +43,13 @@ public sealed class BigtableContainerTest : IAsyncLifetime
 
         // When
         var bigtableClient = await bigtableClientBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await bigtableClient.CreateTableAsync(instanceName, tableName.TableId, table)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var actualTable = await bigtableClient.GetTableAsync(tableName)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.NotNull(actualTable);

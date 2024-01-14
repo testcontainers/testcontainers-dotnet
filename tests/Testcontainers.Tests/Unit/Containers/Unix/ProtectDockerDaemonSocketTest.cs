@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var version = await client.System.GetVersionAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.StartsWith(version.Version, _fixture.Image.Tag);
@@ -68,7 +68,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var version = await client.System.GetVersionAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.StartsWith(version.Version, _fixture.Image.Tag);
@@ -96,7 +96,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // When
         var version = await client.System.GetVersionAsync()
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         // Then
         Assert.StartsWith(version.Version, _fixture.Image.Tag);

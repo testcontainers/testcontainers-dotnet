@@ -29,10 +29,10 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
 
         // When
         await graphTraversalSource.AddV(label).Promise(traversal => traversal.Iterate())
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var count = await graphTraversalSource.V().HasLabel(label).Count().Promise(traversal => traversal.Next())
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(1, count);

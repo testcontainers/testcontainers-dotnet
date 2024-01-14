@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       await Assert.ThrowsAsync<TimeoutException>(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(5)))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.Equal(expectedCount, tryCount);
     }
@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       _ = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => wait.UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromSeconds(5)))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.Equal(expectedCount, tryCount);
     }

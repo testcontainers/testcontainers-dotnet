@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task HttpWaitStrategyReceivesStatusCode(HttpWaitStrategy httpWaitStrategy)
     {
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.True(succeeded);
     }
@@ -67,13 +67,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       await Task.Delay(TimeSpan.FromSeconds(1))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var (stdout, _) = await _container.GetLogsAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.True(succeeded);
@@ -97,13 +97,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       await Task.Delay(TimeSpan.FromSeconds(1))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var (stdout, _) = await _container.GetLogsAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.True(succeeded);
@@ -121,10 +121,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var exceptionOnSubsequentCall = await Record.ExceptionAsync(() => httpWaitStrategy.UntilAsync(_container))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Null(exceptionOnSubsequentCall);

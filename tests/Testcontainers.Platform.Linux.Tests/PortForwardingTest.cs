@@ -24,10 +24,10 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public async Task EstablishesHostConnection()
     {
         var exitCode = await _container.GetExitCodeAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         Assert.Equal(0, exitCode);
         Assert.Equal(bool.TrueString, stdout);

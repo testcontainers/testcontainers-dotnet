@@ -26,10 +26,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       _ = await _container.ExecAsync(new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" })
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var fileContent = await _container.ReadFileAsync(dayOfWeekFilePath)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(dayOfWeek, Encoding.Default.GetString(fileContent).TrimEnd());

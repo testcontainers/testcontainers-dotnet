@@ -42,20 +42,20 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         expectedRow.Add("score", 85L);
 
         using var bigQueryClient = await bigQueryClientBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var dataset = await bigQueryClient.GetOrCreateDatasetAsync("mydata")
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // When
         var table = await dataset.CreateTableAsync("scores", tableSchema)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await table.InsertRowAsync(expectedRow)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var results = await bigQueryClient.ExecuteQueryAsync($"SELECT * FROM {table}", null)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Single(results);

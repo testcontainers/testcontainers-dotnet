@@ -53,7 +53,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var networkResponse = await client.Network.ByIdAsync(_network.Name)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(Option.Value, Assert.Contains(Option.Key, networkResponse.Options));
@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var networkResponse = await client.Network.ByIdAsync(_network.Name)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(Label.Value, Assert.Contains(Label.Key, networkResponse.Labels));
