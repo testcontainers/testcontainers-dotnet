@@ -28,7 +28,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // When
         var properties = await client.GetPropertiesAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.False(HasError(properties));
@@ -43,7 +43,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // When
         var properties = await client.GetPropertiesAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.False(HasError(properties));
@@ -58,7 +58,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // When
         var properties = await client.GetPropertiesAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.False(HasError(properties));
@@ -107,7 +107,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         {
             // Given
             var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             // When
             var firstLine = stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries).First();

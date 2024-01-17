@@ -25,14 +25,14 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         clusterOptions.Password = CouchbaseBuilder.DefaultPassword;
 
         var cluster = await Cluster.ConnectAsync(clusterOptions)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // When
         var ping = await cluster.PingAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var bucket = await cluster.BucketAsync(_couchbaseContainer.Buckets.Single().Name)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.NotEmpty(ping.Id);

@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task ImmediatelyUntil()
       {
         var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitUntilAsync(() => UntilAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)))
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         Assert.Null(exception);
       }
@@ -23,7 +23,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task ImmediatelyWhile()
       {
         var exception = await Record.ExceptionAsync(() => WaitStrategy.WaitWhileAsync(() => WhileAsync(null), TimeSpan.FromMilliseconds(25), TimeSpan.FromMilliseconds(100)))
-          .ConfigureAwait(false);
+          .ConfigureAwait(true);
 
         Assert.Null(exception);
       }

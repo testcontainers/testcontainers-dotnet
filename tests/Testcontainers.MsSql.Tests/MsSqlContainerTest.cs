@@ -37,7 +37,7 @@ public sealed class MsSqlContainerTest : IAsyncLifetime
 
         // When
         var execResult = await _msSqlContainer.ExecScriptAsync(scriptContent)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);

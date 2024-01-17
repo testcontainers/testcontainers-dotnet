@@ -44,25 +44,25 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 
         // When
         var publisher = await publisherClientBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await publisher.CreateTopicAsync(topicName)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var subscriber = await subscriberClientBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await subscriber.CreateSubscriptionAsync(subscriptionName, topicName, null, 60)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await publisher.PublishAsync(topicName, new[] { message })
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var response = await subscriber.PullAsync(subscriptionName, 1)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await subscriber.AcknowledgeAsync(subscriptionName, response.ReceivedMessages.Select(receivedMessage => receivedMessage.AckId))
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(helloPubSub, response.ReceivedMessages.Single().Message.Data.ToStringUtf8());

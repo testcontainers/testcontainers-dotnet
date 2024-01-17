@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var volumeResponse = await client.Volume.ByIdAsync(_volume.Name)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(Label.Value, Assert.Contains(Label.Key, volumeResponse.Labels));

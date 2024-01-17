@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await container.StartAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(TestcontainersHealthStatus.Healthy, container.Health);
@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       _ = await Record.ExceptionAsync(() => container.StartAsync())
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(TestcontainersHealthStatus.Unhealthy, container.Health);

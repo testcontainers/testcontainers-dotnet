@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using System.Runtime.InteropServices;
@@ -8,6 +9,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
@@ -62,6 +64,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class Base64ProviderTest
     {
+      private readonly WarnLogger _warnLogger = new WarnLogger();
+
       [Theory]
       [InlineData("{\"auths\":{\"ghcr.io\":{}}}")]
       [InlineData("{\"auths\":{\"://ghcr.io\":{}}}")]
@@ -79,26 +83,37 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("{}", false)]
-      [InlineData("{\"auths\":null}", false)]
-      [InlineData("{\"auths\":{}}", false)]
-      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true)]
-      public void ShouldGetNull(string jsonDocument, bool isApplicable)
+      [InlineData("{}", false, null)]
+      [InlineData("{\"auths\":null}", false, null)]
+      [InlineData("{\"auths\":{}}", false, null)]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ not found")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ not found")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}", true, "The \"auth\" property value kind for https://index.docker.io/v1/ is invalid: Object")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"Not_Base64_encoded\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ is not a valid Base64 string")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ should contain one colon separating the username and the password (basic authentication)")]
+      public void ShouldGetNull(string jsonDocument, bool isApplicable, string logMessage)
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
-        var authenticationProvider = new Base64Provider(jsonElement, NullLogger.Instance);
+        var authenticationProvider = new Base64Provider(jsonElement, _warnLogger);
         var authConfig = authenticationProvider.GetAuthConfig(DockerRegistry);
 
         // Then
         Assert.Equal(isApplicable, authenticationProvider.IsApplicable(DockerRegistry));
         Assert.Null(authConfig);
+
+        if (string.IsNullOrEmpty(logMessage))
+        {
+          Assert.Empty(_warnLogger.LogMessages);
+        }
+        else
+        {
+          Assert.Single(_warnLogger.LogMessages, item => logMessage.Equals(item.Item2));
+        }
       }
 
       [Fact]
@@ -221,6 +236,49 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers"))
           .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credsStore"))
           .Distinct()));
+      }
+    }
+
+    private sealed class Disposable : IDisposable
+    {
+      static Disposable()
+      {
+      }
+
+      private Disposable()
+      {
+      }
+
+      public static IDisposable Empty { get; }
+        = new Disposable();
+
+      public void Dispose()
+      {
+      }
+    }
+
+    private sealed class WarnLogger : ILogger
+    {
+      private readonly List<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
+
+      public IEnumerable<Tuple<LogLevel, string>> LogMessages => _logMessages;
+
+      public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+      {
+        if (IsEnabled(logLevel))
+        {
+          _logMessages.Add(Tuple.Create(logLevel, formatter.Invoke(state, exception)));
+        }
+      }
+
+      public bool IsEnabled(LogLevel logLevel)
+      {
+        return LogLevel.Warning.Equals(logLevel);
+      }
+
+      public IDisposable BeginScope<TState>(TState state)
+      {
+        return Disposable.Empty;
       }
     }
   }

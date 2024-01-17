@@ -35,19 +35,14 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         message.Value = Guid.NewGuid().ToString("D");
 
         // When
-        ConsumeResult<string, string> result;
+        using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
+        _ = await producer.ProduceAsync(topic, message)
+            .ConfigureAwait(true);
 
-        using (var producer = new ProducerBuilder<string, string>(producerConfig).Build())
-        {
-            _ = await producer.ProduceAsync(topic, message)
-                .ConfigureAwait(false);
-        }
+        using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
+        consumer.Subscribe(topic);
 
-        using (var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build())
-        {
-            consumer.Subscribe(topic);
-            result = consumer.Consume(TimeSpan.FromSeconds(15));
-        }
+        var result = consumer.Consume(TimeSpan.FromSeconds(15));
 
         // Then
         Assert.NotNull(result);

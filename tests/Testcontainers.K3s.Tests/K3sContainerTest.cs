@@ -22,19 +22,19 @@ public sealed class K3sContainerTest : IAsyncLifetime
         using var kubeconfigStream = new MemoryStream();
 
         var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await kubeconfigStream.WriteAsync(Encoding.Default.GetBytes(kubeconfig))
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var clientConfiguration = await KubernetesClientConfiguration.BuildConfigFromConfigFileAsync(kubeconfigStream)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         using var client = new Kubernetes(clientConfiguration);
 
         // When
         using var response = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(new V1Namespace(metadata: new V1ObjectMeta(name: Guid.NewGuid().ToString("D"))))
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.Created, response.Response.StatusCode);

@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var execResult = await _container1.ExecAsync(new[] { "ping", "-c", "1", destination })
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(0, execResult.ExitCode);

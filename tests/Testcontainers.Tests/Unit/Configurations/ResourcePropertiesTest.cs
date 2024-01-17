@@ -20,28 +20,28 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryNotExistingDockerContainerById()
     {
       Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
+        .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageById()
     {
       Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
+        .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkById()
     {
       Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
+        .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeById()
     {
       Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName)
-        .ConfigureAwait(false));
+        .ConfigureAwait(true));
     }
 
     [Fact]
@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await container.StartAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.NotEmpty(container.Id);
@@ -74,7 +74,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await Task.CompletedTask
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => container.Id);
@@ -95,7 +95,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await Task.CompletedTask
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => image.Repository);
@@ -113,7 +113,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await Task.CompletedTask
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => network.Name);
@@ -127,7 +127,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await Task.CompletedTask
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => volume.Name);

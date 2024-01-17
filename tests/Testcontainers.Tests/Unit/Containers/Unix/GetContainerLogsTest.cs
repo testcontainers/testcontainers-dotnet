@@ -18,7 +18,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task GetLogsShouldNotBeEmpty()
     {
       var (stdout, _) = await _container.GetLogsAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.NotEmpty(stdout);
     }
@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task GetLogsShouldBeEmptyWhenSinceIsOutOfDateRage()
     {
       var (stdout, stderr) = await _container.GetLogsAsync(since: DateTime.Now.AddDays(1))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.Empty(stdout);
       Assert.Empty(stderr);
@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task GetLogsShouldBeEmptyWhenUntilIsOutOfDateRage()
     {
       var (stdout, stderr) = await _container.GetLogsAsync(until: DateTime.Now.AddDays(-1))
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.Empty(stdout);
       Assert.Empty(stderr);
