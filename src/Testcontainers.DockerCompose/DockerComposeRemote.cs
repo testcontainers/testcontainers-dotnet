@@ -1,8 +1,7 @@
 namespace Testcontainers.DockerCompose;
 
-/// <inheritdoc cref="DockerContainer" />
-[PublicAPI]
-public class DockerComposeRemote : DockerContainer
+/// <inheritdoc cref="DockerCompose" />
+internal sealed class DockerComposeRemote : DockerCompose
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerComposeRemote" /> class.
@@ -13,16 +12,11 @@ public class DockerComposeRemote : DockerContainer
         : base(configuration, logger)
     {
     }
-
-    /// <summary>
-    /// Gets the runtime configuration.
-    /// </summary>
-    public DockerComposeConfiguration RuntimeConfiguration => _configuration as DockerComposeConfiguration;
     
     /// <inheritdoc />
     public override async Task StopAsync(CancellationToken ct = default)
     {
-        await ExecAsync(new[] { "docker", "compose", "down"}, ct)
+        await ExecAsync(StopCommandLine, ct)
             .ConfigureAwait(false);
         await base.StopAsync(ct);
     }

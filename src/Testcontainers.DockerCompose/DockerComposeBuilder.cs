@@ -63,6 +63,17 @@ public sealed class DockerComposeBuilder : ContainerBuilder<DockerComposeBuilder
         (localCompose: localCompose));
     }
     
+    /// <summary>
+    /// Adds options to the docker-compose command, e.g. docker-compose --compatibility.
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public DockerComposeBuilder WithOptions(params string[] options) {
+        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration
+            (options: options));
+    }
+
+    
     /// <inheritdoc />
     protected override DockerComposeBuilder Init()
     {
@@ -116,7 +127,8 @@ public sealed class DockerComposeBuilder : ContainerBuilder<DockerComposeBuilder
                 await container.CopyAsync(fileInfo, ".", Unix.FileMode644, ct)
                     .ConfigureAwait(false);
             }
-            await container.ExecAsync(new[] { "docker", "compose", "up",  "-d" }, ct)
+            
+            await container.ExecAsync(dockerComposeContainer.StartCommandLine,  ct)
                 .ConfigureAwait(false);
         }
     }

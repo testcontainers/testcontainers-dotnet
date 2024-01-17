@@ -1,7 +1,7 @@
 ﻿namespace Testcontainers.DockerCompose;
 
-[PublicAPI]
-public sealed class DockerComposeLocal : DockerContainer
+/// <inheritdoc cref="DockerCompose" />
+internal sealed class DockerComposeLocal : DockerCompose
 {
     private readonly string _dockerBinary =
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker.exe" : "docker";
@@ -14,17 +14,12 @@ public sealed class DockerComposeLocal : DockerContainer
     public DockerComposeLocal(DockerComposeConfiguration configuration, ILogger logger) : base(configuration, logger)
     {
     }
-
-    /// <summary>
-    /// Gets the runtime configuration.
-    /// </summary>
-    public DockerComposeConfiguration RuntimeConfiguration => _configuration as DockerComposeConfiguration;
     
     /// <inheritdoc />
     public override async Task StartAsync(CancellationToken ct = default)
     {
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(new[] {"compose", "up", "-d"})
+            .WithArguments(StartCommandLine.Skip(1))
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
             .ExecuteBufferedAsync();
     }
@@ -33,7 +28,7 @@ public sealed class DockerComposeLocal : DockerContainer
     public override async Task StopAsync(CancellationToken ct = default)
     {
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(new[] {"compose", "down"})
+            .WithArguments(StopCommandLine.Skip(1))
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
             .ExecuteBufferedAsync();
     }

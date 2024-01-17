@@ -9,12 +9,15 @@ public sealed class DockerComposeConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="composeFile">The fully qualified path to the compose file.</param>
     /// <param name="localCompose">Whether the local compose will be used.</param>
+    /// <param name="options">Options for the docker-compose command.</param>
     public DockerComposeConfiguration(
         string composeFile = null,
-        bool localCompose = false)
+        bool localCompose = false, 
+        IEnumerable<string> options = null)
     {
         ComposeFile = composeFile;
         LocalCompose = localCompose;
+        Options = options ?? Array.Empty<string>();
     }
 
     /// <summary>
@@ -68,4 +71,9 @@ public sealed class DockerComposeConfiguration : ContainerConfiguration
     /// Indicates whether local compose is enabled.
     /// </summary>
     public bool LocalCompose { get; }
+
+    /// <summary>
+    /// Options for the docker-compose command
+    /// </summary>
+    public IEnumerable<string> Options { get; } = Array.Empty<string>();
 }

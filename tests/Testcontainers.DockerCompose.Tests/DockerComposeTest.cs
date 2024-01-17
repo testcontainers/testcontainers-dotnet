@@ -1,12 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿namespace Testcontainers.DockerCompose;
 
-namespace Testcontainers.DockerCompose;
-
-public abstract class DockerComposeRemoteTest : IAsyncLifetime
+public abstract class DockerComposeTest : IAsyncLifetime
 {
     private readonly DockerComposeContainer _dockerComposeContainer;
 
-    protected DockerComposeRemoteTest(DockerComposeContainer dockerComposeContainer)
+    protected DockerComposeTest(DockerComposeContainer dockerComposeContainer)
     {
         _dockerComposeContainer = dockerComposeContainer;
     }
@@ -30,7 +28,7 @@ public abstract class DockerComposeRemoteTest : IAsyncLifetime
     }
     
     [UsedImplicitly]
-    public sealed class DockerComposeRemoteConfiguration : DockerComposeRemoteTest
+    public sealed class DockerComposeRemoteConfiguration : DockerComposeTest
     {
         public DockerComposeRemoteConfiguration()
             : base(new DockerComposeBuilder()
@@ -41,12 +39,36 @@ public abstract class DockerComposeRemoteTest : IAsyncLifetime
     }
     
     [UsedImplicitly]
-    public sealed class DockerComposeLocalConfiguration : DockerComposeRemoteTest
+    public sealed class DockerComposeLocalConfiguration : DockerComposeTest
     {
         public DockerComposeLocalConfiguration()
             : base(new DockerComposeBuilder()
                 .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
                 .WithLocalCompose(true)
+                .Build())
+        {
+        }
+    }
+    
+    [UsedImplicitly]
+    public sealed class DockerComposeRemoteWithOptionConfiguration : DockerComposeTest
+    {
+        public DockerComposeRemoteWithOptionConfiguration()
+            : base(new DockerComposeBuilder()
+                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
+                .WithOptions("--compatibility")
+                .Build())
+        {
+        }
+    }
+    
+    [UsedImplicitly]
+    public sealed class DockerComposeLocalWithOptionConfiguration : DockerComposeTest
+    {
+        public DockerComposeLocalWithOptionConfiguration()
+            : base(new DockerComposeBuilder()
+                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
+                .WithOptions("--compatibility")
                 .Build())
         {
         }
