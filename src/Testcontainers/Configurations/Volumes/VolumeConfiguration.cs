@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System.Text.Json.Serialization;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;

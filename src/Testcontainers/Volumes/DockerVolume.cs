@@ -1,8 +1,10 @@
 namespace DotNet.Testcontainers.Volumes
 {
   using System;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -17,6 +19,8 @@ namespace DotNet.Testcontainers.Volumes
 
     private readonly IVolumeConfiguration _configuration;
 
+    private readonly ILogger _logger;
+
     private VolumeResponse _volume = new VolumeResponse();
 
     /// <summary>
@@ -28,6 +32,7 @@ namespace DotNet.Testcontainers.Volumes
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
+      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -94,8 +99,36 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      var id = await _client.Volume.CreateAsync(_configuration, ct)
-        .ConfigureAwait(false);
+      string id;
+
+      if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
+      {
+        var filters = new FilterByReuseHash(_configuration);
+
+        var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct)
+          .ConfigureAwait(false);
+
+        var reusableVolume = reusableVolumes.SingleOrDefault();
+
+        if (reusableVolume != null)
+        {
+          _logger.ReusableResourceFound();
+
+          id = reusableVolume.Name;
+        }
+        else
+        {
+          _logger.ReusableResourceNotFound();
+
+          id = await _client.Volume.CreateAsync(_configuration, ct)
+            .ConfigureAwait(false);
+        }
+      }
+      else
+      {
+        id = await _client.Volume.CreateAsync(_configuration, ct)
+          .ConfigureAwait(false);
+      }
 
       _volume = await _client.Volume.ByIdAsync(id, ct)
         .ConfigureAwait(false);
@@ -111,10 +144,18 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      await _client.Volume.DeleteAsync(Name, ct)
-        .ConfigureAwait(false);
-
-      _volume = new VolumeResponse();
+      try
+      {
+        await _client.Volume.DeleteAsync(Name, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+      }
+      finally
+      {
+        _volume = new VolumeResponse();
+      }
     }
   }
 }
