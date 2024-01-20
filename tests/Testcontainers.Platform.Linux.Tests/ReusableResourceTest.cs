@@ -24,8 +24,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
             // We are running in a single session, we do not need to disable the cleanup feature.
             var container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
-                .WithEntrypoint("sleep")
-                .WithCommand("infinity")
+                .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithLabel(_labelKey, _labelValue)
                 .WithReuse(true)
                 .Build();
@@ -76,5 +75,73 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
         Assert.Single(containers);
         Assert.Single(networks);
         Assert.Single(response.Volumes);
+    }
+
+    public static class UnsupportedBuilderConfigurationTest
+    {
+        private const string EnabledCleanUpExceptionMessage = "Reuse cannot be used in conjunction with WithCleanUp(true). (Parameter 'Reuse')";
+
+        private const string EnabledAutoRemoveExceptionMessage = "Reuse cannot be used in conjunction with WithAutoRemove(true). (Parameter 'Reuse')";
+
+        public sealed class ContainerBuilderTest
+        {
+            [Fact]
+            public void EnabledCleanUpThrowsException()
+            {
+                // Given
+                var containerBuilder = new ContainerBuilder().WithReuse(true).WithCleanUp(true);
+
+                // When
+                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+
+                // Then
+                Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
+            }
+
+            [Fact]
+            public void EnabledAutoRemoveThrowsException()
+            {
+                // Given
+                var containerBuilder = new ContainerBuilder().WithReuse(true).WithAutoRemove(true);
+
+                // When
+                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+
+                // Then
+                Assert.Equal(EnabledAutoRemoveExceptionMessage, exception.Message);
+            }
+        }
+
+        public sealed class NetworkBuilderTest
+        {
+            [Fact]
+            public void EnabledCleanUpThrowsException()
+            {
+                // Given
+                var containerBuilder = new NetworkBuilder().WithReuse(true).WithCleanUp(true);
+
+                // When
+                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+
+                // Then
+                Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
+            }
+        }
+
+        public sealed class VolumeBuilderTest
+        {
+            [Fact]
+            public void EnabledCleanUpThrowsException()
+            {
+                // Given
+                var containerBuilder = new VolumeBuilder().WithReuse(true).WithCleanUp(true);
+
+                // When
+                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+
+                // Then
+                Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
+            }
+        }
     }
 }

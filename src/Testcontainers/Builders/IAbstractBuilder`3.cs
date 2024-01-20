@@ -68,6 +68,11 @@ namespace DotNet.Testcontainers.Builders
     /// matching resource, it will reuse this resource instead of creating a new one. Enabling
     /// reuse will disable the resource reaper, meaning the resource will not be cleaned up
     /// after the tests are finished.
+    ///
+    /// This is an <b>experimental</b> feature. Reuse does not take all builder
+    /// configurations into account when calculating the hash value. There might be configurations
+    /// where Testcontainers is not, or not yet, able to find a matching resource and
+    /// recreate the resource.
     /// </remarks>
     /// <param name="reuse">Determines whether to reuse an existing resource configuration or not.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
