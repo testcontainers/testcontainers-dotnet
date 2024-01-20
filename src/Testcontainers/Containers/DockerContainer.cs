@@ -368,6 +368,8 @@ namespace DotNet.Testcontainers.Containers
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
+        Logger.ReusableExperimentalFeature();
+
         var filters = new FilterByReuseHash(_configuration);
 
         var reusableContainers = await _client.Container.GetAllAsync(filters, ct)

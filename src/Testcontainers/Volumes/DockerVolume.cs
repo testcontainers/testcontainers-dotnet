@@ -103,6 +103,8 @@ namespace DotNet.Testcontainers.Volumes
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
+        _logger.ReusableExperimentalFeature();
+
         var filters = new FilterByReuseHash(_configuration);
 
         var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct)

@@ -103,6 +103,8 @@ namespace DotNet.Testcontainers.Networks
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
+        _logger.ReusableExperimentalFeature();
+
         var filters = new FilterByReuseHash(_configuration);
 
         var reusableNetworks = await _client.Network.GetAllAsync(filters, ct)
