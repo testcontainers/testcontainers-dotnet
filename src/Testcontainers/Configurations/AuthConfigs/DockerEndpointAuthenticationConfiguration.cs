@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using Docker.DotNet;
   using DotNet.Testcontainers.Clients;
   using JetBrains.Annotations;

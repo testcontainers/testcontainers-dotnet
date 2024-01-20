@@ -63,14 +63,11 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
     [Fact]
     public async Task ShouldReuseExistingResource()
     {
-        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters })
-            .ConfigureAwait(false);
+        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters });
 
-        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters })
-            .ConfigureAwait(false);
+        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters });
 
-        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters })
-            .ConfigureAwait(false);
+        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters });
 
         Assert.Single(containers);
         Assert.Single(networks);
