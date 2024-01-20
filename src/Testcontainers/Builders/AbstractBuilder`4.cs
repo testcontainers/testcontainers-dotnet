@@ -58,6 +58,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithReuse(bool reuse)
+    {
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse)).WithCleanUp(!reuse);
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithLabel(string name, string value)
     {
       return WithLabel(new Dictionary<string, string> { { name, value } });
@@ -126,9 +132,13 @@ namespace DotNet.Testcontainers.Builders
     /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     protected virtual void Validate()
     {
-      const string message = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/";
+      const string containerRuntimeNotFound = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
-        .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(message, argument.Name));
+        .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(containerRuntimeNotFound, argument.Name));
+
+      const string reuseNotSupported = "Reuse cannot be used in conjunction with WithCleanUp(true).";
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
+        .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && !Guid.Empty.Equals(argument.Value.SessionId), argument => new ArgumentException(reuseNotSupported, argument.Name));
     }
 
     /// <summary>
