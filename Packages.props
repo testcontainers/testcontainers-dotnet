@@ -12,7 +12,7 @@
     <!-- Unit and integration test dependencies: -->
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Update="coverlet.collector" Version="6.0.0" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0" />
-    <PackageReference Update="xunit" Version="2.5.0" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.5.6" />
+    <PackageReference Update="xunit" Version="2.6.5" />
   </ItemGroup>
 </Project>

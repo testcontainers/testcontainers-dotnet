@@ -34,14 +34,14 @@ public sealed class FirestoreContainerTest : IAsyncLifetime
         firestoreDbBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         var firestoreDb = await firestoreDbBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // When
         _ = await firestoreDb.Collection(collection).Document().SetAsync(documentData)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var querySnapshot = await firestoreDb.Collection(collection).GetSnapshotAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(documentData, querySnapshot.Documents.Select(document => document.ConvertTo<Dictionary<string, string>>()).Single());

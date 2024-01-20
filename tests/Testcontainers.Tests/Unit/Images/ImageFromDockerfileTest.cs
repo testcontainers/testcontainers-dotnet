@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // When
       using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal($"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.", exception.Message);
@@ -94,7 +94,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
@@ -118,10 +118,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       await imageFromDockerfileBuilder.CreateAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       await imageFromDockerfileBuilder.CreateAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));

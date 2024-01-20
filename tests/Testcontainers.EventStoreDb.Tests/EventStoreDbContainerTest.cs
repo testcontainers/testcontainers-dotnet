@@ -31,12 +31,12 @@ public sealed class EventStoreDbContainerTest : IAsyncLifetime
 
         // When
         _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, new[] { eventData })
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var resolvedEvents = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start);
 
         var resolvedEvent = await resolvedEvents.FirstAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(eventType, resolvedEvent.Event.EventType);

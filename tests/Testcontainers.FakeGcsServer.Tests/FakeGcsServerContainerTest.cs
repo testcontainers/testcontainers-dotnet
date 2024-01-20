@@ -37,16 +37,16 @@ public sealed class FakeGcsServerContainerTest : IAsyncLifetime
 
         // When
         var client = await storageClientBuilder.BuildAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.CreateBucketAsync(project, bucket)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.UploadObjectAsync(bucket, fileName, "text/plain", writeStream)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.DownloadObjectAsync(bucket, fileName, readStream)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(helloWorld, Encoding.Default.GetString(readStream.ToArray()));

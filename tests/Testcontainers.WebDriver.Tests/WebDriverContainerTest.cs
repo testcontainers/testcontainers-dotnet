@@ -70,10 +70,10 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
             // When
             await _webDriverContainer.StopAsync()
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _webDriverContainer.ExportVideoAsync(videoFilePath)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             // Then
             Assert.True(File.Exists(videoFilePath));

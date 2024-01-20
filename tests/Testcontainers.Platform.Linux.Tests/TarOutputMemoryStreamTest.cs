@@ -115,23 +115,23 @@ public abstract class TarOutputMemoryStreamTest
 
             // When
             var fileContent = await GetAllBytesAsync()
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await container.StartAsync()
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await container.CopyAsync(fileContent, targetFilePath2)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await container.CopyAsync(_testFile.FullName, targetDirectoryPath3)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath4)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             // Then
             var execResults = await Task.WhenAll(targetFilePaths.Select(containerFilePath => container.ExecAsync(new[] { "test", "-f", containerFilePath })))
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
         }

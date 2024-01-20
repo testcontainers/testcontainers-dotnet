@@ -42,7 +42,7 @@ public abstract class MySqlContainerTest : IAsyncLifetime
 
         // When
         var execResult = await _mySqlContainer.ExecScriptAsync(scriptContent)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);

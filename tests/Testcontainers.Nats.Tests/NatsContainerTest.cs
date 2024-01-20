@@ -29,10 +29,10 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
         // When
         using var response = await client.GetAsync("/healthz")
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var jsonStatusString = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

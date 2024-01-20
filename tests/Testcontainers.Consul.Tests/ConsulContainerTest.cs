@@ -33,10 +33,10 @@ public sealed class ConsulContainerTest : IAsyncLifetime
 
         // When
         _ = await consulClient.KV.Put(expected)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var actual = await consulClient.KV.Get(key)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
