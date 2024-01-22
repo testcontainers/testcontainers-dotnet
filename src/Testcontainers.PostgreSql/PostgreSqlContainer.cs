@@ -48,4 +48,20 @@ public sealed class PostgreSqlContainer : DockerContainer, IDatabaseContainer
         return await ExecAsync(new[] { "psql", "--username", _configuration.Username, "--dbname", _configuration.Database, "--file", scriptFilePath }, ct)
             .ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Test whether the database is ready to accept connections or not with the <a href="https://www.postgresql.org/docs/current/app-pg-isready.html">pg_isready</a> command.
+    /// </summary>
+    /// <returns><see langword="true"/> if the database is ready to accept connections; <see langword="false"/> if the database is not yet ready.</returns>
+    internal async Task<bool> IsReadyAsync()
+    {
+        var command = new[] {
+            "pg_isready",
+            "--host", "localhost", // Explicitly specify localhost in order to be ready only after the initdb scripts have run and the server is listening over TCP/IP
+            "--dbname", _configuration.Database,
+            "--username", _configuration.Username,
+        };
+        var result = await ExecAsync(command);
+        return result.ExitCode == 0;
+    }
 }
