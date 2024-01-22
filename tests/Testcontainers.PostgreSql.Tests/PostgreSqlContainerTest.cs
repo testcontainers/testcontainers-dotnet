@@ -42,4 +42,33 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
     }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task StopAndStartMultipleTimes()
+    {
+        // Given
+        var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+        // When
+        var exception = await RestartAsync(timeoutSource.Token);
+
+        // Then
+        Assert.Null(exception);
+    }
+
+    private async Task<Exception> RestartAsync(CancellationToken cancellationToken)
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            await _postgreSqlContainer.StopAsync(cancellationToken);
+            var exception = await Record.ExceptionAsync(() => _postgreSqlContainer.StartAsync(cancellationToken));
+            if (exception != null)
+            {
+                return exception;
+            }
+        }
+
+        return null;
+    }
 }
