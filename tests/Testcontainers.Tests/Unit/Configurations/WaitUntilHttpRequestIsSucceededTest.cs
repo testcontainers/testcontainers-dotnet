@@ -23,14 +23,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       .WithPortBinding(HttpPort, true)
       .Build();
 
-    public static IEnumerable<object[]> GetHttpWaitStrategies()
+    public static TheoryData<HttpWaitStrategy> GetHttpWaitStrategies()
     {
-      yield return new object[] { new HttpWaitStrategy() };
-      yield return new object[] { new HttpWaitStrategy().ForPort(HttpPort) };
-      yield return new object[] { new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK) };
-      yield return new object[] { new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)) };
-      yield return new object[] { new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)) };
-      yield return new object[] { new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)) };
+      var theoryData = new TheoryData<HttpWaitStrategy>();
+      theoryData.Add(new HttpWaitStrategy());
+      theoryData.Add(new HttpWaitStrategy().ForPort(HttpPort));
+      theoryData.Add(new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK));
+      theoryData.Add(new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)));
+      theoryData.Add(new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)));
+      theoryData.Add(new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)));
+      return theoryData;
     }
 
     public Task InitializeAsync()

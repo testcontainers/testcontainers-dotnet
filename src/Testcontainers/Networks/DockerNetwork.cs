@@ -153,6 +153,7 @@ namespace DotNet.Testcontainers.Networks
       }
       catch (DockerApiException)
       {
+        // Ignore exception for resources that do not exist anymore.
       }
       finally
       {
