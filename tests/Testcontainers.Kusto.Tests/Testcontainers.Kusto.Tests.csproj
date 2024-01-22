@@ -12,7 +12,7 @@
         <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="11.3.3"/>
   </ItemGroup>
   <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
   </ItemGroup>
 </Project>

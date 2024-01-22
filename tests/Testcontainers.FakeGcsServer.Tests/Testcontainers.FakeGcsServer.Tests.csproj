@@ -12,7 +12,7 @@
         <PackageReference Include="Google.Cloud.Storage.V1" Version="4.6.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.FakeGcsServer/Testcontainers.FakeGcsServer.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.FakeGcsServer/Testcontainers.FakeGcsServer.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

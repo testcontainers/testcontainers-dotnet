@@ -12,7 +12,7 @@
         <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.CosmosDb/Testcontainers.CosmosDb.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.CosmosDb/Testcontainers.CosmosDb.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

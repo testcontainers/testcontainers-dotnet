@@ -10,9 +10,9 @@
     <PackageReference Include="Testcontainers.SqlEdge"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Interactors/WeatherForecast.Interactors.csproj"/>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Interactors/WeatherForecast.Interactors.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <!-- https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory-1 -->

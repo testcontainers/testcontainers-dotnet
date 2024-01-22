@@ -12,7 +12,7 @@
         <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.0.5"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

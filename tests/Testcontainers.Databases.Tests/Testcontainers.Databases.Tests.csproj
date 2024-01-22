@@ -11,7 +11,7 @@
         <PackageReference Include="xunit" Version="2.6.5"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"/>
-        <ProjectReference Remove="$(SolutionDir)tests/Testcontainers.Databases.Tests/Testcontainers.Databases.Tests.csproj"/>
+        <ProjectReference Include="../Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"/>
+        <ProjectReference Remove="Testcontainers.Databases.Tests.csproj"/>
     </ItemGroup>
 </Project>

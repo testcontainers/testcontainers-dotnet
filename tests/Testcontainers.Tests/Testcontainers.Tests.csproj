@@ -17,7 +17,7 @@
     <PackageReference Include="xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
+    <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/**/*">
