@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Text.Json.Serialization;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -139,27 +140,34 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public bool? AutoRemove { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public bool? Privileged { get; }
 
     /// <inheritdoc />
     public IImage Image { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string Name { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string Hostname { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string MacAddress { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public string WorkingDirectory { get; }
 
     /// <inheritdoc />
@@ -178,15 +186,19 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyDictionary<string, string> PortBindings { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IResourceMapping> ResourceMappings { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IContainer> Containers { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IMount> Mounts { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<INetwork> Networks { get; }
 
     /// <inheritdoc />
@@ -196,12 +208,15 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IOutputConsumer OutputConsumer { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<IWaitUntil> WaitStrategies { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
   }
 }
