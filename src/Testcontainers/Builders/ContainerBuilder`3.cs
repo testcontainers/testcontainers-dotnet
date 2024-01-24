@@ -197,6 +197,11 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
+      if (Uri.TryCreate(source, UriKind.Absolute, out var uri))
+      {
+        return WithResourceMapping(uri, target, fileMode);
+      }
+
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
@@ -232,6 +237,12 @@ namespace DotNet.Testcontainers.Builders
           return WithResourceMapping(resourceContent, target.ToString(), fileMode);
         }
       }
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return source.IsFile ? WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, fileMode)) : WithResourceMapping(new UriResourceMapping(source, target, fileMode));
     }
 
     /// <inheritdoc />
