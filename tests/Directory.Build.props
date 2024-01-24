@@ -4,4 +4,10 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <ItemGroup>
+    <VSTestLogger Include="trx%3BLogFileName=$(MSBuildProjectName).trx" Condition="$(UseTrxLogger) == 'true'" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VSTestLogger>@(VSTestLogger)</VSTestLogger>
+  </PropertyGroup>
 </Project>
