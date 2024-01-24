@@ -13,7 +13,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
 
     public const string DefaultUsername = "root";
 
-    public const string DefaultPassword = "cockroachdb";
+    public const string DefaultPassword = "";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
@@ -99,8 +99,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
         base.Validate();
 
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
-            .NotNull()
-            .NotEmpty();
+            .NotNull();
     }
 
     /// <inheritdoc />
