@@ -42,7 +42,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ContainerIsRunning()
     {
       var execResult = await _container.ExecAsync(new List<string> { "test", "-f", ContainerFilePath })
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       Assert.Equal(0, execResult.ExitCode);
     }

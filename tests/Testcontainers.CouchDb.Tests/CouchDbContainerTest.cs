@@ -23,7 +23,7 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
 
         // When
         var database = await client.Database.PutAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.Created, database.StatusCode);

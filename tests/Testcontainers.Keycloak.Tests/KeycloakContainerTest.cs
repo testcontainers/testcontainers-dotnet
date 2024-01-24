@@ -23,7 +23,7 @@ public sealed class KeycloakContainerTest : IAsyncLifetime
 
         // When
         using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -37,7 +37,7 @@ public sealed class KeycloakContainerTest : IAsyncLifetime
 
         // When
         var masterRealm = await keycloakClient.GetRealmAsync("master")
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(masterRealm.Enabled);

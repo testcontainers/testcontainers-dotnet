@@ -42,7 +42,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // When
         var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
@@ -79,13 +79,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // When
         _ = await client.CreateTableAsync(tableRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.PutItemAsync(putItemRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var itemResponse = await client.GetItemAsync(getItemRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(id, itemResponse.Item.Values.Single().S);
@@ -104,7 +104,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // When
         var buckets = await client.ListBucketsAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
@@ -123,7 +123,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // When
         var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"))
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, topicResponse.HttpStatusCode);
@@ -142,7 +142,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // When
         var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);

@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
+  using System.Text.Json.Serialization;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using JetBrains.Annotations;
@@ -60,9 +61,11 @@ namespace DotNet.Testcontainers.Configurations
     public string Name { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public NetworkDriver Driver { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IReadOnlyDictionary<string, string> Options { get; }
   }
 }

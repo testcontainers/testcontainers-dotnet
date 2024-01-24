@@ -32,7 +32,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
         // When
         var tables = await client.ListTablesAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, tables.HttpStatusCode);
@@ -68,13 +68,13 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
         // When
         _ = await client.CreateTableAsync(tableRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _ = await client.PutItemAsync(putItemRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var itemResponse = await client.GetItemAsync(getItemRequest)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(id, itemResponse.Item.Values.Single().S);

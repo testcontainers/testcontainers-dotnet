@@ -364,6 +364,10 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
+      const string reuseNotSupported = "Reuse cannot be used in conjunction with WithAutoRemove(true).";
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(IContainerConfiguration.Reuse))
+        .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && argument.Value.AutoRemove.HasValue && argument.Value.AutoRemove.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
+
       _ = Guard.Argument(DockerResourceConfiguration.Image, nameof(IContainerConfiguration.Image))
         .NotNull();
     }

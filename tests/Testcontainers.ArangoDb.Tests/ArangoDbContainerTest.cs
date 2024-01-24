@@ -27,7 +27,7 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
 
         // When
         var response = await client.Database.GetDatabasesAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, response.Code);

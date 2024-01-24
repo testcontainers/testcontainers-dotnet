@@ -25,7 +25,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
         // When
         var result = await client.PingAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(result);
@@ -56,10 +56,10 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
         // When
         await writeApi.WritePointAsync(point, InfluxDbBuilder.DefaultBucket, InfluxDbBuilder.DefaultOrganization)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var fluxTables = await queryApi.QueryAsync(query, InfluxDbBuilder.DefaultOrganization)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var recordValues = fluxTables.Single().Records.Single().Values;
 

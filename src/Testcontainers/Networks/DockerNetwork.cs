@@ -1,8 +1,10 @@
 namespace DotNet.Testcontainers.Networks
 {
   using System;
+  using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -17,6 +19,8 @@ namespace DotNet.Testcontainers.Networks
 
     private readonly INetworkConfiguration _configuration;
 
+    private readonly ILogger _logger;
+
     private NetworkResponse _network = new NetworkResponse();
 
     /// <summary>
@@ -28,6 +32,7 @@ namespace DotNet.Testcontainers.Networks
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
+      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -94,8 +99,38 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      var id = await _client.Network.CreateAsync(_configuration, ct)
-        .ConfigureAwait(false);
+      string id;
+
+      if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
+      {
+        _logger.ReusableExperimentalFeature();
+
+        var filters = new FilterByReuseHash(_configuration);
+
+        var reusableNetworks = await _client.Network.GetAllAsync(filters, ct)
+          .ConfigureAwait(false);
+
+        var reusableNetwork = reusableNetworks.SingleOrDefault();
+
+        if (reusableNetwork != null)
+        {
+          _logger.ReusableResourceFound();
+
+          id = reusableNetwork.ID;
+        }
+        else
+        {
+          _logger.ReusableResourceNotFound();
+
+          id = await _client.Network.CreateAsync(_configuration, ct)
+            .ConfigureAwait(false);
+        }
+      }
+      else
+      {
+        id = await _client.Network.CreateAsync(_configuration, ct)
+          .ConfigureAwait(false);
+      }
 
       _network = await _client.Network.ByIdAsync(id, ct)
         .ConfigureAwait(false);
@@ -111,10 +146,19 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      await _client.Network.DeleteAsync(_network.ID, ct)
-        .ConfigureAwait(false);
-
-      _network = new NetworkResponse();
+      try
+      {
+        await _client.Network.DeleteAsync(_network.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        // Ignore exception for resources that do not exist anymore.
+      }
+      finally
+      {
+        _network = new NetworkResponse();
+      }
     }
   }
 }
