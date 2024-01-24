@@ -66,6 +66,7 @@ jobs:
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: ${{ matrix.os }}
           path: test-results
