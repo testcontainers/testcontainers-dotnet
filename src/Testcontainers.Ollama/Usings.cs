@@ -6,6 +6,6 @@ global using DotNet.Testcontainers;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
 global using DotNet.Testcontainers.Images;
-global using System.Linq;
-global using System.Threading.Tasks;
 global using System;
+global using System.Collections.Generic;
+global using System.Threading.Tasks;
