@@ -12,7 +12,7 @@
         <PackageReference Include="Consul" Version="1.6.10.9" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Consul/Testcontainers.Consul.csproj" />
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj" />
+        <ProjectReference Include="../../src/Testcontainers.Consul/Testcontainers.Consul.csproj" />
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
     </ItemGroup>
 </Project>
