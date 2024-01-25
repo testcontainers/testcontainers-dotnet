@@ -12,7 +12,7 @@
         <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="3.7.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

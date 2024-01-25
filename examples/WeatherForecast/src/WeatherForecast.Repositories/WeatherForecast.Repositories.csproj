@@ -7,6 +7,6 @@
     <PackageReference Include="JetBrains.Annotations"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Entities/WeatherForecast.Entities.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Entities/WeatherForecast.Entities.csproj"/>
   </ItemGroup>
 </Project>

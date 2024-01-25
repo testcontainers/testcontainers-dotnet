@@ -12,7 +12,7 @@
         <PackageReference Include="MySqlConnector" Version="2.2.5"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

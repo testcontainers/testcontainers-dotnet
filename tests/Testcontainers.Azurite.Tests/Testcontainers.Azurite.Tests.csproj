@@ -14,7 +14,7 @@
         <PackageReference Include="Azure.Storage.Queues" Version="12.15.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

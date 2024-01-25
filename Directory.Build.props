@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildProjectDirectory)', 'Testcontainers.sln'))/</SolutionDir>
-  </PropertyGroup>
-  <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
     <Version>3.8.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
@@ -35,10 +32,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
-    <None Include="$(SolutionDir)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />
-    <None Include="$(SolutionDir)LICENSE" Visible="false" Pack="true" PackagePath="" />
-    <None Include="$(SolutionDir)README.md" Visible="false" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
+    <None Include="$(MSBuildThisFileDirectory)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Visible="false" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

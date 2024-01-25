@@ -8,6 +8,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
   </ItemGroup>
 </Project>

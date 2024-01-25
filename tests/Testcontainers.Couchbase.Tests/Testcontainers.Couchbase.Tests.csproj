@@ -12,7 +12,7 @@
         <PackageReference Include="CouchbaseNetClient" Version="3.4.3"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.Couchbase/Testcontainers.Couchbase.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Couchbase/Testcontainers.Couchbase.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>
