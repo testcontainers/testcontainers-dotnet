@@ -2,13 +2,13 @@ namespace Testcontainers.Ollama;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class Testcontainers.OllamaBuilder : ContainerBuilder<Testcontainers.OllamaBuilder, Testcontainers.OllamaContainer, Testcontainers.OllamaConfiguration>
+public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Testcontainers.OllamaBuilder" /> class.
     /// </summary>
-    public Testcontainers.OllamaBuilder()
-        : this(new Testcontainers.OllamaConfiguration())
+    public OllamaBuilder()
+        : this(new OllamaConfiguration())
     {
         // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "Testcontainers.OllamaBuilder Init()" method.
         //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
@@ -26,7 +26,7 @@ public sealed class Testcontainers.OllamaBuilder : ContainerBuilder<Testcontaine
     /// Initializes a new instance of the <see cref="Testcontainers.OllamaBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private Testcontainers.OllamaBuilder(Testcontainers.OllamaConfiguration resourceConfiguration)
+    private OllamaBuilder(OllamaConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
         // DockerResourceConfiguration = resourceConfiguration;
@@ -48,10 +48,13 @@ public sealed class Testcontainers.OllamaBuilder : ContainerBuilder<Testcontaine
     // }
 
     /// <inheritdoc />
-    public override Testcontainers.OllamaContainer Build()
+    protected override OllamaConfiguration DockerResourceConfiguration { get; }
+
+    /// <inheritdoc />
+    public override OllamaContainer Build()
     {
         Validate();
-        return new Testcontainers.OllamaContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new OllamaContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     // /// <inheritdoc />
@@ -67,20 +70,20 @@ public sealed class Testcontainers.OllamaBuilder : ContainerBuilder<Testcontaine
     // }
 
     /// <inheritdoc />
-    protected override Testcontainers.OllamaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override OllamaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new Testcontainers.OllamaConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new OllamaConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override Testcontainers.OllamaBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override OllamaBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new Testcontainers.OllamaConfiguration(resourceConfiguration));
+        return Merge(DockerResourceConfiguration, new OllamaConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override Testcontainers.OllamaBuilder Merge(Testcontainers.OllamaConfiguration oldValue, Testcontainers.OllamaConfiguration newValue)
+    protected override OllamaBuilder Merge(OllamaConfiguration oldValue, OllamaConfiguration newValue)
     {
-        return new Testcontainers.OllamaBuilder(new Testcontainers.OllamaConfiguration(oldValue, newValue));
+        return new OllamaBuilder(new OllamaConfiguration(oldValue, newValue));
     }
 }

@@ -1,4 +1,4 @@
-namespace Testcontainers.Ollama;
+namespace Testcontainers.Ollama.Tests;
 
 public class OllamaContainerTests : IAsyncLifetime
 {
