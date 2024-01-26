@@ -4,9 +4,10 @@ namespace Testcontainers.CockroachDb;
 [PublicAPI]
 public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
-    public const string CockroachDbImage = "cockroachdb/cockroach:v23.1.13";
+    public const string CockroachDbImage = "cockroachdb/cockroach:latest-v23.1";
 
     public const ushort CockroachDbPort = 26257;
+
     public const ushort CockroachDbRestPort = 8080;
 
     public const string DefaultDatabase = "defaultdb";
@@ -90,7 +91,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
             .WithCommand("start-single-node")
             .WithCommand("--insecure")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health").ForPort(CockroachDbRestPort)));
+                request.ForPort(CockroachDbRestPort).ForPath("/health")));
     }
 
     /// <inheritdoc />
@@ -123,7 +124,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] LineEndings = { "\r\n", "\n" };
+        private static readonly string[] LineEndings = ["\r\n", "\n"];
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)

@@ -2,16 +2,16 @@ namespace Testcontainers.CockroachDb;
 
 public sealed class CockroachDbContainerTest : IAsyncLifetime
 {
-    private readonly CockroachDbContainer _CockroachDbContainer = new CockroachDbBuilder().Build();
+    private readonly CockroachDbContainer _cockroachDbContainer = new CockroachDbBuilder().Build();
 
     public Task InitializeAsync()
     {
-        return _CockroachDbContainer.StartAsync();
+        return _cockroachDbContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _CockroachDbContainer.DisposeAsync().AsTask();
+        return _cockroachDbContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public sealed class CockroachDbContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new NpgsqlConnection(_CockroachDbContainer.GetConnectionString());
+        using DbConnection connection = new NpgsqlConnection(_cockroachDbContainer.GetConnectionString());
 
         // When
         connection.Open();
@@ -36,8 +36,8 @@ public sealed class CockroachDbContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _CockroachDbContainer.ExecScriptAsync(scriptContent)
-            .ConfigureAwait(false);
+        var execResult = await _cockroachDbContainer.ExecScriptAsync(scriptContent)
+            .ConfigureAwait(true);
 
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);

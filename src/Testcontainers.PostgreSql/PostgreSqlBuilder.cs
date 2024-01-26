@@ -123,7 +123,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] LineEndings = { "\r\n", "\n" };
+        private static readonly string[] LineEndings = ["\r\n", "\n"];
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
