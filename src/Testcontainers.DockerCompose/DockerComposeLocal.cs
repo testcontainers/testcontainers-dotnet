@@ -19,17 +19,19 @@ internal sealed class DockerComposeLocal : DockerCompose
     public override async Task StartAsync(CancellationToken ct = default)
     {
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(StartCommandLine.Skip(1))
+            .WithArguments(BuildStartCommandLine().Skip(1))
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
-            .ExecuteBufferedAsync();
+            .ExecuteBufferedAsync()
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public override async Task StopAsync(CancellationToken ct = default)
     {
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(StopCommandLine.Skip(1))
+            .WithArguments(BuildStopCommandLine().Skip(1))
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
-            .ExecuteBufferedAsync();
+            .ExecuteBufferedAsync()
+            .ConfigureAwait(false);
     }
 }

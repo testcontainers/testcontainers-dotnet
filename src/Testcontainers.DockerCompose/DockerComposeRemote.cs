@@ -16,7 +16,7 @@ internal sealed class DockerComposeRemote : DockerCompose
     /// <inheritdoc />
     public override async Task StopAsync(CancellationToken ct = default)
     {
-        await ExecAsync(StopCommandLine, ct)
+        await ExecAsync(BuildStopCommandLine(), ct)
             .ConfigureAwait(false);
         await base.StopAsync(ct);
     }

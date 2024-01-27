@@ -1,0 +1,7 @@
+﻿version: '3.9'
+
+name: test-alpine
+
+services:
+  nginx:
+    image: alpine

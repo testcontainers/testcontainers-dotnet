@@ -73,5 +73,30 @@ public abstract class DockerComposeTest : IAsyncLifetime
         {
         }
     }
+    
+    [UsedImplicitly]
+    public sealed class DockerComposeRemoteWithRemoveImagesConfiguration : DockerComposeTest
+    {
+        public DockerComposeRemoteWithRemoveImagesConfiguration()
+            : base(new DockerComposeBuilder()
+                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose-rmi.yaml"))
+                .WithRemoveImages(RemoveImages.All)
+                .Build())
+        {
+        }
+    }
+    
+    [UsedImplicitly]
+    public sealed class DockerComposeLocalWithRemoveImagesConfiguration : DockerComposeTest
+    {
+        public DockerComposeLocalWithRemoveImagesConfiguration()
+            : base(new DockerComposeBuilder()
+                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose-rmi.yaml"))
+                .WithRemoveImages(RemoveImages.All)
+                .WithLocalCompose(true)
+                .Build())
+        {
+        }
+    }
 }
     
