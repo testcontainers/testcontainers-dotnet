@@ -120,22 +120,4 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     {
         return new CockroachDbBuilder(new CockroachDbConfiguration(oldValue, newValue));
     }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        private static readonly string[] LineEndings = ["\r\n", "\n"];
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
-                .ConfigureAwait(false);
-
-            return 2.Equals(Array.Empty<string>()
-                .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Count(line => line.Contains("database system is ready to accept connections")));
-        }
-    }
 }

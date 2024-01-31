@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24FE2FC4-620
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CC7C97EE-5A60-4DAB-B07A-EFD3A73E6E3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers", "..\..\src\Testcontainers\Testcontainers.csproj", "{490171F7-0781-40B1-B942-ACE759F8D51D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Contexts", "src\WeatherForecast.Contexts\WeatherForecast.Contexts.csproj", "{86938290-5D7D-43B5-8146-4614FB5820F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Entities", "src\WeatherForecast.Entities\WeatherForecast.Entities.csproj", "{53CAFB42-4AEB-43F9-B6A1-DAA8EE46F174}"
@@ -37,10 +35,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{490171F7-0781-40B1-B942-ACE759F8D51D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{490171F7-0781-40B1-B942-ACE759F8D51D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{490171F7-0781-40B1-B942-ACE759F8D51D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{490171F7-0781-40B1-B942-ACE759F8D51D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86938290-5D7D-43B5-8146-4614FB5820F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{86938290-5D7D-43B5-8146-4614FB5820F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86938290-5D7D-43B5-8146-4614FB5820F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,7 +65,6 @@ Global
 		{B8C371A9-6B6C-4595-9B5B-88071D6F3A71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{490171F7-0781-40B1-B942-ACE759F8D51D} = {24FE2FC4-620F-4850-B115-9D1B4265839C}
 		{86938290-5D7D-43B5-8146-4614FB5820F4} = {24FE2FC4-620F-4850-B115-9D1B4265839C}
 		{53CAFB42-4AEB-43F9-B6A1-DAA8EE46F174} = {24FE2FC4-620F-4850-B115-9D1B4265839C}
 		{6582ADC8-7DE3-4183-95DF-75D63B784023} = {24FE2FC4-620F-4850-B115-9D1B4265839C}
