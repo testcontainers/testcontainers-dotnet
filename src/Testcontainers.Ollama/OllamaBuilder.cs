@@ -5,6 +5,31 @@ namespace Testcontainers.Ollama
     public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
     {
         /// <summary>
+        /// Gets the default port of the Ollama API.
+        /// </summary>
+        public const int DefaultPort = 11434;
+        
+        /// <summary>
+        /// Default image name and version tag.
+        /// </summary>
+        public const string OllamaImage = "ollama/ollama:0.1.22";
+    
+        /// <summary>
+        /// Default volume path.
+        /// </summary>
+        public const string DefaultVolumePath = "/root/.ollama";
+    
+        /// <summary>
+        /// Default volume name.
+        /// </summary>
+        public const string DefaultVolumeName = "ollama-volume";
+
+        /// <summary>
+        /// The default model name for the OllamaBuilder.
+        /// </summary>
+        public const string DefaultModelName = OllamaModels.Llama2;
+        
+        /// <summary>
         /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
         /// </summary>
         public OllamaBuilder()
@@ -54,9 +79,9 @@ namespace Testcontainers.Ollama
         protected override OllamaBuilder Init()
         {
             return base.Init()
-                    .WithImage(new DockerImage(OllamaConfiguration.ImageName))
-                    .WithPortBinding(OllamaConfiguration.DefaultPort, true)
-                    .WithVolumeMount(OllamaConfiguration.DefaultVolumeName, OllamaConfiguration.DefaultVolumePath)
+                    .WithImage(new DockerImage(OllamaImage))
+                    .WithPortBinding(DefaultPort, true)
+                    .WithVolumeMount(DefaultVolumeName, DefaultVolumePath)
                 ;
         }
 
@@ -90,7 +115,7 @@ namespace Testcontainers.Ollama
         /// </remarks>
         public OllamaBuilder WithModelName(string name)
         {
-            return Merge(DockerResourceConfiguration, new OllamaConfiguration(DockerResourceConfiguration) {ModelName = name});
+            return Merge(DockerResourceConfiguration, new OllamaConfiguration(DockerResourceConfiguration, new OllamaConfiguration(modelName: name)));
         }
     }
 }

@@ -2,20 +2,15 @@ namespace Testcontainers.Ollama.Tests
 {
   public class OllamaContainerTests : IAsyncLifetime
   {
-    private readonly ITestOutputHelper _testOutputHelper;
     private OllamaContainer _ollamaContainer;
-
-    public OllamaContainerTests(ITestOutputHelper testOutputHelper)
-    {
-      _testOutputHelper = testOutputHelper;
-    }
 
     public async Task InitializeAsync()
     {
-      TestcontainersSettings.Logger = new TestOutputLogger(nameof(OllamaContainerTests), _testOutputHelper);
-      _ollamaContainer = new OllamaBuilder().Build();
+      _ollamaContainer = new OllamaBuilder()
+        .OllamaConfig(new OllamaConfiguration(OllamaModels.Llama2))
+        .Build();
       await _ollamaContainer.StartAsync();
-      await _ollamaContainer.StartOllamaAsync();
+      await _ollamaContainer.Run();
     }
 
     public async Task DisposeAsync()
@@ -40,8 +35,6 @@ namespace Testcontainers.Ollama.Tests
 
       var response = await client.SendChat(chatRequest, stream => { });
       response = response.ToList();
-
-      _testOutputHelper.WriteJson(response);
 
       Assert.True(response.Any());
     }

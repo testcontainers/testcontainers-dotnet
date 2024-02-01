@@ -5,15 +5,14 @@ namespace Testcontainers.Ollama
     public sealed class OllamaConfiguration : ContainerConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OllamaConfiguration" /> class.
+        /// The OllamaConfiguration class represents the configuration for an Ollama container.
         /// </summary>
-        /// <param name="modelName"></param>
-        /// <param name="schema"></param>
-        /// <param name="hostName"></param>
-        /// <param name="port"></param>
-        public OllamaConfiguration(string modelName = null, string schema = null, int? port = null)
+        public OllamaConfiguration(string modelName = null, string volumePath = null, string volumeName = null, int? port = null)
         {
-            ModelName = modelName;
+            ModelName = modelName ?? string.Empty;
+            VolumePath = volumePath ?? OllamaBuilder.DefaultVolumePath;
+            VolumeName = volumeName ?? OllamaBuilder.DefaultVolumeName;
+            Port = port ?? OllamaBuilder.DefaultPort;
         }
 
         /// <summary>
@@ -55,31 +54,29 @@ namespace Testcontainers.Ollama
             : base(oldValue, newValue)
         {
             ModelName = BuildConfiguration.Combine(oldValue.ModelName, newValue.ModelName);
+            VolumePath = BuildConfiguration.Combine(oldValue.VolumePath, newValue.VolumePath);
+            VolumeName = BuildConfiguration.Combine(oldValue.VolumeName, newValue.VolumeName);
+            Port = BuildConfiguration.Combine(oldValue.Port, newValue.Port);
         }
-    
+
         /// <summary>
-        /// Name of the model to use.
+        /// Represents the configuration for the Ollama container.
         /// </summary>
-        public string ModelName { get; set; } = OllamaModels.Llama2;
-    
+        public string ModelName { get; set; }
+
         /// <summary>
-        /// Gets the default port of the Ollama API.
+        /// The OllamaConfiguration class represents the configuration for an Ollama container.
         /// </summary>
-        public const int DefaultPort = 11434;
-        
+        public string VolumePath { get; set; }
+
         /// <summary>
-        /// Default image name.
+        /// Gets or sets the name of the volume associated with the Ollama container.
         /// </summary>
-        public const string ImageName = "ollama/ollama:latest";
-    
+        public string VolumeName { get; set; }
+
         /// <summary>
-        /// Default volume path.
+        /// The <see cref="Port"/> class represents the configuration for an Ollama container port.
         /// </summary>
-        public const string DefaultVolumePath = "/root/.ollama";
-    
-        /// <summary>
-        /// Default volume name.
-        /// </summary>
-        public const string DefaultVolumeName = "ollama-volume";
+        public int Port { get; set; }
     }
 }

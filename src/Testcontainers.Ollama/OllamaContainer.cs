@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace Testcontainers.Ollama
 {
     /// <inheritdoc cref="DockerContainer" />
@@ -12,24 +14,29 @@ namespace Testcontainers.Ollama
         public OllamaContainer(OllamaConfiguration configuration, ILogger logger)
             : base(configuration, logger)
         {
-            ModelName = configuration.ModelName;
-            ImageName = OllamaConfiguration.ImageName;
+            Configuration = configuration;
+        }
+
+        public OllamaConfiguration Configuration { get; private set; }
+
+        public Task Run(CancellationToken ct = default)
+        {
+            return Run(Configuration.ModelName, ct);
         }
     
         /// <summary>
         /// Starts the Ollama container.
         /// </summary>
-        public async Task StartOllamaAsync()
+        public Task Run(string modelName, CancellationToken ct = default)
         {
-            if (State!= TestcontainersStates.Created && State != TestcontainersStates.Running)                {
-                throw new InvalidOperationException("Cannot start a container that has not been created.");
+            ModelName = modelName;
+            if (State!= TestcontainersStates.Created && State != TestcontainersStates.Running) {
+                ThrowIfResourceNotFound();
             }
-            Task.WaitAll(ExecAsync(new List<string>()
-            {
+
+            return ExecAsync(new List<string>() {
                 "ollama", "run", ModelName,
-            }));
-            
-            await Task.CompletedTask;
+            }, ct);
         }
     
         /// <summary>
@@ -37,7 +44,7 @@ namespace Testcontainers.Ollama
         /// </summary>
         /// <returns>The base URL of the Ollama API.</returns>
         /// <example>http://localhost:5000/api</example>
-        public string GetBaseUrl() => $"http://{Hostname}:{GetMappedPublicPort(OllamaConfiguration.DefaultPort)}/api";
+        public string GetBaseUrl() => $"http://{Hostname}:{GetMappedPublicPort(OllamaBuilder.DefaultPort)}/api";
     
         /// <summary>
         /// Gets the name of the Docker image to use.
@@ -47,6 +54,6 @@ namespace Testcontainers.Ollama
         /// <summary>
         /// Gets the name of the model to run.
         /// </summary>
-        public string ModelName { get; }
+        public string ModelName { get; private set; }
     }
 }
