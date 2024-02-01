@@ -27,7 +27,7 @@ internal sealed class BuildInformation
 
     var publishNuGetPackage = context.EnvironmentVariable("PUBLISH_NUGET_PACKAGE");
 
-    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[2]/Version/text()");
+    var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[1]/Version/text()");
 
     var git = context.GitBranchCurrent(".");
 

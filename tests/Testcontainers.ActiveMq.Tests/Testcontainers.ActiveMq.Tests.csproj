@@ -12,7 +12,7 @@
         <PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

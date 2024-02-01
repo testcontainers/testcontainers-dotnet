@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), WeatherForecast.sln))/</SolutionDir>
-  </PropertyGroup>
-  <PropertyGroup>
     <Version>0.1.0</Version>
     <PackageId>$(AssemblyName)</PackageId>
     <AssemblyVersion>$(Version)</AssemblyVersion>
