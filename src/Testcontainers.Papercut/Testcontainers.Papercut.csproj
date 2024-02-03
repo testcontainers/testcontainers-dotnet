@@ -2,12 +2,9 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
-        <Copyright>Copyright (c) 2019 - 2024 Liam Wilson, Andre Hofmeister and other authors</Copyright>
-        <Authors>Liam Wilson, Andre Hofmeister and contributors</Authors>
-        <Description>A Testcontainers Papercut module for testing SMTP clients and sending emails.</Description>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
