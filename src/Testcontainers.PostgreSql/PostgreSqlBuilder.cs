@@ -73,7 +73,11 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     public override PostgreSqlContainer Build()
     {
         Validate();
-        return new PostgreSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
+        // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
+        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -88,8 +92,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
-            .WithCommand("-c", "synchronous_commit=off")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithCommand("-c", "synchronous_commit=off");
     }
 
     /// <inheritdoc />
@@ -123,10 +126,32 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        /// <inheritdoc />
-        public Task<bool> UntilAsync(IContainer container)
+        private readonly string[] _command;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(PostgreSqlConfiguration configuration)
         {
-            return ((PostgreSqlContainer)container).IsReadyAsync();
+            _command = new[] {
+                "pg_isready",
+                "--host", "localhost", // Explicitly specify localhost in order to be ready only after the initdb scripts have run and the server is listening over TCP/IP
+                "--dbname", configuration.Database,
+                "--username", configuration.Username,
+            };
+        }
+
+        /// <summary>
+        /// Test whether the database is ready to accept connections or not with the <a href="https://www.postgresql.org/docs/current/app-pg-isready.html">pg_isready</a> command.
+        /// </summary>
+        /// <returns><see langword="true"/> if the database is ready to accept connections; <see langword="false"/> if the database is not yet ready.</returns>
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var execResult = await container.ExecAsync(_command)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }
