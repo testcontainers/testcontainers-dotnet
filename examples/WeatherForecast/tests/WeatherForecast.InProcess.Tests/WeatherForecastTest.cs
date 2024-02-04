@@ -51,11 +51,14 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       const string path = "api/WeatherForecast";
 
       // When
-      var response = await _httpClient.GetAsync(path);
+      var response = await _httpClient.GetAsync(path)
+        .ConfigureAwait(true);
 
-      var weatherForecastStream = await response.Content.ReadAsStreamAsync();
+      var weatherForecastStream = await response.Content.ReadAsStreamAsync()
+        .ConfigureAwait(true);
 
-      var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream);
+      var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream)
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -72,7 +75,8 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       var weatherDataReadOnlyRepository = _serviceScope.ServiceProvider.GetRequiredService<IWeatherDataReadOnlyRepository>();
 
       // When
-      var weatherForecast = await weatherDataReadOnlyRepository.GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(threeDays));
+      var weatherForecast = await weatherDataReadOnlyRepository.GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(threeDays))
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(threeDays, weatherForecast.Count());
