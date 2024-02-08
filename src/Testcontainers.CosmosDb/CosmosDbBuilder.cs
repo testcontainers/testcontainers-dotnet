@@ -45,7 +45,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
         return base.Init()
             .WithImage(CosmosDbImage)
             .WithPortBinding(CosmosDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started\\r?\\n"));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -64,5 +64,34 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Merge(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
     {
         return new CosmosDbBuilder(new CosmosDbConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
+            const string requestUri = "https://localhost/_explorer/emulator.pem";
+
+            var httpClient = ((CosmosDbContainer)container).HttpClient;
+
+            try
+            {
+                using var httpResponse = await httpClient.GetAsync(requestUri)
+                    .ConfigureAwait(false);
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                httpClient.Dispose();
+            }
+        }
     }
 }
