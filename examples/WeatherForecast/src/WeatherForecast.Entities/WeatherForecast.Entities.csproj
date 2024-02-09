@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.1.3"/>
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations"/>
-    <PackageReference Include="System.ComponentModel.Annotations"/>
-    <PackageReference Include="System.Text.Json"/>
+    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
   </ItemGroup>
 </Project>

@@ -4,9 +4,9 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers/Testcontainers.csproj"/>
+        <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
     </ItemGroup>
 </Project>

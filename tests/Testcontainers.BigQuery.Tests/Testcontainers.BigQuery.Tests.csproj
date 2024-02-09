@@ -5,14 +5,14 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6"/>
-        <PackageReference Include="xunit" Version="2.6.5"/>
-        <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.4.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="Google.Cloud.BigQuery.V2"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
-        <ProjectReference Include="$(SolutionDir)tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

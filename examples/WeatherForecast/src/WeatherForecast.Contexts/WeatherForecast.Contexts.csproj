@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.1.3"/>
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)src/WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
   </ItemGroup>
 </Project>

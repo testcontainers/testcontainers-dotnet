@@ -25,13 +25,13 @@ public static class WeatherForecastTest
 
       // When
       var response = await _weatherForecastContainer.GetAsync(path)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var weatherForecastStream = await response.Content.ReadAsStreamAsync()
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream)
-        .ConfigureAwait(false);
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
