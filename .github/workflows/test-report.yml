@@ -1,15 +1,10 @@
-name: 'Test Report'
+name: Test Report
 
 on:
   workflow_run:
     workflows: ['Continuous Integration & Delivery']
     types:
       - completed
-
-permissions:
-  contents: read
-  actions: read
-  checks: write
 
 jobs:
   report:
@@ -18,13 +13,18 @@ jobs:
       matrix:
         os: [ ubuntu-22.04, windows-2022 ]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
+    permissions:
+      actions: read
+      checks: write
+      contents: read
 
     steps:
-    - name: Publish ${{ matrix.os }} Test Results
-      uses: dorny/test-reporter@v1
-      with:
-        artifact: ${{ matrix.os }}
-        name: Test Results (${{ matrix.os }})
-        path: '*.trx'
-        reporter: dotnet-trx
+      - name: Publish '${{ matrix.os }}' Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          artifact: ${{ matrix.os }}
+          name: ${{ matrix.os }}
+          path: '*.trx'
+          reporter: dotnet-trx

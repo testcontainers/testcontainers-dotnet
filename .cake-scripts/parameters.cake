@@ -29,7 +29,6 @@ internal sealed class BuildParameters
   public NuGetCredentials NuGetCredentials { get; private set; }
   public BuildProjects Projects { get; private set; }
   public BuildPaths Paths { get; private set; }
-  public DotNetMSBuildSettings MSBuildSettings { get; private set; }
 
   public static BuildParameters Instance(ICakeContext context)
   {
@@ -60,7 +59,6 @@ internal sealed class BuildParameters
       NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
       Projects = BuildProjects.Instance(context, solutionFilePath),
       Paths = BuildPaths.Instance(context, buildInformation.Version),
-      MSBuildSettings = new DotNetMSBuildSettings()
     };
   }
 }

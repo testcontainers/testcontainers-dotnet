@@ -80,7 +80,6 @@ Task("Tests")
     NoRestore = true,
     NoBuild = true,
     Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-    MSBuildSettings = param.MSBuildSettings.WithProperty("UseTrxLogger", "true"),
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args
