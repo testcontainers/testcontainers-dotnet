@@ -78,8 +78,18 @@ jobs:
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
+      # The Test Reporter GH Action is not yet compatible with the recent
+      # actions/upload-artifact updates: https://github.com/dorny/test-reporter/issues/363.
+      - name: Upload Test And Coverage Results
+        uses: actions/upload-artifact@v3
+        if: true
+        with:
+          name: ${{ matrix.os }}-v3
+          path: test-results
+
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
+        if: true
         with:
           name: ${{ matrix.os }}
           path: test-results
