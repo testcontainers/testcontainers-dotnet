@@ -25,6 +25,6 @@ jobs:
         uses: dorny/test-reporter@v1.8.0
         with:
           artifact: ${{ matrix.os }}-v3
-          name: Test Report
+          name: report (${{ matrix.os }})
           path: '*.trx'
           reporter: dotnet-trx
