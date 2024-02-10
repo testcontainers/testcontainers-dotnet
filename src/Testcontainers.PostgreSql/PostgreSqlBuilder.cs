@@ -123,18 +123,19 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] LineEndings = ["\r\n", "\n"];
+        private const string IPv4Listening = "listening on IPv4";
+
+        private const string IPv6Listening = "listening on IPv6";
+
+        private const string DatabaseSystemReady = "database system is ready to accept connections";
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
+            var (_, stderr) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
                 .ConfigureAwait(false);
 
-            return 2.Equals(Array.Empty<string>()
-                .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Count(line => line.Contains("database system is ready to accept connections")));
+            return new[] { IPv4Listening, IPv6Listening, DatabaseSystemReady }.All(stderr.Contains);
         }
     }
 }
