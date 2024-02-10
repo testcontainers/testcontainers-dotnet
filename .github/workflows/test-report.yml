@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [ ubuntu-22.04, windows-2022 ]
 
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
 
     permissions:
       actions: read
@@ -21,10 +21,10 @@ jobs:
       contents: read
 
     steps:
-      - name: Publish '${{ matrix.os }}' Test Report
-        uses: dorny/test-reporter@v1
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1.8.0
         with:
-          artifact: ${{ matrix.os }}
+          artifact: ${{ matrix.os }}-v3
           name: ${{ matrix.os }}
           path: '*.trx'
           reporter: dotnet-trx
