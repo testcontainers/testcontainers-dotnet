@@ -78,8 +78,8 @@ jobs:
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
-      # The Test Reporter GH Action is not yet compatible with the recent
-      # actions/upload-artifact updates: https://github.com/dorny/test-reporter/issues/363.
+      # The Test Reporter GH Action is not compatible with the recent
+      # actions/upload-artifact@v4 updates: https://github.com/dorny/test-reporter/issues/363.
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3
         if: true
@@ -175,7 +175,7 @@ jobs:
         run: dotnet cake --target=Publish
 
       # Cake sets the semVer environment variable
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         with:
           version: ${{ env.semVer }}
         env:
