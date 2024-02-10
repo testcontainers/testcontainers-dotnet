@@ -58,7 +58,7 @@ internal sealed class BuildParameters
       SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
       NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
       Projects = BuildProjects.Instance(context, solutionFilePath),
-      Paths = BuildPaths.Instance(context, buildInformation.Version),
+      Paths = BuildPaths.Instance(context, buildInformation.Version)
     };
   }
 }
