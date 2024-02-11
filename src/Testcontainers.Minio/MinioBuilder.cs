@@ -60,7 +60,7 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     public override MinioContainer Build()
     {
         Validate();
-        return new MinioContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MinioContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

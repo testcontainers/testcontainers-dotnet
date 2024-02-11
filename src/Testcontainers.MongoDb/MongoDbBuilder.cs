@@ -69,7 +69,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         // provided, the log message "Waiting for connections" appears twice.
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
         var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

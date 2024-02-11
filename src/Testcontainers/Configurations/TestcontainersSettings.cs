@@ -2,10 +2,8 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
-  using System.Globalization;
   using System.Linq;
   using System.Runtime.InteropServices;
-  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -20,7 +18,7 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
+    private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(true);
 
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
@@ -41,68 +39,6 @@ namespace DotNet.Testcontainers.Configurations
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
       = DockerEndpointAuthProvider?.GetAuthConfig();
-
-    static TestcontainersSettings()
-    {
-      Task.Run(async () =>
-      {
-        var runtimeInfo = new StringBuilder();
-
-        if (DockerEndpointAuthConfig != null)
-        {
-          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
-          {
-            using (var dockerClient = dockerClientConfiguration.CreateClient())
-            {
-              try
-              {
-                var byteUnits = new[] { "KB", "MB", "GB" };
-
-                var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
-                  .ConfigureAwait(false);
-
-                var dockerVersion = await dockerClient.System.GetVersionAsync()
-                  .ConfigureAwait(false);
-
-                runtimeInfo.AppendLine("Connected to Docker:");
-
-                runtimeInfo.Append("  Host: ");
-                runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
-
-                runtimeInfo.Append("  Server Version: ");
-                runtimeInfo.AppendLine(dockerInfo.ServerVersion);
-
-                runtimeInfo.Append("  Kernel Version: ");
-                runtimeInfo.AppendLine(dockerInfo.KernelVersion);
-
-                runtimeInfo.Append("  API Version: ");
-                runtimeInfo.AppendLine(dockerVersion.APIVersion);
-
-                runtimeInfo.Append("  Operating System: ");
-                runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
-
-                runtimeInfo.Append("  Total Memory: ");
-                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
-              }
-              catch
-              {
-                // Ignore exceptions in auto discovery. Users can provide the Docker endpoint with the builder too.
-              }
-            }
-          }
-        }
-        else
-        {
-          runtimeInfo.AppendLine("Auto discovery did not detect a Docker host configuration");
-        }
-
-#pragma warning disable CA1848, CA2254
-        Logger.LogInformation(runtimeInfo.ToString());
-#pragma warning restore CA1848, CA2254
-
-        ManualResetEvent.Set();
-      });
-    }
 
     /// <summary>
     /// Gets or sets the Docker host override value.
@@ -167,6 +103,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets the logger.
     /// </summary>
     [NotNull]
+    [Obsolete("The logger is now configured per resource by calling WithLogger(ILogger logger) in the builder.")]
     public static ILogger Logger { get; set; }
       = ConsoleLogger.Instance;
 
@@ -181,6 +118,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the wait handle that signals settings initialized.
     /// </summary>
     [NotNull]
+    [Obsolete("This wait handle is not used anymore.")]
     public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
 

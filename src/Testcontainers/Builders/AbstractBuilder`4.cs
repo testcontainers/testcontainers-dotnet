@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// An abstract fluent Docker resource builder.
@@ -25,7 +26,6 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
     protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration)
     {
-      _ = TestcontainersSettings.SettingsInitialized.WaitOne(TimeSpan.FromSeconds(5));
     }
 
     /// <summary>
@@ -83,6 +83,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithLogger(ILogger logger)
+    {
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(logger: logger));
+    }
+
+    /// <inheritdoc />
     public abstract TResourceEntity Build();
 
     /// <summary>
@@ -123,7 +129,7 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected virtual TBuilderEntity Init()
     {
-      return WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig).WithLabel(DefaultLabels.Instance);
+      return WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig).WithLabel(DefaultLabels.Instance).WithLogger(ConsoleLogger.Instance);
     }
 
     /// <summary>

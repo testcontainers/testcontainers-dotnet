@@ -8,9 +8,8 @@ public sealed class KafkaContainer : DockerContainer
     /// Initializes a new instance of the <see cref="KafkaContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public KafkaContainer(KafkaConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public KafkaContainer(KafkaConfiguration configuration)
+        : base(configuration)
     {
     }
 

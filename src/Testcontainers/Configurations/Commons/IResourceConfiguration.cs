@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// A resource configuration.
@@ -40,5 +41,10 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the reuse hash.
     /// </summary>
     string GetReuseHash();
+
+    /// <summary>
+    /// Gets the logger.
+    /// </summary>
+    ILogger Logger { get; }
   }
 }

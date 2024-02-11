@@ -32,12 +32,10 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DockerContainer(IContainerConfiguration configuration, ILogger logger)
+    public DockerContainer(IContainerConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      Logger = logger;
     }
 
     /// <inheritdoc />
@@ -59,7 +57,7 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
-    public ILogger Logger { get; }
+    public ILogger Logger => _configuration.Logger;
 
     /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }

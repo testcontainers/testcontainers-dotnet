@@ -10,9 +10,8 @@ public sealed class PostgreSqlContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="PostgreSqlContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public PostgreSqlContainer(PostgreSqlConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public PostgreSqlContainer(PostgreSqlConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

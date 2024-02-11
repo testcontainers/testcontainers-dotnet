@@ -27,12 +27,11 @@ namespace DotNet.Testcontainers.Volumes
     /// Initializes a new instance of the <see cref="DockerVolume" /> class.
     /// </summary>
     /// <param name="configuration">The volume configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DockerVolume(IVolumeConfiguration configuration, ILogger logger)
+    public DockerVolume(IVolumeConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = logger;
+      _logger = configuration.Logger;
     }
 
     /// <inheritdoc />

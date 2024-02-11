@@ -10,9 +10,8 @@ public sealed class MongoDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="MongoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MongoDbContainer(MongoDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MongoDbContainer(MongoDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

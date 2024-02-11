@@ -27,12 +27,11 @@ namespace DotNet.Testcontainers.Networks
     /// Initializes a new instance of the <see cref="DockerNetwork" /> class.
     /// </summary>
     /// <param name="configuration">The network configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DockerNetwork(INetworkConfiguration configuration, ILogger logger)
+    public DockerNetwork(INetworkConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = logger;
+      _logger = configuration.Logger;
     }
 
     /// <inheritdoc />

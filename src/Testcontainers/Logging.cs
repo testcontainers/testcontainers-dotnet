@@ -4,12 +4,27 @@ namespace DotNet.Testcontainers
   using System.Collections.Generic;
   using System.Text.Json;
   using System.Text.RegularExpressions;
+  using System.Threading.Tasks;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
   internal static class Logging
   {
 #pragma warning disable InconsistentNaming, SA1309
+
+    private static readonly Action<ILogger, Uri, string, string, string, string, string, Exception> _DockerRuntimeInfo
+      = LoggerMessage.Define<Uri, string, string, string, string, string>(LogLevel.Information, default,
+        "Connected to Docker" + Environment.NewLine +
+        "  Host: {Host}" + Environment.NewLine +
+        "  Server Version: {ServerVersion}" + Environment.NewLine +
+        "  Kernel Version: {KernelVersion}" + Environment.NewLine +
+        "  API Version: {APIVersion}" + Environment.NewLine +
+        "  Operating System: {OperatingSystem}" + Environment.NewLine +
+        "  Total Memory: {TotalMemory}");
+
+    private static readonly Action<ILogger, Exception, Exception> _DockerRuntimeError
+      = LoggerMessage.Define<Exception>(LogLevel.Error, default, "Failed to get Docker runtime information: {Exception}");
 
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
@@ -111,6 +126,30 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource not found, create resource");
 
 #pragma warning restore InconsistentNaming, SA1309
+
+    public static async Task DockerRuntimeInfoAsync(this ILogger logger, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    {
+      try
+      {
+        using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration())
+        {
+          using (var dockerClient = dockerClientConfiguration.CreateClient())
+          {
+            var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
+              .ConfigureAwait(false);
+            var dockerVersion = await dockerClient.System.GetVersionAsync()
+              .ConfigureAwait(false);
+            var byteUnits = new[] { "KB", "MB", "GB" };
+            var totalMemory = FormattableString.Invariant($"{dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length):F} {byteUnits[byteUnits.Length - 1]}");
+            _DockerRuntimeInfo(logger, dockerClient.Configuration.EndpointBaseUri, dockerInfo.ServerVersion, dockerInfo.KernelVersion, dockerVersion.APIVersion, dockerInfo.OperatingSystem, totalMemory, null);
+          }
+        }
+      }
+      catch (Exception exception)
+      {
+        _DockerRuntimeError(logger, exception, exception);
+      }
+    }
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {

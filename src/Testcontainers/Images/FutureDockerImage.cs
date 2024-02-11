@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Images
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IFutureDockerImage" />
   [PublicAPI]
@@ -22,10 +21,9 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="FutureDockerImage" /> class.
     /// </summary>
     /// <param name="configuration">The image configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
+    public FutureDockerImage(IImageFromDockerfileConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
     }
 

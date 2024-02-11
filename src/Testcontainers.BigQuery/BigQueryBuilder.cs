@@ -46,7 +46,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     public override BigQueryContainer Build()
     {
         Validate();
-        return new BigQueryContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new BigQueryContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

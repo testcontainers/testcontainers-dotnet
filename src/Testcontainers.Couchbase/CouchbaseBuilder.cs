@@ -122,7 +122,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         }
 
         var couchbaseBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
-        return new CouchbaseContainer(couchbaseBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new CouchbaseContainer(couchbaseBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

@@ -10,9 +10,8 @@ public sealed class SqlEdgeContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="SqlEdgeContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public SqlEdgeContainer(SqlEdgeConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public SqlEdgeContainer(SqlEdgeConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
