@@ -5,6 +5,7 @@ namespace Testcontainers.MySql;
 public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MySqlConfiguration _configuration;
+    private bool _hasConfigFile;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlContainer" /> class.
@@ -45,7 +46,20 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mysql", "--protocol=TCP", $"--port={MySqlBuilder.MySqlPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
+        if (!_hasConfigFile)
+        {
+            var config = new StringWriter { NewLine = "\n" };
+            config.WriteLine("[client]");
+            config.WriteLine("protocol=TCP");
+            config.WriteLine($"user={_configuration.Username}");
+            config.WriteLine($"password={_configuration.Password}");
+            await CopyAsync(Encoding.Default.GetBytes(config.ToString()), "/etc/mysql/my.cnf", UnixFileModes.UserRead | UnixFileModes.UserWrite, ct)
+                .ConfigureAwait(false);
+
+            _hasConfigFile = true;
+        }
+
+        return await ExecAsync(new[] { "mysql", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
             .ConfigureAwait(false);
     }
 }
