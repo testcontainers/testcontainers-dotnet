@@ -89,7 +89,8 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
             .WithPortBinding(MySqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithStartupCallback((container, ct) => container.WriteConfigurationFileAsync(ct));
     }
 
     /// <inheritdoc />

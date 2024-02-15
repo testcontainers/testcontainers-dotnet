@@ -348,9 +348,9 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback)
+    public TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback)
     {
-      return Clone(new ContainerConfiguration(startupCallback: startupCallback));
+      return Clone(new ContainerConfiguration(startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)));
     }
 
     /// <inheritdoc />
