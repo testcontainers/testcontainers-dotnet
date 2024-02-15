@@ -18,8 +18,10 @@ internal sealed class DockerComposeLocal : DockerCompose
     /// <inheritdoc />
     public override async Task StartAsync(CancellationToken ct = default)
     {
+        var builder = DockerComposeCommandLineBuilder.FromLocalConfiguration(RuntimeConfiguration);
+        
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(BuildStartCommandLine().Skip(1))
+            .WithArguments(builder.BuildStartCommand())
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
             .ExecuteBufferedAsync()
             .ConfigureAwait(false);
@@ -28,8 +30,10 @@ internal sealed class DockerComposeLocal : DockerCompose
     /// <inheritdoc />
     public override async Task StopAsync(CancellationToken ct = default)
     {
+        var builder = DockerComposeCommandLineBuilder.FromLocalConfiguration(RuntimeConfiguration);
+        
         await Cli.Wrap(_dockerBinary)
-            .WithArguments(BuildStopCommandLine().Skip(1))
+            .WithArguments(builder.BuildStopCommand())
             .WithWorkingDirectory(Path.GetDirectoryName(RuntimeConfiguration.ComposeFile)!)
             .ExecuteBufferedAsync()
             .ConfigureAwait(false);

@@ -14,4 +14,3 @@ global using Microsoft.Extensions.Logging;
 global using System.Runtime.InteropServices;
 global using CliWrap;
 global using CliWrap.Buffered;
-global using DotNet.Testcontainers.Commons;
