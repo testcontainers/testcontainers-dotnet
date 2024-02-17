@@ -197,7 +197,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      if (Uri.TryCreate(source, UriKind.Absolute, out var uri))
+      if (Uri.IsWellFormedUriString(source, UriKind.Absolute) && Uri.TryCreate(source, UriKind.Absolute, out var uri) && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme))
       {
         return WithResourceMapping(uri, target, fileMode);
       }
@@ -242,7 +242,14 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return source.IsFile ? WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, fileMode)) : WithResourceMapping(new UriResourceMapping(source, target, fileMode));
+      if (source.IsFile)
+      {
+        return WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, fileMode));
+      }
+      else
+      {
+        return WithResourceMapping(new UriResourceMapping(source, target, fileMode));
+      }
     }
 
     /// <inheritdoc />

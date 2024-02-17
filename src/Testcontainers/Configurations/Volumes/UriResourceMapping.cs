@@ -1,12 +1,12 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
+  using System.Net.Http;
+  using System.Threading;
+  using System.Threading.Tasks;
+
   /// <inheritdoc cref="IResourceMapping" />
-  internal class UriResourceMapping : IResourceMapping
+  internal sealed class UriResourceMapping : IResourceMapping
   {
     private readonly Uri _uri;
 
@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Configurations
     public Task DeleteAsync(CancellationToken ct = default) => Task.CompletedTask;
 
     /// <inheritdoc />
-    public virtual async Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
+    public async Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
     {
       using (var httpClient = new HttpClient())
       {

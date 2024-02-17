@@ -33,8 +33,18 @@ public abstract class TarOutputMemoryStreamTest
     }
 
     [UsedImplicitly]
-    public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IAsyncLifetime, IDisposable
+    public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IClassFixture<FromResourceMapping.HttpFixture>, IAsyncLifetime, IDisposable
     {
+        private readonly string _testUriHttp;
+
+        private readonly string _testUriFile;
+
+        public FromResourceMapping(FromResourceMapping.HttpFixture httpFixture)
+        {
+            _testUriHttp = httpFixture.BaseAddress;
+            _testUriFile = new Uri(_testFile.FullName).ToString();
+        }
+
         public MountType Type
             => MountType.Bind;
 
@@ -86,24 +96,23 @@ public abstract class TarOutputMemoryStreamTest
         {
             // Given
             var targetFilePath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
-
             var targetFilePath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
-
+            var targetFilePath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
             var targetDirectoryPath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
-
             var targetDirectoryPath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
-
             var targetDirectoryPath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
-
             var targetDirectoryPath4 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath5 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
 
             var targetFilePaths = new List<string>();
             targetFilePaths.Add(targetFilePath1);
             targetFilePaths.Add(targetFilePath2);
+            targetFilePaths.Add(targetFilePath3);
             targetFilePaths.Add(string.Join("/", targetDirectoryPath1, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath2, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath3, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath4, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath5, _testFile.Name));
 
             await using var container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
@@ -111,6 +120,8 @@ public abstract class TarOutputMemoryStreamTest
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
                 .WithResourceMapping(_testFile.Directory.FullName, targetDirectoryPath2)
+                .WithResourceMapping(_testUriHttp, targetFilePath2)
+                .WithResourceMapping(_testUriFile, targetDirectoryPath3)
                 .Build();
 
             // When
@@ -120,13 +131,13 @@ public abstract class TarOutputMemoryStreamTest
             await container.StartAsync()
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(fileContent, targetFilePath2)
+            await container.CopyAsync(fileContent, targetFilePath3)
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(_testFile.FullName, targetDirectoryPath3)
+            await container.CopyAsync(_testFile.FullName, targetDirectoryPath4)
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath4)
+            await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath5)
                 .ConfigureAwait(true);
 
             // Then
@@ -134,6 +145,31 @@ public abstract class TarOutputMemoryStreamTest
                 .ConfigureAwait(true);
 
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
+        }
+
+        public sealed class HttpFixture : IAsyncLifetime
+        {
+            private const ushort HttpPort = 80;
+
+            private readonly IContainer _container = new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithEntrypoint("/bin/sh", "-c")
+                .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
+                .WithPortBinding(HttpPort, true)
+                .Build();
+
+            public string BaseAddress
+                => new UriBuilder(Uri.UriSchemeHttp, _container.Hostname, _container.GetMappedPublicPort(HttpPort)).ToString();
+
+            public Task InitializeAsync()
+            {
+                return _container.StartAsync();
+            }
+
+            public Task DisposeAsync()
+            {
+                return _container.DisposeAsync().AsTask();
+            }
         }
     }
 
