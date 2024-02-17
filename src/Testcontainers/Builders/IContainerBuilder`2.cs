@@ -224,7 +224,7 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>
     /// If the source corresponds to a file or the Uri scheme corresponds to a file,
     /// the content is copied to the target directory path. If the Uri scheme
-    /// corresponds to HTTP or HTTPS, the content is copied to the target file.
+    /// corresponds to HTTP or HTTPS, the content is copied to the target file path.
     ///
     /// If you prefer to copy a file to a specific target file path instead of a
     /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, UnixFileModes)" />.
@@ -272,12 +272,14 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>
     /// If the Uri scheme corresponds to a file, the content is copied to the target
     /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
-    /// copied to the target file.
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
     ///
     /// If you prefer to copy a file to a specific target file path instead of a
     /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, UnixFileModes)" />.
     /// </remarks>
-    /// <param name="source">The source URL of the file to be copied. Must be a <c>http</c>, <c>https</c> or <c>file</c> URL.</param>
+    /// <param name="source">The source URL of the file to be copied.</param>
     /// <param name="target">The target directory or file path to copy the file to.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>

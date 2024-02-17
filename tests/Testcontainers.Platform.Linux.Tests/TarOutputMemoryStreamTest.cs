@@ -35,14 +35,14 @@ public abstract class TarOutputMemoryStreamTest
     [UsedImplicitly]
     public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IClassFixture<FromResourceMapping.HttpFixture>, IAsyncLifetime, IDisposable
     {
-        private readonly string _testUriHttp;
+        private readonly string _testHttpUri;
 
-        private readonly string _testUriFile;
+        private readonly string _testFileUri;
 
         public FromResourceMapping(FromResourceMapping.HttpFixture httpFixture)
         {
-            _testUriHttp = httpFixture.BaseAddress;
-            _testUriFile = new Uri(_testFile.FullName).ToString();
+            _testHttpUri = httpFixture.BaseAddress;
+            _testFileUri = new Uri(_testFile.FullName).ToString();
         }
 
         public MountType Type
@@ -120,8 +120,8 @@ public abstract class TarOutputMemoryStreamTest
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
                 .WithResourceMapping(_testFile.Directory.FullName, targetDirectoryPath2)
-                .WithResourceMapping(_testUriHttp, targetFilePath2)
-                .WithResourceMapping(_testUriFile, targetDirectoryPath3)
+                .WithResourceMapping(_testHttpUri, targetFilePath2)
+                .WithResourceMapping(_testFileUri, targetDirectoryPath3)
                 .Build();
 
             // When
