@@ -40,12 +40,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(ignoreRecursiveFiles, ".git/logs", false);
       Add(ignoreRecursiveFiles, "src/lorem/lipsum/lipsum.config", false);
       Add(ignoreRecursiveFiles, "src/lorem/lipsum.config", false);
+      Add(ignoreRecursiveFiles, "src/lipsum.config", false);
       Add(ignoreRecursiveFiles, ".gitignore", true);
       Add(ignoreRecursiveFiles, ".git/HEAD", true);
       Add(ignoreRecursiveFiles, ".git/refs/heads/main", true);
       Add(ignoreRecursiveFiles, ".git/refs/heads/bugfix/gh-1119", true);
       Add(ignoreRecursiveFiles, "src/lorem/temp", true);
-      Add(ignoreRecursiveFiles, "src/lipsum.config", true);
       Add(ignoreRecursiveFiles, "lipsum.config", true);
       Add(ignoreSingleCharacterFiles, "temp", false);
       Add(ignoreSingleCharacterFiles, "temp1", false);

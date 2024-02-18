@@ -75,10 +75,10 @@ namespace DotNet.Testcontainers.Images
         {
           const string globstar = "**/";
 
-          if (line.Key.StartsWith(globstar))
+          if (line.Key.Contains(globstar))
           {
             lines.Add(line);
-            lines.Add(new KeyValuePair<string, bool>(line.Key.Substring(globstar.Length), line.Value));
+            lines.Add(new KeyValuePair<string, bool>(line.Key.Replace(globstar, string.Empty), line.Value));
           }
           else
           {
