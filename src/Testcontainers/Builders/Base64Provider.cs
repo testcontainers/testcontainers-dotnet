@@ -74,7 +74,7 @@ namespace DotNet.Testcontainers.Builders
         if (!string.IsNullOrEmpty(identityTokenValue))
         {
           _logger.DockerRegistryCredentialFound(hostname);
-          return new DockerRegistryAuthenticationConfiguration(authProperty.Name, null, null, identityToken.GetString());
+          return new DockerRegistryAuthenticationConfiguration(authProperty.Name, null, null, identityTokenValue);
         }
       }
 
