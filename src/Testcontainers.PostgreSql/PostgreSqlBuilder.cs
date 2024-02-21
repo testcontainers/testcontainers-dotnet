@@ -126,7 +126,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly string[] _command;
+        private readonly IList<string> _command;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitUntil" /> class.
@@ -134,18 +134,19 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(PostgreSqlConfiguration configuration)
         {
-            _command = new[] {
-                "pg_isready",
-                "--host", "localhost", // Explicitly specify localhost in order to be ready only after the initdb scripts have run and the server is listening over TCP/IP
-                "--dbname", configuration.Database,
-                "--username", configuration.Username,
-            };
+            // Explicitly specify the host to ensure readiness only after the initdb scripts have executed, and the server is listening on TCP/IP.
+            _command = new List<string> { "pg_isready", "--host", "localhost", "--dbname", configuration.Database, "--username", configuration.Username };
         }
 
         /// <summary>
-        /// Test whether the database is ready to accept connections or not with the <a href="https://www.postgresql.org/docs/current/app-pg-isready.html">pg_isready</a> command.
+        /// Checks whether the database is ready and accepts connections or not.
         /// </summary>
-        /// <returns><see langword="true"/> if the database is ready to accept connections; <see langword="false"/> if the database is not yet ready.</returns>
+        /// <remarks>
+        /// The wait strategy uses <a href="https://www.postgresql.org/docs/current/app-pg-isready.html">pg_isready</a> to check the connection status of PostgreSql.
+        /// </remarks>
+        /// <param name="container">The starting container instance.</param>
+        /// <returns>Task that completes and returns true when the database is ready and accepts connections, otherwise false.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the PostgreSql image does not contain <c>pg_isready</c>.</exception>
         public async Task<bool> UntilAsync(IContainer container)
         {
             var execResult = await container.ExecAsync(_command)
@@ -153,7 +154,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
             if (execResult.Stderr.Contains("pg_isready was not found"))
             {
-                throw new NotSupportedException($"The {container.Image.FullName} image is not supported. Please use postgres:9.3 onwards.");
+                throw new NotSupportedException($"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards.");
             }
 
             return 0L.Equals(execResult.ExitCode);
