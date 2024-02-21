@@ -93,6 +93,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}", true, "The \"auth\" property value kind for https://index.docker.io/v1/ is invalid: Object")]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"Not_Base64_encoded\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ is not a valid Base64 string")]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ should contain one colon separating the username and the password (basic authentication)")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":null}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"\"}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":{}}}}", true, null)]
       public void ShouldGetNull(string jsonDocument, bool isApplicable, string logMessage)
       {
         // Given
@@ -118,7 +121,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       [Theory]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}", "username", "password", null)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}", "username", "password", "identitytoken")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}", null, null, "identitytoken")]
       public void ShouldGetAuthConfig(string jsonDocument, string expectedUsername, string expectedPassword, string expectedIdentityToken)
       {
         // Given
@@ -261,7 +264,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private sealed class WarnLogger : ILogger
     {
-      private readonly List<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
+      private readonly IList<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
 
       public IEnumerable<Tuple<LogLevel, string>> LogMessages => _logMessages;
 

@@ -67,6 +67,17 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
+      if (authProperty.Value.TryGetProperty("identitytoken", out var identityToken) && JsonValueKind.String.Equals(identityToken.ValueKind))
+      {
+        var identityTokenValue = identityToken.GetString();
+
+        if (!string.IsNullOrEmpty(identityTokenValue))
+        {
+          _logger.DockerRegistryCredentialFound(hostname);
+          return new DockerRegistryAuthenticationConfiguration(authProperty.Name, null, null, identityToken.GetString());
+        }
+      }
+
       if (!authProperty.Value.TryGetProperty("auth", out var auth))
       {
         return null;
