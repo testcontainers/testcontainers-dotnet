@@ -116,11 +116,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         }
       }
 
-      [Fact]
-      public void ShouldGetAuthConfig()
+      [Theory]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}", "username", "password", null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}", "username", "password", "identitytoken")]
+      public void ShouldGetAuthConfig(string jsonDocument, string expectedUsername, string expectedPassword, string expectedIdentityToken)
       {
         // Given
-        const string jsonDocument = "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
@@ -131,8 +132,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.True(authenticationProvider.IsApplicable(DockerRegistry));
         Assert.NotNull(authConfig);
         Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
-        Assert.Equal("username", authConfig.Username);
-        Assert.Equal("password", authConfig.Password);
+        Assert.Equal(expectedUsername, authConfig.Username);
+        Assert.Equal(expectedPassword, authConfig.Password);
+        Assert.Equal(expectedIdentityToken, authConfig.IdentityToken);
       }
     }
 
