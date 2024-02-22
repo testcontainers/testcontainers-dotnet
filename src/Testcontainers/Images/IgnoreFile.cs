@@ -73,14 +73,17 @@ namespace DotNet.Testcontainers.Images
         // Prepare exact and partial patterns.
         .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
         {
-          var key = line.Key;
-          var value = line.Value;
+          const string globstar = "**/";
 
-          lines.AddRange(key
-            .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
-            .Skip(1)
-            .Prepend(key)
-            .Select(ignorePattern => new KeyValuePair<string, bool>(ignorePattern, value)));
+          if (line.Key.Contains(globstar))
+          {
+            lines.Add(line);
+            lines.Add(new KeyValuePair<string, bool>(line.Key.Replace(globstar, string.Empty), line.Value));
+          }
+          else
+          {
+            lines.Add(line);
+          }
 
           return lines;
         })
