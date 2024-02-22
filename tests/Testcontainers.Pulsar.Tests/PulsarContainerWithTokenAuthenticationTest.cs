@@ -1,12 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using DotPulsar;
-using DotPulsar.Abstractions;
-using DotPulsar.Extensions;
-using DotPulsar.Internal;
-using Xunit.Abstractions;
-
-namespace Testcontainers.Pulsar.Tests;
+﻿namespace Testcontainers.Pulsar;
 
 public sealed class PulsarContainerWithTokenAuthenticationTest : IAsyncLifetime
 {
