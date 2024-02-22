@@ -62,6 +62,15 @@ namespace DotNet.Testcontainers.Containers
     public ILogger Logger { get; }
 
     /// <inheritdoc />
+    public DateTime CreatedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime StartedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
     public string Id
     {
       get
@@ -400,6 +409,7 @@ namespace DotNet.Testcontainers.Containers
       _container = await _client.Container.ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
+      CreatedTime = DateTime.UtcNow;
       Created?.Invoke(this, EventArgs.Empty);
     }
 
@@ -420,6 +430,10 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
 
       _container = new ContainerInspectResponse();
+
+      CreatedTime = default;
+      StartedTime = default;
+      StoppedTime = default;
     }
 
     /// <summary>
@@ -476,6 +490,7 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
+      StartedTime = DateTime.UtcNow;
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -504,6 +519,7 @@ namespace DotNet.Testcontainers.Containers
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
+      StoppedTime = DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
     }
 

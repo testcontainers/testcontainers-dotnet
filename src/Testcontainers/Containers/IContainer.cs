@@ -59,6 +59,21 @@ namespace DotNet.Testcontainers.Containers
     ILogger Logger { get; }
 
     /// <summary>
+    /// Gets the created timestamp.
+    /// </summary>
+    DateTime CreatedTime { get; }
+
+    /// <summary>
+    /// Gets the started timestamp.
+    /// </summary>
+    DateTime StartedTime { get; }
+
+    /// <summary>
+    /// Gets the stopped timestamp.
+    /// </summary>
+    DateTime StoppedTime { get; }
+
+    /// <summary>
     /// Gets the container id.
     /// </summary>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>

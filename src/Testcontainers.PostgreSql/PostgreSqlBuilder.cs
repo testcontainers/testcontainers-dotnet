@@ -73,7 +73,11 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     public override PostgreSqlContainer Build()
     {
         Validate();
-        return new PostgreSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
+        // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
+        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
 
     /// <inheritdoc />
@@ -88,8 +92,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
-            .WithCommand("-c", "synchronous_commit=off")
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithCommand("-c", "synchronous_commit=off");
     }
 
     /// <inheritdoc />
@@ -123,18 +126,38 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] LineEndings = ["\r\n", "\n"];
+        private readonly IList<string> _command;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(PostgreSqlConfiguration configuration)
+        {
+            // Explicitly specify the host to ensure readiness only after the initdb scripts have executed, and the server is listening on TCP/IP.
+            _command = new List<string> { "pg_isready", "--host", "localhost", "--dbname", configuration.Database, "--username", configuration.Username };
+        }
+
+        /// <summary>
+        /// Checks whether the database is ready and accepts connections or not.
+        /// </summary>
+        /// <remarks>
+        /// The wait strategy uses <a href="https://www.postgresql.org/docs/current/app-pg-isready.html">pg_isready</a> to check the connection status of PostgreSql.
+        /// </remarks>
+        /// <param name="container">The starting container instance.</param>
+        /// <returns>Task that completes and returns true when the database is ready and accepts connections, otherwise false.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the PostgreSql image does not contain <c>pg_isready</c>.</exception>
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, stderr) = await container.GetLogsAsync(timestampsEnabled: false)
+            var execResult = await container.ExecAsync(_command)
                 .ConfigureAwait(false);
 
-            return 2.Equals(Array.Empty<string>()
-                .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
-                .Count(line => line.Contains("database system is ready to accept connections")));
+            if (execResult.Stderr.Contains("pg_isready was not found"))
+            {
+                throw new NotSupportedException($"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards.");
+            }
+
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }

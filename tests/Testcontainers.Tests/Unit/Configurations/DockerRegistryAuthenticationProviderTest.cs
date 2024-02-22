@@ -93,6 +93,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}", true, "The \"auth\" property value kind for https://index.docker.io/v1/ is invalid: Object")]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"Not_Base64_encoded\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ is not a valid Base64 string")]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ should contain one colon separating the username and the password (basic authentication)")]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":null}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"\"}}}", true, null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":{}}}}", true, null)]
       public void ShouldGetNull(string jsonDocument, bool isApplicable, string logMessage)
       {
         // Given
@@ -116,11 +119,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         }
       }
 
-      [Fact]
-      public void ShouldGetAuthConfig()
+      [Theory]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}", "username", "password", null)]
+      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}", null, null, "identitytoken")]
+      public void ShouldGetAuthConfig(string jsonDocument, string expectedUsername, string expectedPassword, string expectedIdentityToken)
       {
         // Given
-        const string jsonDocument = "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
@@ -131,8 +135,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.True(authenticationProvider.IsApplicable(DockerRegistry));
         Assert.NotNull(authConfig);
         Assert.Equal(DockerRegistry, authConfig.RegistryEndpoint);
-        Assert.Equal("username", authConfig.Username);
-        Assert.Equal("password", authConfig.Password);
+        Assert.Equal(expectedUsername, authConfig.Username);
+        Assert.Equal(expectedPassword, authConfig.Password);
+        Assert.Equal(expectedIdentityToken, authConfig.IdentityToken);
       }
     }
 
@@ -259,7 +264,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private sealed class WarnLogger : ILogger
     {
-      private readonly List<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
+      private readonly IList<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
 
       public IEnumerable<Tuple<LogLevel, string>> LogMessages => _logMessages;
 

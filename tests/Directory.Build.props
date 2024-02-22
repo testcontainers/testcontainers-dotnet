@@ -4,4 +4,7 @@
     <PropertyGroup>
         <SignAssembly>false</SignAssembly>
     </PropertyGroup>
+    <PropertyGroup>
+        <VSTestLogger>trx%3BLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    </PropertyGroup>
 </Project>
