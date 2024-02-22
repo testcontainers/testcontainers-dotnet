@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Testcontainers.Pulsar;
+﻿namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -57,16 +56,16 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         var pulsarStartupCommands = String.Empty;
         if (DockerResourceConfiguration.Authentication == Enabled)
         {
-            pulsarStartupCommands = $"bin/pulsar tokens create-secret-key --output {SecretKeyPath} && " + 
+            pulsarStartupCommands = $"bin/pulsar tokens create-secret-key --output {SecretKeyPath} && " +
                                     $"export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key {SecretKeyPath} --subject {UserName}) && " +
                                     $"export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters && bin/apply-config-from-env.py conf/standalone.conf && " +
                                     $"bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf && ";
         }
         pulsarStartupCommands += "bin/pulsar standalone";
-        
-        if (DockerResourceConfiguration.Functions != Enabled) 
+
+        if (DockerResourceConfiguration.Functions != Enabled)
             pulsarStartupCommands += " --no-functions-worker";
-        
+
         var pulsarBuilder = WithCommand("/bin/bash", "-c",pulsarStartupCommands);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
     }
@@ -92,7 +91,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     {
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(functions: Enabled));
     }
-    
+
     /// <inheritdoc />
     protected override PulsarBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
