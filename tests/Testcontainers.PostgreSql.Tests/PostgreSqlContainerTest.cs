@@ -42,4 +42,45 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         // When
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
     }
+
+    public sealed class ReuseContainerTest : IClassFixture<SharedPostgreSqlInstance>, IDisposable
+    {
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+
+        private readonly SharedContainerInstance<PostgreSqlContainer> _fixture;
+
+        public ReuseContainerTest(SharedPostgreSqlInstance fixture)
+        {
+            _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            _cts.Dispose();
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task StopsAndStartsContainerSuccessful(int _)
+        {
+            await _fixture.Container.StopAsync(_cts.Token)
+                .ConfigureAwait(true);
+
+            await _fixture.Container.StartAsync(_cts.Token)
+                .ConfigureAwait(true);
+
+            Assert.False(_cts.IsCancellationRequested);
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class SharedPostgreSqlInstance : SharedContainerInstance<PostgreSqlContainer>
+    {
+        public SharedPostgreSqlInstance()
+            : base(new PostgreSqlBuilder().Build())
+        {
+        }
+    }
 }

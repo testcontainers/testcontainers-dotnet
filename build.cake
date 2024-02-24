@@ -80,7 +80,6 @@ Task("Tests")
     NoRestore = true,
     NoBuild = true,
     Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-    Loggers = new[] { "trx" },
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args

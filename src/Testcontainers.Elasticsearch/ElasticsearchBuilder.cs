@@ -126,7 +126,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogsAsync(timestampsEnabled: false)
+            var (stdout, _) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return Pattern.Any(stdout.Contains);
