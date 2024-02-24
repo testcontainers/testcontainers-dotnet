@@ -24,11 +24,14 @@ public static class WeatherForecastTest
       const string path = "api/WeatherForecast";
 
       // When
-      var response = await _weatherForecastContainer.GetAsync(path);
+      var response = await _weatherForecastContainer.GetAsync(path)
+        .ConfigureAwait(true);
 
-      var weatherForecastStream = await response.Content.ReadAsStreamAsync();
+      var weatherForecastStream = await response.Content.ReadAsStreamAsync()
+        .ConfigureAwait(true);
 
-      var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream);
+      var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream)
+        .ConfigureAwait(true);
 
       // Then
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);

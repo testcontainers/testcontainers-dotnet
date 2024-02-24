@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- Unit and integration test dependencies: -->
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageVersion Include="Testcontainers.PostgreSql" Version="3.7.0"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7"/>
+        <PackageVersion Include="xunit" Version="2.7.0"/>
+        <!-- Third-party client dependencies to connect and interact with the containers: -->
+        <PackageVersion Include="Npgsql" Version="6.0.10"/>
+    </ItemGroup>
+</Project>

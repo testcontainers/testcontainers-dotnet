@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.1.3" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All" />
-    <PackageReference Include="Docker.DotNet" />
-    <PackageReference Include="Docker.DotNet.X509" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="BouncyCastle.Cryptography" />
-    <PackageReference Include="SharpZipLib" />
-    <PackageReference Include="SSH.NET" />
-    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+    <PackageReference Include="BouncyCastle.Cryptography"/>
+    <PackageReference Include="Docker.DotNet.X509"/>
+    <PackageReference Include="Docker.DotNet"/>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+    <PackageReference Include="SharpZipLib"/>
+    <PackageReference Include="SSH.NET"/>
+    <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
 </Project>

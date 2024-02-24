@@ -35,22 +35,36 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
       - name: Cache NuGet Packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Build.props') }}
+          key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Packages.props') }}
           path: ~/.nuget/packages
 
+      # Our modules occupy too much disk space. The GitHub-hosted runners ran into the
+      # error: "no space left on device." The pulled images are not cleaned up between
+      # the test runs. One obvious approach is splitting the tests and running them on
+      # multiple runners. However, we need to keep in mind that running too many
+      # simultaneous builds has an impact on others as well. We observed that scheduled
+      # Dependabot builds blocked others in the Testcontainers organization.
       - name: Free Disk Space
-        run: Remove-Item -Recurse -Force '/usr/local/lib/android' -ErrorAction SilentlyContinue # TODO: Split module tests across multiple runners (the Docker images require too much disk space)
-        shell: pwsh
+        uses: jlumbroso/free-disk-space@v1.3.1
+        if: runner.os == 'Linux'
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: false
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
 
       - name: Restore .NET Tools
         run: dotnet tool restore
@@ -64,8 +78,18 @@ jobs:
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
+      # The Test Reporter GH Action is not compatible with the recent
+      # actions/upload-artifact@v4 updates: https://github.com/dorny/test-reporter/issues/363.
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ matrix.os }}-v3
+          path: test-results
+
+      - name: Upload Test And Coverage Results
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: ${{ matrix.os }}
           path: test-results
@@ -77,7 +101,7 @@ jobs:
 
     environment: production
 
-    runs-on: windows-2022 # It looks like the Linux runner cannot sign the NuGet using a PFX file.
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: write
@@ -96,19 +120,19 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
 
       - name: Download Test And Coverage Results (ubuntu-22.04)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ubuntu-22.04
           path: test-results
 
       - name: Download Test And Coverage Results (windows-2022)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows-2022
           path: test-results
@@ -117,24 +141,20 @@ jobs:
         run: Get-ChildItem -Path 'test-results' -Filter *.xml -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content -LiteralPath $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content -LiteralPath $_ }
         shell: pwsh
 
-      - name: Decode Code Signing Certificate
-        run: echo $CODE_SIGNING_CERTIFICATE_BASE64 | base64 --decode > code-signing-certificate.pfx
-        shell: bash
-
       - name: Cache NuGet Packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          key: windows-2022-nuget-${{ hashFiles('Directory.Build.props') }}
+          key: ubuntu-22.04-nuget-${{ hashFiles('Directory.Packages.props') }}
           path: ~/.nuget/packages
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
 
       - name: Restore .NET Tools
         run: dotnet tool restore
@@ -154,8 +174,9 @@ jobs:
       - name: Publish NuGet Package
         run: dotnet cake --target=Publish
 
-      - uses: release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772
+      # Cake sets the semVer environment variable
+      - uses: release-drafter/release-drafter@v6
         with:
-          version: ${{ env.semVer }} # Cake sets the semVer environment variable
+          version: ${{ env.semVer }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+    <PropertyGroup>
+        <SignAssembly>false</SignAssembly>
+    </PropertyGroup>
+    <PropertyGroup>
+        <VSTestLogger>trx%3BLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    </PropertyGroup>
 </Project>

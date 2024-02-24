@@ -3,11 +3,13 @@
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
+        <IsTestProject>false</IsTestProject>
         <SignAssembly>true</SignAssembly>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0"/>
+        <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0"/>
+        <PackageReference Include="xunit"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers/Testcontainers.csproj"/>
