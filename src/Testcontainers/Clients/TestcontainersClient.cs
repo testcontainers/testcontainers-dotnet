@@ -339,7 +339,7 @@ namespace DotNet.Testcontainers.Clients
         var cachedImages = await Image.GetAllAsync(filters, ct)
           .ConfigureAwait(false);
 
-        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags));
+        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>()));
 
         var uncachedImages = baseImages.Where(baseImage => !repositoryTags.Contains(baseImage.FullName));
 
