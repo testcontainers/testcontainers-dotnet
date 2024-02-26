@@ -9,10 +9,6 @@
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup>
-    <EnableSourceLink>false</EnableSourceLink>
-    <Deterministic>false</Deterministic>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="coverlet.collector"/>
