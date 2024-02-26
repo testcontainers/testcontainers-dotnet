@@ -67,6 +67,7 @@ Task("Build")
     Verbosity = param.Verbosity,
     NoRestore = true,
     ArgumentCustomization = args => args
+      .Append($"/p:ContinuousIntegrationBuild=true")
   });
 });
 
@@ -130,12 +131,8 @@ Task("Create-NuGet-Packages")
     Verbosity = param.Verbosity,
     NoRestore = true,
     NoBuild = true,
-    IncludeSymbols = true,
-    SymbolPackageFormat = "snupkg",
     OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
     ArgumentCustomization = args => args
-      .Append("/p:ContinuousIntegrationBuild=true")
-      .Append("/p:EmbedUntrackedSources=true")
       .Append($"/p:Version={param.Version}")
   });
 });
@@ -160,7 +157,7 @@ Task("Publish-NuGet-Packages")
   .WithCriteria(() => param.ShouldPublish)
   .Does(() =>
 {
-  foreach(var package in GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.(nupkg|snupkgs)"))
+  foreach (var package in GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.nupkg"))
   {
     DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
     {
