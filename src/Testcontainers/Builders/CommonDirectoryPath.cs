@@ -107,17 +107,17 @@ namespace DotNet.Testcontainers.Builders
 
     private static string GetDirectoryPath(string path, string searchPattern)
     {
-      return GetDirectoryPath(Directory.Exists(path) ? new DirectoryInfo(path) : null, searchPattern, path);
+      return GetDirectoryPath(Directory.Exists(path) ? new DirectoryInfo(path) : null, searchPattern);
     }
 
-    private static string GetDirectoryPath(DirectoryInfo path, string searchPattern, string originalPath)
+    private static string GetDirectoryPath(DirectoryInfo path, string searchPattern)
     {
       if (path != null)
       {
-        return path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly).Any() ? path.FullName : GetDirectoryPath(path.Parent, searchPattern, originalPath);
+        return path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly).Any() ? path.FullName : GetDirectoryPath(path.Parent, searchPattern);
       }
 
-      var message = $"Cannot find '{searchPattern}' and resolve the base directory in the directory tree of '{originalPath}'.";
+      var message = $"Cannot find '{searchPattern}' and resolve the base directory in the directory tree.";
       throw new DirectoryNotFoundException(message);
     }
   }
