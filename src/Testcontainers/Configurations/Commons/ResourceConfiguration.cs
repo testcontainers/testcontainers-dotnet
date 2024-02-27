@@ -67,10 +67,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
-    public bool? Reuse { get; }
-
-    /// <inheritdoc />
-    [JsonIgnore]
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
 
     /// <inheritdoc />
@@ -82,6 +78,14 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
+    public bool? Reuse { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public ILogger Logger { get; }
+
+    /// <inheritdoc />
     public virtual string GetReuseHash()
     {
       var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
@@ -91,8 +95,5 @@ namespace DotNet.Testcontainers.Configurations
         return Convert.ToBase64String(sha1.ComputeHash(jsonUtf8Bytes));
       }
     }
-
-    /// <inheritdoc />
-    public ILogger Logger { get; }
   }
 }

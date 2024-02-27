@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Volumes
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IVolume" />
   [PublicAPI]
@@ -18,8 +17,6 @@ namespace DotNet.Testcontainers.Volumes
     private readonly ITestcontainersClient _client;
 
     private readonly IVolumeConfiguration _configuration;
-
-    private readonly ILogger _logger;
 
     private VolumeResponse _volume = new VolumeResponse();
 
@@ -31,7 +28,6 @@ namespace DotNet.Testcontainers.Volumes
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = configuration.Logger;
     }
 
     /// <inheritdoc />
@@ -102,7 +98,7 @@ namespace DotNet.Testcontainers.Volumes
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        _logger.ReusableExperimentalFeature();
+        _configuration.Logger.ReusableExperimentalFeature();
 
         var filters = new FilterByReuseHash(_configuration);
 
@@ -113,13 +109,13 @@ namespace DotNet.Testcontainers.Volumes
 
         if (reusableVolume != null)
         {
-          _logger.ReusableResourceFound();
+          _configuration.Logger.ReusableResourceFound();
 
           id = reusableVolume.Name;
         }
         else
         {
-          _logger.ReusableResourceNotFound();
+          _configuration.Logger.ReusableResourceNotFound();
 
           id = await _client.Volume.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);

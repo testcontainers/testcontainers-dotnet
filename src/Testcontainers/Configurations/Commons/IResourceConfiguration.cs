@@ -18,11 +18,6 @@ namespace DotNet.Testcontainers.Configurations
     Guid SessionId { get; }
 
     /// <summary>
-    /// Gets a value indicating whether to reuse an existing resource configuration or not.
-    /// </summary>
-    bool? Reuse { get; }
-
-    /// <summary>
     /// Gets the Docker endpoint authentication configuration.
     /// </summary>
     IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }
@@ -38,13 +33,18 @@ namespace DotNet.Testcontainers.Configurations
     IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
 
     /// <summary>
-    /// Gets the reuse hash.
+    /// Gets a value indicating whether to reuse an existing resource configuration or not.
     /// </summary>
-    string GetReuseHash();
+    bool? Reuse { get; }
 
     /// <summary>
     /// Gets the logger.
     /// </summary>
     ILogger Logger { get; }
+
+    /// <summary>
+    /// Gets the reuse hash.
+    /// </summary>
+    string GetReuseHash();
   }
 }

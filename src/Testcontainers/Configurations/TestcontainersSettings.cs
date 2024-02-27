@@ -40,6 +40,10 @@ namespace DotNet.Testcontainers.Configurations
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
       = DockerEndpointAuthProvider?.GetAuthConfig();
 
+    static TestcontainersSettings()
+    {
+    }
+
     /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
@@ -103,7 +107,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets the logger.
     /// </summary>
     [NotNull]
-    [Obsolete("The logger is now configured per resource by calling WithLogger(ILogger logger) in the builder.")]
+    [Obsolete("Use the builder API WithLogger(ILogger) instead.")]
     public static ILogger Logger { get; set; }
       = ConsoleLogger.Instance;
 
@@ -118,7 +122,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the wait handle that signals settings initialized.
     /// </summary>
     [NotNull]
-    [Obsolete("This wait handle is not used anymore.")]
+    [Obsolete("This property is no longer supported.")]
     public static WaitHandle SettingsInitialized
       => ManualResetEvent.WaitHandle;
 

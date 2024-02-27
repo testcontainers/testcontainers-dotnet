@@ -57,9 +57,6 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
-    public ILogger Logger => _configuration.Logger;
-
-    /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }
 
     /// <inheritdoc />
@@ -67,6 +64,15 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc />
     public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
+    public ILogger Logger
+    {
+      get
+      {
+        return _configuration.Logger;
+      }
+    }
 
     /// <inheritdoc />
     public string Id

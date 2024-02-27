@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Networks
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="INetwork" />
   [PublicAPI]
@@ -18,8 +17,6 @@ namespace DotNet.Testcontainers.Networks
     private readonly ITestcontainersClient _client;
 
     private readonly INetworkConfiguration _configuration;
-
-    private readonly ILogger _logger;
 
     private NetworkResponse _network = new NetworkResponse();
 
@@ -31,7 +28,6 @@ namespace DotNet.Testcontainers.Networks
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = configuration.Logger;
     }
 
     /// <inheritdoc />
@@ -102,7 +98,7 @@ namespace DotNet.Testcontainers.Networks
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        _logger.ReusableExperimentalFeature();
+        _configuration.Logger.ReusableExperimentalFeature();
 
         var filters = new FilterByReuseHash(_configuration);
 
@@ -113,13 +109,13 @@ namespace DotNet.Testcontainers.Networks
 
         if (reusableNetwork != null)
         {
-          _logger.ReusableResourceFound();
+          _configuration.Logger.ReusableResourceFound();
 
           id = reusableNetwork.ID;
         }
         else
         {
-          _logger.ReusableResourceNotFound();
+          _configuration.Logger.ReusableResourceNotFound();
 
           id = await _client.Network.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);
