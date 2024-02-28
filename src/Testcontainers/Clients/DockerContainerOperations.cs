@@ -165,10 +165,6 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
-      // TODO: Move to an appropriate location. This is only for demonstration purposes; ideally, we add this to each resource CreateAsync(CancellationToken) method.
-      await LogContainerRuntimeInfoAsync(ct)
-        .ConfigureAwait(false);
-
       var converter = new ContainerConfigurationConverter(configuration);
 
       var hostConfig = new HostConfig
