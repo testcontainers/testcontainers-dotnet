@@ -94,6 +94,9 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
+
       string id;
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)

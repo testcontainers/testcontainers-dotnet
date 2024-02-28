@@ -387,6 +387,9 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
+
       Creating?.Invoke(this, EventArgs.Empty);
 
       string id;

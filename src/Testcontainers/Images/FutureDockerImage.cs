@@ -110,6 +110,9 @@ namespace DotNet.Testcontainers.Images
         return;
       }
 
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
+
       _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);
 

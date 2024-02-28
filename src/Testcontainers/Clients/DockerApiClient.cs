@@ -58,11 +58,14 @@ namespace DotNet.Testcontainers.Clients
     protected ILogger Logger { get; }
 
     /// <summary>
-    ///
+    /// Logs the container runtime information.
     /// </summary>
+    /// <remarks>
+    /// The method logs the information once per Docker Engine API client and logger.
+    /// </remarks>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns></returns>
-    protected async Task LogContainerRuntimeInfoAsync(CancellationToken ct = default)
+    /// <returns>Task that completes when the information has been logged.</returns>
+    public async Task LogContainerRuntimeInfoAsync(CancellationToken ct = default)
     {
       var hashCode = HashCode.Combine(DockerClient, Logger);
 
