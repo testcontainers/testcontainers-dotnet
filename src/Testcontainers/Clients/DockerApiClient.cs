@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Clients
     /// <returns></returns>
     protected async Task LogContainerRuntimeInfoAsync(CancellationToken ct = default)
     {
-      var hashCode = Logger.GetHashCode();
+      var hashCode = HashCode.Combine(DockerClient, Logger);
 
       await RuntimeInitialized.WaitAsync(ct)
         .ConfigureAwait(false);

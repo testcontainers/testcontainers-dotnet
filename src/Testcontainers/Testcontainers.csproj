@@ -10,6 +10,7 @@
     <PackageReference Include="Docker.DotNet.X509"/>
     <PackageReference Include="Docker.DotNet"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
+    <PackageReference Include="Microsoft.Bcl.HashCode"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <PackageReference Include="SharpZipLib"/>
     <PackageReference Include="SSH.NET"/>
