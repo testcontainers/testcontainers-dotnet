@@ -31,6 +31,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
     <None Include="$(MSBuildThisFileDirectory)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />
