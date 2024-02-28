@@ -7,8 +7,6 @@ public class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContainer, Mi
     public const ushort MilvusGrpcPort = 19530;
     public const ushort MilvusManagementPort = 9091;
 
-    private string? _etcdEndpoint;
-
     public MilvusBuilder() : this(new MilvusConfiguration())
         => DockerResourceConfiguration = Init().DockerResourceConfiguration;
 
@@ -22,13 +20,18 @@ public class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContainer, Mi
     }
 
     public MilvusBuilder WithEtcdEndpoint(string? etcdEndpoint)
-    {
-        _etcdEndpoint = etcdEndpoint;
-        return this;
-    }
+        => WithEnvironment("ETCD_USE_EMBED", "false")
+            .WithEnvironment("ETCD_DATA_DIR", "")
+            .WithEnvironment("ETCD_CONFIG_PATH", "")
+            .WithEnvironment("ETCD_ENDPOINTS", etcdEndpoint);
 
     protected override MilvusBuilder Init()
     {
+        const string etcdYaml = """
+                                listen-client-urls: http://0.0.0.0:2379
+                                advertise-client-urls: http://0.0.0.0:2379
+                                """;
+
         var builder = base.Init()
             .WithImage(MilvusImage)
             .WithEnvironment("COMMON_STORAGETYPE", "local")
@@ -41,23 +44,12 @@ public class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContainer, Mi
                         .ForPort(MilvusManagementPort)
                         .ForPath("/healthz")));
 
-        if (_etcdEndpoint is null)
-        {
-            const string etcdYaml = """
-                                    listen-client-urls: http://0.0.0.0:2379
-                                    advertise-client-urls: http://0.0.0.0:2379
-                                    """;
-
-            builder = builder
-                .WithResourceMapping(Encoding.UTF8.GetBytes(etcdYaml), "/milvus/configs/embedEtcd.yaml")
-                .WithEnvironment("ETCD_USE_EMBED", "true")
-                .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
-                .WithEnvironment("ETCD_CONFIG_PATH", "/milvus/configs/embedEtcd.yaml");
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
+        // For embedded etcd only; see WithEtcdEndpoint for using an external etcd.
+        builder = builder
+            .WithEnvironment("ETCD_USE_EMBED", "true")
+            .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
+            .WithEnvironment("ETCD_CONFIG_PATH", "/milvus/configs/embedEtcd.yaml")
+            .WithResourceMapping(Encoding.UTF8.GetBytes(etcdYaml), "/milvus/configs/embedEtcd.yaml");
 
         return builder;
     }
