@@ -23,6 +23,7 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src/strongname.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>CS0618,CS1591,SA0001,SA1600,SA1633,SA1649,CA1859,CA1861</NoWarn>
@@ -30,9 +31,6 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
