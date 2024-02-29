@@ -1,8 +1,9 @@
 namespace Testcontainers.Milvus;
 
+/// <inheritdoc cref="ContainerConfiguration" />
+[PublicAPI]
 public sealed class MilvusConfiguration : ContainerConfiguration
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusConfiguration" /> class.
     /// </summary>
@@ -17,6 +18,7 @@ public sealed class MilvusConfiguration : ContainerConfiguration
     public MilvusConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -48,9 +50,4 @@ public sealed class MilvusConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
     }
-
-    /// <summary>
-    ///     An optional endpoint for an external etcd service. If <c>null</c>, uses an embedded etcd service.
-    /// </summary>
-    public string? EtcdEndpoint { get; }
 }
