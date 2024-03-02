@@ -279,7 +279,7 @@ namespace DotNet.Testcontainers.Containers
       {
         if (!TryGetEndpoint(out var host, out var port))
         {
-          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
             .ConfigureAwait(false);
 
           continue;
@@ -291,8 +291,13 @@ namespace DotNet.Testcontainers.Containers
 
           try
           {
+#if NET6_0_OR_GREATER
+            await tcpClient.ConnectAsync(host, port, ct)
+              .ConfigureAwait(false);
+#else
             await tcpClient.ConnectAsync(host, port)
               .ConfigureAwait(false);
+#endif
 
             var stream = tcpClient.GetStream();
 
@@ -384,14 +389,14 @@ namespace DotNet.Testcontainers.Containers
           {
             _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
               .ConfigureAwait(false);
           }
           catch (Exception e)
           {
             _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
               .ConfigureAwait(false);
           }
         }
