@@ -48,6 +48,7 @@
         <Project Path="src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
         <Project Path="src/Testcontainers.LocalStack/Testcontainers.LocalStack.csproj"/>
         <Project Path="src/Testcontainers.LowkeyVault/Testcontainers.LowkeyVault.csproj"/>
+        <Project Path="src/Testcontainers.Mailpit/Testcontainers.Mailpit.csproj"/>
         <Project Path="src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
         <Project Path="src/Testcontainers.Milvus/Testcontainers.Milvus.csproj"/>
         <Project Path="src/Testcontainers.Minio/Testcontainers.Minio.csproj"/>
@@ -116,6 +117,7 @@
         <Project Path="tests/Testcontainers.Kusto.Tests/Testcontainers.Kusto.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LocalStack.Tests/Testcontainers.LocalStack.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LowkeyVault.Tests/Testcontainers.LowkeyVault.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Mailpit.Tests/Testcontainers.Mailpit.Tests.csproj"/>
         <Project Path="tests/Testcontainers.MariaDb.Tests/Testcontainers.MariaDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Milvus.Tests/Testcontainers.Milvus.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Minio.Tests/Testcontainers.Minio.Tests.csproj"/>
