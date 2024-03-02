@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Tests;
+namespace Testcontainers.Tests;
 
 public abstract class LoggerTest : IAsyncLifetime
 {
