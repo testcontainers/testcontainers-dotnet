@@ -21,6 +21,6 @@ global using ICSharpCode.SharpZipLib.Tar;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Logging.Abstractions;
-global using Moq;
+global using Microsoft.Extensions.Logging.Testing;
 global using Xunit;
 global using Xunit.Abstractions;

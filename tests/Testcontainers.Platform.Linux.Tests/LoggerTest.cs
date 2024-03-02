@@ -2,11 +2,11 @@
 
 public abstract class LoggerTest : IAsyncLifetime
 {
-    private readonly Mock<ILogger> _mockOfILogger;
+    private readonly FakeLogger _fakeLogger;
 
-    protected LoggerTest(MockOfILogger mockOfILogger)
+    protected LoggerTest(FakeLogger fakeLogger)
     {
-        _mockOfILogger = mockOfILogger;
+        _fakeLogger = fakeLogger;
     }
 
     public Task InitializeAsync()
@@ -14,7 +14,7 @@ public abstract class LoggerTest : IAsyncLifetime
         return new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
-            .WithLogger(_mockOfILogger.Object)
+            .WithLogger(_fakeLogger)
             .Build()
             .StartAsync();
     }
@@ -30,14 +30,7 @@ public abstract class LoggerTest : IAsyncLifetime
     [InlineData(2)]
     public void LogContainerRuntimeInformationOnce(int _)
     {
-        Expression<Action<ILogger>> predicate = logger => logger.Log(
-            It.Is<LogLevel>(logLevel => LogLevel.Information.Equals(logLevel)),
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((state, _) => state.ToString().Contains("Connected to Docker")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception, string>>());
-
-        _mockOfILogger.Verify(predicate, Times.Once);
+        Assert.Contains("Connected to Docker", _fakeLogger.Collector.GetSnapshot().First().Message);
     }
 
     [UsedImplicitly]
@@ -78,12 +71,12 @@ public abstract class LoggerTest : IAsyncLifetime
         }
     }
 
-    public sealed class SingleInstance : MockOfILogger
+    public sealed class SingleInstance : FakeLogger
     {
         // Ctor ITestOutputHelper
     }
 
-    public sealed class SharedInstance : MockOfILogger
+    public sealed class SharedInstance : FakeLogger
     {
         // Ctor IMessageSink
     }
@@ -92,13 +85,5 @@ public abstract class LoggerTest : IAsyncLifetime
     public sealed class SharedCollection : ICollectionFixture<SharedInstance>
     {
         // Ctor IMessageSink
-    }
-
-    public abstract class MockOfILogger : Mock<ILogger>
-    {
-        public MockOfILogger()
-        {
-            Setup(logger => logger.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
-        }
     }
 }

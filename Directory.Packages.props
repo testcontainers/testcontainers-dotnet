@@ -15,8 +15,8 @@
         <PackageVersion Include="System.Text.Json" Version="6.0.9"/>
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageVersion Include="coverlet.collector" Version="6.0.0"/>
-        <PackageVersion Include="Moq" Version="4.20.70"/>
+        <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.2.0"/>
+        <PackageVersion Include="coverlet.collector" Version="6.0.1"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7"/>
         <PackageVersion Include="xunit" Version="2.7.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
