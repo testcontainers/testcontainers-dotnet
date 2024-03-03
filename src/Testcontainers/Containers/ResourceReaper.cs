@@ -279,7 +279,7 @@ namespace DotNet.Testcontainers.Containers
       {
         if (!TryGetEndpoint(out var host, out var port))
         {
-          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
+          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
             .ConfigureAwait(false);
 
           continue;
@@ -389,14 +389,14 @@ namespace DotNet.Testcontainers.Containers
           {
             _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
               .ConfigureAwait(false);
           }
           catch (Exception e)
           {
             _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default(CancellationToken))
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
               .ConfigureAwait(false);
           }
         }
