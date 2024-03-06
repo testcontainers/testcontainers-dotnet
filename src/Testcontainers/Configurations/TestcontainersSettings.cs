@@ -104,6 +104,12 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
+    /// Gets or sets the maximum time for a wait strategy to execute before a <see cref="TimeoutException"/> is thrown.
+    /// Defaults to 5 minutes.
+    /// </summary>
+    public static TimeSpan WaitTimeout { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
     /// Gets or sets the logger.
     /// </summary>
     [NotNull]

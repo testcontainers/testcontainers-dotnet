@@ -503,8 +503,15 @@ namespace DotNet.Testcontainers.Containers
 
       foreach (var waitStrategy in _configuration.WaitStrategies)
       {
-        await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategyAsync(waitStrategy), TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan, ct)
-          .ConfigureAwait(false);
+        try
+        {
+          await WaitStrategy.WaitUntilAsync(() => CheckWaitStrategyAsync(waitStrategy), TimeSpan.FromSeconds(1), TestcontainersSettings.WaitTimeout, ct)
+            .ConfigureAwait(false);
+        }
+        catch (TimeoutException exception) when (exception.Source == "Testcontainers")
+        {
+          throw new TimeoutException(FormattableString.Invariant($"The {_container.Config.Image} container failed to complete readiness checks after waiting for {TestcontainersSettings.WaitTimeout.TotalMinutes:0.##} minutes (configurable with TestcontainersSettings.WaitTimeout)."));
+        }
       }
 
       Logger.CompleteReadinessCheck(_container.ID);
