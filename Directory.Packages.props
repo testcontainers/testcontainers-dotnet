@@ -29,6 +29,7 @@
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
         <PackageVersion Include="ClickHouse.Client" Version="6.7.1"/>
+        <PackageVersion Include="CliWrap" Version="3.6.4"/>
         <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
         <PackageVersion Include="CouchbaseNetClient" Version="3.4.3"/>
@@ -59,6 +60,5 @@
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
-        <PackageVersion Include="CliWrap" Version="3.6.4"/>
     </ItemGroup>
 </Project>
