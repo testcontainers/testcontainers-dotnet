@@ -15,6 +15,27 @@ _ = new ContainerBuilder()
   .WithLabel("reuse-id", "WeatherForecast");
 ```
 
+The current implementation considers the following resource configurations and their corresponding builder APIs when calculating the hash value.
+
+- [ContainerConfiguration](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/src/Testcontainers/Configurations/Containers/ContainerConfiguration.cs)
+    - Image
+    - Entrypoint
+    - Command
+    - Environments
+    - ExposedPorts
+    - PortBindings
+    - NetworkAliases
+    - ExtraHosts
+    - Labels
+- [NetworkConfiguration](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/src/Testcontainers/Configurations/Networks/NetworkConfiguration.cs)
+    - Name
+    - Labels
+- [VolumeConfiguration](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/src/Testcontainers/Configurations/Volumes/VolumeConfiguration.cs)
+    - Name
+    - Labels
+
+By default, all module resource configurations are included. This works well for simple value and reference types that can be serialized and deserialized to JSON without custom converters. However, more complex resource configurations may require a custom converter to properly serialize and deserialize their values.
+
 !!!warning
 
     Reuse does not replace singleton implementations to improve test performance. Prefer proper shared instances according to your chosen test framework.

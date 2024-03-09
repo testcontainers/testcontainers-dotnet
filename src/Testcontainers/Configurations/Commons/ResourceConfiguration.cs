@@ -81,10 +81,14 @@ namespace DotNet.Testcontainers.Configurations
     {
       var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
 
+#if NET6_0_OR_GREATER
+      return Convert.ToBase64String(SHA1.HashData(jsonUtf8Bytes));
+#else
       using (var sha1 = SHA1.Create())
       {
         return Convert.ToBase64String(sha1.ComputeHash(jsonUtf8Bytes));
       }
+#endif
     }
   }
 }
