@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.DockerCompose;
+namespace Testcontainers.DockerCompose;
 
 [PublicAPI]
 public class DockerComposeContainer : DockerContainer

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.DockerCompose;
+namespace Testcontainers.DockerCompose;
 
 /// <inheritdoc cref="DockerContainer" />
 internal abstract class DockerCompose : DockerContainer

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.DockerCompose;
+namespace Testcontainers.DockerCompose;
 
 /// <inheritdoc cref="DockerCompose" />
 internal sealed class DockerComposeLocal : DockerCompose

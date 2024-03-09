@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.DockerCompose;
+namespace Testcontainers.DockerCompose;
 
 public abstract class DockerComposeTest : IAsyncLifetime
 {
