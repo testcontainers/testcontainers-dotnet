@@ -7,20 +7,14 @@ public sealed class DockerComposeConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerComposeConfiguration" /> class.
     /// </summary>
-    /// <param name="composeFile">The fully qualified path to the compose file.</param>
-    /// <param name="localCompose">Whether the local compose will be used.</param>
-    /// <param name="options">Options for the docker-compose command.</param>
-    /// <param name="removeImages">Options for remove images.</param>
+    /// <param name="composeFilePath">The Docker Compose file path.</param>
+    /// <param name="mode">The Docker Compose mode.</param>
     public DockerComposeConfiguration(
-        string composeFile = null,
-        bool localCompose = false, 
-        IEnumerable<string> options = null, 
-        RemoveImages removeImages = RemoveImages.None)
+        string composeFilePath = null,
+        DockerComposeMode? mode = null)
     {
-        ComposeFile = composeFile;
-        LocalCompose = localCompose;
-        Options = options ?? Array.Empty<string>();
-        RemoveImages = removeImages;
+        ComposeFilePath = composeFilePath;
+        Mode = mode;
     }
 
     /// <summary>
@@ -61,28 +55,17 @@ public sealed class DockerComposeConfiguration : ContainerConfiguration
     public DockerComposeConfiguration(DockerComposeConfiguration oldValue, DockerComposeConfiguration newValue)
         : base(oldValue, newValue)
     {
-        ComposeFile = BuildConfiguration.Combine(oldValue.ComposeFile, newValue.ComposeFile);
-        LocalCompose = BuildConfiguration.Combine(oldValue.LocalCompose, newValue.LocalCompose);
-        RemoveImages = BuildConfiguration.Combine(oldValue.RemoveImages, newValue.RemoveImages);
+        ComposeFilePath = BuildConfiguration.Combine(oldValue.ComposeFilePath, newValue.ComposeFilePath);
+        Mode = BuildConfiguration.Combine(oldValue.Mode, newValue.Mode);
     }
-    
-    /// <summary>
-    /// Gets the path to the compose file.
-    /// </summary>
-    public string ComposeFile { get; }
-    
-    /// <summary>
-    /// Indicates whether local compose is enabled.
-    /// </summary>
-    public bool LocalCompose { get; }
 
     /// <summary>
-    /// Options for the docker-compose command.
+    /// Gets the Docker Compose file path.
     /// </summary>
-    public IEnumerable<string> Options { get; } = Array.Empty<string>();
-    
+    public string ComposeFilePath { get; }
+
     /// <summary>
-    /// Options for remove images.
+    /// Gets the Docker Compose mode.
     /// </summary>
-    public RemoveImages RemoveImages { get; } = RemoveImages.None;
+    public DockerComposeMode? Mode { get; }
 }

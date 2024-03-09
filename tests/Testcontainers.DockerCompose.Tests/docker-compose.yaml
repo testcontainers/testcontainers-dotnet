@@ -1,9 +1,0 @@
-version: '3.9'
-
-name: test-nginx
-
-services:
-  nginx:
-    image: nginx
-    ports:
-      - "8080:80"

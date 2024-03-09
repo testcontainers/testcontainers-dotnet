@@ -2,18 +2,17 @@ namespace Testcontainers.DockerCompose;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class
-    DockerComposeBuilder : ContainerBuilder<DockerComposeBuilder, DockerComposeContainer, DockerComposeConfiguration>
+public sealed class DockerComposeBuilder : ContainerBuilder<DockerComposeBuilder, DockerComposeContainer, DockerComposeConfiguration>
 {
-    private const string NoComposeFile = "No docker compose file have been provided.";
+    public const string DockerComposeFilePath = "/docker-compose.yml";
 
-    //Docker Compose is included as part of this image.
-    private const string DockerComposeImage = "docker:24-cli";
+    public const string DockerComposeImage = "docker:25.0-cli";
+
+    // TODO: This does not support all container runtimes (host configurations). We should do something similar to what we are doing in the Resource Reaper implementation.
     private const string DockerSocketPath = "/var/run/docker.sock";
-    private const string DockerComposeStartCommand = "docker compose up";
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="DockerComposeBuilder" /> class.
+    /// Initializes a new instance of the <see cref="DockerComposeBuilder" /> class.
     /// </summary>
     public DockerComposeBuilder()
         : this(new DockerComposeConfiguration())
@@ -22,7 +21,7 @@ public sealed class
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="DockerComposeBuilder" /> class.
+    /// Initializes a new instance of the <see cref="DockerComposeBuilder" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     private DockerComposeBuilder(DockerComposeConfiguration resourceConfiguration)
@@ -34,68 +33,52 @@ public sealed class
     /// <inheritdoc />
     protected override DockerComposeConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    /// Sets the Docker Compose file.
+    /// </summary>
+    /// <param name="composeFilePath">The Docker Compose file path.</param>
+    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
+    public DockerComposeBuilder WithComposeFile(string composeFilePath)
+    {
+        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(composeFilePath: composeFilePath))
+            .WithEntrypoint("docker", "compose", "--project-name", Guid.NewGuid().ToString("D"), "--file", composeFilePath)
+            .WithResourceMapping(new FileInfo(composeFilePath), new FileInfo(DockerComposeFilePath));
+    }
+
+    /// <summary>
+    /// Sets the Docker Compose mode.
+    /// </summary>
+    /// <param name="mode">The Docker Compose mode.</param>
+    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
+    public DockerComposeBuilder WithComposeMode(DockerComposeMode mode)
+    {
+        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(mode: mode));
+    }
+
     /// <inheritdoc />
     public override DockerComposeContainer Build()
     {
         Validate();
 
-        return new DockerComposeContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        switch (DockerResourceConfiguration.Mode)
+        {
+            case DockerComposeMode.Local:
+                return new DockerComposeLocalContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+            case DockerComposeMode.Remote:
+                return new DockerComposeRemoteContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(DockerResourceConfiguration.Mode), "Docker Compose mode not supported.");
+        }
     }
 
-    /// <summary>
-    ///     Sets the compose file.
-    /// </summary>
-    /// <param name="composeFile">The compose file.</param>
-    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
-    public DockerComposeBuilder WithComposeFile(string composeFile)
-    {
-        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(composeFile))
-            .WithResourceMapping(new FileInfo(composeFile), 
-                new FileInfo(DockerComposeCommandLineBuilder.DockerComposeFileName));
-    }
-
-    /// <summary>
-    ///     If true use a local Docker Compose binary instead of a container.
-    /// </summary>
-    /// <param name="localCompose">Whether the local compose will be used.</param>
-    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
-    public DockerComposeBuilder WithLocalCompose(bool localCompose)
-    {
-        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration
-            (localCompose: localCompose));
-    }
-
-    /// <summary>
-    ///     Adds options to the docker-compose command, e.g. docker-compose --compatibility.
-    /// </summary>
-    /// <param name="options">Options for the docker-compose command.</param>
-    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
-    public DockerComposeBuilder WithOptions(params string[] options)
-    {
-        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(options: options))
-            .WithCommand(options);
-    }
-
-    /// <summary>
-    ///     Remove images after containers shutdown.
-    /// </summary>
-    /// <param name="removeImages"></param>
-    /// <returns>A configured instance of <see cref="DockerComposeBuilder" />.</returns>
-    public DockerComposeBuilder WithRemoveImages(RemoveImages removeImages)
-    {
-        return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(removeImages: removeImages));
-    }
-        
     /// <inheritdoc />
     protected override DockerComposeBuilder Init()
     {
         return base.Init()
             .WithImage(DockerComposeImage)
-            .WithEntrypoint(DockerComposeCommandLineBuilder.DockerAppName)
-            .WithCommand(DockerComposeCommandLineBuilder
-                .FromRemoteConfiguration(DockerResourceConfiguration)
-                .BuildStartCommand()
-                .ToArray())
+            .WithCommand("up")
+            .WithCommand("--detach")
+            .WithComposeMode(DockerComposeMode.Remote)
             .WithBindMount(DockerSocketPath, DockerSocketPath, AccessMode.ReadOnly);
     }
 
@@ -104,17 +87,15 @@ public sealed class
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.ComposeFile, nameof(DockerResourceConfiguration.ComposeFile))
-            .NotEmpty();
-
-        _ = Guard.Argument(DockerResourceConfiguration.ComposeFile, nameof(DockerResourceConfiguration.ComposeFile))
-            .ThrowIf(argument => !File.Exists(argument.Value),
-                argument => new FileNotFoundException(NoComposeFile, argument.Name));
+        const string dockerComposeFileNotFound = "Docker Compose file not found.";
+        _ = Guard.Argument(DockerResourceConfiguration.ComposeFilePath, nameof(DockerComposeConfiguration.ComposeFilePath))
+            .NotNull()
+            .NotEmpty()
+            .ThrowIf(argument => !File.Exists(argument.Value), argument => new FileNotFoundException(dockerComposeFileNotFound, argument.Value));
     }
 
     /// <inheritdoc />
-    protected override DockerComposeBuilder Clone(
-        IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override DockerComposeBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new DockerComposeConfiguration(resourceConfiguration));
     }
@@ -126,8 +107,7 @@ public sealed class
     }
 
     /// <inheritdoc />
-    protected override DockerComposeBuilder Merge(DockerComposeConfiguration oldValue,
-        DockerComposeConfiguration newValue)
+    protected override DockerComposeBuilder Merge(DockerComposeConfiguration oldValue, DockerComposeConfiguration newValue)
     {
         return new DockerComposeBuilder(new DockerComposeConfiguration(oldValue, newValue));
     }

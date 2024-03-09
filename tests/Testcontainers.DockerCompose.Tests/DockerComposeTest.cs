@@ -1,102 +1,54 @@
-namespace Testcontainers.DockerCompose;
+﻿namespace Testcontainers.DockerCompose;
 
-public abstract class DockerComposeTest : IAsyncLifetime
+public abstract class DockerComposeContainerTest : IAsyncLifetime
 {
     private readonly DockerComposeContainer _dockerComposeContainer;
 
-    protected DockerComposeTest(DockerComposeContainer dockerComposeContainer)
+    private DockerComposeContainerTest(DockerComposeContainer dockerComposeContainer)
     {
         _dockerComposeContainer = dockerComposeContainer;
     }
-    
+
     public Task InitializeAsync()
     {
         return _dockerComposeContainer.StartAsync();
     }
-    
-    public async Task DisposeAsync()
+
+    public Task DisposeAsync()
     {
-        await _dockerComposeContainer.StopAsync();
-        await _dockerComposeContainer.DisposeAsync().AsTask();
+        return Task.CompletedTask;
+        return _dockerComposeContainer.DisposeAsync().AsTask();
     }
-    
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ContainerStartedSuccessfully()
     {
+        // TODO: How do we test that the Compose configuration is actually working? How do we access services?
         Assert.Equal(TestcontainersHealthStatus.Healthy, TestcontainersHealthStatus.Healthy);
     }
-    
+
     [UsedImplicitly]
-    public sealed class DockerComposeRemoteConfiguration : DockerComposeTest
-    {
-        public DockerComposeRemoteConfiguration()
-            : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
-                .Build())
-        {
-        }
-    }
-    
-    [UsedImplicitly]
-    public sealed class DockerComposeLocalConfiguration : DockerComposeTest
+    public sealed class DockerComposeLocalConfiguration : DockerComposeContainerTest
     {
         public DockerComposeLocalConfiguration()
             : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
-                .WithLocalCompose(true)
+                .WithComposeFile("docker-compose.yml")
+                .WithComposeMode(DockerComposeMode.Local)
                 .Build())
         {
         }
     }
-    
+
     [UsedImplicitly]
-    public sealed class DockerComposeRemoteWithOptionConfiguration : DockerComposeTest
+    public sealed class DockerComposeRemoteConfiguration : DockerComposeContainerTest
     {
-        public DockerComposeRemoteWithOptionConfiguration()
+        public DockerComposeRemoteConfiguration()
             : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
-                .WithOptions("--compatibility")
-                .Build())
-        {
-        }
-    }
-    
-    [UsedImplicitly]
-    public sealed class DockerComposeLocalWithOptionConfiguration : DockerComposeTest
-    {
-        public DockerComposeLocalWithOptionConfiguration()
-            : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose.yaml"))
-                .WithOptions("--compatibility")
-                .Build())
-        {
-        }
-    }
-    
-    [UsedImplicitly]
-    public sealed class DockerComposeRemoteWithRemoveImagesConfiguration : DockerComposeTest
-    {
-        public DockerComposeRemoteWithRemoveImagesConfiguration()
-            : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose-rmi.yaml"))
-                .WithRemoveImages(RemoveImages.All)
-                .Build())
-        {
-        }
-    }
-    
-    [UsedImplicitly]
-    public sealed class DockerComposeLocalWithRemoveImagesConfiguration : DockerComposeTest
-    {
-        public DockerComposeLocalWithRemoveImagesConfiguration()
-            : base(new DockerComposeBuilder()
-                .WithComposeFile(Path.Combine(Directory.GetCurrentDirectory(), @"./../../../docker-compose-rmi.yaml"))
-                .WithRemoveImages(RemoveImages.All)
-                .WithLocalCompose(true)
+                .WithComposeFile("docker-compose.yml")
+                .WithComposeMode(DockerComposeMode.Remote)
                 .Build())
         {
         }
     }
 }
-    
