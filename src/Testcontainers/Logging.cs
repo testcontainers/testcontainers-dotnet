@@ -4,27 +4,12 @@ namespace DotNet.Testcontainers
   using System.Collections.Generic;
   using System.Text.Json;
   using System.Text.RegularExpressions;
-  using System.Threading.Tasks;
-  using Docker.DotNet;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
   internal static class Logging
   {
 #pragma warning disable InconsistentNaming, SA1309
-
-    private static readonly Action<ILogger, Uri, string, string, string, string, double, Exception> _DockerRuntimeInfo
-      = LoggerMessage.Define<Uri, string, string, string, string, double>(LogLevel.Information, default,
-        "Connected to Docker" + Environment.NewLine +
-        "  Host: {Host}" + Environment.NewLine +
-        "  Server Version: {ServerVersion}" + Environment.NewLine +
-        "  Kernel Version: {KernelVersion}" + Environment.NewLine +
-        "  API Version: {APIVersion}" + Environment.NewLine +
-        "  Operating System: {OperatingSystem}" + Environment.NewLine +
-        "  Total Memory: {TotalMemory:F2} GB");
-
-    private static readonly Action<ILogger, Exception> _DockerRuntimeError
-      = LoggerMessage.Define(LogLevel.Error, default, "Failed to retrieve Docker container runtime information");
 
     private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
       = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
@@ -126,23 +111,6 @@ namespace DotNet.Testcontainers
       = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource not found, create resource");
 
 #pragma warning restore InconsistentNaming, SA1309
-
-    public static async Task DockerRuntimeInfoAsync(this ILogger logger, IDockerClient dockerClient)
-    {
-      try
-      {
-        var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
-          .ConfigureAwait(false);
-        var dockerVersion = await dockerClient.System.GetVersionAsync()
-          .ConfigureAwait(false);
-        var totalMemory = dockerInfo.MemTotal / (1024.0 * 1024 * 1024);
-        _DockerRuntimeInfo(logger, dockerClient.Configuration.EndpointBaseUri, dockerInfo.ServerVersion, dockerInfo.KernelVersion, dockerVersion.APIVersion, dockerInfo.OperatingSystem, totalMemory, null);
-      }
-      catch (Exception exception)
-      {
-        _DockerRuntimeError(logger, exception);
-      }
-    }
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {
