@@ -8,9 +8,8 @@ public sealed class RedpandaContainer : DockerContainer
     /// Initializes a new instance of the <see cref="RedpandaContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public RedpandaContainer(RedpandaConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public RedpandaContainer(RedpandaConfiguration configuration)
+        : base(configuration)
     {
     }
 

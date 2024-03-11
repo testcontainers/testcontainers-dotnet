@@ -10,9 +10,8 @@ public sealed class MinioContainer : DockerContainer
     /// Initializes a new instance of the <see cref="MinioContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MinioContainer(MinioConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MinioContainer(MinioConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

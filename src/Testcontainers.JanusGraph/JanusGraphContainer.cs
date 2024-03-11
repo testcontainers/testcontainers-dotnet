@@ -8,9 +8,8 @@ public sealed class JanusGraphContainer : DockerContainer
     /// Initializes a new instance of the <see cref="JanusGraphContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public JanusGraphContainer(JanusGraphConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public JanusGraphContainer(JanusGraphConfiguration configuration)
+        : base(configuration)
     {
     }
 }

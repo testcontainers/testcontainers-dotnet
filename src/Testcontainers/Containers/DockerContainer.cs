@@ -32,12 +32,22 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
+    public DockerContainer(IContainerConfiguration configuration)
+    {
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
+      _configuration = configuration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
     /// <param name="logger">The logger.</param>
+    [Obsolete("Use the constructor DockerContainer(IContainerConfiguration) instead.")]
     public DockerContainer(IContainerConfiguration configuration, ILogger logger)
     {
       _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
       _configuration = configuration;
-      Logger = logger;
     }
 
     /// <inheritdoc />
@@ -59,9 +69,6 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
-    public ILogger Logger { get; }
-
-    /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }
 
     /// <inheritdoc />
@@ -69,6 +76,15 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc />
     public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
+    public ILogger Logger
+    {
+      get
+      {
+        return _configuration.Logger;
+      }
+    }
 
     /// <inheritdoc />
     public string Id
@@ -370,6 +386,9 @@ namespace DotNet.Testcontainers.Containers
       {
         return;
       }
+
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
 
       Creating?.Invoke(this, EventArgs.Empty);
 

@@ -49,7 +49,7 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     public override ArangoDbContainer Build()
     {
         Validate();
-        return new ArangoDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ArangoDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

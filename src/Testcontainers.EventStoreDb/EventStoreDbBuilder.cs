@@ -33,7 +33,7 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     /// <inheritdoc />
     public override EventStoreDbContainer Build()
     {
-        return new EventStoreDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new EventStoreDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

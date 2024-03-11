@@ -60,7 +60,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     public override RabbitMqContainer Build()
     {
         Validate();
-        return new RabbitMqContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new RabbitMqContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
