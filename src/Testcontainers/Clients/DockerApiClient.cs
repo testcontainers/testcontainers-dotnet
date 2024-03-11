@@ -109,7 +109,7 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.Append("  Total Memory: ");
         runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
 
-        Logger.LogInformation(runtimeInfo.ToString());
+        Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
       catch(Exception e)
       {

@@ -30,7 +30,7 @@ public abstract class LoggerTest : IAsyncLifetime
     [InlineData(2)]
     public void LogContainerRuntimeInformationOnce(int _)
     {
-        Assert.Contains("Connected to Docker", _fakeLogger.Collector.GetSnapshot().First().Message);
+        Assert.Contains("Connected to Docker", _fakeLogger.Collector.GetSnapshot()[0].Message);
     }
 
     [UsedImplicitly]

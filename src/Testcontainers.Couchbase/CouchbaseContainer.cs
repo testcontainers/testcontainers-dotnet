@@ -15,7 +15,7 @@ public sealed class CouchbaseContainer : DockerContainer
     {
         _configuration = configuration;
         Starting += (_, _) => Logger.LogInformation("Couchbase container is starting, performing configuration.");
-        Started += (_, _) => Logger.LogInformation($"Couchbase container is ready! UI available at {new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CouchbaseBuilder.MgmtPort))}");
+        Started += (_, _) => Logger.LogInformation("Couchbase container is ready! UI available at {Url}.", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CouchbaseBuilder.MgmtPort)));
     }
 
     /// <summary>
