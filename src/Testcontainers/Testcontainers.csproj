@@ -6,14 +6,16 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
-    <PackageReference Include="BouncyCastle.Cryptography"/>
     <PackageReference Include="Docker.DotNet.X509"/>
     <PackageReference Include="Docker.DotNet"/>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
-    <PackageReference Include="Microsoft.Bcl.HashCode"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <PackageReference Include="SharpZipLib"/>
     <PackageReference Include="SSH.NET"/>
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFrameworkIdentifier) == '.NETStandard'">
+    <PackageReference Include="BouncyCastle.Cryptography"/>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
+    <PackageReference Include="Microsoft.Bcl.HashCode"/>
     <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
 </Project>
