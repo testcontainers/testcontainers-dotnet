@@ -12,17 +12,14 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerVolumeOperations : DockerApiClient, IDockerVolumeOperations
   {
-    private readonly ILogger _logger;
-
     public DockerVolumeOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(sessionId, dockerEndpointAuthConfig)
+      : base(sessionId, dockerEndpointAuthConfig, logger)
     {
-      _logger = logger;
     }
 
     public async Task<IEnumerable<VolumeResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      var response = await Docker.Volumes.ListAsync(ct)
+      var response = await DockerClient.Volumes.ListAsync(ct)
         .ConfigureAwait(false);
 
       return response.Volumes;
@@ -30,7 +27,7 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<IEnumerable<VolumeResponse>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default)
     {
-      var response = await Docker.Volumes.ListAsync(new VolumesListParameters { Filters = filters }, ct)
+      var response = await DockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = filters }, ct)
         .ConfigureAwait(false);
 
       return response.Volumes;
@@ -40,7 +37,7 @@ namespace DotNet.Testcontainers.Clients
     {
       try
       {
-        return await Docker.Volumes.InspectAsync(id, ct)
+        return await DockerClient.Volumes.InspectAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -78,17 +75,17 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      var createVolumeResponse = await Docker.Volumes.CreateAsync(createParameters, ct)
+      var createVolumeResponse = await DockerClient.Volumes.CreateAsync(createParameters, ct)
         .ConfigureAwait(false);
 
-      _logger.DockerVolumeCreated(createVolumeResponse.Name);
+      Logger.DockerVolumeCreated(createVolumeResponse.Name);
       return createVolumeResponse.Name;
     }
 
     public Task DeleteAsync(string name, CancellationToken ct = default)
     {
-      _logger.DeleteDockerVolume(name);
-      return Docker.Volumes.RemoveAsync(name, false, ct);
+      Logger.DeleteDockerVolume(name);
+      return DockerClient.Volumes.RemoveAsync(name, false, ct);
     }
   }
 }

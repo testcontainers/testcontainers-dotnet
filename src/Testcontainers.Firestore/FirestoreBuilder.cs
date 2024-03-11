@@ -34,7 +34,7 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     public override FirestoreContainer Build()
     {
         Validate();
-        return new FirestoreContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new FirestoreContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

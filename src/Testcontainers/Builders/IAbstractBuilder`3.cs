@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// A fluent Docker resource builder.
@@ -106,6 +107,14 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithCreateParameterModifier(Action<TCreateResourceEntity> parameterModifier);
+
+    /// <summary>
+    /// Sets the logger.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithLogger(ILogger logger);
 
     /// <summary>
     /// Builds an instance of <typeparamref name="TResourceEntity" /> with the given resource configuration.

@@ -38,7 +38,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     public override KustoContainer Build()
     {
         Validate();
-        return new KustoContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new KustoContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

@@ -38,7 +38,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     public override RedpandaContainer Build()
     {
         Validate();
-        return new RedpandaContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new RedpandaContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

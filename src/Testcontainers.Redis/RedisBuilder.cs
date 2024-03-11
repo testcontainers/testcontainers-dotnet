@@ -34,7 +34,7 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     public override RedisContainer Build()
     {
         Validate();
-        return new RedisContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new RedisContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

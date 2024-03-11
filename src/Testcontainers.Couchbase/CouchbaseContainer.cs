@@ -10,9 +10,8 @@ public sealed class CouchbaseContainer : DockerContainer
     /// Initializes a new instance of the <see cref="CouchbaseContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public CouchbaseContainer(CouchbaseConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public CouchbaseContainer(CouchbaseConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
         Starting += (_, _) => Logger.LogInformation("Couchbase container is starting, performing configuration.");

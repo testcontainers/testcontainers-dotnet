@@ -10,9 +10,8 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="MariaDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MariaDbContainer(MariaDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MariaDbContainer(MariaDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

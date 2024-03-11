@@ -291,7 +291,7 @@ namespace DotNet.Testcontainers.Clients
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
           .ConfigureAwait(false);
 
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, isWindowsEngineEnabled, ct)
+        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, configuration.Logger, isWindowsEngineEnabled, ct)
           .ConfigureAwait(false);
       }
 

@@ -10,9 +10,8 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="MsSqlContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MsSqlContainer(MsSqlConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MsSqlContainer(MsSqlConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
