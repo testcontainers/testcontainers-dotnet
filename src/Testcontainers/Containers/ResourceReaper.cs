@@ -105,9 +105,9 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
     [Obsolete("Use GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken) instead.")]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
+    public static Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
     {
-      return await GetAndStartDefaultAsync(dockerEndpointAuthConfig, ConsoleLogger.Instance, isWindowsEngineEnabled, ct);
+      return GetAndStartDefaultAsync(dockerEndpointAuthConfig, ConsoleLogger.Instance, isWindowsEngineEnabled, ct);
     }
 
     /// <summary>
