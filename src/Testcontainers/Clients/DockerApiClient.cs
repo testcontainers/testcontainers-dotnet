@@ -72,54 +72,14 @@ namespace DotNet.Testcontainers.Clients
       await RuntimeInitialized.WaitAsync(ct)
         .ConfigureAwait(false);
 
-      try
+      if (!ProcessedHashCodes.Contains(hashCode))
       {
-        if (ProcessedHashCodes.Contains(hashCode))
-        {
-          return;
-        }
-
-        var runtimeInfo = new StringBuilder();
-
-        var byteUnits = new[] { "KB", "MB", "GB" };
-
-        var dockerInfo = await DockerClient.System.GetSystemInfoAsync(ct)
+        await Logger.DockerRuntimeInfoAsync(DockerClient)
           .ConfigureAwait(false);
-
-        var dockerVersion = await DockerClient.System.GetVersionAsync(ct)
-          .ConfigureAwait(false);
-
-        runtimeInfo.AppendLine("Connected to Docker:");
-
-        runtimeInfo.Append("  Host: ");
-        runtimeInfo.AppendLine(DockerClient.Configuration.EndpointBaseUri.ToString());
-
-        runtimeInfo.Append("  Server Version: ");
-        runtimeInfo.AppendLine(dockerInfo.ServerVersion);
-
-        runtimeInfo.Append("  Kernel Version: ");
-        runtimeInfo.AppendLine(dockerInfo.KernelVersion);
-
-        runtimeInfo.Append("  API Version: ");
-        runtimeInfo.AppendLine(dockerVersion.APIVersion);
-
-        runtimeInfo.Append("  Operating System: ");
-        runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
-
-        runtimeInfo.Append("  Total Memory: ");
-        runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
-
-        Logger.LogInformation(runtimeInfo.ToString());
-      }
-      catch(Exception e)
-      {
-        Logger.LogError(e, "Failed to retrieve Docker container runtime information.");
-      }
-      finally
-      {
         ProcessedHashCodes.Add(hashCode);
-        RuntimeInitialized.Release();
       }
+
+      RuntimeInitialized.Release();
     }
 
     private static IDockerClient GetDockerClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
