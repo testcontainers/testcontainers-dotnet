@@ -8,9 +8,8 @@ public sealed class ArangoDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="ArangoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ArangoDbContainer(ArangoDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ArangoDbContainer(ArangoDbConfiguration configuration)
+        : base(configuration)
     {
     }
 

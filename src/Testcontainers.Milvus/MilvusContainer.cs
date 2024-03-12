@@ -8,9 +8,8 @@ public sealed class MilvusContainer : DockerContainer
     /// Initializes a new instance of the <see cref="MilvusContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MilvusContainer(MilvusConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MilvusContainer(MilvusConfiguration configuration)
+        : base(configuration)
     {
     }
 

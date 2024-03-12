@@ -8,9 +8,8 @@ public sealed class RedisContainer : DockerContainer
     /// Initializes a new instance of the <see cref="RedisContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public RedisContainer(RedisConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public RedisContainer(RedisConfiguration configuration)
+        : base(configuration)
     {
     }
 

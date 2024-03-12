@@ -8,9 +8,8 @@ public sealed class DynamoDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="DynamoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DynamoDbContainer(DynamoDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public DynamoDbContainer(DynamoDbConfiguration configuration)
+        : base(configuration)
     {
     }
 

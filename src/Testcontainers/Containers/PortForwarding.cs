@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
   using Renci.SshNet;
 
   /// <inheritdoc cref="DockerContainer" />
@@ -26,9 +25,8 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="PortForwardingContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    private PortForwardingContainer(PortForwardingConfiguration configuration, ILogger logger)
-      : base(configuration, logger)
+    private PortForwardingContainer(PortForwardingConfiguration configuration)
+      : base(configuration)
     {
       _configuration = configuration;
     }
@@ -107,7 +105,7 @@ namespace DotNet.Testcontainers.Containers
         // instance of the port forwarding container. To improve the user experience, it
         // is preferable to stop supporting `WithDockerEndpoint(string)` and instead rely
         // on the environment variables or the properties file custom configurations.
-        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration);
       }
 
       /// <inheritdoc />

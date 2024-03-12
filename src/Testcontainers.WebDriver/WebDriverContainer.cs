@@ -12,9 +12,8 @@ public sealed class WebDriverContainer : DockerContainer
     /// Initializes a new instance of the <see cref="WebDriverContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public WebDriverContainer(WebDriverConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public WebDriverContainer(WebDriverConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
         _ffmpegContainer = configuration.FFmpegContainer ?? FFmpegContainer.Instance;
@@ -110,7 +109,7 @@ public sealed class WebDriverContainer : DockerContainer
         /// Initializes a new instance of the <see cref="FFmpegContainer" /> class.
         /// </summary>
         private FFmpegContainer()
-            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")))), NullLogger.Instance)
+            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")), null, null, false, NullLogger.Instance)))
         {
         }
 

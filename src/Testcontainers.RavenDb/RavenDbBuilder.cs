@@ -34,7 +34,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     public override RavenDbContainer Build()
     {
         Validate();
-        return new RavenDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new RavenDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

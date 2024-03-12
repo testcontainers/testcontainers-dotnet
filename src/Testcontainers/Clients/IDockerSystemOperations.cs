@@ -6,6 +6,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal interface IDockerSystemOperations
   {
+    Task LogContainerRuntimeInfoAsync(CancellationToken ct = default);
+
     Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default);
 
     Task<SystemInfoResponse> GetInfoAsync(CancellationToken ct = default);

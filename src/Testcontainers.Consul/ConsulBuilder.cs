@@ -36,7 +36,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     public override ConsulContainer Build()
     {
         Validate();
-        return new ConsulContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ConsulContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

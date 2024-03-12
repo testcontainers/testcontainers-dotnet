@@ -8,9 +8,8 @@ public sealed class BigQueryContainer : DockerContainer
     /// Initializes a new instance of the <see cref="BigQueryContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public BigQueryContainer(BigQueryConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public BigQueryContainer(BigQueryConfiguration configuration)
+        : base(configuration)
     {
     }
 

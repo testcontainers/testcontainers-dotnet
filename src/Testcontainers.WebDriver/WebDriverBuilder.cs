@@ -88,7 +88,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     public override WebDriverContainer Build()
     {
         Validate();
-        return new WebDriverContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new WebDriverContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

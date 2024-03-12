@@ -8,9 +8,8 @@ public sealed class CosmosDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="CosmosDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public CosmosDbContainer(CosmosDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public CosmosDbContainer(CosmosDbConfiguration configuration)
+        : base(configuration)
     {
     }
 

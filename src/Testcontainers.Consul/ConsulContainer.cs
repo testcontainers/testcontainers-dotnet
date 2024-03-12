@@ -8,9 +8,8 @@ public sealed class ConsulContainer : DockerContainer
     /// Initializes a new instance of the <see cref="ConsulContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ConsulContainer(ConsulConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ConsulContainer(ConsulConfiguration configuration)
+        : base(configuration)
     {
     }
 

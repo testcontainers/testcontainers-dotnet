@@ -51,7 +51,7 @@ public sealed class SqlEdgeBuilder : ContainerBuilder<SqlEdgeBuilder, SqlEdgeCon
     public override SqlEdgeContainer Build()
     {
         Validate();
-        return new SqlEdgeContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new SqlEdgeContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

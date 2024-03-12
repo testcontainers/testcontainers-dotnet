@@ -10,9 +10,8 @@ public sealed class OracleContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="OracleContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public OracleContainer(OracleConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public OracleContainer(OracleConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

@@ -75,7 +75,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     public override ClickHouseContainer Build()
     {
         Validate();
-        return new ClickHouseContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ClickHouseContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

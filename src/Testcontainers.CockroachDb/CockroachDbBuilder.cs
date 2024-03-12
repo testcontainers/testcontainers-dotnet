@@ -75,7 +75,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     public override CockroachDbContainer Build()
     {
         Validate();
-        return new CockroachDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new CockroachDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

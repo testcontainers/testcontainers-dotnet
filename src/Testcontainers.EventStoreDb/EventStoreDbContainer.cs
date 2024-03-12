@@ -8,9 +8,8 @@ public sealed class EventStoreDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="EventStoreDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public EventStoreDbContainer(EventStoreDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public EventStoreDbContainer(EventStoreDbConfiguration configuration)
+        : base(configuration)
     {
     }
 

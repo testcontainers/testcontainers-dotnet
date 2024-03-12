@@ -53,12 +53,6 @@ namespace DotNet.Testcontainers.Containers
     event EventHandler Stopped;
 
     /// <summary>
-    /// Gets the logger.
-    /// </summary>
-    [NotNull]
-    ILogger Logger { get; }
-
-    /// <summary>
     /// Gets the created timestamp.
     /// </summary>
     DateTime CreatedTime { get; }
@@ -72,6 +66,12 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the stopped timestamp.
     /// </summary>
     DateTime StoppedTime { get; }
+
+    /// <summary>
+    /// Gets the logger.
+    /// </summary>
+    [NotNull]
+    ILogger Logger { get; }
 
     /// <summary>
     /// Gets the container id.

@@ -53,7 +53,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     public override MilvusContainer Build()
     {
         Validate();
-        return new MilvusContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MilvusContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

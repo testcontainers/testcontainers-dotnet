@@ -12,23 +12,20 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerNetworkOperations : DockerApiClient, IDockerNetworkOperations
   {
-    private readonly ILogger _logger;
-
     public DockerNetworkOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(sessionId, dockerEndpointAuthConfig)
+      : base(sessionId, dockerEndpointAuthConfig, logger)
     {
-      _logger = logger;
     }
 
     public async Task<IEnumerable<NetworkResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return await Docker.Networks.ListNetworksAsync(new NetworksListParameters(), ct)
+      return await DockerClient.Networks.ListNetworksAsync(new NetworksListParameters(), ct)
         .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<NetworkResponse>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default)
     {
-      return await Docker.Networks.ListNetworksAsync(new NetworksListParameters { Filters = filters }, ct)
+      return await DockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = filters }, ct)
         .ConfigureAwait(false);
     }
 
@@ -36,7 +33,7 @@ namespace DotNet.Testcontainers.Clients
     {
       try
       {
-        return await Docker.Networks.InspectNetworkAsync(id, ct)
+        return await DockerClient.Networks.InspectNetworkAsync(id, ct)
           .ConfigureAwait(false);
       }
       catch (DockerApiException)
@@ -76,23 +73,23 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      var createNetworkResponse = await Docker.Networks.CreateNetworkAsync(createParameters, ct)
+      var createNetworkResponse = await DockerClient.Networks.CreateNetworkAsync(createParameters, ct)
         .ConfigureAwait(false);
 
-      _logger.DockerNetworkCreated(createNetworkResponse.ID);
+      Logger.DockerNetworkCreated(createNetworkResponse.ID);
       return createNetworkResponse.ID;
     }
 
     public Task DeleteAsync(string id, CancellationToken ct = default)
     {
-      _logger.DeleteDockerNetwork(id);
-      return Docker.Networks.DeleteNetworkAsync(id, ct);
+      Logger.DeleteDockerNetwork(id);
+      return DockerClient.Networks.DeleteNetworkAsync(id, ct);
     }
 
     public Task ConnectAsync(string networkId, string containerId, CancellationToken ct = default)
     {
-      _logger.ConnectToDockerNetwork(networkId, containerId);
-      return Docker.Networks.ConnectNetworkAsync(networkId, new NetworkConnectParameters { Container = containerId }, ct);
+      Logger.ConnectToDockerNetwork(networkId, containerId);
+      return DockerClient.Networks.ConnectNetworkAsync(networkId, new NetworkConnectParameters { Container = containerId }, ct);
     }
   }
 }
