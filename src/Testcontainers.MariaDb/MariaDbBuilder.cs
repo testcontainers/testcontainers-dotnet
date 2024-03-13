@@ -78,7 +78,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         // By default, the base builder waits until the container is running. However, for MariaDb, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MariaDb waiting strategy.
         var mariaDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new MariaDbContainer(mariaDbBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MariaDbContainer(mariaDbBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

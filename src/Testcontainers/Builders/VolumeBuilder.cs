@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Builders
     public override IVolume Build()
     {
       Validate();
-      return new DockerVolume(DockerResourceConfiguration, TestcontainersSettings.Logger);
+      return new DockerVolume(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

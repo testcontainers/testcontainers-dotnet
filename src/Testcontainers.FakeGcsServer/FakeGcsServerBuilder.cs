@@ -36,7 +36,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     public override FakeGcsServerContainer Build()
     {
         Validate();
-        return new FakeGcsServerContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new FakeGcsServerContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

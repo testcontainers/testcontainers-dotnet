@@ -60,7 +60,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public override KeycloakContainer Build()
     {
         Validate();
-        return new KeycloakContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new KeycloakContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

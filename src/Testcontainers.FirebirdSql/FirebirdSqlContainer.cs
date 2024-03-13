@@ -10,9 +10,8 @@ public sealed class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="FirebirdSqlContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public FirebirdSqlContainer(FirebirdSqlConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public FirebirdSqlContainer(FirebirdSqlConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

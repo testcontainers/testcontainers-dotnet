@@ -63,7 +63,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     public override OracleContainer Build()
     {
         Validate();
-        return new OracleContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new OracleContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

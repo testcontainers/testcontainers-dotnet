@@ -8,9 +8,8 @@ public sealed class PapercutContainer : DockerContainer
     /// Initializes a new instance of the <see cref="PapercutContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public PapercutContainer(PapercutConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public PapercutContainer(PapercutConfiguration configuration)
+        : base(configuration)
     {
     }
 

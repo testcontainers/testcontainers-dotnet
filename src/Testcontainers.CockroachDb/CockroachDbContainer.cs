@@ -10,9 +10,8 @@ public sealed class CockroachDbContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="CockroachDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public CockroachDbContainer(CockroachDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public CockroachDbContainer(CockroachDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

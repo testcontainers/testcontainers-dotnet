@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// The Resource Reaper takes care of the remaining Docker resources and removes them: https://dotnet.testcontainers.org/api/resource-reaper/.
@@ -52,7 +53,7 @@ namespace DotNet.Testcontainers.Containers
     {
     }
 
-    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode)
+    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode)
     {
       _resourceReaperContainer = new ContainerBuilder()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
@@ -63,6 +64,7 @@ namespace DotNet.Testcontainers.Containers
         .WithCleanUp(false)
         .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
         .WithMount(dockerSocket)
+        .WithLogger(logger)
         .Build();
 
       SessionId = sessionId;
@@ -102,7 +104,22 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
+    [Obsolete("Use GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken) instead.")]
+    public static Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
+    {
+      return GetAndStartDefaultAsync(dockerEndpointAuthConfig, ConsoleLogger.Instance, isWindowsEngineEnabled, ct);
+    }
+
+    /// <summary>
+    /// Starts and returns the default <see cref="ResourceReaper" /> instance.
+    /// </summary>
+    /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="isWindowsEngineEnabled">Determines whether the Windows engine is enabled or not.</param>
+    /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
+    /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
+    [PublicAPI]
+    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
     {
       if (isWindowsEngineEnabled)
       {
@@ -129,7 +146,7 @@ namespace DotNet.Testcontainers.Containers
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
 
-        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, new UnixSocketMount(dockerEndpointAuthConfig.Endpoint), requiresPrivilegedMode, ct: ct)
+        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, new UnixSocketMount(dockerEndpointAuthConfig.Endpoint), logger, requiresPrivilegedMode, ct: ct)
           .ConfigureAwait(false);
 
         return _defaultInstance;
@@ -177,14 +194,15 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="resourceReaperImage">The Resource Reaper image.</param>
     /// <param name="dockerSocket">The Docker socket.</param>
+    /// <param name="logger">The logger.</param>
     /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    private static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
-      return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, requiresPrivilegedMode, initTimeout, ct);
+      return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode, initTimeout, ct);
     }
 
     /// <summary>
@@ -194,16 +212,17 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="resourceReaperImage">The Resource Reaper image.</param>
     /// <param name="dockerSocket">The Docker socket.</param>
+    /// <param name="logger">The logger.</param>
     /// <param name="requiresPrivilegedMode">True if the container requires privileged mode, otherwise false.</param>
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    private static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
-      var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, requiresPrivilegedMode);
+      var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode);
 
       initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
@@ -279,7 +298,7 @@ namespace DotNet.Testcontainers.Containers
       {
         if (!TryGetEndpoint(out var host, out var port))
         {
-          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+          await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
             .ConfigureAwait(false);
 
           continue;
@@ -291,8 +310,13 @@ namespace DotNet.Testcontainers.Containers
 
           try
           {
+#if NET6_0_OR_GREATER
+            await tcpClient.ConnectAsync(host, port, ct)
+              .ConfigureAwait(false);
+#else
             await tcpClient.ConnectAsync(host, port)
               .ConfigureAwait(false);
+#endif
 
             var stream = tcpClient.GetStream();
 
@@ -384,14 +408,14 @@ namespace DotNet.Testcontainers.Containers
           {
             _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
               .ConfigureAwait(false);
           }
           catch (Exception e)
           {
             _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, e);
 
-            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), default)
+            await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
               .ConfigureAwait(false);
           }
         }

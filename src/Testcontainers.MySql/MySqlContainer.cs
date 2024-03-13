@@ -10,9 +10,8 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="MySqlContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MySqlContainer(MySqlConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MySqlContainer(MySqlConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

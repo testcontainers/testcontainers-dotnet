@@ -10,6 +10,10 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public sealed class Windows : IOperatingSystem
   {
+    static Windows()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
     /// </summary>

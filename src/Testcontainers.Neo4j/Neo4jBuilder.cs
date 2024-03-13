@@ -36,7 +36,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     public override Neo4jContainer Build()
     {
         Validate();
-        return new Neo4jContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new Neo4jContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

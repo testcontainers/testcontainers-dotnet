@@ -10,9 +10,8 @@ public sealed class CouchDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="CouchDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public CouchDbContainer(CouchDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public CouchDbContainer(CouchDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

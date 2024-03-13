@@ -86,7 +86,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         }
 
         var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
-        return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

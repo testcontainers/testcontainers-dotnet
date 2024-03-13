@@ -78,7 +78,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
         var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
