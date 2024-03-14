@@ -33,7 +33,9 @@ public sealed class RedisContainerTest : IAsyncLifetime
         var execResult = await _redisContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.True("Hello, scripting!\n".Equals(execResult.Stdout), execResult.Stdout);
+        Assert.Empty(execResult.Stderr);
     }
 }

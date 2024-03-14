@@ -113,7 +113,7 @@ namespace DotNet.Testcontainers.Clients
       }
       catch(Exception e)
       {
-        Logger.LogError(e, "Failed to retrieve Docker container runtime information.");
+        Logger.LogError(e, "Failed to retrieve Docker container runtime information");
       }
       finally
       {

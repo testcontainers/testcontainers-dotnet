@@ -39,7 +39,8 @@ public sealed class OracleContainerTest : IAsyncLifetime
         var execResult = await _oracleContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 }
