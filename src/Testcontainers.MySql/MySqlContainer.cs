@@ -49,14 +49,16 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Writes a configuration file so that calling <see cref="ExecScriptAsync"/> does not
-    /// produce a warning on stderr about using a password on the command line.
+    /// Write an unobfuscated MySql configuration file that configures the client
+    /// login path. This prevents warnings in the <see cref="ExecScriptAsync" />
+    /// result about using a password on the command line.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the configuration file has been written.</returns>
-    internal Task WriteConfigurationFileAsync(CancellationToken ct)
+    /// <returns>Task that completes when the configuration file has been executed.</returns>
+    internal Task WriteConfigurationFileAsync(CancellationToken ct = default)
     {
-        var config = new StringWriter { NewLine = "\n" };
+        var config = new StringWriter();
+        config.NewLine = "\n";
         config.WriteLine("[client]");
         config.WriteLine("protocol=TCP");
         config.WriteLine($"user={_configuration.Username}");

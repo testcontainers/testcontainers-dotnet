@@ -42,12 +42,12 @@ public sealed class MongoDbContainer : DockerContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        var whichMongosh = await ExecAsync(new[] { "which", "mongosh" }, ct)
+        var whichMongoDbShell = await ExecAsync(new[] { "which", "mongosh" }, ct)
             .ConfigureAwait(false);
 
         var command = new[]
         {
-            whichMongosh.ExitCode == 0 ? "mongosh" : "mongo",
+            whichMongoDbShell.ExitCode == 0 ? "mongosh" : "mongo",
             "--username", _configuration.Username,
             "--password", _configuration.Password,
             "--quiet",
