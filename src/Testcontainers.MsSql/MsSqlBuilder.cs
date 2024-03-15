@@ -104,7 +104,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </remarks>
     /// <param name="database">The MsSql database.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithDatabase(string database)
+    public MsSqlBuilder WithDatabase(string database)
     {
         return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
             .WithEnvironment("SQLCMDDBNAME", database);
