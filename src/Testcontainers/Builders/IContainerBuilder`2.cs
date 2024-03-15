@@ -452,6 +452,6 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithStartupCallback(Func<IContainer, CancellationToken, Task> startupCallback);
+    TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback);
   }
 }
