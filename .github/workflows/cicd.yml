@@ -63,6 +63,16 @@ jobs:
           docker-images: true
           swap-storage: false
 
+      # https://github.com/actions/runner-images/issues/6688
+      - name: Set Docker Daemon Configuration
+        if: runner.os == 'Windows'
+        run: |
+          $daemonSettings = New-Object PSObject
+          $daemonSettings | Add-Member NoteProperty hosts @("npipe://")
+          $daemonSettings | Add-Member NoteProperty group "Users"
+          $daemonSettings | ConvertTo-Json | Out-File -FilePath "$($env:ProgramData)\docker\config\daemon.json" -Encoding ASCII
+          Get-Service -Name *docker* | Restart-Service
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 

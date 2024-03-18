@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.6.0");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.7.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -121,11 +121,6 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
     {
-      if (isWindowsEngineEnabled)
-      {
-        return null;
-      }
-
       if (_defaultInstance != null && !_defaultInstance._disposed)
       {
         return _defaultInstance;
@@ -144,9 +139,11 @@ namespace DotNet.Testcontainers.Containers
       {
         var resourceReaperImage = TestcontainersSettings.ResourceReaperImage ?? RyukImage;
 
+        var dockerSocket = Wormhole.GetDockerSocket(dockerEndpointAuthConfig.Endpoint, isWindowsEngineEnabled);
+
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
 
-        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, new UnixSocketMount(dockerEndpointAuthConfig.Endpoint), logger, requiresPrivilegedMode, ct: ct)
+        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode, ct: ct)
           .ConfigureAwait(false);
 
         return _defaultInstance;
@@ -434,41 +431,6 @@ namespace DotNet.Testcontainers.Containers
       else
       {
         ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization failed."));
-      }
-    }
-
-    private sealed class UnixSocketMount : IMount
-    {
-      private const string DockerSocketFilePath = "/var/run/docker.sock";
-
-      public UnixSocketMount([NotNull] Uri dockerEndpoint)
-      {
-        // If the Docker endpoint is a Unix socket, extract the socket path from the URI; otherwise, fallback to the default Unix socket path.
-        Source = "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase) ? dockerEndpoint.AbsolutePath : DockerSocketFilePath;
-
-        // If the user has overridden the Docker socket path, use the user-specified path; otherwise, keep the previously determined source.
-        Source = !string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride) ? TestcontainersSettings.DockerSocketOverride : Source;
-        Target = DockerSocketFilePath;
-      }
-
-      public MountType Type
-        => MountType.Bind;
-
-      public AccessMode AccessMode
-        => AccessMode.ReadOnly;
-
-      public string Source { get; }
-
-      public string Target { get; }
-
-      public Task CreateAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
-      }
-
-      public Task DeleteAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
       }
     }
   }
