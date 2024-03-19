@@ -78,7 +78,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         // By default, the base builder waits until the container is running. However, for MariaDb, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MariaDb waiting strategy.
         var mariaDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new MariaDbContainer(mariaDbBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MariaDbContainer(mariaDbBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -89,7 +89,8 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
             .WithPortBinding(MariaDbPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithStartupCallback((container, ct) => container.WriteConfigurationFileAsync(ct));
     }
 
     /// <inheritdoc />
@@ -135,7 +136,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MariaDbConfiguration configuration)
         {
-            _command = new List<string> { "mariadb", "--protocol=TCP", $"--port={MariaDbPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string> { "mariadb", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
         }
 
         /// <inheritdoc />

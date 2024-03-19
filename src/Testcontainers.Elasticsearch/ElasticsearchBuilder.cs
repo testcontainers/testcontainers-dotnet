@@ -59,7 +59,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     public override ElasticsearchContainer Build()
     {
         Validate();
-        return new ElasticsearchContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ElasticsearchContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

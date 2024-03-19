@@ -21,7 +21,6 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
     {
         for (var _ = 0; _ < 3; _++)
         {
-            // We are running in a single session, we do not need to disable the cleanup feature.
             var container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
@@ -63,11 +62,14 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
     [Fact]
     public async Task ShouldReuseExistingResource()
     {
-        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters });
+        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters })
+            .ConfigureAwait(true);
 
-        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters });
+        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters })
+            .ConfigureAwait(true);
 
-        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters });
+        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters })
+            .ConfigureAwait(true);
 
         Assert.Single(containers);
         Assert.Single(networks);

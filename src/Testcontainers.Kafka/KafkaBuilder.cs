@@ -40,7 +40,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     public override KafkaContainer Build()
     {
         Validate();
-        return new KafkaContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new KafkaContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

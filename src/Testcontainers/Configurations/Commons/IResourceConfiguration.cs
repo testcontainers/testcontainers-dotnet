@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// A resource configuration.
@@ -15,11 +16,6 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the test session id.
     /// </summary>
     Guid SessionId { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether to reuse an existing resource configuration or not.
-    /// </summary>
-    bool? Reuse { get; }
 
     /// <summary>
     /// Gets the Docker endpoint authentication configuration.
@@ -35,6 +31,16 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets a list of low level modifications of the Docker.DotNet entity.
     /// </summary>
     IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether to reuse an existing resource configuration or not.
+    /// </summary>
+    bool? Reuse { get; }
+
+    /// <summary>
+    /// Gets the logger.
+    /// </summary>
+    ILogger Logger { get; }
 
     /// <summary>
     /// Gets the reuse hash.

@@ -8,9 +8,8 @@ public sealed class Neo4jContainer : DockerContainer
     /// Initializes a new instance of the <see cref="Neo4jContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public Neo4jContainer(Neo4jConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public Neo4jContainer(Neo4jConfiguration configuration)
+        : base(configuration)
     {
     }
 

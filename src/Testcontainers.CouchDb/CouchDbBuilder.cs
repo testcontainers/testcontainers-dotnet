@@ -60,7 +60,7 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     public override CouchDbContainer Build()
     {
         Validate();
-        return new CouchDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new CouchDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

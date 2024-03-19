@@ -10,9 +10,8 @@ public sealed class ClickHouseContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="ClickHouseContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ClickHouseContainer(ClickHouseConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ClickHouseContainer(ClickHouseConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

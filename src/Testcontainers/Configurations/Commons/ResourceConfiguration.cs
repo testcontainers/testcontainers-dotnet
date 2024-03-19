@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IResourceConfiguration{TCreateResourceEntity}" />
   [PublicAPI]
@@ -20,17 +21,20 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="labels">The test session id.</param>
     /// <param name="parameterModifiers">A list of low level modifications of the Docker.DotNet entity.</param>
     /// <param name="reuse">A value indicating whether to reuse an existing resource configuration or not.</param>
+    /// <param name="logger">The logger.</param>
     public ResourceConfiguration(
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null,
-      bool? reuse = null)
+      bool? reuse = null,
+      ILogger logger = null)
     {
       SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
       DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
       Labels = labels;
       ParameterModifiers = parameterModifiers;
       Reuse = reuse;
+      Logger = logger;
     }
 
     /// <summary>
@@ -52,17 +56,14 @@ namespace DotNet.Testcontainers.Configurations
         dockerEndpointAuthenticationConfiguration: BuildConfiguration.Combine(oldValue.DockerEndpointAuthConfig, newValue.DockerEndpointAuthConfig),
         labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels),
         parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
-        reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value))
+        reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value),
+        logger: BuildConfiguration.Combine(oldValue.Logger, newValue.Logger))
     {
     }
 
     /// <inheritdoc />
     [JsonIgnore]
     public Guid SessionId { get; }
-
-    /// <inheritdoc />
-    [JsonIgnore]
-    public bool? Reuse { get; }
 
     /// <inheritdoc />
     [JsonIgnore]
@@ -77,14 +78,26 @@ namespace DotNet.Testcontainers.Configurations
     public IReadOnlyList<Action<TCreateResourceEntity>> ParameterModifiers { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
+    public bool? Reuse { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public ILogger Logger { get; }
+
+    /// <inheritdoc />
     public virtual string GetReuseHash()
     {
       var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
 
+#if NET6_0_OR_GREATER
+      return Convert.ToBase64String(SHA1.HashData(jsonUtf8Bytes));
+#else
       using (var sha1 = SHA1.Create())
       {
         return Convert.ToBase64String(sha1.ComputeHash(jsonUtf8Bytes));
       }
+#endif
     }
   }
 }

@@ -52,7 +52,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     public override MsSqlContainer Build()
     {
         Validate();
-        return new MsSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MsSqlContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

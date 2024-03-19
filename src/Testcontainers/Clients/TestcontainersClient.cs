@@ -291,7 +291,7 @@ namespace DotNet.Testcontainers.Clients
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
           .ConfigureAwait(false);
 
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, isWindowsEngineEnabled, ct)
+        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, configuration.Logger, isWindowsEngineEnabled, ct)
           .ConfigureAwait(false);
       }
 
@@ -339,7 +339,7 @@ namespace DotNet.Testcontainers.Clients
         var cachedImages = await Image.GetAllAsync(filters, ct)
           .ConfigureAwait(false);
 
-        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags));
+        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>()));
 
         var uncachedImages = baseImages.Where(baseImage => !repositoryTags.Contains(baseImage.FullName));
 

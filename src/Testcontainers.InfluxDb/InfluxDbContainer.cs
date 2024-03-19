@@ -8,9 +8,8 @@ public sealed class InfluxDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="InfluxDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public InfluxDbContainer(InfluxDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public InfluxDbContainer(InfluxDbConfiguration configuration)
+        : base(configuration)
     {
     }
 

@@ -62,7 +62,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     public override ArtemisContainer Build()
     {
         Validate();
-        return new ArtemisContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ArtemisContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

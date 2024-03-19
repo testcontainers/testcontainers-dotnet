@@ -8,9 +8,8 @@ public sealed class KustoContainer : DockerContainer
     /// Initializes a new instance of the <see cref="KustoContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public KustoContainer(KustoConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public KustoContainer(KustoConfiguration configuration)
+        : base(configuration)
     {
     }
 

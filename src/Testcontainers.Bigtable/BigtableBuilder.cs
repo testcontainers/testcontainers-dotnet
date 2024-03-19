@@ -34,7 +34,7 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     public override BigtableContainer Build()
     {
         Validate();
-        return new BigtableContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new BigtableContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

@@ -10,9 +10,8 @@ public sealed class RabbitMqContainer : DockerContainer
     /// Initializes a new instance of the <see cref="RabbitMqContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public RabbitMqContainer(RabbitMqConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public RabbitMqContainer(RabbitMqConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

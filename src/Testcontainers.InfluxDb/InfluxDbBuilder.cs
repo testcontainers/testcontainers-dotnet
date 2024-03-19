@@ -108,7 +108,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     public override InfluxDbContainer Build()
     {
         Validate();
-        return new InfluxDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new InfluxDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

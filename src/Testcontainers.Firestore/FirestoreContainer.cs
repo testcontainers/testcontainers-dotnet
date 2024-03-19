@@ -8,9 +8,8 @@ public sealed class FirestoreContainer : DockerContainer
     /// Initializes a new instance of the <see cref="FirestoreContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public FirestoreContainer(FirestoreConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public FirestoreContainer(FirestoreConfiguration configuration)
+        : base(configuration)
     {
     }
 

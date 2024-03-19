@@ -78,7 +78,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     public override FirebirdSqlContainer Build()
     {
         Validate();
-        return new FirebirdSqlContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new FirebirdSqlContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

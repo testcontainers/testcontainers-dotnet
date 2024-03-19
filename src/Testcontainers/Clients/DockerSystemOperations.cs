@@ -10,9 +10,8 @@ namespace DotNet.Testcontainers.Clients
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {
     public DockerSystemOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(sessionId, dockerEndpointAuthConfig)
+      : base(sessionId, dockerEndpointAuthConfig, logger)
     {
-      _ = logger;
     }
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
@@ -25,12 +24,12 @@ namespace DotNet.Testcontainers.Clients
 
     public Task<SystemInfoResponse> GetInfoAsync(CancellationToken ct = default)
     {
-      return Docker.System.GetSystemInfoAsync(ct);
+      return DockerClient.System.GetSystemInfoAsync(ct);
     }
 
     public Task<VersionResponse> GetVersionAsync(CancellationToken ct = default)
     {
-      return Docker.System.GetVersionAsync(ct);
+      return DockerClient.System.GetVersionAsync(ct);
     }
   }
 }

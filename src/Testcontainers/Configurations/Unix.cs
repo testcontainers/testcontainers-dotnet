@@ -64,6 +64,10 @@ namespace DotNet.Testcontainers.Configurations
       UnixFileModes.OtherWrite |
       UnixFileModes.OtherExecute;
 
+    static Unix()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Unix" /> class.
     /// </summary>

@@ -13,16 +13,15 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true
     },
-    "ghcr.io/devcontainers/features/dotnet:1": {
-      "version": "8.0.100",
+    "ghcr.io/devcontainers/features/dotnet:2.0.5": {
+      "version": "8.0.200",
       "installUsingApt": false
     }
   },
   "customizations": {
     "extensions": [
-      "formulahendry.dotnet-test-explorer",
       "ms-azuretools.vscode-docker",
-      "ms-dotnettools.csharp"
+      "ms-dotnettools.csdevkit"
     ],
     "settings": {
       "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.

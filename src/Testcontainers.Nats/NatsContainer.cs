@@ -10,9 +10,8 @@ public sealed class NatsContainer : DockerContainer
     /// Initializes a new instance of the <see cref="NatsContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public NatsContainer(NatsConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public NatsContainer(NatsConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

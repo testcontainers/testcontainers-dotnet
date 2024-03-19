@@ -10,9 +10,8 @@ public sealed class ElasticsearchContainer : DockerContainer
     /// Initializes a new instance of the <see cref="ElasticsearchContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ElasticsearchContainer(ElasticsearchConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ElasticsearchContainer(ElasticsearchConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

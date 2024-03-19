@@ -8,9 +8,8 @@ public sealed class FakeGcsServerContainer : DockerContainer
     /// Initializes a new instance of the <see cref="FakeGcsServerContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public FakeGcsServerContainer(FakeGcsServerConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public FakeGcsServerContainer(FakeGcsServerConfiguration configuration)
+        : base(configuration)
     {
     }
 

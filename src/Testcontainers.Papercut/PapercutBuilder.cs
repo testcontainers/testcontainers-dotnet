@@ -36,7 +36,7 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     public override PapercutContainer Build()
     {
         Validate();
-        return new PapercutContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new PapercutContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

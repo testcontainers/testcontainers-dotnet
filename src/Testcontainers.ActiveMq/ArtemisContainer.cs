@@ -10,9 +10,8 @@ public sealed class ArtemisContainer : DockerContainer
     /// Initializes a new instance of the <see cref="ArtemisContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ArtemisContainer(ActiveMqConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ArtemisContainer(ActiveMqConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }

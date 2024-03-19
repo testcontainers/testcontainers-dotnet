@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Builders
     public override IFutureDockerImage Build()
     {
       Validate();
-      return new FutureDockerImage(DockerResourceConfiguration, TestcontainersSettings.Logger);
+      return new FutureDockerImage(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

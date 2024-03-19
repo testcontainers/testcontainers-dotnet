@@ -69,7 +69,7 @@ namespace DotNet.Testcontainers.Builders
     public override INetwork Build()
     {
       Validate();
-      return new DockerNetwork(DockerResourceConfiguration, TestcontainersSettings.Logger);
+      return new DockerNetwork(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

@@ -60,7 +60,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     public override NatsContainer Build()
     {
         Validate();
-        return new NatsContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new NatsContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

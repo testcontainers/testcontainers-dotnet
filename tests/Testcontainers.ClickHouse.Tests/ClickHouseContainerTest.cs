@@ -39,7 +39,8 @@ public sealed class ClickHouseContainerTest : IAsyncLifetime
         var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 }

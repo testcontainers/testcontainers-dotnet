@@ -44,8 +44,9 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 
     [UsedImplicitly]

@@ -34,7 +34,7 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     public override PubSubContainer Build()
     {
         Validate();
-        return new PubSubContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new PubSubContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

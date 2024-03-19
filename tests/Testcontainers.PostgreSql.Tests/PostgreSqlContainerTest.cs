@@ -39,8 +39,9 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         var execResult = await _postgreSqlContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 
     public sealed class ReuseContainerTest : IClassFixture<SharedPostgreSqlInstance>, IDisposable

@@ -10,9 +10,8 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="MariaDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MariaDbContainer(MariaDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MariaDbContainer(MariaDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
@@ -45,7 +44,25 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mariadb", "--protocol=TCP", $"--port={MariaDbBuilder.MariaDbPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
+        return await ExecAsync(new[] { "mariadb", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Write an unobfuscated MariaDb configuration file that configures the client
+    /// login path. This prevents warnings in the <see cref="ExecScriptAsync" />
+    /// result about using a password on the command line.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the configuration file has been executed.</returns>
+    internal Task WriteConfigurationFileAsync(CancellationToken ct = default)
+    {
+        var config = new StringWriter();
+        config.NewLine = "\n";
+        config.WriteLine("[client]");
+        config.WriteLine("protocol=TCP");
+        config.WriteLine($"user={_configuration.Username}");
+        config.WriteLine($"password={_configuration.Password}");
+        return CopyAsync(Encoding.Default.GetBytes(config.ToString()), "/etc/mysql/my.cnf", UnixFileModes.UserRead | UnixFileModes.UserWrite, ct);
     }
 }

@@ -8,9 +8,8 @@ public sealed class KeycloakContainer : DockerContainer
     /// Initializes a new instance of the <see cref="KeycloakContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public KeycloakContainer(KeycloakConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public KeycloakContainer(KeycloakConfiguration configuration)
+        : base(configuration)
     {
     }
 

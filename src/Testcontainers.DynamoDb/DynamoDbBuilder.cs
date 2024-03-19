@@ -34,7 +34,7 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     public override DynamoDbContainer Build()
     {
         Validate();
-        return new DynamoDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new DynamoDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

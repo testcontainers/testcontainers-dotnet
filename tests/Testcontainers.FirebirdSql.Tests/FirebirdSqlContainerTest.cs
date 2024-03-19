@@ -44,7 +44,7 @@ public abstract class FirebirdSqlContainerTest : IAsyncLifetime
         var execResult = await _firebirdSqlContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }

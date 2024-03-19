@@ -44,8 +44,9 @@ public abstract class MariaDbContainerTest : IAsyncLifetime
         var execResult = await _mariaDbContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 
     [UsedImplicitly]

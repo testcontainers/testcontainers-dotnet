@@ -8,9 +8,8 @@ public sealed class PubSubContainer : DockerContainer
     /// Initializes a new instance of the <see cref="PubSubContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public PubSubContainer(PubSubConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public PubSubContainer(PubSubConfiguration configuration)
+        : base(configuration)
     {
     }
 

@@ -36,7 +36,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     public override K3sContainer Build()
     {
         Validate();
-        return new K3sContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new K3sContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

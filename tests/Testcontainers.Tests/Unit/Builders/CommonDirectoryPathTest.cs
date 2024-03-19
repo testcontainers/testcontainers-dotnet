@@ -1,21 +1,21 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
-  using System.Collections.Generic;
   using System.IO;
   using DotNet.Testcontainers.Builders;
   using Xunit;
 
   public sealed class CommonDirectoryPathTest
   {
-    public static IEnumerable<object[]> CommonDirectoryPaths { get; }
-      = new[]
-      {
-        new[] { (object)CommonDirectoryPath.GetBinDirectory() },
-        new[] { (object)CommonDirectoryPath.GetGitDirectory() },
-        new[] { (object)CommonDirectoryPath.GetProjectDirectory() },
-        new[] { (object)CommonDirectoryPath.GetSolutionDirectory() },
-        new[] { (object)CommonDirectoryPath.GetCallerFileDirectory() },
-      };
+    public static TheoryData<CommonDirectoryPath> CommonDirectoryPaths()
+    {
+      var theoryData = new TheoryData<CommonDirectoryPath>();
+      theoryData.Add(CommonDirectoryPath.GetBinDirectory());
+      theoryData.Add(CommonDirectoryPath.GetGitDirectory());
+      theoryData.Add(CommonDirectoryPath.GetProjectDirectory());
+      theoryData.Add(CommonDirectoryPath.GetSolutionDirectory());
+      theoryData.Add(CommonDirectoryPath.GetCallerFileDirectory());
+      return theoryData;
+    }
 
     [Theory]
     [MemberData(nameof(CommonDirectoryPaths))]

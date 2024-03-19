@@ -136,7 +136,7 @@ namespace DotNet.Testcontainers.Images
     public bool Accepts(string file)
     {
       var matches = _ignorePatterns.AsParallel().Where(ignorePattern => ignorePattern.Key.IsMatch(file)).ToArray();
-      return !matches.Any() || matches[matches.Length - 1].Value;
+      return matches.Length == 0 || matches[matches.Length - 1].Value;
     }
 
     /// <summary>

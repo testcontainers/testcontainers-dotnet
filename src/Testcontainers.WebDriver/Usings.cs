@@ -13,5 +13,4 @@ global using DotNet.Testcontainers.Containers;
 global using DotNet.Testcontainers.Images;
 global using DotNet.Testcontainers.Networks;
 global using JetBrains.Annotations;
-global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Logging.Abstractions;
