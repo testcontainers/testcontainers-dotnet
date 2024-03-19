@@ -1,7 +1,6 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -14,20 +13,20 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Collection(nameof(DockerImageNameSubstitutionTest))]
     public sealed class HubImageNamePrefixIsSet : IDisposable
     {
-      public static IEnumerable<object[]> Substitutions { get; }
-        = new[]
+      public static TheoryData<string, string, string> Substitutions { get; }
+        = new TheoryData<string, string, string>
         {
-          new[] { "my.proxy.com", "bar", "my.proxy.com/bar:latest" },
-          new[] { "my.proxy.com", "bar:latest", "my.proxy.com/bar:latest" },
-          new[] { "my.proxy.com", "bar:1.0.0", "my.proxy.com/bar:1.0.0" },
-          new[] { "my.proxy.com/my-path", "bar:1.0.0", "my.proxy.com/my-path/bar:1.0.0" },
-          new[] { "my.proxy.com:443", "bar:1.0.0", "my.proxy.com:443/bar:1.0.0" },
-          new[] { "my.proxy.com", "foo/bar:1.0.0", "my.proxy.com/foo/bar:1.0.0" },
-          new[] { "my.proxy.com/my-path", "foo/bar:1.0.0", "my.proxy.com/my-path/foo/bar:1.0.0" },
-          new[] { "my.proxy.com:443", "foo/bar:1.0.0", "my.proxy.com:443/foo/bar:1.0.0" },
-          new[] { "my.proxy.com:443/my-path", "foo/bar:1.0.0", "my.proxy.com:443/my-path/foo/bar:1.0.0" },
-          new[] { "my.proxy.com", "myregistry.azurecr.io/foo/bar:1.0.0", "myregistry.azurecr.io/foo/bar:1.0.0" },
-          new[] { "my.proxy.com", "myregistry.azurecr.io:443/foo/bar:1.0.0", "myregistry.azurecr.io:443/foo/bar:1.0.0" },
+          { "my.proxy.com", "bar", "my.proxy.com/bar:latest" },
+          { "my.proxy.com", "bar:latest", "my.proxy.com/bar:latest" },
+          { "my.proxy.com", "bar:1.0.0", "my.proxy.com/bar:1.0.0" },
+          { "my.proxy.com/my-path", "bar:1.0.0", "my.proxy.com/my-path/bar:1.0.0" },
+          { "my.proxy.com:443", "bar:1.0.0", "my.proxy.com:443/bar:1.0.0" },
+          { "my.proxy.com", "foo/bar:1.0.0", "my.proxy.com/foo/bar:1.0.0" },
+          { "my.proxy.com/my-path", "foo/bar:1.0.0", "my.proxy.com/my-path/foo/bar:1.0.0" },
+          { "my.proxy.com:443", "foo/bar:1.0.0", "my.proxy.com:443/foo/bar:1.0.0" },
+          { "my.proxy.com:443/my-path", "foo/bar:1.0.0", "my.proxy.com:443/my-path/foo/bar:1.0.0" },
+          { "my.proxy.com", "myregistry.azurecr.io/foo/bar:1.0.0", "myregistry.azurecr.io/foo/bar:1.0.0" },
+          { "my.proxy.com", "myregistry.azurecr.io:443/foo/bar:1.0.0", "myregistry.azurecr.io:443/foo/bar:1.0.0" },
         };
 
       [Theory]

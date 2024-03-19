@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers
       /// <returns>True if the argument has a value; otherwise, false.</returns>
       public bool HasValue()
       {
-        return Value != null;
+        return !Equals(default(TType), Value);
       }
     }
   }
