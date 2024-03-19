@@ -10,49 +10,96 @@ public sealed class PulsarContainer : DockerContainer
     /// Initializes a new instance of the <see cref="PulsarContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public PulsarContainer(PulsarConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public PulsarContainer(PulsarConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
 
     /// <summary>
-    /// Gets the Pulsar broker url.
+    /// Gets the Pulsar broker address.
     /// </summary>
-    /// <returns>The Pulsar broker url.</returns>
-    public string GetPulsarBrokerUrl() =>
-        new UriBuilder("pulsar://", Hostname, GetMappedPublicPort(PulsarBuilder.PulsarBrokerPort)).ToString();
-
-    /// <summary>
-    /// Gets the Pulsar service url.
-    /// </summary>
-    /// <returns>The Pulsar service url.</returns>
-    public string GetHttpServiceUrl() =>
-        new UriBuilder("http", Hostname, GetMappedPublicPort(PulsarBuilder.PulsarBrokerHttpPort)).ToString();
-
-    /// <summary>
-    /// Creates Authentication token
-    /// </summary>
-    /// <param name="expiryTime">Relative expiry time for the token (eg: 1h, 3d, 10y)</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>Authentication token</returns>
-    /// <exception cref="Exception"></exception>
-    public async Task<string> CreateToken(TimeSpan expiryTime, CancellationToken cancellationToken = default)
+    /// <returns>The Pulsar broker address.</returns>
+    public string GetBrokerAddress()
     {
-        if (_configuration.Authentication != PulsarBuilder.Enabled)
-            throw new Exception($"Could not create the token, because WithAuthentication is not used.");
+        return new UriBuilder("pulsar", Hostname, GetMappedPublicPort(PulsarBuilder.PulsarBrokerDataPort)).ToString();
+    }
 
-        var arguments = $"bin/pulsar tokens create --secret-key /pulsar/secret.key --subject test-user";
+    /// <summary>
+    /// Gets the Pulsar web service address.
+    /// </summary>
+    /// <returns>The Pulsar web service address.</returns>
+    public string GetServiceAddress()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(PulsarBuilder.PulsarWebServicePort)).ToString();
+    }
 
-        if (expiryTime != Timeout.InfiniteTimeSpan)
-            arguments += $" --expiry-time {expiryTime.TotalSeconds}s";
+    /// <summary>
+    /// Creates an authentication token.
+    /// </summary>
+    /// <param name="expire">The time after the authentication token expires.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the authentication token has been created.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public async Task<string> CreateAuthenticationTokenAsync(TimeSpan expire = default, CancellationToken ct = default)
+    {
+        if (_configuration.AuthenticationEnabled.HasValue && !_configuration.AuthenticationEnabled.Value)
+        {
+            throw new ArgumentException("Failed to create token. Authentication is not enabled.");
+        }
 
-        var result = await ExecAsync(new[] { "/bin/bash", "-c", arguments }, cancellationToken);
+        var command = new[]
+        {
+            "bin/pulsar",
+            "tokens",
+            "create",
+            "--secret-key",
+            PulsarBuilder.SecretKeyFilePath,
+            "--subject",
+            PulsarBuilder.Username,
+            "--expiry-time",
+            $"{expire.TotalSeconds}s",
+        };
 
-        if (result.ExitCode != 0)
-            throw new Exception($"Could not create the token: {result.Stderr}");
+        var tokensResult = await ExecAsync(command, ct)
+            .ConfigureAwait(false);
 
-        return result.Stdout;
+        if (tokensResult.ExitCode != 0)
+        {
+            throw new ArgumentException($"Failed to create token. Command returned a non-zero exit code: {tokensResult.Stderr}.");
+        }
+
+        return tokensResult.Stdout;
+    }
+
+    /// <summary>
+    /// Copies the Pulsar startup script to the container.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the startup script has been copied.</returns>
+    internal Task CopyStartupScriptAsync(CancellationToken ct = default)
+    {
+        var startupScript = new StringWriter();
+        startupScript.NewLine = "\n";
+        startupScript.WriteLine("#!/bin/bash");
+
+        if (_configuration.AuthenticationEnabled.HasValue && _configuration.AuthenticationEnabled.Value)
+        {
+            startupScript.WriteLine("bin/pulsar tokens create-secret-key --output " + PulsarBuilder.SecretKeyFilePath);
+            startupScript.WriteLine("export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)");
+            startupScript.WriteLine("export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters");
+            startupScript.WriteLine("bin/apply-config-from-env.py conf/standalone.conf");
+            startupScript.WriteLine("bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf");
+        }
+
+        startupScript.Write("bin/pulsar standalone");
+
+        if (_configuration.FunctionsWorkerEnabled.HasValue && !_configuration.FunctionsWorkerEnabled.Value)
+        {
+            startupScript.Write(" --no-functions-worker");
+            startupScript.Write(" --no-stream-storage");
+        }
+
+        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
     }
 }

@@ -4,28 +4,36 @@
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    private const string AuthenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
-    private const string SecretKeyPath = "/pulsar/secret.key";
-    private const string UserName = "test-user";
-    private const string PulsarImage = "apachepulsar/pulsar:3.0.2";
-    private const string AdminClustersEndpoint = "/admin/v2/clusters";
-    internal const string Enabled = "Enabled";
+    public const string PulsarImage = "apachepulsar/pulsar:3.0.3";
 
-    private Dictionary<string, string> _environmentVariables = new Dictionary<string, string>
+    public const ushort PulsarBrokerDataPort = 6650;
+
+    public const ushort PulsarWebServicePort = 8080;
+
+    public const string StartupScriptFilePath = "/testcontainers.sh";
+
+    public const string SecretKeyFilePath = "/pulsar/secret.key";
+
+    public const string Username = "test-user";
+
+    private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars;
+
+    static PulsarBuilder()
     {
-        { "PULSAR_PREFIX_tokenSecretKey", $"file://{SecretKeyPath}" },
-        { "PULSAR_PREFIX_authenticationRefreshCheckSeconds", "5" },
-        { "superUserRoles", UserName },
-        { "authenticationEnabled", "true" },
-        { "authorizationEnabled", "true" },
-        { "authenticationProviders", "org.apache.pulsar.broker.authentication.AuthenticationProviderToken" },
-        { "authenticateOriginalAuthData", "false" },
-        { "brokerClientAuthenticationPlugin", AuthenticationPlugin },
-        { "CLIENT_PREFIX_authPlugin", AuthenticationPlugin }
-    };
+        const string authenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
 
-    public const ushort PulsarBrokerPort = 6650;
-    public const ushort PulsarBrokerHttpPort = 8080;
+        var authenticationEnvVars = new Dictionary<string, string>();
+        authenticationEnvVars.Add("authenticateOriginalAuthData", "false");
+        authenticationEnvVars.Add("authenticationEnabled", "true");
+        authenticationEnvVars.Add("authorizationEnabled", "true");
+        authenticationEnvVars.Add("authenticationProviders", "org.apache.pulsar.broker.authentication.AuthenticationProviderToken");
+        authenticationEnvVars.Add("brokerClientAuthenticationPlugin", authenticationPlugin);
+        authenticationEnvVars.Add("CLIENT_PREFIX_authPlugin", authenticationPlugin);
+        authenticationEnvVars.Add("PULSAR_PREFIX_authenticationRefreshCheckSeconds", "5");
+        authenticationEnvVars.Add("PULSAR_PREFIX_tokenSecretKey", "file://" + SecretKeyFilePath);
+        authenticationEnvVars.Add("superUserRoles", Username);
+        AuthenticationEnvVars = new ReadOnlyDictionary<string, string>(authenticationEnvVars);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
@@ -49,25 +57,31 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <inheritdoc />
     protected override PulsarConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    public PulsarBuilder WithAuthentication()
+    {
+        return Merge(DockerResourceConfiguration, new PulsarConfiguration(authenticationEnabled: true))
+            .WithEnvironment(AuthenticationEnvVars);
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    public PulsarBuilder WithFunctionsWorker(bool functionsWorkerEnabled = true)
+    {
+        // TODO: When enabled we need to adjust the wait strategy.
+        return Merge(DockerResourceConfiguration, new PulsarConfiguration(functionsWorkerEnabled: functionsWorkerEnabled));
+    }
+
     /// <inheritdoc />
     public override PulsarContainer Build()
     {
         Validate();
-        var pulsarStartupCommands = String.Empty;
-        if (DockerResourceConfiguration.Authentication == Enabled)
-        {
-            pulsarStartupCommands = $"bin/pulsar tokens create-secret-key --output {SecretKeyPath} && " +
-                                    $"export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key {SecretKeyPath} --subject {UserName}) && " +
-                                    $"export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters && bin/apply-config-from-env.py conf/standalone.conf && " +
-                                    $"bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf && ";
-        }
-        pulsarStartupCommands += "bin/pulsar standalone";
-
-        if (DockerResourceConfiguration.Functions != Enabled)
-            pulsarStartupCommands += " --no-functions-worker";
-
-        var pulsarBuilder = WithCommand("/bin/bash", "-c",pulsarStartupCommands);
-        return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new PulsarContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -75,21 +89,13 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     {
         return base.Init()
             .WithImage(PulsarImage)
-            .WithPortBinding(PulsarBrokerPort, true)
-            .WithPortBinding(PulsarBrokerHttpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilCommandIsCompleted(["/bin/bash", "-c", "bin/pulsar-admin clusters list"]));
-    }
-
-    public PulsarBuilder WithTokenAuthentication()
-    {
-        return Merge(DockerResourceConfiguration, new PulsarConfiguration(authentication: Enabled))
-            .WithEnvironment(_environmentVariables);
-    }
-
-    public PulsarBuilder WithFunctions()
-    {
-        return Merge(DockerResourceConfiguration, new PulsarConfiguration(functions: Enabled));
+            .WithPortBinding(PulsarBrokerDataPort, true)
+            .WithPortBinding(PulsarWebServicePort, true)
+            .WithFunctionsWorker(false)
+            .WithEntrypoint("/bin/sh", "-c")
+            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("bin/pulsar-admin", "clusters", "list"))
+            .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
     }
 
     /// <inheritdoc />
