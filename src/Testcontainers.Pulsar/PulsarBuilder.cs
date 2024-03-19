@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Pulsar;
+namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]

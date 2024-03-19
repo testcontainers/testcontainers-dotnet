@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Pulsar;
+namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]

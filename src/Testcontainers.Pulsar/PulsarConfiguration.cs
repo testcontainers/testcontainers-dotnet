@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Pulsar;
+namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
@@ -60,12 +60,12 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public bool? AuthenticationEnabled { get; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public bool? FunctionsWorkerEnabled { get; }
 }
