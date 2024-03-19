@@ -16,7 +16,7 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>Changed configuration object. If there is no change, the previous configuration object.</returns>
     public static T Combine<T>(T oldValue, T newValue)
     {
-      return newValue == null ? oldValue : newValue;
+      return Equals(default(T), newValue) ? oldValue : newValue;
     }
 
     /// <summary>
