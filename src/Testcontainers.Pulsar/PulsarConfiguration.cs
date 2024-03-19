@@ -7,11 +7,14 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarConfiguration" /> class.
     /// </summary>
-    public PulsarConfiguration(string authentication = null, 
-                               string functions = null)
+    /// <param name="authenticationEnabled"></param>
+    /// <param name="functionsWorkerEnabled"></param>
+    public PulsarConfiguration(
+        bool? authenticationEnabled = null,
+        bool? functionsWorkerEnabled = null)
     {
-        Authentication = authentication;
-        Functions = functions;
+        AuthenticationEnabled = authenticationEnabled;
+        FunctionsWorkerEnabled = functionsWorkerEnabled;
     }
 
     /// <summary>
@@ -52,17 +55,17 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     public PulsarConfiguration(PulsarConfiguration oldValue, PulsarConfiguration newValue)
         : base(oldValue, newValue)
     {
-        Authentication = BuildConfiguration.Combine(oldValue.Authentication, newValue.Authentication);
-        Functions = BuildConfiguration.Combine(oldValue.Functions, newValue.Functions);
+        AuthenticationEnabled = (oldValue.AuthenticationEnabled.HasValue && oldValue.AuthenticationEnabled.Value) || (newValue.AuthenticationEnabled.HasValue && newValue.AuthenticationEnabled.Value);
+        FunctionsWorkerEnabled = (oldValue.FunctionsWorkerEnabled.HasValue && oldValue.FunctionsWorkerEnabled.Value) || (newValue.FunctionsWorkerEnabled.HasValue && newValue.FunctionsWorkerEnabled.Value);
     }
 
     /// <summary>
-    /// Gets authentication.
+    /// 
     /// </summary>
-    public string Authentication { get; }
-    
+    public bool? AuthenticationEnabled { get; }
+
     /// <summary>
-    /// Gets functions.
+    /// 
     /// </summary>
-    public string Functions { get; }
+    public bool? FunctionsWorkerEnabled { get; }
 }

@@ -1,73 +1,88 @@
 namespace Testcontainers.Pulsar;
 
-public sealed class PulsarContainerTest : IAsyncLifetime
+public abstract class PulsarContainerTest : IAsyncLifetime
 {
-  private readonly CancellationTokenSource _cts;
-  private readonly PulsarContainer _pulsarContainer;
-  private readonly ITestOutputHelper _testOutputHelper;
+    private readonly PulsarContainer _pulsarContainer;
 
-  public PulsarContainerTest(ITestOutputHelper testOutputHelper)
-  {
-    _testOutputHelper = testOutputHelper;
-    _pulsarContainer = new PulsarBuilder().Build();
-    _cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-  }
+    private PulsarContainerTest(PulsarContainer pulsarContainer)
+    {
+        _pulsarContainer = pulsarContainer;
+    }
 
-  public Task InitializeAsync()
-  {
-    return _pulsarContainer.StartAsync();
-  }
+    protected abstract Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default);
 
-  public Task DisposeAsync()
-  {
-    return _pulsarContainer.DisposeAsync().AsTask();
-  }
+    public Task InitializeAsync()
+    {
+        return _pulsarContainer.StartAsync();
+    }
 
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public async Task PulsarContainer_WhenBrokerIsStarted_ShouldConnect()
-  {
-    // Given
-    await using var client = CreateClient();
-    var expected = new List<MessageId> { MessageId.Earliest };
-    await using var reader = CreateReader(client, MessageId.Earliest, await CreateTopic(_cts.Token));
+    public Task DisposeAsync()
+    {
+        return _pulsarContainer.DisposeAsync().AsTask();
+    }
 
-    // When
-    var actual = await reader.GetLastMessageIds(_cts.Token);
+    [Fact]
+    public async Task ConsumerReceivesSendMessage()
+    {
+        // Given
+        const string helloPulsar = "Hello, Pulsar!";
 
-    // Then
-    Assert.Equal(expected,actual);
-  }
+        var topic = $"persistent://public/default/{Guid.NewGuid():D}";
 
-  private IReader<string> CreateReader(IPulsarClient pulsarClient, MessageId messageId, string topicName)
-    => pulsarClient.NewReader(Schema.String)
-      .StartMessageId(messageId)
-      .Topic(topicName)
-      .Create();
+        var name = Guid.NewGuid().ToString("D");
 
-  private static string CreateTopicName() => $"persistent://public/default/{Guid.NewGuid():N}";
+        await using var client = await CreateClientAsync()
+            .ConfigureAwait(true);
 
-  private async Task CreateTopic(string topic, CancellationToken cancellationToken)
-  {
-    var arguments = $"bin/pulsar-admin topics create {topic}";
+        await using var producer = client.NewProducer(Schema.String)
+            .Topic(topic)
+            .Create();
 
-    var result = await _pulsarContainer.ExecAsync(new[] { "/bin/bash", "-c", arguments }, cancellationToken);
+        await using var consumer = client.NewConsumer(Schema.String)
+            .Topic(topic)
+            .SubscriptionName(name)
+            .InitialPosition(SubscriptionInitialPosition.Earliest)
+            .Create();
 
-    if (result.ExitCode != 0)
-      throw new Exception($"Could not create the topic: {result.Stderr}");
-  }
+        // When
+        _ = await producer.Send(helloPulsar)
+            .ConfigureAwait(true);
 
-  private async Task<string> CreateTopic(CancellationToken cancellationToken)
-  {
-    var topic = CreateTopicName();
-    await CreateTopic(topic, cancellationToken);
-    return topic;
-  }
+        var message = await consumer.Receive()
+            .ConfigureAwait(true);
 
-  private IPulsarClient CreateClient()
-    => PulsarClient
-      .Builder()
-      .ExceptionHandler(context => _testOutputHelper.WriteLine($"PulsarClient got an exception: {context.Exception}"))
-      .ServiceUrl(new Uri(_pulsarContainer.GetPulsarBrokerUrl()))
-      .Build();
+        // Then
+        Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
+    }
+
+    [UsedImplicitly]
+    public sealed class PulsarDefaultConfiguration : PulsarContainerTest
+    {
+        public PulsarDefaultConfiguration()
+            : base(new PulsarBuilder().Build())
+        {
+        }
+
+        protected override Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
+        {
+            return Task.FromResult(PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Build());
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class PulsarAuthConfiguration : PulsarContainerTest
+    {
+        public PulsarAuthConfiguration()
+            : base(new PulsarBuilder().WithAuthentication().Build())
+        {
+        }
+
+        protected override async Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
+        {
+            var token = await _pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1), ct)
+                .ConfigureAwait(false);
+
+            return PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Authentication(new TokenAuthentication(token)).Build();
+        }
+    }
 }
