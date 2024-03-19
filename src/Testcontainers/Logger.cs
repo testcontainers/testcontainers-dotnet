@@ -61,6 +61,10 @@ namespace DotNet.Testcontainers
 
     private LogLevel _minLogLevel = LogLevel.Information;
 
+    static ConsoleLogger()
+    {
+    }
+
     private ConsoleLogger()
     {
       if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected && !Console.IsErrorRedirected)
