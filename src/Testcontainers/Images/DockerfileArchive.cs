@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Images
         throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
       }
 
-      if (!dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Any())
+      if (dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Length == 0)
       {
         throw new ArgumentException($"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'.");
       }

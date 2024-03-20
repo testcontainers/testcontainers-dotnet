@@ -16,8 +16,10 @@ public sealed class DatabaseContainersTest
         Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does implement the database interface.");
     }
 
-    public static IEnumerable<object[]> GetContainerImplementations(bool expectDataProvider)
+    public static TheoryData<Type> GetContainerImplementations(bool expectDataProvider)
     {
+        var theoryData = new TheoryData<Type>();
+
         var testAssemblies = Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
             .Select(Path.GetFullPath)
             .Select(Assembly.LoadFrom)
@@ -41,14 +43,16 @@ public sealed class DatabaseContainersTest
 
                 if (expectDataProvider && hasDataProvider)
                 {
-                    yield return new object[] { containerType };
+                    theoryData.Add(containerType);
                 }
 
                 if (!expectDataProvider && !hasDataProvider)
                 {
-                    yield return new object[] { containerType };
+                    theoryData.Add(containerType);
                 }
             }
         }
+
+        return theoryData;
     }
 }

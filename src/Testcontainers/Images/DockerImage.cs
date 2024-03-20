@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Images
 
     private static readonly char[] TrimChars = { ' ', ':', '/' };
 
+    private static readonly char[] HostnameIdentifierChars = { '.', ':' };
+
     private readonly string _hubImageNamePrefix;
 
     private readonly Lazy<string> _lazyFullName;
@@ -86,14 +88,7 @@ namespace DotNet.Testcontainers.Images
           .First()
           .Split('/')[0];
 
-        if (firstSegmentOfRepository.IndexOfAny(new[] { '.', ':' }) >= 0)
-        {
-          return firstSegmentOfRepository;
-        }
-        else
-        {
-          return null;
-        }
+        return firstSegmentOfRepository.IndexOfAny(HostnameIdentifierChars) >= 0 ? firstSegmentOfRepository : null;
       });
     }
 
