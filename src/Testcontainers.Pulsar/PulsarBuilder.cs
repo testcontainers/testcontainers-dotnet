@@ -81,7 +81,26 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     public override PulsarContainer Build()
     {
         Validate();
-        return new PulsarContainer(DockerResourceConfiguration);
+        
+        var waitStrategy = Wait.ForUnixContainer();
+
+        waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
+            => request
+                .ForPath("/admin/v2/clusters")
+                .ForPort(PulsarWebServicePort)
+                .ForResponseMessageMatching(VerifyPulsarStatusAsync));
+ 
+        //To Do How do I access PulsarContainer.CreateAuthenticationTokenAsync so i can get the auth token?
+        // waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
+        //     => request
+        //         .ForPath("/admin/v2/clusters")
+        //         .ForPort(PulsarWebServicePort)
+        //         .ForResponseMessageMatching(VerifyPulsarStatusAsync)
+        //         .WithHeader("Authorization", ));
+        
+        var pulsarBuilder = WithWaitStrategy(waitStrategy);
+        
+        return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -94,10 +113,9 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithFunctionsWorker(false)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("bin/pulsar-admin", "clusters", "list"))
             .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
     }
-
+    
     /// <inheritdoc />
     protected override PulsarBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
@@ -114,5 +132,11 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Merge(PulsarConfiguration oldValue, PulsarConfiguration newValue)
     {
         return new PulsarBuilder(new PulsarConfiguration(oldValue, newValue));
+    }
+    
+    private async Task<bool> VerifyPulsarStatusAsync(System.Net.Http.HttpResponseMessage response)
+    {
+        var readAsStringAsync = await response.Content.ReadAsStringAsync();
+        return readAsStringAsync == "[\"standalone\"]";
     }
 }
