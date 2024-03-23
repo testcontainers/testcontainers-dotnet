@@ -49,6 +49,20 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
+    /// Creates an empty <c>/var/lib/mysql-files</c> directory.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <remarks>
+    /// This directory does not exist in the mysql 8.0.28 and earlier
+    /// Docker images and is required for the container to start properly.
+    /// </remarks>
+    /// <returns>Task that completes when the directory has been created.</returns>
+    internal Task CreateMySqlFilesDirectory(CancellationToken ct = default)
+    {
+        return ExecAsync(new[] { "mkdir", "/var/lib/mysql-files" }, ct);
+    }
+
+    /// <summary>
     /// Write an unobfuscated MySql configuration file that configures the client
     /// login path. This prevents warnings in the <see cref="ExecScriptAsync" />
     /// result about using a password on the command line.

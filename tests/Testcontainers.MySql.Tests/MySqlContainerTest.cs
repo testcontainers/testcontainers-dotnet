@@ -59,6 +59,16 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    public sealed class MySqlOldConfiguration : MySqlContainerTest
+    {
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1142
+        public MySqlOldConfiguration()
+            : base(new MySqlBuilder().WithImage("mysql:8.0.28").Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
     public sealed class MySqlRootConfiguration : MySqlContainerTest
     {
         public MySqlRootConfiguration()
