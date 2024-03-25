@@ -59,20 +59,20 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class MySqlOldConfiguration : MySqlContainerTest
+    public sealed class MySqlRootConfiguration : MySqlContainerTest
     {
-        // https://github.com/testcontainers/testcontainers-dotnet/issues/1142
-        public MySqlOldConfiguration()
-            : base(new MySqlBuilder().WithImage("mysql:8.0.28").Build())
+        public MySqlRootConfiguration()
+            : base(new MySqlBuilder().WithUsername("root").Build())
         {
         }
     }
 
     [UsedImplicitly]
-    public sealed class MySqlRootConfiguration : MySqlContainerTest
+    public sealed class GitHubIssue1142 : MySqlContainerTest
     {
-        public MySqlRootConfiguration()
-            : base(new MySqlBuilder().WithUsername("root").Build())
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
+        public GitHubIssue1142()
+            : base(new MySqlBuilder().WithImage("mysql:8.0.28").Build())
         {
         }
     }

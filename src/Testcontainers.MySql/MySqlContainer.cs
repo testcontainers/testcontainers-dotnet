@@ -51,13 +51,13 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     /// <summary>
     /// Creates an empty <c>/var/lib/mysql-files</c> directory.
     /// </summary>
-    /// <param name="ct">Cancellation token.</param>
     /// <remarks>
-    /// This directory does not exist in the mysql 8.0.28 and earlier
-    /// Docker images and is required for the container to start properly.
+    /// The directory does not exist in the MySql 8.0.28 and earlier Docker images, and
+    /// it is required for the module to start properly.
     /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the directory has been created.</returns>
-    internal Task CreateMySqlFilesDirectory(CancellationToken ct = default)
+    internal Task CreateMySqlFilesDirectoryAsync(CancellationToken ct = default)
     {
         return ExecAsync(new[] { "mkdir", "/var/lib/mysql-files" }, ct);
     }
