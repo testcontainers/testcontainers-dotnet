@@ -90,7 +90,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithStartupCallback((container, ct) => container.WriteConfigurationFileAsync(ct));
+            .WithStartupCallback((container, ct) => Task.WhenAll(container.CreateMySqlFilesDirectoryAsync(ct), container.WriteConfigurationFileAsync(ct)));
     }
 
     /// <inheritdoc />
