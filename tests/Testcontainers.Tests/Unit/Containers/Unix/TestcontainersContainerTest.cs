@@ -525,6 +525,19 @@ namespace DotNet.Testcontainers.Tests.Unit
         await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync())
           .ConfigureAwait(true);
       }
+
+      [Fact]
+      [UseWaitTimeout(seconds: 1)]
+      public async Task WaitStrategyTimeout()
+      {
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntilFiveSecondsPassedFixture()))
+          .Build();
+
+        var exception = await Assert.ThrowsAsync<TimeoutException>(() => container.StartAsync());
+        Assert.Equal("The alpine:3.17 container failed to complete readiness checks after waiting for 0.02 minutes (configurable with TestcontainersSettings.WaitTimeout).", exception.Message);
+      }
     }
   }
 }
