@@ -38,18 +38,6 @@ namespace DotNet.Testcontainers.Containers
       _configuration = configuration;
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerContainer" /> class.
-    /// </summary>
-    /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    [Obsolete("Use the constructor DockerContainer(IContainerConfiguration) instead.")]
-    public DockerContainer(IContainerConfiguration configuration, ILogger logger)
-    {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
-      _configuration = configuration;
-    }
-
     /// <inheritdoc />
     public event EventHandler Creating;
 

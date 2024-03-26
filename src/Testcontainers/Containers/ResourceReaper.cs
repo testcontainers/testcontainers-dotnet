@@ -100,20 +100,6 @@ namespace DotNet.Testcontainers.Containers
     /// Starts and returns the default <see cref="ResourceReaper" /> instance.
     /// </summary>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
-    /// <param name="isWindowsEngineEnabled">Determines whether the Windows engine is enabled or not.</param>
-    /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
-    /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
-    [PublicAPI]
-    [Obsolete("Use GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken) instead.")]
-    public static Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
-    {
-      return GetAndStartDefaultAsync(dockerEndpointAuthConfig, ConsoleLogger.Instance, isWindowsEngineEnabled, ct);
-    }
-
-    /// <summary>
-    /// Starts and returns the default <see cref="ResourceReaper" /> instance.
-    /// </summary>
-    /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="isWindowsEngineEnabled">Determines whether the Windows engine is enabled or not.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>

@@ -10,7 +10,6 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// This class represents the Testcontainers settings.
@@ -18,8 +17,6 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(true);
-
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
       = new IDockerEndpointAuthenticationProvider[]
@@ -104,27 +101,11 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
-    /// Gets or sets the logger.
-    /// </summary>
-    [NotNull]
-    [Obsolete("Use the builder API WithLogger(ILogger) instead.")]
-    public static ILogger Logger { get; set; }
-      = ConsoleLogger.Instance;
-
-    /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
       = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
-
-    /// <summary>
-    /// Gets the wait handle that signals settings initialized.
-    /// </summary>
-    [NotNull]
-    [Obsolete("This property is no longer supported.")]
-    public static WaitHandle SettingsInitialized
-      => ManualResetEvent.WaitHandle;
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
