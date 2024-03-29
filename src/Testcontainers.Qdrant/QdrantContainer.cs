@@ -6,7 +6,7 @@ public class QdrantContainer : DockerContainer
 {
 	private readonly QdrantConfiguration _configuration;
 
-	public QdrantContainer(QdrantConfiguration configuration, ILogger logger) : base(configuration, logger)
+	public QdrantContainer(QdrantConfiguration configuration) : base(configuration)
 	{
 		_configuration = configuration;
 	}

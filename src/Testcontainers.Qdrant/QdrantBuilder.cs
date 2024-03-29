@@ -1,21 +1,14 @@
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Security;
-
 namespace Testcontainers.Qdrant;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
-	public const string QdrantImage = "qdrant/qdrant:v1.5.0";
+	public const string QdrantImage = "qdrant/qdrant:v1.8.3";
 
 	public const ushort QdrantHttpPort = 6333;
 
 	public const ushort QdrantGrpcPort = 6334;
-
-	public const string QdrantLocalConfigurationFilePath = "/qdrant/config/local.yaml";
 	
 	public const string QdrantTlsCertFilePath = "/qdrant/tls/cert.pem";
 	
@@ -26,53 +19,28 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
 
 	private QdrantBuilder(QdrantConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration) =>
 		DockerResourceConfiguration = dockerResourceConfiguration;
-
+	
 	/// <summary>
-	/// A path to a configuration file with which configure the instance.
-	/// </summary>
-	/// <param name="configurationFilePath">The path to the configuration file</param>
-	public QdrantBuilder WithConfigFile(string configurationFilePath) =>
-		Merge(DockerResourceConfiguration, new QdrantConfiguration(configurationFilePath: configurationFilePath))
-			.WithBindMount(configurationFilePath, QdrantLocalConfigurationFilePath);
-    
-	/// <summary>
-	/// The API key used to secure the instance. A certificate should also be provided to <see cref="WithCertificate"/>
-	/// to enable TLS
+	/// The API key used to secure the instance. A certificate and private key should also be
+	/// provided to <see cref="WithCertificate"/> to enable Transport Layer Security (TLS).
 	/// </summary>
 	/// <param name="apiKey">The API key</param>
 	public QdrantBuilder WithApiKey(string apiKey) =>
 		Merge(DockerResourceConfiguration, new QdrantConfiguration(apiKey: apiKey))
 			.WithEnvironment("QDRANT__SERVICE__API_KEY", apiKey);
-	
+
 	/// <summary>
-	/// A certificate to use to enable Transport Layer Security (TLS). The certificate must contain the
-	/// private key.
+	/// A certificate and private key to enable Transport Layer Security (TLS).
 	/// </summary>
-	/// <param name="certificate">A certificate containing a private key</param>
-	public QdrantBuilder WithCertificate(X509Certificate2 certificate)
+	/// <param name="certificate">A public certificate in PEM format</param>
+	/// <param name="privateKey">A private key for the certificate in PEM format</param>
+	public QdrantBuilder WithCertificate(string certificate, string privateKey)
 	{
-		if (!certificate.HasPrivateKey)
-		{
-			throw new ArgumentException("certificate must contain a private key", nameof(certificate));
-		}
-		
-		var builder = new StringBuilder();
-		builder.AppendLine("-----BEGIN CERTIFICATE-----");
-		builder.AppendLine(Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
-		builder.AppendLine("-----END CERTIFICATE-----");
-		var cert = builder.ToString();
-		builder.Clear();
-		
-		var keyPair = DotNetUtilities.GetKeyPair(certificate.PrivateKey);
-		var pemWriter = new PemWriter(new StringWriter(builder));
-		pemWriter.WriteObject(keyPair.Private);
-		var key = builder.ToString();
-        
-		return Merge(DockerResourceConfiguration, new QdrantConfiguration(certificate: certificate))
+		return Merge(DockerResourceConfiguration, new QdrantConfiguration(certificate: certificate, privateKey: privateKey))
 			.WithEnvironment("QDRANT__SERVICE__ENABLE_TLS", "1")
-			.WithResourceMapping(Encoding.UTF8.GetBytes(cert), QdrantTlsCertFilePath)
+			.WithResourceMapping(Encoding.UTF8.GetBytes(certificate), QdrantTlsCertFilePath)
 			.WithEnvironment("QDRANT__TLS__CERT", QdrantTlsCertFilePath)
-			.WithResourceMapping(Encoding.UTF8.GetBytes(key), QdrantTlsKeyFilePath)
+			.WithResourceMapping(Encoding.UTF8.GetBytes(privateKey), QdrantTlsKeyFilePath)
 			.WithEnvironment("QDRANT__TLS__KEY", QdrantTlsKeyFilePath);
 	}
     
@@ -80,7 +48,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
 	public override QdrantContainer Build()
 	{
 		Validate();
-		return new QdrantContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+		return new QdrantContainer(DockerResourceConfiguration);
 	}
 
 	/// <inheritdoc />

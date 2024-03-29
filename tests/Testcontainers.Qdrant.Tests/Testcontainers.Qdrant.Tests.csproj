@@ -1,14 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net6.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1"/>
-        <PackageReference Include="coverlet.collector" Version="3.2.0"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
-        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7"/>
+        <PackageReference Include="xunit" Version="2.7.0"/>
+        <PackageReference Include="BouncyCastle.Cryptography" />
+        <PackageReference Include="Qdrant.Client" Version="1.8.0"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)src/Testcontainers.Qdrant/Testcontainers.Qdrant.csproj"/>

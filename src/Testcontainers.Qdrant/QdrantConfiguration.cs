@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+using static DotNet.Testcontainers.Builders.BuildConfiguration;
 
 namespace Testcontainers.Qdrant;
 
@@ -9,11 +9,11 @@ public sealed class QdrantConfiguration : ContainerConfiguration
 	/// <summary>
 	/// Initializes a new instance of the <see cref="QdrantConfiguration" /> class.
 	/// </summary>
-	public QdrantConfiguration(string apiKey = null, X509Certificate2 certificate = null, string configurationFilePath = null)
+	public QdrantConfiguration(string apiKey = null, string certificate = null, string privateKey = null)
 	{
 		ApiKey = apiKey;
 		Certificate = certificate;
-		ConfigurationFilePath = configurationFilePath;
+		PrivateKey = privateKey;
 	}
 
 	/// <summary>
@@ -51,9 +51,9 @@ public sealed class QdrantConfiguration : ContainerConfiguration
 	public QdrantConfiguration(QdrantConfiguration oldValue, QdrantConfiguration newValue)
 		: base(oldValue, newValue)
 	{
-		ApiKey = BuildConfiguration.Combine(oldValue.ApiKey, newValue.ApiKey);
-		Certificate = BuildConfiguration.Combine(oldValue.Certificate, newValue.Certificate);
-		ConfigurationFilePath = BuildConfiguration.Combine(oldValue.ConfigurationFilePath, newValue.ConfigurationFilePath);
+		ApiKey = Combine(oldValue.ApiKey, newValue.ApiKey);
+		Certificate = Combine(oldValue.Certificate, newValue.Certificate);
+		PrivateKey = Combine(oldValue.PrivateKey, newValue.PrivateKey);
 	}
 	
 	/// <summary>
@@ -64,10 +64,10 @@ public sealed class QdrantConfiguration : ContainerConfiguration
 	/// <summary>
 	/// Gets the certificate used to configure Transport Layer Security
 	/// </summary>
-	public X509Certificate2 Certificate { get; }
+	public string Certificate { get; }
 
 	/// <summary>
-	/// Gets the path to the configuration file used to configure Qdrant
+	/// Gets the private key used to configure Transport Layer Security
 	/// </summary>
-	public string ConfigurationFilePath { get; }
+	public string PrivateKey { get; }
 }

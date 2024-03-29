@@ -17,7 +17,9 @@ namespace Testcontainers.Qdrant;
 
 public static class X509CertificateGenerator
 {
-    public static X509Certificate2 GenerateCert(string subjectName)
+    public record PemCertificate(string Certificate, string PrivateKey);
+    
+    public static PemCertificate Generate(string subjectName)
     {
         var randomGenerator = new CryptoApiRandomGenerator();
         var random = new SecureRandom(randomGenerator);
@@ -55,13 +57,12 @@ public static class X509CertificateGenerator
         using var pemWriter = new PemWriter(writer);
         
         pemWriter.WriteObject(certificate);
-        var pemCert = builder.ToString();
+        var cert = builder.ToString();
         builder.Clear();
 	
         pemWriter.WriteObject(privateKeyInfo);
-        var pemKey = builder.ToString();
-	
-        return X509Certificate2.CreateFromPem(pemCert, pemKey);
+        var privateKey = builder.ToString();
+        return new PemCertificate(cert, privateKey);
     }
 }
     

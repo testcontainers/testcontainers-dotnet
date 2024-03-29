@@ -1,4 +1,5 @@
 using System.Net.Http;
+using Qdrant.Client;
 
 namespace Testcontainers.Qdrant;
 
@@ -27,5 +28,16 @@ public sealed class QdrantContainerTest : IAsyncLifetime
 
         var response = await client.GetAsync("/");
         Assert.True(response.IsSuccessStatusCode);
+    }
+    
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ListCollectionsReturnsValidResponse()
+    {
+        var uri = new Uri(_qdrantContainer.GetGrpcConnectionString());
+        var client = new QdrantClient(uri.Host, uri.Port);
+
+        var response = await client.ListCollectionsAsync();
+        Assert.Empty(response);
     }
 }
