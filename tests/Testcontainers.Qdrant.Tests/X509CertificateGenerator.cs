@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
@@ -65,5 +64,3 @@ public static class X509CertificateGenerator
         return new PemCertificate(cert, privateKey);
     }
 }
-    
-    
