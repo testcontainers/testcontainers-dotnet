@@ -44,7 +44,7 @@
      public override GitlabContainer Build()
      {
          Validate();
-         return new GitlabContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+         return new GitlabContainer(DockerResourceConfiguration);
      }
 
      /// <inheritdoc />

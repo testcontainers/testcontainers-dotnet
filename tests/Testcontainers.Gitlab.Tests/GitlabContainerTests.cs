@@ -19,11 +19,25 @@ public sealed class GitlabContainerTest : IAsyncLifetime
         return _gitlabContainer.DisposeAsync().AsTask();
     }
 
+    // [Fact]
+    // [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    // public async Task ConnectionStateReturnsOpen()
+    // {
+    //     var pat = await _gitlabContainer.GenerateAccessToken("root",PersonalAccessTokenScopes.api);
+    //     Assert.True(!string.IsNullOrEmpty(pat.Token));
+    // }
+    
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ConnectionStateReturnsOpen()
+    public async Task GetUser()
     {
         var pat = await _gitlabContainer.GenerateAccessToken("root",PersonalAccessTokenScopes.api);
-        Assert.True(!string.IsNullOrEmpty(pat.Token));
+
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("PRIVATE-TOKEN", pat.Token);
+        var port = _gitlabContainer.GetMappedPublicPort(80);
+        var result = await client.GetAsync($"http://localhost:{port}/api/v4/user");
+
+        Assert.True(result.IsSuccessStatusCode);
     }
 }

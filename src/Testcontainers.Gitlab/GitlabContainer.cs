@@ -8,9 +8,8 @@ namespace Testcontainers.Gitlab;
 /// Initializes a new instance of the <see cref="GitlabContainer" /> class.
 /// </summary>
 /// <param name="configuration">The container configuration.</param>
-/// <param name="logger">The logger.</param>
 [PublicAPI]
-public sealed class GitlabContainer(GitlabConfiguration configuration, ILogger logger) : DockerContainer(configuration, logger)
+public sealed class GitlabContainer(GitlabConfiguration configuration) : DockerContainer(configuration)
 {
     /// <summary>
     /// The password for the root user
