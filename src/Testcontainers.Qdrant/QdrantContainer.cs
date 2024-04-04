@@ -11,6 +11,9 @@ public class QdrantContainer : DockerContainer
 		_configuration = configuration;
 	}
     
+	/// <summary>
+	/// Gets the connection string for connecting to Qdrant REST APIs
+	/// </summary>
 	public string GetHttpConnectionString()
 	{
 		var scheme = _configuration.Certificate != null ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
@@ -18,6 +21,9 @@ public class QdrantContainer : DockerContainer
 		return endpoint.ToString();
 	}
 	
+	/// <summary>
+	/// Gets the connection string for connecting to Qdrant gRPC APIs
+	/// </summary>
 	public string GetGrpcConnectionString()
 	{
 		var scheme = _configuration.Certificate != null ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;

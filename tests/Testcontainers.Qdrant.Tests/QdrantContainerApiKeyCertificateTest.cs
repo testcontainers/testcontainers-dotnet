@@ -1,24 +1,16 @@
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Grpc.Core;
-using Grpc.Core.Interceptors;
-using Grpc.Net.Client;
-using Qdrant.Client;
-using Qdrant.Client.Grpc;
-using static Testcontainers.Qdrant.X509CertificateGenerator;
-using Uri = System.Uri;
-
 namespace Testcontainers.Qdrant;
 
 public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
 {
-    private static readonly PemCertificate Cert = Generate("CN=Testcontainers");
+    private const string Host = "Testcontainers";
+    private const string ApiKey = "password!";
+    
+    private static readonly X509CertificateGenerator.PemCertificate Cert = 
+        X509CertificateGenerator.Generate($"CN={Host}");
     private static readonly string Thumbprint =
         X509Certificate2.CreateFromPem(Cert.Certificate, Cert.PrivateKey)
             .GetCertHashString(HashAlgorithmName.SHA256);
-    private const string ApiKey = "password!";
-
+    
     private readonly QdrantContainer _qdrantContainer = new QdrantBuilder()
         .WithApiKey(ApiKey)
         .WithCertificate(Cert.Certificate, Cert.PrivateKey)
@@ -50,7 +42,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
             {
                 HttpClient = new HttpClient(httpMessageHandler)
                 {
-                    DefaultRequestHeaders = { Host = "Testcontainers" },
+                    DefaultRequestHeaders = { Host = Host },
                 },
             });
         var callInvoker = channel.Intercept(metadata =>
@@ -82,7 +74,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
             {
                 HttpClient = new HttpClient(httpMessageHandler)
                 {
-                    DefaultRequestHeaders = { Host = "Testcontainers" },
+                    DefaultRequestHeaders = { Host = Host },
                 },
             });
 
@@ -102,13 +94,12 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var client = new HttpClient
         {
             BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString()),
-            DefaultRequestHeaders = { Host = "Testcontainers" },
+            DefaultRequestHeaders = { Host = Host },
         };
         
         client.DefaultRequestHeaders.Add("api-key", ApiKey);
         
         // The SSL connection could not be established
-        await Assert.ThrowsAsync<HttpRequestException>(() => 
-            client.GetAsync("/collections"));
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetAsync("/collections"));
     }
 }

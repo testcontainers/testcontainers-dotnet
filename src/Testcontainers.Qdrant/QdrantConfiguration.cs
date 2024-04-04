@@ -57,17 +57,17 @@ public sealed class QdrantConfiguration : ContainerConfiguration
 	}
 	
 	/// <summary>
-	/// Gets the API key used to secure Qdrant
+	/// Gets the API key used to secure Qdrant.
 	/// </summary>
 	public string ApiKey { get; }
 	
 	/// <summary>
-	/// Gets the certificate used to configure Transport Layer Security
+	/// Gets the certificate used to configure Transport Layer Security. Certificate must be in PEM format.
 	/// </summary>
 	public string Certificate { get; }
 
 	/// <summary>
-	/// Gets the private key used to configure Transport Layer Security
+	/// Gets the private key used to configure Transport Layer Security. Private key must be in PEM format.
 	/// </summary>
 	public string PrivateKey { get; }
 }

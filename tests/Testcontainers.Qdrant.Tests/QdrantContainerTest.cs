@@ -1,6 +1,3 @@
-using System.Net.Http;
-using Qdrant.Client;
-
 namespace Testcontainers.Qdrant;
 
 public sealed class QdrantContainerTest : IAsyncLifetime
