@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Net.Http;
+
 namespace Testcontainers.Qdrant;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -48,7 +51,26 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
 	public override QdrantContainer Build()
 	{
 		Validate();
-		return new QdrantContainer(DockerResourceConfiguration);
+
+		var waitStrategy = Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+		{
+			var httpWaitStrategy = request.ForPort(QdrantHttpPort).ForPath("/readyz");
+			
+			// allow any certificate defined to pass validation
+			if (DockerResourceConfiguration.Certificate is not null)
+			{
+				httpWaitStrategy.UsingTls()
+					.UsingHttpMessageHandler(new HttpClientHandler
+					{
+						ServerCertificateCustomValidationCallback = (_, _, _, _) => true 
+					});
+			}
+
+			return httpWaitStrategy;
+		});
+		
+		var qdrantBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+		return new QdrantContainer(qdrantBuilder.DockerResourceConfiguration);
 	}
 
 	/// <inheritdoc />
@@ -56,9 +78,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
 		base.Init()
 			.WithImage(QdrantImage)
 			.WithPortBinding(QdrantHttpPort, true)
-			.WithPortBinding(QdrantGrpcPort, true)
-			.WithWaitStrategy(Wait.ForUnixContainer()
-				.UntilMessageIsLogged(".*Actix runtime found; starting in Actix runtime.*"));
+			.WithPortBinding(QdrantGrpcPort, true);
 
 	/// <inheritdoc />
 	protected override QdrantBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration) =>
