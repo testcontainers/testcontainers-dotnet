@@ -55,6 +55,18 @@ _ = new ContainerBuilder()
   .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
 ```
 
+## Reading files from the container
+
+The `IContainer` interface offers a `ReadFileAsync(string, CancellationToken)` method to read files from the container. The implementation returns the read bytes. Either process the read bytes in-memory or persist them to the disk.
+
+```csharp title="Reading a file"
+var readBytes = await container.ReadFileAsync("/app/appsettings.json")
+  .ConfigureAwait(false);
+
+await File.WriteAllBytesAsync("appsettings.json", readBytes)
+  .ConfigureAwait(false);
+```
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
