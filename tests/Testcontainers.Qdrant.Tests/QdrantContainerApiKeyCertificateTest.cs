@@ -4,13 +4,8 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
 {
     private const string Host = "Testcontainers";
     private const string ApiKey = "password!";
-    
-    private static readonly X509CertificateGenerator.PemCertificate Cert = 
-        X509CertificateGenerator.Generate($"CN={Host}");
-    private static readonly string Thumbprint =
-        X509Certificate2.CreateFromPem(Cert.Certificate, Cert.PrivateKey)
-            .GetCertHashString(HashAlgorithmName.SHA256);
-    
+    private static readonly PemCertificate Cert = PemCertificate.Create(Host);
+
     private readonly QdrantContainer _qdrantContainer = new QdrantBuilder()
         .WithApiKey(ApiKey)
         .WithCertificate(Cert.Certificate, Cert.PrivateKey)
@@ -33,7 +28,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var httpMessageHandler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = 
-                CertificateValidation.Thumbprint(Thumbprint),
+                CertificateValidation.Thumbprint(Cert.Thumbprint),
         };
 
         var channel = GrpcChannel.ForAddress(
@@ -65,7 +60,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var httpMessageHandler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = 
-                CertificateValidation.Thumbprint(Thumbprint)
+                CertificateValidation.Thumbprint(Cert.Thumbprint)
         };
 
         var channel = GrpcChannel.ForAddress(

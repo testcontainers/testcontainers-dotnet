@@ -9,7 +9,6 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="BouncyCastle.Cryptography" />
         <PackageReference Include="Qdrant.Client"/>
     </ItemGroup>
     <ItemGroup>
