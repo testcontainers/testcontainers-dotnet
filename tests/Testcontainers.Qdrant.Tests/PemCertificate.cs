@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Qdrant;
+namespace Testcontainers.Qdrant;
 
 public record PemCertificate(string Certificate, string PrivateKey, string Thumbprint)
 {
