@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,6 +19,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     public const string Username = "test-user";
 
     private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars;
+    
+    private static readonly ISet<PulsarService> EnabledServices = new HashSet<PulsarService>();
 
     static PulsarBuilder()
     {
@@ -58,22 +62,27 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    ///
+    /// Enables authentication in the Pulsar container.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="PulsarBuilder"/> instance.</returns>
     public PulsarBuilder WithAuthentication()
     {
+        EnabledServices.Add(PulsarService.Authentication);
+        
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(authenticationEnabled: true))
             .WithEnvironment(AuthenticationEnvVars);
     }
 
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="WithFunctionsWorkerWorker" /> class.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="functionsWorkerEnabled">Determines if the functions worker is enabled.</param>
+    /// <returns>A new instance of the <see cref="PulsarBuilder" /> class.</returns>
     public PulsarBuilder WithFunctionsWorker(bool functionsWorkerEnabled = true)
     {
-        // TODO: When enabled we need to adjust the wait strategy.
+        if (functionsWorkerEnabled)
+            EnabledServices.Add(PulsarService.FunctionWorker);
+        
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(functionsWorkerEnabled: functionsWorkerEnabled));
     }
 
@@ -84,18 +93,25 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         
         var waitStrategy = Wait.ForUnixContainer();
 
-        //TODO We need to switch between the default and custom WaitStrategy depending on if the user used WithAuthentication.
-        //Would you prefer we handled it in a similar to Couchbase?
-        waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-            => request
-                .ForPath("/admin/v2/clusters")
-                .ForPort(PulsarWebServicePort)
-                .ForResponseMessageMatching(VerifyPulsarStatusAsync));
+        if (EnabledServices.Contains(PulsarService.Authentication))
+        {
+            waitStrategy.AddCustomWaitStrategy(new WaitUntil());
+        }
+        else
+        {
+            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
+                => request
+                    .ForPath("/admin/v2/clusters")
+                    .ForPort(PulsarWebServicePort)
+                    .ForResponseMessageMatching(VerifyPulsarStatusAsync));
+        }
         
-        waitStrategy.AddCustomWaitStrategy(new WaitUntil());
+        if (EnabledServices.Contains(PulsarService.FunctionWorker))
+        {
+            waitStrategy.UntilMessageIsLogged(".*Function worker service started.*");
+        }
         
-        var pulsarBuilder = WithWaitStrategy(waitStrategy);
-        
+        var pulsarBuilder =  WithWaitStrategy(waitStrategy);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);
     }
 
