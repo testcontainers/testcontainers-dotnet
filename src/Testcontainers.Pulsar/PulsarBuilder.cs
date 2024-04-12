@@ -4,7 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    public const string PulsarImage = "apachepulsar/pulsar:3.0.3";
+    public const string PulsarImage = "apachepulsar/pulsar:3.0.4";
 
     public const ushort PulsarBrokerDataPort = 6650;
 
@@ -84,19 +84,15 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         
         var waitStrategy = Wait.ForUnixContainer();
 
+        //TODO We need to switch between the default and custom WaitStrategy depending on if the user used WithAuthentication.
+        //Would you prefer we handled it in a similar to Couchbase?
         waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
             => request
                 .ForPath("/admin/v2/clusters")
                 .ForPort(PulsarWebServicePort)
                 .ForResponseMessageMatching(VerifyPulsarStatusAsync));
- 
-        //To Do How do I access PulsarContainer.CreateAuthenticationTokenAsync so i can get the auth token?
-        // waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-        //     => request
-        //         .ForPath("/admin/v2/clusters")
-        //         .ForPort(PulsarWebServicePort)
-        //         .ForResponseMessageMatching(VerifyPulsarStatusAsync)
-        //         .WithHeader("Authorization", ));
+        
+        waitStrategy.AddCustomWaitStrategy(new WaitUntil());
         
         var pulsarBuilder = WithWaitStrategy(waitStrategy);
         
@@ -134,9 +130,34 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         return new PulsarBuilder(new PulsarConfiguration(oldValue, newValue));
     }
     
-    private async Task<bool> VerifyPulsarStatusAsync(System.Net.Http.HttpResponseMessage response)
+    private static async Task<bool> VerifyPulsarStatusAsync(System.Net.Http.HttpResponseMessage response)
     {
         var readAsStringAsync = await response.Content.ReadAsStringAsync();
         return readAsStringAsync == "[\"standalone\"]";
+    }
+    
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            try
+            {
+                var pulsarContainer = container as PulsarContainer;
+                var authenticationToken = await pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromSeconds(60),CancellationToken.None);
+                using (var client = new System.Net.Http.HttpClient())
+                {
+                    client.BaseAddress = new Uri($"http://{container.Hostname}:{container.GetMappedPublicPort(PulsarWebServicePort)}/");
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticationToken.Replace("\n", ""));
+                    System.Net.Http.HttpResponseMessage response = await client.GetAsync("admin/v2/clusters");
+                    return await VerifyPulsarStatusAsync(response);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
