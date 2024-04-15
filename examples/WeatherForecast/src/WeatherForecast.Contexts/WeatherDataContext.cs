@@ -13,7 +13,7 @@ public sealed class WeatherDataContext : DbContext
   {
     // Map all read-only properties. There is not [Mapped] attribute like [NotMapped].
     modelBuilder.Entity<WeatherData>().Property(weatherData => weatherData.Id);
-    modelBuilder.Entity<WeatherData>().Property(weatherData => weatherData.Date);
+    modelBuilder.Entity<WeatherData>().Property(weatherData => weatherData.Period);
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.Id);
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.UnitName);
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.UnitSymbol);
@@ -21,8 +21,8 @@ public sealed class WeatherDataContext : DbContext
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.Measured);
     modelBuilder.Entity<WeatherData>().HasMany(weatherData => weatherData.Temperatures).WithOne().HasForeignKey(temperature => temperature.BelongsTo);
 
-    var weatherDataSeed = Enumerable.Range(0, 30).Select(_ => Guid.NewGuid()).Select((id, day) => new WeatherData(id, DateTime.Today.AddDays(day))).ToList();
-    var temperatureSeed = weatherDataSeed.SelectMany(data => Enumerable.Range(0, 23).Select(hour => Temperature.Celsius(data.Id, Random.Shared.Next(-10, 30), data.Date.AddHours(hour)))).ToList();
+    var weatherDataSeed = Enumerable.Range(0, 30).Select(_ => Guid.NewGuid()).Select((id, day) => new WeatherData(id, DateTimeOffset.Now.AddDays(day))).ToList();
+    var temperatureSeed = weatherDataSeed.SelectMany(data => Enumerable.Range(0, 23).Select(hour => Temperature.Celsius(data.Id, Random.Shared.Next(-10, 30), data.Period.AddHours(hour)))).ToList();
 
     modelBuilder.Entity<Temperature>().HasData(temperatureSeed);
     modelBuilder.Entity<WeatherData>().HasData(weatherDataSeed);
