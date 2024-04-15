@@ -6,7 +6,7 @@ public sealed class WeatherForecastController : ControllerBase, IDisposable
 {
   private readonly ISearchCityOrZipCode _searchCityOrZipCode;
 
-  private readonly EventWaitHandle _wait = new AutoResetEvent(false);
+  private readonly SemaphoreSlim _wait = new SemaphoreSlim(0, 1);
 
   private IEnumerable<WeatherData> _weatherData = Array.Empty<WeatherData>();
 
@@ -29,7 +29,8 @@ public sealed class WeatherForecastController : ControllerBase, IDisposable
     await _searchCityOrZipCode.ExecuteAsync(string.Empty)
       .ConfigureAwait(false);
 
-    _wait.WaitOne();
+    await _wait.WaitAsync()
+      .ConfigureAwait(false);
 
     return Ok(_weatherData);
   }
@@ -41,6 +42,6 @@ public sealed class WeatherForecastController : ControllerBase, IDisposable
       _weatherData = result.Value;
     }
 
-    _wait.Set();
+    _wait.Release();
   }
 }

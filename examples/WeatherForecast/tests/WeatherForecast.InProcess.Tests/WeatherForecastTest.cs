@@ -3,16 +3,16 @@ namespace WeatherForecast.InProcess.Tests;
 [UsedImplicitly]
 public sealed class WeatherForecastTest : IAsyncLifetime
 {
-  private readonly SqlEdgeContainer _sqlEdgeContainer = new SqlEdgeBuilder().Build();
+  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
 
   public Task InitializeAsync()
   {
-    return _sqlEdgeContainer.StartAsync();
+    return _postgreSqlContainer.StartAsync();
   }
 
   public Task DisposeAsync()
   {
-    return _sqlEdgeContainer.DisposeAsync().AsTask();
+    return _postgreSqlContainer.DisposeAsync().AsTask();
   }
 
   public sealed class Api : IClassFixture<WeatherForecastTest>, IDisposable
@@ -30,7 +30,7 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "https://+");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path", "certificate.crt");
       Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password", "password");
-      Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", weatherForecastTest._sqlEdgeContainer.GetConnectionString());
+      Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", weatherForecastTest._postgreSqlContainer.GetConnectionString());
       _webApplicationFactory = new WebApplicationFactory<Program>();
       _serviceScope = _webApplicationFactory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
       _httpClient = _webApplicationFactory.CreateClient();
