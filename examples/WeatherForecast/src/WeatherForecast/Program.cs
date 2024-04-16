@@ -14,13 +14,13 @@ if (string.IsNullOrWhiteSpace(connectionString))
   builder.Services.AddDbContext<WeatherDataContext>((services, options) =>
   {
     var databaseContainer = services.GetRequiredService<DatabaseContainer>();
-    options.UseSqlServer(databaseContainer.GetConnectionString());
+    options.UseNpgsql(databaseContainer.GetConnectionString());
   });
 }
 else
 {
   // The application configuration includes a database connection string, use it to establish a connection and seed the database.
-  builder.Services.AddDbContext<WeatherDataContext>((_, options) => options.UseSqlServer(connectionString));
+  builder.Services.AddDbContext<WeatherDataContext>((_, options) => options.UseNpgsql(connectionString));
 }
 
 builder.Services.AddScoped<IWeatherDataReadOnlyRepository, WeatherDataReadOnlyContext>();

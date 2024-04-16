@@ -8,7 +8,7 @@ global using System.Threading.Tasks;
 global using JetBrains.Annotations;
 global using Microsoft.AspNetCore.Mvc.Testing;
 global using Microsoft.Extensions.DependencyInjection;
-global using Testcontainers.SqlEdge;
+global using Testcontainers.PostgreSql;
 global using WeatherForecast.Entities;
 global using WeatherForecast.Repositories;
 global using Xunit;

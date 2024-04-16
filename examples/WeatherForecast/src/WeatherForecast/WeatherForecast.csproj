@@ -3,9 +3,9 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
     <PackageReference Include="Microsoft.Fast.Components.FluentUI"/>
-    <PackageReference Include="Testcontainers.SqlEdge"/>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Testcontainers.PostgreSql"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
