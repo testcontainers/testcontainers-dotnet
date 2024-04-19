@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net8.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
@@ -13,5 +13,10 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.DockerCompose/Testcontainers.DockerCompose.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="docker-compose.yml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

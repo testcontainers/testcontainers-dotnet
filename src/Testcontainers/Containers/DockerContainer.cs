@@ -24,9 +24,9 @@ namespace DotNet.Testcontainers.Containers
 
     private readonly ITestcontainersClient _client;
 
-    protected ContainerInspectResponse _container = new ContainerInspectResponse();
+    private readonly IContainerConfiguration _configuration;
 
-    protected readonly IContainerConfiguration _configuration;
+    private ContainerInspectResponse _container = new ContainerInspectResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.

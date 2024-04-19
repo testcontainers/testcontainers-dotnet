@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  test:
+    image: alpine:3.17
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - 'trap : TERM INT; sleep infinity & wait'
