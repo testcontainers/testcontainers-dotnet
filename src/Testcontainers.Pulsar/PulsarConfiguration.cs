@@ -7,8 +7,8 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarConfiguration" /> class.
     /// </summary>
-    /// <param name="authenticationEnabled"></param>
-    /// <param name="functionsWorkerEnabled"></param>
+    /// <param name="authenticationEnabled">A value indicating whether authentication is enabled or not.</param>
+    /// <param name="functionsWorkerEnabled">A value indicating whether function workers is enabled or not.</param>
     public PulsarConfiguration(
         bool? authenticationEnabled = null,
         bool? functionsWorkerEnabled = null)
@@ -60,20 +60,12 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// Gets or sets the flag indicating whether authentication is enabled for the Pulsar container.
+    /// Gets a value indicating whether authentication is enabled or not.
     /// </summary>
-    /// <remarks>
-    /// By default, authentication is disabled.
-    /// Setting this property to true enables authentication for the Pulsar container.
-    /// </remarks>
     public bool? AuthenticationEnabled { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the functions worker is enabled.
+    /// Gets a value indicating whether function workers is enabled or not.
     /// </summary>
-    /// <remarks>
-    /// The functions worker is responsible for executing functions within Pulsar.
-    /// By default, the functions worker is not enabled.
-    /// </remarks>
     public bool? FunctionsWorkerEnabled { get; }
 }

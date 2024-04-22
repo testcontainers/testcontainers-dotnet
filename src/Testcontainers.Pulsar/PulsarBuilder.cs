@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -19,13 +17,10 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     public const string Username = "test-user";
 
     private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars;
-    
-    private static readonly ISet<PulsarService> EnabledServices = new HashSet<PulsarService>();
 
     static PulsarBuilder()
     {
         const string authenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
-
         var authenticationEnvVars = new Dictionary<string, string>();
         authenticationEnvVars.Add("authenticateOriginalAuthData", "false");
         authenticationEnvVars.Add("authenticationEnabled", "true");
@@ -62,27 +57,25 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Enables authentication in the Pulsar container.
+    /// Enables authentication.
     /// </summary>
-    /// <returns>A <see cref="PulsarBuilder"/> instance.</returns>
+    /// <remarks>
+    /// To create an authentication call <see cref="PulsarContainer.CreateAuthenticationTokenAsync" />.
+    /// </remarks>
+    /// <returns>A configured instance of <see cref="Pulsar" />.</returns>
     public PulsarBuilder WithAuthentication()
     {
-        EnabledServices.Add(PulsarService.Authentication);
-        
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(authenticationEnabled: true))
             .WithEnvironment(AuthenticationEnvVars);
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WithFunctionsWorkerWorker" /> class.
+    /// Enables function workers.
     /// </summary>
-    /// <param name="functionsWorkerEnabled">Determines if the functions worker is enabled.</param>
-    /// <returns>A new instance of the <see cref="PulsarBuilder" /> class.</returns>
+    /// <param name="functionsWorkerEnabled">Determines whether function workers is enabled or not.</param>
+    /// <returns>A configured instance of <see cref="Pulsar" />.</returns>
     public PulsarBuilder WithFunctionsWorker(bool functionsWorkerEnabled = true)
     {
-        if (functionsWorkerEnabled)
-            EnabledServices.Add(PulsarService.FunctionWorker);
-        
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(functionsWorkerEnabled: functionsWorkerEnabled));
     }
 
@@ -90,27 +83,14 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     public override PulsarContainer Build()
     {
         Validate();
-        
-        var waitStrategy = Wait.ForUnixContainer();
 
-        if (EnabledServices.Contains(PulsarService.Authentication))
+        var waitStrategy = Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault()));
+
+        if (DockerResourceConfiguration.FunctionsWorkerEnabled.GetValueOrDefault())
         {
-            waitStrategy.AddCustomWaitStrategy(new WaitUntil());
+            waitStrategy = waitStrategy.UntilMessageIsLogged("Function worker service started");
         }
-        else
-        {
-            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
-                    .ForPath("/admin/v2/clusters")
-                    .ForPort(PulsarWebServicePort)
-                    .ForResponseMessageMatching(VerifyPulsarStatusAsync));
-        }
-        
-        if (EnabledServices.Contains(PulsarService.FunctionWorker))
-        {
-            waitStrategy.UntilMessageIsLogged(".*Function worker service started.*");
-        }
-        
+
         var pulsarBuilder =  WithWaitStrategy(waitStrategy);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);
     }
@@ -127,7 +107,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
     }
-    
+
     /// <inheritdoc />
     protected override PulsarBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
@@ -145,32 +125,80 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     {
         return new PulsarBuilder(new PulsarConfiguration(oldValue, newValue));
     }
-    
-    private static async Task<bool> VerifyPulsarStatusAsync(System.Net.Http.HttpResponseMessage response)
-    {
-        var readAsStringAsync = await response.Content.ReadAsStringAsync();
-        return readAsStringAsync == "[\"standalone\"]";
-    }
-    
+
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
+        private readonly HttpWaitStrategy _httpWaitStrategy = new HttpWaitStrategy()
+            .ForPath("/admin/v2/clusters")
+            .ForPort(PulsarWebServicePort)
+            .ForResponseMessageMatching(IsClusterHealthyAsync);
+
+        private readonly bool _authenticationEnabled;
+
+        private string _authToken;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="authenticationEnabled">A value indicating whether authentication is enabled or not.</param>
+        public WaitUntil(bool authenticationEnabled)
         {
-            try
+            _authenticationEnabled = authenticationEnabled;
+        }
+
+        /// <inheritdoc />
+        public Task<bool> UntilAsync(IContainer container)
+        {
+            return UntilAsync(container as PulsarContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private async Task<bool> UntilAsync(PulsarContainer container)
+        {
+            _ = Guard.Argument(container, nameof(container))
+                .NotNull();
+
+            if (_authenticationEnabled && _authToken == null)
             {
-                var pulsarContainer = container as PulsarContainer;
-                var authenticationToken = await pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromSeconds(60),CancellationToken.None);
-                using (var client = new System.Net.Http.HttpClient())
+                try
                 {
-                    client.BaseAddress = new Uri($"http://{container.Hostname}:{container.GetMappedPublicPort(PulsarWebServicePort)}/");
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticationToken.Replace("\n", ""));
-                    System.Net.Http.HttpResponseMessage response = await client.GetAsync("admin/v2/clusters");
-                    return await VerifyPulsarStatusAsync(response);
+                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
+                        .ConfigureAwait(false);
+
+                    _ = _httpWaitStrategy.WithHeader("Authorization", "Bearer " + _authToken.Trim());
+                }
+                catch
+                {
+                    return false;
                 }
             }
-            catch (Exception)
+
+            return await _httpWaitStrategy.UntilAsync(container)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Determines whether the cluster is healthy or not.
+        /// </summary>
+        /// <param name="response">The HTTP response that contains the cluster information.</param>
+        /// <returns>A value indicating whether the cluster is healthy or not.</returns>
+        private static async Task<bool> IsClusterHealthyAsync(HttpResponseMessage response)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync()
+                .ConfigureAwait(false);
+
+            try
+            {
+                var status = JsonDocument.Parse(jsonString)
+                    .RootElement
+                    .EnumerateArray()
+                    .ElementAt(0)
+                    .GetString();
+
+                return "standalone".Equals(status);
+            }
+            catch
             {
                 return false;
             }

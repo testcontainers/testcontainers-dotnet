@@ -79,10 +79,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         protected override async Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
         {
-            var token = await _pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1), ct)
+            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1), ct)
                 .ConfigureAwait(false);
 
-            return PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Authentication(new TokenAuthentication(token)).Build();
+            return PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Authentication(new TokenAuthentication(authToken)).Build();
         }
     }
 }
