@@ -14,6 +14,6 @@ global using DotNet.Testcontainers.Containers;
 global using DotNet.Testcontainers.Images;
 global using DotNet.Testcontainers.Networks;
 global using JetBrains.Annotations;
-global using Testcontainers.SqlEdge;
+global using Testcontainers.PostgreSql;
 global using WeatherForecast.Entities;
 global using Xunit;

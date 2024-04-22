@@ -6,7 +6,7 @@
   <h1>Weather Forecast</h1>
   <FluentDataGrid Items="@_weatherData.AsQueryable()">
     <ChildContent>
-      <PropertyColumn Title="Date" Property="@(item => item.Date.ToShortDateString())"/>
+      <PropertyColumn Title="Period" Property="@(item => item.Period.Date.ToShortDateString())"/>
       <PropertyColumn Title="Avg °C" Property="@(item => item.Temperatures.Average(temperature => temperature.Value).ToString("0"))"/>
     </ChildContent>
     <EmptyContent></EmptyContent>

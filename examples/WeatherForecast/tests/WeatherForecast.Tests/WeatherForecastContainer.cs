@@ -9,7 +9,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 
   private readonly INetwork _weatherForecastNetwork;
 
-  private readonly IContainer _sqlEdgeContainer;
+  private readonly IContainer _postgreSqlContainer;
 
   private readonly IContainer _weatherForecastContainer;
 
@@ -22,12 +22,12 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     const string weatherForecastStorage = "weatherForecastStorage";
 
-    const string connectionString = $"Server={weatherForecastStorage};User Id={SqlEdgeBuilder.DefaultUsername};Password={SqlEdgeBuilder.DefaultPassword};Database={SqlEdgeBuilder.DefaultDatabase};TrustServerCertificate=True";
+    const string connectionString = $"Host={weatherForecastStorage};Username={PostgreSqlBuilder.DefaultUsername};Password={PostgreSqlBuilder.DefaultPassword};Database={PostgreSqlBuilder.DefaultDatabase}";
 
     _weatherForecastNetwork = new NetworkBuilder()
       .Build();
 
-    _sqlEdgeContainer = new SqlEdgeBuilder()
+    _postgreSqlContainer = new PostgreSqlBuilder()
       .WithNetwork(_weatherForecastNetwork)
       .WithNetworkAliases(weatherForecastStorage)
       .Build();
@@ -52,7 +52,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await _weatherForecastNetwork.CreateAsync()
       .ConfigureAwait(false);
 
-    await _sqlEdgeContainer.StartAsync()
+    await _postgreSqlContainer.StartAsync()
       .ConfigureAwait(false);
 
     await _weatherForecastContainer.StartAsync()
@@ -68,7 +68,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     await _weatherForecastContainer.DisposeAsync()
       .ConfigureAwait(false);
 
-    await _sqlEdgeContainer.DisposeAsync()
+    await _postgreSqlContainer.DisposeAsync()
       .ConfigureAwait(false);
 
     await _weatherForecastNetwork.DeleteAsync()

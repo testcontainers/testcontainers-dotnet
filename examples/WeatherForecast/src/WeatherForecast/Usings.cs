@@ -9,7 +9,7 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Fast.Components.FluentUI;
-global using Testcontainers.SqlEdge;
+global using Testcontainers.PostgreSql;
 global using WeatherForecast;
 global using WeatherForecast.Contexts;
 global using WeatherForecast.Entities;
