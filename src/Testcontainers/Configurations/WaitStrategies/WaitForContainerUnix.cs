@@ -1,14 +1,12 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+
   /// <inheritdoc cref="IWaitForContainerOS" />
   internal sealed class WaitForContainerUnix : WaitForContainerOS
   {
-    /// <inheritdoc />
-    public override IWaitForContainerOS UntilCommandIsCompleted(string command)
-    {
-      return AddCustomWaitStrategy(new UntilUnixCommandIsCompleted(command));
-    }
-
     /// <inheritdoc />
     public override IWaitForContainerOS UntilCommandIsCompleted(params string[] command)
     {
@@ -16,9 +14,21 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilPortIsAvailable(int port)
+    public override IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilUnixPortIsAvailable(port));
+      return AddCustomWaitStrategy(new UntilUnixCommandIsCompleted(command), waitStrategyModifier);
+    }
+
+    /// <inheritdoc />
+    public override IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilUnixCommandIsCompleted(command.ToArray()), waitStrategyModifier);
+    }
+
+    /// <inheritdoc />
+    public override IWaitForContainerOS UntilPortIsAvailable(ushort port, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilUnixPortIsAvailable(port), waitStrategyModifier);
     }
   }
 }
