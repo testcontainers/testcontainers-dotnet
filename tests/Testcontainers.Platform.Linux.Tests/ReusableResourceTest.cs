@@ -76,6 +76,15 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
         Assert.Single(response.Volumes);
     }
 
+    [Fact]
+    public void ContainersWithDifferentNamesShouldHaveDifferentHashes()
+    {
+        var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
+        var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
+
+        Assert.NotEqual(hash1, hash2);
+    }
+
     public static class UnsupportedBuilderConfigurationTest
     {
         private const string EnabledCleanUpExceptionMessage = "Reuse cannot be used in conjunction with WithCleanUp(true). (Parameter 'Reuse')";
@@ -142,5 +151,31 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
             }
         }
+    }
+
+    private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
+    {
+        public ReuseHashContainerBuilder() : this(new ContainerConfiguration())
+            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+
+        private ReuseHashContainerBuilder(ContainerConfiguration configuration) : base(configuration)
+            => DockerResourceConfiguration = configuration;
+
+        protected override ContainerConfiguration DockerResourceConfiguration { get; }
+
+        public string GetReuseHash()
+            => DockerResourceConfiguration.GetReuseHash();
+
+        public override DockerContainer Build()
+            => new(DockerResourceConfiguration);
+
+        protected override ReuseHashContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+
+        protected override ReuseHashContainerBuilder Clone(IContainerConfiguration resourceConfiguration)
+            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+
+        protected override ReuseHashContainerBuilder Merge(ContainerConfiguration oldValue, ContainerConfiguration newValue)
+            => new(new ContainerConfiguration(oldValue, newValue));
     }
 }
