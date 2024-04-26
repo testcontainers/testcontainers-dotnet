@@ -155,7 +155,6 @@ namespace DotNet.Testcontainers.Configurations
     public Func<ImageInspectResponse, bool> ImagePullPolicy { get; }
 
     /// <inheritdoc />
-    [JsonIgnore]
     public string Name { get; }
 
     /// <inheritdoc />

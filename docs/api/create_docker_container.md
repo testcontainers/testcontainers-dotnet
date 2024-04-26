@@ -67,6 +67,15 @@ await File.WriteAllBytesAsync("appsettings.json", readBytes)
   .ConfigureAwait(false);
 ```
 
+## Canceling a container start
+
+Starting a container or creating a resource (such as a network or a volume) can be canceled by passing a `CancellationToken` to the member. The following example cancels the container start after one minute if it has not finished before.
+
+```csharp title="Canceling container start after one minute"
+using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+await _container.StartAsync(timeoutCts.Token);
+```
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
