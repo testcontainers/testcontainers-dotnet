@@ -17,6 +17,9 @@ _ = new ContainerBuilder()
 
 The current implementation considers the following resource configurations and their corresponding builder APIs when calculating the hash value.
 
+> [!NOTE]  
+> Version 3.8.0 did not include the container configuration's name in the hash value.
+
 - [ContainerConfiguration](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/src/Testcontainers/Configurations/Containers/ContainerConfiguration.cs)
     - Image
     - Entrypoint
@@ -26,6 +29,7 @@ The current implementation considers the following resource configurations and t
     - PortBindings
     - NetworkAliases
     - ExtraHosts
+    - Name
     - Labels
 - [NetworkConfiguration](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/src/Testcontainers/Configurations/Networks/NetworkConfiguration.cs)
     - Name
