@@ -83,13 +83,18 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
         Assert.Single(response.Volumes);
     }
 
-    [Fact]
-    public void ContainersWithDifferentNamesShouldHaveDifferentHashes()
+    public static class ReuseHash
     {
-        var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
-        var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
-
-        Assert.NotEqual(hash1, hash2);
+        public sealed class NotEqual
+        {
+            [Fact]
+            public void ForDifferentNames()
+            {
+                var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
+                var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
+                Assert.NotEqual(hash1, hash2);
+            }
+        }
     }
 
     public static class UnsupportedBuilderConfigurationTest
