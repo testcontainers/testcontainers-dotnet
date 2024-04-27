@@ -51,14 +51,16 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
 
     public Task DisposeAsync()
     {
-        return Task.WhenAll(_disposables.Select(disposable =>
-        {
-            // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
-            // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
-            // reflection afterward to delete the container, network, and volume.
-            disposable.AsDynamic()._configuration.SessionId = ResourceReaper.DefaultSessionId;
-            return disposable.DisposeAsync().AsTask();
-        }));
+        return Task.WhenAll(_disposables
+            .Take(3)
+            .Select(disposable =>
+            {
+                // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
+                // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
+                // reflection afterward to delete the container, network, and volume.
+                disposable.AsDynamic()._configuration.SessionId = ResourceReaper.DefaultSessionId;
+                return disposable.DisposeAsync().AsTask();
+            }));
     }
 
     public void Dispose()
