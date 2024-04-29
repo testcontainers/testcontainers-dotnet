@@ -54,11 +54,11 @@
              .WithImage(GitlabImage)
              .WithPortBinding(GitlabHttpPort, true)
              .WithPortBinding(GitlabSshPort, true)
-             .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists("/etc/gitlab/initial_root_password"))
-             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
-             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(22))
-             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
-             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/users/sign_in").ForStatusCode(HttpStatusCode.OK)));
+             .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilPortIsAvailable(80)
+                .UntilPortIsAvailable(22)
+                .UntilContainerIsHealthy()
+                .UntilHttpRequestIsSucceeded(request => request.ForPath("/users/sign_in").ForStatusCode(HttpStatusCode.OK)));
      }
 
      /// <inheritdoc />
