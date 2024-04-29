@@ -51,7 +51,16 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
 
     public Task DisposeAsync()
     {
-        return Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()));
+        return Task.WhenAll(_disposables
+            .Take(3)
+            .Select(disposable =>
+            {
+                // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
+                // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
+                // reflection afterward to delete the container, network, and volume.
+                disposable.AsDynamic()._configuration.SessionId = ResourceReaper.DefaultSessionId;
+                return disposable.DisposeAsync().AsTask();
+            }));
     }
 
     public void Dispose()
@@ -76,13 +85,18 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
         Assert.Single(response.Volumes);
     }
 
-    [Fact]
-    public void ContainersWithDifferentNamesShouldHaveDifferentHashes()
+    public static class ReuseHash
     {
-        var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
-        var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
-
-        Assert.NotEqual(hash1, hash2);
+        public sealed class NotEqual
+        {
+            [Fact]
+            public void ForDifferentNames()
+            {
+                var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
+                var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
+                Assert.NotEqual(hash1, hash2);
+            }
+        }
     }
 
     public static class UnsupportedBuilderConfigurationTest
