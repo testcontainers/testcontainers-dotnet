@@ -5,9 +5,9 @@
  public sealed class GitlabBuilder : ContainerBuilder<GitlabBuilder, GitlabContainer, GitlabConfiguration>
  {
      /// <summary>
-     /// This is the default image for gitlab community edition.
+     /// This is the default image for gitlab community edition in version 16.11.1 .
      /// </summary>
-     public const string GitlabImage = "gitlab/gitlab-ce";
+     public const string GitlabImage = "gitlab/gitlab-ce:16.11.1-ce.0";
      /// <summary>
      /// This port is used for http communication to gitlab instance.
      /// </summary>
