@@ -1,7 +1,5 @@
 using Testcontainers.Gitlab.Models;
-using Testcontainers.Gitlab.RegexPatterns;
 using System.Net.Http;
-using System;
 
 namespace Testcontainers.Gitlab;
 
@@ -19,19 +17,11 @@ public sealed class GitlabContainerTest : IAsyncLifetime
         return _gitlabContainer.DisposeAsync().AsTask();
     }
 
-    // [Fact]
-    // [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    // public async Task ConnectionStateReturnsOpen()
-    // {
-    //     var pat = await _gitlabContainer.GenerateAccessToken("root",PersonalAccessTokenScopes.api);
-    //     Assert.True(!string.IsNullOrEmpty(pat.Token));
-    // }
-    
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task GetUser()
     {
-        var pat = await _gitlabContainer.GenerateAccessToken("root",PersonalAccessTokenScopes.api);
+        var pat = await _gitlabContainer.GenerateAccessToken("root", PersonalAccessTokenScopes.api);
 
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("PRIVATE-TOKEN", pat.Token);
