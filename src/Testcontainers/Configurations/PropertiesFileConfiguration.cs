@@ -139,5 +139,26 @@ namespace DotNet.Testcontainers.Configurations
       const string propertyName = "hub.image.name.prefix";
       return GetHubImageNamePrefix(propertyName);
     }
+
+    /// <inheritdoc />
+    public ushort GetWaitStrategyRetries()
+    {
+      const string propertyName = "wait.strategy.retries";
+      return GetWaitStrategyRetries(propertyName);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan GetWaitStrategyInterval()
+    {
+      const string propertyName = "wait.strategy.interval";
+      return GetWaitStrategyInterval(propertyName);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan GetWaitStrategyTimeout()
+    {
+      const string propertyName = "wait.strategy.timeout";
+      return GetWaitStrategyTimeout(propertyName);
+    }
   }
 }

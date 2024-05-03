@@ -101,5 +101,23 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
     [CanBeNull]
     string GetHubImageNamePrefix();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    ushort GetWaitStrategyRetries();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    TimeSpan GetWaitStrategyInterval();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    TimeSpan GetWaitStrategyTimeout();
   }
 }

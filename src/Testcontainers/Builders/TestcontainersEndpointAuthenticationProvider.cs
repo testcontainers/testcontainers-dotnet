@@ -129,6 +129,24 @@ namespace DotNet.Testcontainers.Builders
       return _customConfiguration.GetHubImageNamePrefix();
     }
 
+    /// <inheritdoc />
+    public ushort GetWaitStrategyRetries()
+    {
+      return ushort.MinValue;
+    }
+
+    /// <inheritdoc />
+    public TimeSpan GetWaitStrategyInterval()
+    {
+      return TimeSpan.Zero;
+    }
+
+    /// <inheritdoc />
+    public TimeSpan GetWaitStrategyTimeout()
+    {
+      return TimeSpan.Zero;
+    }
+
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration
     {
       public TestcontainersConfiguration()

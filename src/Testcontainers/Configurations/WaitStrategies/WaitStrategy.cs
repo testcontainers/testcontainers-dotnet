@@ -44,8 +44,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the number of retries.
     /// </summary>
-    public int Retries { get; private set; }
-      = -1;
+    public ushort Retries { get; private set; }
+      = ushort.MinValue;
 
     /// <summary>
     /// Gets the interval between retries.

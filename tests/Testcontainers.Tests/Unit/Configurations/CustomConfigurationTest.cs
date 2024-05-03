@@ -27,6 +27,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
       }
 
       [Theory]
@@ -175,6 +178,41 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
+      }
+
+      [Theory]
+      [InlineData("", "", 0)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "", 0)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "1", 1)]
+      public void GetWaitStrategyRetriesCustomConfiguration(string propertyName, string propertyValue, ushort expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyRetries());
+      }
+
+      [Theory]
+      [InlineData("", "", "00:00:01")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "", "00:00:01")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "-00:00:00.001", "00:00:01")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "00:00:01", "00:00:01")]
+      public void GetWaitStrategyIntervalCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyInterval().ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", "01:00:00")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "", "01:00:00")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "-00:00:00.001", "01:00:00")]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "00:00:01", "00:00:01")]
+      public void GetWaitStrategyTimeoutCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout().ToString());
       }
 
       public void Dispose()
@@ -330,6 +368,38 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
+      }
+
+      [Theory]
+      [InlineData("", 0)]
+      [InlineData("wait.strategy.retries=", 0)]
+      [InlineData("wait.strategy.retries=1", 1)]
+      public void GetWaitStrategyRetriesCustomConfiguration(string configuration, ushort expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyRetries());
+      }
+
+      [Theory]
+      [InlineData("", "00:00:01")]
+      [InlineData("wait.strategy.interval=", "00:00:01")]
+      [InlineData("wait.strategy.interval=-00:00:00.001", "00:00:01")]
+      [InlineData("wait.strategy.interval=00:00:01", "00:00:01")]
+      public void GetWaitStrategyIntervalCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyInterval().ToString());
+      }
+
+      [Theory]
+      [InlineData("", "01:00:00")]
+      [InlineData("wait.strategy.timeout=", "01:00:00")]
+      [InlineData("wait.strategy.timeout=-00:00:00.001", "01:00:00")]
+      [InlineData("wait.strategy.timeout=00:00:01", "00:00:01")]
+      public void GetWaitStrategyTimeoutCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout().ToString());
       }
     }
   }

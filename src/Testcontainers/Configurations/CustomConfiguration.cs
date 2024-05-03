@@ -102,6 +102,21 @@ namespace DotNet.Testcontainers.Configurations
       return GetPropertyValue<string>(propertyName);
     }
 
+    protected virtual ushort GetWaitStrategyRetries(string propertyName)
+    {
+      return GetPropertyValue<ushort>(propertyName);
+    }
+
+    protected virtual TimeSpan GetWaitStrategyInterval(string propertyName)
+    {
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : TimeSpan.FromSeconds(1);
+    }
+
+    protected virtual TimeSpan GetWaitStrategyTimeout(string propertyName)
+    {
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : TimeSpan.FromHours(1);
+    }
+
     private T GetPropertyValue<T>(string propertyName)
     {
       switch (Type.GetTypeCode(typeof(T)))
@@ -109,6 +124,11 @@ namespace DotNet.Testcontainers.Configurations
         case TypeCode.Boolean:
         {
           return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ("1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var result) && result)));
+        }
+
+        case TypeCode.UInt16:
+        {
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : ushort.MinValue);
         }
 
         case TypeCode.String:
