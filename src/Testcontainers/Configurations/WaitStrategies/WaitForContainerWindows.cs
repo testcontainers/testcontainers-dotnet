@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilPortIsAvailable(ushort port, Action<IWaitStrategy> waitStrategyModifier = null)
+    public override IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilWindowsPortIsAvailable(port), waitStrategyModifier);
     }

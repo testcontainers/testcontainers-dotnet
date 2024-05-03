@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilPortIsAvailable(ushort port, Action<IWaitStrategy> waitStrategyModifier = null);
+    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Waits until the file exists.
