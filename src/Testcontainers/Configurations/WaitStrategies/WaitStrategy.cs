@@ -44,20 +44,20 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the number of retries.
     /// </summary>
-    public int Retries { get; private set; }
-      = -1;
+    public ushort Retries { get; private set; }
+      = TestcontainersSettings.WaitStrategyRetries ?? 0;
 
     /// <summary>
     /// Gets the interval between retries.
     /// </summary>
     public TimeSpan Interval { get; private set; }
-      = TimeSpan.FromSeconds(1);
+      = TestcontainersSettings.WaitStrategyInterval ?? TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// Gets the timeout.
     /// </summary>
     public TimeSpan Timeout { get; private set; }
-      = TimeSpan.FromHours(1);
+      = TestcontainersSettings.WaitStrategyTimeout ?? TimeSpan.FromHours(1);
 
     /// <inheritdoc />
     public IWaitStrategy WithRetries(ushort retries)
@@ -114,10 +114,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="retries">The number of retries to run for the condition to become false.</param>
     /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
-    /// <exception cref="ArgumentException">Thrown when the number of retries is exceeded.</exception>
+    /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = -1, CancellationToken ct = default)
+    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
     {
       ushort actualRetries = 0;
 
@@ -134,7 +134,7 @@ namespace DotNet.Testcontainers.Configurations
           }
 
           _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new ArgumentException(MaximumRetryExceededException));
+            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
 
           await Task.Delay(interval, ct)
             .ConfigureAwait(false);
@@ -170,10 +170,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="retries">The number of retries to run for the condition to become true.</param>
     /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
-    /// <exception cref="ArgumentException">Thrown when the number of retries is exceeded.</exception>
+    /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = -1, CancellationToken ct = default)
+    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
     {
       ushort actualRetries = 0;
 
@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Configurations
           }
 
           _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new ArgumentException(MaximumRetryExceededException));
+            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
 
           await Task.Delay(interval, ct)
             .ConfigureAwait(false);

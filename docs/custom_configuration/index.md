@@ -16,6 +16,11 @@ Testcontainers supports various configurations to set up your test environment. 
 | `ryuk.container.privileged` | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED` | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `false`                     |
 | `ryuk.container.image`      | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`      | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.5.1` |
 | `hub.image.name.prefix`     | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`     | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
+<!-- | `wait.strategy.retries`     | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`     | The wait strategy retry count.                                                                                            | `infinite`                  |
+| `wait.strategy.interval`    | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`    | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                  |
+| `wait.strategy.timeout`     | `TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT`     | The wait strategy timeout<sup>1</sup>.                                                                                    | `01:00:00`                  |
+
+1) The value represent the string representation of a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan), for example, `00:00:01` for 1 second. -->
 
 ## Configure remote container runtime
 
