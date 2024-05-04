@@ -102,24 +102,26 @@ namespace DotNet.Testcontainers.Configurations
       return GetPropertyValue<string>(propertyName);
     }
 
-    protected virtual ushort GetWaitStrategyRetries(string propertyName)
+    protected virtual ushort? GetWaitStrategyRetries(string propertyName)
     {
-      return GetPropertyValue<ushort>(propertyName);
+      return GetPropertyValue<ushort?>(propertyName);
     }
 
-    protected virtual TimeSpan GetWaitStrategyInterval(string propertyName)
+    protected virtual TimeSpan? GetWaitStrategyInterval(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : TimeSpan.FromSeconds(1);
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
     }
 
-    protected virtual TimeSpan GetWaitStrategyTimeout(string propertyName)
+    protected virtual TimeSpan? GetWaitStrategyTimeout(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : TimeSpan.FromHours(1);
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
     }
 
     private T GetPropertyValue<T>(string propertyName)
     {
-      switch (Type.GetTypeCode(typeof(T)))
+      var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+      switch (Type.GetTypeCode(type))
       {
         case TypeCode.Boolean:
         {
@@ -128,7 +130,7 @@ namespace DotNet.Testcontainers.Configurations
 
         case TypeCode.UInt16:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : ushort.MinValue);
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : (ushort?)null);
         }
 
         case TypeCode.String:

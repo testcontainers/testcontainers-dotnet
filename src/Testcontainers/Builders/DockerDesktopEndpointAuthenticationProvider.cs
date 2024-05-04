@@ -103,21 +103,21 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ushort GetWaitStrategyRetries()
+    public ushort? GetWaitStrategyRetries()
     {
-      return ushort.MinValue;
+      return null;
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyInterval()
+    public TimeSpan? GetWaitStrategyInterval()
     {
-      return TimeSpan.Zero;
+      return null;
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyTimeout()
+    public TimeSpan? GetWaitStrategyTimeout()
     {
-      return TimeSpan.Zero;
+      return null;
     }
   }
 }

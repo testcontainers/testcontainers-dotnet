@@ -130,21 +130,21 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ushort GetWaitStrategyRetries()
+    public ushort? GetWaitStrategyRetries()
     {
-      return ushort.MinValue;
+      return _customConfiguration.GetWaitStrategyRetries();
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyInterval()
+    public TimeSpan? GetWaitStrategyInterval()
     {
-      return TimeSpan.Zero;
+      return _customConfiguration.GetWaitStrategyInterval();
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyTimeout()
+    public TimeSpan? GetWaitStrategyTimeout()
     {
-      return TimeSpan.Zero;
+      return _customConfiguration.GetWaitStrategyTimeout();
     }
 
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration

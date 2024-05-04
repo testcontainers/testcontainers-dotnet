@@ -45,19 +45,19 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the number of retries.
     /// </summary>
     public ushort Retries { get; private set; }
-      = ushort.MinValue;
+      = TestcontainersSettings.WaitStrategyRetries ?? 0;
 
     /// <summary>
     /// Gets the interval between retries.
     /// </summary>
     public TimeSpan Interval { get; private set; }
-      = TimeSpan.FromSeconds(1);
+      = TestcontainersSettings.WaitStrategyInterval ?? TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// Gets the timeout.
     /// </summary>
     public TimeSpan Timeout { get; private set; }
-      = TimeSpan.FromHours(1);
+      = TestcontainersSettings.WaitStrategyTimeout ?? TimeSpan.FromHours(1);
 
     /// <inheritdoc />
     public IWaitStrategy WithRetries(ushort retries)

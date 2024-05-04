@@ -149,19 +149,19 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public ushort GetWaitStrategyRetries()
+    public ushort? GetWaitStrategyRetries()
     {
       return GetWaitStrategyRetries(WaitStrategyRetries);
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyInterval()
+    public TimeSpan? GetWaitStrategyInterval()
     {
       return GetWaitStrategyInterval(WaitStrategyInterval);
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyTimeout()
+    public TimeSpan? GetWaitStrategyTimeout()
     {
       return GetWaitStrategyTimeout(WaitStrategyTimeout);
     }

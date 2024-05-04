@@ -141,21 +141,21 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public ushort GetWaitStrategyRetries()
+    public ushort? GetWaitStrategyRetries()
     {
       const string propertyName = "wait.strategy.retries";
       return GetWaitStrategyRetries(propertyName);
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyInterval()
+    public TimeSpan? GetWaitStrategyInterval()
     {
       const string propertyName = "wait.strategy.interval";
       return GetWaitStrategyInterval(propertyName);
     }
 
     /// <inheritdoc />
-    public TimeSpan GetWaitStrategyTimeout()
+    public TimeSpan? GetWaitStrategyTimeout()
     {
       const string propertyName = "wait.strategy.timeout";
       return GetWaitStrategyTimeout(propertyName);

@@ -103,21 +103,27 @@ namespace DotNet.Testcontainers.Configurations
     string GetHubImageNamePrefix();
 
     /// <summary>
-    ///
+    /// Gets the wait strategy retries custom configuration.
     /// </summary>
-    /// <returns></returns>
-    ushort GetWaitStrategyRetries();
+    /// <returns>The wait strategy retries custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    ushort? GetWaitStrategyRetries();
 
     /// <summary>
-    ///
+    /// Gets the wait strategy interval custom configuration.
     /// </summary>
-    /// <returns></returns>
-    TimeSpan GetWaitStrategyInterval();
+    /// <returns>The wait strategy interval custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetWaitStrategyInterval();
 
     /// <summary>
-    ///
+    /// Gets the wait strategy timeout custom configuration.
     /// </summary>
-    /// <returns></returns>
-    TimeSpan GetWaitStrategyTimeout();
+    /// <returns>The wait strategy timeout custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetWaitStrategyTimeout();
   }
 }
