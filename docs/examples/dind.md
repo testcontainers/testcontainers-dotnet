@@ -28,7 +28,7 @@ services:
       context: .
     entrypoint: dotnet
     command: test
-    # Uncomment lines below in the case of Docker Desktop.
+    # Uncomment the lines below in the case of Docker Desktop (see note above).
     # TESTCONTAINERS_HOST_OVERRIDE is not needed in the case of Docker Engine. 
     # environment:
     #   - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
