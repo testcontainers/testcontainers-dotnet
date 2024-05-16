@@ -4,7 +4,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.0"/>
+        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.1"/>
         <PackageVersion Include="Docker.DotNet.X509" Version="3.125.15"/>
         <PackageVersion Include="Docker.DotNet" Version="3.125.15"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"/>
