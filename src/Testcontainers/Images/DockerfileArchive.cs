@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Images
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Runtime.InteropServices;
   using System.Text;
   using System.Text.RegularExpressions;
   using System.Threading;
@@ -148,7 +149,12 @@ namespace DotNet.Testcontainers.Images
               using (var inputStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read))
               {
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
-                entry.Size = inputStream.Length;
+                entry.TarHeader.Size = inputStream.Length;
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                  entry.TarHeader.Mode = (int)Unix.FileMode755;
+                }
 
                 await tarOutputStream.PutNextEntryAsync(entry, ct)
                   .ConfigureAwait(false);

@@ -1,8 +1,8 @@
 # Running inside another container
 
-## Docker Desktop
+## 'Docker wormhole' pattern - Sibling Docker containers
 
-### Sibling containers
+### Docker-only example
 
 If you choose to run your tests in a Docker Wormhole configuration, which involves using sibling containers, it is necessary to mount Docker's raw socket `/var/run/docker.sock.raw`. You find more information and an explanation of the Docker bug in this [comment](https://github.com/docker/for-mac/issues/5588#issuecomment-934600089).
 
@@ -10,11 +10,13 @@ If you choose to run your tests in a Docker Wormhole configuration, which involv
 docker run -v /var/run/docker.sock.raw:/var/run/docker.sock $IMAGE dotnet test
 ```
 
-### Compose
+!!! note
+    If you are using Docker Desktop, you need to configure the `TESTCONTAINERS_HOST_OVERRIDE` environment variable to use the special DNS name
+    `host.docker.internal` for accessing the host from within a container, which is provided by Docker Desktop:
+    `-e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal`
 
-To use Docker's Compose tool to build and run a Testcontainers environment in a Docker Desktop Wormhole configuration,
-it is necessary to override Testcontainers' Docker host resolution and set the environment variable `TESTCONTAINERS_HOST_OVERRIDE` to `host.docker.internal`.
-Otherwise, Testcontainers cannot access sibling containers like the Resource Reaper Ryuk or other services running on the Docker host.
+### Docker Compose example
+
 A minimal `docker-compose.yml` file that builds a new container image and runs the test inside the container look something like:
 
 ```yaml
@@ -26,8 +28,10 @@ services:
       context: .
     entrypoint: dotnet
     command: test
-    environment:
-      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+    # Uncomment the lines below in the case of Docker Desktop (see note above).
+    # TESTCONTAINERS_HOST_OVERRIDE is not needed in the case of Docker Engine. 
+    # environment:
+    #   - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
