@@ -5,7 +5,7 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Azure.Messaging.EventHubs" Version="5.11.3" />
+        <PackageReference Include="Azure.Messaging.EventHubs" />
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
