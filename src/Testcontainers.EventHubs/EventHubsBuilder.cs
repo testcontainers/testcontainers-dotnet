@@ -1,3 +1,5 @@
+using DotNet.Testcontainers;
+
 namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -39,7 +41,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         var configBytes = Encoding.UTF8.GetBytes(configurationBuilder.Build());
         
-        return WithResourceMapping(configBytes, "Eventhubs_Emulator/ConfigFiles/Config.json");
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(configurationBuilder: configurationBuilder))
+            .WithResourceMapping(configBytes, "Eventhubs_Emulator/ConfigFiles/Config.json");
     }
     
     /// <summary>
@@ -49,7 +52,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <returns></returns>
     public EventHubsBuilder WithAzuriteBlobEndpoint(string azuriteBlobEndpoint)
     {
-        return WithEnvironment("BLOB_SERVER", azuriteBlobEndpoint);
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteBlobEndpoint: azuriteBlobEndpoint))
+            .WithEnvironment("BLOB_SERVER", azuriteBlobEndpoint);
     }
     
     /// <summary>
@@ -59,7 +63,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <returns></returns>
     public EventHubsBuilder WithAzuriteTableEndpoint(string azuriteTableEndpoint)
     {
-        return WithEnvironment("METADATA_SERVER", azuriteTableEndpoint);
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteTableEndpoint: azuriteTableEndpoint))
+            .WithEnvironment("METADATA_SERVER", azuriteTableEndpoint);
     }
     
     /// <inheritdoc />
@@ -73,6 +78,26 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         return new EventHubsContainer(eventHubsBuilder.DockerResourceConfiguration);
     }
 
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder,
+                nameof(DockerResourceConfiguration.ConfigurationBuilder))
+            .NotNull();
+
+        _ = Guard.Argument(DockerResourceConfiguration.AzuriteBlobEndpoint,
+                nameof(DockerResourceConfiguration.AzuriteBlobEndpoint))
+            .NotNull()
+            .NotEmpty();
+        
+        _ = Guard.Argument(DockerResourceConfiguration.AzuriteTableEndpoint,
+                nameof(DockerResourceConfiguration.AzuriteTableEndpoint))
+            .NotNull()
+            .NotEmpty();
+    }
+    
     /// <inheritdoc />
     protected override EventHubsBuilder Init()
     {
