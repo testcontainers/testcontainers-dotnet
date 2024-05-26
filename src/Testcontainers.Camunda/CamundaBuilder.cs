@@ -43,7 +43,7 @@ public class CamundaBuilder : ContainerBuilder<CamundaBuilder, CamundaContainer,
         return base.Init()
             .WithImage(CamundaImage)
             .WithPortBinding(CamundaPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*Engine created.*$"));
     }
 
     /// <inheritdoc />
