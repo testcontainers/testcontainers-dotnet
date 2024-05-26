@@ -2,7 +2,7 @@
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public class CamundaBuilder : ContainerBuilder<CamundaBuilder, CamundaContainer, CamundaConfiguration>
+public sealed class CamundaBuilder : ContainerBuilder<CamundaBuilder, CamundaContainer, CamundaConfiguration>
 {
     public const string CamundaImage = "camunda/camunda-bpm-platform:7.22.0-SNAPSHOT";
     

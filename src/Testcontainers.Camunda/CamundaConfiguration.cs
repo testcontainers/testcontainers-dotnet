@@ -2,7 +2,7 @@
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
-public class CamundaConfiguration : ContainerConfiguration
+public sealed class CamundaConfiguration : ContainerConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CamundaConfiguration" /> class.
