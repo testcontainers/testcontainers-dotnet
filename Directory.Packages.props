@@ -4,64 +4,65 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.1"/>
-    <PackageVersion Include="Docker.DotNet.X509" Version="3.125.15"/>
-    <PackageVersion Include="Docker.DotNet" Version="3.125.15"/>
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"/>
-    <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4"/>
-    <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
-    <PackageVersion Include="SharpZipLib" Version="1.4.2"/>
-    <PackageVersion Include="SSH.NET" Version="2023.0.0"/>
-    <PackageVersion Include="System.Text.Json" Version="6.0.9"/>
+    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.1" />
+    <PackageVersion Include="Camunda.Api.Client" Version="2.6.0" />
+    <PackageVersion Include="Docker.DotNet.X509" Version="3.125.15" />
+    <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />
+    <PackageVersion Include="ReflectionMagic" Version="5.0.1" />
+    <PackageVersion Include="SharpZipLib" Version="1.4.2" />
+    <PackageVersion Include="SSH.NET" Version="2023.0.0" />
+    <PackageVersion Include="System.Text.Json" Version="6.0.9" />
     <!-- Unit and integration test dependencies: -->
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.2.0"/>
-    <PackageVersion Include="coverlet.collector" Version="6.0.1"/>
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7"/>
-    <PackageVersion Include="xunit" Version="2.7.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.2.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
+    <PackageVersion Include="xunit" Version="2.7.0" />
     <!-- Third-party client dependencies to connect and interact with the containers: -->
-    <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
-    <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
-    <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="3.7.104.14"/>
-    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.101.42"/>
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.103.3"/>
-    <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.101.7"/>
-    <PackageVersion Include="AWSSDK.SQS" Version="3.7.100.71"/>
-    <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
-    <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
-    <PackageVersion Include="ClickHouse.Client" Version="6.7.1"/>
+    <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
+    <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1" />
+    <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="3.7.104.14" />
+    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.101.42" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.103.3" />
+    <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.101.7" />
+    <PackageVersion Include="AWSSDK.SQS" Version="3.7.100.71" />
+    <PackageVersion Include="Azure.Data.Tables" Version="12.8.0" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0" />
+    <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0" />
     <PackageVersion Include="Camunda.Api.Client" Version="2.6.0"/>
-    <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
-    <PackageVersion Include="Consul" Version="1.6.10.9"/>
-    <PackageVersion Include="CouchbaseNetClient" Version="3.4.3"/>
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.0.5"/>
-    <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
-    <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"/>
-    <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.4.0"/>
-    <PackageVersion Include="Google.Cloud.Bigtable.Admin.V2" Version="3.7.0"/>
-    <PackageVersion Include="Google.Cloud.Firestore" Version="3.1.0"/>
-    <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.5.0"/>
-    <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.6.0"/>
-    <PackageVersion Include="InfluxDB.Client" Version="4.12.0"/>
-    <PackageVersion Include="JanusGraph.Net" Version="1.0.0"/>
-    <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
-    <PackageVersion Include="KubernetesClient" Version="10.1.4"/>
-    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
-    <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="11.3.3"/>
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.1.3"/>
-    <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6"/>
-    <PackageVersion Include="MongoDB.Driver" Version="2.19.0"/>
-    <PackageVersion Include="MyCouch" Version="7.6.0"/>
-    <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
-    <PackageVersion Include="NATS.Client" Version="1.0.8"/>
-    <PackageVersion Include="Neo4j.Driver" Version="5.5.0"/>
-    <PackageVersion Include="Npgsql" Version="6.0.10"/>
-    <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="3.21.90"/>
-    <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
-    <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
-    <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
-    <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
+    <PackageVersion Include="ClickHouse.Client" Version="6.7.1" />
+    <PackageVersion Include="Confluent.Kafka" Version="2.0.2" />
+    <PackageVersion Include="Consul" Version="1.6.10.9" />
+    <PackageVersion Include="CouchbaseNetClient" Version="3.4.3" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.0.5" />
+    <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0" />
+    <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
+    <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.4.0" />
+    <PackageVersion Include="Google.Cloud.Bigtable.Admin.V2" Version="3.7.0" />
+    <PackageVersion Include="Google.Cloud.Firestore" Version="3.1.0" />
+    <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.5.0" />
+    <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.6.0" />
+    <PackageVersion Include="InfluxDB.Client" Version="4.12.0" />
+    <PackageVersion Include="JanusGraph.Net" Version="1.0.0" />
+    <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20" />
+    <PackageVersion Include="KubernetesClient" Version="10.1.4" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1" />
+    <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="11.3.3" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.1.3" />
+    <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6" />
+    <PackageVersion Include="MongoDB.Driver" Version="2.19.0" />
+    <PackageVersion Include="MyCouch" Version="7.6.0" />
+    <PackageVersion Include="MySqlConnector" Version="2.2.5" />
+    <PackageVersion Include="NATS.Client" Version="1.0.8" />
+    <PackageVersion Include="Neo4j.Driver" Version="5.5.0" />
+    <PackageVersion Include="Npgsql" Version="6.0.10" />
+    <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
+    <PackageVersion Include="RabbitMQ.Client" Version="6.4.0" />
+    <PackageVersion Include="RavenDB.Client" Version="5.4.100" />
+    <PackageVersion Include="Selenium.WebDriver" Version="4.8.1" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.6.90" />
   </ItemGroup>
 </Project>
