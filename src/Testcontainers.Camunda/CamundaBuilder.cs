@@ -4,7 +4,7 @@
 [PublicAPI]
 public class CamundaBuilder : ContainerBuilder<CamundaBuilder, CamundaContainer, CamundaConfiguration>
 {
-    public const string CamundaImage = "camunda/camunda-bpm-platform:wildfly-7.22.0-SNAPSHOT";
+    public const string CamundaImage = "camunda/camunda-bpm-platform:7.22.0-SNAPSHOT";
     
     public const ushort CamundaPort = 8080;
     
