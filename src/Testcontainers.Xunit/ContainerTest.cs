@@ -7,30 +7,16 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public abstract class ContainerTest<TBuilderEntity, TContainerEntity> : IAsyncLifetime
+public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null) : ContainerLifetime<TBuilderEntity, TContainerEntity>
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer
 {
-    protected ContainerTest(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
-    {
-        var builder = new TBuilderEntity().WithLogger(new TestOutputLogger(testOutputHelper));
-        Container = configure == null ? builder.Build() : configure(builder).Build();
-    }
-
     /// <summary>
-    /// The container instance.
+    /// The helper used for writing messages to the test output.
     /// </summary>
-    protected TContainerEntity Container { get; }
+    protected ITestOutputHelper TestOutputHelper { get; } = testOutputHelper;
 
-    /// <inheritdoc />
-    Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
+    protected override ILogger Logger { get; } = new TestOutputLogger(testOutputHelper);
 
-    /// <inheritdoc cref="IAsyncLifetime.InitializeAsync()" />
-    protected virtual Task InitializeAsync() => Container.StartAsync();
-
-    /// <inheritdoc />
-    Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
-
-    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync()" />
-    protected virtual Task DisposeAsync() => Container.DisposeAsync().AsTask();
+    protected override TBuilderEntity Configure(TBuilderEntity builder) => configure != null ? configure(builder) : builder;
 }
