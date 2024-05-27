@@ -5,36 +5,34 @@ namespace Testcontainers.Xunit;
 /// See <a href="https://xunit.net/docs/shared-context">Shared Context between Tests</a> from xUnit.net documentation for more information about fixtures.
 /// A logger is automatically configured to write diagnostic messages to xUnit's <see cref="IMessageSink"/>.
 /// </summary>
-/// <param name="messageSink">The message sink used for reporting diagnostic messages.</param>
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink) : IAsyncLifetime
+public class ContainerFixture<TBuilderEntity, TContainerEntity> : IAsyncLifetime
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer
 {
-    private TContainerEntity _container;
+    private Lazy<TContainerEntity> _container;
+
+    public ContainerFixture(IMessageSink messageSink)
+    {
+        MessageSink = messageSink;
+        _container = new Lazy<TContainerEntity>(() =>
+        {
+            var containerBuilder = new TBuilderEntity().WithLogger(new MessageSinkLogger(MessageSink));
+            return Configure(containerBuilder).Build();
+        });
+    }
 
     /// <summary>
     /// The message sink used for reporting diagnostic messages.
     /// </summary>
-    protected IMessageSink MessageSink { get; } = messageSink;
+    protected IMessageSink MessageSink { get; }
 
     /// <summary>
     /// The container instance.
     /// </summary>
-    public TContainerEntity Container
-    {
-        get
-        {
-            if (_container == null)
-            {
-                var containerBuilder = new TBuilderEntity().WithLogger(new MessageSinkLogger(MessageSink));
-                _container = Configure(containerBuilder).Build();
-            }
-            return _container;
-        }
-    }
+    public TContainerEntity Container => _container.Value;
 
     /// <summary>
     /// Extension point to further configure the container instance.
@@ -54,10 +52,7 @@ public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink mes
     /// </example>
     /// <param name="builder">The container builder.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected virtual TBuilderEntity Configure(TBuilderEntity builder)
-    {
-        return builder;
-    }
+    protected virtual TBuilderEntity Configure(TBuilderEntity builder) => builder;
 
     /// <inheritdoc />
     Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
