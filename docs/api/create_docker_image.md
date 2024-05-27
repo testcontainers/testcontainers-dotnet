@@ -94,6 +94,7 @@ _ = new ImageFromDockerfileBuilder()
 | `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
 | `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
 | `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).      |
+| `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
