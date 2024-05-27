@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 /// <summary>
 /// Fixture for sharing a container instance across multiple tests in a single class.

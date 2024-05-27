@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 internal class DbContainerTestMethods(DbProviderFactory dbProviderFactory, string connectionString) : IDbContainerTestMethods, IAsyncDisposable
 {

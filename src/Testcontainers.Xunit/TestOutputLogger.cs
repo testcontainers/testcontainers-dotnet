@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : ILogger, IDisposable
 {
