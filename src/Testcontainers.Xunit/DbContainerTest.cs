@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 /// <summary>
 /// Base class for tests needing a database container per test method.

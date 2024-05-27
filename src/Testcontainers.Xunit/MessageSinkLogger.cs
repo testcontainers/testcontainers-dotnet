@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 internal sealed class MessageSinkLogger(IMessageSink messageSink) : ILogger, IDisposable
 {
