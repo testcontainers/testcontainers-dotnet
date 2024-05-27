@@ -1,0 +1,12 @@
+global using System;
+global using System.Data.Common;
+global using System.Diagnostics;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Containers;
+global using JetBrains.Annotations;
+global using Microsoft.Extensions.Logging;
+global using Xunit;
+global using Xunit.Abstractions;
+global using Xunit.Sdk;
