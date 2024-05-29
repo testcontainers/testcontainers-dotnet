@@ -4,7 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    public const string PulsarImage = "apachepulsar/pulsar:3.0.4";
+    public const string PulsarImage = "apachepulsar/pulsar:3.2.3";
 
     public const ushort PulsarBrokerDataPort = 6650;
 
@@ -163,7 +163,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             {
                 try
                 {
-                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
+                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromDays(365))
                         .ConfigureAwait(false);
 
                     _ = _httpWaitStrategy.WithHeader("Authorization", "Bearer " + _authToken.Trim());
