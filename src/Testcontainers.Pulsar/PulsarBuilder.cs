@@ -163,7 +163,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             {
                 try
                 {
-                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromDays(365))
+                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
                         .ConfigureAwait(false);
 
                     _ = _httpWaitStrategy.WithHeader("Authorization", "Bearer " + _authToken.Trim());

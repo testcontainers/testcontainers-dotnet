@@ -58,8 +58,13 @@ public sealed class PulsarContainer : DockerContainer
             "--subject",
             PulsarBuilder.Username,
             "--expiry-time",
-            $"{expire.TotalSeconds}s",
+            "",
         };
+
+        if (_configuration.Image.FullName is "apachepulsar/pulsar:3.2.0" or "apachepulsar/pulsar:3.2.1" or "apachepulsar/pulsar:3.2.2" or "apachepulsar/pulsar:3.2.3")
+            command[8] = $"{expire.TotalSeconds * 1000}s";
+        else
+            command[8] = $"{expire.TotalSeconds}s";
 
         var tokensResult = await ExecAsync(command, ct)
             .ConfigureAwait(false);
