@@ -261,34 +261,34 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public virtual async Task StartAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        var futureResources = Array.Empty<IFutureResource>()
-          .Concat(_configuration.Mounts)
-          .Concat(_configuration.Networks);
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
 
-        await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
-          .ConfigureAwait(false);
+      var futureResources = Array.Empty<IFutureResource>()
+        .Concat(_configuration.Mounts)
+        .Concat(_configuration.Networks);
 
-        await Task.WhenAll(_configuration.Containers.Select(resource => resource.StartAsync(ct)))
-          .ConfigureAwait(false);
+      await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
+        .ConfigureAwait(false);
 
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
+      await Task.WhenAll(_configuration.Containers.Select(resource => resource.StartAsync(ct)))
+        .ConfigureAwait(false);
 
-        await UnsafeStartAsync(ct)
-          .ConfigureAwait(false);
-      }
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeStartAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public virtual async Task StopAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeStopAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeStopAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -344,7 +344,8 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      using (_ = AcquireLock())
+      using (_ = await AcquireLockAsync()
+               .ConfigureAwait(false))
       {
         if (Guid.Empty.Equals(_configuration.SessionId))
         {
