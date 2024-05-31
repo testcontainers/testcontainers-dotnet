@@ -101,6 +101,42 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
+    /// Gets or sets the wait strategy retry count.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static ushort? WaitStrategyRetries { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyRetries() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyRetries();
+
+    /// <summary>
+    /// Gets or sets the wait strategy interval.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyInterval { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyInterval() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyInterval();
+
+    /// <summary>
+    /// Gets or sets the wait strategy timeout.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyTimeout { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyTimeout() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
+
+    /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]

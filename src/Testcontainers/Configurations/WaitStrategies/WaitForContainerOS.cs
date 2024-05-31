@@ -7,77 +7,87 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IWaitForContainerOS" />
   internal abstract class WaitForContainerOS : IWaitForContainerOS
   {
-    private readonly ICollection<IWaitUntil> _waitStrategies = new List<IWaitUntil>();
+    private readonly ICollection<WaitStrategy> _waitStrategies = new List<WaitStrategy>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WaitForContainerOS" /> class.
     /// </summary>
     protected WaitForContainerOS()
     {
-      _waitStrategies.Add(new UntilContainerIsRunning());
+      _waitStrategies.Add(new WaitStrategy(new UntilContainerIsRunning()));
     }
-
-    /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilCommandIsCompleted(string command);
 
     /// <inheritdoc />
     public abstract IWaitForContainerOS UntilCommandIsCompleted(params string[] command);
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilPortIsAvailable(int port);
+    public abstract IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitStrategy)
+    public abstract IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <inheritdoc />
+    public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <inheritdoc />
+    public virtual IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
     {
+      var waitStrategy = new WaitStrategy(waitUntil);
+
+      if (waitStrategyModifier != null)
+      {
+        waitStrategyModifier(waitStrategy);
+      }
+
       _waitStrategies.Add(waitStrategy);
       return this;
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilFileExists(string filePath, FileSystem fileSystem = FileSystem.Host)
+    public virtual IWaitForContainerOS UntilFileExists(string filePath, FileSystem fileSystem = FileSystem.Host, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       switch (fileSystem)
       {
         case FileSystem.Container:
-          return AddCustomWaitStrategy(new UntilFileExistsInContainer(filePath));
+          return AddCustomWaitStrategy(new UntilFileExistsInContainer(filePath), waitStrategyModifier);
         case FileSystem.Host:
         default:
-          return AddCustomWaitStrategy(new UntilFileExistsOnHost(filePath));
+          return AddCustomWaitStrategy(new UntilFileExistsOnHost(filePath), waitStrategyModifier);
       }
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilMessageIsLogged(string pattern)
+    public IWaitForContainerOS UntilMessageIsLogged(string pattern, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern));
+      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IWaitForContainerOS UntilMessageIsLogged(Regex pattern)
+    public IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern));
+      return AddCustomWaitStrategy(new UntilMessageIsLogged(pattern), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount)
+    public virtual IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilOperationIsSucceeded(operation, maxCallCount));
+      return AddCustomWaitStrategy(new UntilOperationIsSucceeded(operation, maxCallCount), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request)
+    public virtual IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()));
+      return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3)
+    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak));
+      return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public IEnumerable<IWaitUntil> Build()
+    public IEnumerable<WaitStrategy> Build()
     {
       return _waitStrategies;
     }

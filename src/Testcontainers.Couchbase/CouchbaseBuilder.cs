@@ -183,7 +183,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <param name="ct">Cancellation token.</param>
     private async Task ConfigureCouchbaseAsync(IContainer container, CancellationToken ct = default)
     {
-        await WaitStrategy.WaitUntilAsync(() => WaitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
+        await WaitStrategy.WaitUntilAsync(() => WaitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
             .ConfigureAwait(false);
 
         using (var httpClient = new HttpClient(new RetryHandler()))
@@ -269,7 +269,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             .Build()
             .Last();
 
-        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), ct)
+        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
             .ConfigureAwait(false);
     }
 

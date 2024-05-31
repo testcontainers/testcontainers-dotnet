@@ -61,18 +61,9 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     private sealed class PortForwardingBuilder : ContainerBuilder<PortForwardingBuilder, PortForwardingContainer, PortForwardingConfiguration>
     {
-      public const string SshdImage = "testcontainers/sshd:1.1.0";
+      public const string SshdImage = "testcontainers/sshd:1.2.0";
 
       public const ushort SshdPort = 22;
-
-      private const string Command = "echo \"$USERNAME:$PASSWORD\" | chpasswd && /usr/sbin/sshd -D"
-                                     + " -o AddressFamily=inet"
-                                     + " -o AllowAgentForwarding=yes"
-                                     + " -o AllowTcpForwarding=yes"
-                                     + " -o GatewayPorts=yes"
-                                     + " -o HostkeyAlgorithms=+ssh-rsa"
-                                     + " -o KexAlgorithms=+diffie-hellman-group1-sha1"
-                                     + " -o PermitRootLogin=yes";
 
       /// <summary>
       /// Initializes a new instance of the <see cref="PortForwardingConfiguration" /> class.
@@ -114,8 +105,6 @@ namespace DotNet.Testcontainers.Containers
         return base.Init()
           .WithImage(SshdImage)
           .WithPortBinding(SshdPort, true)
-          .WithEntrypoint("/bin/sh", "-c")
-          .WithCommand(Command)
           .WithUsername("root")
           .WithPassword("root")
           .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(SshdPort));
