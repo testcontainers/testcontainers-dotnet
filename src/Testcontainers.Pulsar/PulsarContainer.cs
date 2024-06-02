@@ -43,9 +43,21 @@ public sealed class PulsarContainer : DockerContainer
     /// <exception cref="ArgumentException"></exception>
     public async Task<string> CreateAuthenticationTokenAsync(TimeSpan expire = default, CancellationToken ct = default)
     {
+        int secondsToMilliseconds;
+
         if (_configuration.AuthenticationEnabled.HasValue && !_configuration.AuthenticationEnabled.Value)
         {
             throw new ArgumentException("Failed to create token. Authentication is not enabled.");
+        }
+
+        if (_configuration.Image.Tag.StartsWith("3.2") || _configuration.Image.Tag.StartsWith("latest"))
+        {
+            Logger.LogWarning("The 'apachepulsar/pulsar:3.2.?' image contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
+            secondsToMilliseconds = 1000;
+        }
+        else
+        {
+            secondsToMilliseconds = 1;
         }
 
         var command = new[]
@@ -58,13 +70,8 @@ public sealed class PulsarContainer : DockerContainer
             "--subject",
             PulsarBuilder.Username,
             "--expiry-time",
-            "",
+            $"{secondsToMilliseconds * expire.TotalSeconds}s",
         };
-
-        if (_configuration.Image.FullName is "apachepulsar/pulsar:3.2.0" or "apachepulsar/pulsar:3.2.1" or "apachepulsar/pulsar:3.2.2" or "apachepulsar/pulsar:3.2.3")
-            command[8] = $"{expire.TotalSeconds * 1000}s";
-        else
-            command[8] = $"{expire.TotalSeconds}s";
 
         var tokensResult = await ExecAsync(command, ct)
             .ConfigureAwait(false);
