@@ -84,7 +84,7 @@ To get the Pulsar service URL use:
 string pulsarServiceUrl = _pulsarContainer.GetHttpServiceUrl();
 ```
 
-### Enable token authentication
+## Enable token authentication
 
 If you need to use token authentication, use the following builder configuration to enable authentication:
 
@@ -99,7 +99,7 @@ var authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHour
     .ConfigureAwait(false);
 ```
 
-#### Enable Pulsar Functions
+## Enable Pulsar Functions
 
 If you need to use Pulsar Functions, use the following builder configuration to enable it:
 
