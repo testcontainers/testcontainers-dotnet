@@ -47,5 +47,3 @@ public sealed class Neo4jContainerTest : IAsyncLifetime
 ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
-
-[xunit]: https://xunit.net/

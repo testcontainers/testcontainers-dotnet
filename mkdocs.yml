@@ -45,4 +45,5 @@ nav:
     - modules/mssql.md
     - modules/neo4j.md
     - modules/postgres.md
+    - modules/pulsar.md
     - modules/rabbitmq.md
