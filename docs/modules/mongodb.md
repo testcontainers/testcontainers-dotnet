@@ -45,5 +45,3 @@ public sealed class MongoDbContainerTest : IAsyncLifetime
 ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
-
-[xunit]: https://xunit.net/
