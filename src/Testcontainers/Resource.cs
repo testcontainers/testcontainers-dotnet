@@ -60,9 +60,12 @@ namespace DotNet.Testcontainers
     /// <summary>
     /// Acquires a lock to access the resource thread-safe.
     /// </summary>
-    /// <returns>An <see cref="IDisposable" /> that releases the lock on <see cref="IDisposable.Dispose" />.</returns>
-    protected virtual IDisposable AcquireLock()
+    /// <returns>A <see cref="IDisposable" /> that releases the lock on <see cref="IDisposable.Dispose" />.</returns>
+    protected virtual async Task<IDisposable> AcquireLockAsync(CancellationToken ct = default)
     {
+      await _semaphoreSlim.WaitAsync(ct)
+        .ConfigureAwait(false);
+
       return new Lock(_semaphoreSlim);
     }
 
@@ -102,7 +105,6 @@ namespace DotNet.Testcontainers
       public Lock(SemaphoreSlim semaphoreSlim)
       {
         _semaphoreSlim = semaphoreSlim;
-        _semaphoreSlim.Wait();
       }
 
       public void Dispose()
