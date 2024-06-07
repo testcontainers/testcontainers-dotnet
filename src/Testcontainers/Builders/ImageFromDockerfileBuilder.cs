@@ -18,6 +18,7 @@ namespace DotNet.Testcontainers.Builders
   ///     .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
   ///     .WithLabel(DefaultLabels.Instance)
   ///     .WithCleanUp(true)
+  ///     .WithImageBuildPolicy(PullPolicy.Always)
   ///     .WithDockerfile("Dockerfile")
   ///     .WithDockerfileDirectory(Directory.GetCurrentDirectory())
   ///     .WithName(new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty))

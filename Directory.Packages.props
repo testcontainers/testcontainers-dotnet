@@ -4,7 +4,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.0"/>
+        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.3.1"/>
         <PackageVersion Include="Docker.DotNet.X509" Version="3.125.15"/>
         <PackageVersion Include="Docker.DotNet" Version="3.125.15"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"/>
@@ -35,6 +35,7 @@
         <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
         <PackageVersion Include="CouchbaseNetClient" Version="3.4.3"/>
+        <PackageVersion Include="DotPulsar" Version="3.1.2"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.0.5"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
         <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"/>
@@ -56,7 +57,7 @@
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
         <PackageVersion Include="Neo4j.Driver" Version="5.5.0"/>
-        <PackageVersion Include="Npgsql" Version="6.0.10"/>
+        <PackageVersion Include="Npgsql" Version="6.0.11"/>
         <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="3.21.90"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
