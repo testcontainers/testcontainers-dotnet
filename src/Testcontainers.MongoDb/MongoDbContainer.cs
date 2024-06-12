@@ -26,6 +26,10 @@ public sealed class MongoDbContainer : DockerContainer
         var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
+        if (!string.IsNullOrEmpty(_configuration.ReplicaSetName))
+        {
+           endpoint.Query = $"replicaSet={_configuration.ReplicaSetName}";
+        }
         return endpoint.ToString();
     }
 

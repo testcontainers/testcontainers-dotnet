@@ -80,7 +80,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         if (!string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
         {
             mongoDbBuilder = mongoDbBuilder
-                .WithCommand(DockerResourceConfiguration.Command.Concat(["--replSet", DockerResourceConfiguration.ReplicaSetName, "--keyFile", "/tmp/keyfile"]).ToArray())
+                .WithCommand(DockerResourceConfiguration.Command.Concat(["--replSet", DockerResourceConfiguration.ReplicaSetName, "--keyFile", "/tmp/keyfile", "--bind_ip_all"]).ToArray())
                 .WithResourceMapping(Encoding.Default.GetBytes("""
                     #!/bin/bash
                     openssl rand -base64 32 > "/tmp/keyfile"
