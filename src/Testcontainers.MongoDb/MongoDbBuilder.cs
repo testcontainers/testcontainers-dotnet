@@ -60,6 +60,13 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", initDbRootPassword);
     }
 
+    public MongoDbBuilder WithReplicaSet(string replicaSetName = "rs0")
+    {
+        var initReplicaSetName = replicaSetName ?? "rs0";
+
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: initReplicaSetName));
+    }
+
     /// <inheritdoc />
     public override MongoDbContainer Build()
     {
@@ -69,6 +76,22 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         // provided, the log message "Waiting for connections" appears twice.
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
         var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+
+        if (!string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
+        {
+            mongoDbBuilder = mongoDbBuilder
+                .WithCommand(DockerResourceConfiguration.Command.Concat(["--replSet", DockerResourceConfiguration.ReplicaSetName, "--keyFile", "/tmp/keyfile"]).ToArray())
+                .WithResourceMapping(Encoding.Default.GetBytes("""
+                    #!/bin/bash
+                    openssl rand -base64 32 > "/tmp/keyfile"
+                    chmod 600 /tmp/keyfile
+                    chown 999:999 /tmp/keyfile
+                    """.Replace("\r", "")), "/docker-entrypoint-initdb.d/01-init-keyfile.sh", UnixFileModes.OtherRead | UnixFileModes.OtherExecute)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted(
+                    "mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet --eval " +
+                    $"\"try {{ rs.status().ok }} catch (e) {{ rs.initiate({{'_id':'{DockerResourceConfiguration.ReplicaSetName}', members: [{{'_id':1, 'host':'127.0.0.1:27017'}}]}}).ok }}\""));
+        }
+
         return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
