@@ -9,7 +9,7 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="Azure.Data.AppConfiguration" Version="1.4.1"/>
+        <PackageReference Include="Azure.Data.AppConfiguration"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.AzureAppConfiguration/Testcontainers.AzureAppConfiguration.csproj"/>

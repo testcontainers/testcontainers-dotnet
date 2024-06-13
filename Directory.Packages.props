@@ -28,6 +28,7 @@
         <PackageVersion Include="AWSSDK.S3" Version="3.7.103.3"/>
         <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.101.7"/>
         <PackageVersion Include="AWSSDK.SQS" Version="3.7.100.71"/>
+        <PackageVersion Include="Azure.Data.AppConfiguration" Version="1.4.1"/>
         <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
