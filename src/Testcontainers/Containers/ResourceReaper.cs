@@ -358,12 +358,16 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
-                    messageBuffer.Write(readBytes, 0, numberOfBytes);
+                    await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
+                      .ConfigureAwait(false);
+
                     hasAcknowledge = false;
                   }
                   else
                   {
-                    messageBuffer.Write(readBytes, 0, indexOfNewLine);
+                    await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
+                      .ConfigureAwait(false);
+
                     hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
                   }

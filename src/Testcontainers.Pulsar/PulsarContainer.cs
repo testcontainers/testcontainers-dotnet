@@ -47,8 +47,8 @@ public sealed class PulsarContainer : DockerContainer
         {
             throw new ArgumentException("Failed to create token. Authentication is not enabled.");
         }
-        
-        var command = new List<string>(9)
+
+        var command = new List<string>
         {
             "bin/pulsar",
             "tokens",
@@ -59,9 +59,10 @@ public sealed class PulsarContainer : DockerContainer
             PulsarBuilder.Username
         };
 
-        if (expiryTime != Timeout.InfiniteTimeSpan)
+        if (!Timeout.InfiniteTimeSpan.Equals(expiryTime))
         {
             int secondsToMilliseconds;
+
             if (_configuration.Image.Tag.StartsWith("3.2") || _configuration.Image.Tag.StartsWith("latest"))
             {
                 Logger.LogWarning("The 'apachepulsar/pulsar:3.2.?' image contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
@@ -71,6 +72,7 @@ public sealed class PulsarContainer : DockerContainer
             {
                 secondsToMilliseconds = 1;
             }
+
             command.Add("--expiry-time");
             command.Add($"{secondsToMilliseconds * expiryTime.TotalSeconds}s");
         }
