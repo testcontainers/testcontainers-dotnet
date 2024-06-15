@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, bool, CancellationToken)" />
+    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken)" />
     /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
