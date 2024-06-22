@@ -6,7 +6,7 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
 {
     public const string AspireDashboardImage = "mcr.microsoft.com/dotnet/aspire-dashboard:latest";
 
-    public const ushort AspireDashboardPort = 18888;
+    public const ushort AspireDashboardFrontendPort = 18888;
 
     public const ushort AspireDashboardOtlpPort = 18889;
 
@@ -29,30 +29,30 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
         DockerResourceConfiguration = resourceConfiguration;
     }
 
+    /// <inheritdoc />
+    protected override AspireDashboardConfiguration DockerResourceConfiguration { get; }
+
     /// <summary>
-    /// Sets the AllowAnonymous mode.
+    /// Configures the dashboard to accept anonymous access.
     /// </summary>
-    /// <param name="allowed"></param>
-    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    /// <param name="allowed">A value indicating whether anonymous access is allowed.</param>
+    /// <returns>A configured instance of <see cref="AspireDashboardBuilder" />.</returns>
     public AspireDashboardBuilder AllowAnonymous(bool allowed)
     {
         return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration(allowAnonymous: allowed))
-            .WithEnvironment("DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS", allowed.ToString().ToLower());
+            .WithEnvironment("DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS", allowed.ToString().ToLowerInvariant());
     }
 
     /// <summary>
-    /// Sets the AllowAnonymous mode.
+    /// Configures the dashboard to allow unsecured transport.
     /// </summary>
-    /// <param name="allowed"></param>
-    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    /// <param name="allowed">A value indicating whether unsecured transport is allowed.</param>
+    /// <returns>A configured instance of <see cref="AspireDashboardBuilder" />.</returns>
     public AspireDashboardBuilder AllowUnsecuredTransport(bool allowed)
     {
         return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration(allowUnsecuredTransport: allowed))
-            .WithEnvironment("ASPIRE_ALLOW_UNSECURED_TRANSPORT", allowed.ToString().ToLower());
+            .WithEnvironment("ASPIRE_ALLOW_UNSECURED_TRANSPORT", allowed.ToString().ToLowerInvariant());
     }
-
-    /// <inheritdoc />
-    protected override AspireDashboardConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
     public override AspireDashboardContainer Build()
@@ -66,9 +66,9 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
     {
         return base.Init()
             .WithImage(AspireDashboardImage)
-            .WithPortBinding(AspireDashboardPort, AspireDashboardPort)
+            .WithPortBinding(AspireDashboardFrontendPort, AspireDashboardFrontendPort)
             .WithPortBinding(AspireDashboardOtlpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(AspireDashboardPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(AspireDashboardFrontendPort)));
     }
 
     /// <inheritdoc />

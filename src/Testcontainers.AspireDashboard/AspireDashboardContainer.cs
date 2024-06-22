@@ -22,7 +22,7 @@ public sealed class AspireDashboardContainer : DockerContainer
         var endpoint = new UriBuilder(
             Uri.UriSchemeHttp,
             Hostname,
-            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardPort));
+            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort));
 
         return endpoint.ToString();
     }
