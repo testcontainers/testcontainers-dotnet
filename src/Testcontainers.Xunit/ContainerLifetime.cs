@@ -10,6 +10,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     where TContainerEntity : IContainer
 {
     private readonly Lazy<TContainerEntity> _container;
+    [CanBeNull] private ExceptionDispatchInfo _exception;
 
     /// <summary>
     /// The logger.
@@ -48,17 +49,40 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     /// <summary>
     /// The container instance.
     /// </summary>
-    public TContainerEntity Container => _container.Value;
+    public TContainerEntity Container
+    {
+        get
+        {
+            _exception?.Throw();
+            return _container.Value;
+        }
+    }
 
     /// <inheritdoc />
     Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
 
     /// <inheritdoc cref="IAsyncLifetime.InitializeAsync()" />
-    protected virtual Task InitializeAsync() => Container.StartAsync();
+    protected virtual async Task InitializeAsync()
+    {
+        try
+        {
+            await Container.StartAsync();
+        }
+        catch (Exception e)
+        {
+            _exception = ExceptionDispatchInfo.Capture(e);
+        }
+    }
 
     /// <inheritdoc />
     Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
 
     /// <inheritdoc cref="IAsyncLifetime.DisposeAsync()" />
-    protected virtual Task DisposeAsync() => Container.DisposeAsync().AsTask();
+    protected virtual async Task DisposeAsync()
+    {
+        if (_exception == null)
+        {
+            await Container.DisposeAsync();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 global using System;
 global using System.Data.Common;
 global using System.Diagnostics;
+global using System.Runtime.ExceptionServices;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Builders;
