@@ -92,10 +92,17 @@ If you need to use token authentication, use the following builder configuration
 PulsarContainer _pulsarContainer = PulsarBuilder().WithTokenAuthentication().Build();
 ```
 
-Start the container and get the token from the running instance by using:
+Start the container and obtain an authentication token with a specified expiration time
 
 ```csharp
 var authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
+    .ConfigureAwait(false);
+```
+
+Alternatively, set the token to never expire
+
+```csharp
+var authToken = await container.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan)
     .ConfigureAwait(false);
 ```
 

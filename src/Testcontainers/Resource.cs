@@ -31,7 +31,7 @@ namespace DotNet.Testcontainers
     }
 
     /// <summary>
-    /// Checks whether the resources exists or not.
+    /// Checks whether the resources exist or not.
     /// </summary>
     /// <returns>True if the resource exists; otherwise, false.</returns>
     protected abstract bool Exists();

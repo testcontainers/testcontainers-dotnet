@@ -11,14 +11,14 @@ _ = Wait.ForUnixContainer()
   .AddCustomWaitStrategy(new MyCustomWaitStrategy());
 ```
 
-<!-- In some cases, it might be necessary to configure the behavior of a wait strategy further, being able to cancel the readiness check. The API provides a callback that allows setting additional configurations such as `Retries`, `Interval`, and `Timeout`.
+In some cases, it might be necessary to configure the behavior of a wait strategy further, being able to cancel the readiness check. The API provides a callback that allows setting additional configurations such as `Retries`, `Interval`, and `Timeout`.
 
 ```csharp title="Cancel the readiness check after one minute"
 _ = Wait.ForUnixContainer()
   .UntilMessageIsLogged("Server started", o => o.WithTimeout(TimeSpan.FromMinutes(1)));
 ```
 
-Besides configuring the wait strategy, cancelling a container start can always be done utilizing a [CancellationToken](create_docker_container.md#canceling-a-container-start). -->
+Besides configuring the wait strategy, cancelling a container start can always be done utilizing a [CancellationToken](create_docker_container.md#canceling-a-container-start).
 
 ## Wait until an HTTP(S) endpoint is available
 

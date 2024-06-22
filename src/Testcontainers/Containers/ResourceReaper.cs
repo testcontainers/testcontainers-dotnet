@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, bool, CancellationToken)" />
+    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken)" />
     /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
@@ -358,12 +358,16 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
-                    messageBuffer.Write(readBytes, 0, numberOfBytes);
+                    await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
+                      .ConfigureAwait(false);
+
                     hasAcknowledge = false;
                   }
                   else
                   {
-                    messageBuffer.Write(readBytes, 0, indexOfNewLine);
+                    await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
+                      .ConfigureAwait(false);
+
                     hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
                   }
