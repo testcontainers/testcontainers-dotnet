@@ -1,6 +1,6 @@
 namespace Testcontainers.Xunit;
 
-internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : ILogger, IDisposable
+internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : ILogger
 {
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
@@ -13,11 +13,7 @@ internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : ILo
         }
     }
 
-    public bool IsEnabled(LogLevel logLevel) => true;
+    public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
-    public IDisposable BeginScope<TState>(TState state) => this;
-
-    public void Dispose()
-    {
-    }
+    public IDisposable BeginScope<TState>(TState state) => new NullScope();
 }
