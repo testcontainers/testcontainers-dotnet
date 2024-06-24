@@ -11,10 +11,12 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     /// <param name="password">The MongoDb password.</param>
     public MongoDbConfiguration(
         string username = null,
-        string password = null)
+        string password = null,
+        string replicaSetName = null)
     {
         Username = username;
         Password = password;
+        ReplicaSetName = replicaSetName;
     }
 
     /// <summary>
@@ -57,6 +59,7 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+        ReplicaSetName = BuildConfiguration.Combine(oldValue.ReplicaSetName, newValue.ReplicaSetName);
     }
 
     /// <summary>
@@ -68,4 +71,10 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     /// Gets the MongoDb password.
     /// </summary>
     public string Password { get; }
+
+    /// <summary>
+    /// Name of the replica set. If specified, the container will be started as a single node replica set.
+    /// </summary>
+    /// <example>rs0</example>
+    public string ReplicaSetName { get; }
 }
