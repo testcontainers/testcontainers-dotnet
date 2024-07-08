@@ -94,18 +94,6 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the operation is completed successfully.
-    /// </summary>
-    /// <param name="operation">The operation to be executed.</param>
-    /// <param name="maxCallCount">The number of attempts before an exception is thrown.</param>
-    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
-    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="maxCallCount" />.</exception>
-    [PublicAPI]
-    [Obsolete("Use one of the other wait strategies in combination with the `Action<IWaitStrategy>` argument, and set the number of retries.")]
-    IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyModifier = null);
-
-    /// <summary>
     /// Waits until the http request is completed successfully.
     /// </summary>
     /// <param name="request">The http request to be executed.</param>
