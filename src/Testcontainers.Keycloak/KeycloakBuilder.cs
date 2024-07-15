@@ -61,8 +61,21 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
-        Validate();
-        return new KeycloakContainer(DockerResourceConfiguration);
+        var builder = this;
+
+        var tagMajorIndex = DockerResourceConfiguration.Image.Tag.IndexOf(".", StringComparison.Ordinal);
+        if (tagMajorIndex > 0
+            && int.TryParse(DockerResourceConfiguration.Image.Tag.Substring(0, tagMajorIndex), out var tagMajorVersion)
+            && tagMajorVersion >= 25)
+        {
+            builder = builder
+                .WithPortBinding(KeycloakHealthPort, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                    request.ForPath("/health/ready").ForPort(KeycloakHealthPort)));
+        }
+
+        builder.Validate();
+        return new KeycloakContainer(builder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -91,18 +104,6 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
             .NotNull()
             .NotEmpty();
-
-        var tagMajorIndex = DockerResourceConfiguration.Image.Tag.IndexOf(".", StringComparison.Ordinal);
-        if (tagMajorIndex > 0)
-        {
-            if (int.TryParse(DockerResourceConfiguration.Image.Tag.Substring(0, tagMajorIndex), out var tagMajorVersion)
-                && tagMajorVersion >= 25)
-            {
-                WithPortBinding(KeycloakHealthPort, true);
-                WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                    request.ForPath("/health/ready").ForPort(KeycloakHealthPort)));
-            }
-        }
     }
 
     /// <inheritdoc />
