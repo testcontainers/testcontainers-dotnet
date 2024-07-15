@@ -8,6 +8,8 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
 
     public const ushort KeycloakPort = 8080;
 
+    public const ushort KeycloakHealthPort = 9000;
+
     public const string DefaultUsername = "admin";
 
     public const string DefaultPassword = "admin";
@@ -89,6 +91,18 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
             .NotNull()
             .NotEmpty();
+
+        var tagMajorIndex = DockerResourceConfiguration.Image.Tag.IndexOf(".", StringComparison.Ordinal);
+        if (tagMajorIndex > 0)
+        {
+            if (int.TryParse(DockerResourceConfiguration.Image.Tag.Substring(0, tagMajorIndex), out var tagMajorVersion)
+                && tagMajorVersion >= 25)
+            {
+                WithPortBinding(KeycloakHealthPort, true);
+                WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                    request.ForPath("/health/ready").ForPort(KeycloakHealthPort)));
+            }
+        }
     }
 
     /// <inheritdoc />
