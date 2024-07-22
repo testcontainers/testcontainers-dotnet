@@ -210,6 +210,62 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task RandomUdpPortBinding()
+      {
+        // Given
+        const string containerUdpQualifiedPort = "4001/udp";
+        const ushort containerUdpPort = 4001;
+
+        // Simple Python-based echo server with UDP
+        // https://github.com/vhiribarren/docker-echo-server
+        await using var container = new ContainerBuilder()
+          .WithImage("vhiribarren/echo-server")
+          .WithPortBinding(containerUdpQualifiedPort, true)
+          .Build();
+
+        // When
+        await container.StartAsync()
+          .ConfigureAwait(true);
+
+        // Then
+        var localMappedPort = container.GetMappedPublicPort(containerUdpQualifiedPort);
+        Assert.NotEqual(containerUdpPort, localMappedPort);
+
+        var message = Guid.NewGuid().ToString("D");
+        var response = CallUdpEchoServer(container.Hostname, localMappedPort, message);
+        Assert.Equal(message, response);
+      }
+
+      private string CallUdpEchoServer(string serverIP, int serverPort, string message)
+      {
+        // Create a UDP client
+        UdpClient client = new UdpClient(serverPort);
+
+        try
+        {
+          // Connect to the server
+          client.Connect(serverIP, serverPort);
+
+          // Send data to the server
+          byte[] sendData = Encoding.ASCII.GetBytes(message);
+          client.Send(sendData, sendData.Length);
+
+          // Receive the response from the server
+          IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+          byte[] receiveData = client.Receive(ref remoteEndPoint);
+          string receivedMessage = Encoding.ASCII.GetString(receiveData);
+
+          return receivedMessage;
+        }
+        finally
+        {
+          // Close the client
+          client.Close();
+        }
+        return string.Empty;
+      }
+
+      [Fact]
       public async Task BindMountAndCommand()
       {
         // Given
