@@ -229,65 +229,6 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.NotEqual(containerPort, container.GetMappedPublicPort("161/udp"));
       }
 
-      [Fact(Skip = "UDP server doesn't work")]
-      public async Task RandomUdpPortBindingUdpServer()
-      {
-        // Given
-        const string containerUdpQualifiedPort = "4001/udp";
-        const ushort containerUdpPort = 4001;
-
-        // Simple Python-based echo server with UDP
-        // https://github.com/vhiribarren/docker-echo-server
-        await using var container = new ContainerBuilder()
-          // .WithImage("docker-hub.artifactory.mocca.yunextraffic.cloud/vhiribarren/echo-server")
-          .WithImage("vhiribarren/echo-server")
-          .WithPortBinding(containerUdpQualifiedPort, true)
-          .Build();
-
-        // When
-        await container.StartAsync()
-          .ConfigureAwait(true);
-
-        // Then
-        var localMappedPort = container.GetMappedPublicPort(containerUdpQualifiedPort);
-        Assert.NotEqual(containerUdpPort, localMappedPort);
-
-        var message = Guid.NewGuid().ToString("D");
-        var response = CallUdpEchoServer("127.0.0.1", localMappedPort, message);
-        // var response = CallUdpEchoServer("172.19.212.239", localMappedPort, message);
-        // response will look like this: "UDP: fb15aa0b4d19 received: <message> from ('<IP>', <Port>)
-        Assert.Contains(message, response);
-      }
-
-      private string CallUdpEchoServer(string serverIP, int serverPort, string message)
-      {
-        // Create a UDP client
-        // UdpClient client = new UdpClient(0, AddressFamily.InterNetwork);
-        UdpClient client = new UdpClient();
-
-        try
-        {
-          // Connect to the server
-          client.Connect(serverIP, serverPort);
-
-          // Send data to the server
-          byte[] sendData = Encoding.ASCII.GetBytes(message);
-          client.Send(sendData, sendData.Length);
-
-          // Receive the response from the server
-          IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-          byte[] receiveData = client.Receive(ref remoteEndPoint);
-          string receivedMessage = Encoding.ASCII.GetString(receiveData);
-
-          return receivedMessage;
-        }
-        finally
-        {
-          // Close the client
-          client.Close();
-        }
-      }
-
       [Fact]
       public async Task BindMountAndCommand()
       {
