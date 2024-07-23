@@ -77,7 +77,7 @@ jobs:
 
       - name: Run Tests
         # run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
-        run: dotnet cake --target=Tests --test-filter=FullyQualifiedName~RandomUdpPortBinding
+        run: dotnet cake --target=Tests --test-filter='FullyQualifiedName~RandomUdpPortBinding'
 
       # The Test Reporter GH Action is not compatible with the recent
       # actions/upload-artifact@v4 updates: https://github.com/dorny/test-reporter/issues/363.
