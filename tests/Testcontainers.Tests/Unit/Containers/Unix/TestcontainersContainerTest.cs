@@ -232,7 +232,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.NotEqual(containerUdpPort, localMappedPort);
 
         var message = Guid.NewGuid().ToString("D");
-        var response = CallUdpEchoServer(container.Hostname, localMappedPort, message);
+        var response = CallUdpEchoServer("127.0.0.1", localMappedPort, message);
         Assert.Equal(message, response);
       }
 
