@@ -219,6 +219,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Simple Python-based echo server with UDP
         // https://github.com/vhiribarren/docker-echo-server
         await using var container = new ContainerBuilder()
+          // .WithImage("docker-hub.artifactory.mocca.yunextraffic.cloud/vhiribarren/echo-server")
           .WithImage("vhiribarren/echo-server")
           .WithPortBinding(containerUdpQualifiedPort, true)
           .Build();
@@ -233,13 +234,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         var message = Guid.NewGuid().ToString("D");
         var response = CallUdpEchoServer("127.0.0.1", localMappedPort, message);
-        // Assert.Equal(message, response);
+        // var response = CallUdpEchoServer("172.19.212.239", localMappedPort, message);
+        // response will look like this: "UDP: fb15aa0b4d19 received: <message> from ('<IP>', <Port>)
+        Assert.Contains(message, response);
       }
 
       private string CallUdpEchoServer(string serverIP, int serverPort, string message)
       {
         // Create a UDP client
-        UdpClient client = new UdpClient(serverPort);
+        // UdpClient client = new UdpClient(0, AddressFamily.InterNetwork);
+        UdpClient client = new UdpClient();
 
         try
         {
