@@ -132,6 +132,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Resolves the public assigned host port.
     /// </summary>
+    /// <remarks>
+    /// Resolves the public assigned host port for the TCP protocol. To resolve a specific protocol, use <see cref="GetMappedPublicPort(string)" />.
+    /// </remarks>
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
@@ -140,6 +143,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Resolves the public assigned host port.
     /// </summary>
+    /// <remarks>
+    /// Append /tcp|udp|sctp to <paramref name="containerPort" /> to resolve the public assigned host port for a specific protocol e.g. "53/udp".
+    /// </remarks>
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
