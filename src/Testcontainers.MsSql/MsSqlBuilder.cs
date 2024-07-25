@@ -131,12 +131,20 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" };
-
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
+            var hasMsSql18Tools = await container.ExecAsync(new[] { "[", "-f" , "/opt/mssql-tools18/bin/sqlcmd", "]" })
+                .ConfigureAwait(false);
+     
+            string[] command = [ 
+                hasMsSql18Tools.ExitCode == 0 ? "/opt/mssql-tools18/bin/sqlcmd" : "/opt/mssql-tools/bin/sqlcmd",
+                "-C",
+                "-Q",
+                "SELECT 1;",
+            ];
+            
+            var execResult = await container.ExecAsync(command)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
