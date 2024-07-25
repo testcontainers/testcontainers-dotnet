@@ -236,13 +236,15 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfResourceNotFound();
 
-      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
+      var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
+
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
       {
         return publicPort;
       }
       else
       {
-        throw new InvalidOperationException($"Exposed port {containerPort} is not mapped.");
+        throw new InvalidOperationException($"Exposed port {qualifiedContainerPort} is not mapped.");
       }
     }
 

@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Clients
 
     public IDictionary<string, EndpointSettings> Networks { get; }
 
-    private static string GetQualifiedPort(string containerPort)
+    public static string GetQualifiedPort(string containerPort)
     {
       return Array.Exists(new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)) ? containerPort.ToLowerInvariant() : containerPort + TcpPortSuffix;
     }
