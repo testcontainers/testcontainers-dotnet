@@ -68,14 +68,17 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
 
         var majorVersionString = new string(DockerResourceConfiguration.Image.Tag.TakeWhile(char.IsDigit).ToArray());
 
-        var isLatestVersion = "latest".Equals(DockerResourceConfiguration.Image.Tag, StringComparison.OrdinalIgnoreCase);
+        if (!isLatestVersion)
+        {
+            var majorVersionString = new string(DockerResourceConfiguration.Image.Tag.TakeWhile(char.IsDigit).ToArray());
 
-        // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
-        var isMajorVersionAtLeast25 = int.TryParse(majorVersionString, out var majorVersion) && majorVersion >= 25;
+            // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
+            isLatestVersion |= (int.TryParse(majorVersionString, out var majorVersion) && majorVersion >= 25);
+        }
 
         var waitStrategy = Wait.ForUnixContainer()
             .UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health/ready").ForPort(isLatestVersion || isMajorVersionAtLeast25 ? KeycloakHealthPort : KeycloakPort));
+                request.ForPath("/health/ready").ForPort(isLatestVersion ? KeycloakHealthPort : KeycloakPort));
 
         var keycloakBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
         return new KeycloakContainer(keycloakBuilder.DockerResourceConfiguration);
