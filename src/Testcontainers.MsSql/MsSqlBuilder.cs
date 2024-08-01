@@ -134,11 +134,17 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var hasMsSql18Tools = await container.ExecAsync(new[] { "[", "-f" , "/opt/mssql-tools18/bin/sqlcmd", "]" })
+            var msSqlContainer = container as MsSqlContainer;
+            if (msSqlContainer == null)
+            {
+                throw new InvalidOperationException("The container is not a MsSqlContainer.");
+            }
+            
+            var sqlCmdPath = await msSqlContainer.GetSqlCmdPathAsync()
                 .ConfigureAwait(false);
      
             string[] command = [ 
-                hasMsSql18Tools.ExitCode == 0 ? "/opt/mssql-tools18/bin/sqlcmd" : "/opt/mssql-tools/bin/sqlcmd",
+                sqlCmdPath,
                 "-C",
                 "-Q",
                 "SELECT 1;",
