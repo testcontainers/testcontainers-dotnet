@@ -171,7 +171,29 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task RandomPortBinding()
+      public async Task RandomUdpPortBinding()
+      {
+        // Given
+        const ushort containerPort = 53;
+
+        const string qualifiedContainerPort = "53/udp";
+
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(qualifiedContainerPort, true)
+          .Build();
+
+        // When
+        await container.StartAsync()
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.NotEqual(containerPort, container.GetMappedPublicPort(qualifiedContainerPort));
+      }
+
+      [Fact]
+      public async Task RandomTcpPortBinding()
       {
         // Given
         const ushort containerPort = 80;
