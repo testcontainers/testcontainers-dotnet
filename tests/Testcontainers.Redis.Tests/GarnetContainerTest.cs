@@ -1,4 +1,5 @@
 namespace Testcontainers.Redis;
+
 public sealed class GarnetContainerTest : IAsyncLifetime
 {
     // see https://microsoft.github.io/garnet/docs/welcome/releases#docker
