@@ -44,23 +44,23 @@ namespace DotNet.Testcontainers.Images
     string GetHostname();
 
     /// <summary>
-    ///
+    /// Checks if the tag matches either the latest or nightly tag.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if the tag matches the latest or nightly tag, otherwise false.</returns>
     bool MatchLatestOrNightly();
 
     /// <summary>
-    ///
+    /// Checks if the tag matches the specified predicate.
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
+    /// <param name="predicate">The predicate to match the tag against.</param>
+    /// <returns>True if the tag matches the predicate, otherwise false.</returns>
     bool MatchVersion(Predicate<string> predicate);
 
     /// <summary>
-    ///
+    /// Checks if the tag matches the specified predicate.
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
+    /// <param name="predicate">The predicate to match the tag against.</param>
+    /// <returns>True if the tag matches the predicate, otherwise false.</returns>
     bool MatchVersion(Predicate<Version> predicate);
   }
 }
