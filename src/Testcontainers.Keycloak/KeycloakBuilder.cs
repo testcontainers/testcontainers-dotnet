@@ -61,21 +61,24 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
-        var builder = this;
+        Validate();
 
-        var tagMajorIndex = DockerResourceConfiguration.Image.Tag.IndexOf(".", StringComparison.Ordinal);
-        if (tagMajorIndex > 0
-            && int.TryParse(DockerResourceConfiguration.Image.Tag.Substring(0, tagMajorIndex), out var tagMajorVersion)
-            && tagMajorVersion >= 25)
-        {
-            builder = builder
-                .WithPortBinding(KeycloakHealthPort, true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                    request.ForPath("/health/ready").ForPort(KeycloakHealthPort)));
-        }
+        var image = DockerResourceConfiguration.Image;
+        _ = image.MatchVersion((string tag) => "Foo".Equals(tag));
 
-        builder.Validate();
-        return new KeycloakContainer(builder.DockerResourceConfiguration);
+        var majorVersionString = new string(DockerResourceConfiguration.Image.Tag.TakeWhile(char.IsDigit).ToArray());
+
+        var isLatestVersion = "latest".Equals(DockerResourceConfiguration.Image.Tag, StringComparison.OrdinalIgnoreCase);
+
+        // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
+        var isMajorVersionAtLeast25 = int.TryParse(majorVersionString, out var majorVersion) && majorVersion >= 25;
+
+        var waitStrategy = Wait.ForUnixContainer()
+            .UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health/ready").ForPort(isLatestVersion || isMajorVersionAtLeast25 ? KeycloakHealthPort : KeycloakPort));
+
+        var keycloakBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        return new KeycloakContainer(keycloakBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -88,8 +91,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithEnvironment("KC_HEALTH_ENABLED", "true")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health/ready").ForPort(KeycloakPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPath("/health/ready").ForPort(KeycloakPort)));
     }
 
     /// <inheritdoc />

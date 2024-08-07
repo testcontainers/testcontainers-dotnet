@@ -59,5 +59,72 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected.Tag, dockerImage.Tag);
       Assert.Equal(expected.FullName, dockerImage.FullName);
     }
+
+    [Fact]
+    public void MatchLatestOrNightly_TagIsLatest_ReturnsTrue()
+    {
+      // Given
+      IImage dockerImage = new DockerImage("foo:latest");
+
+      // When
+      var result = dockerImage.MatchLatestOrNightly();
+
+      // Then
+      Assert.True(result);
+    }
+
+    [Fact]
+    public void MatchLatestOrNightly_TagIsNightly_ReturnsTrue()
+    {
+      // Given
+      IImage dockerImage = new DockerImage("foo:nightly");
+
+      // When
+      var result = dockerImage.MatchLatestOrNightly();
+
+      // Then
+      Assert.True(result);
+    }
+
+    [Fact]
+    public void MatchLatestOrNightly_TagIsNeither_ReturnsFalse()
+    {
+      // Given
+      IImage dockerImage = new DockerImage("foo:1.0.0");
+
+      // When
+      var result = dockerImage.MatchLatestOrNightly();
+
+      // Then
+      Assert.False(result);
+    }
+
+    [Fact]
+    public void MatchVersion_ReturnsTrue_WhenVersionMatchesPredicate()
+    {
+      // Given
+      Predicate<Version> predicate = v => v.Major == 1 && v.Minor == 0 && v.Build == 0;
+      IImage dockerImage = new DockerImage("foo:1.0.0");
+
+      // When
+      var result = dockerImage.MatchVersion(predicate);
+
+      // Then
+      Assert.True(result);
+    }
+
+    [Fact]
+    public void MatchVersion_ReturnsFalse_WhenVersionDoesNotMatchPredicate()
+    {
+      // Given
+      Predicate<Version> predicate = v => v.Major == 0 && v.Minor == 0 && v.Build == 1;
+      IImage dockerImage = new DockerImage("foo:1.0.0");
+
+      // When
+      var result = dockerImage.MatchVersion(predicate);
+
+      // Then
+      Assert.False(result);
+    }
   }
 }

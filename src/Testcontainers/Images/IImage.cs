@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
+  using System;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -41,5 +42,25 @@ namespace DotNet.Testcontainers.Images
     /// <returns>The registry hostname.</returns>
     [CanBeNull]
     string GetHostname();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    bool MatchLatestOrNightly();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    bool MatchVersion(Predicate<string> predicate);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    bool MatchVersion(Predicate<Version> predicate);
   }
 }
