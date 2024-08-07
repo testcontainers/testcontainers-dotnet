@@ -107,8 +107,19 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
         runtimeInfo.Append("  Total Memory: ");
-        runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
+        runtimeInfo.AppendLine(String.Format(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]));
 
+        var labels = dockerInfo.Labels;
+        if (labels != null && labels.Count > 0)
+        {
+          runtimeInfo.AppendLine("  Labels: ");
+
+          foreach (var label in labels)
+          {
+            runtimeInfo.Append("    ");
+            runtimeInfo.AppendLine(label);
+          }
+        }
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
       catch(Exception e)

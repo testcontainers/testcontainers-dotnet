@@ -16,23 +16,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
 
     public const string Username = "test-user";
 
-    private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars;
-
-    static PulsarBuilder()
-    {
-        const string authenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
-        var authenticationEnvVars = new Dictionary<string, string>();
-        authenticationEnvVars.Add("authenticateOriginalAuthData", "false");
-        authenticationEnvVars.Add("authenticationEnabled", "true");
-        authenticationEnvVars.Add("authorizationEnabled", "true");
-        authenticationEnvVars.Add("authenticationProviders", "org.apache.pulsar.broker.authentication.AuthenticationProviderToken");
-        authenticationEnvVars.Add("brokerClientAuthenticationPlugin", authenticationPlugin);
-        authenticationEnvVars.Add("CLIENT_PREFIX_authPlugin", authenticationPlugin);
-        authenticationEnvVars.Add("PULSAR_PREFIX_authenticationRefreshCheckSeconds", "5");
-        authenticationEnvVars.Add("PULSAR_PREFIX_tokenSecretKey", "file://" + SecretKeyFilePath);
-        authenticationEnvVars.Add("superUserRoles", Username);
-        AuthenticationEnvVars = new ReadOnlyDictionary<string, string>(authenticationEnvVars);
-    }
+    private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars = InitAuthenticationEnvVars();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
@@ -124,6 +108,22 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Merge(PulsarConfiguration oldValue, PulsarConfiguration newValue)
     {
         return new PulsarBuilder(new PulsarConfiguration(oldValue, newValue));
+    }
+
+    private static IReadOnlyDictionary<string, string> InitAuthenticationEnvVars()
+    {
+        const string authenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
+        var authenticationEnvVars = new Dictionary<string, string>();
+        authenticationEnvVars.Add("authenticateOriginalAuthData", "false");
+        authenticationEnvVars.Add("authenticationEnabled", "true");
+        authenticationEnvVars.Add("authorizationEnabled", "true");
+        authenticationEnvVars.Add("authenticationProviders", "org.apache.pulsar.broker.authentication.AuthenticationProviderToken");
+        authenticationEnvVars.Add("brokerClientAuthenticationPlugin", authenticationPlugin);
+        authenticationEnvVars.Add("CLIENT_PREFIX_authPlugin", authenticationPlugin);
+        authenticationEnvVars.Add("PULSAR_PREFIX_authenticationRefreshCheckSeconds", "5");
+        authenticationEnvVars.Add("PULSAR_PREFIX_tokenSecretKey", "file://" + SecretKeyFilePath);
+        authenticationEnvVars.Add("superUserRoles", Username);
+        return new ReadOnlyDictionary<string, string>(authenticationEnvVars);
     }
 
     /// <inheritdoc cref="IWaitUntil" />

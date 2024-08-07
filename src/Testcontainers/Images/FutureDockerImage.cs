@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
+  using System;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -72,6 +73,24 @@ namespace DotNet.Testcontainers.Images
     {
       ThrowIfResourceNotFound();
       return _configuration.Image.GetHostname();
+    }
+
+    /// <inheritdoc />
+    public bool MatchLatestOrNightly()
+    {
+      return _configuration.Image.MatchLatestOrNightly();
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<string> predicate)
+    {
+      return _configuration.Image.MatchVersion(predicate);
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<System.Version> predicate)
+    {
+      return _configuration.Image.MatchVersion(predicate);
     }
 
     /// <inheritdoc />

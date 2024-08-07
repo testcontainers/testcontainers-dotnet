@@ -1,17 +1,43 @@
 namespace Testcontainers.Tests;
 
-public abstract class TarOutputMemoryStreamTest
+public abstract class TarOutputMemoryStreamTest : IDisposable
 {
     private const string TargetDirectoryPath = "/tmp";
 
     private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath, NullLogger.Instance);
 
-    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName()));
+    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"), Path.GetRandomFileName()));
+
+    private bool _disposed;
 
     protected TarOutputMemoryStreamTest()
     {
+        _ = Directory.CreateDirectory(_testFile.Directory!.FullName);
+
         using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
         fileStream.WriteByte(13);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _tarOutputMemoryStream.Dispose();
+            _testFile.Directory!.Delete(true);
+        }
+
+        _disposed = true;
     }
 
     [Fact]
@@ -33,13 +59,13 @@ public abstract class TarOutputMemoryStreamTest
     }
 
     [UsedImplicitly]
-    public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IClassFixture<FromResourceMapping.HttpFixture>, IAsyncLifetime, IDisposable
+    public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IClassFixture<FromResourceMapping.HttpFixture>, IAsyncLifetime
     {
         private readonly string _testHttpUri;
 
         private readonly string _testFileUri;
 
-        public FromResourceMapping(FromResourceMapping.HttpFixture httpFixture)
+        public FromResourceMapping(HttpFixture httpFixture)
         {
             _testHttpUri = httpFixture.BaseAddress;
             _testFileUri = new Uri(_testFile.FullName).ToString();
@@ -68,12 +94,6 @@ public abstract class TarOutputMemoryStreamTest
         public Task DisposeAsync()
         {
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _tarOutputMemoryStream.Dispose();
-            _testFile.Delete();
         }
 
         Task IFutureResource.CreateAsync(CancellationToken ct)
@@ -119,7 +139,7 @@ public abstract class TarOutputMemoryStreamTest
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
-                .WithResourceMapping(_testFile.Directory.FullName, targetDirectoryPath2)
+                .WithResourceMapping(_testFile.Directory!.FullName, targetDirectoryPath2)
                 .WithResourceMapping(_testHttpUri, targetFilePath2)
                 .WithResourceMapping(_testFileUri, targetDirectoryPath3)
                 .Build();
@@ -137,7 +157,7 @@ public abstract class TarOutputMemoryStreamTest
             await container.CopyAsync(_testFile.FullName, targetDirectoryPath4)
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath5)
+            await container.CopyAsync(_testFile.Directory!.FullName, targetDirectoryPath5)
                 .ConfigureAwait(true);
 
             // Then
@@ -174,7 +194,7 @@ public abstract class TarOutputMemoryStreamTest
     }
 
     [UsedImplicitly]
-    public sealed class FromFile : TarOutputMemoryStreamTest, IAsyncLifetime, IDisposable
+    public sealed class FromFile : TarOutputMemoryStreamTest, IAsyncLifetime
     {
         public Task InitializeAsync()
         {
@@ -185,16 +205,10 @@ public abstract class TarOutputMemoryStreamTest
         {
             return Task.CompletedTask;
         }
-
-        public void Dispose()
-        {
-            _tarOutputMemoryStream.Dispose();
-            _testFile.Delete();
-        }
     }
 
     [UsedImplicitly]
-    public sealed class FromDirectory : TarOutputMemoryStreamTest, IAsyncLifetime, IDisposable
+    public sealed class FromDirectory : TarOutputMemoryStreamTest, IAsyncLifetime
     {
         public Task InitializeAsync()
         {
@@ -204,12 +218,6 @@ public abstract class TarOutputMemoryStreamTest
         public Task DisposeAsync()
         {
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _tarOutputMemoryStream.Dispose();
-            _testFile.Delete();
         }
     }
 
