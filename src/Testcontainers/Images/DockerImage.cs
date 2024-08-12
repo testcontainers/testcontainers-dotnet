@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
+  using System.Globalization;
   using System.Linq;
   using System.Text.RegularExpressions;
   using JetBrains.Annotations;
@@ -125,8 +126,15 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     public bool MatchVersion(Predicate<Version> predicate)
     {
-      var versionMatch = Regex.Match(Tag, "^\\d+(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
-      return versionMatch.Success && Version.TryParse(versionMatch.Value, out var version) && predicate(version);
+      var versionMatch = Regex.Match(Tag, @"^(\d+)(\.\d+)?(\.\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+      if (!versionMatch.Success)
+        return false;
+
+      if (Version.TryParse(versionMatch.Value, out var version))
+        return predicate(version);
+
+      // If the regex matches and Version.TryParse fails then it means it's a major version only (i.e. without any . in the version)
+      return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
     }
 
     private static string TrimOrDefault(string value, string defaultValue = default)
