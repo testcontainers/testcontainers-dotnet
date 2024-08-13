@@ -20,14 +20,14 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity> : Contai
     }
 
     /// <inheritdoc />
-    protected override async Task InitializeAsync()
+    protected override async LifetimeTask InitializeAsync()
     {
         await base.InitializeAsync();
         _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
     }
 
     /// <inheritdoc />
-    protected override async Task DisposeAsync()
+    protected override async LifetimeTask DisposeAsync()
     {
         if (_testMethods != null)
         {

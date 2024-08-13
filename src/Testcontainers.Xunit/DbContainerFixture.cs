@@ -15,14 +15,14 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     private DbContainerTestMethods _testMethods;
 
     /// <inheritdoc />
-    protected override async Task InitializeAsync()
+    protected override async LifetimeTask InitializeAsync()
     {
         await base.InitializeAsync();
         _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
     }
 
     /// <inheritdoc />
-    protected override async Task DisposeAsync()
+    protected override async LifetimeTask DisposeAsync()
     {
         if (_testMethods != null)
         {

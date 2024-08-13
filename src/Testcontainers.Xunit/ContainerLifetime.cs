@@ -59,10 +59,10 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     }
 
     /// <inheritdoc />
-    Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
+    LifetimeTask IAsyncLifetime.InitializeAsync() => InitializeAsync();
 
     /// <inheritdoc cref="IAsyncLifetime.InitializeAsync()" />
-    protected virtual async Task InitializeAsync()
+    protected virtual async LifetimeTask InitializeAsync()
     {
         try
         {
@@ -75,10 +75,14 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     }
 
     /// <inheritdoc />
-    Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
+#if XUNIT_V3
+    LifetimeTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+#else
+    LifetimeTask IAsyncLifetime.DisposeAsync() => DisposeAsync();
+#endif
 
     /// <inheritdoc cref="IAsyncLifetime.DisposeAsync()" />
-    protected virtual async Task DisposeAsync()
+    protected virtual async LifetimeTask DisposeAsync()
     {
         if (_exception == null)
         {
