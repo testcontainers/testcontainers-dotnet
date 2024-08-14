@@ -13,5 +13,6 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="../Testcontainers.Xunit/*.cs"/>
+        <Compile Remove="../Testcontainers.Xunit/MessageSinkLogger.cs"/>
     </ItemGroup>
 </Project>
