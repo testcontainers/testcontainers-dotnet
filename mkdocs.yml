@@ -35,6 +35,7 @@ nav:
   - api/resource_reuse.md
   - api/wait_strategies.md
   - api/best_practices.md
+  - api/testing_xunit.md
   - Examples:
     - examples/dind.md
     - examples/aspnet.md
