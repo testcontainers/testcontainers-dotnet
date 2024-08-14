@@ -127,13 +127,18 @@ namespace DotNet.Testcontainers.Images
     public bool MatchVersion(Predicate<Version> predicate)
     {
       var versionMatch = Regex.Match(Tag, @"^(\d+)(\.\d+)?(\.\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+
       if (!versionMatch.Success)
+      {
         return false;
+      }
 
       if (Version.TryParse(versionMatch.Value, out var version))
+      {
         return predicate(version);
+      }
 
-      // If the regex matches and Version.TryParse fails then it means it's a major version only (i.e. without any . in the version)
+      // If the Regex matches and Version.TryParse(string?, out Version?) fails then it means it is a major version only (i.e. without any dot separator)
       return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
     }
 
