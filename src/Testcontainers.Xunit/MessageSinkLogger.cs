@@ -1,16 +1,12 @@
 namespace Testcontainers.Xunit;
 
-internal sealed class MessageSinkLogger(IMessageSink messageSink) : ILogger
+internal sealed class MessageSinkLogger(IMessageSink messageSink) : Logger
 {
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    protected override void Log<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
-        var message = exception == null ? formatter(state, null) : $"{formatter(state, exception)}{Environment.NewLine}{exception}";
+        var message = GetMessage(state, exception, formatter);
         messageSink.OnMessage(new DiagnosticMessage($"[testcontainers.org] {message}"));
     }
-
-    public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
-
-    public IDisposable BeginScope<TState>(TState state) => new NullScope();
 
     /// <returns>
     /// The hash code of the underlying message sink, because <see cref="DotNet.Testcontainers.Clients.DockerApiClient.LogContainerRuntimeInfoAsync"/>
