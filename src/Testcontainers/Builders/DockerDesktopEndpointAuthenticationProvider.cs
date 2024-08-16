@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="DockerDesktopEndpointAuthenticationProvider" /> class.
     /// </summary>
     public DockerDesktopEndpointAuthenticationProvider()
-      : base(GetSocketPathFromHomeDesktopDir(), GetSocketPathFromHomeRunDir())
+      : base(DockerProcess.GetCurrentEndpoint()?.AbsolutePath, GetSocketPathFromHomeDesktopDir(), GetSocketPathFromHomeRunDir())
     {
     }
 
