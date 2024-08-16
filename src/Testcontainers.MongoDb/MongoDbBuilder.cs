@@ -12,6 +12,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     public const string DefaultPassword = "mongo";
 
+    private const string InitKeyFileScriptFilePath = "/docker-entrypoint-initdb.d/01-init-keyfile.sh";
+
+    private const string KeyFilePath = "/tmp/mongodb-keyfile";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
@@ -60,11 +64,14 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", initDbRootPassword);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="replicaSetName"></param>
+    /// <returns></returns>
     public MongoDbBuilder WithReplicaSet(string replicaSetName = "rs0")
     {
-        var initReplicaSetName = replicaSetName ?? "rs0";
-
-        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: initReplicaSetName));
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName));
     }
 
     /// <inheritdoc />
@@ -72,26 +79,37 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     {
         Validate();
 
-        // The wait strategy relies on the configuration of MongoDb. If credentials are
-        // provided, the log message "Waiting for connections" appears twice.
-        // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
-        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        IWaitUntil waitUntil;
 
-        if (!string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
+        MongoDbBuilder mongoDbBuilder;
+
+        if (string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
         {
-            mongoDbBuilder = mongoDbBuilder
-                .WithCommand(DockerResourceConfiguration.Command.Concat(["--replSet", DockerResourceConfiguration.ReplicaSetName, "--keyFile", "/tmp/keyfile", "--bind_ip_all"]).ToArray())
-                .WithResourceMapping(Encoding.Default.GetBytes("""
-                    #!/bin/bash
-                    openssl rand -base64 32 > "/tmp/keyfile"
-                    chmod 600 /tmp/keyfile
-                    chown 999:999 /tmp/keyfile
-                    """.Replace("\r", "")), "/docker-entrypoint-initdb.d/01-init-keyfile.sh", UnixFileModes.OtherRead | UnixFileModes.OtherExecute)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted(
-                    "mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet --eval " +
-                    $"\"try {{ rs.status().ok }} catch (e) {{ rs.initiate({{'_id':'{DockerResourceConfiguration.ReplicaSetName}', members: [{{'_id':1, 'host':'127.0.0.1:27017'}}]}}).ok }}\""));
+            // The wait strategy relies on the configuration of MongoDb. If credentials are
+            // provided, the log message "Waiting for connections" appears twice.
+            waitUntil = new WaitUntil(DockerResourceConfiguration);
+            mongoDbBuilder = this;
+        }
+        else
+        {
+            var initKeyFileScript = new StringWriter();
+            initKeyFileScript.NewLine = "\n";
+            initKeyFileScript.WriteLine("#!/bin/bash");
+            initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFilePath + "\"");
+            initKeyFileScript.WriteLine("chmod 600 \"" + KeyFilePath + "\"");
+
+            waitUntil = new WaitInitiateReplicaSet(DockerResourceConfiguration);
+            mongoDbBuilder = this
+                .WithCommand("--replSet")
+                .WithCommand(DockerResourceConfiguration.ReplicaSetName)
+                .WithCommand("--keyFile")
+                .WithCommand(KeyFilePath)
+                .WithCommand("--bind_ip_all")
+                .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, Unix.FileMode755);
         }
 
+        // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
+        mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? mongoDbBuilder : mongoDbBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(waitUntil));
         return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
@@ -166,6 +184,36 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
                 .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Count(line => line.Contains("Waiting for connections")));
+        }
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitInitiateReplicaSet : IWaitUntil
+    {
+        private readonly string _scriptContent;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitInitiateReplicaSet" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitInitiateReplicaSet(MongoDbConfiguration configuration)
+        {
+            _scriptContent = $"try{{rs.status().ok}}catch(e){{rs.initiate({{'_id':'{configuration.ReplicaSetName}',members:[{{'_id':1,'host':'127.0.0.1:27017'}}]}}).ok}}";
+        }
+
+        /// <inheritdoc />
+        public Task<bool> UntilAsync(IContainer container)
+        {
+            return UntilAsync(container as MongoDbContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private async Task<bool> UntilAsync(MongoDbContainer container)
+        {
+            var execResult = await container.ExecScriptAsync(_scriptContent)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }
