@@ -8,11 +8,7 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-#if XUNIT_V3
-public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity> : ContainerFixture<TBuilderEntity, TContainerEntity>, IDbContainerTestMethods
-#else
 public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink) : ContainerFixture<TBuilderEntity, TContainerEntity>(messageSink), IDbContainerTestMethods
-#endif
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {

@@ -26,26 +26,6 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
         });
     }
 
-#if XUNIT_V3
-    /// <summary>
-    /// Extension point to further configure the container instance.
-    /// </summary>
-    /// <example>
-    ///   <code>
-    ///   public class MariaDbRootUserFixture : DbContainerFixture&lt;MariaDbBuilder, MariaDbContainer&gt;
-    ///   {
-    ///     public override DbProviderFactory DbProviderFactory =&gt; MySqlConnectorFactory.Instance;
-    ///     <br />
-    ///     protected override MariaDbBuilder Configure(MariaDbBuilder builder)
-    ///     {
-    ///       return builder.WithUsername("root");
-    ///     }
-    ///   }
-    ///   </code>
-    /// </example>
-    /// <param name="builder">The container builder.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-#else
     /// <summary>
     /// Extension point to further configure the container instance.
     /// </summary>
@@ -64,7 +44,6 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     /// </example>
     /// <param name="builder">The container builder.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-#endif
     protected virtual TBuilderEntity Configure(TBuilderEntity builder) => builder;
 
     /// <summary>
