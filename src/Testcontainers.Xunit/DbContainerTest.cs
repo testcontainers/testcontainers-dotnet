@@ -7,17 +7,13 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public abstract class DbContainerTest<TBuilderEntity, TContainerEntity> : ContainerTest<TBuilderEntity, TContainerEntity>, IDbContainerTestMethods
+public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
+    : ContainerTest<TBuilderEntity, TContainerEntity>(testOutputHelper, configure), IDbContainerTestMethods
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
     private DbContainerTestMethods _testMethods;
-
-    protected DbContainerTest(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
-        : base(testOutputHelper, configure)
-    {
-    }
 
     /// <inheritdoc />
     protected override async LifetimeTask InitializeAsync()

@@ -6,6 +6,11 @@ internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : Log
 
     protected override void Log<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
+        if (testOutputHelper == null)
+        {
+            return;
+        }
+
         testOutputHelper.WriteLine($@"[testcontainers.org {_stopwatch.Elapsed:hh\:mm\:ss\.fff}] {formatter(state, exception)}");
         if (exception != null)
         {
