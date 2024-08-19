@@ -53,6 +53,12 @@ public static class DockerCli
         return 0.Equals(commandResult.ExitCode);
     }
 
+    public static Uri GetCurrentEndpoint()
+    {
+        var commandResult = new Command("context", "inspect", "--format", "{{.Endpoints.docker.Host}}").Execute();
+        return new Uri(commandResult.Stdout);
+    }
+
     [PublicAPI]
     private sealed class Command
     {
