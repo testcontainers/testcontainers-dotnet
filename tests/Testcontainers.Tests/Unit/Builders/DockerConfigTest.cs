@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetCurrentEndpoint()
     {
-      var endpoint = new DockerConfig().GetCurrentEndpoint();
+      var endpoint = DockerConfig.Default.GetCurrentEndpoint();
       Assert.NotNull(endpoint);
 
       var expectedEndpoint = DockerProcess.GetCurrentEndpoint();

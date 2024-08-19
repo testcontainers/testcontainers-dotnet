@@ -19,9 +19,11 @@
       return new FileInfo(Path.Combine(dockerConfigDirectoryPath, "config.json"));
     }
 
+    public static DockerConfig Default { get; } = new DockerConfig();
+
     private readonly FileInfo _file;
 
-    public DockerConfig() : this(GetFile())
+    private DockerConfig() : this(GetFile())
     {
     }
 

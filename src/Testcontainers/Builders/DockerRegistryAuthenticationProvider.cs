@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
-      : this(new DockerConfig(), logger)
+      : this(DockerConfig.Default, logger)
     {
     }
 
