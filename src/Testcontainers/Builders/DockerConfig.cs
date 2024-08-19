@@ -1,8 +1,9 @@
-namespace DotNet.Testcontainers.Builders
+﻿namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.IO;
   using System.Text.Json;
+  using System.Text.Json.Serialization;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
 
@@ -53,17 +54,10 @@ namespace DotNet.Testcontainers.Builders
             var currentContext = currentContextNode.GetString();
             foreach (var metaDirectory in Directory.EnumerateDirectories(UserProfileDockerContextMetaPath, "*", SearchOption.TopDirectoryOnly))
             {
-              try
+              var endpoint = GetEndpoint(metaDirectory, currentContext);
+              if (endpoint != null)
               {
-                var endpoint = GetEndpoint(metaDirectory, currentContext);
-                if (endpoint != null)
-                {
-                  return endpoint;
-                }
-              }
-              catch
-              {
-                // try next meta.json file
+                return endpoint;
               }
             }
           }
@@ -80,32 +74,49 @@ namespace DotNet.Testcontainers.Builders
     [CanBeNull]
     private static Uri GetEndpoint(string metaDirectory, string currentContext)
     {
-      var metaFilePath = Path.Combine(metaDirectory, "meta.json");
-      using (var metaFileStream = new FileStream(metaFilePath, FileMode.Open, FileAccess.Read))
+      try
       {
-        using (var meta = JsonDocument.Parse(metaFileStream))
+        var metaFilePath = Path.Combine(metaDirectory, "meta.json");
+        using (var metaFileStream = new FileStream(metaFilePath, FileMode.Open, FileAccess.Read))
         {
-          if (meta.RootElement.TryGetProperty("Name", out var nameNode) && nameNode.ValueKind == JsonValueKind.String && nameNode.GetString() == currentContext)
+          var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
+          if (meta?.Name == currentContext)
           {
-            if (meta.RootElement.TryGetProperty("Endpoints", out var endpointsNode) && endpointsNode.ValueKind == JsonValueKind.Object)
+            var host = meta?.Endpoints?.Docker?.Host;
+            if (!string.IsNullOrEmpty(host))
             {
-              if (endpointsNode.TryGetProperty("docker", out var dockerNode) && dockerNode.ValueKind == JsonValueKind.Object)
-              {
-                if (dockerNode.TryGetProperty("Host", out var hostNode) && hostNode.ValueKind == JsonValueKind.String)
-                {
-                  var host = hostNode.GetString();
-                  if (!string.IsNullOrEmpty(host))
-                  {
-                    return new Uri(host);
-                  }
-                }
-              }
+              return new Uri(host);
             }
           }
         }
       }
+      catch
+      {
+        return null;
+      }
 
       return null;
+    }
+
+    internal class DockerContextMeta
+    {
+      [JsonPropertyName("Name"), CanBeNull]
+      public string Name { get; set; }
+
+      [JsonPropertyName("Endpoints"), CanBeNull]
+      public DockerContextMetaEndpoints Endpoints { get; set; }
+    }
+
+    internal class DockerContextMetaEndpoints
+    {
+      [JsonPropertyName("docker"), CanBeNull]
+      public DockerContextMetaEndpointsDocker Docker { get; set; }
+    }
+
+    internal class DockerContextMetaEndpointsDocker
+    {
+      [JsonPropertyName("Host"), CanBeNull]
+      public string Host { get; set; }
     }
   }
 }
