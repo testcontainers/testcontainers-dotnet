@@ -49,19 +49,18 @@
     {
       try
       {
-        using (var config = Parse())
+        var currentContext = GetCurrentContext();
+        if (currentContext == null)
         {
-          if (config.RootElement.TryGetProperty("currentContext", out var currentContextNode) && currentContextNode.ValueKind == JsonValueKind.String)
+          return EnvironmentConfiguration.Instance.GetDockerHost() ?? UnixEndpointAuthenticationProvider.DockerEngine;
+        }
+
+        foreach (var metaDirectory in Directory.EnumerateDirectories(UserProfileDockerContextMetaPath, "*", SearchOption.TopDirectoryOnly))
+        {
+          var endpoint = GetEndpoint(metaDirectory, currentContext);
+          if (endpoint != null)
           {
-            var currentContext = currentContextNode.GetString();
-            foreach (var metaDirectory in Directory.EnumerateDirectories(UserProfileDockerContextMetaPath, "*", SearchOption.TopDirectoryOnly))
-            {
-              var endpoint = GetEndpoint(metaDirectory, currentContext);
-              if (endpoint != null)
-              {
-                return endpoint;
-              }
-            }
+            return endpoint;
           }
         }
       }
@@ -71,6 +70,20 @@
       }
 
       return null;
+    }
+
+    [CanBeNull]
+    private string GetCurrentContext()
+    {
+      using (var config = Parse())
+      {
+        if (config.RootElement.TryGetProperty("currentContext", out var currentContextNode) && currentContextNode.ValueKind == JsonValueKind.String)
+        {
+          return currentContextNode.GetString();
+        }
+
+        return null;
+      }
     }
 
     [CanBeNull]
