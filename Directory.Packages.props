@@ -35,6 +35,7 @@
         <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
         <PackageVersion Include="CouchbaseNetClient" Version="3.4.3"/>
+        <PackageVersion Include="Net.IBM.Data.Db2" Version="8.0.0.200" />
         <PackageVersion Include="DotPulsar" Version="3.1.2"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.0.5"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
