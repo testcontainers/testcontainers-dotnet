@@ -55,8 +55,14 @@ public static class DockerCli
 
     public static Uri GetCurrentEndpoint()
     {
-        var commandResult = new Command("context", "inspect", "--format", "{{.Endpoints.docker.Host}}").Execute();
-        return new Uri(commandResult.Stdout);
+        var command = new Command("context", "inspect", "--format", "{{.Endpoints.docker.Host}}");
+        var commandResult = command.Execute();
+        if (commandResult.ExitCode == 0)
+        {
+            return new Uri(commandResult.Stdout);
+        }
+
+        throw new InvalidOperationException($"Executing `{command}` failed: {commandResult.Stderr}");
     }
 
     [PublicAPI]
@@ -115,6 +121,11 @@ public static class DockerCli
         private void AppendStderr(object sender, DataReceivedEventArgs e)
         {
             _stderr.Append(e.Data);
+        }
+
+        public override string ToString()
+        {
+            return $"{_processStartInfo.FileName} {_processStartInfo.Arguments}";
         }
     }
 

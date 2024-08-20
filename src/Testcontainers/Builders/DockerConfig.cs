@@ -2,6 +2,10 @@
 {
   using System;
   using System.IO;
+  using System.Linq;
+  using System.Runtime.InteropServices;
+  using System.Security.Cryptography;
+  using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DotNet.Testcontainers.Configurations;
@@ -22,14 +26,20 @@
     public static DockerConfig Default { get; } = new DockerConfig();
 
     private readonly FileInfo _file;
+    private readonly ICustomConfiguration _environment;
 
-    private DockerConfig() : this(GetFile())
+    private DockerConfig() : this(GetFile(), EnvironmentConfiguration.Instance)
     {
     }
 
-    public DockerConfig(FileInfo file)
+    public DockerConfig(ICustomConfiguration environment) : this(GetFile(), environment)
+    {
+    }
+
+    public DockerConfig(FileInfo file, ICustomConfiguration environment = null)
     {
       _file = file;
+      _environment = environment ?? EnvironmentConfiguration.Instance;
     }
 
     public bool Exists => _file.Exists;
@@ -44,37 +54,48 @@
       }
     }
 
+    /// <summary>
+    /// Performs the equivalent of running <c>docker context inspect --format {{.Endpoints.docker.Host}}</c>
+    /// </summary>
     [CanBeNull]
     public Uri GetCurrentEndpoint()
     {
       try
       {
-        var currentContext = GetCurrentContext();
-        if (currentContext == null)
+        var envDockerHost = _environment.GetDockerHost();
+        if (envDockerHost != null)
         {
-          return EnvironmentConfiguration.Instance.GetDockerHost() ?? UnixEndpointAuthenticationProvider.DockerEngine;
+          return envDockerHost;
         }
 
-        foreach (var metaDirectory in Directory.EnumerateDirectories(UserProfileDockerContextMetaPath, "*", SearchOption.TopDirectoryOnly))
+        var currentContext = GetCurrentContext();
+        if (currentContext is null or "default")
         {
-          var endpoint = GetEndpoint(metaDirectory, currentContext);
-          if (endpoint != null)
-          {
-            return endpoint;
-          }
+          return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? NpipeEndpointAuthenticationProvider.DockerEngine : UnixEndpointAuthenticationProvider.DockerEngine;
         }
+
+        using var sha256 = SHA256.Create();
+        var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentContext));
+        var digest = hash.Aggregate(new StringBuilder(hash.Length * 2), (sb, b) => sb.Append(b.ToString("x2"))).ToString();
+        var contextDirectory = Path.Combine(UserProfileDockerContextMetaPath, digest);
+        var endpoint = GetEndpoint(contextDirectory, currentContext);
+        return endpoint;
       }
       catch
       {
         return null;
       }
-
-      return null;
     }
 
     [CanBeNull]
     private string GetCurrentContext()
     {
+      var dockerContext = Environment.GetEnvironmentVariable("DOCKER_CONTEXT");
+      if (!string.IsNullOrEmpty(dockerContext))
+      {
+        return dockerContext;
+      }
+
       using (var config = Parse())
       {
         if (config.RootElement.TryGetProperty("currentContext", out var currentContextNode) && currentContextNode.ValueKind == JsonValueKind.String)
