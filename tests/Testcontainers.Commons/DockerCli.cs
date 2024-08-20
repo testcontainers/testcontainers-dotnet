@@ -59,7 +59,10 @@ public static class DockerCli
         var commandResult = command.Execute();
         if (commandResult.ExitCode == 0)
         {
-            return new Uri(commandResult.Stdout);
+            // Because new Uri("npipe:////./pipe/docker_engine") returns "npipe:////pipe/docker_engine"
+            const string npipePrefix = "npipe:////./";
+            var host = commandResult.Stdout;
+            return host.StartsWith(npipePrefix, StringComparison.Ordinal) ? new Uri($"npipe://./{host.Substring(npipePrefix.Length)}") : new Uri(host);
         }
 
         throw new InvalidOperationException($"Executing `{command}` failed: {commandResult.Stderr}");

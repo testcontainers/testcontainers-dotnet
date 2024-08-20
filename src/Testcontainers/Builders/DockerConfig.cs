@@ -121,7 +121,8 @@
             var host = meta?.Endpoints?.Docker?.Host;
             if (!string.IsNullOrEmpty(host))
             {
-              return new Uri(host);
+              const string npipePrefix = "npipe:////./";
+              return host.StartsWith(npipePrefix, StringComparison.Ordinal) ? new Uri($"npipe://./{host.Substring(npipePrefix.Length)}") : new Uri(host);
             }
           }
         }
