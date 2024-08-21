@@ -18,7 +18,7 @@ public sealed class Db2ContainerTest : IAsyncLifetime
   }
 
   [SkipOnLinuxEngine]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
   public void ConnectionStateReturnsOpen()
   {
     // Given
