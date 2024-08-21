@@ -15,5 +15,6 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Db2/Testcontainers.Db2.csproj" />
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
+        <ProjectReference Include="..\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj" />
     </ItemGroup>
 </Project>

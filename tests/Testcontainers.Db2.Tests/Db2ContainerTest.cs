@@ -1,4 +1,5 @@
 using IBM.Data.Db2;
+using Testcontainers.Tests;
 
 namespace Testcontainers.Db2;
 
@@ -16,8 +17,8 @@ public sealed class Db2ContainerTest : IAsyncLifetime
     return _db2Container.DisposeAsync().AsTask();
   }
 
-  [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
+  [SkipOnLinuxEngine]
+  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
   public void ConnectionStateReturnsOpen()
   {
     // Given
@@ -31,7 +32,6 @@ public sealed class Db2ContainerTest : IAsyncLifetime
   }
 
   [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
   public async Task ExecScriptReturnsSuccessful()
   {
