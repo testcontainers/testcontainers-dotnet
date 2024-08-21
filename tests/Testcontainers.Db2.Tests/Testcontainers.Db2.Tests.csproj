@@ -7,7 +7,8 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="Net.IBM.Data.Db2" />
+        <PackageReference Include="Net.IBM.Data.Db2" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+        <PackageReference Include="Net.IBM.Data.Db2-lnx" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
         <PackageReference Include="xunit.runner.visualstudio" />
         <PackageReference Include="xunit" />
     </ItemGroup>
