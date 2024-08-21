@@ -17,7 +17,7 @@ public sealed class Db2ContainerTest : IAsyncLifetime
   }
 
   [Fact]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
   public void ConnectionStateReturnsOpen()
   {
     // Given
@@ -31,6 +31,7 @@ public sealed class Db2ContainerTest : IAsyncLifetime
   }
 
   [Fact]
+  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
   public async Task ExecScriptReturnsSuccessful()
   {
