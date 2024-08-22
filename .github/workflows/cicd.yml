@@ -76,11 +76,12 @@ jobs:
         run: dotnet cake --target=Build
 
       - name: Prepare Db2 test environment variables
+        if: runner.os == 'Linux'
         run: |
-          echo "${{ env.GITHUB_WORKSPACE }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/bin" >> $GITHUB_PATH \
-          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ env.GITHUB_WORKSPACE }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib" >> $GITHUB_PATH \
-          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ env.GITHUB_WORKSPACE }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib/icc" >> $GITHUB_PATH \
-          echo "DB2_CLI_DRIVER_INSTALL_PATH=${{ env.GITHUB_WORKSPACE }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver" >> $GITHUB_PATH
+          echo "${GITHUB_WORKSPACE}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/bin" >> $GITHUB_PATH \
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${GITHUB_WORKSPACE}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib" >> $GITHUB_PATH \
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${GITHUB_WORKSPACE}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib/icc" >> $GITHUB_PATH \
+          echo "DB2_CLI_DRIVER_INSTALL_PATH=${GITHUB_WORKSPACE}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver" >> $GITHUB_PATH
 
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
