@@ -3,6 +3,7 @@
         <TargetFrameworks>net8.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
+        <ProcessorArchitecture>amd64</ProcessorArchitecture>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />

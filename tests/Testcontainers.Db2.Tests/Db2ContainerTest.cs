@@ -17,8 +17,8 @@ public sealed class Db2ContainerTest : IAsyncLifetime
     return _db2Container.DisposeAsync().AsTask();
   }
 
-  [SkipOnLinuxEngine]
-  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Windows))]
+  [Fact]
+  [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
   public void ConnectionStateReturnsOpen()
   {
     // Given
