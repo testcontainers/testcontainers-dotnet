@@ -75,20 +75,6 @@ jobs:
       - name: Run Build
         run: dotnet cake --target=Build
 
-      - name: Prepare Db2 test environment variables
-        if: runner.os == 'Linux'
-        run: |
-          echo "${{ github.workspace }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/bin" >> $GITHUB_PATH
-          echo "LD_LIBRARY_PATH=${{ github.workspace }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib:${{ github.workspace }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver/lib/icc" >> $GITHUB_ENV
-          echo "DB2_CLI_DRIVER_INSTALL_PATH=${{ github.workspace }}/tests/TestContainers.Db2.Tests/bin/Debug/net8.0/clidriver" >> $GITHUB_ENV
-
-      - name: Debug Db2 environment variables
-        if: runner.os == 'Linux'
-        run: |
-          echo "$PATH"
-          echo "$LD_LIBRARY_PATH"
-          echo "$DB2_CLI_DRIVER_INSTALL_PATH"
-
       - name: Run Tests
         run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
