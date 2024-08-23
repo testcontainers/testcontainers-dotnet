@@ -65,13 +65,24 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <summary>
-    ///
+    /// Initialise the MongoDb container as a single node a replica set.
     /// </summary>
-    /// <param name="replicaSetName"></param>
-    /// <returns></returns>
+    /// <param name="replicaSetName">The replica set name.</param>
+    /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithReplicaSet(string replicaSetName = "rs0")
     {
-        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName));
+        var initKeyFileScript = new StringWriter();
+        initKeyFileScript.NewLine = "\n";
+        initKeyFileScript.WriteLine("#!/bin/bash");
+        initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFilePath + "\"");
+        initKeyFileScript.WriteLine("chmod 600 \"" + KeyFilePath + "\"");
+
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName))
+            .WithCommand(
+                "--replSet", replicaSetName,
+                "--keyFile", KeyFilePath,
+                "--bind_ip_all")
+            .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, Unix.FileMode755);
     }
 
     /// <inheritdoc />
@@ -79,37 +90,18 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     {
         Validate();
 
-        IWaitUntil waitUntil;
-
-        MongoDbBuilder mongoDbBuilder;
-
-        if (string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
-        {
-            // The wait strategy relies on the configuration of MongoDb. If credentials are
-            // provided, the log message "Waiting for connections" appears twice.
-            waitUntil = new WaitUntil(DockerResourceConfiguration);
-            mongoDbBuilder = this;
-        }
-        else
-        {
-            var initKeyFileScript = new StringWriter();
-            initKeyFileScript.NewLine = "\n";
-            initKeyFileScript.WriteLine("#!/bin/bash");
-            initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFilePath + "\"");
-            initKeyFileScript.WriteLine("chmod 600 \"" + KeyFilePath + "\"");
-
-            waitUntil = new WaitInitiateReplicaSet(DockerResourceConfiguration);
-            mongoDbBuilder = this
-                .WithCommand("--replSet")
-                .WithCommand(DockerResourceConfiguration.ReplicaSetName)
-                .WithCommand("--keyFile")
-                .WithCommand(KeyFilePath)
-                .WithCommand("--bind_ip_all")
-                .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, Unix.FileMode755);
-        }
-
+        // The wait strategy relies on the configuration of MongoDb. If credentials are
+        // provided, the log message "Waiting for connections" appears twice.
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
-        mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? mongoDbBuilder : mongoDbBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(waitUntil));
+        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+
+        if (!string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
+        {
+            // If the user has specified a replica set name, we need to initiate the replica set.
+            var replicaInitStrategy = new WaitInitiateReplicaSet(DockerResourceConfiguration);
+            mongoDbBuilder = mongoDbBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(replicaInitStrategy));
+        }
+
         return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
