@@ -93,6 +93,9 @@
     /// <summary>
     /// Performs the equivalent of running <c>docker context inspect --format {{.Endpoints.docker.Host}}</c>
     /// </summary>
+    /// <remarks>
+    /// See the <a href="https://github.com/docker/cli/blob/v25.0.0/cli/command/cli.go#L364-L390">Docker CLI implementation comments</a>.
+    /// </remarks>
     [CanBeNull]
     public Uri GetCurrentEndpoint()
     {
