@@ -1,17 +1,24 @@
-using System;
-using System.Reflection;
 using DotNet.Testcontainers.Configurations;
-using Xunit.Sdk;
 
 namespace DotNet.Testcontainers.Tests.Unit
 {
+  using System;
+  using System.Reflection;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
   using Xunit;
   using Xunit.Abstractions;
+  using Xunit.Sdk;
 
-  public class DockerConfigTest(ITestOutputHelper output)
+  public sealed class DockerConfigTest
   {
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public DockerConfigTest(ITestOutputHelper testOutputHelper)
+    {
+      _testOutputHelper = testOutputHelper;
+    }
+
     [Fact]
     public void GetCurrentEndpoint()
     {
@@ -37,7 +44,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       var expectedEndpoint = DockerCli.GetCurrentEndpoint();
       var endpoint = new DockerConfig(new EnvironmentConfiguration()).GetCurrentEndpoint();
-      output.WriteLine($"DockerConfig.Default.GetCurrentEndpoint() => {endpoint}");
+      _testOutputHelper.WriteLine($"DockerConfig.Default.GetCurrentEndpoint() => {endpoint}");
       Assert.Equal(expectedEndpoint, endpoint);
       Assert.NotNull(endpoint);
       return endpoint;
@@ -52,16 +59,26 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
   }
 
-  public class UseEnvironmentVariableAttribute(string variable, string value) : BeforeAfterTestAttribute
+  public sealed class UseEnvironmentVariableAttribute : BeforeAfterTestAttribute
   {
+    private readonly string _variable;
+
+    private readonly string _value;
+
+    public UseEnvironmentVariableAttribute(string variable, string value)
+    {
+      _variable = variable;
+      _value = value;
+    }
+
     public override void Before(MethodInfo methodUnderTest)
     {
-      Environment.SetEnvironmentVariable(variable, value);
+      Environment.SetEnvironmentVariable(_variable, _value);
     }
 
     public override void After(MethodInfo methodUnderTest)
     {
-      Environment.SetEnvironmentVariable(variable, null);
+      Environment.SetEnvironmentVariable(_variable, null);
     }
   }
 }

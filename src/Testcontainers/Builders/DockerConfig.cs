@@ -11,44 +11,80 @@
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
 
-  internal class DockerConfig
+  /// <summary>
+  ///
+  /// </summary>
+  internal sealed class DockerConfig
   {
     private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
 
-    private static readonly string UserProfileDockerContextMetaPath = Path.Combine(UserProfileDockerConfigDirectoryPath, "contexts", "meta");
+    private static readonly string UserProfileDockerContextMetaDirectoryPath = Path.Combine(UserProfileDockerConfigDirectoryPath, "contexts", "meta");
 
-    private static FileInfo GetFile()
-    {
-      var dockerConfigDirectoryPath = EnvironmentConfiguration.Instance.GetDockerConfig() ?? PropertiesFileConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
-      return new FileInfo(Path.Combine(dockerConfigDirectoryPath, "config.json"));
-    }
+    private readonly FileInfo _dockerConfigFile;
 
-    public static DockerConfig Default { get; } = new DockerConfig();
+    [CanBeNull]
+    private readonly Uri _dockerHost;
 
-    private readonly FileInfo _file;
-    private readonly ICustomConfiguration _environment;
+    [CanBeNull]
+    private readonly string _dockerContext;
 
-    private DockerConfig() : this(GetFile(), EnvironmentConfiguration.Instance)
-    {
-    }
-
-    public DockerConfig(ICustomConfiguration environment) : this(GetFile(), environment)
+    /// <summary>
+    ///
+    /// </summary>
+    public DockerConfig()
+      : this(GetDockerConfigFile())
     {
     }
 
-    public DockerConfig(FileInfo file, ICustomConfiguration environment = null)
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="dockerConfigFile"></param>
+    public DockerConfig(FileInfo dockerConfigFile)
+      : this(dockerConfigFile, EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
     {
-      _file = file;
-      _environment = environment ?? EnvironmentConfiguration.Instance;
     }
 
-    public bool Exists => _file.Exists;
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="dockerConfigFile"></param>
+    public DockerConfig(params ICustomConfiguration[] customConfigurations)
+      : this(GetDockerConfigFile(), customConfigurations)
+    {
+    }
 
-    public string FullName => _file.FullName;
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="dockerConfigFile"></param>
+    /// <param name="customConfigurations"></param>
+    public DockerConfig(FileInfo dockerConfigFile, params ICustomConfiguration[] customConfigurations)
+    {
+      _dockerConfigFile = dockerConfigFile;
+      _dockerHost = customConfigurations.Select(customConfiguration => customConfiguration.GetDockerHost()).FirstOrDefault(dockerHost => dockerHost != null);
+      _dockerContext = customConfigurations.Select(customConfiguration => customConfiguration.GetDockerContext()).FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
+    }
 
+    /// <summary>
+    ///
+    /// </summary>
+    public static DockerConfig Instance { get; }
+      = new DockerConfig(GetDockerConfigFile());
+
+    /// <inheritdoc cref="FileInfo.Exists" />
+    public bool Exists => _dockerConfigFile.Exists;
+
+    /// <inheritdoc cref="FileInfo.Exists" />
+    public string FullName => _dockerConfigFile.FullName;
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
     public JsonDocument Parse()
     {
-      using (var dockerConfigFileStream = _file.OpenRead())
+      using (var dockerConfigFileStream = _dockerConfigFile.OpenRead())
       {
         return JsonDocument.Parse(dockerConfigFileStream);
       }
@@ -62,10 +98,9 @@
     {
       try
       {
-        var envDockerHost = _environment.GetDockerHost();
-        if (envDockerHost != null)
+        if (_dockerHost != null)
         {
-          return envDockerHost;
+          return _dockerHost;
         }
 
         var currentContext = GetCurrentContext();
@@ -77,7 +112,7 @@
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentContext));
         var digest = hash.Aggregate(new StringBuilder(hash.Length * 2), (sb, b) => sb.Append(b.ToString("x2"))).ToString();
-        var contextDirectory = Path.Combine(UserProfileDockerContextMetaPath, digest);
+        var contextDirectory = Path.Combine(UserProfileDockerContextMetaDirectoryPath, digest);
         var endpoint = GetEndpoint(contextDirectory, currentContext);
         return endpoint;
       }
@@ -90,10 +125,9 @@
     [CanBeNull]
     private string GetCurrentContext()
     {
-      var dockerContext = Environment.GetEnvironmentVariable("DOCKER_CONTEXT");
-      if (!string.IsNullOrEmpty(dockerContext))
+      if (!string.IsNullOrEmpty(_dockerContext))
       {
-        return dockerContext;
+        return _dockerContext;
       }
 
       using (var config = Parse())
@@ -133,6 +167,12 @@
       }
 
       return null;
+    }
+
+    private static FileInfo GetDockerConfigFile()
+    {
+      var dockerConfigDirectoryPath = EnvironmentConfiguration.Instance.GetDockerConfig() ?? PropertiesFileConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
+      return new FileInfo(Path.Combine(dockerConfigDirectoryPath, "config.json"));
     }
 
     internal class DockerContextMeta
