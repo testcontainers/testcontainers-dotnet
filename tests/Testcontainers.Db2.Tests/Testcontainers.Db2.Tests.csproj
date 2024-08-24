@@ -1,21 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <Target Condition="$([MSBuild]::IsOSPlatform('Linux'))" Name="TestPrepare" BeforeTargets="RunTests;VSTest">
-       <ItemGroup>
-        <Line Include='&lt;%3Fxml version="1.0" encoding="utf-8"%3F&gt;' />
-        <Line Include='&lt;RunSettings&gt;' />
-        <Line Include=' &lt;RunConfiguration&gt;' />
-        <Line Include='   &lt;EnvironmentVariables&gt;' />
-        <Line Include='     &lt;LD_LIBRARY_PATH&gt;$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib:$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib/icc&lt;/LD_LIBRARY_PATH&gt;' />
-        <Line Include='     &lt;PATH&gt;$(MSBuildProjectDirectory)/$(OutputPath)clidriver/bin&lt;/PATH&gt;' />
-        <Line Include='     &lt;DB2_CLI_DRIVER_INSTALL_PATH&gt;$(MSBuildProjectDirectory)/$(OutputPath)clidriver&lt;/DB2_CLI_DRIVER_INSTALL_PATH&gt;' />
-        <Line Include='   &lt;/EnvironmentVariables&gt;' />
-        <Line Include=' &lt;/RunConfiguration&gt;' />
-        <Line Include='&lt;/RunSettings&gt;' />
-      </ItemGroup>
-      <WriteLinesToFile
-        File="linux.runsettings"
-        Lines="@(Line)"
-        Overwrite="true"
+      <XmlPoke
+        XmlInputPath="linux.runsettings"
+        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib:$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib/icc"
+        Query="/RunSettings/RunConfiguration/EnvironmentVariables/LD_LIBRARY_PATH"
+      />
+      <XmlPoke
+        XmlInputPath="linux.runsettings"
+        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/bin"
+        Query="/RunSettings/RunConfiguration/EnvironmentVariables/PATH"
+      />
+      <XmlPoke
+        XmlInputPath="linux.runsettings"
+        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver"
+        Query="/RunSettings/RunConfiguration/EnvironmentVariables/DB2_CLI_DRIVER_INSTALL_PATH"
       />
     </Target>
     <PropertyGroup>
