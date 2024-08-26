@@ -3,6 +3,7 @@
   using System;
   using System.IO;
   using System.Linq;
+  using System.Runtime.InteropServices;
   using System.Security.Cryptography;
   using System.Text;
   using System.Text.Json;
@@ -97,15 +98,15 @@
         return dockerHost;
       }
 
-      var dockerContext = GetCurrentDockerContext();
+      var dockerContext = GetCurrentContext();
       if (string.IsNullOrEmpty(dockerContext) || defaultDockerContext.Equals(dockerContext))
       {
-        return TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint;
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? NpipeEndpointAuthenticationProvider.DockerEngine : UnixEndpointAuthenticationProvider.DockerEngine;
       }
 
       using (var sha256 = SHA256.Create())
       {
-        var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
+        var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
         var metaFilePath = Path.Combine(UserProfileDockerContextMetaDirectoryPath, dockerContextHash, "meta.json");
 
         if (!File.Exists(metaFilePath))
@@ -123,7 +124,7 @@
     }
 
     [CanBeNull]
-    private string GetCurrentDockerContext()
+    private string GetCurrentContext()
     {
       var dockerContext = GetDockerContext();
       if (!string.IsNullOrEmpty(dockerContext))
@@ -136,11 +137,11 @@
         return null;
       }
 
-      using (var config = Parse())
+      using (var dockerConfigJsonDocument = Parse())
       {
-        if (config.RootElement.TryGetProperty("currentContext", out var currentContextNode) && currentContextNode.ValueKind == JsonValueKind.String)
+        if (dockerConfigJsonDocument.RootElement.TryGetProperty("currentContext", out var currentContext) && currentContext.ValueKind == JsonValueKind.String)
         {
-          return currentContextNode.GetString();
+          return currentContext.GetString();
         }
         else
         {

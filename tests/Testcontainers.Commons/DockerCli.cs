@@ -55,8 +55,9 @@ public static class DockerCli
 
     public static Uri GetCurrentEndpoint(string context = "")
     {
-        var commandResult = new Command("context", "inspect", "--format {{.Endpoints.docker.Host}}", context).Execute();
-        return 0.Equals(commandResult.ExitCode) ? new Uri(commandResult.Stdout.Replace("npipe:////./", "npipe://./")) : throw new InvalidOperationException($"Unexpected error: {commandResult.Stderr}");
+        var command = new Command("context", "inspect", "--format {{.Endpoints.docker.Host}}", context);
+        var commandResult = command.Execute();
+        return 0.Equals(commandResult.ExitCode) ? new Uri(commandResult.Stdout.Replace("npipe:////./", "npipe://./")) : throw new InvalidOperationException($"Executing '{command}' failed: {commandResult.Stderr}");
     }
 
     [PublicAPI]
