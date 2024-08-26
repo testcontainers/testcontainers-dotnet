@@ -43,7 +43,7 @@ public static class DockerCli
 
     public static bool PlatformIsEnabled(DockerPlatform platform)
     {
-        var commandResult = new Command("version", "--format '{{.Server.Os}}'").Execute();
+        var commandResult = new Command("version", "--format {{.Server.Os}}").Execute();
         return 0.Equals(commandResult.ExitCode) && commandResult.Stdout.Contains(platform.ToString().ToLowerInvariant());
     }
 
@@ -53,19 +53,10 @@ public static class DockerCli
         return 0.Equals(commandResult.ExitCode);
     }
 
-    public static Uri GetCurrentEndpoint()
+    public static Uri GetCurrentEndpoint(string context = "")
     {
-        var command = new Command("context", "inspect", "--format", "{{.Endpoints.docker.Host}}");
-        var commandResult = command.Execute();
-        if (commandResult.ExitCode == 0)
-        {
-            // Because new Uri("npipe:////./pipe/docker_engine") returns "npipe:////pipe/docker_engine"
-            const string npipePrefix = "npipe:////./";
-            var host = commandResult.Stdout;
-            return host.StartsWith(npipePrefix, StringComparison.Ordinal) ? new Uri($"npipe://./{host.Substring(npipePrefix.Length)}") : new Uri(host);
-        }
-
-        throw new InvalidOperationException($"Executing `{command}` failed: {commandResult.Stderr}");
+        var commandResult = new Command("context", "inspect", "--format {{.Endpoints.docker.Host}}", context).Execute();
+        return 0.Equals(commandResult.ExitCode) ? new Uri(commandResult.Stdout.Replace("npipe:////./", "npipe://./")) : throw new InvalidOperationException($"Unexpected error: {commandResult.Stderr}");
     }
 
     [PublicAPI]

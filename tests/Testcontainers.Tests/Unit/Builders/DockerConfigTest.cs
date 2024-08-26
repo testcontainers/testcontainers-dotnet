@@ -1,84 +1,95 @@
-using DotNet.Testcontainers.Configurations;
-
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
-  using System.Reflection;
+  using System.IO;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
+  using DotNet.Testcontainers.Configurations;
   using Xunit;
-  using Xunit.Abstractions;
-  using Xunit.Sdk;
 
-  public sealed class DockerConfigTest
+  public static class DockerConfigTests
   {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public DockerConfigTest(ITestOutputHelper testOutputHelper)
+    public sealed class DockerContextConfigurationTests
     {
-      _testOutputHelper = testOutputHelper;
+      [Fact]
+      public void ReturnsDefaultOsEndpointWhenDockerContextIsUnset()
+      {
+        // Given
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=" });
+        var dockerConfig = new DockerConfig(new FileInfo("config.json"), customConfiguration);
+
+        // When
+        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
+
+        // Then
+        Assert.Equal(TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint, currentEndpoint);
+      }
+
+      [Fact]
+      public void ReturnsDefaultOsEndpointWhenDockerContextIsDefault()
+      {
+        // Given
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=default" });
+        var dockerConfig = new DockerConfig(new FileInfo("config.json"), customConfiguration);
+
+        // When
+        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
+
+        // Then
+        Assert.Equal(TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint, currentEndpoint);
+      }
+
+      [Fact]
+      public void ReturnsConfiguredEndpointWhenDockerContextIsNotSet()
+      {
+        var currentEndpoint = new DockerConfig().GetCurrentEndpoint();
+        Assert.Equal(DockerCli.GetCurrentEndpoint(), currentEndpoint);
+      }
+
+      [Fact]
+      public void ReturnsNullWhenDockerContextNotFound()
+      {
+        // Given
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=missing" });
+        var dockerConfig = new DockerConfig(customConfiguration);
+
+        // When
+        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
+
+        // Then
+        Assert.Null(currentEndpoint);
+      }
     }
 
-    [Fact]
-    public void GetCurrentEndpoint()
+    public sealed class DockerHostConfigurationTests
     {
-      AssertCurrentEndpoint();
-    }
+      [Fact]
+      public void ReturnsDefaultOsEndpointWhenDockerHostIsUnset()
+      {
+        // Given
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=" });
+        var dockerConfig = new DockerConfig(new FileInfo("config.json"), customConfiguration);
 
-    [Fact]
-    [UseEnvironmentVariable("DOCKER_CONTEXT", "default")]
-    public void GetCurrentEndpointWithDefaultDockerContextEnvironmentVariable()
-    {
-      AssertCurrentEndpoint();
-    }
+        // When
+        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
 
-    [Fact]
-    [UseEnvironmentVariable("DOCKER_HOST", "tcp://docker:2375")]
-    public void GetCurrentEndpointWithDockerHostEnvironmentVariable()
-    {
-      var endpoint = AssertCurrentEndpoint();
-      Assert.Equal(new Uri("tcp://docker:2375"), endpoint);
-    }
+        // Then
+        Assert.Equal(TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint, currentEndpoint);
+      }
 
-    private Uri AssertCurrentEndpoint()
-    {
-      var expectedEndpoint = DockerCli.GetCurrentEndpoint();
-      var endpoint = new DockerConfig(new EnvironmentConfiguration()).GetCurrentEndpoint();
-      _testOutputHelper.WriteLine($"DockerConfig.Default.GetCurrentEndpoint() => {endpoint}");
-      Assert.Equal(expectedEndpoint, endpoint);
-      Assert.NotNull(endpoint);
-      return endpoint;
-    }
+      [Fact]
+      public void ReturnsConfiguredEndpointWhenDockerHostIsSet()
+      {
+        // Given
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=tcp://127.0.0.1:2375/" });
+        var dockerConfig = new DockerConfig(new FileInfo("config.json"), customConfiguration);
 
-    [Fact]
-    [UseEnvironmentVariable("DOCKER_CONTEXT", "wrong")]
-    public void GetCurrentEndpointWithWrongDockerContextEnvironmentVariable()
-    {
-      var endpoint = new DockerConfig(new EnvironmentConfiguration()).GetCurrentEndpoint();
-      Assert.Null(endpoint);
-    }
-  }
+        // When
+        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
 
-  public sealed class UseEnvironmentVariableAttribute : BeforeAfterTestAttribute
-  {
-    private readonly string _variable;
-
-    private readonly string _value;
-
-    public UseEnvironmentVariableAttribute(string variable, string value)
-    {
-      _variable = variable;
-      _value = value;
-    }
-
-    public override void Before(MethodInfo methodUnderTest)
-    {
-      Environment.SetEnvironmentVariable(_variable, _value);
-    }
-
-    public override void After(MethodInfo methodUnderTest)
-    {
-      Environment.SetEnvironmentVariable(_variable, null);
+        // Then
+        Assert.Equal(new Uri("tcp://127.0.0.1:2375/"), currentEndpoint);
+      }
     }
   }
 }

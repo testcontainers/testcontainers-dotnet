@@ -3,7 +3,6 @@
   using System;
   using System.IO;
   using System.Linq;
-  using System.Runtime.InteropServices;
   using System.Security.Cryptography;
   using System.Text;
   using System.Text.Json;
@@ -12,7 +11,7 @@
   using JetBrains.Annotations;
 
   /// <summary>
-  ///
+  /// Represents a Docker config.
   /// </summary>
   internal sealed class DockerConfig
   {
@@ -22,55 +21,44 @@
 
     private readonly FileInfo _dockerConfigFile;
 
-    [CanBeNull]
-    private readonly Uri _dockerHost;
-
-    [CanBeNull]
-    private readonly string _dockerContext;
+    private readonly ICustomConfiguration[] _customConfigurations;
 
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="DockerConfig" /> class.
     /// </summary>
+    [PublicAPI]
     public DockerConfig()
-      : this(GetDockerConfigFile())
+      : this(GetDockerConfigFile(), EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
     {
     }
 
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="DockerConfig" /> class.
     /// </summary>
-    /// <param name="dockerConfigFile"></param>
-    public DockerConfig(FileInfo dockerConfigFile)
-      : this(dockerConfigFile, EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
-    {
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="dockerConfigFile"></param>
+    /// <param name="customConfigurations">A list of custom configurations.</param>
+    [PublicAPI]
     public DockerConfig(params ICustomConfiguration[] customConfigurations)
       : this(GetDockerConfigFile(), customConfigurations)
     {
     }
 
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="DockerConfig" /> class.
     /// </summary>
-    /// <param name="dockerConfigFile"></param>
-    /// <param name="customConfigurations"></param>
+    /// <param name="dockerConfigFile">The Docker config file.</param>
+    /// <param name="customConfigurations">A list of custom configurations.</param>
+    [PublicAPI]
     public DockerConfig(FileInfo dockerConfigFile, params ICustomConfiguration[] customConfigurations)
     {
       _dockerConfigFile = dockerConfigFile;
-      _dockerHost = customConfigurations.Select(customConfiguration => customConfiguration.GetDockerHost()).FirstOrDefault(dockerHost => dockerHost != null);
-      _dockerContext = customConfigurations.Select(customConfiguration => customConfiguration.GetDockerContext()).FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
+      _customConfigurations = customConfigurations;
     }
 
     /// <summary>
-    ///
+    /// Gets the <see cref="DockerConfig" /> instance.
     /// </summary>
     public static DockerConfig Instance { get; }
-      = new DockerConfig(GetDockerConfigFile());
+      = new DockerConfig();
 
     /// <inheritdoc cref="FileInfo.Exists" />
     public bool Exists => _dockerConfigFile.Exists;
@@ -79,9 +67,9 @@
     public string FullName => _dockerConfigFile.FullName;
 
     /// <summary>
-    ///
+    /// Parses the Docker config file.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="JsonDocument" /> representing the Docker config.</returns>
     public JsonDocument Parse()
     {
       using (var dockerConfigFileStream = _dockerConfigFile.OpenRead())
@@ -91,46 +79,61 @@
     }
 
     /// <summary>
-    /// Performs the equivalent of running <c>docker context inspect --format {{.Endpoints.docker.Host}}</c>
+    /// Gets the current Docker endpoint.
     /// </summary>
     /// <remarks>
-    /// See the <a href="https://github.com/docker/cli/blob/v25.0.0/cli/command/cli.go#L364-L390">Docker CLI implementation comments</a>.
+    /// See the Docker CLI implementation <a href="https://github.com/docker/cli/blob/v25.0.0/cli/command/cli.go#L364-L390">comments</a>.
+    /// Executes a command equivalent to <c>docker context inspect --format {{.Endpoints.docker.Host}}</c>.
     /// </remarks>
+    /// A <see cref="Uri" /> representing the current Docker endpoint if available; otherwise, <c>null</c>.
     [CanBeNull]
     public Uri GetCurrentEndpoint()
     {
-      try
+      const string defaultDockerContext = "default";
+
+      var dockerHost = GetDockerHost();
+      if (dockerHost != null)
       {
-        if (_dockerHost != null)
-        {
-          return _dockerHost;
-        }
-
-        var currentContext = GetCurrentContext();
-        if (currentContext is null or "default")
-        {
-          return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? NpipeEndpointAuthenticationProvider.DockerEngine : UnixEndpointAuthenticationProvider.DockerEngine;
-        }
-
-        using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentContext));
-        var digest = hash.Aggregate(new StringBuilder(hash.Length * 2), (sb, b) => sb.Append(b.ToString("x2"))).ToString();
-        var contextDirectory = Path.Combine(UserProfileDockerContextMetaDirectoryPath, digest);
-        var endpoint = GetEndpoint(contextDirectory, currentContext);
-        return endpoint;
+        return dockerHost;
       }
-      catch
+
+      var dockerContext = GetCurrentDockerContext();
+      if (string.IsNullOrEmpty(dockerContext) || defaultDockerContext.Equals(dockerContext))
       {
-        return null;
+        return TestcontainersSettings.OS.DockerEndpointAuthConfig.Endpoint;
+      }
+
+      using (var sha256 = SHA256.Create())
+      {
+        var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
+        var metaFilePath = Path.Combine(UserProfileDockerContextMetaDirectoryPath, dockerContextHash, "meta.json");
+
+        if (!File.Exists(metaFilePath))
+        {
+          return null;
+        }
+
+        using (var metaFileStream = File.OpenRead(metaFilePath))
+        {
+          var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
+          var host = meta?.Name == dockerContext ? meta.Endpoints?.Docker?.Host : null;
+          return string.IsNullOrEmpty(host) ? null : new Uri(host.Replace("npipe:////./", "npipe://./"));
+        }
       }
     }
 
     [CanBeNull]
-    private string GetCurrentContext()
+    private string GetCurrentDockerContext()
     {
-      if (!string.IsNullOrEmpty(_dockerContext))
+      var dockerContext = GetDockerContext();
+      if (!string.IsNullOrEmpty(dockerContext))
       {
-        return _dockerContext;
+        return dockerContext;
+      }
+
+      if (!Exists)
+      {
+        return null;
       }
 
       using (var config = Parse())
@@ -139,37 +142,23 @@
         {
           return currentContextNode.GetString();
         }
-
-        return null;
+        else
+        {
+          return null;
+        }
       }
     }
 
     [CanBeNull]
-    private static Uri GetEndpoint(string metaDirectory, string currentContext)
+    private Uri GetDockerHost()
     {
-      try
-      {
-        var metaFilePath = Path.Combine(metaDirectory, "meta.json");
-        using (var metaFileStream = new FileStream(metaFilePath, FileMode.Open, FileAccess.Read))
-        {
-          var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
-          if (meta?.Name == currentContext)
-          {
-            var host = meta?.Endpoints?.Docker?.Host;
-            if (!string.IsNullOrEmpty(host))
-            {
-              const string npipePrefix = "npipe:////./";
-              return host.StartsWith(npipePrefix, StringComparison.Ordinal) ? new Uri($"npipe://./{host.Substring(npipePrefix.Length)}") : new Uri(host);
-            }
-          }
-        }
-      }
-      catch
-      {
-        return null;
-      }
+      return _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerHost()).FirstOrDefault(dockerHost => dockerHost != null);
+    }
 
-      return null;
+    [CanBeNull]
+    private string GetDockerContext()
+    {
+      return _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerContext()).FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
     }
 
     private static FileInfo GetDockerConfigFile()
@@ -178,25 +167,44 @@
       return new FileInfo(Path.Combine(dockerConfigDirectoryPath, "config.json"));
     }
 
-    internal class DockerContextMeta
+    internal sealed class DockerContextMeta
     {
-      [JsonPropertyName("Name"), CanBeNull]
-      public string Name { get; set; }
+      [JsonConstructor]
+      public DockerContextMeta(string name, DockerContextMetaEndpoints endpoints)
+      {
+        Name = name;
+        Endpoints = endpoints;
+      }
 
-      [JsonPropertyName("Endpoints"), CanBeNull]
-      public DockerContextMetaEndpoints Endpoints { get; set; }
+      [JsonPropertyName("Name")]
+      public string Name { get; }
+
+      [JsonPropertyName("Endpoints")]
+      public DockerContextMetaEndpoints Endpoints { get; }
     }
 
-    internal class DockerContextMetaEndpoints
+    internal sealed class DockerContextMetaEndpoints
     {
-      [JsonPropertyName("docker"), CanBeNull]
-      public DockerContextMetaEndpointsDocker Docker { get; set; }
+      [JsonConstructor]
+      public DockerContextMetaEndpoints(DockerContextMetaEndpointsDocker docker)
+      {
+        Docker = docker;
+      }
+
+      [JsonPropertyName("docker")]
+      public DockerContextMetaEndpointsDocker Docker { get; }
     }
 
-    internal class DockerContextMetaEndpointsDocker
+    internal sealed class DockerContextMetaEndpointsDocker
     {
-      [JsonPropertyName("Host"), CanBeNull]
-      public string Host { get; set; }
+      [JsonConstructor]
+      public DockerContextMetaEndpointsDocker(string host)
+      {
+        Host = host;
+      }
+
+      [JsonPropertyName("Host")]
+      public string Host { get; }
     }
   }
 }
