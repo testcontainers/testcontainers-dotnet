@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public sealed class DockerContextConfigurationTests
     {
       [Fact]
-      public void ReturnsDefaultOsEndpointWhenDockerContextIsUnset()
+      public void ReturnsDefaultOsEndpointWhenDockerContextIsEmpty()
       {
         // Given
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=" });
@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public void ReturnsConfiguredEndpointWhenDockerContextIsNotSet()
+      public void ReturnsActiveEndpointWhenDockerContextIsUnset()
       {
         var currentEndpoint = new DockerConfig().GetCurrentEndpoint();
         Assert.Equal(DockerCli.GetCurrentEndpoint(), currentEndpoint);
@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public sealed class DockerHostConfigurationTests
     {
       [Fact]
-      public void ReturnsDefaultOsEndpointWhenDockerHostIsUnset()
+      public void ReturnsDefaultOsEndpointWhenDockerHostIsEmpty()
       {
         // Given
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=" });

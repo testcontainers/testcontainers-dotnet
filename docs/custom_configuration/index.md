@@ -6,6 +6,7 @@ Testcontainers supports various configurations to set up your test environment. 
 |-----------------------------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------|
 | `docker.config`             | `DOCKER_CONFIG`                            | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                |
 | `docker.host`               | `DOCKER_HOST`                              | The Docker daemon socket to connect to.                                                                                   | -                           |
+| `docker.context`            | `DOCKER_CONTEXT`                           | The Docker context to connect to.                                                                                         | -                           |
 | `docker.auth.config`        | `DOCKER_AUTH_CONFIG`                       | The Docker configuration file content (GitLab: [Use statically-defined credentials][use-statically-defined-credentials]). | -                           |
 | `docker.cert.path`          | `DOCKER_CERT_PATH`                         | The directory path that contains the client certificate (`{ca,cert,key}.pem`) files.                                      | `~/.docker/`                |
 | `docker.tls`                | `DOCKER_TLS`                               | Enables TLS.                                                                                                              | `false`                     |
@@ -16,11 +17,11 @@ Testcontainers supports various configurations to set up your test environment. 
 | `ryuk.container.privileged` | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED` | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `false`                     |
 | `ryuk.container.image`      | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`      | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.5.1` |
 | `hub.image.name.prefix`     | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`     | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
-<!-- | `wait.strategy.retries`     | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`     | The wait strategy retry count.                                                                                            | `infinite`                  |
+| `wait.strategy.retries`     | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`     | The wait strategy retry count.                                                                                            | `infinite`                  |
 | `wait.strategy.interval`    | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`    | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                  |
 | `wait.strategy.timeout`     | `TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT`     | The wait strategy timeout<sup>1</sup>.                                                                                    | `01:00:00`                  |
 
-1) The value represent the string representation of a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan), for example, `00:00:01` for 1 second. -->
+1) The value represent the string representation of a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan), for example, `00:00:01` for 1 second.
 
 ## Configure remote container runtime
 
@@ -34,9 +35,24 @@ docker.host=tcp://docker:2375
 DOCKER_HOST=tcp://docker:2375
 ```
 
+## Use a different context
+
+You can switch between contexts using the properties file or an environment variable. Once the context is set, Testcontainers will connect to the specified endpoint based on the given value.
+
+    NAME   DESCRIPTION   DOCKER ENDPOINT           ERROR
+    tcc                  tcp://127.0.0.1:64453/0
+
+```console title="Properties File"
+docker.context=tcc
+```
+
+```console title="Environment Variable"
+DOCKER_CONTEXT=tcc
+```
+
 ## Enable logging
 
-In .NET logging usually goes through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the appropriate output stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`). The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, set the `TestcontainersSettings.Logger` property to an instance of an `ILogger` implementation before creating a Docker resource, such as a container.
+In .NET logging usually goes through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the appropriate output stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`). The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, use the builder's `WithLogger(ILogger)` method and provide an `ILogger` instance to replace the default console logger.
 
     [testcontainers.org 00:00:00.34] Connected to Docker:
       Host: tcp://127.0.0.1:60706/
