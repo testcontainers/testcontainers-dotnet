@@ -130,6 +130,7 @@ public static class DockerCli
         public CommandResult(Command command, int exitCode, DateTime startTime, DateTime exitTime, string stdout, string stderr)
         {
             Command = command;
+            ExitCode = exitCode;
             StartTime = startTime;
             ExitTime = exitTime;
             Stdout = stdout;
