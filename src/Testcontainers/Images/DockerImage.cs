@@ -126,7 +126,7 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     public bool MatchVersion(Predicate<Version> predicate)
     {
-      var versionMatch = Regex.Match(Tag, @"^(\d+)(\.\d+)?(\.\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
 
       if (!versionMatch.Success)
       {
