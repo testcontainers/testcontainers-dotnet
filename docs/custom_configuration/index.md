@@ -39,8 +39,13 @@ DOCKER_HOST=tcp://docker:2375
 
 You can switch between contexts using the properties file or an environment variable. Once the context is set, Testcontainers will connect to the specified endpoint based on the given value.
 
-    NAME   DESCRIPTION   DOCKER ENDPOINT           ERROR
-    tcc                  tcp://127.0.0.1:64453/0
+```console title="List available contexts"
+PS C:\Sources\dotnet\testcontainers-dotnet> docker context ls
+NAME   DESCRIPTION   DOCKER ENDPOINT           ERROR
+tcc                  tcp://127.0.0.1:60706/0
+```
+
+Setting the context to `tcc` in this example will use the Docker host running at `127.0.0.1:60706` to create and run the test resources.
 
 ```console title="Properties File"
 docker.context=tcc
@@ -73,6 +78,10 @@ In .NET logging usually goes through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:06.22] Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d created
     [testcontainers.org 00:00:06.26] Start Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
     [testcontainers.org 00:00:06.64] Delete Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
+
+!!!tip
+
+    These log messages are from the Testcontainers library and contain information about the test resources. They do not include log messages from the containers. To get the container log messages, see: [Getting log messages](https://dotnet.testcontainers.org/api/create_docker_container/#getting-log-messages).
 
 To enable debug log messages in the default implementation, set the property `ConsoleLogger.Instance.DebugLogLevelEnabled` to `true`. This will forward messages related to building or pulling Docker images to the output stream.
 
