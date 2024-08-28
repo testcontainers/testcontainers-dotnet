@@ -48,9 +48,8 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 ## MongoDb Replica Set
 
-By default, MongoDB runs as a standalone instance. If your tests require a MongoDB replica set, use the code below which will initialise it as a single node replica set:
+By default, MongoDB runs as a standalone instance. If your tests require a MongoDB replica set, use the code below which will initialize it as a single-node replica set:
 
 ```csharp
-    private readonly MongoDbContainer _mongoDbContainer =
-        new MongoDbBuilder().WithReplicaSet().Build();
+MongoDbContainer _mongoDbContainer = new MongoDbBuilder().WithReplicaSet().Build();
 ```

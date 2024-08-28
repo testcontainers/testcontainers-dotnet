@@ -9,6 +9,7 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The MongoDb username.</param>
     /// <param name="password">The MongoDb password.</param>
+    /// <param name="replicaSetName">The replica set name.</param>
     public MongoDbConfiguration(
         string username = null,
         string password = null,
@@ -73,8 +74,10 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     public string Password { get; }
 
     /// <summary>
-    /// Name of the replica set. If specified, the container will be started as a single node replica set.
+    /// Gets the replica set name.
     /// </summary>
-    /// <example>rs0</example>
+    /// <remarks>
+    /// If specified, the container will be started as a single-node replica set.
+    /// </remarks>
     public string ReplicaSetName { get; }
 }

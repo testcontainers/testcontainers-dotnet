@@ -14,7 +14,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     private const string InitKeyFileScriptFilePath = "/docker-entrypoint-initdb.d/01-init-keyfile.sh";
 
-    private const string KeyFilePath = "/tmp/mongodb-keyfile";
+    private const string KeyFileFilePath = "/tmp/mongodb-keyfile";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
@@ -65,7 +65,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <summary>
-    /// Initialise the MongoDb container as a single node a replica set.
+    /// Initialize MongoDB as a single-node replica set.
     /// </summary>
     /// <param name="replicaSetName">The replica set name.</param>
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
@@ -74,14 +74,11 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         var initKeyFileScript = new StringWriter();
         initKeyFileScript.NewLine = "\n";
         initKeyFileScript.WriteLine("#!/bin/bash");
-        initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFilePath + "\"");
-        initKeyFileScript.WriteLine("chmod 600 \"" + KeyFilePath + "\"");
+        initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFileFilePath + "\"");
+        initKeyFileScript.WriteLine("chmod 600 \"" + KeyFileFilePath + "\"");
 
         return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName))
-            .WithCommand(
-                "--replSet", replicaSetName,
-                "--keyFile", KeyFilePath,
-                "--bind_ip_all")
+            .WithCommand("--replSet", replicaSetName, "--keyFile", KeyFileFilePath, "--bind_ip_all")
             .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, Unix.FileMode755);
     }
 
@@ -90,18 +87,21 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     {
         Validate();
 
-        // The wait strategy relies on the configuration of MongoDb. If credentials are
-        // provided, the log message "Waiting for connections" appears twice.
-        // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
-        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        IWaitUntil waitUntil;
 
-        if (!string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
+        if (string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
         {
-            // If the user has specified a replica set name, we need to initiate the replica set.
-            var replicaInitStrategy = new WaitInitiateReplicaSet(DockerResourceConfiguration);
-            mongoDbBuilder = mongoDbBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(replicaInitStrategy));
+            // The wait strategy relies on the configuration of MongoDb. If credentials are
+            // provided, the log message "Waiting for connections" appears twice.
+            waitUntil = new WaitIndicateReadiness(DockerResourceConfiguration);
+        }
+        else
+        {
+            waitUntil = new WaitInitiateReplicaSet(DockerResourceConfiguration);
         }
 
+        // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
+        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(waitUntil));
         return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
@@ -151,17 +151,17 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
+    private sealed class WaitIndicateReadiness : IWaitUntil
     {
         private static readonly string[] LineEndings = { "\r\n", "\n" };
 
         private readonly int _count;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// Initializes a new instance of the <see cref="WaitIndicateReadiness" /> class.
         /// </summary>
         /// <param name="configuration">The container configuration.</param>
-        public WaitUntil(MongoDbConfiguration configuration)
+        public WaitIndicateReadiness(MongoDbConfiguration configuration)
         {
             _count = string.IsNullOrEmpty(configuration.Username) && string.IsNullOrEmpty(configuration.Password) ? 1 : 2;
         }

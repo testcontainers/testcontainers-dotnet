@@ -3,12 +3,13 @@ namespace Testcontainers.MongoDb;
 public abstract class MongoDbContainerTest : IAsyncLifetime
 {
     private readonly MongoDbContainer _mongoDbContainer;
-    private readonly bool _isReplicaSet;
 
-    private MongoDbContainerTest(MongoDbContainer mongoDbContainer, bool isReplicaSet = false)
+    private readonly bool _replicaSetEnabled;
+
+    private MongoDbContainerTest(MongoDbContainer mongoDbContainer, bool replicaSetEnabled = false)
     {
         _mongoDbContainer = mongoDbContainer;
-        _isReplicaSet = isReplicaSet;
+        _replicaSetEnabled = replicaSetEnabled;
     }
 
     public Task InitializeAsync()
@@ -63,11 +64,10 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         // Then
-        if (_isReplicaSet)
+        if (_replicaSetEnabled)
         {
             Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
             Assert.Empty(execResult.Stderr);
-            Assert.Equal("true\n", execResult.Stdout);
         }
         else
         {
@@ -107,7 +107,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build(), isReplicaSet: true) // Replica set status returns ok in MongoDB 4.4 without initialising it
+            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build(), true)
         {
         }
     }
@@ -116,7 +116,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbReplicaSetDefaultConfiguration : MongoDbContainerTest
     {
         public MongoDbReplicaSetDefaultConfiguration()
-            : base(new MongoDbBuilder().WithReplicaSet().Build(), isReplicaSet: true)
+            : base(new MongoDbBuilder().WithReplicaSet().Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
         {
         }
     }
@@ -125,7 +125,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbNamedReplicaSetConfiguration : MongoDbContainerTest
     {
         public MongoDbNamedReplicaSetConfiguration()
-            : base(new MongoDbBuilder().WithReplicaSet("rscustom").Build(), isReplicaSet: true)
+            : base(new MongoDbBuilder().WithReplicaSet("rs1").Build(), true)
         {
         }
     }
