@@ -1,7 +1,9 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
+  using System.Globalization;
   using System.Linq;
+  using System.Text.RegularExpressions;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IImage" />
@@ -9,6 +11,8 @@ namespace DotNet.Testcontainers.Images
   public sealed class DockerImage : IImage
   {
     private const string LatestTag = "latest";
+
+    private const string NightlyTag = "nightly";
 
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
@@ -106,6 +110,37 @@ namespace DotNet.Testcontainers.Images
 
     /// <inheritdoc />
     public string GetHostname() => _lazyHostname.Value;
+
+    /// <inheritdoc />
+    public bool MatchLatestOrNightly()
+    {
+      return MatchVersion((string tag) => LatestTag.Equals(tag) || NightlyTag.Equals(tag));
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<string> predicate)
+    {
+      return predicate(Tag);
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<Version> predicate)
+    {
+      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+
+      if (!versionMatch.Success)
+      {
+        return false;
+      }
+
+      if (Version.TryParse(versionMatch.Value, out var version))
+      {
+        return predicate(version);
+      }
+
+      // If the Regex matches and Version.TryParse(string?, out Version?) fails then it means it is a major version only (i.e. without any dot separator)
+      return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
+    }
 
     private static string TrimOrDefault(string value, string defaultValue = default)
     {
