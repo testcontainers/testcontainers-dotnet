@@ -5,8 +5,6 @@ namespace Testcontainers.MsSql;
 public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
 {
     private readonly MsSqlConfiguration _configuration;
-    private const string MsSqlToolsPath = "/opt/mssql-tools/bin/sqlcmd";
-    private const string MsSql18ToolsPath = "/opt/mssql-tools18/bin/sqlcmd";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlContainer" /> class.
@@ -46,35 +44,7 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        var sqlCmdPath = await GetSqlCmdPathAsync(ct)
+        return await ExecAsync(new[] { "/opt/mssql-tools/bin/sqlcmd", "-b", "-r", "1", "-U", _configuration.Username, "-P", _configuration.Password, "-i", scriptFilePath }, ct)
             .ConfigureAwait(false);
-
-        var command = new[]
-        {
-            sqlCmdPath,
-            "-C",
-            "-b",
-            "-r",
-            "1",
-            "-U",
-            _configuration.Username,
-            "-P",
-            _configuration.Password,
-            "-i",
-            scriptFilePath,
-        };
-        
-        return await ExecAsync(command, ct)
-            .ConfigureAwait(false);
-    }
-    
-    internal async Task<string> GetSqlCmdPathAsync(CancellationToken ct = default)
-    {
-        var hasMsSql18ToolsResult = await ExecAsync(new[] { "[", "-f" , MsSql18ToolsPath, "]" }, ct)
-            .ConfigureAwait(false);
-
-        return 0L.Equals(hasMsSql18ToolsResult.ExitCode)
-            ? MsSql18ToolsPath
-            : MsSqlToolsPath;
     }
 }

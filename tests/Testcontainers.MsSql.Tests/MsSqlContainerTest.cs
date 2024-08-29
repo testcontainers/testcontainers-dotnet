@@ -1,16 +1,14 @@
-using JetBrains.Annotations;
-
 namespace Testcontainers.MsSql;
 
 public abstract class MsSqlContainerTest : IAsyncLifetime
 {
     private readonly MsSqlContainer _msSqlContainer;
 
-    private MsSqlContainerTest(MsSqlContainer msSqlContainer)
+    public MsSqlContainerTest(MsSqlContainer msSqlContainer)
     {
         _msSqlContainer = msSqlContainer;
     }
-    
+
     public Task InitializeAsync()
     {
         return _msSqlContainer.StartAsync();
@@ -50,7 +48,7 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
-    
+
     [UsedImplicitly]
     public sealed class MsSqlDefaultConfiguration : MsSqlContainerTest
     {
@@ -61,9 +59,9 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class MsSqlWithMsSqlTools18Configuration : MsSqlContainerTest
+    public sealed class MsSqlTools18Configuration : MsSqlContainerTest
     {
-        public MsSqlWithMsSqlTools18Configuration()
+        public MsSqlTools18Configuration()
             : base(new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build())
         {
         }

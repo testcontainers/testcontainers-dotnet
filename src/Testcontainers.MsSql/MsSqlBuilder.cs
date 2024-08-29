@@ -131,26 +131,24 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
+        private static readonly string[] FindSqlCmd = { "/bin/sh", "-c", "find /opt/mssql-tools*/bin/sqlcmd -type f -print -quit" };
+
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var msSqlContainer = container as MsSqlContainer;
-            if (msSqlContainer == null)
-            {
-                throw new InvalidOperationException("The container is not a MsSqlContainer.");
-            }
-            
-            var sqlCmdPath = await msSqlContainer.GetSqlCmdPathAsync()
+            var findSqlCmdExecResult = await container.ExecAsync(FindSqlCmd)
                 .ConfigureAwait(false);
-     
-            string[] command = [ 
-                sqlCmdPath,
-                "-C",
-                "-Q",
-                "SELECT 1;",
-            ];
-            
-            var execResult = await container.ExecAsync(command)
+
+            if (findSqlCmdExecResult.ExitCode != 0)
+            {
+                throw new NotSupportedException("The sqlcmd binary could not be found.");
+            }
+
+            var sqlCmdFilePath = findSqlCmdExecResult.Stdout.Trim();
+
+            var sqlCmdArguments = new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" };
+
+            var execResult = await container.ExecAsync(sqlCmdArguments)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
