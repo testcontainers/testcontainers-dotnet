@@ -126,29 +126,24 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
 
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
+    /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] FindSqlCmd = { "/bin/sh", "-c", "find /opt/mssql-tools*/bin/sqlcmd -type f -print -quit" };
-
         /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
+        public Task<bool> UntilAsync(IContainer container)
         {
-            var findSqlCmdExecResult = await container.ExecAsync(FindSqlCmd)
+            return UntilAsync(container as MsSqlContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private async Task<bool> UntilAsync(MsSqlContainer container)
+        {
+            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
                 .ConfigureAwait(false);
 
-            if (findSqlCmdExecResult.ExitCode != 0)
-            {
-                throw new NotSupportedException("The sqlcmd binary could not be found.");
-            }
-
-            var sqlCmdFilePath = findSqlCmdExecResult.Stdout.Trim();
-
-            var sqlCmdArguments = new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" };
-
-            var execResult = await container.ExecAsync(sqlCmdArguments)
+            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
