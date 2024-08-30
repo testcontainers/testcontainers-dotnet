@@ -78,7 +78,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         }
     }
 
-    // CreateMongoDbContainer
+    // CreateMongoDbContainer {
     [UsedImplicitly]
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
