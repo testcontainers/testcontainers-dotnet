@@ -9,6 +9,7 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         _msSqlContainer = msSqlContainer;
     }
 
+    // UseMsSqlContainer {
     public Task InitializeAsync()
     {
         return _msSqlContainer.StartAsync();
@@ -48,7 +49,9 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+    // }
 
+    // CreateMsSqlContainer {
     [UsedImplicitly]
     public sealed class MsSqlDefaultConfiguration : MsSqlContainerTest
     {
@@ -57,6 +60,7 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         {
         }
     }
+    // }
 
     [UsedImplicitly]
     public sealed class MsSqlTools18Configuration : MsSqlContainerTest
