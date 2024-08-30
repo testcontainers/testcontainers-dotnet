@@ -28,7 +28,7 @@ The test example uses the following NuGet dependencies:
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
---8<-- "_call_out_test_projects.md"
+--8<-- "docs/modules/_call_out_test_projects.md"
 
 ## MongoDb Replica Set
 
