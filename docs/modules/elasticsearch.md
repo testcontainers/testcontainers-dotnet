@@ -5,7 +5,7 @@
 The following example uses the following NuGet packages:
 
 <!--codeinclude-->
-[Dependencies](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:Dependencies
+[Dependencies](../../tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj) inside_block:Dependencies
 <!--/codeinclude-->
 
 IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
@@ -13,7 +13,7 @@ IDEs and editors may also require the following packages to run tests: `xunit.ru
 Copy and paste the following code into a new `.cs` test file within an existing test project.
 
 <!--codeinclude-->
-[Elasticsearch Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) block:ElasticsearchContainerTest
+[Elasticsearch Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:ElasticsearchContainerTest
 <!--/codeinclude-->
 
 To execute the tests, use the command `dotnet test` from a terminal.

@@ -2,6 +2,7 @@ namespace Testcontainers.Elasticsearch;
 
 public sealed class ElasticsearchContainerTest : IAsyncLifetime
 {
+    // Elasticsearch {
     private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
 
     public Task InitializeAsync()
@@ -30,4 +31,5 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
         // Then
         Assert.True(response.IsValidResponse);
     }
+    // }
 }
