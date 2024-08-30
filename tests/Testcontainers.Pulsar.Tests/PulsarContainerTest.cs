@@ -11,6 +11,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
     protected abstract Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default);
 
+    // UsePulsarContainer {
     public Task InitializeAsync()
     {
         return _pulsarContainer.StartAsync();
@@ -54,14 +55,17 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
     }
+    // }
 
     [UsedImplicitly]
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
+        // CreatePulsarContainer {
         public PulsarDefaultConfiguration()
             : base(new PulsarBuilder().Build())
         {
         }
+        // }
 
         protected override Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
         {

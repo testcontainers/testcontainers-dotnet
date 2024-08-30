@@ -1,5 +1,7 @@
 # PostgreSQL
 
+[PostgreSQL](https://www.postgresql.org/) is a powerful, open-source relational database management system (RDBMS) used to store, manage, and retrieve structured data.
+
 Add the following dependency to your project file:
 
 ```console title="NuGet"
