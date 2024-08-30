@@ -1,36 +1,21 @@
 # PostgreSQL
 
-Here is an example of a pre-configured PostgreSQL [module](https://www.nuget.org/packages/Testcontainers.PostgreSql). In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query against it.
+Add the following dependency to your project file:
 
-```csharp
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
-{
-  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
-
-  public Task InitializeAsync()
-  {
-    return _postgreSqlContainer.StartAsync();
-  }
-
-  public Task DisposeAsync()
-  {
-    return _postgreSqlContainer.DisposeAsync().AsTask();
-  }
-
-  [Fact]
-  public void ExecuteCommand()
-  {
-    using (DbConnection connection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString()))
-    {
-      using (DbCommand command = new NpgsqlCommand())
-      {
-        connection.Open();
-        command.Connection = connection;
-        command.CommandText = "SELECT 1";
-      }
-    }
-  }
-}
+```console title="NuGet"
+dotnet add package Testcontainers.PostgreSql
 ```
 
-[xunit]: https://xunit.net/
+You can start an PostgreSQL container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+
+<!--codeinclude-->
+[Usage Example](../../tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs) inside_block:UsePostgreSqlContainer
+<!--/codeinclude-->
+
+The test example uses the following NuGet dependencies:
+
+<!--codeinclude-->
+[Package References](../../tests/Testcontainers.PostgreSql.Tests/Testcontainers.PostgreSql.Tests.csproj) inside_block:PackageReferences
+<!--/codeinclude-->
+
+To execute the tests, use the command `dotnet test` from a terminal.
