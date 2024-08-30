@@ -2,6 +2,7 @@ namespace Testcontainers.RabbitMq;
 
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
+    // UseRabbitMqContainer {
     private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
 
     public Task InitializeAsync()
@@ -28,4 +29,5 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
         // Then
         Assert.True(connection.IsOpen);
     }
+    // }
 }
