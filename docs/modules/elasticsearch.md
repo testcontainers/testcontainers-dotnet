@@ -4,47 +4,17 @@
 
 The following example uses the following NuGet packages:
 
-```console title="Install the NuGet dependencies"
-dotnet add package Testcontainers.Elasticsearch
-dotnet add package Elastic.Clients.Elasticsearch
-dotnet add package xunit
-```
+<!--codeinclude-->
+[Dependencies](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:Dependencies
+<!--/codeinclude-->
 
 IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
 
 Copy and paste the following code into a new `.cs` test file within an existing test project.
 
-```csharp
-using Elastic.Clients.Elasticsearch;
-using Elastic.Transport;
-using Testcontainers.Elasticsearch;
-using Xunit;
-
-public sealed class ElasticsearchContainerTest : IAsyncLifetime
-{
-    private readonly ElasticsearchContainer _elasticsearch
-        = new ElasticsearchBuilder().Build();
-
-    [Fact]
-    public async Task ReadFromElasticsearch()
-    {
-        var settings = new ElasticsearchClientSettings(new Uri(_elasticsearch.GetConnectionString()));
-        settings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
-
-        var client = new ElasticsearchClient(settings);
-
-        var stats = await client.PingAsync();
-
-        Assert.True(stats.IsValidResponse);
-    }
-
-    public Task InitializeAsync()
-        => _elasticsearch.StartAsync();
-
-    public Task DisposeAsync()
-        => _elasticsearch.DisposeAsync().AsTask();
-}
-```
+<!--codeinclude-->
+[Elasticsearch Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) block:ElasticsearchContainerTest
+<!--/codeinclude-->
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
