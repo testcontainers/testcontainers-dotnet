@@ -22,7 +22,7 @@ The test example uses the following NuGet dependencies:
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
---8<-- "_call_out_test_projects.md"
+{{! include '_call_out_test_projects.md' }}
 
 ## A Note To Developers
 
