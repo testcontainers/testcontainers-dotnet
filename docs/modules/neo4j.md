@@ -21,3 +21,5 @@ The test example uses the following NuGet dependencies:
 <!--/codeinclude-->
 
 To execute the tests, use the command `dotnet test` from a terminal.
+
+--8<-- "_call_out_test_projects.md"

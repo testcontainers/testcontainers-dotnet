@@ -28,6 +28,8 @@ The test example uses the following NuGet dependencies:
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
+--8<-- "_call_out_test_projects.md"
+
 ## Access Apache Pulsar
 
 ```csharp title="Gets the Pulsar broker URL"

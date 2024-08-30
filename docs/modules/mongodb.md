@@ -28,6 +28,8 @@ The test example uses the following NuGet dependencies:
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
+--8<-- "_call_out_test_projects.md"
+
 ## MongoDb Replica Set
 
 By default, MongoDB runs as a standalone instance. If your tests require a MongoDB replica set, use the following configuration which will initialize a single-node replica set:
