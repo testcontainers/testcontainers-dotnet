@@ -13,7 +13,7 @@ IDEs and editors may also require the following packages to run tests: `xunit.ru
 Copy and paste the following code into a new `.cs` test file within an existing test project.
 
 <!--codeinclude-->
-[Elasticsearch Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:ElasticsearchContainerTest
+[Elasticsearch Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:Elasticsearch
 <!--/codeinclude-->
 
 To execute the tests, use the command `dotnet test` from a terminal.
