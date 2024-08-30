@@ -2,7 +2,7 @@ namespace Testcontainers.Elasticsearch;
 
 public sealed class ElasticsearchContainerTest : IAsyncLifetime
 {
-    // Elasticsearch {
+    // CreateElasticsearchContainer {
     private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
 
     public Task InitializeAsync()
