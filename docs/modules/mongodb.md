@@ -8,7 +8,7 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.MongoDb
 ```
 
-You can start an MongoDB container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+You can start a MongoDB container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
 <!--codeinclude-->
 [Create Container Instance](../../tests/Testcontainers.MongoDb.Tests/MongoDbContainerTest.cs) inside_block:CreateMongoDbContainer
@@ -33,5 +33,5 @@ To execute the tests, use the command `dotnet test` from a terminal.
 By default, MongoDB runs as a standalone instance. If your tests require a MongoDB replica set, use the following configuration which will initialize a single-node replica set:
 
 <!--codeinclude-->
-[Usage Example](../../tests/Testcontainers.MongoDb.Tests/MongoDbContainerTest.cs) inside_block:ReplicaSetContainerConfiguration
+[Replica Set Configuration](../../tests/Testcontainers.MongoDb.Tests/MongoDbContainerTest.cs) inside_block:ReplicaSetContainerConfiguration
 <!--/codeinclude-->
