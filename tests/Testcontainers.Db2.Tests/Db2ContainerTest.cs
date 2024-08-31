@@ -1,5 +1,4 @@
 using IBM.Data.Db2;
-using Testcontainers.Tests;
 
 namespace Testcontainers.Db2;
 
@@ -19,13 +18,19 @@ public sealed class Db2ContainerTest : IAsyncLifetime
 
   [Fact]
   [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-  public void ConnectionStateReturnsOpen()
+  public async Task ReadFromDb2Database()
   {
     // Given
     using DbConnection connection = new DB2Connection(_db2Container.GetConnectionString());
 
     // When
     connection.Open();
+
+    using DbCommand command = connection.CreateCommand();
+    command.CommandText = "SELECT 1 FROM SYSIBM.SYSDUMMY1;";
+
+    var actual = await command.ExecuteScalarAsync() as int?;
+    Assert.Equal(1, actual.GetValueOrDefault());
 
     // Then
     Assert.Equal(ConnectionState.Open, connection.State);
