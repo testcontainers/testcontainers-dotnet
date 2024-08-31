@@ -2,6 +2,7 @@ namespace Testcontainers.PostgreSql;
 
 public sealed class PostgreSqlContainerTest : IAsyncLifetime
 {
+    // UsePostgreSqlContainer {
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
 
     public Task InitializeAsync()
@@ -43,6 +44,7 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+    // }
 
     public sealed class ReuseContainerTest : IClassFixture<SharedPostgreSqlInstance>, IDisposable
     {

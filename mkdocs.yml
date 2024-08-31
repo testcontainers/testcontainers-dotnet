@@ -23,7 +23,10 @@ plugins:
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 nav:
   - index.md
   - cicd/index.md
