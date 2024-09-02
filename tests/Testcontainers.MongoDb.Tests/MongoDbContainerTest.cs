@@ -12,7 +12,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         _replicaSetEnabled = replicaSetEnabled;
     }
 
-    // UseMongoDbContainer {
+    // # --8<-- [start:UseMongoDbContainer]
     public Task InitializeAsync()
     {
         return _mongoDbContainer.StartAsync();
@@ -52,7 +52,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
-    // }
+    // # --8<-- [end:UseMongoDbContainer]
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -78,7 +78,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         }
     }
 
-    // CreateMongoDbContainer {
+    // # --8<-- [start:CreateMongoDbContainer]
     [UsedImplicitly]
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
@@ -96,7 +96,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         {
         }
     }
-    // }
+    // # --8<-- [end:CreateMongoDbContainer]
 
     [UsedImplicitly]
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
@@ -125,7 +125,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         }
     }
 
-    // ReplicaSetContainerConfiguration {
+    // # --8<-- [start:ReplicaSetContainerConfiguration]
     [UsedImplicitly]
     public sealed class MongoDbNamedReplicaSetConfiguration : MongoDbContainerTest
     {
@@ -134,5 +134,5 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         {
         }
     }
-    // }
+    // # --8<-- [end:ReplicaSetContainerConfiguration]
 }

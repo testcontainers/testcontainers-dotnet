@@ -6,7 +6,7 @@
 
 If you choose to run your tests in a Docker Wormhole configuration, which involves using sibling containers, it is necessary to mount Docker's raw socket `/var/run/docker.sock.raw`. You find more information and an explanation of the Docker bug in this [comment](https://github.com/docker/for-mac/issues/5588#issuecomment-934600089).
 
-```console
+```shell
 docker run -v /var/run/docker.sock.raw:/var/run/docker.sock $IMAGE dotnet test
 ```
 
@@ -29,7 +29,7 @@ services:
     entrypoint: dotnet
     command: test
     # Uncomment the lines below in the case of Docker Desktop (see note above).
-    # TESTCONTAINERS_HOST_OVERRIDE is not needed in the case of Docker Engine. 
+    # TESTCONTAINERS_HOST_OVERRIDE is not needed in the case of Docker Engine.
     # environment:
     #   - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
     volumes:
