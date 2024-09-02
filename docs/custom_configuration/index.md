@@ -26,13 +26,15 @@ Testcontainers supports various configurations to set up your test environment. 
 
 To configure a remote container runtime, Testcontainers provides support for Docker's environment variables in addition to the properties file. During initialization, Testcontainers' auto-discovery feature detect and apply custom configurations including container runtimes. If you are running Docker on a remote host, you can configure it using either of the following methods:
 
-```console title="Properties File"
-docker.host=tcp://docker:2375
-```
+=== "Environment Variable"
+    ```
+    DOCKER_HOST=tcp://docker:2375
+    ```
 
-```console title="Environment Variable"
-DOCKER_HOST=tcp://docker:2375
-```
+=== "Properties File"
+    ```
+    docker.host=tcp://docker:2375
+    ```
 
 ## Enable logging
 
