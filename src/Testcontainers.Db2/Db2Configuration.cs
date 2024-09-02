@@ -20,7 +20,8 @@ public sealed class Db2Configuration : ContainerConfiguration
         string password = null,
         bool archiveLogs = false,
         bool autoConfig = false,
-        string licenseAgreement = null)
+        string licenseAgreement = null,
+        string inMemoryDatabasePath = null)
   {
     Database = database;
     Username = username;
@@ -28,6 +29,7 @@ public sealed class Db2Configuration : ContainerConfiguration
     ArchiveLogs = archiveLogs;
     AutoConfig = autoConfig;
     LicenseAgreement = licenseAgreement;
+    InMemoryDatabasePath = inMemoryDatabasePath;
   }
 
   /// <summary>
@@ -93,4 +95,5 @@ public sealed class Db2Configuration : ContainerConfiguration
   public bool AutoConfig { get; }
 
   public string LicenseAgreement { get; }
+  public string InMemoryDatabasePath { get; }
 }

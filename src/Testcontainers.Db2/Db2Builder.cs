@@ -19,6 +19,8 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
   public const string DefaultLicenseAgreement = "accept";
 
+  public const string DefaultInMemoryDatabasePath = "/home/db2inst1/data";
+
   /// <summary>
   /// Initializes a new instance of the <see cref="Db2Builder" /> class.
   /// </summary>
@@ -107,6 +109,16 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
   }
 
   /// <summary>
+  /// Maps the database to memory.
+  /// </summary>
+  /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
+  public Db2Builder WithInMemoryDatabase()
+  {
+    return Merge(DockerResourceConfiguration, new Db2Configuration(licenseAgreement: DefaultInMemoryDatabasePath))
+        .WithTmpfsMount(DefaultInMemoryDatabasePath);
+  }
+
+  /// <summary>
   /// <inheritdoc />
   public override Db2Container Build()
   {
@@ -133,6 +145,9 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
         .WithUsername(DefaultUsername)
         .WithPassword(DefaultPassword)
         .WithLicenseAgreement()
+        .WithArchiveLogs(false)
+        .WithAutoconfig(false)
+        .WithInMemoryDatabase()
         .WithPrivileged(true);
 
   /// <inheritdoc />
