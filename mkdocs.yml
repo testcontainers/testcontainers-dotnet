@@ -52,3 +52,5 @@ nav:
     - modules/postgres.md
     - modules/pulsar.md
     - modules/rabbitmq.md
+  - contributing.md
+  - contributing_docs.md
