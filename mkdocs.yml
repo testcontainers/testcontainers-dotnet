@@ -17,13 +17,15 @@ extra_css:
   - css/extra.css
   - css/tc-header.css
 plugins:
-  - codeinclude
   - markdownextradata
   - search
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.snippets
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.snippets:
+      dedent_subsections: true
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
