@@ -4,7 +4,7 @@ Modules are great examples of Testcontainers' capabilities. To write tests again
 
 Modules are standalone dependencies that can be installed from [NuGet.org](https://www.nuget.org/profiles/Testcontainers). To use a module in your test project, you need to add it as a dependency first:
 
-```console
+```shell
 dotnet add package Testcontainers.ModuleName
 ```
 
@@ -69,7 +69,7 @@ await moduleNameContainer.StartAsync();
 
 The Testcontainers for .NET repository contains a .NET [template](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Templates) to scaffold advanced modules quickly. To create and add a new module to the Testcontainers solution file, checkout the repository and install the .NET template first:
 
-```console
+```shell
 git clone --branch develop git@github.com:testcontainers/testcontainers-dotnet.git
 cd ./testcontainers-dotnet/
 dotnet new --install ./src/Templates
@@ -77,7 +77,7 @@ dotnet new --install ./src/Templates
 
 The following CLI commands create and add a new PostgreSQL module to the solution file:
 
-```console
+```shell
 dotnet new tcm --name PostgreSql --official-module true --output ./src
 dotnet sln add ./src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj
 ```

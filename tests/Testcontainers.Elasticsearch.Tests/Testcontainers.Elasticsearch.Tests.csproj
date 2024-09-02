@@ -5,13 +5,13 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <!-- PackageReferences { -->
+        <!-- -8<- [start:PackageReferences] -->
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Elastic.Clients.Elasticsearch"/>
-        <!-- } -->
+        <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
