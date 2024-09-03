@@ -1,56 +1,38 @@
 # Microsoft SQL Server
 
-[Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server), also known as MSSQL, is a relational database engine developed by Microsoft and is a popular choice in enterprise systems. The following example provides .NET developers with a starting point to use a Microsoft SQL Server instance in the [xUnit][xunit] tests.
+[Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server), also known as MSSQL, is a relational database engine developed by Microsoft and is a popular choice in enterprise systems.
 
-The following example uses the following NuGet packages:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.MsSql
-dotnet add package Microsoft.Data.SqlClient
-dotnet add package xunit
 ```
 
-IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
+You can start a MSSQL container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
-Copy and paste the following code into a new `.cs` test file within an existing test project.
+=== "Create Container Instance"
+    ```csharp
+    --8<-- "tests/Testcontainers.MsSql.Tests/MsSqlContainerTest.cs:CreateMsSqlContainer"
+    ```
 
-```csharp
-using Microsoft.Data.SqlClient;
-using Testcontainers.MsSql;
-using Xunit;
+This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-namespace TestcontainersModules;
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.MsSql.Tests/MsSqlContainerTest.cs:UseMsSqlContainer"
+    ```
 
-public sealed class MsSqlServerContainerTest : IAsyncLifetime
-{
-    private readonly MsSqlContainer _msSqlContainer
-        = new MsSqlBuilder().Build();
+The test example uses the following NuGet dependencies:
 
-    [Fact]
-    public async Task ReadFromMsSqlDatabase()
-    {
-        await using var connection = new SqlConnection(_msSqlContainer.GetConnectionString());
-        await connection.OpenAsync();
-
-        await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT 1;";
-
-        var actual = await command.ExecuteScalarAsync() as int?;
-        Assert.Equal(1, actual.GetValueOrDefault());
-    }
-
-    public Task InitializeAsync()
-        => _msSqlContainer.StartAsync();
-
-    public Task DisposeAsync()
-        => _msSqlContainer.DisposeAsync().AsTask();
-}
-```
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.MsSql.Tests/Testcontainers.MsSql.Tests.csproj:PackageReferences"
+    ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
+--8<-- "docs/modules/_call_out_test_projects.txt"
+
 ## A Note To Developers
 
-Once Testcontainers creates a server instance, developers may use the connection string with any of the popular data-access technologies found in the .NET Ecosystem. Some of these libraries include [Entity Framework Core](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore), [Dapper](https://www.nuget.org/packages/Dapper), and [NHibernate](https://www.nuget.org/packages/NHibernate). At which point, developers can execute database migrations and SQL scripts.
-
-[xunit]: https://xunit.net/
+Once Testcontainers creates a server instance, developers may use the connection string with any of the popular data-access technologies found in the .NET ecosystem. Some of these libraries include [Entity Framework Core](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore), [Dapper](https://www.nuget.org/packages/Dapper), and [NHibernate](https://www.nuget.org/packages/NHibernate). At which point, developers can execute database migrations and SQL scripts.
