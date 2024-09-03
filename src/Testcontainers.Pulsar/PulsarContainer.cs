@@ -63,7 +63,7 @@ public sealed class PulsarContainer : DockerContainer
         {
             int secondsToMilliseconds;
 
-            if (_configuration.Image.MatchVersion(IsVersionAffectedByRegression))
+            if (_configuration.Image.MatchVersion(IsVersionAffectedByRegressionGh22811))
             {
                 Logger.LogWarning("The 'apachepulsar/pulsar:3.2.0-3' and '3.3.0' images contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
                 secondsToMilliseconds = 1000;
@@ -86,13 +86,6 @@ public sealed class PulsarContainer : DockerContainer
         }
 
         return tokensResult.Stdout;
-    }
-
-    private bool IsVersionAffectedByRegression(System.Version version)
-    {
-        return version.Major == 3
-               && ((version.Minor == 2 && version.Build is >= 0 and <= 3) ||
-                   (version.Minor == 3 && version.Build == 0));
     }
 
     /// <summary>
@@ -124,5 +117,10 @@ public sealed class PulsarContainer : DockerContainer
         }
 
         return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
+    }
+
+    private static bool IsVersionAffectedByRegressionGh22811(System.Version version)
+    {
+        return version.Major == 3 && ((version.Minor == 2 && version.Build is >= 0 and <= 3) || (version.Minor == 3 && version.Build == 0));
     }
 }
