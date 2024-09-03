@@ -138,7 +138,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         }
 
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private async Task<bool> UntilAsync(MsSqlContainer container)
+        private static async Task<bool> UntilAsync(MsSqlContainer container)
         {
             var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
                 .ConfigureAwait(false);
