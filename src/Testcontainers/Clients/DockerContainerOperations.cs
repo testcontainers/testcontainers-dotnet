@@ -33,23 +33,22 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ContainerInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Containers.InspectContainerAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Containers.InspectContainerAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
-
-      return response != null;
+      try
+      {
+        await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
+        return true;
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        return false;
+      }
     }
 
     public async Task<long> GetExitCodeAsync(string id, CancellationToken ct = default)

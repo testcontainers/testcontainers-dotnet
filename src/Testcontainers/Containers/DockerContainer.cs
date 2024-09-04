@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -507,8 +508,15 @@ namespace DotNet.Testcontainers.Containers
       await _client.StopAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      _container = await _client.Container.ByIdAsync(_container.ID, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _container = await _client.Container.ByIdAsync(_container.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException)
+      {
+        _container = null;
+      }
 
       StoppedTime = DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
