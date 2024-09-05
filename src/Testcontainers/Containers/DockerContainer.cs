@@ -515,7 +515,7 @@ namespace DotNet.Testcontainers.Containers
       }
       catch (DockerApiException)
       {
-        _container = null;
+        _container = new ContainerInspectResponse();
       }
 
       StoppedTime = DateTime.UtcNow;
@@ -525,7 +525,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return _container != null && ContainerHasBeenCreatedStates.HasFlag(State);
+      return ContainerHasBeenCreatedStates.HasFlag(State);
     }
 
     /// <summary>

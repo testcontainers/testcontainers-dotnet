@@ -41,8 +41,9 @@ namespace DotNet.Testcontainers.Clients
     {
       try
       {
-        await ByIdAsync(id, ct)
+        _ = await ByIdAsync(id, ct)
           .ConfigureAwait(false);
+
         return true;
       }
       catch (DockerContainerNotFoundException)
