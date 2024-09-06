@@ -31,23 +31,23 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Networks.InspectNetworkAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Networks.InspectNetworkAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _ = await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
 
-      return response != null;
+        return true;
+      }
+      catch (DockerNetworkNotFoundException)
+      {
+        return false;
+      }
     }
 
     public async Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default)
