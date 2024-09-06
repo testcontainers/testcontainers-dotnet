@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
-      var authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", NullLogger.Instance);
+      var authenticationProvider = new DockerRegistryAuthenticationProvider(DockerConfig.Instance, NullLogger.Instance);
       Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig("index.docker.io"));
     }
 
