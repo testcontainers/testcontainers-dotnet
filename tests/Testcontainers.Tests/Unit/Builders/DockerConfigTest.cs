@@ -71,9 +71,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal(new Uri("tcp://127.0.0.1:2375/"), currentEndpoint);
       }
 
-      [Fact]
+      [SkippableFact]
       public void ReturnsActiveEndpointWhenDockerContextIsUnset()
       {
+        var properties = PropertiesFileConfiguration.Instance;
+        var dockerHost = properties.GetDockerHost();
+        var dockerContext = properties.GetDockerContext();
+        Skip.If(dockerHost != null || dockerContext != null, "The docker cli doesn't know about ~/.testcontainers.properties");
+
         var currentEndpoint = new DockerConfig().GetCurrentEndpoint();
         Assert.Equal(DockerCli.GetCurrentEndpoint(), currentEndpoint);
       }
