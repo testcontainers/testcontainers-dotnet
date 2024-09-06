@@ -43,12 +43,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public void ReturnsConfiguredEndpointWhenDockerContextIsCustomFromProperties()
+      public void ReturnsConfiguredEndpointWhenDockerContextIsCustomFromPropertiesFile()
       {
         // Given
-        using var context = new TempDockerContext("custom", "tcp://127.0.0.1:2375/");
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=custom" });
-        var dockerConfig = new DockerConfig(context.ConfigFile, customConfiguration);
+        using var context = new ConfigMetaFile("custom", "tcp://127.0.0.1:2375/");
+
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=custom", context.GetDockerConfig() });
+        var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
         var currentEndpoint = dockerConfig.GetCurrentEndpoint();
@@ -61,8 +62,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ReturnsConfiguredEndpointWhenDockerContextIsCustomFromConfigFile()
       {
         // Given
-        using var context = new TempDockerContext("custom", "tcp://127.0.0.1:2375/");
-        var dockerConfig = new DockerConfig(context.ConfigFile);
+        using var context = new ConfigMetaFile("custom", "tcp://127.0.0.1:2375/");
+
+        // This test reads the current context JSON node from the Docker config file.
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { context.GetDockerConfig() });
+        var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
         var currentEndpoint = dockerConfig.GetCurrentEndpoint();
@@ -71,14 +75,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         Assert.Equal(new Uri("tcp://127.0.0.1:2375/"), currentEndpoint);
       }
 
-      [SkippableFact]
+      [SkipIfHostOrContextIsSet]
       public void ReturnsActiveEndpointWhenDockerContextIsUnset()
       {
-        var properties = PropertiesFileConfiguration.Instance;
-        var dockerHost = properties.GetDockerHost();
-        var dockerContext = properties.GetDockerContext();
-        Skip.If(dockerHost != null || dockerContext != null, "The docker cli doesn't know about ~/.testcontainers.properties");
-
         var currentEndpoint = new DockerConfig().GetCurrentEndpoint();
         Assert.Equal(DockerCli.GetCurrentEndpoint(), currentEndpoint);
       }
@@ -118,9 +117,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ReturnsConfiguredEndpointWhenDockerHostIsSet()
       {
         // Given
-        using var context = new TempDockerContext("custom", "");
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=tcp://127.0.0.1:2375/" });
-        var dockerConfig = new DockerConfig(context.ConfigFile, customConfiguration);
+        using var context = new ConfigMetaFile("custom", "");
+
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=tcp://127.0.0.1:2375/", context.GetDockerConfig() });
+        var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
         var currentEndpoint = dockerConfig.GetCurrentEndpoint();
@@ -130,33 +130,43 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    private class TempDockerContext : IDisposable
+    private sealed class SkipIfHostOrContextIsSet : FactAttribute
     {
-      private readonly DirectoryInfo _directory;
-
-      public TempDockerContext(string contextName, string endpoint, [CallerMemberName] string caller = "")
+      public SkipIfHostOrContextIsSet()
       {
-        _directory = new DirectoryInfo(Path.Combine(TestSession.TempDirectoryPath, caller));
-        _directory.Create();
-        ConfigFile = new FileInfo(Path.Combine(_directory.FullName, "config.json"));
+        const string reason = "The Docker CLI doesn't know about ~/.testcontainers.properties file.";
+        var dockerHost = PropertiesFileConfiguration.Instance.GetDockerHost();
+        var dockerContext = PropertiesFileConfiguration.Instance.GetDockerContext();
+        Skip = dockerHost != null || dockerContext != null ? reason : string.Empty;
+      }
+    }
 
-        // lang=json
-        var config = $$"""{ "currentContext": "{{contextName}}" }""";
-        File.WriteAllText(ConfigFile.FullName, config);
+    private sealed class ConfigMetaFile : IDisposable
+    {
+      private const string ConfigFileJson = "{{\"currentContext\":\"{0}\"}}";
 
-        // lang=json
-        var meta = $$"""{ "Name": "{{contextName}}", "Metadata": {}, "Endpoints": { "docker": { "Host": "{{endpoint}}", "SkipTLSVerify":false } } }""";
-        var dockerContextHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(contextName))).ToLowerInvariant();
-        var metaDirectory = Path.Combine(_directory.FullName, "contexts", "meta", dockerContextHash);
-        Directory.CreateDirectory(metaDirectory);
-        File.WriteAllText(Path.Combine(metaDirectory, "meta.json"), meta);
+      private const string MetaFileJson = "{{\"Name\":\"{0}\",\"Metadata\":{{}},\"Endpoints\":{{\"docker\":{{\"Host\":\"{1}\",\"SkipTLSVerify\":false}}}}}}";
+
+      private readonly string _dockerConfigDirectoryPath;
+
+      public ConfigMetaFile(string context, string endpoint, [CallerMemberName] string caller = "")
+      {
+        _dockerConfigDirectoryPath = Path.Combine(TestSession.TempDirectoryPath, caller);
+        var dockerContextHash = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(context))).ToLowerInvariant();
+        var dockerContextMetaDirectoryPath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash);
+        _ = Directory.CreateDirectory(dockerContextMetaDirectoryPath);
+        File.WriteAllText(Path.Combine(_dockerConfigDirectoryPath, "config.json"), string.Format(ConfigFileJson, context));
+        File.WriteAllText(Path.Combine(dockerContextMetaDirectoryPath, "meta.json"), string.Format(MetaFileJson, context, endpoint));
       }
 
-      public FileInfo ConfigFile { get; }
+      public string GetDockerConfig()
+      {
+        return "docker.config=" + _dockerConfigDirectoryPath;
+      }
 
       public void Dispose()
       {
-        _directory.Delete(recursive: true);
+        Directory.Delete(_dockerConfigDirectoryPath, true);
       }
     }
   }

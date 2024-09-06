@@ -16,17 +16,20 @@
   /// </summary>
   internal sealed class DockerConfig
   {
-    private readonly FileInfo _dockerConfigFile;
-    private readonly string _dockerContextMetaDirectoryPath;
+    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
 
     private readonly ICustomConfiguration[] _customConfigurations;
+
+    private readonly string _dockerConfigDirectoryPath;
+
+    private readonly string _dockerConfigFilePath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerConfig" /> class.
     /// </summary>
     [PublicAPI]
     public DockerConfig()
-      : this(GetDockerConfigFile(), EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
+      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
     {
     }
 
@@ -36,22 +39,10 @@
     /// <param name="customConfigurations">A list of custom configurations.</param>
     [PublicAPI]
     public DockerConfig(params ICustomConfiguration[] customConfigurations)
-      : this(GetDockerConfigFile(), customConfigurations)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerConfig" /> class.
-    /// </summary>
-    /// <param name="dockerConfigFile">The Docker config file.</param>
-    /// <param name="customConfigurations">A list of custom configurations.</param>
-    [PublicAPI]
-    public DockerConfig(FileInfo dockerConfigFile, params ICustomConfiguration[] customConfigurations)
-    {
-      _dockerConfigFile = dockerConfigFile;
-      var dockerConfigDirectory = _dockerConfigFile.DirectoryName ?? throw new ArgumentException($"The {dockerConfigFile.Name} file must be inside a directory.", nameof(dockerConfigFile));
-      _dockerContextMetaDirectoryPath = Path.Combine(dockerConfigDirectory, "contexts", "meta");
       _customConfigurations = customConfigurations;
+      _dockerConfigDirectoryPath = GetDockerConfig();
+      _dockerConfigFilePath = Path.Combine(_dockerConfigDirectoryPath, "config.json");
     }
 
     /// <summary>
@@ -61,10 +52,10 @@
       = new DockerConfig();
 
     /// <inheritdoc cref="FileInfo.Exists" />
-    public bool Exists => _dockerConfigFile.Exists;
+    public bool Exists => File.Exists(_dockerConfigFilePath);
 
-    /// <inheritdoc cref="FileInfo.Exists" />
-    public string FullName => _dockerConfigFile.FullName;
+    /// <inheritdoc cref="FileInfo.FullName" />
+    public string FullName => _dockerConfigFilePath;
 
     /// <summary>
     /// Parses the Docker config file.
@@ -72,7 +63,7 @@
     /// <returns>A <see cref="JsonDocument" /> representing the Docker config.</returns>
     public JsonDocument Parse()
     {
-      using (var dockerConfigFileStream = _dockerConfigFile.OpenRead())
+      using (var dockerConfigFileStream = File.OpenRead(_dockerConfigFilePath))
       {
         return JsonDocument.Parse(dockerConfigFileStream);
       }
@@ -106,7 +97,7 @@
       using (var sha256 = SHA256.Create())
       {
         var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
-        var metaFilePath = Path.Combine(_dockerContextMetaDirectoryPath, dockerContextHash, "meta.json");
+        var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
 
         if (!File.Exists(metaFilePath))
         {
@@ -149,6 +140,13 @@
       }
     }
 
+    [NotNull]
+    private string GetDockerConfig()
+    {
+      var dockerConfigDirectoryPath = _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerConfig()).FirstOrDefault(dockerConfig => !string.IsNullOrEmpty(dockerConfig));
+      return dockerConfigDirectoryPath ?? UserProfileDockerConfigDirectoryPath;
+    }
+
     [CanBeNull]
     private Uri GetDockerHost()
     {
@@ -159,14 +157,6 @@
     private string GetDockerContext()
     {
       return _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerContext()).FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
-    }
-
-    private static FileInfo GetDockerConfigFile()
-    {
-      var dockerConfigDirectoryPath = EnvironmentConfiguration.Instance.GetDockerConfig() ??
-                                      PropertiesFileConfiguration.Instance.GetDockerConfig() ??
-                                      Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
-      return new FileInfo(Path.Combine(dockerConfigDirectoryPath, "config.json"));
     }
 
     internal sealed class DockerContextMeta

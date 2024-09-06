@@ -33,17 +33,6 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
     /// </summary>
-    /// <param name="dockerConfigFilePath">The Docker config file path.</param>
-    /// <param name="logger">The logger.</param>
-    [PublicAPI]
-    public DockerRegistryAuthenticationProvider(string dockerConfigFilePath, ILogger logger)
-      : this(new DockerConfig(new FileInfo(dockerConfigFilePath)), logger)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
-    /// </summary>
     /// <param name="dockerConfig">The Docker config.</param>
     /// <param name="logger">The logger.</param>
     [PublicAPI]
