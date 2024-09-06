@@ -130,7 +130,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// </remarks>
     /// <param name="response">The HTTP response that contains the Selenium Grid information.</param>
     /// <returns>A value indicating whether the Selenium Grid is ready.</returns>
-    private async Task<bool> IsGridReadyAsync(HttpResponseMessage response)
+    private static async Task<bool> IsGridReadyAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);
