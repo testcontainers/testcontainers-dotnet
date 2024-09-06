@@ -41,7 +41,7 @@ To configure a remote container runtime, Testcontainers provides support for Doc
 
 You can switch between contexts using the properties file or an environment variable. Once the context is set, Testcontainers will connect to the specified endpoint based on the given value.
 
-```console title="List available contexts"
+```title="List available contexts"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker context ls
 NAME   DESCRIPTION   DOCKER ENDPOINT           ERROR
 tcc                  tcp://127.0.0.1:60706/0
@@ -49,13 +49,15 @@ tcc                  tcp://127.0.0.1:60706/0
 
 Setting the context to `tcc` in this example will use the Docker host running at `127.0.0.1:60706` to create and run the test resources.
 
-```console title="Properties File"
-docker.context=tcc
-```
+=== "Environment Variable"
+    ```
+    DOCKER_CONTEXT=tcc
+    ```
 
-```console title="Environment Variable"
-DOCKER_CONTEXT=tcc
-```
+=== "Properties File"
+    ```
+    docker.context=tcc
+    ```
 
 ## Enable logging
 
