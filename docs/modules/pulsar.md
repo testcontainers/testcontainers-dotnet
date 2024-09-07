@@ -1,86 +1,45 @@
 # Apache Pulsar
 
-Testcontainers can be used to automatically create [Apache Pulsar](https://pulsar.apache.org) containers without the need for external services. Based on the official Apache Pulsar Docker image, it is recommended to read the official [getting started](https://pulsar.apache.org/docs/next/getting-started-docker/) guide.
+[Apache Pulsar](https://pulsar.apache.org/) is a distributed messaging and event streaming platform designed for high-throughput, low-latency data processing across multiple topics.
 
-The following example uses the following NuGet packages:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.Pulsar
-dotnet add package DotPulsar
-dotnet add package xunit
 ```
 
-IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
+You can start a Apache Pulsar container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
-Copy and paste the following code into a new `.cs` test file within an existing test project.
+=== "Create Container Instance"
+    ```csharp
+    --8<-- "tests/Testcontainers.Pulsar.Tests/PulsarContainerTest.cs:CreatePulsarContainer"
+    ```
 
-```csharp
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using DotPulsar;
-using DotPulsar.Extensions;
-using Xunit;
+This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-namespace Testcontainers.Pulsar;
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.Pulsar.Tests/PulsarContainerTest.cs:UsePulsarContainer"
+    ```
 
-public sealed class PulsarContainerTest : IAsyncLifetime
-{
-    private readonly PulsarContainer _pulsarContainer =
-        new PulsarBuilder().Build();
+The test example uses the following NuGet dependencies:
 
-    [Fact]
-    public async Task ConsumerReceivesSendMessage()
-    {
-        const string helloPulsar = "Hello, Pulsar!";
-
-        var topic = $"persistent://public/default/{Guid.NewGuid():D}";
-
-        var name = Guid.NewGuid().ToString("D");
-
-        await using var client = PulsarClient.Builder()
-            .ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress()))
-            .Build();
-
-        await using var producer = client.NewProducer(Schema.String)
-            .Topic(topic)
-            .Create();
-
-        await using var consumer = client.NewConsumer(Schema.String)
-            .Topic(topic)
-            .SubscriptionName(name)
-            .InitialPosition(SubscriptionInitialPosition.Earliest)
-            .Create();
-
-        _ = await producer.Send(helloPulsar)
-            .ConfigureAwait(true);
-
-        var message = await consumer.Receive()
-            .ConfigureAwait(true);
-
-        Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
-    }
-
-    public Task InitializeAsync()
-        => _pulsarContainer.StartAsync();
-
-    public Task DisposeAsync()
-        => _pulsarContainer.DisposeAsync().AsTask();
-}
-```
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.Pulsar.Tests/Testcontainers.Pulsar.Tests.csproj:PackageReferences"
+    ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
-## Access Pulsar
+--8<-- "docs/modules/_call_out_test_projects.txt"
 
-To get the Pulsar broker URL use:
+## Access Apache Pulsar
 
-```csharp
+```csharp title="Gets the Pulsar broker URL"
 string pulsarBrokerUrl = _pulsarContainer.GetPulsarBrokerUrl();
 ```
 
-To get the Pulsar service URL use:
-```csharp
+```csharp title="Gets the Pulsar service URL"
 string pulsarServiceUrl = _pulsarContainer.GetHttpServiceUrl();
 ```
 

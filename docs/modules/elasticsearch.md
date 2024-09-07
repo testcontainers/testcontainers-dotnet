@@ -2,51 +2,29 @@
 
 [Elasticsearch](https://www.elastic.co/elasticsearch/) is a distributed, RESTful search and analytics engine capable of addressing a growing number of use cases. As the heart of the Elastic Stack, it centrally stores data for lightning fast search, fine‑tuned relevancy, and powerful analytics that scale with ease.
 
-The following example uses the following NuGet packages:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.Elasticsearch
-dotnet add package Elastic.Clients.Elasticsearch
-dotnet add package xunit
 ```
 
-IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
+You can start an Elasticsearch container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-Copy and paste the following code into a new `.cs` test file within an existing test project.
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs:UseElasticsearchContainer"
+    ```
 
-```csharp
-using Elastic.Clients.Elasticsearch;
-using Elastic.Transport;
-using Testcontainers.Elasticsearch;
-using Xunit;
+The test example uses the following NuGet dependencies:
 
-public sealed class ElasticsearchContainerTest : IAsyncLifetime
-{
-    private readonly ElasticsearchContainer _elasticsearch
-        = new ElasticsearchBuilder().Build();
-
-    [Fact]
-    public async Task ReadFromElasticsearch()
-    {
-        var settings = new ElasticsearchClientSettings(new Uri(_elasticsearch.GetConnectionString()));
-        settings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
-
-        var client = new ElasticsearchClient(settings);
-
-        var stats = await client.PingAsync();
-
-        Assert.True(stats.IsValidResponse);
-    }
-
-    public Task InitializeAsync()
-        => _elasticsearch.StartAsync();
-
-    public Task DisposeAsync()
-        => _elasticsearch.DisposeAsync().AsTask();
-}
-```
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj:PackageReferences"
+    ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
+
+--8<-- "docs/modules/_call_out_test_projects.txt"
 
 ## A Note To Developers
 

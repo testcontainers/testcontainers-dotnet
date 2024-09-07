@@ -4,7 +4,7 @@ Modules are great examples of Testcontainers' capabilities. To write tests again
 
 Modules are standalone dependencies that can be installed from [NuGet.org](https://www.nuget.org/profiles/Testcontainers). To use a module in your test project, you need to add it as a dependency first:
 
-```console
+```shell
 dotnet add package Testcontainers.ModuleName
 ```
 
@@ -47,6 +47,7 @@ await moduleNameContainer.StartAsync();
 | Kusto emulator   | `mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest`        | [NuGet](https://www.nuget.org/packages/Testcontainers.Kusto)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Kusto)         |
 | LocalStack       | `localstack/localstack:2.0`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.LocalStack)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.LocalStack)    |
 | MariaDB          | `mariadb:10.10`                                                     | [NuGet](https://www.nuget.org/packages/Testcontainers.MariaDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MariaDb)       |
+| Milvus           | `milvusdb/milvus:v2.3.10`                                           | [NuGet](https://www.nuget.org/packages/Testcontainers.Milvus)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Milvus)        |
 | MinIO            | `minio/minio:RELEASE.2023-01-31T02-24-19Z`                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Minio)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Minio)         |
 | MongoDB          | `mongo:6.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.MongoDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MongoDb)       |
 | MySQL            | `mysql:8.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.MySql)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MySql)         |
@@ -56,7 +57,7 @@ await moduleNameContainer.StartAsync();
 | Papercut         | `jijiechen/papercut:latest`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Papercut)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Papercut)      |
 | PostgreSQL       | `postgres:15.1`                                                     | [NuGet](https://www.nuget.org/packages/Testcontainers.PostgreSql)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.PostgreSql)    |
 | PubSub           | `gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators` | [NuGet](https://www.nuget.org/packages/Testcontainers.PubSub)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.PubSub)        |
-| Pulsar           | `apachepulsar/pulsar:3.2.3`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Pulsar)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Pulsar)        |
+| Pulsar           | `apachepulsar/pulsar:3.0.6`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Pulsar)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Pulsar)        |
 | RabbitMQ         | `rabbitmq:3.11`                                                     | [NuGet](https://www.nuget.org/packages/Testcontainers.RabbitMq)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.RabbitMq)      |
 | RavenDB          | `ravendb/ravendb:5.4-ubuntu-latest`                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.RavenDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.RavenDb)       |
 | Redis            | `redis:7.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Redis)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Redis)         |
@@ -68,7 +69,7 @@ await moduleNameContainer.StartAsync();
 
 The Testcontainers for .NET repository contains a .NET [template](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Templates) to scaffold advanced modules quickly. To create and add a new module to the Testcontainers solution file, checkout the repository and install the .NET template first:
 
-```console
+```shell
 git clone --branch develop git@github.com:testcontainers/testcontainers-dotnet.git
 cd ./testcontainers-dotnet/
 dotnet new --install ./src/Templates
@@ -76,7 +77,7 @@ dotnet new --install ./src/Templates
 
 The following CLI commands create and add a new PostgreSQL module to the solution file:
 
-```console
+```shell
 dotnet new tcm --name PostgreSql --official-module true --output ./src
 dotnet sln add ./src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj
 ```

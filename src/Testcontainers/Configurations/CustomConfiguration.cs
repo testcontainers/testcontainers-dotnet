@@ -25,6 +25,11 @@ namespace DotNet.Testcontainers.Configurations
       return _properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
     }
 
+    protected virtual string GetDockerContext(string propertyName)
+    {
+      return GetPropertyValue<string>(propertyName);
+    }
+
     protected virtual string GetDockerHostOverride(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);

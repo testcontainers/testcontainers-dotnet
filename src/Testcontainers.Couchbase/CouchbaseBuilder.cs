@@ -269,7 +269,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             .Build()
             .Last();
 
-        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container, ct), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
             .ConfigureAwait(false);
     }
 
@@ -281,7 +281,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// </remarks>
     /// <param name="response">The HTTP response that contains the cluster information.</param>
     /// <returns>A value indicating whether the single-node is healthy or not.</returns>
-    private async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
+    private static async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);
@@ -312,7 +312,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// </remarks>
     /// <param name="response">The HTTP response that contains the bucket information.</param>
     /// <returns>A value indicating whether all services are enabled for a bucket or not.</returns>
-    private async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
+    private static async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);

@@ -17,13 +17,18 @@ extra_css:
   - css/extra.css
   - css/tc-header.css
 plugins:
-  - codeinclude
   - markdownextradata
   - search
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.snippets:
+      dedent_subsections: true
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 nav:
   - index.md
   - cicd/index.md
@@ -48,3 +53,5 @@ nav:
     - modules/postgres.md
     - modules/pulsar.md
     - modules/rabbitmq.md
+  - contributing.md
+  - contributing_docs.md
