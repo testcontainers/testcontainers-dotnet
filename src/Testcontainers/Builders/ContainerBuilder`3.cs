@@ -80,7 +80,7 @@ namespace DotNet.Testcontainers.Builders
         return Clone(new ContainerConfiguration(image: image));
       }
 
-      return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix)));
+      return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, TestcontainersSettings.HubImageNamePrefix)));
     }
 
     /// <inheritdoc />

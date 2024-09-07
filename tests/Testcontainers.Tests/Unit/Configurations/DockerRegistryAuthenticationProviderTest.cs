@@ -45,13 +45,13 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
-    [InlineData("", "docker", "stable")]
-    [InlineData("fedora", "httpd", "1.0")]
-    [InlineData("foo/bar", "baz", "1.0.0")]
-    public void GetHostnameFromHubImageNamePrefix(string repository, string name, string tag)
+    [InlineData("baz/foo/bar", null)]
+    [InlineData("baz/foo/bar", "")]
+    [InlineData("baz/foo/bar", "1.0.0")]
+    public void GetHostnameFromHubImageNamePrefix(string repository, string tag)
     {
       const string hubImageNamePrefix = "myregistry.azurecr.io";
-      IImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
+      IImage image = new DockerImage(repository, null, tag, null, hubImageNamePrefix);
       Assert.Equal(hubImageNamePrefix, image.GetHostname());
     }
 
