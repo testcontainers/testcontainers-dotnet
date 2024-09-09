@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
+  using System.Globalization;
   using System.Text.RegularExpressions;
 
   internal static class MatchImage
@@ -11,7 +12,13 @@ namespace DotNet.Testcontainers.Images
         .NotNull()
         .NotEmpty();
 
+      const string invalidReferenceFormat = "Error parsing reference: '{0}' is not a valid repository/tag.";
+
       var referenceMatch = ReferenceRegex.Instance.Match(image);
+
+      _ = Guard.Argument(referenceMatch, nameof(image))
+        .ThrowIf(argument => !argument.Value.Success, argument => new ArgumentException(string.Format(CultureInfo.InvariantCulture, invalidReferenceFormat, image), argument.Name));
+
       var remoteName = referenceMatch.Groups["remote_name"].Value;
       var tag = referenceMatch.Groups["tag"].Value;
       var digest = referenceMatch.Groups["digest"].Value;

@@ -56,7 +56,7 @@ public sealed class PulsarContainer : DockerContainer
             "--secret-key",
             PulsarBuilder.SecretKeyFilePath,
             "--subject",
-            PulsarBuilder.Username
+            PulsarBuilder.Username,
         };
 
         if (!Timeout.InfiniteTimeSpan.Equals(expiryTime))

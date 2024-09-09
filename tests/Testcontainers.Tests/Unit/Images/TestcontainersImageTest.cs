@@ -34,6 +34,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
+    [InlineData("baz/.foo/bar:1.0.0")]
+    [InlineData("baz/:foo/bar:1.0.0")]
+    public void ShouldThrowArgumentExceptionIfImageIsInvalidReferenceFormat(string image)
+    {
+      Assert.Throws<ArgumentException>(() => new DockerImage(image));
+    }
+
+    [Theory]
     [InlineData("bar:LATEST")]
     [InlineData("foo/bar:LATEST")]
     public void ShouldNotThrowArgumentExceptionIfImageTagHasUppercaseCharacters(string image)
