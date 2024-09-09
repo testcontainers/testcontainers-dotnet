@@ -52,21 +52,23 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     [Theory]
     [ClassData(typeof(DockerImageFixture))]
-    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string fullName)
+    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string image, string fullName)
     {
       // Given
       var expected = serializable.Image;
 
       // When
-      IImage dockerImage = new DockerImage(fullName);
+      IImage actual = new DockerImage(image);
 
       // Then
-      Assert.Equal(expected.Repository, dockerImage.Repository);
-      Assert.Equal(expected.Registry, dockerImage.Registry);
-      Assert.Equal(expected.Tag, dockerImage.Tag);
-      Assert.Equal(expected.Digest, dockerImage.Digest);
-      Assert.Equal(expected.FullName, dockerImage.FullName);
-      Assert.Equal(expected.Name, dockerImage.Name);
+      Assert.Equal(expected.Repository, actual.Repository);
+      Assert.Equal(expected.Registry, actual.Registry);
+      Assert.Equal(expected.Tag, actual.Tag);
+      Assert.Equal(expected.Digest, actual.Digest);
+      Assert.Equal(expected.FullName, actual.FullName);
+      Assert.Equal(expected.Name, actual.Name);
+      // Assert.Equal(fullName, expected.FullName);
+      // Assert.Equal(fullName, actual.FullName);
     }
 
     [Fact]
