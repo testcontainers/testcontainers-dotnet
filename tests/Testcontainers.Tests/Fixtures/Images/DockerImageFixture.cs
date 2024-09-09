@@ -18,6 +18,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", "1.0.0")), "myregistry.azurecr.io/baz/foo/bar:1.0.0");
       Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", string.Empty)), "myregistry.azurecr.io/baz/foo/bar");
       Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", string.Empty)), "myregistry.azurecr.io/baz/foo/bar:latest");
+      Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", "1.0.0@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")), "myregistry.azurecr.io/baz/foo/bar:1.0.0@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", "@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")), "myregistry.azurecr.io/baz/foo/bar@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      Add(new DockerImageFixtureSerializable(new DockerImage("myregistry.azurecr.io/baz/foo", "bar", "latest@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")), "myregistry.azurecr.io/baz/foo/bar:latest@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       Add(new DockerImageFixtureSerializable(new DockerImage("fedora", "httpd", "version1.0.test")), "fedora/httpd:version1.0.test");
       Add(new DockerImageFixtureSerializable(new DockerImage("fedora", "httpd", "version1.0")), "fedora/httpd:version1.0");
       Add(new DockerImageFixtureSerializable(new DockerImage("myregistryhost:5000/fedora", "httpd", "version1.0")), "myregistryhost:5000/fedora/httpd:version1.0");
