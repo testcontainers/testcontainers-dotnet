@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     [Theory]
     [ClassData(typeof(DockerImageFixture))]
-    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string image, string fullName)
+    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string image, string _)
     {
       // Given
       var expected = serializable.Image;
@@ -67,7 +67,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected.Digest, actual.Digest);
       Assert.Equal(expected.FullName, actual.FullName);
       Assert.Equal(expected.Name, actual.Name);
-      // Assert.Equal(fullName, expected.FullName);
       // Assert.Equal(fullName, actual.FullName);
     }
 
