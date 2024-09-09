@@ -1,3 +1,4 @@
+<!-- -8<- [start:RunSettingsGeneration] -->
 <Project Sdk="Microsoft.NET.Sdk">
     <Target Condition="$([MSBuild]::IsOSPlatform('Linux'))" Name="TestPrepare" BeforeTargets="RunTests;VSTest">
       <XmlPoke
@@ -37,3 +38,4 @@
         <ProjectReference Include="..\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj" />
     </ItemGroup>
 </Project>
+<!-- -8<- [end:RunSettingsGeneration] -->

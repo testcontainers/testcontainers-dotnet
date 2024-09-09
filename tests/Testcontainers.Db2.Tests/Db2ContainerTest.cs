@@ -4,6 +4,7 @@ namespace Testcontainers.Db2;
 
 public sealed class Db2ContainerTest : IAsyncLifetime
 {
+  // # --8<-- [start:UseDb2Container]
   private readonly Db2Container _db2Container = new Db2Builder().Build();
 
   public Task InitializeAsync()
@@ -50,4 +51,5 @@ public sealed class Db2ContainerTest : IAsyncLifetime
     Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
     Assert.Empty(execResult.Stderr);
   }
+  // # --8<-- [end:UseDb2Container]
 }
