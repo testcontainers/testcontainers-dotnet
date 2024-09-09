@@ -4,25 +4,27 @@
 
 Add the following dependency to your project file:
 
-```console title="NuGet"
+```shell title="NuGet"
 dotnet add package Testcontainers.Elasticsearch
 ```
 
 You can start an Elasticsearch container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-<!--codeinclude-->
-[Usage Example](../../tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs) inside_block:UseElasticsearchContainer
-<!--/codeinclude-->
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs:UseElasticsearchContainer"
+    ```
 
 The test example uses the following NuGet dependencies:
 
-<!--codeinclude-->
-[Package References](../../tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj) inside_block:PackageReferences
-<!--/codeinclude-->
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj:PackageReferences"
+    ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
---8<-- "docs/modules/_call_out_test_projects.md"
+--8<-- "docs/modules/_call_out_test_projects.txt"
 
 ## A Note To Developers
 

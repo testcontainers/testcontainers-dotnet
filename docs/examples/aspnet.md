@@ -75,7 +75,7 @@ The following example adds tests to an ASP.NET Core Blazor application. The test
 
 To use Testcontainers' pre-configured Microsoft SQL Server module, add the [Testcontainers.MsSql](https://www.nuget.org/packages/Testcontainers.MsSql) NuGet dependency to your test project:
 
-```console
+```shell
 dotnet add package Testcontainers.MsSql --version 3.0.0
 ```
 

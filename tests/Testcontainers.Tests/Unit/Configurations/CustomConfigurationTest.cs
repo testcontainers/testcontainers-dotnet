@@ -56,6 +56,17 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       [Theory]
       [InlineData("", "", null)]
+      [InlineData("DOCKER_CONTEXT", "", null)]
+      [InlineData("DOCKER_CONTEXT", "default", "default")]
+      public void GetDockerContextCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_HOST_OVERRIDE", "", null)]
       [InlineData("TESTCONTAINERS_HOST_OVERRIDE", "docker.svc.local", "docker.svc.local")]
       public void GetDockerHostOverrideCustomConfiguration(string propertyName, string propertyValue, string expected)
@@ -252,6 +263,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("docker.context=", null)]
+      [InlineData("docker.context=default", "default")]
+      public void GetDockerContextCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
       }
 
       [Theory]

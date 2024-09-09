@@ -12,7 +12,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         _authenticationEnabled = authenticationEnabled;
     }
 
-    // UsePulsarContainer {
+    // # --8<-- [start:UsePulsarContainer]
     public Task InitializeAsync()
     {
         return _pulsarContainer.StartAsync();
@@ -63,9 +63,9 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
     }
-    // }
+    // # --8<-- [end:UsePulsarContainer]
 
-    // CreatePulsarContainer {
+    // # --8<-- [start:CreatePulsarContainer]
     [UsedImplicitly]
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
@@ -74,7 +74,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         {
         }
     }
-    // }
+    // # --8<-- [end:CreatePulsarContainer]
 
     [UsedImplicitly]
     public sealed class PulsarAuthConfiguration : PulsarContainerTest

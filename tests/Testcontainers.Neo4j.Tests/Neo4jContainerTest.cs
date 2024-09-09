@@ -2,7 +2,7 @@ namespace Testcontainers.Neo4j;
 
 public sealed class Neo4jContainerTest : IAsyncLifetime
 {
-    // UseNeo4jContainer {
+    // # --8<-- [start:UseNeo4jContainer]
     private readonly Neo4jContainer _neo4jContainer = new Neo4jBuilder().Build();
 
     public Task InitializeAsync()
@@ -30,5 +30,5 @@ public sealed class Neo4jContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(database, session.SessionConfig.Database);
     }
-    // }
+    // # --8<-- [end:UseNeo4jContainer]
 }

@@ -1,6 +1,6 @@
 # Welcome to Testcontainers for .NET!
 
-```console title="Install the NuGet dependency"
+```shell title="Install the NuGet dependency"
 dotnet add package Testcontainers
 ```
 

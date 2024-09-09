@@ -76,6 +76,27 @@ using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 await _container.StartAsync(timeoutCts.Token);
 ```
 
+## Getting log messages
+
+Testcontainers for .NET provides two approaches for retrieving log messages from containers: `GetLogsAsync` and `WithOutputConsumer`. Each method serves different use cases for handling container logs.
+
+The `GetLogsAsync` method is available through the `IContainer` interface. It allows you to fetch logs from a container for a specific time range or from the beginning until the present. This approach is useful for retrieving logs after a test has run, especially when troubleshooting issues or failures.
+
+```csharp title="Getting all log messages"
+var (stdout, stderr) = await _container.GetLogsAsync();
+```
+
+The `WithOutputConsumer` method is part of the `ContainerBuilder` class and is used to continuously forward container log messages to a specified output consumer. This approach provides real-time access to logs as the container runs.
+
+```csharp title="Forwarding all log messages"
+using IOutputConsumer outputConsumer = Consume.RedirectStdoutAndStderrToConsole();
+
+_ = new ContainerBuilder()
+  .WithOutputConsumer(outputConsumer);
+```
+
+The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.

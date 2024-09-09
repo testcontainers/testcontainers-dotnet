@@ -36,23 +36,23 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Images.InspectImageAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Images.InspectImageAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _ = await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
 
-      return response != null;
+        return true;
+      }
+      catch (DockerImageNotFoundException)
+      {
+        return false;
+      }
     }
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
