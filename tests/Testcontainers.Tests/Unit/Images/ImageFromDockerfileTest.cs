@@ -130,9 +130,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag2.FullName));
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
     }
   }

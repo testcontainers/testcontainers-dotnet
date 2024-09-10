@@ -16,16 +16,22 @@ namespace DotNet.Testcontainers.Images
     string Repository { get; }
 
     /// <summary>
-    /// Gets the name.
+    /// Gets the registry.
     /// </summary>
-    [NotNull]
-    string Name { get; }
+    [CanBeNull]
+    string Registry { get; }
 
     /// <summary>
     /// Gets the tag.
     /// </summary>
-    [NotNull]
+    [CanBeNull]
     string Tag { get; }
+
+    /// <summary>
+    /// Gets the digest.
+    /// </summary>
+    [CanBeNull]
+    string Digest { get; }
 
     /// <summary>
     /// Gets the full image name.
@@ -35,6 +41,13 @@ namespace DotNet.Testcontainers.Images
     /// </remarks>
     [NotNull]
     string FullName { get; }
+
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
+    [NotNull]
+    [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]
+    string Name { get; }
 
     /// <summary>
     /// Gets the registry hostname.
