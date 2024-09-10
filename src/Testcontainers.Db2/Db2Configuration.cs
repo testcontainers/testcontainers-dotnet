@@ -14,6 +14,7 @@ public sealed class Db2Configuration : ContainerConfiguration
   /// <param name="archiveLogs">The Db2 archive logs setting.</param>
   /// <param name="autoConfig">The Db2 auto config setting.</param>
   /// <param name="licenseAgreement">The Db2 license agreement.</param>
+  /// <param name="inMemoryDatabasePath">The Db2 database path to map into memory (tmpfs).</param>
   public Db2Configuration(
         string database = null,
         string username = null,
@@ -73,6 +74,10 @@ public sealed class Db2Configuration : ContainerConfiguration
     Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
     Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
     Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+    ArchiveLogs = BuildConfiguration.Combine(oldValue.ArchiveLogs, newValue.ArchiveLogs);
+    AutoConfig = BuildConfiguration.Combine(oldValue.AutoConfig, newValue.AutoConfig);
+    LicenseAgreement = BuildConfiguration.Combine(oldValue.LicenseAgreement, newValue.LicenseAgreement);
+    InMemoryDatabasePath = BuildConfiguration.Combine(oldValue.InMemoryDatabasePath, newValue.InMemoryDatabasePath);
   }
 
   /// <summary>
@@ -90,10 +95,23 @@ public sealed class Db2Configuration : ContainerConfiguration
   /// </summary>
   public string Password { get; }
 
+  /// <summary>
+  /// Toggle for archivation of logs.
+  /// </summary>
   public bool ArchiveLogs { get; }
 
+  /// <summary>
+  /// Toggle for database autoconfiguration.
+  /// </summary>
   public bool AutoConfig { get; }
 
+  /// <summary>
+  /// License agreement value.
+  /// </summary>
   public string LicenseAgreement { get; }
+
+  /// <summary>
+  /// Path to the database files that should be mapped into memory (tmpfs).
+  /// </summary>
   public string InMemoryDatabasePath { get; }
 }

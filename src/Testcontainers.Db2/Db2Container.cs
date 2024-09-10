@@ -20,7 +20,7 @@ namespace Testcontainers.Db2
     }
 
     public string GetConnectionString() => new StringBuilder()
-      .Append("Server=").Append(Hostname).Append(":").Append(GetMappedPublicPort(Db2Builder.Db2Port).ToString()).Append(ConnectionStringDelimiter)
+      .Append("Server=").Append(Hostname).Append(':').Append(GetMappedPublicPort(Db2Builder.Db2Port).ToString()).Append(ConnectionStringDelimiter)
       .Append("Database=").Append(_configuration.Database).Append(ConnectionStringDelimiter)
       .Append("UID=").Append(_configuration.Username).Append(ConnectionStringDelimiter)
       .Append("PWD=").Append(_configuration.Password).Append(ConnectionStringDelimiter)
@@ -32,7 +32,7 @@ namespace Testcontainers.Db2
         .Append(Db2CommandPath).Append(" connect to ").Append(_configuration.Database)
         .Append(" user ").Append(_configuration.Username).Append(" using ").Append(_configuration.Password)
         .Append("; ")
-        .Append(Db2CommandPath).Append(" ").Append(scriptContent)
+        .Append(Db2CommandPath).Append(' ').Append(scriptContent)
         .ToString()
       ];
 

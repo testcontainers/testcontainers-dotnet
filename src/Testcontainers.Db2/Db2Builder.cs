@@ -118,14 +118,13 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
         .WithTmpfsMount(DefaultInMemoryDatabasePath);
   }
 
-  /// <summary>
   /// <inheritdoc />
   public override Db2Container Build()
   {
     Validate();
 
-    // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
-    // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
+    // By default, the base builder waits until the container is running. However, for Db2, a more advanced waiting strategy is necessary 
+    // If the user does not provide a custom waiting strategy, append the default Db2 waiting strategy.
     var db2Builder = DockerResourceConfiguration.WaitStrategies.Count() > 1
       ? this
       : WithWaitStrategy(Wait.ForUnixContainer()
