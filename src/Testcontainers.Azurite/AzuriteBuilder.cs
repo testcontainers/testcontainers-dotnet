@@ -12,6 +12,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const ushort TablePort = 10002;
 
+    public const string AccountName = "devstoreaccount1";
+
+    public const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+
     private static readonly ISet<AzuriteService> EnabledServices = new HashSet<AzuriteService>();
 
     static AzuriteBuilder()

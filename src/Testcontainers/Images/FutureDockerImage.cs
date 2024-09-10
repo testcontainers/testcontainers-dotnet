@@ -39,12 +39,12 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
-    public string Name
+    public string Registry
     {
       get
       {
         ThrowIfResourceNotFound();
-        return _configuration.Image.Name;
+        return _configuration.Image.Registry;
       }
     }
 
@@ -59,12 +59,32 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
+    public string Digest
+    {
+      get
+      {
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Digest;
+      }
+    }
+
+    /// <inheritdoc />
     public string FullName
     {
       get
       {
         ThrowIfResourceNotFound();
         return _configuration.Image.FullName;
+      }
+    }
+
+    /// <inheritdoc />
+    public string Name
+    {
+      get
+      {
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Name;
       }
     }
 
