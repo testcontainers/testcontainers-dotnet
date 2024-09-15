@@ -12,7 +12,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       Assert.Throws<ArgumentException>(() => new DockerImage((string)null));
       Assert.Throws<ArgumentException>(() => new DockerImage(null, null));
-      Assert.Throws<ArgumentException>(() => new DockerImage("fedora", null));
     }
 
     [Fact]
@@ -35,6 +34,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
+    [InlineData("baz/.foo/bar:1.0.0")]
+    [InlineData("baz/:foo/bar:1.0.0")]
+    public void ShouldThrowArgumentExceptionIfImageIsInvalidReferenceFormat(string image)
+    {
+      Assert.Throws<ArgumentException>(() => new DockerImage(image));
+    }
+
+    [Theory]
     [InlineData("bar:LATEST")]
     [InlineData("foo/bar:LATEST")]
     public void ShouldNotThrowArgumentExceptionIfImageTagHasUppercaseCharacters(string image)
@@ -45,19 +52,22 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     [Theory]
     [ClassData(typeof(DockerImageFixture))]
-    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string fullName)
+    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string image, string fullName)
     {
       // Given
       var expected = serializable.Image;
 
       // When
-      IImage dockerImage = new DockerImage(fullName);
+      IImage actual = new DockerImage(image);
 
       // Then
-      Assert.Equal(expected.Repository, dockerImage.Repository);
-      Assert.Equal(expected.Name, dockerImage.Name);
-      Assert.Equal(expected.Tag, dockerImage.Tag);
-      Assert.Equal(expected.FullName, dockerImage.FullName);
+      Assert.Equal(expected.Repository, actual.Repository);
+      Assert.Equal(expected.Registry, actual.Registry);
+      Assert.Equal(expected.Tag, actual.Tag);
+      Assert.Equal(expected.Digest, actual.Digest);
+      Assert.Equal(expected.FullName, actual.FullName);
+      Assert.Equal(expected.Name, actual.Name);
+      Assert.Equal(fullName, actual.FullName);
     }
 
     [Fact]

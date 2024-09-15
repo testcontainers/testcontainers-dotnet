@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.IO;
-  using System.Linq;
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -27,7 +26,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="socketPaths">A list of socket paths.</param>
     public RootlessUnixEndpointAuthenticationProvider(params string[] socketPaths)
     {
-      var socketPath = socketPaths.FirstOrDefault(File.Exists);
+      var socketPath = Array.Find(socketPaths, File.Exists);
       DockerEngine = socketPath == null ? null : new Uri("unix://" + socketPath);
     }
 

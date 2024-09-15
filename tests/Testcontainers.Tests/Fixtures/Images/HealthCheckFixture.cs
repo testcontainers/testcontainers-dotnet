@@ -17,11 +17,15 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public string Repository => _image.Repository;
 
-    public string Name => _image.Name;
+    public string Registry => _image.Registry;
 
     public string Tag => _image.Tag;
 
+    public string Digest => _image.Digest;
+
     public string FullName => _image.FullName;
+
+    public string Name => _image.Name;
 
     public string GetHostname()
     {
