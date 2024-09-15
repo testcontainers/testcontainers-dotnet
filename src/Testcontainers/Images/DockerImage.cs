@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Images
+namespace DotNet.Testcontainers.Images
 {
   using System;
   using System.Globalization;
@@ -117,7 +117,16 @@
     public string Digest => _digit;
 
     /// <inheritdoc />
-    public string FullName => $"{Registry}/{Repository}:{Tag}".Trim(TrimChars);
+    public string FullName
+    {
+      get
+      {
+        var registry = string.IsNullOrEmpty(Registry) ? string.Empty : $"{Registry}/";
+        var tag = string.IsNullOrEmpty(Tag) ? string.Empty : $":{Tag}";
+        var digest = string.IsNullOrEmpty(Digest) ? string.Empty : $"@{Digest}";
+        return $"{registry}{Repository}{tag}{digest}";
+      }
+    }
 
     /// <inheritdoc />
     [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]

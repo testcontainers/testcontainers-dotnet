@@ -536,6 +536,23 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task PullDigest()
+      {
+        // Given
+        await using var container = new ContainerBuilder()
+          .WithImage("alpine@sha256:3451da08fc6ef554a100da3e2df5ac6d598c82f2a774d5f6ed465c3d80cd163a")
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .Build();
+
+        // When
+        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.Null(exception);
+      }
+
+      [Fact]
       public async Task PullPolicyNever()
       {
         await using var container = new ContainerBuilder()
