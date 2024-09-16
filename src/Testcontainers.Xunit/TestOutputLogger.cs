@@ -12,6 +12,7 @@ internal sealed class TestOutputLogger(ITestOutputHelper testOutputHelper) : Log
         }
 
         testOutputHelper.WriteLine($@"[testcontainers.org {_stopwatch.Elapsed:hh\:mm\:ss\.fff}] {formatter(state, exception)}");
+
         if (exception != null)
         {
             testOutputHelper.WriteLine(exception.ToString());

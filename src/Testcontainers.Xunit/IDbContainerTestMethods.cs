@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 /// <summary>
 /// Method to ease working with DbConnection, DbCommand and DbBatch provided by both

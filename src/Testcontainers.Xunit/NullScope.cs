@@ -1,9 +1,8 @@
-namespace Testcontainers.Xunit
+namespace Testcontainers.Xunit;
+
+internal sealed class NullScope : IDisposable
 {
-    internal sealed class NullScope : IDisposable
+    public void Dispose()
     {
-        public void Dispose()
-        {
-        }
     }
 }
