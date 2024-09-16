@@ -66,7 +66,8 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     {
         try
         {
-            await Container.StartAsync();
+            await Container.StartAsync()
+                .ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -86,7 +87,8 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     {
         if (_exception == null)
         {
-            await Container.DisposeAsync();
+            await Container.DisposeAsync()
+                .ConfigureAwait(false);
         }
     }
 }

@@ -17,7 +17,9 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     /// <inheritdoc />
     protected override async LifetimeTask InitializeAsync()
     {
-        await base.InitializeAsync();
+        await base.InitializeAsync()
+            .ConfigureAwait(false);
+
         _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
     }
 
