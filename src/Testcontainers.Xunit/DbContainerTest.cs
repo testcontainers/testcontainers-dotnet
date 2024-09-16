@@ -2,7 +2,7 @@ namespace Testcontainers.Xunit;
 
 /// <summary>
 /// Base class for tests needing a database container per test method.
-/// A logger is automatically configured to write messages to xUnit's <see cref="ITestOutputHelper"/>.
+/// A logger is automatically configured to write messages to xUnit's <see cref="ITestOutputHelper" />.
 /// </summary>
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
@@ -37,7 +37,7 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     }
 
     /// <summary>
-    /// The <see cref="DbProviderFactory"/> used to create <see cref="DbConnection"/> instances.
+    /// The <see cref="DbProviderFactory" /> used to create <see cref="DbConnection" /> instances.
     /// </summary>
     public abstract DbProviderFactory DbProviderFactory { get; }
 

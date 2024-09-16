@@ -14,5 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../Testcontainers.Redis.Tests/Testcontainers.Redis.Tests.csproj"/>
     </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@ namespace Testcontainers.Xunit;
 
 /// <summary>
 /// Method to ease working with DbConnection, DbCommand and DbBatch provided by both
-/// <see cref="DbContainerFixture{TBuilderEntity,TContainerEntity}"/> and <see cref="DbContainerTest{TBuilderEntity,TContainerEntity}"/>.
+/// <see cref="DbContainerFixture{TBuilderEntity,TContainerEntity}" /> and <see cref="DbContainerTest{TBuilderEntity,TContainerEntity}" />.
 /// </summary>
 internal interface IDbContainerTestMethods
 {
@@ -45,7 +45,7 @@ internal interface IDbContainerTestMethods
     /// Returns a <see cref="DbCommand" /> that's ready for execution against the database.
     /// </summary>
     /// <remarks>
-    /// Commands returned from this method are already configured to execute against the database; their <see cref="DbCommand.Connection"/> does not need to be set, and doing so will throw an exception.
+    /// Commands returned from this method are already configured to execute against the database; their <see cref="DbCommand.Connection" /> does not need to be set, and doing so will throw an exception.
     /// </remarks>
     /// <param name="commandText">The text command with which to initialize the <see cref="DbCommand" /> that this method returns.</param>
     /// <returns>A <see cref="DbCommand" /> that's ready for execution against the database.</returns>
@@ -55,7 +55,7 @@ internal interface IDbContainerTestMethods
     /// Returns a <see cref="DbBatch" /> that's ready for execution against the database.
     /// </summary>
     /// <remarks>
-    /// Batches returned from this method are already configured to execute against the database; their <see cref="DbCommand.Connection"/> does not need to be set, and doing so will throw an exception.
+    /// Batches returned from this method are already configured to execute against the database; their <see cref="DbCommand.Connection" /> does not need to be set, and doing so will throw an exception.
     /// </remarks>
     /// <returns>A <see cref="DbBatch" /> that's ready for execution against the database.</returns>
     DbBatch CreateBatch();

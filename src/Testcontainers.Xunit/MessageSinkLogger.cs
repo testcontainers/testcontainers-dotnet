@@ -14,7 +14,7 @@ internal sealed class MessageSinkLogger(IMessageSink messageSink) : Logger
     }
 
     /// <returns>
-    /// The hash code of the underlying message sink, because <see cref="DotNet.Testcontainers.Clients.DockerApiClient.LogContainerRuntimeInfoAsync"/>
+    /// The hash code of the underlying message sink, because <see cref="DotNet.Testcontainers.Clients.DockerApiClient.LogContainerRuntimeInfoAsync" />
     /// logs the runtime information once per Docker Engine API client and logger.
     /// </returns>
     public override int GetHashCode() => messageSink?.GetHashCode() ?? 0;
