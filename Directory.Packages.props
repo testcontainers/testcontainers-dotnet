@@ -18,9 +18,9 @@
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.2.0"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.1"/>
-        <PackageVersion Include="xunit.extensibility.execution" Version="2.7.0"/>
-        <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7"/>
-        <PackageVersion Include="xunit" Version="2.7.0"/>
+        <PackageVersion Include="xunit.extensibility.execution" Version="2.9.0"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2"/>
+        <PackageVersion Include="xunit" Version="2.9.0"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="0.2.0-pre.69"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>

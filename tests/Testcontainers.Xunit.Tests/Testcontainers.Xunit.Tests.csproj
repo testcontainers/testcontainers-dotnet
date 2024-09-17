@@ -9,7 +9,6 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="Microsoft.Data.SqlClient"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj"/>

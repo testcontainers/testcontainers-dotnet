@@ -40,7 +40,6 @@ nav:
   - api/resource_reuse.md
   - api/wait_strategies.md
   - api/best_practices.md
-  - api/testing_xunit.md
   - test_frameworks/xunit_net.md
   - Examples:
     - examples/dind.md

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Xunit;
+﻿namespace Testcontainers.Xunit.Example1;
 
 // # --8<-- [start:ConfigureRedisContainer]
 public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelper)
@@ -12,7 +12,7 @@ public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelpe
 }
 // # --8<-- [end:ConfigureRedisContainer]
 
-public sealed partial class RedisContainerTest
+public sealed partial class RedisContainerTest : ITestCaseOrderer
 {
     // # --8<-- [start:RunTests]
     [Fact]
@@ -35,4 +35,9 @@ public sealed partial class RedisContainerTest
         // 👇 The created and started container is disposed of after this method (test) completes.
     }
     // # --8<-- [end:RunTests]
+
+    public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases) where TTestCase : ITestCase
+    {
+        return testCases.OrderBy(testCase => testCase.TestMethod.Method.Name);
+    }
 }

@@ -1,5 +1,9 @@
+global using System.Collections.Generic;
+global using System.Linq;
 global using System.Threading.Tasks;
+global using JetBrains.Annotations;
 global using StackExchange.Redis;
 global using Testcontainers.Redis;
 global using Xunit;
 global using Xunit.Abstractions;
+global using Xunit.Sdk;
