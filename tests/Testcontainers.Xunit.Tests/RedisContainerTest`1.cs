@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Xunit.Example1;
+namespace Testcontainers.Xunit.Example1;
 
 // # --8<-- [start:ConfigureRedisContainer]
 public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelper)

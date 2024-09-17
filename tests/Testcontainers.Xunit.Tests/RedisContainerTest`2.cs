@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Xunit.Example2;
+namespace Testcontainers.Xunit.Example2;
 
 // # --8<-- [start:ConfigureRedisContainer]
 [UsedImplicitly]
