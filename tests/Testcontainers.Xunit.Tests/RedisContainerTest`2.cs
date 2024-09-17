@@ -27,15 +27,15 @@ public sealed partial class RedisContainerTest : ITestCaseOrderer
         Assert.True(redis.IsConnected);
     }
 
+    // # --8<-- [start:RunTests]
     [Fact]
     public async Task Test2()
     {
         using var redis = await ConnectionMultiplexer.ConnectAsync(fixture.Container.GetConnectionString());
         var redisValue = await redis.GetDatabase().StringGetAsync("key");
-        // # --8<-- [start:RunTests]
         Assert.Equal("value", redisValue);
-        // # --8<-- [end:RunTests]
     }
+    // # --8<-- [end:RunTests]
 
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases) where TTestCase : ITestCase
     {

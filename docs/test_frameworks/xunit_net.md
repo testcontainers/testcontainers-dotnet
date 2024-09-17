@@ -50,7 +50,7 @@ Sometimes, creating and disposing of a test resource can be an expensive operati
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:ConfigureRedisContainer"
     ```
 
-This ensures that the fixture is created only once for the entire test class. You must implement the `IClassFixture<TFixture>` interface with the previously created container fixture type.
+This ensures that the fixture is created only once for the entire test class. You must implement the `IClassFixture<TFixture>` interface with the previously created container fixture type in your test class and add the type to the default constructor.
 
 === "Run Tests"
     ```csharp
@@ -64,14 +64,14 @@ In this case, retrieving the Redis (string) value in the second test will not re
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:RunTests"
     ```
 
+The output of `docker ps` shows that, instead of two Redis containers, only one runs.
+
 ```title="List running containers"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
 e878f0b8f4bc   testcontainers/ryuk:0.9.0   "/bin/ryuk"              3 seconds ago
 ```
-
-The output of `docker ps` shows that, instead of two Redis containers, only one runs.
 
 ## TODO: Add `DbContainerText` / `DbContainerFixture`
 
