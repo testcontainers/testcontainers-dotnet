@@ -17,5 +17,5 @@ public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink mes
     /// </summary>
     protected IMessageSink MessageSink { get; } = messageSink;
 
-    protected override ILogger Logger { get; } = new MessageSinkLogger(messageSink);
+    protected override ILogger Logger { get; } = new XunitLoggerProvider(messageSink).CreateLogger("testcontainers.org");
 }

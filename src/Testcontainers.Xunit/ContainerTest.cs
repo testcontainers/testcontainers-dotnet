@@ -16,7 +16,7 @@ public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutpu
     /// </summary>
     protected ITestOutputHelper TestOutputHelper { get; } = testOutputHelper;
 
-    protected override ILogger Logger { get; } = new TestOutputLogger(testOutputHelper);
+    protected override ILogger Logger { get; } = new XunitLoggerProvider(testOutputHelper).CreateLogger("testcontainers.org");
 
     protected override TBuilderEntity Configure(TBuilderEntity builder) => configure != null ? configure(builder) : builder;
 }
