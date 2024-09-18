@@ -24,7 +24,7 @@ The example below demonstrates how to override the `Configure(TBuilderEntity)` m
 
 The base class also receives an instance of xUnit.net's [ITestOutputHelper](https://xunit.net/docs/capturing-output) to capture and forward log messages to the running test.
 
-Considering that xUnit.net runs tests in a deterministic natural sort order (e.g., `Test1`, `Test2`, etc.), retrieving the Redis (string) value in the second test will always return `null` since a new test resource instance (Redis container) is created for each test.
+Considering that xUnit.net runs tests in a deterministic natural sort order (like `Test1`, `Test2`, etc.), retrieving the Redis (string) value in the second test will always return `null` since a new test resource instance (Redis container) is created for each test.
 
 === "Run Tests"
     ```csharp
@@ -45,14 +45,14 @@ be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 
 Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class.
 
-=== "Configure a Redis Container"
+=== "Configure Redis Container"
     ```csharp
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:ConfigureRedisContainer"
     ```
 
 This ensures that the fixture is created only once for the entire test class. You must implement the `IClassFixture<TFixture>` interface with the previously created container fixture type in your test class and add the type to the default constructor.
 
-=== "Run Tests"
+=== "Inject Redis Container"
     ```csharp
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:InjectContainerFixture"
     ```
@@ -73,6 +73,35 @@ d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 e878f0b8f4bc   testcontainers/ryuk:0.9.0   "/bin/ryuk"              3 seconds ago
 ```
 
-## TODO: Add `DbContainerText` / `DbContainerFixture`
+## Testing ADO.NET services
+
+In addition to the two mentioned base classes, the package contains two more classes: `DbContainerTest` and `DbContainerFixture`, which behave identically but offer additional convenient features when working with services accessible through an ADO.NET provider.
+
+Inherit from either the `DbContainerTest` or `DbContainerFixture` class and override the `Configure(TBuilderEntity)` method to configure your database service.
+
+In this example, we use the default configuration of the PostgreSQL module. The container image capabilities are used to instantiate the database, schema, and test data. During startup, the PostgreSQL container runs SQL scripts placed under the `/docker-entrypoint-initdb.d/` directory automatically.
+
+=== "Configure PostgreSQL Container"
+```csharp
+--8<-- "tests/Testcontainers.Xunit.Tests/PostgreSqlContainer.cs:ConfigurePostgreSqlContainer"
+```
+
+Inheriting from the database container test or fixture class requires you to implement the abstract `DbProviderFactory` property and resolve a compatible `DbProviderFactory` according to your ADO.NET service.
+
+=== "Configure DbProviderFactory"
+```csharp
+--8<-- "tests/Testcontainers.Xunit.Tests/PostgreSqlContainer.cs:ConfigureDbProviderFactory"
+```
+
+!!! note
+
+    Depending on how you initialize the database, it may be necessary to override the `ConnectionString` property and replace the default database name with the one actual in use.
+
+After configuring the dependent ADO.NET service, you can add the necessary tests. In this case, we run an SQL `SELECT` statement to retrieve the first record from the `album` table.
+
+=== "Run Tests"
+```csharp
+--8<-- "tests/Testcontainers.Xunit.Tests/PostgreSqlContainer.cs:RunTests"
+```
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
