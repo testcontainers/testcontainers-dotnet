@@ -1,6 +1,6 @@
 namespace Testcontainers.Xunit;
 
-internal class DbContainerTestMethods(DbProviderFactory dbProviderFactory, string connectionString) : IDbContainerTestMethods, IAsyncDisposable
+internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory, string connectionString) : IDbContainerTestMethods, IAsyncDisposable
 {
     private readonly DbProviderFactory _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
     private readonly string _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));

@@ -8,14 +8,7 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink) : ContainerLifetime<TBuilderEntity, TContainerEntity>
+public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
+    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new XunitLoggerProvider(messageSink).CreateLogger("testcontainers.org"))
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
-    where TContainerEntity : IContainer
-{
-    /// <summary>
-    /// The message sink used for reporting diagnostic messages.
-    /// </summary>
-    protected IMessageSink MessageSink { get; } = messageSink;
-
-    protected override ILogger Logger { get; } = new XunitLoggerProvider(messageSink).CreateLogger("testcontainers.org");
-}
+    where TContainerEntity : IContainer;

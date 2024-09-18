@@ -10,24 +10,40 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     where TContainerEntity : IContainer
 {
     private readonly Lazy<TContainerEntity> _container;
-    [CanBeNull] private ExceptionDispatchInfo _exception;
 
-    /// <summary>
-    /// The logger.
-    /// </summary>
-    protected abstract ILogger Logger { get; }
+    [CanBeNull]
+    private ExceptionDispatchInfo _exception;
 
-    protected ContainerLifetime()
+    protected ContainerLifetime(ILogger logger)
     {
-        _container = new Lazy<TContainerEntity>(() =>
-        {
-            var containerBuilder = new TBuilderEntity().WithLogger(Logger);
-            return Configure(containerBuilder).Build();
-        });
+        _container = new Lazy<TContainerEntity>(() => Configure(new TBuilderEntity().WithLogger(logger)).Build());
     }
 
     /// <summary>
-    /// Extension point to further configure the container instance.
+    /// Gets the container instance.
+    /// </summary>
+    public TContainerEntity Container
+    {
+        get
+        {
+            _exception?.Throw();
+            return _container.Value;
+        }
+    }
+
+    /// <inheritdoc />
+    LifetimeTask IAsyncLifetime.InitializeAsync() => InitializeAsync();
+
+#if !XUNIT_V3
+    /// <inheritdoc />
+    LifetimeTask IAsyncLifetime.DisposeAsync() => DisposeAsync();
+#else
+    /// <inheritdoc />
+    LifetimeTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+#endif
+
+    /// <summary>
+    /// Extension method to further configure the container instance.
     /// </summary>
     /// <example>
     ///   <code>
@@ -42,26 +58,14 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     ///   }
     ///   </code>
     /// </example>
-    /// <param name="builder">The container builder.</param>
+    /// <param name="builder">The container builder to configure.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected virtual TBuilderEntity Configure(TBuilderEntity builder) => builder;
-
-    /// <summary>
-    /// The container instance.
-    /// </summary>
-    public TContainerEntity Container
+    protected virtual TBuilderEntity Configure(TBuilderEntity builder)
     {
-        get
-        {
-            _exception?.Throw();
-            return _container.Value;
-        }
+        return builder;
     }
 
-    /// <inheritdoc />
-    LifetimeTask IAsyncLifetime.InitializeAsync() => InitializeAsync();
-
-    /// <inheritdoc cref="IAsyncLifetime.InitializeAsync()" />
+    /// <inheritdoc cref="IAsyncLifetime" />
     protected virtual async LifetimeTask InitializeAsync()
     {
         try
@@ -75,14 +79,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
         }
     }
 
-    /// <inheritdoc />
-#if XUNIT_V3
-    LifetimeTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
-#else
-    LifetimeTask IAsyncLifetime.DisposeAsync() => DisposeAsync();
-#endif
-
-    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync()" />
+    /// <inheritdoc cref="IAsyncLifetime" />
     protected virtual async LifetimeTask DisposeAsync()
     {
         if (_exception == null)
