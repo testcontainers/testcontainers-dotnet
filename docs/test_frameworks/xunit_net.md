@@ -20,7 +20,7 @@ The example below demonstrates how to override the `Configure(TBuilderEntity)` m
     ```
 
 !!!tip
-    Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag pointing to a new version.
+    Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag may pointing to a new version.
 
 The base class also receives an instance of xUnit.net's [ITestOutputHelper](https://xunit.net/docs/capturing-output) to capture and forward log messages to the running test.
 
@@ -45,19 +45,21 @@ be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 
 Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class.
 
+xUnit.net's fixture implementation does not rely on the `ITestOutputHelper` interface to capture and forward log messages; instead, it expects an implementation of `IMessageSink`. Make sure your fixture's default constructor accepts the interface implementation and forwards it to the base class.
+
 === "Configure Redis Container"
     ```csharp
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:ConfigureRedisContainer"
     ```
 
-This ensures that the fixture is created only once for the entire test class. You must implement the `IClassFixture<TFixture>` interface with the previously created container fixture type in your test class and add the type to the default constructor.
+This ensures that the fixture is created only once for the entire test class, which also improves overall test performance. You must implement the `IClassFixture<TFixture>` interface with the previously created container fixture type in your test class and add the type as argument to the default constructor.
 
 === "Inject Redis Container"
     ```csharp
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:InjectContainerFixture"
     ```
 
-In this case, retrieving the Redis (string) value in the second test will not return `null`. Instead, it will return the value added in the first test.
+In this case, retrieving the Redis (string) value in the second test will no longer return `null`. Instead, it will return the value added in the first test.
 
 === "Run Tests"
     ```csharp
@@ -95,7 +97,7 @@ Inheriting from the database container test or fixture class requires you to imp
 
 !!! note
 
-    Depending on how you initialize the database, it may be necessary to override the `ConnectionString` property and replace the default database name with the one actual in use.
+    Depending on how you initialize and access the database, it may be necessary to override the `ConnectionString` property and replace the default database name with the one actual in use.
 
 After configuring the dependent ADO.NET service, you can add the necessary tests. In this case, we run an SQL `SELECT` statement to retrieve the first record from the `album` table.
 
