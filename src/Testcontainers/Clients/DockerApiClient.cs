@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Concurrent;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -113,12 +114,7 @@ namespace DotNet.Testcontainers.Clients
         if (labels != null && labels.Count > 0)
         {
           runtimeInfo.AppendLine("  Labels: ");
-
-          foreach (var label in labels)
-          {
-            runtimeInfo.Append("    ");
-            runtimeInfo.AppendLine(label);
-          }
+          runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
