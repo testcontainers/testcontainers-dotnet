@@ -76,7 +76,8 @@ internal sealed class XunitLoggerProvider : ILoggerProvider
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            _testOutputHelper.WriteLine("[{0} {1:hh\\:mm\\:ss\\.ff}] {2}", _categoryName, _stopwatch.Elapsed, formatter.Invoke(state, exception));
+            var message = exception == null ? formatter.Invoke(state, null) : $"{formatter.Invoke(state, exception)}\n{exception}";
+            _testOutputHelper.WriteLine("[{0} {1:hh\\:mm\\:ss\\.ff}] {2}", _categoryName, _stopwatch.Elapsed, message);
         }
 
         private sealed class Disposable : IDisposable
