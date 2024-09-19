@@ -8,7 +8,7 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
 public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
-    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new XunitLoggerProvider(testOutputHelper).CreateLogger("testcontainers.org"))
+    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new TestOutputLogger(testOutputHelper))
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer
 {

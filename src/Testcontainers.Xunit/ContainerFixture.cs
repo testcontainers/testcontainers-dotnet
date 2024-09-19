@@ -9,6 +9,6 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
 public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
-    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new XunitLoggerProvider(messageSink).CreateLogger("testcontainers.org"))
+    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new MessageSinkLogger(messageSink))
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer;
