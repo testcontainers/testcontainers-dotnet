@@ -7,13 +7,19 @@ public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelpe
     protected override RedisBuilder Configure(RedisBuilder builder)
     {
         // 👇 Configure your container instance here.
-        return builder.WithImage(RedisBuilder.RedisImage);
+        return builder.WithImage("redis:7.0");
     }
 }
 // # --8<-- [end:ConfigureRedisContainer]
 
 public sealed partial class RedisContainerTest : ITestCaseOrderer
 {
+    [Fact]
+    public void ImageShouldMatchDefaultModuleImage()
+    {
+        Assert.Equal(RedisBuilder.RedisImage, Container.Image.FullName);
+    }
+
     // # --8<-- [start:RunTests]
     [Fact]
     public async Task Test1()

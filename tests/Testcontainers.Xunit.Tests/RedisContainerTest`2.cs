@@ -7,7 +7,7 @@ public sealed class RedisContainerFixture(IMessageSink messageSink)
 {
     protected override RedisBuilder Configure(RedisBuilder builder)
     {
-        return builder.WithImage(RedisBuilder.RedisImage);
+        return builder.WithImage("redis:7.0");
     }
 }
 // # --8<-- [end:ConfigureRedisContainer]
@@ -19,6 +19,12 @@ public sealed partial class RedisContainerTest(RedisContainerFixture fixture)
 
 public sealed partial class RedisContainerTest : ITestCaseOrderer
 {
+    [Fact]
+    public void ImageShouldMatchDefaultModuleImage()
+    {
+        Assert.Equal(RedisBuilder.RedisImage, fixture.Container.Image.FullName);
+    }
+
     [Fact]
     public async Task Test1()
     {

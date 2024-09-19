@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Xunit;
+namespace Testcontainers.Xunit;
 
 internal sealed class XunitLoggerProvider : ILoggerProvider
 {
@@ -47,6 +47,11 @@ internal sealed class XunitLoggerProvider : ILoggerProvider
         {
             _messageSink.OnMessage(new DiagnosticMessage(format, args));
         }
+
+        public override int GetHashCode()
+        {
+            return _messageSink.GetHashCode();
+        }
     }
 
     private sealed class XunitLogger : ILogger
@@ -76,8 +81,13 @@ internal sealed class XunitLoggerProvider : ILoggerProvider
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var message = exception == null ? formatter.Invoke(state, null) : $"{formatter.Invoke(state, exception)}\n{exception}";
+            var message = exception == null ? formatter.Invoke(state, null) : string.Join(Environment.NewLine, formatter.Invoke(state, exception), exception);
             _testOutputHelper.WriteLine("[{0} {1:hh\\:mm\\:ss\\.ff}] {2}", _categoryName, _stopwatch.Elapsed, message);
+        }
+
+        public override int GetHashCode()
+        {
+            return _testOutputHelper.GetHashCode();
         }
 
         private sealed class Disposable : IDisposable

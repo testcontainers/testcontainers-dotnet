@@ -7,7 +7,7 @@ public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutput
     protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
     {
         return builder
-            .WithImage(PostgreSqlBuilder.PostgreSqlImage)
+            .WithImage("postgres:15.1")
             .WithResourceMapping("Chinook_PostgreSql_AutoIncrementPKs.sql", "/docker-entrypoint-initdb.d/");
     }
 }
@@ -35,6 +35,12 @@ public sealed partial class PostgreSqlContainerTest
 
 public sealed partial class PostgreSqlContainerTest
 {
+    [Fact]
+    public void ImageShouldMatchDefaultModuleImage()
+    {
+        Assert.Equal(PostgreSqlBuilder.PostgreSqlImage, Container.Image.FullName);
+    }
+
     // # --8<-- [start:RunTests]
     [Fact]
     public async Task Test1()
