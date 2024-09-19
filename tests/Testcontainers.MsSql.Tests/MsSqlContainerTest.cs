@@ -61,13 +61,4 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         }
     }
     // # --8<-- [end:CreateMsSqlContainer]
-
-    [UsedImplicitly]
-    public sealed class MsSqlTools18Configuration : MsSqlContainerTest
-    {
-        public MsSqlTools18Configuration()
-            : base(new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build())
-        {
-        }
-    }
 }
