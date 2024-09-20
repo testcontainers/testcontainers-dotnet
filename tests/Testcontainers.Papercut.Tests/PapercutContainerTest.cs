@@ -21,7 +21,7 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // Given
         const string subject = "Test";
 
-        Message[] messages;
+        Message[] messages = [];
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_papercutContainer.GetBaseAddress());
@@ -31,13 +31,26 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // When
         smtpClient.Send("from@example.com", "to@example.com", subject, "A test message");
 
+        var tries = 0;
         do
         {
-            var messagesJson = await httpClient.GetStringAsync("/api/messages")
-                .ConfigureAwait(true);
+            try
+            {
+                var messagesJson = await httpClient.GetStringAsync("/api/messages")
+                    .ConfigureAwait(true);
 
-            var jsonDocument = JsonDocument.Parse(messagesJson);
-            messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
+                var jsonDocument = JsonDocument.Parse(messagesJson);
+                messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
+            }
+            catch
+            {
+                tries++;
+                if (tries >= 5)
+                {
+                    throw;
+                }
+                await Task.Delay(25 + Random.Shared.Next(-10, 10));
+            }
         }
         while (messages.Length == 0);
 
