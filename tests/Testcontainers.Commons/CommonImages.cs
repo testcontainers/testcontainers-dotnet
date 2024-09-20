@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Commons;
 [PublicAPI]
 public static class CommonImages
 {
-    public static readonly IImage Ryuk = new DockerImage("testcontainers/ryuk:0.6.0");
+    public static readonly IImage Ryuk = new DockerImage("testcontainers/ryuk:0.9.0");
 
     public static readonly IImage Alpine = new DockerImage("alpine:3.17");
 

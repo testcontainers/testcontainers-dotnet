@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Concurrent;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
@@ -107,18 +108,14 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
         runtimeInfo.Append("  Total Memory: ");
-        runtimeInfo.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]));
+        runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
 
         var labels = dockerInfo.Labels;
         if (labels != null && labels.Count > 0)
         {
+          runtimeInfo.AppendLine();
           runtimeInfo.AppendLine("  Labels: ");
-
-          foreach (var label in labels)
-          {
-            runtimeInfo.Append("    ");
-            runtimeInfo.AppendLine(label);
-          }
+          runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
