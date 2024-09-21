@@ -71,20 +71,46 @@ Task("Build")
   });
 });
 
+void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
+{
+    var batches = testProjects
+        .Select((project, index) => new { project, index })
+        .GroupBy(x => x.index / batchSize)
+        .Select(group => group.Select(g => g.project));
+
+    int batchNumber = 1;
+
+    foreach (var batch in batches)
+    {
+        Information($"Running batch {batchNumber++}");
+
+        foreach (var project in batch)
+        {
+            Information($"Running tests for project: {project.FullPath}");
+            DotNetTest(project.FullPath, new DotNetTestSettings
+            {
+                Configuration = param.Configuration,
+                Verbosity = param.Verbosity,
+                NoRestore = true,
+                NoBuild = true,
+                Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
+                ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
+                ArgumentCustomization = args => args
+            });
+        }
+    }
+}
+
 Task("Tests")
   .Does(() =>
 {
-  DotNetTest(param.Solution, new DotNetTestSettings
-  {
-    Configuration = param.Configuration,
-    Verbosity = param.Verbosity,
-    NoRestore = true,
-    NoBuild = true,
-    Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-    Filter = param.TestFilter,
-    ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-    ArgumentCustomization = args => args
-  });
+    var testProjects = param.Projects.All
+        .Where(p => p.Name.Contains("Test"))
+        .Select(p => p.Path);
+
+    var batchSize = 5;
+
+    RunTestsInBatches(testProjects, batchSize);
 });
 
 Task("Sonar-Begin")
