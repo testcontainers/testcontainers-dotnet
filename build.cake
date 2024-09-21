@@ -84,9 +84,11 @@ void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
     {
         Information($"Running batch {batchNumber++}");
 
-        foreach (var project in batch)
+        // Parallel execution within each batch
+        Parallel.ForEach(batch, new ParallelOptions { MaxDegreeOfParallelism = batchSize }, project =>
         {
             Information($"Running tests for project: {project.FullPath}");
+
             DotNetTest(project.FullPath, new DotNetTestSettings
             {
                 Configuration = param.Configuration,
@@ -97,7 +99,7 @@ void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
                 ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
                 ArgumentCustomization = args => args
             });
-        }
+        });
     }
 }
 
@@ -108,7 +110,7 @@ Task("Tests")
         .Where(p => p.Name.Contains("Test"))
         .Select(p => p.Path);
 
-    var batchSize = 5;
+    var batchSize = 10;
 
     RunTestsInBatches(testProjects, batchSize);
 });
