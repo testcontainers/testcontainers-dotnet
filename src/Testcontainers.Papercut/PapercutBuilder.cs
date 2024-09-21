@@ -6,10 +6,9 @@ namespace Testcontainers.Papercut;
 [PublicAPI]
 public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
 {
-    public const string PapercutImage = "jijiechen/papercut:latest";
+    public const string PapercutImage = "changemakerstudiosus/papercut-smtp:latest";
 
-    public const ushort HttpPort = 37408;
-
+    public const ushort HttpPort = 80;
     public const ushort SmtpPort = 25;
 
     /// <summary>
