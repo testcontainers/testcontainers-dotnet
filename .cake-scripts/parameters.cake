@@ -29,6 +29,7 @@ internal sealed class BuildParameters
   public NuGetCredentials NuGetCredentials { get; private set; }
   public BuildProjects Projects { get; private set; }
   public BuildPaths Paths { get; private set; }
+  public bool EnableDockerImageRemoval { get; private set; }
 
   public static BuildParameters Instance(ICakeContext context)
   {
@@ -58,7 +59,8 @@ internal sealed class BuildParameters
       SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
       NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
       Projects = BuildProjects.Instance(context, solutionFilePath),
-      Paths = BuildPaths.Instance(context, buildInformation.Version)
+      Paths = BuildPaths.Instance(context, buildInformation.Version),
+      EnableDockerImageRemoval = context.Argument<bool>("enable-docker-image-removal", false)
     };
   }
 }

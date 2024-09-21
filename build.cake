@@ -104,6 +104,15 @@ void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
                                   .AppendSwitchQuoted("--blame-hang-timeout", "5m")
             });
         });
+
+        if (param.EnableDockerImageRemoval)
+        {
+            Information($"Cleaning up Docker images and containers after batch {batchNumber - 1}");
+            StartProcess("docker", new ProcessSettings
+            {
+                Arguments = "system prune -a -f"
+            });
+        }
     }
 }
 
