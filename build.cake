@@ -98,8 +98,10 @@ void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
                 NoRestore = true,
                 NoBuild = true,
                 Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
+                Filter = param.TestFilter,
                 ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
                 ArgumentCustomization = args => args
+                                  .AppendSwitchQuoted("--blame-hang-timeout", "5m")
             });
         });
     }
