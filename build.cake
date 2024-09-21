@@ -76,13 +76,15 @@ void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
     var batches = testProjects
         .Select((project, index) => new { project, index })
         .GroupBy(x => x.index / batchSize)
-        .Select(group => group.Select(g => g.project));
+        .Select(group => group.Select(g => g.project))
+        .ToArray();
 
     int batchNumber = 1;
+    int batchCount = batches.Count();
 
     foreach (var batch in batches)
     {
-        Information($"Running batch {batchNumber++}");
+        Information($"Running batch {batchNumber++} / {batchCount}");
 
         // Parallel execution within each batch
         Parallel.ForEach(batch, new ParallelOptions { MaxDegreeOfParallelism = batchSize }, project =>
