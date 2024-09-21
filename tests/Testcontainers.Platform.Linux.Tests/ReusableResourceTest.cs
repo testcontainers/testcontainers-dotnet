@@ -1,9 +1,16 @@
 namespace Testcontainers.Tests;
 
-public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
+// We cannot run these tests in parallel because they interfere with the port
+// forwarding tests. When the port forwarding container is running, Testcontainers
+// automatically inject the necessary extra hosts into the builder configuration
+// using `WithPortForwarding()` internally. Depending on when the test framework
+// starts the port forwarding container, these extra hosts can lead to flakiness.
+// This happens because the reuse hash changes, resulting in two containers with
+// the same labels running instead of one.
+[CollectionDefinition(nameof(ReusableResourceTest), DisableParallelization = true)]
+[Collection(nameof(ReusableResourceTest))]
+public sealed class ReusableResourceTest : IAsyncLifetime
 {
-    private readonly DockerClient _dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid()).CreateClient();
-
     private readonly FilterByProperty _filters = new FilterByProperty();
 
     private readonly IList<IAsyncDisposable> _disposables = new List<IAsyncDisposable>();
@@ -63,21 +70,26 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
             }));
     }
 
-    public void Dispose()
-    {
-        _dockerClient.Dispose();
-    }
-
     [Fact]
     public async Task ShouldReuseExistingResource()
     {
-        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters })
+        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
+
+        using var client = clientConfiguration.CreateClient();
+
+        var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
+
+        var networksListParameters = new NetworksListParameters { Filters = _filters };
+
+        var volumesListParameters = new VolumesListParameters { Filters = _filters };
+
+        var containers = await client.Containers.ListContainersAsync(containersListParameters)
             .ConfigureAwait(true);
 
-        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters })
+        var networks = await client.Networks.ListNetworksAsync(networksListParameters)
             .ConfigureAwait(true);
 
-        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters })
+        var response = await client.Volumes.ListAsync(volumesListParameters)
             .ConfigureAwait(true);
 
         Assert.Single(containers);
@@ -85,9 +97,9 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
         Assert.Single(response.Volumes);
     }
 
-    public static class ReuseHash
+    public static class ReuseHashTest
     {
-        public sealed class NotEqual
+        public sealed class NotEqualTest
         {
             [Fact]
             public void ForDifferentNames()
