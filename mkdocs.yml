@@ -47,3 +47,4 @@ nav:
     - modules/postgres.md
     - modules/pulsar.md
     - modules/rabbitmq.md
+    - modules/aspire-dashboard.md

@@ -1,5 +1,14 @@
-namespace Testcontainers.AspireDashboard;
+# Aspire Dashboard
 
+## Configuration
+
+The Aspire Dashboard can be configured in the following ways:
+
+- Use `AllowAnonymous(true)` to allow anonymous access to the dashboard.
+- Use `AllowUnsecuredTransport` to allow unsecured transport, such as HTTP.
+- Aspire Dashboard usually runs on port 18888. You can change the port by using the `WithPortBinding`
+
+```csharp
 public sealed class AspireDashboardContainerTest : IAsyncLifetime
 {
     private readonly AspireDashboardContainer _container = new AspireDashboardBuilder()
@@ -24,16 +33,14 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
     [Fact]
     public async Task GetDashboardReturnsHttpStatusCodeOk()
     {
-        // Given
         using var httpClient = new HttpClient();
-
         var address = new Uri(_container.GetDashboardUrl());
         httpClient.BaseAddress = address;
 
-        // When
         using var response = await httpClient.GetAsync("/");
 
-        // Then
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }
+```
+[Aspire Dashboard on Microsoft Artifact Registry](https://mcr.microsoft.com/en-us/product/dotnet/aspire-dashboard/tags)

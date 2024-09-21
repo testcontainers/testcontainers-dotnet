@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Testcontainers.AspireDashboard;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -11,6 +13,23 @@ public sealed class AspireDashboardContainer : DockerContainer
     public AspireDashboardContainer(AspireDashboardConfiguration configuration)
         : base(configuration)
     {
+        Started += (_, _) => Logger.LogInformation("AspireDashboard container is ready!");
+        Logger.LogInformation(
+            "Dashboard available at {Url}.",
+            new UriBuilder(
+                Uri.UriSchemeHttp,
+                Hostname,
+                GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort)
+            )
+        );
+        Logger.LogInformation(
+            "OTLP endpoint available at {Url}.",
+            new UriBuilder(
+                Uri.UriSchemeHttp,
+                Hostname,
+                GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpPort)
+            )
+        );
     }
 
     /// <summary>
@@ -22,7 +41,8 @@ public sealed class AspireDashboardContainer : DockerContainer
         var endpoint = new UriBuilder(
             Uri.UriSchemeHttp,
             Hostname,
-            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort));
+            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort)
+        );
 
         return endpoint.ToString();
     }
@@ -36,7 +56,8 @@ public sealed class AspireDashboardContainer : DockerContainer
         var endpoint = new UriBuilder(
             Uri.UriSchemeHttp,
             Hostname,
-            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpPort));
+            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpPort)
+        );
 
         return endpoint.ToString();
     }
