@@ -1,3 +1,6 @@
+using System.Linq;
+using DotNet.Testcontainers;
+
 namespace Testcontainers.Neo4j;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -6,9 +9,15 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 {
     public const string Neo4jImage = "neo4j:5.4";
 
+    public const string Neo4jEnterpriseImage = "neo4j:5.4-enterprise";
+
     public const ushort Neo4jHttpPort = 7474;
 
     public const ushort Neo4jBoltPort = 7687;
+
+    private const string AcceptLicenseAgreementEnvVar = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
+
+    private const string AcceptLicenseAgreementEnvVarValue = "yes";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
@@ -40,6 +49,26 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     }
 
     /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        if (IsEnterpriseImage())
+        {
+            const string message = $"The 'enterprise' image requires setting environment variable {AcceptLicenseAgreementEnvVar} to= '{AcceptLicenseAgreementEnvVarValue}'";
+            _ = Guard.Argument(DockerResourceConfiguration, "Enterprise License agreement")
+                .ThrowIf(
+                    argument => !argument.Value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || licenseAgreementValue != AcceptLicenseAgreementEnvVarValue,
+                    argument => new ArgumentException(message, argument.Name));
+        }
+    }
+
+    private bool IsEnterpriseImage()
+    {
+        return DockerResourceConfiguration.Image.Tag?.Contains("enterprise") ?? false;
+    }
+
+    /// <inheritdoc />
     protected override Neo4jBuilder Init()
     {
         return base.Init()
@@ -67,5 +96,11 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Merge(Neo4jConfiguration oldValue, Neo4jConfiguration newValue)
     {
         return new Neo4jBuilder(new Neo4jConfiguration(oldValue, newValue));
+    }
+
+    public Neo4jBuilder WithEnterpriseEdition()
+    {
+        return WithImage(Neo4jEnterpriseImage)
+            .WithEnvironment(AcceptLicenseAgreementEnvVar, AcceptLicenseAgreementEnvVarValue);
     }
 }
