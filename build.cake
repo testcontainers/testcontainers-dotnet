@@ -84,6 +84,7 @@ Task("Tests")
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args
+      .AppendSwitchQuoted("--blame-hang-timeout", "5m")
   });
 });
 
