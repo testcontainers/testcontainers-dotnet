@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -236,13 +237,15 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfResourceNotFound();
 
-      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
+      var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
+
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
       {
         return publicPort;
       }
       else
       {
-        throw new InvalidOperationException($"Exposed port {containerPort} is not mapped.");
+        throw new InvalidOperationException($"Exposed port {qualifiedContainerPort} is not mapped.");
       }
     }
 
@@ -261,34 +264,34 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public virtual async Task StartAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        var futureResources = Array.Empty<IFutureResource>()
-          .Concat(_configuration.Mounts)
-          .Concat(_configuration.Networks);
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
 
-        await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
-          .ConfigureAwait(false);
+      var futureResources = Array.Empty<IFutureResource>()
+        .Concat(_configuration.Mounts)
+        .Concat(_configuration.Networks);
 
-        await Task.WhenAll(_configuration.Containers.Select(resource => resource.StartAsync(ct)))
-          .ConfigureAwait(false);
+      await Task.WhenAll(futureResources.Select(resource => resource.CreateAsync(ct)))
+        .ConfigureAwait(false);
 
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
+      await Task.WhenAll(_configuration.Containers.Select(resource => resource.StartAsync(ct)))
+        .ConfigureAwait(false);
 
-        await UnsafeStartAsync(ct)
-          .ConfigureAwait(false);
-      }
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeStartAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public virtual async Task StopAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeStopAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeStopAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -344,7 +347,8 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      using (_ = AcquireLock())
+      using (_ = await AcquireLockAsync()
+               .ConfigureAwait(false))
       {
         if (Guid.Empty.Equals(_configuration.SessionId))
         {
@@ -504,8 +508,15 @@ namespace DotNet.Testcontainers.Containers
       await _client.StopAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      _container = await _client.Container.ByIdAsync(_container.ID, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _container = await _client.Container.ByIdAsync(_container.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        _container = new ContainerInspectResponse();
+      }
 
       StoppedTime = DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
@@ -514,7 +525,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return _container != null && ContainerHasBeenCreatedStates.HasFlag(State);
+      return ContainerHasBeenCreatedStates.HasFlag(State);
     }
 
     /// <summary>

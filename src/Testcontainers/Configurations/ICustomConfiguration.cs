@@ -27,6 +27,14 @@ namespace DotNet.Testcontainers.Configurations
     Uri GetDockerHost();
 
     /// <summary>
+    /// Gets the Docker context custom configuration.
+    /// </summary>
+    /// <returns>The Docker context custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    string GetDockerContext();
+
+    /// <summary>
     /// Gets the Docker host override custom configuration.
     /// </summary>
     /// <returns>The Docker host override custom configuration.</returns>

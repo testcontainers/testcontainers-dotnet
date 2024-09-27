@@ -100,8 +100,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
     }
 
-    [Fact]
-    public async Task BuildsDockerImage()
+    [Theory]
+    [InlineData("Dockerfile")]
+    [InlineData("./Dockerfile")]
+    [InlineData(".\\Dockerfile")]
+    public async Task BuildsDockerImage(string dockerfile)
     {
       // Given
       IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
@@ -110,7 +113,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
-        .WithDockerfile("Dockerfile")
+        .WithDockerfile(dockerfile)
         .WithDockerfileDirectory("Assets/")
         .WithDeleteIfExists(true)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Tags.Add(tag2.FullName))
@@ -127,9 +130,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag2.FullName));
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
     }
   }

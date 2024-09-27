@@ -171,7 +171,29 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task RandomPortBinding()
+      public async Task RandomUdpPortBinding()
+      {
+        // Given
+        const ushort containerPort = 53;
+
+        const string qualifiedContainerPort = "53/udp";
+
+        await using var container = new ContainerBuilder()
+          .WithImage(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(qualifiedContainerPort, true)
+          .Build();
+
+        // When
+        await container.StartAsync()
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.NotEqual(containerPort, container.GetMappedPublicPort(qualifiedContainerPort));
+      }
+
+      [Fact]
+      public async Task RandomTcpPortBinding()
       {
         // Given
         const ushort containerPort = 80;
@@ -511,6 +533,23 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // Then
         Assert.EndsWith(name, container.Name);
+      }
+
+      [Fact]
+      public async Task PullDigest()
+      {
+        // Given
+        await using var container = new ContainerBuilder()
+          .WithImage("alpine@sha256:3451da08fc6ef554a100da3e2df5ac6d598c82f2a774d5f6ed465c3d80cd163a")
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .Build();
+
+        // When
+        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.Null(exception);
       }
 
       [Fact]

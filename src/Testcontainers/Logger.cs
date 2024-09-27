@@ -106,7 +106,8 @@ namespace DotNet.Testcontainers
     {
       if (IsEnabled(logLevel))
       {
-        Console.Out.WriteLine("[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, formatter.Invoke(state, exception));
+        var message = exception == null ? formatter.Invoke(state, null) : string.Join(Environment.NewLine, formatter.Invoke(state, exception), exception);
+        Console.Out.WriteLine("[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, message);
       }
     }
 

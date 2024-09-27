@@ -1,7 +1,8 @@
 namespace DotNet.Testcontainers.Images
 {
   using System;
-  using System.Linq;
+  using System.Globalization;
+  using System.Text.RegularExpressions;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IImage" />
@@ -10,24 +11,33 @@ namespace DotNet.Testcontainers.Images
   {
     private const string LatestTag = "latest";
 
+    private const string NightlyTag = "nightly";
+
+    private static readonly char[] TrimChars = [' ', ':', '/'];
+
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
-    private static readonly char[] TrimChars = { ' ', ':', '/' };
+    [NotNull]
+    private readonly string _repository;
 
-    private static readonly char[] HostnameIdentifierChars = { '.', ':' };
+    [CanBeNull]
+    private readonly string _registry;
 
+    [CanBeNull]
+    private readonly string _tag;
+
+    [CanBeNull]
+    private readonly string _digit;
+
+    [CanBeNull]
     private readonly string _hubImageNamePrefix;
-
-    private readonly Lazy<string> _lazyFullName;
-
-    private readonly Lazy<string> _lazyHostname;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="image">The image.</param>
     public DockerImage(IImage image)
-      : this(image.Repository, image.Name, image.Tag)
+      : this(image.Repository, image.Registry, image.Tag, image.Digest)
     {
     }
 
@@ -35,8 +45,7 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="image">The image.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
-    /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
     public DockerImage(string image)
       : this(GetDockerImage(image))
     {
@@ -47,67 +56,132 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     /// <param name="repository">The repository.</param>
     /// <param name="name">The name.</param>
+    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
+    public DockerImage(string repository, string name)
+      : this(string.Join("/", repository, name).Trim('/'))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
+    /// <param name="repository">The repository.</param>
+    /// <param name="name">The name.</param>
     /// <param name="tag">The tag.</param>
+    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
+    public DockerImage(string repository, string name, string tag)
+      : this(string.Join("/", repository, name).Trim('/') + (":" + tag).TrimEnd(':'))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
+    /// <param name="repository">The repository.</param>
+    /// <param name="registry">The registry.</param>
+    /// <param name="tag">The tag.</param>
+    /// <param name="digest">The digest.</param>
     /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
-    /// <example>"fedora/httpd:version1.0" where "fedora" is the repository, "httpd" the name and "version1.0" the tag.</example>
+    /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
     public DockerImage(
       string repository,
-      string name,
+      string registry = null,
       string tag = null,
+      string digest = null,
       string hubImageNamePrefix = null)
     {
       _ = Guard.Argument(repository, nameof(repository))
         .NotNull()
-        .NotUppercase();
-
-      _ = Guard.Argument(name, nameof(name))
-        .NotNull()
         .NotEmpty()
         .NotUppercase();
 
+      var defaultTag = tag == null && digest == null ? LatestTag : null;
+
+      _repository = TrimOrDefault(repository);
+      _registry = TrimOrDefault(registry);
+      _tag = TrimOrDefault(tag, defaultTag);
+      _digit = TrimOrDefault(digest);
       _hubImageNamePrefix = TrimOrDefault(hubImageNamePrefix);
-
-      Repository = TrimOrDefault(repository, repository);
-      Name = TrimOrDefault(name, name);
-      Tag = TrimOrDefault(tag, LatestTag);
-
-      _lazyFullName = new Lazy<string>(() =>
-      {
-        var imageComponents = new[] { _hubImageNamePrefix, Repository, Name }
-          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent));
-
-        return string.Join("/", imageComponents) + ":" + Tag;
-      });
-
-      _lazyHostname = new Lazy<string>(() =>
-      {
-        var firstSegmentOfRepository = new[] { _hubImageNamePrefix, Repository }
-          .Where(imageComponent => !string.IsNullOrEmpty(imageComponent))
-          .DefaultIfEmpty(string.Empty)
-          .First()
-          .Split('/')[0];
-
-        return firstSegmentOfRepository.IndexOfAny(HostnameIdentifierChars) >= 0 ? firstSegmentOfRepository : null;
-      });
     }
 
     /// <inheritdoc />
-    public string Repository { get; }
+    public string Repository => _repository;
 
     /// <inheritdoc />
-    public string Name { get; }
+    public string Registry => string.IsNullOrEmpty(_hubImageNamePrefix) ? _registry : _hubImageNamePrefix;
 
     /// <inheritdoc />
-    public string Tag { get; }
+    public string Tag => _tag;
 
     /// <inheritdoc />
-    public string FullName => _lazyFullName.Value;
+    public string Digest => _digit;
 
     /// <inheritdoc />
-    public string GetHostname() => _lazyHostname.Value;
+    public string FullName
+    {
+      get
+      {
+        var registry = string.IsNullOrEmpty(Registry) ? string.Empty : $"{Registry}/";
+        var tag = string.IsNullOrEmpty(Tag) ? string.Empty : $":{Tag}";
+        var digest = string.IsNullOrEmpty(Digest) ? string.Empty : $"@{Digest}";
+        return $"{registry}{Repository}{tag}{digest}";
+      }
+    }
 
-    private static string TrimOrDefault(string value, string defaultValue = default)
+    /// <inheritdoc />
+    [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]
+    public string Name => GetBackwardsCompatibleName();
+
+    /// <inheritdoc />
+    public string GetHostname()
+    {
+      return Registry;
+    }
+
+    /// <inheritdoc />
+    public bool MatchLatestOrNightly()
+    {
+      return MatchVersion((string tag) => LatestTag.Equals(tag) || NightlyTag.Equals(tag));
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<string> predicate)
+    {
+      return predicate(Tag);
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<Version> predicate)
+    {
+      if (Tag == null)
+      {
+        return false;
+      }
+
+      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+
+      if (!versionMatch.Success)
+      {
+        return false;
+      }
+
+      if (Version.TryParse(versionMatch.Value, out var version))
+      {
+        return predicate(version);
+      }
+
+      // If the Regex matches and Version.TryParse(string?, out Version?) fails then it means it is a major version only (i.e. without any dot separator)
+      return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
+    }
+
+    private string GetBackwardsCompatibleName()
+    {
+      // The last index will never be a `/`, we trim it in the constructor.
+      var lastIndex = _repository.LastIndexOf('/');
+      return lastIndex == -1 ? _repository : _repository.Substring(lastIndex + 1);
+    }
+
+    private static string TrimOrDefault(string value, string defaultValue = null)
     {
       return string.IsNullOrEmpty(value) ? defaultValue : value.Trim(TrimChars);
     }

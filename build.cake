@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.15.0
+#tool nuget:?package=dotnet-sonarscanner&version=7.1.1
 
 #addin nuget:?package=Cake.Sonar&version=1.1.32
 
@@ -84,6 +84,7 @@ Task("Tests")
     Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args
+      .AppendSwitchQuoted("--blame-hang-timeout", "5m")
   });
 });
 

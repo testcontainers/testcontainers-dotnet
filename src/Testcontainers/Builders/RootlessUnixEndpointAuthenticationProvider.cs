@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.IO;
-  using System.Linq;
   using System.Runtime.InteropServices;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -11,6 +10,8 @@ namespace DotNet.Testcontainers.Builders
   [PublicAPI]
   internal class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
+    private const string DockerSocket = "docker.sock";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
     /// </summary>
@@ -25,10 +26,8 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="socketPaths">A list of socket paths.</param>
     public RootlessUnixEndpointAuthenticationProvider(params string[] socketPaths)
     {
-      DockerEngine = socketPaths
-        .Where(File.Exists)
-        .Select(socketPath => new Uri("unix://" + socketPath))
-        .FirstOrDefault();
+      var socketPath = Array.Find(socketPaths, File.Exists);
+      DockerEngine = socketPath == null ? null : new Uri("unix://" + socketPath);
     }
 
     /// <summary>
@@ -51,17 +50,17 @@ namespace DotNet.Testcontainers.Builders
     protected static string GetSocketPathFromEnv()
     {
       var xdgRuntimeDir = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR");
-      return string.Join("/", xdgRuntimeDir, "docker.sock");
+      return string.Join("/", xdgRuntimeDir, DockerSocket);
     }
 
     protected static string GetSocketPathFromHomeDesktopDir()
     {
-      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "desktop", "docker.sock");
+      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "desktop", DockerSocket);
     }
 
     protected static string GetSocketPathFromHomeRunDir()
     {
-      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "run", "docker.sock");
+      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "run", DockerSocket);
     }
 
     protected static string GetSocketPathFromRunDir()
@@ -78,7 +77,7 @@ namespace DotNet.Testcontainers.Builders
         uid = new Linux().GetUid();
       }
 
-      return string.Join("/", string.Empty, "user", uid, "docker.sock");
+      return string.Join("/", string.Empty, "user", uid, DockerSocket);
     }
 
     /// <summary>

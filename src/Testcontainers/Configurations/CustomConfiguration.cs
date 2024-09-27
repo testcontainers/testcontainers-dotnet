@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.Text.Json;
   using DotNet.Testcontainers.Images;
 
@@ -22,6 +23,11 @@ namespace DotNet.Testcontainers.Configurations
     protected virtual Uri GetDockerHost(string propertyName)
     {
       return _properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+    }
+
+    protected virtual string GetDockerContext(string propertyName)
+    {
+      return GetPropertyValue<string>(propertyName);
     }
 
     protected virtual string GetDockerHostOverride(string propertyName)
@@ -109,12 +115,12 @@ namespace DotNet.Testcontainers.Configurations
 
     protected virtual TimeSpan? GetWaitStrategyInterval(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result) && result > TimeSpan.Zero ? result : null;
     }
 
     protected virtual TimeSpan? GetWaitStrategyTimeout(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result) && result > TimeSpan.Zero ? result : null;
     }
 
     private T GetPropertyValue<T>(string propertyName)
@@ -130,7 +136,7 @@ namespace DotNet.Testcontainers.Configurations
 
         case TypeCode.UInt16:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : (ushort?)null);
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : null);
         }
 
         case TypeCode.String:

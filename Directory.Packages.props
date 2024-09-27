@@ -15,11 +15,11 @@
         <PackageVersion Include="SSH.NET" Version="2023.0.0"/>
         <PackageVersion Include="System.Text.Json" Version="6.0.9"/>
         <!-- Unit and integration test dependencies: -->
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.2.0"/>
-        <PackageVersion Include="coverlet.collector" Version="6.0.1"/>
-        <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7"/>
-        <PackageVersion Include="xunit" Version="2.7.0"/>
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.9.1"/>
+        <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2"/>
+        <PackageVersion Include="xunit" Version="2.9.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
@@ -35,6 +35,7 @@
         <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
         <PackageVersion Include="CouchbaseNetClient" Version="3.4.3"/>
+        <PackageVersion Include="DotPulsar" Version="3.3.2"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.0.5"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
         <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"/>
@@ -56,7 +57,7 @@
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
         <PackageVersion Include="Neo4j.Driver" Version="5.5.0"/>
-        <PackageVersion Include="Npgsql" Version="6.0.10"/>
+        <PackageVersion Include="Npgsql" Version="6.0.11"/>
         <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="3.21.90"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
