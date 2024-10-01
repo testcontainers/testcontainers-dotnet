@@ -13,20 +13,22 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true
     },
-    "ghcr.io/devcontainers/features/dotnet:2.0.5": {
-      "version": "8.0.200",
+    "ghcr.io/devcontainers/features/dotnet:2.1.3": {
+      "version": "8.0",
       "installUsingApt": false
     }
   },
   "customizations": {
-    "extensions": [
-      "ms-azuretools.vscode-docker",
-      "ms-dotnettools.csdevkit"
-    ],
-    "settings": {
-      "omnisharp.path": "latest" // https://github.com/OmniSharp/omnisharp-vscode/issues/5410#issuecomment-1284531542.
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-dotnettools.csdevkit"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "${containerWorkspaceFolder}/Testcontainers.sln"
+      }
     }
   },
   "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && git lfs checkout",
-  "postStartCommand": ["dotnet", "build"]
+  "postStartCommand": ["dotnet", "build", "${containerWorkspaceFolder}/Testcontainers.sln", "/consoleLoggerParameters:NoSummary", "/property:GenerateFullPaths=true", "/property:Configuration=Debug", "/property:Platform=Any CPU"]
 }

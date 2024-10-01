@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=7.1.1
+#tool nuget:?package=dotnet-sonarscanner&version=9.0.0
 
 #addin nuget:?package=Cake.Sonar&version=1.1.32
 
@@ -74,17 +74,21 @@ Task("Build")
 Task("Tests")
   .Does(() =>
 {
-  DotNetTest(param.Solution, new DotNetTestSettings
+  foreach(var testProject in param.Projects.OnlyTests)
   {
-    Configuration = param.Configuration,
-    Verbosity = param.Verbosity,
-    NoRestore = true,
-    NoBuild = true,
-    Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-    Filter = param.TestFilter,
-    ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-    ArgumentCustomization = args => args
-  });
+    DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
+    {
+      Configuration = param.Configuration,
+      Verbosity = param.Verbosity,
+      NoRestore = true,
+      NoBuild = true,
+      Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
+      Filter = param.TestFilter,
+      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
+      ArgumentCustomization = args => args
+        .AppendSwitchQuoted("--blame-hang-timeout", "5m")
+    });
+  }
 });
 
 Task("Sonar-Begin")
