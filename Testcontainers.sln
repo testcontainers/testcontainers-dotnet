@@ -79,8 +79,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle", "src\Testcontainers.Oracle\Testcontainers.Oracle.csproj", "{596EAFC1-0496-495C-B382-D57415FA456A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Papercut", "src\Testcontainers.Papercut\Testcontainers.Papercut.csproj", "{464F1120-A0DA-462B-B9E8-45176D883625}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PostgreSql", "src\Testcontainers.PostgreSql\Testcontainers.PostgreSql.csproj", "{8AB91636-9055-4900-A72A-7CFFACDFDBF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.PubSub", "src\Testcontainers.PubSub\Testcontainers.PubSub.csproj", "{E6642255-667D-476B-B584-089AA5E6C0B1}"
@@ -170,8 +168,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j.Tests", "tests\Testcontainers.Neo4j.Tests\Testcontainers.Neo4j.Tests.csproj", "{D3F63405-C0FA-4F83-8B79-E30BFF5FF5BF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle.Tests", "tests\Testcontainers.Oracle.Tests\Testcontainers.Oracle.Tests.csproj", "{4AC1088B-9965-4497-AC8E-570F1AD5631F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Papercut.Tests", "tests\Testcontainers.Papercut.Tests\Testcontainers.Papercut.Tests.csproj", "{904C8476-FCEF-41F0-8948-9EFA7C08712E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
 EndProject
