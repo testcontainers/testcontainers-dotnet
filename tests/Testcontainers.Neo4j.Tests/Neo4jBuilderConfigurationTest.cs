@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Testcontainers.Neo4j;
+﻿namespace Testcontainers.Neo4j;
 
 public sealed class Neo4jBuilderConfigurationTest
 {

@@ -1,6 +1,3 @@
-using System.Linq;
-using DotNet.Testcontainers;
-
 namespace Testcontainers.Neo4j;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />

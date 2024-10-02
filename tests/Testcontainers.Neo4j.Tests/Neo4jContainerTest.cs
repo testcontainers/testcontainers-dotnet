@@ -1,12 +1,9 @@
-using System;
-using JetBrains.Annotations;
-
 namespace Testcontainers.Neo4j;
 
 public abstract class Neo4jContainerTest : IAsyncLifetime
 {
     private const string Neo4jDatabase = "neo4j";
-    
+
     // # --8<-- [start:UseNeo4jContainer]
     private readonly Neo4jContainer _neo4jContainer;
 
@@ -39,7 +36,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         Assert.Equal(Neo4jDatabase, session.SessionConfig.Database);
     }
     // # --8<-- [end:UseNeo4jContainer]
-    
+
     [UsedImplicitly]
     public sealed class Neo4jDefaultConfiguration : Neo4jContainerTest
     {
@@ -48,7 +45,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         {
         }
     }
-    
+
     [UsedImplicitly]
     public sealed class Neo4jEnterpriseConfiguration : Neo4jContainerTest
     {
@@ -71,7 +68,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
             var result = await session.RunAsync("CALL dbms.components() YIELD edition RETURN edition");
             var record = await result.SingleAsync();
             var edition = record["edition"].As<string>();
-            
+
             // Then
             Assert.Equal("enterprise", edition);
         }
