@@ -50,8 +50,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <returns>A configured instance of <see cref="Neo4jBuilder" />.</returns>
     public Neo4jBuilder WithEnterpriseEdition(bool acceptLicenseAgreement)
     {
-        return WithImage(Neo4jEnterpriseImage)
-            .WithEnvironment(AcceptLicenseAgreementEnvVar, acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement);
+        return WithImage(Neo4jEnterpriseImage).WithEnvironment(AcceptLicenseAgreementEnvVar, acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement);
     }
 
     /// <inheritdoc />
