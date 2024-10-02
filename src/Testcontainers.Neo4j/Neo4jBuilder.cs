@@ -14,7 +14,9 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
     private const string AcceptLicenseAgreementEnvVar = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
 
-    private const string AcceptLicenseAgreementEnvVarValue = "yes";
+    private const string AcceptLicenseAgreement = "yes";
+
+    private const string DeclineLicenseAgreement = "no";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
@@ -38,6 +40,20 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <inheritdoc />
     protected override Neo4jConfiguration DockerResourceConfiguration { get; }
 
+    /// <summary>
+    /// Sets the image to the Neo4j Enterprise Edition.
+    /// </summary>
+    /// <remarks>
+    /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Neo4j Enterprise Edition <see href="https://neo4j.com/docs/operations-manual/current/docker/introduction/#_neo4j_editions">license</see> is accepted.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Neo4j Enterprise Edition license agreement is accepted.</param>
+    /// <returns>A configured instance of <see cref="Neo4jBuilder" />.</returns>
+    public Neo4jBuilder WithEnterpriseEdition(bool acceptLicenseAgreement)
+    {
+        return WithImage(Neo4jEnterpriseImage)
+            .WithEnvironment(AcceptLicenseAgreementEnvVar, acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement);
+    }
+
     /// <inheritdoc />
     public override Neo4jContainer Build()
     {
@@ -48,21 +64,15 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <inheritdoc />
     protected override void Validate()
     {
+        var message = "The image '" + DockerResourceConfiguration.Image.FullName + "' requires you to accept a license agreement.";
+
         base.Validate();
 
-        if (IsEnterpriseImage())
-        {
-            const string message = $"The 'enterprise' image requires setting environment variable {AcceptLicenseAgreementEnvVar} to= '{AcceptLicenseAgreementEnvVarValue}'";
-            _ = Guard.Argument(DockerResourceConfiguration, "Enterprise License agreement")
-                .ThrowIf(
-                    argument => !argument.Value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || licenseAgreementValue != AcceptLicenseAgreementEnvVarValue,
-                    argument => new ArgumentException(message, argument.Name));
-        }
-    }
+        Predicate<Neo4jConfiguration> licenseAgreementNotAccepted = value => value.Image.Tag != null && value.Image.Tag.Contains("enterprise")
+            && (!value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal));
 
-    private bool IsEnterpriseImage()
-    {
-        return DockerResourceConfiguration.Image.Tag?.Contains("enterprise") ?? false;
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(message, argument.Name));
     }
 
     /// <inheritdoc />
@@ -93,11 +103,5 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Merge(Neo4jConfiguration oldValue, Neo4jConfiguration newValue)
     {
         return new Neo4jBuilder(new Neo4jConfiguration(oldValue, newValue));
-    }
-
-    public Neo4jBuilder WithEnterpriseEdition()
-    {
-        return WithImage(Neo4jEnterpriseImage)
-            .WithEnvironment(AcceptLicenseAgreementEnvVar, AcceptLicenseAgreementEnvVarValue);
     }
 }

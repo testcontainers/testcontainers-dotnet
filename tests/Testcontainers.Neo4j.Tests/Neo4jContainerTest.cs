@@ -50,9 +50,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jEnterpriseConfiguration : Neo4jContainerTest
     {
         public Neo4jEnterpriseConfiguration()
-            : base(new Neo4jBuilder()
-                .WithEnterpriseEdition()
-                .Build())
+            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build())
         {
         }
 
