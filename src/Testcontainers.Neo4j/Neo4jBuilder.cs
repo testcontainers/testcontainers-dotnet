@@ -45,12 +45,56 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// </summary>
     /// <remarks>
     /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Neo4j Enterprise Edition <see href="https://neo4j.com/docs/operations-manual/current/docker/introduction/#_neo4j_editions">license</see> is accepted.
+    /// If the Community Edition is explicitly used, we do not update the image tag.
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Neo4j Enterprise Edition license agreement is accepted.</param>
     /// <returns>A configured instance of <see cref="Neo4jBuilder" />.</returns>
     public Neo4jBuilder WithEnterpriseEdition(bool acceptLicenseAgreement)
     {
-        return WithImage(Neo4jEnterpriseImage).WithEnvironment(AcceptLicenseAgreementEnvVar, acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement);
+        const string communitySuffix = "community";
+
+        const string enterpriseSuffix = "enterprise";
+
+        var operatingSystems = new[] { "bullseye", "ubi9" };
+
+        var image = DockerResourceConfiguration.Image;
+
+        string tag;
+
+        // If the specified image does not contain a tag (but a digest), we cannot determine the
+        // actual version and append the enterprise suffix. We expect the developer to set the
+        // Enterprise Edition.
+        if (image.Tag == null)
+        {
+            tag = null;
+        }
+        else if (image.MatchLatestOrNightly())
+        {
+            tag = enterpriseSuffix;
+        }
+        else if (image.MatchVersion(v => v.Contains(communitySuffix)))
+        {
+            tag = image.Tag;
+        }
+        else if (image.MatchVersion(v => v.Contains(enterpriseSuffix)))
+        {
+            tag = image.Tag;
+        }
+        else if (image.MatchVersion(v => operatingSystems.Any(v.Contains)))
+        {
+            MatchEvaluator evaluator = match => $"{enterpriseSuffix}-{match.Value}";
+            tag = Regex.Replace(image.Tag, string.Join("|", operatingSystems), evaluator);
+        }
+        else
+        {
+            tag = $"{image.Tag}-{enterpriseSuffix}";
+        }
+
+        var enterpriseImage = new DockerImage(image.Repository, image.Registry, tag, tag == null ? image.Digest : null);
+
+        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+
+        return WithImage(enterpriseImage).WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
     /// <inheritdoc />
