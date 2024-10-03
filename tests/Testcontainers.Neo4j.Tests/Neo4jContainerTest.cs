@@ -29,10 +29,10 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         // Given
         const string neo4jDatabase = "neo4j";
 
-        await using var driver = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
+        using var driver = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
 
         // When
-        await using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase(neo4jDatabase));
+        using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase(neo4jDatabase));
 
         var result = await session.RunAsync("CALL dbms.components() YIELD edition RETURN edition")
             .ConfigureAwait(true);

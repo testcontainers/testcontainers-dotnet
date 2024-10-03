@@ -63,7 +63,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <inheritdoc />
     protected override void Validate()
     {
-        var message = "The image '" + DockerResourceConfiguration.Image.FullName + "' requires you to accept a license agreement.";
+        const string message = "The image '{0}' requires you to accept a license agreement.";
 
         base.Validate();
 
@@ -71,7 +71,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
             && (!value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal));
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(message, argument.Name));
+            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
     }
 
     /// <inheritdoc />
