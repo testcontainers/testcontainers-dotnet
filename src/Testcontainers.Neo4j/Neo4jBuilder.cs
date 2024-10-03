@@ -6,8 +6,6 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 {
     public const string Neo4jImage = "neo4j:5.4";
 
-    public const string Neo4jEnterpriseImage = "neo4j:5.4-enterprise";
-
     public const ushort Neo4jHttpPort = 7474;
 
     public const ushort Neo4jBoltPort = 7687;
@@ -45,7 +43,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// </summary>
     /// <remarks>
     /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Neo4j Enterprise Edition <see href="https://neo4j.com/docs/operations-manual/current/docker/introduction/#_neo4j_editions">license</see> is accepted.
-    /// If the Community Edition is explicitly used, we do not update the image tag.
+    /// If the Community Edition is explicitly used, we do not update the image.
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Neo4j Enterprise Edition license agreement is accepted.</param>
     /// <returns>A configured instance of <see cref="Neo4jBuilder" />.</returns>
