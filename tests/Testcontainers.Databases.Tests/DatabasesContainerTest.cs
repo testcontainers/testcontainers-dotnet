@@ -21,6 +21,7 @@ public sealed class DatabaseContainersTest
         var theoryData = new TheoryData<Type>();
 
         var testAssemblies = Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
+            .Where(fileName => !fileName.Contains("Testcontainers.Xunit.Tests"))
             .Select(Path.GetFullPath)
             .Select(Assembly.LoadFrom)
             .ToDictionary(assembly => assembly, assembly => assembly.GetReferencedAssemblies()
