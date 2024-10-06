@@ -76,7 +76,7 @@ jobs:
         run: dotnet cake --target=Build
 
       - name: Run Tests
-        run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }} --enable-docker-image-removal=true
+        run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
