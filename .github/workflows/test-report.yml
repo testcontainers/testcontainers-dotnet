@@ -21,10 +21,11 @@ jobs:
       contents: read
 
     steps:
+      # https://github.com/dorny/test-reporter/issues/363#issuecomment-2381625959.
       - name: Publish Test Report
-        uses: dorny/test-reporter@v1.8.0
+        uses: dorny/test-reporter@v1.9.1
         with:
-          artifact: ${{ matrix.os }}-v3
+          artifact: ${{ matrix.os }}
           name: report (${{ matrix.os }})
           path: '*.trx'
           reporter: dotnet-trx

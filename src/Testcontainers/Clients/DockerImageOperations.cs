@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var createParameters = new ImagesCreateParameters
       {
-        FromImage = image.FullName
+        FromImage = image.FullName,
       };
 
       var authConfig = new AuthConfig

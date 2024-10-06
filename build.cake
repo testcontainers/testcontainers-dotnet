@@ -1,4 +1,4 @@
-#tool nuget:?package=dotnet-sonarscanner&version=7.1.1
+#tool nuget:?package=dotnet-sonarscanner&version=9.0.0
 
 #addin nuget:?package=Cake.Sonar&version=1.1.32
 
@@ -71,61 +71,24 @@ Task("Build")
   });
 });
 
-void RunTestsInBatches(IEnumerable<FilePath> testProjects, int batchSize)
-{
-    var batches = testProjects
-        .Select((project, index) => new { project, index })
-        .GroupBy(x => x.index / batchSize)
-        .Select(group => group.Select(g => g.project))
-        .ToArray();
-
-    int batchNumber = 1;
-    int batchCount = batches.Count();
-
-    foreach (var batch in batches)
-    {
-        Information($"Running batch {batchNumber++} / {batchCount}");
-
-        // Parallel execution within each batch
-        Parallel.ForEach(batch, new ParallelOptions { MaxDegreeOfParallelism = batchSize }, project =>
-        {
-            Information($"Running tests for project: {project.FullPath}");
-
-            DotNetTest(project.FullPath, new DotNetTestSettings
-            {
-                Configuration = param.Configuration,
-                Verbosity = param.Verbosity,
-                NoRestore = true,
-                NoBuild = true,
-                Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-                Filter = param.TestFilter,
-                ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-                ArgumentCustomization = args => args
-                                  .AppendSwitchQuoted("--blame-hang-timeout", "5m")
-            });
-        });
-
-        if (param.EnableDockerImageRemoval)
-        {
-            Information($"Cleaning up Docker images and containers after batch {batchNumber - 1}");
-            StartProcess("docker", new ProcessSettings
-            {
-                Arguments = "system prune -a -f"
-            });
-        }
-    }
-}
-
 Task("Tests")
   .Does(() =>
 {
-    var testProjects = param.Projects.All
-        .Where(p => p.Name.Contains("Test"))
-        .Select(p => p.Path);
-
-    var batchSize = 10;
-
-    RunTestsInBatches(testProjects, batchSize);
+  foreach(var testProject in param.Projects.OnlyTests)
+  {
+    DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
+    {
+      Configuration = param.Configuration,
+      Verbosity = param.Verbosity,
+      NoRestore = true,
+      NoBuild = true,
+      Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
+      Filter = param.TestFilter,
+      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
+      ArgumentCustomization = args => args
+        .AppendSwitchQuoted("--blame-hang-timeout", "5m")
+    });
+  }
 });
 
 Task("Sonar-Begin")
