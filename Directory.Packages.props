@@ -31,6 +31,7 @@
         <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
+        <PackageVersion Include="Camunda.Api.Client" Version="2.6.0"/>
         <PackageVersion Include="ClickHouse.Client" Version="6.7.1"/>
         <PackageVersion Include="Confluent.Kafka" Version="2.0.2"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
