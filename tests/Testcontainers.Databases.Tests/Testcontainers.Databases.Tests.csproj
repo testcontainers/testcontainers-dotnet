@@ -5,13 +5,59 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="xunit.runner.visualstudio"/>
-        <PackageReference Include="xunit"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="xunit" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"/>
-        <ProjectReference Remove="Testcontainers.Databases.Tests.csproj"/>
+        <ProjectReference Include="..\..\..\testcontainers-dotnet\src\Testcontainers.Seq\Testcontainers.Seq.csproj" />
+        <ProjectReference Include="..\Testcontainers.ActiveMq.Tests\Testcontainers.ActiveMq.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.ArangoDb.Tests\Testcontainers.ArangoDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Azurite.Tests\Testcontainers.Azurite.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.BigQuery.Tests\Testcontainers.BigQuery.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Bigtable.Tests\Testcontainers.Bigtable.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.ClickHouse.Tests\Testcontainers.ClickHouse.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.CockroachDb.Tests\Testcontainers.CockroachDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Consul.Tests\Testcontainers.Consul.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.CosmosDb.Tests\Testcontainers.CosmosDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Couchbase.Tests\Testcontainers.Couchbase.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.CouchDb.Tests\Testcontainers.CouchDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.DynamoDb.Tests\Testcontainers.DynamoDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Elasticsearch.Tests\Testcontainers.Elasticsearch.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.EventStoreDb.Tests\Testcontainers.EventStoreDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.FakeGcsServer.Tests\Testcontainers.FakeGcsServer.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.FirebirdSql.Tests\Testcontainers.FirebirdSql.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Firestore.Tests\Testcontainers.Firestore.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.InfluxDb.Tests\Testcontainers.InfluxDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.JanusGraph.Tests\Testcontainers.JanusGraph.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.K3s.Tests\Testcontainers.K3s.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Kafka.Tests\Testcontainers.Kafka.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Keycloak.Tests\Testcontainers.Keycloak.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Kusto.Tests\Testcontainers.Kusto.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.LocalStack.Tests\Testcontainers.LocalStack.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.MariaDb.Tests\Testcontainers.MariaDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Milvus.Tests\Testcontainers.Milvus.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Minio.Tests\Testcontainers.Minio.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.MongoDb.Tests\Testcontainers.MongoDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.MsSql.Tests\Testcontainers.MsSql.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.MySql.Tests\Testcontainers.MySql.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Nats.Tests\Testcontainers.Nats.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Neo4j.Tests\Testcontainers.Neo4j.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Oracle.Tests\Testcontainers.Oracle.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Papercut.Tests\Testcontainers.Papercut.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.PostgreSql.Tests\Testcontainers.PostgreSql.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.PubSub.Tests\Testcontainers.PubSub.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Pulsar.Tests\Testcontainers.Pulsar.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.RabbitMq.Tests\Testcontainers.RabbitMq.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.RavenDb.Tests\Testcontainers.RavenDb.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Redis.Tests\Testcontainers.Redis.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Redpanda.Tests\Testcontainers.Redpanda.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.ResourceReaper.Tests\Testcontainers.ResourceReaper.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.WebDriver.Tests\Testcontainers.WebDriver.Tests.csproj" />
+        <ProjectReference Include="..\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj" />
+        <ProjectReference Remove="Testcontainers.Databases.Tests.csproj" />
     </ItemGroup>
 </Project>
