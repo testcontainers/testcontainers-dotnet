@@ -1,5 +1,4 @@
 global using System;
-global using System.Linq;
 global using System.Text.RegularExpressions;
 global using Docker.DotNet.Models;
 global using DotNet.Testcontainers;

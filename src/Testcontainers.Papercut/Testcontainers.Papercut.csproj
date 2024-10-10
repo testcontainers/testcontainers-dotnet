@@ -2,9 +2,6 @@
     <PropertyGroup>
         <TargetFrameworks>net6.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
-        <Version>4.0.1</Version>
-        <PackageReleaseNotes>4.0.0 - First release
-4.0.1 - Wait stretagy for Papercut WebUI server started successfully</PackageReleaseNotes>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>

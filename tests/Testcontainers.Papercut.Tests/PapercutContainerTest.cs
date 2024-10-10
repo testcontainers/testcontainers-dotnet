@@ -21,12 +21,10 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // Given
         const string subject = "Test";
 
-        Message[] messages = [];
+        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_papercutContainer.GetBaseAddress());
-
-        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
 
         // When
         smtpClient.Send("from@example.com", "to@example.com", subject, "A test message");
@@ -35,11 +33,10 @@ public sealed class PapercutContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         var jsonDocument = JsonDocument.Parse(messagesJson);
-        messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
+        var messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
 
         // Then
-        Assert.NotEmpty(messages);
-        Assert.Equal(subject, messages[0].Subject);
+        Assert.Single(messages, message => subject.Equals(message.Subject));
     }
 
     private readonly struct Message
