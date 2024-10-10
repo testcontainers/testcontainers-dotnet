@@ -17,7 +17,10 @@
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
         <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.9.1"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.1"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
+        <PackageVersion Include="Seq.Api" Version="2024.3.0"/>
+        <PackageVersion Include="Seq.Extensions.Logging" Version="8.0.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2"/>
         <PackageVersion Include="xunit" Version="2.9.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
