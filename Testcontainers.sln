@@ -195,6 +195,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Tests", "tests\Testcontainers.WebDriver.Tests\Testcontainers.WebDriver.Tests.csproj", "{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Ollama", "src\Testcontainers.Ollama\Testcontainers.Ollama.csproj", "{FDC88529-64F5-4F0A-95BE-8FBF653201C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Ollama.Tests", "tests\Testcontainers.Ollama.Tests\Testcontainers.Ollama.Tests.csproj", "{0997BFAD-919D-482F-83E6-5DF9C4A1D313}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -568,6 +572,14 @@ Global
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC88529-64F5-4F0A-95BE-8FBF653201C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC88529-64F5-4F0A-95BE-8FBF653201C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC88529-64F5-4F0A-95BE-8FBF653201C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC88529-64F5-4F0A-95BE-8FBF653201C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0997BFAD-919D-482F-83E6-5DF9C4A1D313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0997BFAD-919D-482F-83E6-5DF9C4A1D313}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0997BFAD-919D-482F-83E6-5DF9C4A1D313}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0997BFAD-919D-482F-83E6-5DF9C4A1D313}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -661,5 +673,7 @@ Global
 		{9E8E6AA5-65D1-498F-BEAB-BA34723A0050} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{FDC88529-64F5-4F0A-95BE-8FBF653201C6} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{0997BFAD-919D-482F-83E6-5DF9C4A1D313} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
