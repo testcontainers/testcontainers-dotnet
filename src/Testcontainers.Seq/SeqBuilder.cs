@@ -4,7 +4,7 @@ namespace Testcontainers.Seq;
 [PublicAPI]
 public sealed class SeqBuilder : ContainerBuilder<SeqBuilder, SeqContainer, SeqConfiguration>
 {
-    public const string SeqImage = "datalust/seq:latest";
+    public const string SeqImage = "datalust/seq:2024.2.11456";
 
     public const ushort SeqApiPort = 80;
     public const ushort SeqIngestionPort = 5341;
