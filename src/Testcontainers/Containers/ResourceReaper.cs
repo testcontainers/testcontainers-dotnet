@@ -156,7 +156,12 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
+#if NET8_0_OR_GREATER
+        await _maintainConnectionCts.CancelAsync()
+          .ConfigureAwait(false);
+#else
         _maintainConnectionCts.Cancel();
+#endif
 
         // Close connection before disposing Resource Reaper.
         await _maintainConnectionTask
