@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ActiveMq", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ArangoDb", "src\Testcontainers.ArangoDb\Testcontainers.ArangoDb.csproj", "{AB9C1563-07C7-4685-BACD-BB1FF64B3611}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.AzureAppConfiguration", "src\Testcontainers.AzureAppConfiguration\Testcontainers.AzureAppConfiguration.csproj", "{5C03BAF1-8CC7-421D-A457-9FBEF923E06E}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Azurite", "src\Testcontainers.Azurite\Testcontainers.Azurite.csproj", "{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.BigQuery", "src\Testcontainers.BigQuery\Testcontainers.BigQuery.csproj", "{A9FF9C7F-BBA0-4B44-90B7-48A60F9E00F3}"
@@ -102,6 +104,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ActiveMq.Tests", "tests\Testcontainers.ActiveMq.Tests\Testcontainers.ActiveMq.Tests.csproj", "{AB93C67F-0A53-4525-AE6C-29B065820ABE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ArangoDb.Tests", "tests\Testcontainers.ArangoDb.Tests\Testcontainers.ArangoDb.Tests.csproj", "{8E1E0A6D-EEBB-4455-B8E8-A55AF9B2062C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.AzureAppConfiguration.Tests", "tests\Testcontainers.AzureAppConfiguration.Tests\Testcontainers.AzureAppConfiguration.Tests.csproj", "{A7C87D4E-540F-4AD2-8A42-C7F86700688D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Azurite.Tests", "tests\Testcontainers.Azurite.Tests\Testcontainers.Azurite.Tests.csproj", "{B272FDDE-5E01-425D-B9E1-10FF883DDAAA}"
 EndProject
@@ -568,6 +572,14 @@ Global
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C03BAF1-8CC7-421D-A457-9FBEF923E06E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C03BAF1-8CC7-421D-A457-9FBEF923E06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C03BAF1-8CC7-421D-A457-9FBEF923E06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C03BAF1-8CC7-421D-A457-9FBEF923E06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7C87D4E-540F-4AD2-8A42-C7F86700688D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7C87D4E-540F-4AD2-8A42-C7F86700688D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7C87D4E-540F-4AD2-8A42-C7F86700688D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7C87D4E-540F-4AD2-8A42-C7F86700688D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -661,5 +673,7 @@ Global
 		{9E8E6AA5-65D1-498F-BEAB-BA34723A0050} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{5C03BAF1-8CC7-421D-A457-9FBEF923E06E} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{A7C87D4E-540F-4AD2-8A42-C7F86700688D} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
