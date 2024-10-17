@@ -1,0 +1,13 @@
+global using System.Collections.Generic;
+global using System.Data.Common;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Dapper;
+global using JetBrains.Annotations;
+global using Npgsql;
+global using StackExchange.Redis;
+global using Testcontainers.PostgreSql;
+global using Testcontainers.Redis;
+global using Xunit;
+global using Xunit.Abstractions;
+global using Xunit.Sdk;
