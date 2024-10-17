@@ -197,6 +197,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Toxiproxy", "src\Testcontainers.Toxiproxy\Testcontainers.Toxiproxy.csproj", "{52091402-4A94-43BF-B57A-3CF8E00B29D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Toxiproxy.Tests", "tests\Testcontainers.Toxiproxy.Tests\Testcontainers.Toxiproxy.Tests.csproj", "{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -574,6 +576,10 @@ Global
 		{52091402-4A94-43BF-B57A-3CF8E00B29D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52091402-4A94-43BF-B57A-3CF8E00B29D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52091402-4A94-43BF-B57A-3CF8E00B29D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -668,5 +674,6 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{52091402-4A94-43BF-B57A-3CF8E00B29D2} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{2B3F08C6-9F14-4ED0-A5AF-5E70FABB7DFB} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
