@@ -83,7 +83,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
                 startupScript.Append(lf);
                 startupScript.Append("echo '' > /etc/confluent/docker/ensure");
                 startupScript.Append(lf);
-                startupScript.Append("/etc/confluent/docker/run");
+                startupScript.Append("exec /etc/confluent/docker/run");
                 return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
             });
     }
