@@ -1,25 +1,20 @@
+
 namespace Testcontainers.Toxiproxy;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, ToxiproxyContainer, ToxiproxyConfiguration>
 {
+    public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy";
+    public const ushort ControlPort = 8474;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
     public ToxiproxyBuilder()
         : this(new ToxiproxyConfiguration())
     {
-        // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "ToxiproxyBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
-
-        // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
-        //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
-
-        // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "ToxiproxyBuilder WithToxiproxyConfig(object)".
-        //    Merge the current module configuration with a new instance of the immutable ToxiproxyConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -29,42 +24,42 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     private ToxiproxyBuilder(ToxiproxyConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-        // DockerResourceConfiguration = resourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
-    // protected override ToxiproxyConfiguration DockerResourceConfiguration { get; }
-
-    // /// <summary>
-    // /// Sets the Toxiproxy config.
-    // /// </summary>
-    // /// <param name="config">The Toxiproxy config.</param>
-    // /// <returns>A configured instance of <see cref="ToxiproxyBuilder" />.</returns>
-    // public ToxiproxyBuilder WithToxiproxyConfig(object config)
-    // {
-    //     // Extends the ContainerBuilder capabilities and holds a custom configuration in ToxiproxyConfiguration.
-    //     // In case of a module requires other properties to represent itself, extend ContainerConfiguration.
-    //     return Merge(DockerResourceConfiguration, new ToxiproxyConfiguration(config: config));
-    // }
+    /// <inheritdoc />
+    protected override ToxiproxyConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
     public override ToxiproxyContainer Build()
     {
         Validate();
-        return new ToxiproxyContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ToxiproxyContainer(DockerResourceConfiguration);
     }
 
-    // /// <inheritdoc />
-    // protected override ToxiproxyBuilder Init()
-    // {
-    //     return base.Init();
-    // }
+    /// <summary>
+    /// Initialize the default Toxiproxy configuration with image, port, and wait strategy.
+    /// </summary>
+    /// <returns>A configured instance of <see cref="ToxiproxyBuilder" />.</returns>
+    protected override ToxiproxyBuilder Init()
+    {
+        // Define a wait strategy that waits for the Toxiproxy CLI command `list` to complete successfully.
 
-    // /// <inheritdoc />
-    // protected override void Validate()
-    // {
-    //     base.Validate();
-    // }
+
+        return base.Init()
+                .WithImage(ToxiproxyImage) // Set the Toxiproxy image.
+                .WithPortBinding(ControlPort, true) // Bind the control port.
+            ; // Use the defined wait strategy.
+    }
+
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        // Validate that the DockerResourceConfiguration is properly set.
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration)).NotNull();
+    }
 
     /// <inheritdoc />
     protected override ToxiproxyBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
@@ -81,6 +76,8 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <inheritdoc />
     protected override ToxiproxyBuilder Merge(ToxiproxyConfiguration oldValue, ToxiproxyConfiguration newValue)
     {
-        return new ToxiproxyBuilder(new ToxiproxyConfiguration(oldValue, newValue));
+        // Merge the old and new configurations into an immutable copy.
+        var mergedConfiguration = new ToxiproxyConfiguration(oldValue, newValue);
+        return new ToxiproxyBuilder(mergedConfiguration);
     }
 }
