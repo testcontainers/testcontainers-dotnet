@@ -107,9 +107,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task BuildsDockerImage(string dockerfile)
     {
       // Given
-      IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag1 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
 
-      IImage tag2 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag2 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
@@ -132,7 +132,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
     }
   }

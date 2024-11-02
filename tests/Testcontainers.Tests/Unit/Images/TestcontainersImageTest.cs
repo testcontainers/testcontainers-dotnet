@@ -66,7 +66,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected.Tag, actual.Tag);
       Assert.Equal(expected.Digest, actual.Digest);
       Assert.Equal(expected.FullName, actual.FullName);
-      Assert.Equal(expected.Name, actual.Name);
       Assert.Equal(fullName, actual.FullName);
     }
 

@@ -43,13 +43,6 @@ namespace DotNet.Testcontainers.Images
     string FullName { get; }
 
     /// <summary>
-    /// Gets the name.
-    /// </summary>
-    [NotNull]
-    [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]
-    string Name { get; }
-
-    /// <summary>
     /// Gets the registry hostname.
     /// </summary>
     /// <returns>The registry hostname.</returns>
