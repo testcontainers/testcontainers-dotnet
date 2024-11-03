@@ -103,7 +103,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Throws<InvalidOperationException>(() => image.Tag);
       Assert.Throws<InvalidOperationException>(() => image.Digest);
       Assert.Throws<InvalidOperationException>(() => image.FullName);
-      Assert.Throws<InvalidOperationException>(() => image.Name);
       Assert.Throws<InvalidOperationException>(() => image.GetHostname());
     }
 

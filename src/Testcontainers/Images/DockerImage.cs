@@ -55,29 +55,6 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="repository">The repository.</param>
-    /// <param name="name">The name.</param>
-    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
-    public DockerImage(string repository, string name)
-      : this(string.Join("/", repository, name).Trim('/'))
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerImage" /> class.
-    /// </summary>
-    /// <param name="repository">The repository.</param>
-    /// <param name="name">The name.</param>
-    /// <param name="tag">The tag.</param>
-    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
-    public DockerImage(string repository, string name, string tag)
-      : this(string.Join("/", repository, name).Trim('/') + (":" + tag).TrimEnd(':'))
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerImage" /> class.
-    /// </summary>
-    /// <param name="repository">The repository.</param>
     /// <param name="registry">The registry.</param>
     /// <param name="tag">The tag.</param>
     /// <param name="digest">The digest.</param>
@@ -129,10 +106,6 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
-    [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]
-    public string Name => GetBackwardsCompatibleName();
-
-    /// <inheritdoc />
     public string GetHostname()
     {
       return Registry;
@@ -172,13 +145,6 @@ namespace DotNet.Testcontainers.Images
 
       // If the Regex matches and Version.TryParse(string?, out Version?) fails then it means it is a major version only (i.e. without any dot separator)
       return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
-    }
-
-    private string GetBackwardsCompatibleName()
-    {
-      // The last index will never be a `/`, we trim it in the constructor.
-      var lastIndex = _repository.LastIndexOf('/');
-      return lastIndex == -1 ? _repository : _repository.Substring(lastIndex + 1);
     }
 
     private static string TrimOrDefault(string value, string defaultValue = null)
