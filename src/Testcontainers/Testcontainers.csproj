@@ -7,8 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
-    <PackageReference Include="Docker.DotNet.X509"/>
-    <PackageReference Include="Docker.DotNet"/>
+    <PackageReference Include="Docker.DotNet.Enhanced.X509"/>
+    <PackageReference Include="Docker.DotNet.Enhanced"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <PackageReference Include="SharpZipLib"/>
     <PackageReference Include="SSH.NET"/>
