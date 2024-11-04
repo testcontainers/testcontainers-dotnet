@@ -8,9 +8,11 @@ public class PlaywrightConfiguration : ContainerConfiguration
   /// Initializes a new instance of the <see cref="PlaywrightConfiguration" /> class.
   /// </summary>
   /// <param name="endpoint">The Playwright endpoint.</param>
-  public PlaywrightConfiguration(string endpoint = null)
+  public PlaywrightConfiguration(string endpoint = null,
+    int? port = null)
   {
     Endpoint = endpoint;
+    Port = port;
   }
 
   /// <summary>
@@ -59,4 +61,10 @@ public class PlaywrightConfiguration : ContainerConfiguration
   /// Gets the Playwright endpoint.
   /// </summary>
   public string Endpoint { get; }
+
+
+  /// <summary>
+  /// Gets the Playwright port.
+  /// </summary>
+  public int? Port { get; }
 }

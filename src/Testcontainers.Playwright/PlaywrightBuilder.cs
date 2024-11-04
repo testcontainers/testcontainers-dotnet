@@ -42,9 +42,10 @@ public class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, PlaywrightC
   {
     return base.Init()
       .WithBrowser(PlaywrightBrowser.Chrome)
-      .WithNetwork(new NetworkBuilder().Build())
       .WithEndpointPath(PlaywrightEndpointPath)
-      .WithPortBinding(PlaywrightPort, true);
+      .WithBrowserPort(PlaywrightPort)
+      .WithWaitStrategy(Wait.ForUnixContainer()
+        .UntilMessageIsLogged($"ws://.*:{PlaywrightPort}{PlaywrightEndpointPath}"));
   }
 
   public PlaywrightBuilder WithBrowser(PlaywrightBrowser playwrightBrowser)
@@ -53,15 +54,29 @@ public class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, PlaywrightC
   }
 
   /// <summary>
-  /// Sets the MsSql password.
+  /// Sets the BROWSER WS ENDPOINT.
   /// </summary>
-  /// <param name="password">The MsSql password.</param>
-  /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+  /// <param name="endpointPath">The BROWSER WS ENDPOINT.</param>
+  /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
   public PlaywrightBuilder WithEndpointPath(string endpointPath)
   {
     return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(endpoint: endpointPath))
       .WithEnvironment("BROWSER_WS_ENDPOINT", endpointPath);
   }
+
+  /// <summary>
+  /// Sets the BROWSER WS PORT.
+  /// </summary>
+  /// <param name="port">The BROWSER WS PORT.</param>
+  /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
+  public PlaywrightBuilder WithBrowserPort(int port, bool assignRandomHostPort=false)
+  {
+    return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(port: port))
+      .WithEnvironment("BROWSER_PORT", port.ToString())
+      .WithPortBinding(port, assignRandomHostPort);
+  }
+
+
 
   /// <inheritdoc />
   protected override PlaywrightBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
