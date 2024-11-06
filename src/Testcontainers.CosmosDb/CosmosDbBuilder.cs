@@ -45,7 +45,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
         return base.Init()
             .WithImage(CosmosDbImage)
             .WithPortBinding(CosmosDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(), s => s.WithTimeout(TimeSpan.FromMinutes(5))));
     }
 
     /// <inheritdoc />
