@@ -15,6 +15,8 @@ namespace DotNet.Testcontainers.Images
 
     private static readonly char[] TrimChars = [' ', ':', '/'];
 
+    private static readonly char[] SlashChar = ['/'];
+
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
     [NotNull]
@@ -27,10 +29,7 @@ namespace DotNet.Testcontainers.Images
     private readonly string _tag;
 
     [CanBeNull]
-    private readonly string _digit;
-
-    [CanBeNull]
-    private readonly string _hubImageNamePrefix;
+    private readonly string _digest;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -66,32 +65,63 @@ namespace DotNet.Testcontainers.Images
       string tag = null,
       string digest = null,
       string hubImageNamePrefix = null)
+      : this(
+        TrimOrDefault(repository),
+        TrimOrDefault(registry),
+        TrimOrDefault(tag, tag == null && digest == null ? LatestTag : null),
+        TrimOrDefault(digest),
+        hubImageNamePrefix == null ? [] : hubImageNamePrefix.Trim(TrimChars).Split(SlashChar, 2, StringSplitOptions.RemoveEmptyEntries))
+    {
+    }
+
+    private DockerImage(
+      string repository,
+      string registry,
+      string tag,
+      string digest,
+      string[] substitutions)
     {
       _ = Guard.Argument(repository, nameof(repository))
         .NotNull()
         .NotEmpty()
         .NotUppercase();
 
-      var defaultTag = tag == null && digest == null ? LatestTag : null;
+      _ = Guard.Argument(substitutions, nameof(substitutions))
+        .NotNull();
 
-      _repository = TrimOrDefault(repository);
-      _registry = TrimOrDefault(registry);
-      _tag = TrimOrDefault(tag, defaultTag);
-      _digit = TrimOrDefault(digest);
-      _hubImageNamePrefix = TrimOrDefault(hubImageNamePrefix);
+      // The Docker Hub image name prefix may include namespaces, which we need to extract
+      // and prepend to the repository name. The registry itself contains only the hostname.
+      switch (substitutions.Length)
+      {
+        case 2:
+          _repository = string.Join("/", substitutions[1], repository);
+          _registry = substitutions[0];
+          break;
+        case 1:
+          _repository = repository;
+          _registry = substitutions[0];
+          break;
+        default:
+          _repository = repository;
+          _registry = registry;
+          break;
+      }
+
+      _tag = tag;
+      _digest = digest;
     }
 
     /// <inheritdoc />
     public string Repository => _repository;
 
     /// <inheritdoc />
-    public string Registry => string.IsNullOrEmpty(_hubImageNamePrefix) ? _registry : _hubImageNamePrefix;
+    public string Registry => _registry;
 
     /// <inheritdoc />
     public string Tag => _tag;
 
     /// <inheritdoc />
-    public string Digest => _digit;
+    public string Digest => _digest;
 
     /// <inheritdoc />
     public string FullName
