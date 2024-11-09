@@ -4,7 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    public const string PulsarImage = "apachepulsar/pulsar:3.0.6";
+    public const string PulsarImage = "apachepulsar/pulsar:4.0.0";
 
     public const ushort PulsarBrokerDataPort = 6650;
 
@@ -87,6 +87,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)
+            .WithCreateParameterModifier(parameterModifier => parameterModifier.User = "root")
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
