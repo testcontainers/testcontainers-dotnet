@@ -9,7 +9,7 @@ internal sealed class BuildPaths
 
   public static BuildPaths Instance(ICakeContext context, string version)
   {
-    var baseDir = (DirectoryPath) context.Directory(".");
+    var baseDir = (DirectoryPath)context.Directory(".");
 
     var testResultsDir = baseDir.Combine("test-results");
     var testCoverageDir = baseDir.Combine("test-coverage");

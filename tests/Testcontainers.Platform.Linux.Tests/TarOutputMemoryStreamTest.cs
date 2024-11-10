@@ -174,7 +174,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             private readonly IContainer _container = new ContainerBuilder()
                 .WithImage(CommonImages.Alpine)
                 .WithEntrypoint("/bin/sh", "-c")
-                .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
+                .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\r\n\" | nc -l -p {HttpPort}; done")
                 .WithPortBinding(HttpPort, true)
                 .Build();
 
