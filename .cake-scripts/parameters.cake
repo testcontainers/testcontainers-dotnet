@@ -19,6 +19,7 @@ internal sealed class BuildParameters
   public string PullRequestId { get; private set; }
   public string Version { get; private set; }
   public string TestFilter { get; private set; }
+  public string TestProject { get; private set; }
   public bool IsLocalBuild { get; private set; }
   public bool IsReleaseBuild { get; private set; }
   public bool IsPullRequest { get; private set; }
@@ -49,6 +50,7 @@ internal sealed class BuildParameters
       PullRequestId = buildInformation.PullRequestId,
       Version = buildInformation.Version,
       TestFilter = context.Argument<string>("test-filter", null),
+      TestProject = context.Argument<string>("test-project", null),
       IsLocalBuild = buildInformation.IsLocalBuild,
       IsReleaseBuild = !buildInformation.IsLocalBuild && buildInformation.IsReleaseBuild,
       IsPullRequest = buildInformation.IsPullRequest,
