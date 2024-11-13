@@ -63,5 +63,6 @@
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
+        <PackageVersion Include="Microsoft.Playwright" Version="1.48.0" />
     </ItemGroup>
 </Project>
