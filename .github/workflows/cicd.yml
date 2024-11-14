@@ -76,7 +76,8 @@ jobs:
           { name: "Testcontainers.RavenDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redpanda", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" }
+          { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Playwright", runs-on: "ubuntu-22.04" }
         ]
 
     runs-on: ${{ matrix.test-projects.runs-on }}
