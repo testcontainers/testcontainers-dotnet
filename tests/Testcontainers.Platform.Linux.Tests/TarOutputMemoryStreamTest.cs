@@ -176,6 +176,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithEntrypoint("/bin/sh", "-c")
                 .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\r\n\" | nc -l -p {HttpPort}; done")
                 .WithPortBinding(HttpPort, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => 
+                    request.ForPath("/")))
                 .Build();
 
             public string BaseAddress
