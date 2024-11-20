@@ -100,11 +100,31 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
     }
 
+    [Fact]
+    public async Task BuildsDockerScratchImage()
+    {
+      // Given
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/scratch")
+        .Build();
+
+      // When
+      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync())
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Null(exception);
+      Assert.NotNull(imageFromDockerfileBuilder.Repository);
+      Assert.NotNull(imageFromDockerfileBuilder.Tag);
+      Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.Null(imageFromDockerfileBuilder.GetHostname());
+    }
+
     [Theory]
     [InlineData("Dockerfile")]
     [InlineData("./Dockerfile")]
     [InlineData(".\\Dockerfile")]
-    public async Task BuildsDockerImage(string dockerfile)
+    public async Task BuildsDockerAlpineImage(string dockerfile)
     {
       // Given
       IImage tag1 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
