@@ -3,4 +3,5 @@ credHelpers
 credsStore
 healthWaitStrategy
 pullBaseImages
+scratch
 **/*.md
