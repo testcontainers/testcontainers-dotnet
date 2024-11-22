@@ -383,6 +383,12 @@ namespace DotNet.Testcontainers.Clients
 
       if (dockerRegistryServerAddress == null)
       {
+        // https://hub.docker.com/_/scratch.
+        if ("scratch".Equals(image.Repository, StringComparison.OrdinalIgnoreCase))
+        {
+          return;
+        }
+
         var info = await System.GetInfoAsync(ct)
           .ConfigureAwait(false);
 

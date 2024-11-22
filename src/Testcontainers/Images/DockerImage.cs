@@ -15,6 +15,8 @@ namespace DotNet.Testcontainers.Images
 
     private static readonly char[] TrimChars = [' ', ':', '/'];
 
+    private static readonly char[] SlashChar = ['/'];
+
     private static readonly Func<string, IImage> GetDockerImage = MatchImage.Match;
 
     [NotNull]
@@ -27,10 +29,7 @@ namespace DotNet.Testcontainers.Images
     private readonly string _tag;
 
     [CanBeNull]
-    private readonly string _digit;
-
-    [CanBeNull]
-    private readonly string _hubImageNamePrefix;
+    private readonly string _digest;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -55,29 +54,6 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="repository">The repository.</param>
-    /// <param name="name">The name.</param>
-    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
-    public DockerImage(string repository, string name)
-      : this(string.Join("/", repository, name).Trim('/'))
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerImage" /> class.
-    /// </summary>
-    /// <param name="repository">The repository.</param>
-    /// <param name="name">The name.</param>
-    /// <param name="tag">The tag.</param>
-    [Obsolete("We will remove this construct and replace it with a more efficient implementation. Please use 'DockerImage(string, string = null, string = null, string = null, string = null)' instead. All arguments except for 'repository' (the first) are optional.")]
-    public DockerImage(string repository, string name, string tag)
-      : this(string.Join("/", repository, name).Trim('/') + (":" + tag).TrimEnd(':'))
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerImage" /> class.
-    /// </summary>
-    /// <param name="repository">The repository.</param>
     /// <param name="registry">The registry.</param>
     /// <param name="tag">The tag.</param>
     /// <param name="digest">The digest.</param>
@@ -89,32 +65,63 @@ namespace DotNet.Testcontainers.Images
       string tag = null,
       string digest = null,
       string hubImageNamePrefix = null)
+      : this(
+        TrimOrDefault(repository),
+        TrimOrDefault(registry),
+        TrimOrDefault(tag, tag == null && digest == null ? LatestTag : null),
+        TrimOrDefault(digest),
+        hubImageNamePrefix == null ? [] : hubImageNamePrefix.Trim(TrimChars).Split(SlashChar, 2, StringSplitOptions.RemoveEmptyEntries))
+    {
+    }
+
+    private DockerImage(
+      string repository,
+      string registry,
+      string tag,
+      string digest,
+      string[] substitutions)
     {
       _ = Guard.Argument(repository, nameof(repository))
         .NotNull()
         .NotEmpty()
         .NotUppercase();
 
-      var defaultTag = tag == null && digest == null ? LatestTag : null;
+      _ = Guard.Argument(substitutions, nameof(substitutions))
+        .NotNull();
 
-      _repository = TrimOrDefault(repository);
-      _registry = TrimOrDefault(registry);
-      _tag = TrimOrDefault(tag, defaultTag);
-      _digit = TrimOrDefault(digest);
-      _hubImageNamePrefix = TrimOrDefault(hubImageNamePrefix);
+      // The Docker Hub image name prefix may include namespaces, which we need to extract
+      // and prepend to the repository name. The registry itself contains only the hostname.
+      switch (substitutions.Length)
+      {
+        case 2:
+          _repository = string.Join("/", substitutions[1], repository);
+          _registry = substitutions[0];
+          break;
+        case 1:
+          _repository = repository;
+          _registry = substitutions[0];
+          break;
+        default:
+          _repository = repository;
+          _registry = registry;
+          break;
+      }
+
+      _tag = tag;
+      _digest = digest;
     }
 
     /// <inheritdoc />
     public string Repository => _repository;
 
     /// <inheritdoc />
-    public string Registry => string.IsNullOrEmpty(_hubImageNamePrefix) ? _registry : _hubImageNamePrefix;
+    public string Registry => _registry;
 
     /// <inheritdoc />
     public string Tag => _tag;
 
     /// <inheritdoc />
-    public string Digest => _digit;
+    public string Digest => _digest;
 
     /// <inheritdoc />
     public string FullName
@@ -127,10 +134,6 @@ namespace DotNet.Testcontainers.Images
         return $"{registry}{Repository}{tag}{digest}";
       }
     }
-
-    /// <inheritdoc />
-    [Obsolete("We will remove this property, it does not follow the DSL. Use the 'Repository' property instead.")]
-    public string Name => GetBackwardsCompatibleName();
 
     /// <inheritdoc />
     public string GetHostname()
@@ -172,13 +175,6 @@ namespace DotNet.Testcontainers.Images
 
       // If the Regex matches and Version.TryParse(string?, out Version?) fails then it means it is a major version only (i.e. without any dot separator)
       return predicate(new Version(int.Parse(versionMatch.Groups[1].Value, NumberStyles.None), 0));
-    }
-
-    private string GetBackwardsCompatibleName()
-    {
-      // The last index will never be a `/`, we trim it in the constructor.
-      var lastIndex = _repository.LastIndexOf('/');
-      return lastIndex == -1 ? _repository : _repository.Substring(lastIndex + 1);
     }
 
     private static string TrimOrDefault(string value, string defaultValue = null)

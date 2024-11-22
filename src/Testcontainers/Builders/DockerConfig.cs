@@ -51,10 +51,10 @@ namespace DotNet.Testcontainers.Builders
     public static DockerConfig Instance { get; }
       = new DockerConfig();
 
-    /// <inheritdoc cref="FileInfo.Exists" />
+    /// <inheritdoc cref="FileSystemInfo.Exists" />
     public bool Exists => File.Exists(_dockerConfigFilePath);
 
-    /// <inheritdoc cref="FileInfo.FullName" />
+    /// <inheritdoc cref="FileSystemInfo.FullName" />
     public string FullName => _dockerConfigFilePath;
 
     /// <summary>

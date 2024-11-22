@@ -172,10 +172,12 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             private const ushort HttpPort = 80;
 
             private readonly IContainer _container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
-                .WithEntrypoint("/bin/sh", "-c")
-                .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
+                .WithImage(CommonImages.Socat)
+                .WithCommand("-v")
+                .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
+                .WithCommand("EXEC:\"echo -e 'HTTP/1.1 200 OK'\n\n\"")
                 .WithPortBinding(HttpPort, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
                 .Build();
 
             public string BaseAddress

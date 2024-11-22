@@ -25,8 +25,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public string FullName => _image.FullName;
 
-    public string Name => _image.Name;
-
     public string GetHostname()
     {
       return _image.GetHostname();

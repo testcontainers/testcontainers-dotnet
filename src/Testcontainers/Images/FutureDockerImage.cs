@@ -79,16 +79,6 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
-    public string Name
-    {
-      get
-      {
-        ThrowIfResourceNotFound();
-        return _configuration.Image.Name;
-      }
-    }
-
-    /// <inheritdoc />
     public string GetHostname()
     {
       ThrowIfResourceNotFound();
