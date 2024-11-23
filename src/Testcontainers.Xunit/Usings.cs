@@ -8,6 +8,7 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Containers;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Logging.Abstractions;
 global using Xunit;
 global using Xunit.Sdk;
 #if XUNIT_V3
