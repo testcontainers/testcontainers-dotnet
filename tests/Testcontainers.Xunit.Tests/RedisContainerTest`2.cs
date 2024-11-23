@@ -17,7 +17,8 @@ public sealed partial class RedisContainerTest(RedisContainerFixture fixture)
     : IClassFixture<RedisContainerFixture>;
 // # --8<-- [end:InjectContainerFixture]
 
-public sealed partial class RedisContainerTest : ITestCaseOrderer
+[TestCaseOrderer(ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer", ordererAssemblyName: "Testcontainers.Xunit.Tests")]
+public sealed partial class RedisContainerTest
 {
     [Fact]
     public void ImageShouldMatchDefaultModuleImage()
@@ -42,9 +43,4 @@ public sealed partial class RedisContainerTest : ITestCaseOrderer
         Assert.Equal("value", redisValue);
     }
     // # --8<-- [end:RunTests]
-
-    public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases) where TTestCase : ITestCase
-    {
-        return testCases.OrderBy(testCase => testCase.TestMethod.Method.Name);
-    }
 }

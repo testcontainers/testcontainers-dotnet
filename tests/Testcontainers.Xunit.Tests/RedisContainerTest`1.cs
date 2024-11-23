@@ -12,7 +12,8 @@ public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelpe
 }
 // # --8<-- [end:ConfigureRedisContainer]
 
-public sealed partial class RedisContainerTest : ITestCaseOrderer
+[TestCaseOrderer(ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer", ordererAssemblyName: "Testcontainers.Xunit.Tests")]
+public sealed partial class RedisContainerTest
 {
     [Fact]
     public void ImageShouldMatchDefaultModuleImage()
@@ -41,9 +42,4 @@ public sealed partial class RedisContainerTest : ITestCaseOrderer
         // 👇 The created and started container is disposed of after this method (test) completes.
     }
     // # --8<-- [end:RunTests]
-
-    public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases) where TTestCase : ITestCase
-    {
-        return testCases.OrderBy(testCase => testCase.TestMethod.Method.Name);
-    }
 }
