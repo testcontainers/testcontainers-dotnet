@@ -26,7 +26,7 @@ internal interface IDbContainerTestMethods
     /// <para />
     /// It is the responsibility of the caller to properly dispose the connection returned by this method. Failure to do so may result in a connection leak.
     /// </remarks>
-    /// <returns>A new, open connection to the database represented.</returns>
+    /// <returns>A new, open connection to the database.</returns>
     DbConnection OpenConnection();
 
     /// <summary>
