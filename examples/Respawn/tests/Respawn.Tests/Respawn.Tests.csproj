@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="Testcontainers.PostgreSql"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="Respawn"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="migrate/*.sql" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+</Project>

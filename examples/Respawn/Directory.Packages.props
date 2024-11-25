@@ -11,5 +11,6 @@
         <PackageVersion Include="xunit" Version="2.9.2"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Npgsql" Version="6.0.11"/>
+        <PackageVersion Include="Respawn" Version="6.2.1"/>
     </ItemGroup>
 </Project>
