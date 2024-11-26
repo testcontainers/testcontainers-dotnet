@@ -141,9 +141,15 @@ namespace DotNet.Testcontainers.Builders
       _ = Guard.Argument(DockerResourceConfiguration.Logger, nameof(IResourceConfiguration<TCreateResourceEntity>.Logger))
         .NotNull();
 
-      const string containerRuntimeNotFound = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/";
-      _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
-        .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(containerRuntimeNotFound, argument.Name));
+      if (DockerResourceConfiguration.DockerEndpointAuthConfig == null)
+      {
+        var message = TestcontainersSettings.UnavailableEndpoints.Count == 0
+          ? "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured."
+          : $"Docker is either not running or misconfigured. Please ensure that Docker is available at {string.Join(" or ", TestcontainersSettings.UnavailableEndpoints)}";
+
+        throw new DockerUnavailableException(message + "\nYou can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. " +
+                                             "For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/");
+      }
 
       const string reuseNotSupported = "Reuse cannot be used in conjunction with WithCleanUp(true).";
       _ = Guard.Argument(DockerResourceConfiguration, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
