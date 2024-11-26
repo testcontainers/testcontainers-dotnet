@@ -46,9 +46,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ReturnsConfiguredEndpointWhenDockerContextIsCustomFromPropertiesFile()
       {
         // Given
-        using var context = new ConfigMetaFile("custom", "tcp://127.0.0.1:2375/");
+        using var context = new ConfigMetaFile("custom", new Uri("tcp://127.0.0.1:2375/"));
 
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=custom", context.GetDockerConfig() });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=custom", $"docker.config={context.DockerConfigDirectoryPath}" });
         var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
@@ -62,10 +62,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ReturnsConfiguredEndpointWhenDockerContextIsCustomFromConfigFile()
       {
         // Given
-        using var context = new ConfigMetaFile("custom", "tcp://127.0.0.1:2375/");
+        using var context = new ConfigMetaFile("custom", new Uri("tcp://127.0.0.1:2375/"));
 
         // This test reads the current context JSON node from the Docker config file.
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { context.GetDockerConfig() });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { $"docker.config={context.DockerConfigDirectoryPath}" });
         var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
@@ -83,17 +83,37 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public void ReturnsNullWhenDockerContextNotFound()
+      public void ThrowsWhenDockerContextNotFound()
       {
         // Given
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=missing" });
         var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
-        var currentEndpoint = dockerConfig.GetCurrentEndpoint();
+        var exception = Assert.Throws<DockerConfigurationException>(() => dockerConfig.GetCurrentEndpoint());
 
         // Then
-        Assert.Null(currentEndpoint);
+        Assert.Equal("The Docker context 'missing' does not exist", exception.Message);
+        Assert.IsType<DirectoryNotFoundException>(exception.InnerException);
+      }
+
+      [Fact]
+      public void ThrowsWhenDockerConfigEndpointNotFound()
+      {
+        // Given
+        using var context = new ConfigMetaFile("custom");
+
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.context=custom", $"docker.config={context.DockerConfigDirectoryPath}" });
+        var dockerConfig = new DockerConfig(customConfiguration);
+
+        // When
+        var exception = Assert.Throws<DockerConfigurationException>(() => dockerConfig.GetCurrentEndpoint());
+
+        // Then
+        Assert.StartsWith("The Docker host is null in ", exception.Message);
+        Assert.Contains(context.DockerConfigDirectoryPath, exception.Message);
+        Assert.EndsWith(" (JSONPath: Endpoints.docker.Host)", exception.Message);
+        Assert.Null(exception.InnerException);
       }
     }
 
@@ -117,9 +137,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ReturnsConfiguredEndpointWhenDockerHostIsSet()
       {
         // Given
-        using var context = new ConfigMetaFile("custom", "");
+        using var context = new ConfigMetaFile("custom");
 
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=tcp://127.0.0.1:2375/", context.GetDockerConfig() });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.host=tcp://127.0.0.1:2375/", $"docker.config={context.DockerConfigDirectoryPath}" });
         var dockerConfig = new DockerConfig(customConfiguration);
 
         // When
@@ -147,26 +167,32 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       private const string MetaFileJson = "{{\"Name\":\"{0}\",\"Metadata\":{{}},\"Endpoints\":{{\"docker\":{{\"Host\":\"{1}\",\"SkipTLSVerify\":false}}}}}}";
 
-      private readonly string _dockerConfigDirectoryPath;
+      public string DockerConfigDirectoryPath { get; }
 
-      public ConfigMetaFile(string context, string endpoint, [CallerMemberName] string caller = "")
+      public ConfigMetaFile(string context, [CallerMemberName] string caller = "")
       {
-        _dockerConfigDirectoryPath = Path.Combine(TestSession.TempDirectoryPath, caller);
-        var dockerContextHash = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(context))).ToLowerInvariant();
-        var dockerContextMetaDirectoryPath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash);
-        _ = Directory.CreateDirectory(dockerContextMetaDirectoryPath);
-        File.WriteAllText(Path.Combine(_dockerConfigDirectoryPath, "config.json"), string.Format(ConfigFileJson, context));
-        File.WriteAllText(Path.Combine(dockerContextMetaDirectoryPath, "meta.json"), string.Format(MetaFileJson, context, endpoint));
+        DockerConfigDirectoryPath = InitializeContext(context, null, caller);
       }
 
-      public string GetDockerConfig()
+      public ConfigMetaFile(string context, Uri endpoint, [CallerMemberName] string caller = "")
       {
-        return "docker.config=" + _dockerConfigDirectoryPath;
+        DockerConfigDirectoryPath = InitializeContext(context, endpoint, caller);
+      }
+
+      private static string InitializeContext(string context, Uri endpoint, [CallerMemberName] string caller = "")
+      {
+        var dockerConfigDirectoryPath = Path.Combine(TestSession.TempDirectoryPath, caller);
+        var dockerContextHash = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(context))).ToLowerInvariant();
+        var dockerContextMetaDirectoryPath = Path.Combine(dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash);
+        _ = Directory.CreateDirectory(dockerContextMetaDirectoryPath);
+        File.WriteAllText(Path.Combine(dockerConfigDirectoryPath, "config.json"), string.Format(ConfigFileJson, context));
+        File.WriteAllText(Path.Combine(dockerContextMetaDirectoryPath, "meta.json"), endpoint == null ?  "{}" : string.Format(MetaFileJson, context, endpoint.AbsoluteUri));
+        return dockerConfigDirectoryPath;
       }
 
       public void Dispose()
       {
-        Directory.Delete(_dockerConfigDirectoryPath, true);
+        Directory.Delete(DockerConfigDirectoryPath, true);
       }
     }
   }
