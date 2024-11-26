@@ -4,7 +4,7 @@ namespace Testcontainers.Xunit;
 /// Base class for tests needing a container per test method.
 /// A logger is automatically configured to write messages to xUnit's <see cref="ITestOutputHelper" />.
 /// </summary>
-/// <param name="testOutputHelper">An optional <see cref="ITestOutputHelper"/> where the logs are written to. Pass <c>null</c> to ignore logs.</param>
+/// <param name="testOutputHelper">An optional <see cref="ITestOutputHelper" /> where the logs are written to. Pass <c>null</c> to ignore logs.</param>
 /// <param name="configure">An optional callback to configure the container.</param>
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>

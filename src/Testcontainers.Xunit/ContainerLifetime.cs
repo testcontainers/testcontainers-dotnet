@@ -50,7 +50,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     ///   public class MariaDbRootUserFixture(IMessageSink messageSink) : DbContainerFixture&lt;MariaDbBuilder, MariaDbContainer&gt;(messageSink)
     ///   {
     ///     public override DbProviderFactory DbProviderFactory =&gt; MySqlConnectorFactory.Instance;
-    ///     <br />
+    ///   <br />
     ///     protected override MariaDbBuilder Configure(MariaDbBuilder builder)
     ///     {
     ///       return builder.WithUsername("root");
