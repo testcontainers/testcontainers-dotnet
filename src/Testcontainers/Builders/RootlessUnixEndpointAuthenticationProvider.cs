@@ -31,6 +31,15 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
+    /// </summary>
+    /// <param name="dockerEngine">The Unix socket Docker Engine endpoint.</param>
+    public RootlessUnixEndpointAuthenticationProvider(Uri dockerEngine)
+    {
+      DockerEngine = dockerEngine;
+    }
+
+    /// <summary>
     /// Gets the Unix socket Docker Engine endpoint.
     /// </summary>
     protected Uri DockerEngine { get; }
