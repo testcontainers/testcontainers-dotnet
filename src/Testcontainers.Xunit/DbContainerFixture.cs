@@ -25,7 +25,7 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     }
 
     /// <inheritdoc />
-    protected override async LifetimeTask DisposeAsync()
+    protected override async LifetimeTask DisposeAsyncCore()
     {
         if (_testMethods != null)
         {
@@ -33,7 +33,7 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
                 .ConfigureAwait(true);
         }
 
-        await base.DisposeAsync()
+        await base.DisposeAsyncCore()
             .ConfigureAwait(true);
     }
 

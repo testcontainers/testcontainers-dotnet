@@ -12,7 +12,6 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
-    private readonly CancellationTokenSource _cts = new CancellationTokenSource();
     private DbContainerTestMethods _testMethods;
 
     /// <inheritdoc />
@@ -25,7 +24,7 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     }
 
     /// <inheritdoc />
-    protected override async LifetimeTask DisposeAsync()
+    protected override async LifetimeTask DisposeAsyncCore()
     {
         if (_testMethods != null)
         {
@@ -33,7 +32,7 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
                 .ConfigureAwait(true);
         }
 
-        await base.DisposeAsync()
+        await base.DisposeAsyncCore()
             .ConfigureAwait(true);
     }
 

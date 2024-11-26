@@ -36,10 +36,16 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
 
 #if !XUNIT_V3
     /// <inheritdoc />
-    LifetimeTask IAsyncLifetime.DisposeAsync() => DisposeAsync();
+    LifetimeTask IAsyncLifetime.DisposeAsync() => DisposeAsyncCore();
 #else
     /// <inheritdoc />
-    LifetimeTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+    async LifetimeTask IAsyncDisposable.DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
+    }
 #endif
 
     /// <summary>
@@ -80,7 +86,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     }
 
     /// <inheritdoc cref="IAsyncLifetime" />
-    protected virtual async LifetimeTask DisposeAsync()
+    protected virtual async LifetimeTask DisposeAsyncCore()
     {
         if (_exception == null)
         {
