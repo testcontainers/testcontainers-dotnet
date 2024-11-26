@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Threading;
   using System.Threading.Tasks;
+  using JetBrains.Annotations;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
@@ -10,6 +11,9 @@ namespace DotNet.Testcontainers.Builders
   internal class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
     private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+    [CanBeNull]
+    public Uri UnavailableEndpoint;
 
     /// <inheritdoc />
     public virtual bool IsApplicable()
@@ -42,6 +46,7 @@ namespace DotNet.Testcontainers.Builders
               }
               catch (Exception)
               {
+                UnavailableEndpoint = dockerClientConfiguration.EndpointBaseUri;
                 return false;
               }
             }

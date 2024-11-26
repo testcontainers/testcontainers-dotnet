@@ -18,27 +18,30 @@ namespace DotNet.Testcontainers.Configurations
   public static class TestcontainersSettings
   {
     [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = new IDockerEndpointAuthenticationProvider[]
-        {
-          new TestcontainersEndpointAuthenticationProvider(),
-          new MTlsEndpointAuthenticationProvider(),
-          new TlsEndpointAuthenticationProvider(),
-          new EnvironmentEndpointAuthenticationProvider(),
-          new NpipeEndpointAuthenticationProvider(),
-          new UnixEndpointAuthenticationProvider(),
-          new DockerDesktopEndpointAuthenticationProvider(),
-          new RootlessUnixEndpointAuthenticationProvider(),
-        }
-        .Where(authProvider => authProvider.IsApplicable())
-        .FirstOrDefault(authProvider => authProvider.IsAvailable());
+    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider;
 
     [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
-      = DockerEndpointAuthProvider?.GetAuthConfig();
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig;
+
+    internal static readonly IReadOnlyList<Uri> UnavailableEndpoints;
 
     static TestcontainersSettings()
     {
+      var providers = new IDockerEndpointAuthenticationProvider[]
+      {
+        new TestcontainersEndpointAuthenticationProvider(),
+        new MTlsEndpointAuthenticationProvider(),
+        new TlsEndpointAuthenticationProvider(),
+        new EnvironmentEndpointAuthenticationProvider(),
+        new NpipeEndpointAuthenticationProvider(),
+        new UnixEndpointAuthenticationProvider(),
+        new DockerDesktopEndpointAuthenticationProvider(),
+        new RootlessUnixEndpointAuthenticationProvider(),
+      };
+
+      DockerEndpointAuthProvider = providers.Where(authProvider => authProvider.IsApplicable()).FirstOrDefault(authProvider => authProvider.IsAvailable());
+      DockerEndpointAuthConfig = DockerEndpointAuthProvider?.GetAuthConfig();
+      UnavailableEndpoints = providers.OfType<DockerEndpointAuthenticationProvider>().Select(e => e.UnavailableEndpoint).Where(e => e != null).Distinct().ToList();
     }
 
     /// <summary>
