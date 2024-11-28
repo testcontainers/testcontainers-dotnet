@@ -21,7 +21,7 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
         await base.InitializeAsync()
             .ConfigureAwait(false);
 
-        _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
+        _testMethods = new DbContainerTestMethods(DbProviderFactory, new Lazy<string>(() => ConnectionString));
     }
 
     /// <inheritdoc />
