@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
+        EnvironmentVariables.Add("DOCKER_CONTEXT");
         EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
         EnvironmentVariables.Add("DOCKER_CERT_PATH");
         EnvironmentVariables.Add("DOCKER_TLS");
@@ -27,8 +28,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
-        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
       }
 
