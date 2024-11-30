@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
     <Configurations>Debug;Release</Configurations>
