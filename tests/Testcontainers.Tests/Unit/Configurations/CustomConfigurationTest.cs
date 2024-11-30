@@ -28,8 +28,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
-        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
       }
 
