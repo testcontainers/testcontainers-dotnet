@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Configurations
 
     protected virtual Uri GetDockerHost(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && !string.IsNullOrEmpty(propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
     }
 
     protected virtual string GetDockerContext(string propertyName)
@@ -142,7 +142,7 @@ namespace DotNet.Testcontainers.Configurations
         case TypeCode.String:
         {
           _ = _properties.TryGetValue(propertyName, out var propertyValue);
-          return (T)(object)propertyValue;
+          return (T)(object)(string.IsNullOrEmpty(propertyValue) ? null : propertyValue);
         }
 
         default:
