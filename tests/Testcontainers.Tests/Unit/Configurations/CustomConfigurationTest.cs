@@ -159,11 +159,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", "", false)]
-      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", false)]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool? expected)
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -362,11 +362,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", false)]
-      [InlineData("ryuk.container.privileged=", false)]
+      [InlineData("", null)]
+      [InlineData("ryuk.container.privileged=", null)]
       [InlineData("ryuk.container.privileged=false", false)]
       [InlineData("ryuk.container.privileged=true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool? expected)
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());

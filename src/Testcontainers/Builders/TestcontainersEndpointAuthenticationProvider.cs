@@ -118,7 +118,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return _customConfiguration.GetRyukContainerPrivileged();
     }

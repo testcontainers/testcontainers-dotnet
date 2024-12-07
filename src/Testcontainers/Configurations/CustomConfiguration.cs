@@ -79,9 +79,9 @@ namespace DotNet.Testcontainers.Configurations
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected virtual bool GetRyukContainerPrivileged(string propertyName)
+    protected virtual bool? GetRyukContainerPrivileged(string propertyName)
     {
-      return GetPropertyValue<bool>(propertyName);
+      return GetPropertyValue<bool?>(propertyName);
     }
 
     protected virtual IImage GetRyukContainerImage(string propertyName)
@@ -127,16 +127,18 @@ namespace DotNet.Testcontainers.Configurations
     {
       var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
+      var isNullable = type != typeof(T);
+
       switch (Type.GetTypeCode(type))
       {
         case TypeCode.Boolean:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ("1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var result) && result)));
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && bool.TryParse(propertyValue, out var result) ? result : isNullable ? null : "1".Equals(propertyValue, StringComparison.Ordinal));
         }
 
         case TypeCode.UInt16:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : null);
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : isNullable ? null : 0);
         }
 
         case TypeCode.String:
