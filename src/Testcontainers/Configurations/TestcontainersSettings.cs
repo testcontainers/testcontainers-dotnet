@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.

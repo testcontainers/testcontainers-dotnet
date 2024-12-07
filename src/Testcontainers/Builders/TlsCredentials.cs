@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Builders
 {
-  using System.Net;
   using System.Net.Http;
   using Docker.DotNet.X509;
   using Microsoft.Net.Http.Client;
@@ -20,7 +19,7 @@ namespace DotNet.Testcontainers.Builders
     public override HttpMessageHandler GetHandler(HttpMessageHandler innerHandler)
     {
       var handler = (ManagedHandler)innerHandler;
-      handler.ServerCertificateValidationCallback = ServerCertificateValidationCallback ?? ServicePointManager.ServerCertificateValidationCallback;
+      handler.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
       return handler;
     }
   }

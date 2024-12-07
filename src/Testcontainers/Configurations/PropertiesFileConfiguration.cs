@@ -127,7 +127,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       const string propertyName = "ryuk.container.privileged";
       return GetRyukContainerPrivileged(propertyName);
