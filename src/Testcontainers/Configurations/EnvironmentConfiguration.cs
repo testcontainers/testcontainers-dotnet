@@ -140,7 +140,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return GetRyukContainerPrivileged(RyukContainerPrivileged);
     }
