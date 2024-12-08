@@ -156,7 +156,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
         await _maintainConnectionCts.CancelAsync()
           .ConfigureAwait(false);
 #else

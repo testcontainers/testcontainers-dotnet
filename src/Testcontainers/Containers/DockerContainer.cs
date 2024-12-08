@@ -575,7 +575,7 @@ namespace DotNet.Testcontainers.Containers
         _ = WithTimeout(TimeSpan.FromSeconds(15));
       }
 
-      public override Task<bool> UntilAsync(IContainer _, CancellationToken ct = default)
+      public override Task<bool> UntilAsync(IContainer container, CancellationToken ct = default)
       {
         var boundPorts = _parent._container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
         return Task.FromResult(_parent._configuration.PortBindings == null || /* IPv4 or IPv6 */ _parent._configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * _parent._configuration.PortBindings.Count == boundPorts);
