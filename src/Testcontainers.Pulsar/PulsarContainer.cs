@@ -101,11 +101,10 @@ public sealed class PulsarContainer : DockerContainer
 
         if (_configuration.AuthenticationEnabled.HasValue && _configuration.AuthenticationEnabled.Value)
         {
-            startupScript.WriteLine("bin/pulsar tokens create-secret-key --output " + PulsarBuilder.SecretKeyFilePath);
+            startupScript.WriteLine("bin/pulsar tokens create-secret-key --output secret.key");
             startupScript.WriteLine("export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)");
             startupScript.WriteLine("export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters");
             startupScript.WriteLine("bin/apply-config-from-env.py conf/standalone.conf");
-            startupScript.WriteLine("bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf");
         }
 
         startupScript.Write("bin/pulsar standalone");
