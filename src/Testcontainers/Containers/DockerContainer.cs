@@ -49,6 +49,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopping;
 
     /// <inheritdoc />
+    public event EventHandler Pausing;
+
+    /// <inheritdoc />
+    public event EventHandler Unpausing;
+
+    /// <inheritdoc />
     public event EventHandler Created;
 
     /// <inheritdoc />
@@ -58,6 +64,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
+    public event EventHandler Paused;
+
+    /// <inheritdoc />
+    public event EventHandler Unpaused;
+
+    /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }
 
     /// <inheritdoc />
@@ -65,6 +77,12 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc />
     public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime PausedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime UnpausedTime { get; private set; }
 
     /// <inheritdoc />
     public ILogger Logger
@@ -294,6 +312,24 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
     }
 
+    public async Task PauseAsync(CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafePauseAsync(ct)
+        .ConfigureAwait(false);
+    }
+
+    public async Task UnpauseAsync(CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeUnpauseAsync(ct)
+        .ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
     public Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
@@ -520,6 +556,78 @@ namespace DotNet.Testcontainers.Containers
 
       StoppedTime = DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Pause the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been stopped.</returns>
+    protected virtual async Task UnsafePauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Pausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.PauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      try
+      {
+        _container = await _client.Container.ByIdAsync(_container.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        _container = new ContainerInspectResponse();
+      }
+
+      PausedTime = DateTime.UtcNow;
+      Paused?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Unpause the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been stopped.</returns>
+    protected virtual async Task UnsafeUnpauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Unpausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.UnpauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      try
+      {
+        _container = await _client.Container.ByIdAsync(_container.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        _container = new ContainerInspectResponse();
+      }
+
+      UnpausedTime = DateTime.UtcNow;
+      Unpaused?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
