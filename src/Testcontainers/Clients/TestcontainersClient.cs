@@ -142,6 +142,26 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    public async Task PauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.PauseAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    public async Task UnpauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.UnpauseAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
     /// <inheritdoc />
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
