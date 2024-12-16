@@ -606,7 +606,7 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfLockNotAcquired();
 
-      if (!Exists())
+      if (State != TestcontainersStates.Paused)
       {
         return;
       }
