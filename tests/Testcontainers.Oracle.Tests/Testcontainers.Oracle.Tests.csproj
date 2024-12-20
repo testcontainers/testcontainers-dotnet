@@ -13,6 +13,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Oracle/Testcontainers.Oracle.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj" />
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

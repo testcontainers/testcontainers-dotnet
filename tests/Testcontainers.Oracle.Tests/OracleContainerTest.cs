@@ -1,25 +1,13 @@
 namespace Testcontainers.Oracle;
 
-public sealed class OracleContainerTest : IAsyncLifetime
+public sealed class OracleContainerTest(OracleContainerTest.OracleFixture oracleFixture) : IClassFixture<OracleContainerTest.OracleFixture>
 {
-    private readonly OracleContainer _oracleContainer = new OracleBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _oracleContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _oracleContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new OracleConnection(_oracleContainer.GetConnectionString());
+        using DbConnection connection = oracleFixture.CreateConnection();
 
         // When
         connection.Open();
@@ -36,11 +24,17 @@ public sealed class OracleContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1 FROM DUAL;";
 
         // When
-        var execResult = await _oracleContainer.ExecScriptAsync(scriptContent)
+        var execResult = await oracleFixture.Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
+    }
+
+    [UsedImplicitly]
+    public class OracleFixture(IMessageSink messageSink) : DbContainerFixture<OracleBuilder, OracleContainer>(messageSink)
+    {
+        public override DbProviderFactory DbProviderFactory => OracleClientFactory.Instance;
     }
 }
