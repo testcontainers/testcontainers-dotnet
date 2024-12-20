@@ -64,7 +64,7 @@
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
         <PackageVersion Include="Neo4j.Driver" Version="5.5.0"/>
         <PackageVersion Include="Npgsql" Version="6.0.11"/>
-        <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="3.21.160"/>
+        <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.7.0"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
