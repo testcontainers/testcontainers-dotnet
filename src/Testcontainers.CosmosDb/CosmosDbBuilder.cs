@@ -1,6 +1,3 @@
-using System.Net;
-using System.Net.Sockets;
-
 namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
