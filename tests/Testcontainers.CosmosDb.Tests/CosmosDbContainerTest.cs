@@ -28,11 +28,11 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         // When
         var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("fakedb")).Database;
         await database.CreateContainerIfNotExistsAsync("fakecontainer", "/id");
-        var properties = (await cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
+        var databaseProperties = (await cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
 
 
         // Then
-        Assert.Equal("fakedb", properties.Id);
+        Assert.Equal("fakedb", databaseProperties.Id);
     }
 
 

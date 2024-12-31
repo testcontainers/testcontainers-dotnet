@@ -5,7 +5,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
-        <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.46.0"/>
+        <PackageReference Include="Microsoft.Azure.Cosmos"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
