@@ -88,7 +88,7 @@ See [LICENSE](https://raw.githubusercontent.com/testcontainers/testcontainers-do
 
 ## Copyright
 
-Copyright (c) 2019 - 2024 Andre Hofmeister and other authors.
+Copyright (c) 2019 - 2025 Andre Hofmeister and other authors.
 
 See [contributors][testcontainers-dotnet-contributors] for all contributors.
 
