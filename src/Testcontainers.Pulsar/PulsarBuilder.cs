@@ -75,7 +75,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             waitStrategy = waitStrategy.UntilMessageIsLogged("Function worker service started");
         }
 
-        var pulsarBuilder =  WithWaitStrategy(waitStrategy);
+        var pulsarBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);
     }
 
@@ -156,9 +156,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
         private async Task<bool> UntilAsync(PulsarContainer container)
         {
-            _ = Guard.Argument(container, nameof(container))
-                .NotNull();
-
             if (_authenticationEnabled && _authToken == null)
             {
                 try
