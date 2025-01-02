@@ -21,6 +21,12 @@ namespace DotNet.Testcontainers.Configurations
     public static readonly NetworkDriver Host = new NetworkDriver("host");
 
     /// <summary>
+    /// Gets network driver nat.
+    /// </summary>
+    [PublicAPI]
+    public static readonly NetworkDriver Nat = new NetworkDriver("nat");
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="NetworkDriver" /> struct.
     /// </summary>
     /// <param name="value">The network driver.</param>
