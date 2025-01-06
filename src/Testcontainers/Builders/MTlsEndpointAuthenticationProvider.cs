@@ -56,7 +56,7 @@ namespace DotNet.Testcontainers.Builders
       return Polyfills.X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
 #elif NET9_0_OR_GREATER
       var certificate = X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
-      return OperatingSystem.IsWindows() ? X509CertificateLoader.LoadCertificate(certificate.Export(X509ContentType.Pfx)) : certificate;
+      return OperatingSystem.IsWindows() ? X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), null) : certificate;
 #elif NET6_0_OR_GREATER
       var certificate = X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
       return OperatingSystem.IsWindows() ? new X509Certificate2(certificate.Export(X509ContentType.Pfx)) : certificate;
