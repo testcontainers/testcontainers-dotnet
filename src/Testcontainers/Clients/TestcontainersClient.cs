@@ -142,6 +142,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    /// <inheritdoc />
     public async Task PauseAsync(string id, CancellationToken ct = default)
     {
       if (await Container.ExistsWithIdAsync(id, ct)
@@ -152,6 +153,7 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
+    /// <inheritdoc />
     public async Task UnpauseAsync(string id, CancellationToken ct = default)
     {
       if (await Container.ExistsWithIdAsync(id, ct)

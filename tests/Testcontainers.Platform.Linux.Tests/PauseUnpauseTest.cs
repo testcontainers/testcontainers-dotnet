@@ -1,25 +1,31 @@
-namespace Testcontainers.Tests
+namespace Testcontainers.Tests;
+
+public sealed class PauseUnpauseTest : IAsyncLifetime
 {
-    public abstract class PauseUnpauseTest
+    private readonly IContainer _container = new ContainerBuilder()
+        .WithImage(CommonImages.Alpine)
+        .WithCommand(CommonCommands.SleepInfinity)
+        .Build();
+
+    public Task InitializeAsync()
     {
-        [Fact]
-        public async Task PauseContainer()
-        {
-            await using var container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
-                .WithEntrypoint(CommonCommands.SleepInfinity)
-                .Build();
+        return _container.StartAsync();
+    }
 
-            await container.StartAsync()
-                .ConfigureAwait(true);
+    public Task DisposeAsync()
+    {
+        return _container.DisposeAsync().AsTask();
+    }
 
-            await container.PauseAsync().ConfigureAwait(true);
+    [Fact]
+    public async Task PausesAndUnpausesContainerSuccessfully()
+    {
+        await _container.PauseAsync()
+            .ConfigureAwait(true);
+        Assert.Equal(TestcontainersStates.Paused, _container.State);
 
-            Assert.Equal(TestcontainersStates.Paused, container.State);
-
-            await container.UnpauseAsync().ConfigureAwait(true);
-
-            Assert.Equal(TestcontainersStates.Running, container.State);
-        }
+        await _container.UnpauseAsync()
+            .ConfigureAwait(true);
+        Assert.Equal(TestcontainersStates.Running, _container.State);
     }
 }

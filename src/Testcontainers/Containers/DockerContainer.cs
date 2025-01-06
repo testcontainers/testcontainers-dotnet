@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public class DockerContainer : Resource, IContainer
   {
-    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
+    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Paused | TestcontainersStates.Exited;
 
     private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
 
@@ -312,6 +312,7 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public async Task PauseAsync(CancellationToken ct = default)
     {
       using var disposable = await AcquireLockAsync(ct)
@@ -321,6 +322,7 @@ namespace DotNet.Testcontainers.Containers
         .ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public async Task UnpauseAsync(CancellationToken ct = default)
     {
       using var disposable = await AcquireLockAsync(ct)
@@ -559,13 +561,13 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Pause the container.
+    /// Pauses the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been stopped.</returns>
+    /// <returns>Task that completes when the container has been paused.</returns>
     protected virtual async Task UnsafePauseAsync(CancellationToken ct = default)
     {
       ThrowIfLockNotAcquired();
@@ -580,33 +582,31 @@ namespace DotNet.Testcontainers.Containers
       await _client.PauseAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      try
-      {
-        _container = await _client.Container.ByIdAsync(_container.ID, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerContainerNotFoundException)
-      {
-        _container = new ContainerInspectResponse();
-      }
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
 
       PausedTime = DateTime.UtcNow;
       Paused?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
-    /// Unpause the container.
+    /// Unpauses the container.
     /// </summary>
     /// <remarks>
-    /// Only the public members <see cref="StartAsync" /> and <see cref="StopAsync" /> are thread-safe for now.
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container has been stopped.</returns>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
     protected virtual async Task UnsafeUnpauseAsync(CancellationToken ct = default)
     {
       ThrowIfLockNotAcquired();
 
-      if (State != TestcontainersStates.Paused)
+      if (!Exists())
+      {
+        return;
+      }
+
+      if (!TestcontainersStates.Paused.Equals(State))
       {
         return;
       }
@@ -616,15 +616,8 @@ namespace DotNet.Testcontainers.Containers
       await _client.UnpauseAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      try
-      {
-        _container = await _client.Container.ByIdAsync(_container.ID, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerContainerNotFoundException)
-      {
-        _container = new ContainerInspectResponse();
-      }
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
 
       UnpausedTime = DateTime.UtcNow;
       Unpaused?.Invoke(this, EventArgs.Empty);

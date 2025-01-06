@@ -1,6 +1,3 @@
-using System.Threading;
-using DotNet.Testcontainers.Containers;
-
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;

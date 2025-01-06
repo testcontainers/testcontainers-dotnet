@@ -222,23 +222,21 @@ namespace DotNet.Testcontainers.Containers
     Task StopAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Pause the container.
+    /// Pauses the container.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been paused.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
-    /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
     Task PauseAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Unpause the container.
+    /// Unpauses the container.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been unpaused.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
-    /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
     Task UnpauseAsync(CancellationToken ct = default);
 
     /// <summary>
