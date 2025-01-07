@@ -1,3 +1,6 @@
+using Docker.DotNet;
+using Xunit.Sdk;
+
 namespace Testcontainers.Tests;
 
 public sealed class PauseUnpauseTest : IAsyncLifetime
@@ -27,5 +30,14 @@ public sealed class PauseUnpauseTest : IAsyncLifetime
         await _container.UnpauseAsync()
             .ConfigureAwait(true);
         Assert.Equal(TestcontainersStates.Running, _container.State);
+    }
+    
+    [Fact]
+    public async Task Unpauses_NotPaused_ContainerSuccessfully()
+    {
+        var thrown = await Assert.ThrowsAsync<DockerApiException>(async () => await _container.UnpauseAsync().ConfigureAwait(true));
+        
+        Assert.Equal(HttpStatusCode.InternalServerError, thrown.StatusCode);
+        Assert.Equal($"Docker API responded with status code=InternalServerError, response={{\"message\":\"Container {_container.Id} is not paused\"}}\n", thrown.Message);
     }
 }

@@ -606,11 +606,6 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      if (!TestcontainersStates.Paused.Equals(State))
-      {
-        return;
-      }
-
       Unpausing?.Invoke(this, EventArgs.Empty);
 
       await _client.UnpauseAsync(_container.ID, ct)
