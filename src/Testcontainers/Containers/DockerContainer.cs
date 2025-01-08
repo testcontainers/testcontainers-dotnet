@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public class DockerContainer : Resource, IContainer
   {
-    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
+    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Paused | TestcontainersStates.Exited;
 
     private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
 
@@ -49,6 +49,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopping;
 
     /// <inheritdoc />
+    public event EventHandler Pausing;
+
+    /// <inheritdoc />
+    public event EventHandler Unpausing;
+
+    /// <inheritdoc />
     public event EventHandler Created;
 
     /// <inheritdoc />
@@ -58,6 +64,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
+    public event EventHandler Paused;
+
+    /// <inheritdoc />
+    public event EventHandler Unpaused;
+
+    /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }
 
     /// <inheritdoc />
@@ -65,6 +77,12 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc />
     public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime PausedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime UnpausedTime { get; private set; }
 
     /// <inheritdoc />
     public ILogger Logger
@@ -295,6 +313,26 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public async Task PauseAsync(CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafePauseAsync(ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task UnpauseAsync(CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeUnpauseAsync(ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
@@ -520,6 +558,64 @@ namespace DotNet.Testcontainers.Containers
 
       StoppedTime = DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Pauses the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been paused.</returns>
+    protected virtual async Task UnsafePauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Pausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.PauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      PausedTime = DateTime.UtcNow;
+      Paused?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Unpauses the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
+    protected virtual async Task UnsafeUnpauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Unpausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.UnpauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      UnpausedTime = DateTime.UtcNow;
+      Unpaused?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
