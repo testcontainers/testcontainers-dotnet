@@ -1,5 +1,3 @@
-using Microsoft.Azure.Cosmos;
-
 namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -26,18 +24,6 @@ public sealed class CosmosDbContainer : DockerContainer
         properties.Add("AccountKey", CosmosDbBuilder.DefaultAccountKey);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
-
-    /// <summary>
-    /// Gets a configured cosmos client with connection mode set to Gateway.
-    /// </summary>
-    public CosmosClient CosmosClient
-        => new CosmosClient(
-            GetConnectionString(),
-            new()
-            {
-                ConnectionMode = ConnectionMode.Gateway,
-                HttpClientFactory = () => new(new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)))
-            });
 
     /// <summary>
     /// Gets a configured HTTP message handler that automatically trusts the CosmosDb Emulator's certificate.

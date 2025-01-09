@@ -46,7 +46,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
             .WithImage(CosmosDbImage)
             .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithPortBinding(CosmosDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(CosmosDbPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -65,5 +65,33 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Merge(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
     {
         return new CosmosDbBuilder(new CosmosDbConfiguration(oldValue, newValue));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
+            const string REQUEST_URI = "http://localhost";
+
+            using var httpClient = ((CosmosDbContainer)container).HttpClient;
+
+            try
+            {
+                using var httpResponse = await httpClient.GetAsync(REQUEST_URI)
+                    .ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    await Task.Delay(2_000);
+                    return true;
+                }
+            }
+            catch { }
+
+            return false;
+        }
     }
 }

@@ -22,7 +22,13 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
     public async Task CreateDatabaseAndContainerSuccessful()
     {
         // Given
-        using var cosmosClient = _cosmosDbContainer.CosmosClient;
+        using var cosmosClient = new CosmosClient(
+            _cosmosDbContainer.GetConnectionString(),
+            new()
+            {
+                ConnectionMode = ConnectionMode.Gateway,
+                HttpClientFactory = () => _cosmosDbContainer.HttpClient
+            });
 
 
         // When
@@ -41,7 +47,13 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
     public async Task RetrieveItemCreated()
     {
         // Given
-        using var cosmosClient = _cosmosDbContainer.CosmosClient;
+        using var cosmosClient = new CosmosClient(
+            _cosmosDbContainer.GetConnectionString(),
+            new()
+            {
+                ConnectionMode = ConnectionMode.Gateway,
+                HttpClientFactory = () => _cosmosDbContainer.HttpClient
+            });
 
         var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("dbfake")).Database;
         await database.CreateContainerIfNotExistsAsync("containerfake", "/id");
