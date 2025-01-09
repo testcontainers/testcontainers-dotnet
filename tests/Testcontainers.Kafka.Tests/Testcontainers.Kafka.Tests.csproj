@@ -5,6 +5,8 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Confluent.SchemaRegistry" />
+        <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json" />
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
