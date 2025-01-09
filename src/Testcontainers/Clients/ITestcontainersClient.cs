@@ -79,6 +79,22 @@ namespace DotNet.Testcontainers.Clients
     Task StopAsync(string id, CancellationToken ct = default);
 
     /// <summary>
+    /// Pauses the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been paused.</returns>
+    Task PauseAsync(string id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Unpauses the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
+    Task UnpauseAsync(string id, CancellationToken ct = default);
+
+    /// <summary>
     /// Removes the container.
     /// </summary>
     /// <param name="id">The container id.</param>
