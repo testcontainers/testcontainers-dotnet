@@ -53,19 +53,20 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
-    
+
     /// <summary>
-    /// Attaches the dependent <see cref="MsSqlContainer"/> to the Azure Service Bus Emulator.
+    /// Sets the dependent MSSQL container for the Azure Service Bus Emulator.
     /// </summary>
     /// <remarks>
-    /// When an exitent instance of <see cref="MsSqlContainer"/> is attached to Azure Service Bus Emulator, please ensure that both containers are in the same network.
+    /// This method allows attaching an existing SQL Server container instance to the Azure Service Bus Emulator.
+    /// The containers must be in the same network to enable communication between them.
     /// </remarks>
-    /// <param name="msSqlContainer">An instance of <see cref="MsSqlContainer"/></param>
-    /// <param name="databaseNetworkAlias">The dependent MSSQL container network alias.</param>
-    /// <param name="saPassword">The dependent MSSQL container SA password.</param>
-    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    /// <param name="msSqlContainer">An existing instance of <see cref="MsSqlContainer"/> to use as the database backend.</param>
+    /// <param name="databaseNetworkAlias">The network alias that will be used to connect to the SQL Server container.</param>
+    /// <param name="saPassword">The SA password for the SQL Server container. Defaults to <see cref="MsSqlBuilder.DefaultPassword"/>.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder"/>.</returns>
     public ServiceBusBuilder WithMsSqlContainer(
-        MsSqlContainer msSqlContainer, 
+        MsSqlContainer msSqlContainer,
         string databaseNetworkAlias,
         string saPassword = MsSqlBuilder.DefaultPassword)
     {
