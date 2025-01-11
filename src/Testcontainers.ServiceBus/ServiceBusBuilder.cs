@@ -53,6 +53,27 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
+    
+    /// <summary>
+    /// Attaches the dependent <see cref="MsSqlContainer"/> to the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// When an exitent instance of <see cref="MsSqlContainer"/> is attached to Azure Service Bus Emulator, please ensure that both containers are in the same network.
+    /// </remarks>
+    /// <param name="msSqlContainer">An instance of <see cref="MsSqlContainer"/></param>
+    /// <param name="databaseNetworkAlias">The dependent MSSQL container network alias.</param>
+    /// <param name="saPassword">The dependent MSSQL container SA password.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithMsSqlContainer(
+        MsSqlContainer msSqlContainer, 
+        string databaseNetworkAlias,
+        string saPassword = MsSqlBuilder.DefaultPassword)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
+            .DependsOn(msSqlContainer)
+            .WithEnvironment("MSSQL_SA_PASSWORD", saPassword)
+            .WithEnvironment("SQL_SERVER", databaseNetworkAlias);
+    }
 
     /// <inheritdoc />
     public override ServiceBusContainer Build()
