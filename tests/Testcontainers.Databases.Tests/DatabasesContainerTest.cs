@@ -37,9 +37,18 @@ public sealed class DatabaseContainersTest
 
         foreach (var testAssembly in testAssemblies)
         {
+            var testAssemblyName = testAssembly.Key.GetName().Name;
+
             // TODO: If a module contains multiple container implementations, it would require all container implementations to implement the interface.
             foreach (var containerType in testAssembly.Value.Where(type => type.IsAssignableTo(typeof(IContainer))))
             {
+                var typeAssemblyName = containerType.Assembly.GetName().Name;
+
+                if (!string.IsNullOrWhiteSpace(testAssemblyName) && !string.IsNullOrWhiteSpace(typeAssemblyName) && !testAssemblyName.Contains(typeAssemblyName))
+                {
+                    continue;
+                }
+
                 var hasDataProvider = testAssembly.Value.Exists(type => type.IsSubclassOf(typeof(DbProviderFactory)));
 
                 if (expectDataProvider && hasDataProvider)
