@@ -1,36 +1,27 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Networks;
-using Testcontainers.MsSql;
+﻿namespace Testcontainers.ServiceBus;
 
-namespace Testcontainers.ServiceBus;
-
-public class ServiceBusContainerWithMsSqlContainerTest : IAsyncLifetime
+public class ServiceBusContainerWithCustomMsSqlTest : IAsyncLifetime
 {
     private static readonly INetwork Network = new NetworkBuilder().Build();
-    
-    private static readonly MsSqlContainer MsSqlContainer = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
-        .WithNetwork(Network)
-        .WithNetworkAliases("sql-server")
-        .Build();
     
     private readonly ServiceBusContainer _serviceBusContainer = new ServiceBusBuilder()
         .WithNetwork(Network)
         .WithAcceptLicenseAgreement(true)
-        .WithMsSqlContainer(MsSqlContainer, "sql-server")
+        .WithMsSqlContainer(new MsSqlBuilder()
+            .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
+            .WithNetwork(Network)
+            .WithNetworkAliases("sql-server")
+            .Build(), "sql-server")
         .Build();
     
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        await MsSqlContainer.StartAsync();
-        await _serviceBusContainer.StartAsync();
+        return _serviceBusContainer.StartAsync();
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
-        await MsSqlContainer.DisposeAsync();
-        await _serviceBusContainer.DisposeAsync();
-        await Network.DisposeAsync();
+        return _serviceBusContainer.DisposeAsync().AsTask();
     }
     
     [Fact]
