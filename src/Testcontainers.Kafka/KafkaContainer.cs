@@ -1,13 +1,11 @@
-using System.Collections.Generic;
-
 namespace Testcontainers.Kafka;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
 public sealed class KafkaContainer : DockerContainer
 {
-    private KafkaConfiguration _configuration;
-    internal IEnumerable<string> AdvertisedListeners => this._configuration.AdvertisedListeners;
+    private readonly KafkaConfiguration _configuration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaContainer" /> class.
     /// </summary>
@@ -15,7 +13,7 @@ public sealed class KafkaContainer : DockerContainer
     public KafkaContainer(KafkaConfiguration configuration)
         : base(configuration)
     {
-        this._configuration = configuration;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -27,4 +25,14 @@ public sealed class KafkaContainer : DockerContainer
         return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
     }
 
+    /// <summary>
+    /// Gets a list of advertised listeners.
+    /// </summary>
+    public IEnumerable<string> AdvertisedListeners
+    {
+        get
+        {
+            return _configuration.AdvertisedListeners;
+        }
+    }
 }

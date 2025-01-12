@@ -1,31 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Testcontainers.Kafka;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
 public sealed class KafkaConfiguration : ContainerConfiguration
 {
-    public IEnumerable<string> AdvertisedListeners { get; }
-    public IEnumerable<string> Listeners { get; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
-    public KafkaConfiguration(IEnumerable<string> listeners = null, IEnumerable<string> advertisedListeners = null)
+    /// <param name="listeners">A list of listeners.</param>
+    /// <param name="advertisedListeners">A list of advertised listeners.</param>
+    public KafkaConfiguration(
+        IEnumerable<string> listeners = null,
+        IEnumerable<string> advertisedListeners = null)
     {
-        if ( listeners != null)
-        {
-            this.Listeners = [..listeners];
-        }
-        if (advertisedListeners != null)
-        {
-            this.AdvertisedListeners = [..advertisedListeners];
-        }
+        Listeners = listeners;
+        AdvertisedListeners = advertisedListeners;
     }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
@@ -64,7 +55,17 @@ public sealed class KafkaConfiguration : ContainerConfiguration
     public KafkaConfiguration(KafkaConfiguration oldValue, KafkaConfiguration newValue)
         : base(oldValue, newValue)
     {
-        this.Listeners = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.Listeners, newValue.Listeners);
-        this.AdvertisedListeners = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.AdvertisedListeners, newValue.AdvertisedListeners);
+        Listeners = BuildConfiguration.Combine(oldValue.Listeners, newValue.Listeners);
+        AdvertisedListeners = BuildConfiguration.Combine(oldValue.AdvertisedListeners, newValue.AdvertisedListeners);
     }
+
+    /// <summary>
+    /// Gets a list of listeners.
+    /// </summary>
+    public IEnumerable<string> Listeners { get; }
+
+    /// <summary>
+    /// Gets a list of advertised listeners.
+    /// </summary>
+    public IEnumerable<string> AdvertisedListeners { get; }
 }

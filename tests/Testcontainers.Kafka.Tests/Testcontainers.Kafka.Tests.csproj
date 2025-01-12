@@ -5,13 +5,13 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Confluent.SchemaRegistry" />
-        <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json" />
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Confluent.Kafka"/>
+        <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json"/>
+        <PackageReference Include="Confluent.SchemaRegistry"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Kafka/Testcontainers.Kafka.csproj"/>
