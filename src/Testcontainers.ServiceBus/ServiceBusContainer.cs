@@ -33,7 +33,7 @@ public sealed class ServiceBusContainer : DockerContainer
     /// <inheritdoc />
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
-        foreach (var network in _configuration.Networks)
+        foreach (var network in _configuration.Networks.ToArray())
         {
             await network.CreateAsync(ct)
                 .ConfigureAwait(false);
