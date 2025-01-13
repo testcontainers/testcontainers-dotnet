@@ -1,63 +1,68 @@
-using System.Collections.Generic;
-using System.Text;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using DotNet.Testcontainers.Networks;
-
 namespace Testcontainers.Kafka;
 
 public sealed class KafkaContainerNetworkTest : IAsyncLifetime
 {
-    private INetwork _network;
-    private KafkaContainer _kafkaContainer;
+    private const string Message = "Message produced by kafkacat";
 
-    private IContainer _kCatContainer;
-    public async Task InitializeAsync()
+    private const string Listener = "kafka:19092";
+
+    private const string DataFilePath = "/data/msgs.txt";
+
+    private readonly INetwork _network;
+
+    private readonly IContainer _kafkaContainer;
+
+    private readonly IContainer _kCatContainer;
+
+    public KafkaContainerNetworkTest()
     {
-        _network = new NetworkBuilder().Build();
+        _network = new NetworkBuilder()
+            .Build();
+
         _kafkaContainer = new KafkaBuilder()
-            .WithImage("confluentinc/cp-kafka")
+            .WithImage("confluentinc/cp-kafka:6.1.9")
             .WithNetwork(_network)
-            .WithListener("kafka:19092")
+            .WithListener(Listener)
             .Build();
 
         _kCatContainer = new ContainerBuilder()
-            .WithImage("confluentinc/cp-kcat")
+            .WithImage("confluentinc/cp-kafkacat:6.1.9")
             .WithNetwork(_network)
-            .WithCommand("-c", "tail -f /dev/null")
-            .WithEntrypoint("sh")
-            .WithResourceMapping(Encoding.Default.GetBytes("Message produced by kcat"), "/data/msgs.txt")
+            .WithEntrypoint(CommonCommands.SleepInfinity)
+            .WithResourceMapping(Encoding.Default.GetBytes(Message), DataFilePath)
             .Build();
-        
-        await _kCatContainer.StartAsync(); 
-        await _kafkaContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task InitializeAsync()
     {
-        return Task.WhenAll(
-            _kafkaContainer.DisposeAsync().AsTask(), 
-            _kCatContainer.DisposeAsync().AsTask()
-        );
+        await _kafkaContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        await _kCatContainer.StartAsync()
+            .ConfigureAwait(false);
     }
-    
+
+    public async Task DisposeAsync()
+    {
+        await _kafkaContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        await _kCatContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        await _network.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
     [Fact]
-    public async Task TestUsageWithListener()
+    public async Task ConsumesProducedKafkaMessage()
     {
-        // kcat producer
-        await _kCatContainer.ExecAsync(new List<string>()
-        {
-            "kcat", "-b", "kafka:19092", "-t", "msgs", "-P", "-l", "/data/msgs.txt"
-        });
-        
-        
-        // kcat consumer
-        var kCatResult = await _kCatContainer.ExecAsync(new List<string>()
-        {
-            "kcat", "-b", "kafka:19092", "-C", "-t", "msgs", "-c", "1"
-        });
-        
-        Assert.Contains("Message produced by kcat", kCatResult.Stdout);
+        _ = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath })
+            .ConfigureAwait(true);
+
+        var execResult = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-C", "-t", "msgs", "-c", "1" })
+            .ConfigureAwait(true);
+
+        Assert.Equal(Message, execResult.Stdout.Trim());
     }
-    
 }

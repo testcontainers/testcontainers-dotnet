@@ -72,20 +72,21 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         var listenerSecurityProtocolMap = $"{protocol}:PLAINTEXT";
 
         var listeners = new[] { listener };
+        var listenersSecurityProtocolMap = new[] { listenerSecurityProtocolMap };
 
         var host = kafka.Split(':')[0];
 
-        var currentListeners = DockerResourceConfiguration.Environments["KAFKA_LISTENERS"]
-            .Split([','], StringSplitOptions.RemoveEmptyEntries)
-            .Concat([listener]);
+        var updatedListeners = DockerResourceConfiguration.Environments["KAFKA_LISTENERS"]
+            .Split(',')
+            .Concat(listeners);
 
-        var currentListenersSecurityProtocolMap = DockerResourceConfiguration.Environments["KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"]
-            .Split([','], StringSplitOptions.RemoveEmptyEntries)
-            .Concat([listenerSecurityProtocolMap]);
+        var updatedListenersSecurityProtocolMap = DockerResourceConfiguration.Environments["KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"]
+            .Split(',')
+            .Concat(listenersSecurityProtocolMap);
 
         return Merge(DockerResourceConfiguration, new KafkaConfiguration(listeners, listeners))
-            .WithEnvironment("KAFKA_LISTENERS", string.Join(",", currentListeners))
-            .WithEnvironment("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", string.Join(",", currentListenersSecurityProtocolMap))
+            .WithEnvironment("KAFKA_LISTENERS", string.Join(",", updatedListeners))
+            .WithEnvironment("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", string.Join(",", updatedListenersSecurityProtocolMap))
             .WithNetworkAliases(host);
     }
 
