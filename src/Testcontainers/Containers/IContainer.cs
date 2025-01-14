@@ -35,6 +35,18 @@ namespace DotNet.Testcontainers.Containers
     event EventHandler Stopping;
 
     /// <summary>
+    /// Subscribes to the pausing event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Pausing;
+
+    /// <summary>
+    /// Subscribes to the unpausing event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Unpausing;
+
+    /// <summary>
     /// Subscribes to the created event.
     /// </summary>
     [CanBeNull]
@@ -53,6 +65,18 @@ namespace DotNet.Testcontainers.Containers
     event EventHandler Stopped;
 
     /// <summary>
+    /// Subscribes to the paused event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Paused;
+
+    /// <summary>
+    /// Subscribes to the unpaused event.
+    /// </summary>
+    [CanBeNull]
+    event EventHandler Unpaused;
+
+    /// <summary>
     /// Gets the created timestamp.
     /// </summary>
     DateTime CreatedTime { get; }
@@ -66,6 +90,16 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the stopped timestamp.
     /// </summary>
     DateTime StoppedTime { get; }
+
+    /// <summary>
+    /// Gets the paused timestamp.
+    /// </summary>
+    DateTime PausedTime { get; }
+
+    /// <summary>
+    /// Gets the unpaused timestamp.
+    /// </summary>
+    DateTime UnpausedTime { get; }
 
     /// <summary>
     /// Gets the logger.
@@ -186,6 +220,24 @@ namespace DotNet.Testcontainers.Containers
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task StopAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Pauses the container.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been paused.</returns>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
+    Task PauseAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Unpauses the container.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
+    Task UnpauseAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host file to the container.
