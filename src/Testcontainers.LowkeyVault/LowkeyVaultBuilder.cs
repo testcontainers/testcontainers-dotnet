@@ -77,8 +77,7 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
     public LowkeyVaultBuilder WithImportFile(string importFilePath)
     {
-        return Merge(DockerResourceConfiguration, new LowkeyVaultConfiguration(importFilePath: importFilePath))
-            .WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_LOCATION={importFilePath}"))
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_LOCATION={importFilePath}"))
             .WithResourceMapping(new FileInfo(importFilePath), new FileInfo("/import/vaults.json"));
     }
 
@@ -102,44 +101,39 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
     public LowkeyVaultBuilder WithCustomSslCertificate(string keyStoreFilePath, string keyStorePassword, StoreType keyStoreType = StoreType.PKCS12)
     {
-        return Merge(DockerResourceConfiguration, new LowkeyVaultConfiguration(keyStoreFilePath: keyStoreFilePath, keyStorePassword: keyStorePassword, keyStoreType: keyStoreType))
-            .WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--server.ssl.key-store={keyStoreFilePath} " +
-            $"--server.ssl.key-store-type={keyStoreType} " +
-            $"--server.ssl.key-store-password={keyStorePassword ?? string.Empty}"))
-            .WithResourceMapping(new FileInfo(keyStoreFilePath), new FileInfo("/config/cert.store"));
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--server.ssl.key-store={keyStoreFilePath} "
+                                                               + $"--server.ssl.key-store-type={keyStoreType} "
+                                                               + $"--server.ssl.key-store-password={keyStorePassword ?? string.Empty}"));
+        //.WithResourceMapping(new FileInfo(keyStoreFilePath), new FileInfo("/config/cert.store"));
     }
 
     /// <summary>
-    /// Sets Debug.
+    /// Enable Lowkey Debug.
     /// </summary>
-    /// <param name="debug">The debug flag.</param>
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
-    public LowkeyVaultBuilder WithDebug(bool debug)
+    public LowkeyVaultBuilder WithDebug()
     {
-        return Merge(DockerResourceConfiguration, new LowkeyVaultConfiguration(debug: debug))
-            .WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_DEBUG_REQUEST_LOG={debug}"));
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_DEBUG_REQUEST_LOG={true}"));
     }
 
     /// <summary>
-    /// Sets Logical Host.
+    /// Sets The host used to replace host placeholder in import template.
     /// </summary>
-    /// <param name="debug">The logical host.</param>
+    /// <param name="logicalHost">The logical host.</param>
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
     public LowkeyVaultBuilder WithLogicalHost(string logicalHost)
     {
-        return Merge(DockerResourceConfiguration, new LowkeyVaultConfiguration(logicalHost: logicalHost))
-            .WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_TEMPLATE_HOST={logicalHost}"));
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_TEMPLATE_HOST={logicalHost}"));
     }
 
     /// <summary>
-    /// Sets Logical Port.
+    /// Sets The port used to replace host placeholder in import template.
     /// </summary>
-    /// <param name="debug">The logical port.</param>
+    /// <param name="logicalPort">The logical port.</param>
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
     public LowkeyVaultBuilder WithLogicalPort(ushort logicalPort)
     {
-        return Merge(DockerResourceConfiguration, new LowkeyVaultConfiguration(logicalPort: logicalPort))
-            .WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_TEMPLATE_PORT={logicalPort}"));
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_IMPORT_TEMPLATE_PORT={logicalPort}"));
     }
 
 
@@ -159,24 +153,6 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     {
         Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.VaultNames, nameof(DockerResourceConfiguration.VaultNames)).NotNull();
-        _ = Guard.Argument(DockerResourceConfiguration.AliasMap, nameof(DockerResourceConfiguration.AliasMap)).NotNull();
-        _ = Guard.Argument(DockerResourceConfiguration.AdditionalArguments, nameof(DockerResourceConfiguration.AdditionalArguments)).NotNull();
-
-        if (DockerResourceConfiguration.ExternalConfigFilePath is { } externalConfigFilePath)
-        {
-            var fileName = Path.GetFileName(externalConfigFilePath);
-
-            if (!fileName.EndsWith(".properties", StringComparison.Ordinal))
-            {
-                throw new ArgumentException("External configuration file must be a *.properties file.");
-            }
-        }
-
-        ValidateVaultNames(DockerResourceConfiguration.VaultNames);
-
-        ValidateAliasMap(DockerResourceConfiguration.AliasMap);
-
         var waitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*Started LowkeyVaultApp.*$");
 
         var lowkeyVaultBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
@@ -191,6 +167,27 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
             .WithImage(LowkeyVaultImage)
             .WithPortBinding(LowkeyVaultPort, false)
             .WithPortBinding(LowkeyVaultTokenPort, false);
+    }
+
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.VaultNames, nameof(DockerResourceConfiguration.VaultNames)).NotNull();
+        _ = Guard.Argument(DockerResourceConfiguration.AliasMap, nameof(DockerResourceConfiguration.AliasMap)).NotNull();
+        _ = Guard.Argument(DockerResourceConfiguration.AdditionalArguments, nameof(DockerResourceConfiguration.AdditionalArguments)).NotNull();
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.ExternalConfigFilePath))
+                 .ThrowIf(argument =>
+                 {
+                     var externalConfigFilePath = argument.Value.ExternalConfigFilePath;
+                     var fileName = Path.GetFileName(externalConfigFilePath);
+                     return !string.IsNullOrEmpty(externalConfigFilePath) && !Path.GetFileName(fileName).EndsWith(".properties", StringComparison.Ordinal);
+                 }, argument => throw new ArgumentException("External configuration file must be a *.properties file."));
+
+        ValidateVaultNames(DockerResourceConfiguration.VaultNames);
+
+        ValidateAliasMap(DockerResourceConfiguration.AliasMap);
     }
 
     /// <inheritdoc />
@@ -211,11 +208,11 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
         return new LowkeyVaultBuilder(new LowkeyVaultConfiguration(oldValue, newValue));
     }
 
-    private string AddOrAppend(string newValue)
+    private string AddOrAppend(string value)
     {
         return DockerResourceConfiguration.Environments.TryGetValue(LowKeyVaultEnvVarKey, out var existingValue)
-            ? MergeEnv(existingValue, newValue)
-            : newValue;
+            ? MergeEnv(existingValue, value)
+            : value;
     }
 
     /// <summary>
@@ -315,5 +312,11 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
                        .SelectMany(pair => pair.Value.OrderBy(alias => alias) // Sort values
                        .Select(alias => $"{pair.Key}={alias}"))
                        .Aggregate((current, next) => $"{current},{next}"); // Join the pairs into a single string with commas
+    }
+
+    public enum StoreType
+    {
+        JKS,
+        PKCS12
     }
 }
