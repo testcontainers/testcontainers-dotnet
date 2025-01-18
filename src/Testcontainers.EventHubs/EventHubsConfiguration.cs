@@ -11,9 +11,11 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// <param name="azuriteBlobEndpoint">The Azurite blob endpoint.</param>
     /// <param name="azuriteTableEndpoint">The Azurite table endpoint.</param>
     public EventHubsConfiguration(
+        ConfigurationBuilder configurationBuilder = null,
         string azuriteBlobEndpoint = null,
         string azuriteTableEndpoint = null)
     {
+        ConfigurationBuilder = configurationBuilder;
         AzuriteBlobEndpoint = azuriteBlobEndpoint;
         AzuriteTableEndpoint = azuriteTableEndpoint;
     }
@@ -56,9 +58,15 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     public EventHubsConfiguration(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
         : base(oldValue, newValue)
     {
+        ConfigurationBuilder = BuildConfiguration.Combine(oldValue.ConfigurationBuilder, newValue.ConfigurationBuilder);
         AzuriteBlobEndpoint = BuildConfiguration.Combine(oldValue.AzuriteBlobEndpoint, newValue.AzuriteBlobEndpoint);
         AzuriteTableEndpoint = BuildConfiguration.Combine(oldValue.AzuriteTableEndpoint, newValue.AzuriteTableEndpoint);
     }
+    
+    /// <summary>
+    /// Gets the configuration builder
+    /// </summary>
+    public ConfigurationBuilder ConfigurationBuilder { get; }
     
     /// <summary>
     /// Gets the Azurite blob endpoint
