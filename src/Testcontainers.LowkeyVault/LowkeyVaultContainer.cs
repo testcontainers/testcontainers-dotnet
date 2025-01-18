@@ -24,7 +24,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// <returns>The default vault base URL.</returns>
     public string GetDefaultVaultBaseUrl()
     {
-        return new UriBuilder(Uri.UriSchemeHttps, Hostname, LowkeyVaultBuilder.LowkeyVaultPort).ToString();
+        return new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultPort)).ToString();
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// <returns>The vault base URL.</returns>
     public string GetVaultBaseUrl(string vaultName)
     {
-        return new UriBuilder(Uri.UriSchemeHttps, $"{vaultName}.{Hostname}", LowkeyVaultBuilder.LowkeyVaultPort).ToString();
+        return new UriBuilder(Uri.UriSchemeHttps, $"{vaultName}.{Hostname}", GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultPort)).ToString();
     }
 
     /// <summary>

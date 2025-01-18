@@ -4,7 +4,7 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, LowkeyVaultContainer, LowkeyVaultConfiguration>
 {
-    public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.6.15";
+    public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.0-ubi9-minimal";
 
     public const ushort LowkeyVaultPort = 8443;
 
@@ -103,17 +103,28 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     {
         return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--server.ssl.key-store={keyStoreFilePath} "
                                                                + $"--server.ssl.key-store-type={keyStoreType} "
-                                                               + $"--server.ssl.key-store-password={keyStorePassword ?? string.Empty}"));
-        //.WithResourceMapping(new FileInfo(keyStoreFilePath), new FileInfo("/config/cert.store"));
+                                                               + $"--server.ssl.key-store-password={keyStorePassword ?? string.Empty}"))
+            .WithResourceMapping(new FileInfo(keyStoreFilePath), new FileInfo("/config/cert.store"));
     }
 
     /// <summary>
-    /// Enable Lowkey Debug.
+    /// Enable Or Disable Debug.
     /// </summary>
+    /// <param name="debug">The flag to enable or disable debug.</param>
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
-    public LowkeyVaultBuilder WithDebug()
+    public LowkeyVaultBuilder WithDebug(bool debug)
     {
-        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_DEBUG_REQUEST_LOG={true}"));
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_DEBUG_REQUEST_LOG={debug}"));
+    }
+
+    /// <summary>
+    /// Enable Or Disable Relaxed Ports.
+    /// </summary>
+    /// <param name="relaxedPorts">The flag to enable or disable relaxed ports.</param>
+    /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
+    public LowkeyVaultBuilder WithRelaxedPorts(bool relaxedPorts)
+    {
+        return WithEnvironment(LowKeyVaultEnvVarKey, AddOrAppend($"--LOWKEY_VAULT_RELAXED_PORTS={relaxedPorts}"));
     }
 
     /// <summary>
@@ -165,8 +176,9 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     {
         return base.Init()
             .WithImage(LowkeyVaultImage)
-            .WithPortBinding(LowkeyVaultPort, false)
-            .WithPortBinding(LowkeyVaultTokenPort, false);
+            .WithPortBinding(LowkeyVaultPort, true)
+            .WithPortBinding(LowkeyVaultTokenPort, true)
+            .WithRelaxedPorts(true);
     }
 
     /// <inheritdoc />
