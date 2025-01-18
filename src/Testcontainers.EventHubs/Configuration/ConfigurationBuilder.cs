@@ -3,6 +3,7 @@
 public class ConfigurationBuilder
 {
     private const string DefaultNamespace = "emulatorns1";
+    private const string DefaultLoggingType = "file";
         
     private readonly RootConfiguration _rootConfiguration = new RootConfiguration();
             
@@ -10,15 +11,15 @@ public class ConfigurationBuilder
     {
         _rootConfiguration.UserConfig = new UserConfig
         {
-            NamespaceConfig = new List<NamespaceConfig>()
-            {
+            NamespaceConfig =
+            [
                 new NamespaceConfig
                 {
                     Type = "EventHub",
                     Name = DefaultNamespace
-                }
-            },
-            LoggingConfig = new LoggingConfig() { Type = "File" }
+                },
+            ],
+            LoggingConfig = new LoggingConfig() { Type = DefaultLoggingType },
         };
     }
 
@@ -39,7 +40,7 @@ public class ConfigurationBuilder
         {
             Name = entityName,
             PartitionCount = partitionCount,
-            ConsumerGroups = consumerGroups.Select(consumerGroupName => new ConsumerGroup { Name = consumerGroupName }).ToList()
+            ConsumerGroups = consumerGroups.Select(consumerGroupName => new ConsumerGroup { Name = consumerGroupName }).ToList(),
         });
 
         return this;
