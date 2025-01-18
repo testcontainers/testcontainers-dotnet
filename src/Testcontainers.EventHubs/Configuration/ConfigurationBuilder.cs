@@ -2,7 +2,7 @@
 
 public class ConfigurationBuilder
 {
-    private const string DefaultNamespace = "emulatorns1";
+    private const string DefaultNamespace = "emulatorNs1";
     private const string DefaultLoggingType = "file";
         
     private readonly RootConfiguration _rootConfiguration = new RootConfiguration();
