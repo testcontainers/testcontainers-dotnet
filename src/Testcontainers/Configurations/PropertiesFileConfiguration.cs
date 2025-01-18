@@ -71,6 +71,13 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      const string propertyName = "docker.context";
+      return GetDockerContext(propertyName);
+    }
+
+    /// <inheritdoc />
     public string GetDockerHostOverride()
     {
       const string propertyName = "host.override";
@@ -120,7 +127,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       const string propertyName = "ryuk.container.privileged";
       return GetRyukContainerPrivileged(propertyName);

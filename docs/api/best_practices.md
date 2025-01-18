@@ -9,3 +9,4 @@ At times, configuring and launching disposable Docker resources for testing purp
 5. Avoid mounting local host paths to containers. Instead, use `_container.WithResourceMapping(string, string)` or one of its overloaded members to copy dependent files to the container before it starts.
 6. In rare cases, it may be necessary to access the underlying Docker API to configure specific properties that are not exposed by Testcontainers' own API. To get access to all Docker API properties required to create a resource, use `_builder.WithCreateParameterModifier(Action<TCreateResourceEntity>)`.
 7. Do not disable the Resource Reaper, as it cleans up remaining test resources. Disabling it may clutter up the test environment.
+8. Ensure that the image version is overridden and pinned, regardless of whether you are using the generic or module container builder `_builder.WithImage("alpine:3.20.0")`.

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <DefineConstants>$(DefineConstants);XUNIT_V3</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="xunit.v3.extensibility.core"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="../Testcontainers.Xunit/*.cs"/>
+    </ItemGroup>
+</Project>

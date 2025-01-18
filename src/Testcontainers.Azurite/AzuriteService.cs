@@ -3,7 +3,7 @@ namespace Testcontainers.Azurite;
 /// <summary>
 /// An Azurite service.
 /// </summary>
-internal readonly struct AzuriteService
+internal readonly record struct AzuriteService
 {
     /// <summary>
     /// Gets the Blob service.

@@ -43,7 +43,7 @@ public static class DockerCli
 
     public static bool PlatformIsEnabled(DockerPlatform platform)
     {
-        var commandResult = new Command("version", "--format '{{.Server.Os}}'").Execute();
+        var commandResult = new Command("version", "--format {{.Server.Os}}").Execute();
         return 0.Equals(commandResult.ExitCode) && commandResult.Stdout.Contains(platform.ToString().ToLowerInvariant());
     }
 
@@ -51,6 +51,13 @@ public static class DockerCli
     {
         var commandResult = new Command("inspect", "--type=" + resource.ToString().ToLowerInvariant(), id).Execute();
         return 0.Equals(commandResult.ExitCode);
+    }
+
+    public static Uri GetCurrentEndpoint(string context = "")
+    {
+        var commandResult = new Command("context", "inspect", "--format {{.Endpoints.docker.Host}}", context).Execute();
+        commandResult.ThrowIfExecutionFailed();
+        return new Uri(commandResult.Stdout.Replace("npipe:////./", "npipe://./"));
     }
 
     [PublicAPI]
@@ -98,7 +105,7 @@ public static class DockerCli
                 process.ErrorDataReceived -= AppendStderr;
             }
 
-            return new CommandResult(process.ExitCode, startTime, exitTime, _stdout.ToString(), _stderr.ToString());
+            return new CommandResult(this, process.ExitCode, startTime, exitTime, _stdout.ToString(), _stderr.ToString());
         }
 
         private void AppendStdout(object sender, DataReceivedEventArgs e)
@@ -110,19 +117,27 @@ public static class DockerCli
         {
             _stderr.Append(e.Data);
         }
+
+        public override string ToString()
+        {
+            return $"{_processStartInfo.FileName} {_processStartInfo.Arguments}";
+        }
     }
 
     [PublicAPI]
     private sealed class CommandResult
     {
-        public CommandResult(int exitCode, DateTime startTime, DateTime exitTime, string stdout, string stderr)
+        public CommandResult(Command command, int exitCode, DateTime startTime, DateTime exitTime, string stdout, string stderr)
         {
+            Command = command;
             ExitCode = exitCode;
             StartTime = startTime;
             ExitTime = exitTime;
             Stdout = stdout;
             Stderr = stderr;
         }
+
+        public Command Command { get; }
 
         public int ExitCode { get; }
 
@@ -133,5 +148,13 @@ public static class DockerCli
         public string Stdout { get; }
 
         public string Stderr { get; }
+
+        public void ThrowIfExecutionFailed()
+        {
+            if (!0.Equals(ExitCode))
+            {
+                throw new InvalidOperationException($"Executing '{Command}' failed: {Stderr}");
+            }
+        }
     }
 }

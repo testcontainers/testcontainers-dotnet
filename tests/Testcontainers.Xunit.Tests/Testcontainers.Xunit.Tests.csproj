@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="Dapper"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../Testcontainers.Redis.Tests/Testcontainers.Redis.Tests.csproj"/>
+        <ProjectReference Include="../Testcontainers.PostgreSql.Tests/Testcontainers.PostgreSql.Tests.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Chinook_PostgreSql_AutoIncrementPKs.sql">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

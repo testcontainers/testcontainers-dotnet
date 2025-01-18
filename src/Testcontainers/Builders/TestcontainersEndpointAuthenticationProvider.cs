@@ -70,6 +70,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      return _customConfiguration.GetDockerContext();
+    }
+
+    /// <inheritdoc />
     public string GetDockerHostOverride()
     {
       return _customConfiguration.GetDockerHostOverride();
@@ -112,7 +118,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return _customConfiguration.GetRyukContainerPrivileged();
     }

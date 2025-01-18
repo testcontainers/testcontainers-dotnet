@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Globalization;
   using System.Text.Json;
   using DotNet.Testcontainers.Images;
 
@@ -21,7 +22,12 @@ namespace DotNet.Testcontainers.Configurations
 
     protected virtual Uri GetDockerHost(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && !string.IsNullOrEmpty(propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+    }
+
+    protected virtual string GetDockerContext(string propertyName)
+    {
+      return GetPropertyValue<string>(propertyName);
     }
 
     protected virtual string GetDockerHostOverride(string propertyName)
@@ -73,9 +79,9 @@ namespace DotNet.Testcontainers.Configurations
       return GetPropertyValue<bool>(propertyName);
     }
 
-    protected virtual bool GetRyukContainerPrivileged(string propertyName)
+    protected virtual bool? GetRyukContainerPrivileged(string propertyName)
     {
-      return GetPropertyValue<bool>(propertyName);
+      return GetPropertyValue<bool?>(propertyName);
     }
 
     protected virtual IImage GetRyukContainerImage(string propertyName)
@@ -109,34 +115,36 @@ namespace DotNet.Testcontainers.Configurations
 
     protected virtual TimeSpan? GetWaitStrategyInterval(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result) && result > TimeSpan.Zero ? result : null;
     }
 
     protected virtual TimeSpan? GetWaitStrategyTimeout(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, out var result) && result > TimeSpan.Zero ? result : (TimeSpan?)null;
+      return _properties.TryGetValue(propertyName, out var propertyValue) && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result) && result > TimeSpan.Zero ? result : null;
     }
 
     private T GetPropertyValue<T>(string propertyName)
     {
       var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
+      var isNullable = type != typeof(T);
+
       switch (Type.GetTypeCode(type))
       {
         case TypeCode.Boolean:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ("1".Equals(propertyValue, StringComparison.Ordinal) || (bool.TryParse(propertyValue, out var result) && result)));
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && bool.TryParse(propertyValue, out var result) ? result : isNullable ? null : "1".Equals(propertyValue, StringComparison.Ordinal));
         }
 
         case TypeCode.UInt16:
         {
-          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : (ushort?)null);
+          return (T)(object)(_properties.TryGetValue(propertyName, out var propertyValue) && ushort.TryParse(propertyValue, out var result) ? result : isNullable ? null : 0);
         }
 
         case TypeCode.String:
         {
           _ = _properties.TryGetValue(propertyName, out var propertyValue);
-          return (T)(object)propertyValue;
+          return (T)(object)(string.IsNullOrEmpty(propertyValue) ? null : propertyValue);
         }
 
         default:

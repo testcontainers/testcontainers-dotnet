@@ -4,11 +4,11 @@ namespace Testcontainers.Papercut;
 [PublicAPI]
 public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
 {
-    public const string PapercutImage = "jijiechen/papercut:latest";
-
-    public const ushort HttpPort = 37408;
+    public const string PapercutImage = "changemakerstudiosus/papercut-smtp:latest";
 
     public const ushort SmtpPort = 25;
+
+    public const ushort HttpPort = 80;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PapercutBuilder" /> class.
@@ -44,9 +44,10 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     {
         return base.Init()
             .WithImage(PapercutImage)
-            .WithPortBinding(HttpPort, true)
             .WithPortBinding(SmtpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Now listening on"));
+            .WithPortBinding(HttpPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health").ForPort(HttpPort).ForResponseMessageMatching(IsInstanceHealthyAsync)));
     }
 
     /// <inheritdoc />
@@ -65,5 +66,18 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     protected override PapercutBuilder Merge(PapercutConfiguration oldValue, PapercutConfiguration newValue)
     {
         return new PapercutBuilder(new PapercutConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Determines whether the instance is healthy or not.
+    /// </summary>
+    /// <param name="response">The HTTP response that contains the health information.</param>
+    /// <returns>A value indicating whether the instance is healthy or not.</returns>
+    private static async Task<bool> IsInstanceHealthyAsync(HttpResponseMessage response)
+    {
+        var body = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        return "Papercut WebUI server started successfully.".Equals(body, StringComparison.OrdinalIgnoreCase);
     }
 }

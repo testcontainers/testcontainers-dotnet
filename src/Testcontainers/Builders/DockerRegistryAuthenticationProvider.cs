@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Concurrent;
-  using System.IO;
   using System.Linq;
   using System.Text.Json;
   using DotNet.Testcontainers.Configurations;
@@ -16,9 +15,7 @@ namespace DotNet.Testcontainers.Builders
 
     private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 
-    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
-
-    private readonly FileInfo _dockerConfigFilePath;
+    private readonly DockerConfig _dockerConfig;
 
     private readonly ILogger _logger;
 
@@ -28,30 +25,19 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
-      : this(GetDefaultDockerConfigFilePath(), logger)
+      : this(DockerConfig.Instance, logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
     /// </summary>
-    /// <param name="dockerConfigFilePath">The Docker config file path.</param>
+    /// <param name="dockerConfig">The Docker config.</param>
     /// <param name="logger">The logger.</param>
     [PublicAPI]
-    public DockerRegistryAuthenticationProvider(string dockerConfigFilePath, ILogger logger)
-      : this(new FileInfo(dockerConfigFilePath), logger)
+    public DockerRegistryAuthenticationProvider(DockerConfig dockerConfig, ILogger logger)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
-    /// </summary>
-    /// <param name="dockerConfigFilePath">The Docker config file path.</param>
-    /// <param name="logger">The logger.</param>
-    [PublicAPI]
-    public DockerRegistryAuthenticationProvider(FileInfo dockerConfigFilePath, ILogger logger)
-    {
-      _dockerConfigFilePath = dockerConfigFilePath;
+      _dockerConfig = dockerConfig;
       _logger = logger;
     }
 
@@ -68,12 +54,6 @@ namespace DotNet.Testcontainers.Builders
       return lazyAuthConfig.Value;
     }
 
-    private static string GetDefaultDockerConfigFilePath()
-    {
-      var dockerConfigDirectoryPath = EnvironmentConfiguration.Instance.GetDockerConfig() ?? PropertiesFileConfiguration.Instance.GetDockerConfig() ?? UserProfileDockerConfigDirectoryPath;
-      return Path.Combine(dockerConfigDirectoryPath, "config.json");
-    }
-
     private static JsonDocument GetDefaultDockerAuthConfig()
     {
       return EnvironmentConfiguration.Instance.GetDockerAuthConfig() ?? PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? JsonDocument.Parse("{}");
@@ -85,28 +65,25 @@ namespace DotNet.Testcontainers.Builders
       {
         IDockerRegistryAuthenticationConfiguration authConfig;
 
-        if (_dockerConfigFilePath.Exists)
+        if (_dockerConfig.Exists)
         {
-          using (var dockerConfigFileStream = new FileStream(_dockerConfigFilePath.FullName, FileMode.Open, FileAccess.Read))
+          using (var dockerConfigJsonDocument = _dockerConfig.Parse())
           {
-            using (var dockerConfigJsonDocument = JsonDocument.Parse(dockerConfigFileStream))
-            {
-              authConfig = new IDockerRegistryAuthenticationProvider[]
-                {
-                  new CredsHelperProvider(dockerConfigJsonDocument, _logger),
-                  new CredsStoreProvider(dockerConfigJsonDocument, _logger),
-                  new Base64Provider(dockerConfigJsonDocument, _logger),
-                  new Base64Provider(dockerAuthConfigJsonDocument, _logger),
-                }
-                .AsParallel()
-                .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
-                .FirstOrDefault(authenticationProvider => authenticationProvider != null);
-            }
+            authConfig = new IDockerRegistryAuthenticationProvider[]
+              {
+                new CredsHelperProvider(dockerConfigJsonDocument, _logger),
+                new CredsStoreProvider(dockerConfigJsonDocument, _logger),
+                new Base64Provider(dockerConfigJsonDocument, _logger),
+                new Base64Provider(dockerAuthConfigJsonDocument, _logger),
+              }
+              .AsParallel()
+              .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
+              .FirstOrDefault(authenticationProvider => authenticationProvider != null);
           }
         }
         else
         {
-          _logger.DockerConfigFileNotFound(_dockerConfigFilePath.FullName);
+          _logger.DockerConfigFileNotFound(_dockerConfig.FullName);
           IDockerRegistryAuthenticationProvider authConfigProvider = new Base64Provider(dockerAuthConfigJsonDocument, _logger);
           authConfig = authConfigProvider.GetAuthConfig(hostname);
         }

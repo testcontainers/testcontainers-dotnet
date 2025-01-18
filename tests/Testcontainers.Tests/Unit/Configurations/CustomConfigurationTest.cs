@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
+        EnvironmentVariables.Add("DOCKER_CONTEXT");
         EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
         EnvironmentVariables.Add("DOCKER_CERT_PATH");
         EnvironmentVariables.Add("DOCKER_TLS");
@@ -52,6 +53,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_CONTEXT", "", null)]
+      [InlineData("DOCKER_CONTEXT", "default", "default")]
+      public void GetDockerContextCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
       }
 
       [Theory]
@@ -147,11 +159,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", "", false)]
-      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", false)]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool? expected)
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -256,6 +268,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       [Theory]
       [InlineData("", null)]
+      [InlineData("docker.context=", null)]
+      [InlineData("docker.context=default", "default")]
+      public void GetDockerContextCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
+      }
+
+      [Theory]
+      [InlineData("", null)]
       [InlineData("host.override=", null)]
       [InlineData("host.override=docker.svc.local", "docker.svc.local")]
       public void GetDockerHostOverrideCustomConfiguration(string configuration, string expected)
@@ -340,11 +362,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", false)]
-      [InlineData("ryuk.container.privileged=", false)]
+      [InlineData("", null)]
+      [InlineData("ryuk.container.privileged=", null)]
       [InlineData("ryuk.container.privileged=false", false)]
       [InlineData("ryuk.container.privileged=true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool? expected)
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());

@@ -19,16 +19,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public void Deserialize(IXunitSerializationInfo info)
     {
       var repository = info.GetValue<string>("Repository");
-      var name = info.GetValue<string>("Name");
+      var registry = info.GetValue<string>("Registry");
       var tag = info.GetValue<string>("Tag");
-      Image = new DockerImage(repository, name, tag);
+      var digest = info.GetValue<string>("Digest");
+      Image = new DockerImage(repository, registry, tag, digest);
     }
 
     public void Serialize(IXunitSerializationInfo info)
     {
       info.AddValue("Repository", Image.Repository);
-      info.AddValue("Name", Image.Name);
+      info.AddValue("Registry", Image.Registry);
       info.AddValue("Tag", Image.Tag);
+      info.AddValue("Digest", Image.Digest);
     }
   }
 }

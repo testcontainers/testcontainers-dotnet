@@ -17,10 +17,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     private const ushort HttpPort = 80;
 
     private readonly IContainer _container = new ContainerBuilder()
-      .WithImage(CommonImages.Alpine)
-      .WithEntrypoint("/bin/sh", "-c")
-      .WithCommand($"while true; do echo \"HTTP/1.1 200 OK\r\n\" | nc -l -p {HttpPort}; done")
+      .WithImage(CommonImages.Socat)
+      .WithCommand("-v")
+      .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
+      .WithCommand("EXEC:\"echo -e 'HTTP/1.1 200 OK'\n\n\"")
       .WithPortBinding(HttpPort, true)
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
       .Build();
 
     public static TheoryData<HttpWaitStrategy> GetHttpWaitStrategies()
@@ -74,15 +76,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       await Task.Delay(TimeSpan.FromSeconds(1))
         .ConfigureAwait(true);
 
-      var (stdout, _) = await _container.GetLogsAsync()
+      var (_, stderr) = await _container.GetLogsAsync()
         .ConfigureAwait(true);
 
       // Then
       Assert.True(succeeded);
-      Assert.Contains("Authorization", stdout);
-      Assert.Contains("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", stdout);
-      Assert.Contains(httpHeaders.First().Key, stdout);
-      Assert.Contains(httpHeaders.First().Value, stdout);
+      Assert.Contains("Authorization", stderr);
+      Assert.Contains("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", stderr);
+      Assert.Contains(httpHeaders.First().Key, stderr);
+      Assert.Contains(httpHeaders.First().Value, stderr);
     }
 
     [Fact]
@@ -104,13 +106,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       await Task.Delay(TimeSpan.FromSeconds(1))
         .ConfigureAwait(true);
 
-      var (stdout, _) = await _container.GetLogsAsync()
+      var (_, stderr) = await _container.GetLogsAsync()
         .ConfigureAwait(true);
 
       // Then
       Assert.True(succeeded);
-      Assert.Contains("Cookie", stdout);
-      Assert.Contains("Key1=Value1", stdout);
+      Assert.Contains("Cookie", stderr);
+      Assert.Contains("Key1=Value1", stderr);
     }
 
     [Fact]

@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -137,6 +138,28 @@ namespace DotNet.Testcontainers.Clients
             .ConfigureAwait(false))
       {
         await Container.StopAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task PauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.PauseAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task UnpauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.UnpauseAsync(id, ct)
           .ConfigureAwait(false);
       }
     }
@@ -286,6 +309,8 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
     {
+      ImageInspectResponse cachedImage;
+
       if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
@@ -295,8 +320,15 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerImageNotFoundException)
+      {
+        cachedImage = null;
+      }
 
       if (configuration.ImagePullPolicy(cachedImage))
       {
@@ -325,8 +357,17 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
-        .ConfigureAwait(false);
+      ImageInspectResponse cachedImage;
+
+      try
+      {
+        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerImageNotFoundException)
+      {
+        cachedImage = null;
+      }
 
       if (configuration.ImageBuildPolicy(cachedImage))
       {
@@ -364,6 +405,12 @@ namespace DotNet.Testcontainers.Clients
 
       if (dockerRegistryServerAddress == null)
       {
+        // https://hub.docker.com/_/scratch.
+        if ("scratch".Equals(image.Repository, StringComparison.OrdinalIgnoreCase))
+        {
+          return;
+        }
+
         var info = await System.GetInfoAsync(ct)
           .ConfigureAwait(false);
 

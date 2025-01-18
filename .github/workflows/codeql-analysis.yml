@@ -3,8 +3,10 @@ name: CodeQL
 on:
   push:
     branches: [ develop, main ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
   pull_request:
     branches: [ develop, main ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}

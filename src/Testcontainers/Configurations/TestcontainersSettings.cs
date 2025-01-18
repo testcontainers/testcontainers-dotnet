@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
@@ -141,7 +141,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)

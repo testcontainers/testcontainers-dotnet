@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string DockerHost = "DOCKER_HOST";
 
+    private const string DockerContext = "DOCKER_CONTEXT";
+
     private const string DockerAuthConfig = "DOCKER_AUTH_CONFIG";
 
     private const string DockerCertPath = "DOCKER_CERT_PATH";
@@ -54,6 +56,7 @@ namespace DotNet.Testcontainers.Configurations
           DockerCertPath,
           DockerConfig,
           DockerHost,
+          DockerContext,
           DockerTls,
           DockerTlsVerify,
           DockerHostOverride,
@@ -86,6 +89,12 @@ namespace DotNet.Testcontainers.Configurations
     public Uri GetDockerHost()
     {
       return GetDockerHost(DockerHost);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      return GetDockerContext(DockerContext);
     }
 
     /// <inheritdoc />
@@ -131,7 +140,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return GetRyukContainerPrivileged(RyukContainerPrivileged);
     }

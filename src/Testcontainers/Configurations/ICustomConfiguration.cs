@@ -27,6 +27,14 @@ namespace DotNet.Testcontainers.Configurations
     Uri GetDockerHost();
 
     /// <summary>
+    /// Gets the Docker context custom configuration.
+    /// </summary>
+    /// <returns>The Docker context custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    string GetDockerContext();
+
+    /// <summary>
     /// Gets the Docker host override custom configuration.
     /// </summary>
     /// <returns>The Docker host override custom configuration.</returns>
@@ -84,7 +92,8 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <returns>The Ryuk container privileged custom configuration.</returns>
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
-    bool GetRyukContainerPrivileged();
+    [CanBeNull]
+    bool? GetRyukContainerPrivileged();
 
     /// <summary>
     /// Gets the Ryuk container image custom configuration.

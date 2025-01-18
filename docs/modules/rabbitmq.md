@@ -1,77 +1,27 @@
 # RabbitMQ
 
-Here is an example of a pre-configured RabbitMQ [module](https://www.nuget.org/packages/Testcontainers.RabbitMq). In this example, Testcontainers is utilized to launch a RabbitMQ server within an [xUnit.net](https://xunit.net/) test. The purpose is to establish a connection to the server, send a message, and subsequently validate the successful transmission and consumption of the message. The process also ensures that the received message corresponds accurately to the originally sent message.
+[RabbitMQ](https://www.rabbitmq.com/) is a message broker that enables reliable communication between distributed applications by managing and routing messages between them.
 
-Before running the test, make sure to install the required dependencies:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.RabbitMq
-dotnet add package RabbitMQ.Client
-dotnet add package xunit
 ```
 
-Copy and paste the following code into a new `.cs` test file:
+You can start a RabbitMQ container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-```csharp
-using System.Text;
-using System.Threading;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using Testcontainers.RabbitMq;
-using Xunit;
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.RabbitMq.Tests/RabbitMqContainerTest.cs:UseRabbitMqContainer"
+    ```
 
-public sealed class RabbitMqContainerTest : IAsyncLifetime
-{
-  private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
+The test example uses the following NuGet dependencies:
 
-  public Task InitializeAsync()
-  {
-    return _rabbitMqContainer.StartAsync();
-  }
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.RabbitMq.Tests/Testcontainers.RabbitMq.Tests.csproj:PackageReferences"
+    ```
 
-  public Task DisposeAsync()
-  {
-    return _rabbitMqContainer.DisposeAsync().AsTask();
-  }
+To execute the tests, use the command `dotnet test` from a terminal.
 
-  [Fact]
-  public void ConsumeMessageFromQueue()
-  {
-    const string queue = "hello";
-
-    const string message = "Hello World!";
-
-    string actualMessage = null;
-
-    // Signal the completion of message reception.
-    EventWaitHandle waitHandle = new ManualResetEvent(false);
-
-    // Create and establish a connection.
-    var connectionFactory = new ConnectionFactory();
-    connectionFactory.Uri = new Uri(_rabbitMqContainer.GetConnectionString());
-    using var connection = connectionFactory.CreateConnection();
-
-    // Send a message to the channel.
-    using var channel = connection.CreateModel();
-    channel.QueueDeclare(queue, false, false, false, null);
-    channel.BasicPublish(string.Empty, queue, null, Encoding.Default.GetBytes(message));
-
-    // Consume a message from the channel.
-    var consumer = new EventingBasicConsumer(channel);
-    consumer.Received += (_, eventArgs) =>
-    {
-      actualMessage = Encoding.Default.GetString(eventArgs.Body.ToArray());
-      waitHandle.Set();
-    };
-
-    channel.BasicConsume(queue, true, consumer);
-    waitHandle.WaitOne(TimeSpan.FromSeconds(1));
-
-    Assert.Equal(message, actualMessage);
-  }
-}
-```
-
-To execute the tests, use the command `dotnet test` from your terminal.
-
-Read more about the usage of RabbitMQ and .NET [here](https://www.rabbitmq.com/tutorials/tutorial-one-dotnet.html).
+--8<-- "docs/modules/_call_out_test_projects.txt"

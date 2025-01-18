@@ -23,9 +23,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     static DockerEndpointAuthenticationProviderTest()
     {
       _ = Directory.CreateDirectory(CertificatesDirectoryPath);
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "ca.pem"));
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "cert.pem"));
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "key.pem"));
+      using var fileStream1 = File.Create(Path.Combine(CertificatesDirectoryPath, "ca.pem"));
+      using var fileStream2 = File.Create(Path.Combine(CertificatesDirectoryPath, "cert.pem"));
+      using var fileStream3 = File.Create(Path.Combine(CertificatesDirectoryPath, "key.pem"));
     }
 
     [Theory]
