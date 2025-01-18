@@ -11,3 +11,4 @@ global using JetBrains.Annotations;
 global using Testcontainers.EventHubs.Configuration;
 global using DotNet.Testcontainers;
 global using System.Threading.Tasks;
+global using Testcontainers.Azurite;

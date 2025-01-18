@@ -7,6 +7,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
+    
+    public const string AzuriteNetworkAlias = "azurite";
 
     private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
 
@@ -50,28 +52,6 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     }
     
     /// <summary>
-    /// Sets the endpoint of the azurite blob service
-    /// </summary>
-    /// <param name="azuriteBlobEndpoint"></param>
-    /// <returns></returns>
-    public EventHubsBuilder WithAzuriteBlobEndpoint(string azuriteBlobEndpoint)
-    {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteBlobEndpoint: azuriteBlobEndpoint))
-            .WithEnvironment("BLOB_SERVER", azuriteBlobEndpoint);
-    }
-    
-    /// <summary>
-    /// Sets the endpoint of the azurite table service
-    /// </summary>
-    /// <param name="azuriteTableEndpoint"></param>
-    /// <returns></returns>
-    public EventHubsBuilder WithAzuriteTableEndpoint(string azuriteTableEndpoint)
-    {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteTableEndpoint: azuriteTableEndpoint))
-            .WithEnvironment("METADATA_SERVER", azuriteTableEndpoint);
-    }
-    
-    /// <summary>
     /// Accepts the license agreement.
     /// </summary>
     /// <remarks>
@@ -83,6 +63,34 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+    }
+    
+    /// <summary>
+    ///  Sets the Azurite container for the Event Hubs Emulator.
+    /// </summary>
+    /// <param name="azuriteContainer">docker container</param>
+    /// <param name="blobEndpoint">blob endpoint</param>
+    /// <param name="tableEndpoint">table endpoint</param>
+    /// <returns></returns>
+    public EventHubsBuilder WithAzurite(AzuriteContainer azuriteContainer, string blobEndpoint, string tableEndpoint)
+    {
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteContainer: azuriteContainer))
+            .DependsOn(azuriteContainer)
+            .WithEnvironment("BLOB_SERVER", blobEndpoint)
+            .WithEnvironment("METADATA_SERVER", tableEndpoint);
+    }
+    
+    /// <summary>
+    ///  Sets the default Azurite container for the Event Hubs Emulator.
+    /// </summary>
+    public EventHubsBuilder WithAzurite()
+    {
+        var azuriteContainer = new AzuriteBuilder()
+            .WithNetwork(DockerResourceConfiguration.Networks.Single())
+            .WithNetworkAliases(AzuriteNetworkAlias)
+            .Build();
+        
+        return WithAzurite(azuriteContainer, AzuriteNetworkAlias, AzuriteNetworkAlias);
     }
     
     /// <inheritdoc />
@@ -105,16 +113,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
                 nameof(DockerResourceConfiguration.ConfigurationBuilder))
             .NotNull()
             .ThrowIf(x => !x.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
-
-        _ = Guard.Argument(DockerResourceConfiguration.AzuriteBlobEndpoint,
-                nameof(DockerResourceConfiguration.AzuriteBlobEndpoint))
-            .NotNull()
-            .NotEmpty();
         
-        _ = Guard.Argument(DockerResourceConfiguration.AzuriteTableEndpoint,
-                nameof(DockerResourceConfiguration.AzuriteTableEndpoint))
-            .NotNull()
-            .NotEmpty();
         return;
         
         bool LicenseAgreementNotAccepted(EventHubsConfiguration value) =>
@@ -122,14 +121,14 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
     }
     
-
-    
     /// <inheritdoc />
     protected override EventHubsBuilder Init()
     {
         return base.Init()
             .WithImage(EventHubsImage)
+            .WithNetwork(new NetworkBuilder().Build())
             .WithPortBinding(EventHubsPort, true)
+            .WithAzurite()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
                 .AddCustomWaitStrategy(new WaitTwoSeconds()));;

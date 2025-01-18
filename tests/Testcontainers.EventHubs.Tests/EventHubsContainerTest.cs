@@ -1,55 +1,20 @@
-using System;
-using Azure.Messaging.EventHubs.Consumer;
-
 namespace Testcontainers.EventHubs;
 
 public abstract class EventHubsContainerTest : IAsyncLifetime
 {
-    private readonly AzuriteContainer _azuriteContainer;
-
-    private EventHubsContainer _eventHubsContainer;
-
-    private readonly INetwork _network = new NetworkBuilder().Build();
+    private static readonly ConfigurationBuilder ConfigurationBuilder = ConfigurationBuilder.Create()
+        .WithEventHub(EventHubName, 2, [EventHubConsumerGroupName]);
     
-    private const string AzuriteNetworkAlias = "azurite";
-    
-    private const string EventHubName = "testeventhub";
+    private readonly EventHubsContainer _eventHubsContainer = new EventHubsBuilder()
+        .WithAcceptLicenseAgreement(true)
+        .WithConfigurationBuilder(ConfigurationBuilder)
+        .Build();
+
+    private const string EventHubName = "eh-1";
     private const string EventHubConsumerGroupName = "testconsumergroup";
-    
-    private EventHubsContainerTest()
-    {
-        _azuriteContainer = new AzuriteBuilder()
-            .WithNetwork(_network)
-            .WithNetworkAliases(AzuriteNetworkAlias)
-            .Build();
-    }
 
-    public async Task InitializeAsync()
-    {
-        await _azuriteContainer.StartAsync();
-        
-        var configurationBuilder = ConfigurationBuilder
-            .Create()
-            .WithEventHub(EventHubName, 2, [EventHubConsumerGroupName]);
-
-        var builder = new EventHubsBuilder()
-            .WithAcceptLicenseAgreement(true)
-            .WithNetwork(_network)
-            .WithConfigurationBuilder(configurationBuilder)
-            .WithAzuriteBlobEndpoint(AzuriteNetworkAlias)
-            .WithAzuriteTableEndpoint(AzuriteNetworkAlias);
-        
-        _eventHubsContainer = builder.Build();
-        
-        await _eventHubsContainer.StartAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _eventHubsContainer.DisposeAsync();
-        
-        await _azuriteContainer.DisposeAsync();
-    }
+    public Task InitializeAsync() => _eventHubsContainer.StartAsync();
+    public Task DisposeAsync() => _eventHubsContainer.DisposeAsync().AsTask();
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]

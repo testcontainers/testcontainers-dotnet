@@ -1,3 +1,5 @@
+using Testcontainers.Azurite;
+
 namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerConfiguration" />
@@ -7,17 +9,13 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsConfiguration" /> class.
     /// </summary>
+    /// <param name="azuriteContainer">The Azurite docker container.</param>
     /// <param name="configurationBuilder">The configuration builder.</param>
-    /// <param name="azuriteBlobEndpoint">The Azurite blob endpoint.</param>
-    /// <param name="azuriteTableEndpoint">The Azurite table endpoint.</param>
-    public EventHubsConfiguration(
-        ConfigurationBuilder configurationBuilder = null,
-        string azuriteBlobEndpoint = null,
-        string azuriteTableEndpoint = null)
+    public EventHubsConfiguration(AzuriteContainer azuriteContainer = null,
+        ConfigurationBuilder configurationBuilder = null)
     {
         ConfigurationBuilder = configurationBuilder;
-        AzuriteBlobEndpoint = azuriteBlobEndpoint;
-        AzuriteTableEndpoint = azuriteTableEndpoint;
+        AzuriteContainer = azuriteContainer;
     }
 
     /// <summary>
@@ -59,22 +57,16 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
         ConfigurationBuilder = BuildConfiguration.Combine(oldValue.ConfigurationBuilder, newValue.ConfigurationBuilder);
-        AzuriteBlobEndpoint = BuildConfiguration.Combine(oldValue.AzuriteBlobEndpoint, newValue.AzuriteBlobEndpoint);
-        AzuriteTableEndpoint = BuildConfiguration.Combine(oldValue.AzuriteTableEndpoint, newValue.AzuriteTableEndpoint);
+        AzuriteContainer = BuildConfiguration.Combine(oldValue.AzuriteContainer, newValue.AzuriteContainer);
     }
     
     /// <summary>
     /// Gets the configuration builder
     /// </summary>
     public ConfigurationBuilder ConfigurationBuilder { get; }
-    
+
     /// <summary>
-    /// Gets the Azurite blob endpoint
+    /// Gets the Azurite docker container details
     /// </summary>
-    public string AzuriteBlobEndpoint { get; }
-    
-    /// <summary>
-    /// Gets the Azurite table endpoint
-    /// </summary>
-    public string AzuriteTableEndpoint { get; }
+    public AzuriteContainer AzuriteContainer { get; set; }
 }
