@@ -45,7 +45,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         var configBytes = Encoding.UTF8.GetBytes(configurationBuilder.Build());
         
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(configurationBuilder: configurationBuilder))
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration())
             .WithResourceMapping(configBytes, "Eventhubs_Emulator/ConfigFiles/Config.json");
     }
     
@@ -100,10 +100,6 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override void Validate()
     {
         base.Validate();
-
-        _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder,
-                nameof(DockerResourceConfiguration.ConfigurationBuilder))
-            .NotNull();
 
         _ = Guard.Argument(DockerResourceConfiguration.AzuriteBlobEndpoint,
                 nameof(DockerResourceConfiguration.AzuriteBlobEndpoint))
