@@ -1,3 +1,6 @@
+using System;
+using Azure.Messaging.EventHubs.Consumer;
+
 namespace Testcontainers.EventHubs;
 
 public abstract class EventHubsContainerTest : IAsyncLifetime
@@ -6,9 +9,8 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
     private EventHubsContainer _eventHubsContainer;
 
-    private readonly INetwork _network = new NetworkBuilder().WithName(NetworkName).Build();
+    private readonly INetwork _network = new NetworkBuilder().Build();
     
-    private const string NetworkName = "eh-network";
     private const string AzuriteNetworkAlias = "azurite";
     
     private const string EventHubName = "testeventhub";
@@ -28,9 +30,10 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         
         var configurationBuilder = ConfigurationBuilder
             .Create()
-            .WithEventHub(EventHubName, "2", new[] { EventHubConsumerGroupName });
+            .WithEventHub(EventHubName, 2, [EventHubConsumerGroupName]);
 
         var builder = new EventHubsBuilder()
+            .WithAcceptLicenseAgreement(true)
             .WithNetwork(_network)
             .WithConfigurationBuilder(configurationBuilder)
             .WithAzuriteBlobEndpoint(AzuriteNetworkAlias)
@@ -50,9 +53,9 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task SendAndReceivesEvents()
+    public async Task SendEvents()
     {
-        // Give
+        // Given
         var eventBody = Encoding.Default.GetBytes("test");
         var producerClient = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubName);
         
