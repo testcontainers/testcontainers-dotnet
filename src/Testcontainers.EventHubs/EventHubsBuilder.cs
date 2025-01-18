@@ -104,7 +104,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder,
                 nameof(DockerResourceConfiguration.ConfigurationBuilder))
             .NotNull()
-            .ThrowIf(x => x.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
+            .ThrowIf(x => !x.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
 
         _ = Guard.Argument(DockerResourceConfiguration.AzuriteBlobEndpoint,
                 nameof(DockerResourceConfiguration.AzuriteBlobEndpoint))
