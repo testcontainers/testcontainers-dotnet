@@ -7,6 +7,12 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
+
+    private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
+
+    private const string AcceptLicenseAgreement = "Y";
+
+    private const string DeclineLicenseAgreement = "N";
     
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
@@ -65,6 +71,20 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .WithEnvironment("METADATA_SERVER", azuriteTableEndpoint);
     }
     
+    /// <summary>
+    /// Accepts the license agreement.
+    /// </summary>
+    /// <remarks>
+    /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Azure Event Hubs Emulator <see href="https://github.com/Azure/azure-event-hubs-emulator-installer/blob/main/EMULATOR_EULA.md">license</see> is accepted.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Azure Event Hubs Emulator license agreement is accepted.</param>
+    /// <returns>A configured instance of <see cref="EventHubsBuilder" />.</returns>
+    public EventHubsBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    {
+        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+    }
+    
     /// <inheritdoc />
     public override EventHubsContainer Build()
     {
@@ -96,12 +116,13 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .NotEmpty();
     }
     
+
+    
     /// <inheritdoc />
     protected override EventHubsBuilder Init()
     {
         return base.Init()
             .WithImage(EventHubsImage)
-            .WithEnvironment("ACCEPT_EULA", "Y")
             .WithPortBinding(EventHubsPort, true);
     }
 
