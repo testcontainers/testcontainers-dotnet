@@ -101,9 +101,14 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         base.Validate();
 
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+            .ThrowIf(argument => LicenseAgreementNotAccepted(argument.Value),
+                argument => throw new ArgumentException($"The image '{DockerResourceConfiguration.Image.FullName}' requires you to accept a license agreement.", argument.Name));
+        
         _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder,
                 nameof(DockerResourceConfiguration.ConfigurationBuilder))
-            .NotNull();
+            .NotNull()
+            .ThrowIf(x => x.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
 
         _ = Guard.Argument(DockerResourceConfiguration.AzuriteBlobEndpoint,
                 nameof(DockerResourceConfiguration.AzuriteBlobEndpoint))
@@ -114,6 +119,11 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
                 nameof(DockerResourceConfiguration.AzuriteTableEndpoint))
             .NotNull()
             .NotEmpty();
+        return;
+        
+        bool LicenseAgreementNotAccepted(EventHubsConfiguration value) =>
+            !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) ||
+            !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
     }
     
 

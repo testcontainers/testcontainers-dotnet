@@ -28,7 +28,7 @@ public class ConfigurationBuilder
         return new ConfigurationBuilder();
     }
         
-    public ConfigurationBuilder WithEventHub(string entityName, string partitionCount, IEnumerable<string> consumerGroups)
+    public ConfigurationBuilder WithEventHub(string entityName, int partitionCount, IEnumerable<string> consumerGroups)
     {
         var namespaceConfig = _rootConfiguration.UserConfig.NamespaceConfig.FirstOrDefault(x => x.Name == DefaultNamespace);
         if (namespaceConfig == null)
@@ -44,6 +44,16 @@ public class ConfigurationBuilder
         });
 
         return this;
+    }
+
+    public bool Validate()
+    {
+        return _rootConfiguration.UserConfig.NamespaceConfig.Count == 1 &&
+               _rootConfiguration.UserConfig.NamespaceConfig.First().Entities.Count > 0 &&
+               _rootConfiguration.UserConfig.NamespaceConfig.First().Entities.Count <= 10 &&
+               _rootConfiguration.UserConfig.NamespaceConfig.First().Entities.All(entity =>
+                   entity.PartitionCount is > 0 and <= 32 &&
+                   entity.ConsumerGroups.Count is > 0 and <= 20);
     }
 
     public string Build()
