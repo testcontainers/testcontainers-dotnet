@@ -10,3 +10,4 @@ global using DotNet.Testcontainers.Containers;
 global using JetBrains.Annotations;
 global using Testcontainers.EventHubs.Configuration;
 global using DotNet.Testcontainers;
+global using System.Threading.Tasks;

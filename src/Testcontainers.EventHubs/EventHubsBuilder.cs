@@ -89,11 +89,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public override EventHubsContainer Build()
     {
         Validate();
-        
-        var waitStrategy = Wait.ForUnixContainer().UntilMessageIsLogged("Emulator Service is Successfully Up!");
-        
-        var eventHubsBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
-        return new EventHubsContainer(eventHubsBuilder.DockerResourceConfiguration);
+        return new EventHubsContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -133,7 +129,10 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         return base.Init()
             .WithImage(EventHubsImage)
-            .WithPortBinding(EventHubsPort, true);
+            .WithPortBinding(EventHubsPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilMessageIsLogged("Emulator Service is Successfully Up!")
+                .AddCustomWaitStrategy(new WaitTwoSeconds()));;
     }
 
     /// <inheritdoc />
@@ -152,5 +151,17 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
     {
         return new EventHubsBuilder(new EventHubsConfiguration(oldValue, newValue));
+    }
+    
+    private sealed class WaitTwoSeconds : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2))
+                .ConfigureAwait(false);
+
+            return true;
+        }
     }
 }
