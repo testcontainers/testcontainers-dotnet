@@ -1,7 +1,6 @@
-﻿namespace Testcontainers.EventHubs.Configuration
+﻿namespace Testcontainers.EventHubs.Configuration;
+
+public record LoggingConfig
 {
-    public record LoggingConfig
-    {
-        public string Type { get; set; }
-    }
+    public string Type { get; set; }
 }

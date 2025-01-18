@@ -1,7 +1,6 @@
-﻿namespace Testcontainers.EventHubs.Configuration
+﻿namespace Testcontainers.EventHubs.Configuration;
+
+public record RootConfiguration
 {
-    public record RootConfiguration
-    {
-        public UserConfig UserConfig { get; set; }
-    }
+    public UserConfig UserConfig { get; set; }
 }

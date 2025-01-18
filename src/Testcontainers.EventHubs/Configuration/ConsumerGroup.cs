@@ -1,7 +1,6 @@
-﻿namespace Testcontainers.EventHubs.Configuration
+﻿namespace Testcontainers.EventHubs.Configuration;
+
+public record ConsumerGroup
 {
-    public record ConsumerGroup
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }
