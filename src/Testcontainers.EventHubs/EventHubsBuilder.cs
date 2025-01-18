@@ -1,5 +1,3 @@
-using DotNet.Testcontainers;
-
 namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
