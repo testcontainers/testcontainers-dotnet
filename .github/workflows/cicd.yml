@@ -51,6 +51,7 @@ jobs:
           { name: "Testcontainers.DynamoDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Elasticsearch", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.EventStoreDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.EventHubs", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.FakeGcsServer", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.FirebirdSql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Firestore", runs-on: "ubuntu-22.04" },
