@@ -7,7 +7,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
-    
+
     public const string AzuriteNetworkAlias = "azurite";
 
     private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
@@ -15,7 +15,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     private const string AcceptLicenseAgreement = "Y";
 
     private const string DeclineLicenseAgreement = "N";
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
@@ -37,7 +37,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     /// <inheritdoc />
     protected override EventHubsConfiguration DockerResourceConfiguration { get; }
-    
+
     /// <summary>
     /// Sets the event hub configuration
     /// </summary>
@@ -46,11 +46,12 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public EventHubsBuilder WithConfigurationBuilder(ConfigurationBuilder configurationBuilder)
     {
         var configBytes = Encoding.UTF8.GetBytes(configurationBuilder.Build());
-        
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(configurationBuilder: configurationBuilder))
+
+        return Merge(DockerResourceConfiguration,
+                new EventHubsConfiguration(configurationBuilder: configurationBuilder))
             .WithResourceMapping(configBytes, "Eventhubs_Emulator/ConfigFiles/Config.json");
     }
-    
+
     /// <summary>
     /// Accepts the license agreement.
     /// </summary>
@@ -64,35 +65,44 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
-    
+
     /// <summary>
     ///  Sets the Azurite container for the Event Hubs Emulator.
     /// </summary>
     /// <param name="azuriteContainer">docker container</param>
-    /// <param name="blobEndpoint">blob endpoint</param>
-    /// <param name="tableEndpoint">table endpoint</param>
+    /// <param name="alias">network alias name that is used for connection to blob and table endpoints</param>
     /// <returns></returns>
-    public EventHubsBuilder WithAzurite(AzuriteContainer azuriteContainer, string blobEndpoint, string tableEndpoint)
+    public EventHubsBuilder WithAzurite(AzuriteContainer azuriteContainer,
+        string alias) =>
+        WithAzurite(azuriteContainer, false, alias);
+
+    private EventHubsBuilder WithAzurite(AzuriteContainer azuriteContainer,
+        bool isInternal,
+        string alias = AzuriteNetworkAlias)
     {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteContainer: azuriteContainer))
-            .DependsOn(azuriteContainer)
-            .WithEnvironment("BLOB_SERVER", blobEndpoint)
-            .WithEnvironment("METADATA_SERVER", tableEndpoint);
+        var builder = Merge(DockerResourceConfiguration,
+            new EventHubsConfiguration(azuriteContainer: azuriteContainer));
+
+        if (!isInternal)
+        {
+            builder = builder.DependsOn(azuriteContainer);
+        }
+
+        return builder
+            .WithEnvironment("BLOB_SERVER", alias)
+            .WithEnvironment("METADATA_SERVER", alias);
     }
-    
-    /// <summary>
-    ///  Sets the default Azurite container for the Event Hubs Emulator.
-    /// </summary>
-    public EventHubsBuilder WithAzurite()
+
+    private EventHubsBuilder WithAzurite()
     {
         var azuriteContainer = new AzuriteBuilder()
             .WithNetwork(DockerResourceConfiguration.Networks.Single())
             .WithNetworkAliases(AzuriteNetworkAlias)
             .Build();
-        
-        return WithAzurite(azuriteContainer, AzuriteNetworkAlias, AzuriteNetworkAlias);
+
+        return WithAzurite(azuriteContainer, true);
     }
-    
+
     /// <inheritdoc />
     public override EventHubsContainer Build()
     {
@@ -107,20 +117,22 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
             .ThrowIf(argument => LicenseAgreementNotAccepted(argument.Value),
-                argument => throw new ArgumentException($"The image '{DockerResourceConfiguration.Image.FullName}' requires you to accept a license agreement.", argument.Name));
-        
+                argument => throw new ArgumentException(
+                    $"The image '{DockerResourceConfiguration.Image.FullName}' requires you to accept a license agreement.",
+                    argument.Name));
+
         _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder,
                 nameof(DockerResourceConfiguration.ConfigurationBuilder))
             .NotNull()
             .ThrowIf(x => !x.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
-        
+
         return;
-        
+
         bool LicenseAgreementNotAccepted(EventHubsConfiguration value) =>
             !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) ||
             !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
     }
-    
+
     /// <inheritdoc />
     protected override EventHubsBuilder Init()
     {
@@ -131,7 +143,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .WithAzurite()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
-                .AddCustomWaitStrategy(new WaitTwoSeconds()));;
+                .AddCustomWaitStrategy(new WaitTwoSeconds()));
+        ;
     }
 
     /// <inheritdoc />
@@ -147,11 +160,12 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     }
 
     /// <inheritdoc />
-    protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
+    protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue,
+        EventHubsConfiguration newValue)
     {
         return new EventHubsBuilder(new EventHubsConfiguration(oldValue, newValue));
     }
-    
+
     private sealed class WaitTwoSeconds : IWaitUntil
     {
         /// <inheritdoc />
