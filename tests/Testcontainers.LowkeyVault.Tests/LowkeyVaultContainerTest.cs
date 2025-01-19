@@ -18,14 +18,22 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task TestContainerDefaults()
     {
-        // Assert
-        var tokenEndpoint = _fakeLowkeyVaultContainer.GetTokenEndpointUrl();
+        // Given
+        const string Alias = "lowkey-vault.local";
 
-        await VerifyTokenEndpointIsWorking(tokenEndpoint, CreateHttpClientHandlerWithDisabledSslValidation());
+        // When
+        var tokenEndpoint = _fakeLowkeyVaultContainer.GetTokenEndpointUrl();
 
         var keyStore = await _fakeLowkeyVaultContainer.GetDefaultKeyStore();
 
+        var password = await _fakeLowkeyVaultContainer.GetDefaultKeyStorePassword();
+
+        // Then
+        await VerifyTokenEndpointIsWorking(tokenEndpoint, CreateHttpClientHandlerWithDisabledSslValidation());
+
         Assert.NotNull(keyStore);
+        Assert.NotNull(password);
+        Assert.Contains(keyStore, cert => cert.Subject.Split('=')?.LastOrDefault() == Alias);
     }
 
 
@@ -130,7 +138,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         return new DefaultAzureCredential();
     }
 
-    private SecretClientOptions CreateSecretClientOption()
+    private static SecretClientOptions CreateSecretClientOption()
     {
         return GetClientOptions(new SecretClientOptions(SecretClientOptions.ServiceVersion.V7_4)
         {
@@ -139,7 +147,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         });
     }
 
-    private CertificateClientOptions CreateCertificateClientOption()
+    private static CertificateClientOptions CreateCertificateClientOption()
     {
         return GetClientOptions(new CertificateClientOptions(CertificateClientOptions.ServiceVersion.V7_4)
         {
@@ -148,7 +156,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         });
     }
 
-    private T GetClientOptions<T>(T options) where T : ClientOptions
+    private static T GetClientOptions<T>(T options) where T : ClientOptions
     {
         DisableSslValidationOnClientOptions(options);
         return options;
@@ -160,17 +168,17 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
     /// <b>WARNING: Do not use in production environments.</b>
     /// </summary>
     /// <param name="options"></param>
-    private void DisableSslValidationOnClientOptions(ClientOptions options)
+    private static void DisableSslValidationOnClientOptions(ClientOptions options)
     {
         options.Transport = new HttpClientTransport(CreateHttpClientHandlerWithDisabledSslValidation());
     }
 
-    private HttpClientHandler CreateHttpClientHandlerWithDisabledSslValidation()
+    private static HttpClientHandler CreateHttpClientHandlerWithDisabledSslValidation()
     {
         return new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
     }
 
-    private async Task VerifyTokenEndpointIsWorking(string endpointUrl, HttpClientHandler httpClientHandler)
+    private static async Task VerifyTokenEndpointIsWorking(string endpointUrl, HttpClientHandler httpClientHandler)
     {
         using var httpClient = new HttpClient(httpClientHandler);
 

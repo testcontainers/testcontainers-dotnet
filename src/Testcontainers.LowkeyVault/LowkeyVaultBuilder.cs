@@ -4,7 +4,7 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, LowkeyVaultContainer, LowkeyVaultConfiguration>
 {
-    public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.0-ubi9-minimal";
+    public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.1-ubi9-minimal";
 
     public const ushort LowkeyVaultPort = 8443;
 
