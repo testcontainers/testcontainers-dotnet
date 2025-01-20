@@ -2,8 +2,6 @@ namespace Testcontainers.ServiceBus;
 
 public abstract class ServiceBusContainerTest : IAsyncLifetime
 {
-    // private readonly ServiceBusContainer _serviceBusContainer = new ServiceBusBuilder().WithAcceptLicenseAgreement(true).Build();
-
     private readonly ServiceBusContainer _serviceBusContainer;
 
     public ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
