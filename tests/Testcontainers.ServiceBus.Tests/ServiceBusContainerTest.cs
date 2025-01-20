@@ -4,7 +4,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
 {
     private readonly ServiceBusContainer _serviceBusContainer;
 
-    public ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
+    protected ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
     {
         _serviceBusContainer = serviceBusContainer;
     }
