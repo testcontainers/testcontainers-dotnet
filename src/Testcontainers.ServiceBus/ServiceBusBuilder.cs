@@ -140,9 +140,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();
 
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
-            .WithEnvironment("MSSQL_SA_PASSWORD", MsSqlBuilder.DefaultPassword)
-            .WithEnvironment("SQL_SERVER", DatabaseNetworkAlias);
+        return WithMsSqlContainer(msSqlContainer, DatabaseNetworkAlias);
     }
 
     /// <inheritdoc cref="IWaitUntil" />
