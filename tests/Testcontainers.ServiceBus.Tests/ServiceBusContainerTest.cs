@@ -4,7 +4,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
 {
     private readonly ServiceBusContainer _serviceBusContainer;
 
-    protected ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
+    private ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
     {
         _serviceBusContainer = serviceBusContainer;
     }
@@ -52,23 +52,23 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
-}
+    
+    [UsedImplicitly]
+    public sealed class ServiceBusContainerWithDefaultMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
+        .WithAcceptLicenseAgreement(true)
+        .Build());
 
-[UsedImplicitly]
-public sealed class ServiceBusContainerWithDefaultMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
-    .WithAcceptLicenseAgreement(true)
-    .Build());
-
-[UsedImplicitly]
-public sealed class ServiceBusContainerWithCustomMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
-    .WithNetwork(Network)
-    .WithAcceptLicenseAgreement(true)
-    .WithMsSqlContainer(new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
+    [UsedImplicitly]
+    public sealed class ServiceBusContainerWithCustomMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
         .WithNetwork(Network)
-        .WithNetworkAliases("sql-server")
-        .Build(), "sql-server")
-    .Build())
-{
-    private static readonly INetwork Network = new NetworkBuilder().Build();
+        .WithAcceptLicenseAgreement(true)
+        .WithMsSqlContainer(new MsSqlBuilder()
+            .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
+            .WithNetwork(Network)
+            .WithNetworkAliases("sql-server")
+            .Build(), "sql-server")
+        .Build())
+    {
+        private static readonly INetwork Network = new NetworkBuilder().Build();
+    }
 }
