@@ -55,6 +55,11 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
 }
 
 [UsedImplicitly]
+public sealed class ServiceBusContainerWithDefaultMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
+    .WithAcceptLicenseAgreement(true)
+    .Build());
+
+[UsedImplicitly]
 public sealed class ServiceBusContainerWithCustomMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
     .WithNetwork(Network)
     .WithAcceptLicenseAgreement(true)
@@ -67,8 +72,3 @@ public sealed class ServiceBusContainerWithCustomMsSqlTest() : ServiceBusContain
 {
     private static readonly INetwork Network = new NetworkBuilder().Build();
 }
-
-[UsedImplicitly]
-public sealed class ServiceBusContainerWithDefaultMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
-    .WithAcceptLicenseAgreement(true)
-    .Build());
