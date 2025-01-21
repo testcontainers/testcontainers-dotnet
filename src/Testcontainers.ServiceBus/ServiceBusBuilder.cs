@@ -80,7 +80,15 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     public override ServiceBusContainer Build()
     {
         Validate();
-        return new ServiceBusContainer(DockerResourceConfiguration);
+
+        if (DockerResourceConfiguration.DatabaseContainer is not null)
+        {
+            return new ServiceBusContainer(DockerResourceConfiguration);
+        }
+        
+        var serviceBusBuilder = WithNetwork(new NetworkBuilder().Build()).WithMsSqlContainer();
+        
+        return new ServiceBusContainer(serviceBusBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -102,10 +110,8 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     {
         return base.Init()
             .WithImage(ServiceBusImage)
-            .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(ServiceBusNetworkAlias)
             .WithPortBinding(ServiceBusPort, true)
-            .WithMsSqlContainer()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
                 .AddCustomWaitStrategy(new WaitTwoSeconds()));
@@ -140,9 +146,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();
 
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
-            .WithEnvironment("MSSQL_SA_PASSWORD", MsSqlBuilder.DefaultPassword)
-            .WithEnvironment("SQL_SERVER", DatabaseNetworkAlias);
+        return WithMsSqlContainer(msSqlContainer, DatabaseNetworkAlias);
     }
 
     /// <inheritdoc cref="IWaitUntil" />
