@@ -40,6 +40,19 @@ public sealed class DatabaseContainersTest
             // TODO: If a module contains multiple container implementations, it would require all container implementations to implement the interface.
             foreach (var containerType in testAssembly.Value.Where(type => type.IsAssignableTo(typeof(IContainer))))
             {
+                var testAssemblyName = testAssembly.Key.GetName().Name!;
+
+                var containerTypeAssemblyName = containerType.Assembly.GetName().Name!;
+
+                // If a module utilizes another one of our modules, do not include the container type
+                // if it does not belong to the actual module. For example, the ServiceBus module
+                // utilizes the MsSql module. We do not want to include the MsSqlContainer type
+                // twice or place it in the wrong test.
+                if (!testAssemblyName.Contains(containerTypeAssemblyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 var hasDataProvider = testAssembly.Value.Exists(type => type.IsSubclassOf(typeof(DbProviderFactory)));
 
                 if (expectDataProvider && hasDataProvider)
