@@ -3,9 +3,9 @@
 [Azure EventHubs](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about) is a native data-streaming service in the cloud that can stream millions of events per second, with low latency, from any source to any destination. Event Hubs is compatible with Apache Kafka. It enables you to run existing Kafka workloads without any code changes.
 In this module, you will learn how to use Testcontainers to start an [Azure EventHubs emulator](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) container for testing. To be able to use the Azure EventHubs emulator, you need to accept the [Microsoft Event Hubs Emulator License](https://github.com/Azure/azure-event-hubs-emulator-installer/blob/main/EMULATOR_EULA.md).
 
-!!!Known Limitations
+!!!Warning
 
-    In the official documentation, there are limitations to the Azure EventHubs emulator. You can find the limitations [here](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#known-limitations).
+    In the official documentation, there are **known limitations** to the Azure EventHubs emulator. You can find it [here](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#known-limitations).
 
 Add the following dependency to your project file:
 
@@ -31,5 +31,5 @@ This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle
 
 === "Usage Example"
 ```csharp
---8<-- "tests/Testcontainers.Pulsar.Tests/PulsarContainerTest.cs:EventHubsUsage"
+--8<-- "tests/Testcontainers.EventHubs.Tests/EventHubsContainerTest.cs:EventHubsUsage"
 ```
