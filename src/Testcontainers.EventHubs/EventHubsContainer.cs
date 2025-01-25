@@ -41,11 +41,8 @@ public sealed class EventHubsContainer : DockerContainer
 
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
-        foreach (var network in _configuration.Networks.ToArray())
-        {
-            await network.CreateAsync(ct)
-                .ConfigureAwait(false);
-        }
+        await _configuration.Networks.Single().CreateAsync(ct)
+            .ConfigureAwait(false);
 
         await base.UnsafeCreateAsync(ct)
             .ConfigureAwait(false);
