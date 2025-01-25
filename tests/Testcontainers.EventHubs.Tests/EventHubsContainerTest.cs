@@ -2,8 +2,13 @@ namespace Testcontainers.EventHubs;
 
 public abstract class EventHubsContainerTest : IAsyncLifetime
 {
+    // # --8<-- [start:MinimalConfigurationJson]
     private static readonly ConfigurationBuilder ConfigurationBuilder = ConfigurationBuilder.Create()
         .WithEventHub(EventHubName, 2, [EventHubConsumerGroupName]);
+    
+    private const string EventHubName = "eh-1";
+    private const string EventHubConsumerGroupName = "testconsumergroup";
+    // # --8<-- [end:MinimalConfigurationJson]
     
     private readonly EventHubsContainer _eventHubsContainer;
 
@@ -12,9 +17,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         _eventHubsContainer = eventHubsContainer;
     }
     
-    private const string EventHubName = "eh-1";
-    private const string EventHubConsumerGroupName = "testconsumergroup";
-
+    // # --8<-- [start:EventHubsUsage]
     public Task InitializeAsync() => _eventHubsContainer.StartAsync();
     public Task DisposeAsync() => _eventHubsContainer.DisposeAsync().AsTask();
 
@@ -36,13 +39,17 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         // Then
         Assert.Null(thrownExceptionSend);
     }
+    // # --8<-- [end:EventHubsUsage]
 
+    // # --8<-- [start:MinimalConfigurationEventHubs]
     [UsedImplicitly]
     public sealed class EventHubsDefaultConfiguration() : EventHubsContainerTest(new EventHubsBuilder()
         .WithAcceptLicenseAgreement(true)
         .WithConfigurationBuilder(ConfigurationBuilder)
         .Build());
+    // # --8<-- [end:MinimalConfigurationEventHubs]
     
+    // # --8<-- [start:CustomConfigurationEventHubs]
     [UsedImplicitly]
     public sealed class EventHubsConfigurationWithCustomAzurite() : EventHubsContainerTest(new EventHubsBuilder()
         .WithAcceptLicenseAgreement(true)
@@ -59,4 +66,5 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             .WithNetworkAliases(CustomAlias)
             .Build();
     } 
+    // # --8<-- [end:CustomConfigurationEventHubs]
 }
