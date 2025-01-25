@@ -8,6 +8,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     public const ushort EventHubsPort = 5672;
 
+    public const string EventHubNetworkAlias = "eventhub";
     public const string AzuriteNetworkAlias = "azurite";
 
     private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
@@ -107,7 +108,20 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public override EventHubsContainer Build()
     {
         Validate();
-        return new EventHubsContainer(DockerResourceConfiguration);
+
+        var builder = this;
+        
+        if (!DockerResourceConfiguration.Networks.Any())
+        {
+            builder = builder.WithNetwork(new NetworkBuilder().Build());
+        }
+        
+        if (DockerResourceConfiguration.AzuriteContainer == null)
+        {
+            builder = builder.WithAzurite();
+        }
+        
+        return new EventHubsContainer(builder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -138,9 +152,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         return base.Init()
             .WithImage(EventHubsImage)
-            .WithNetwork(new NetworkBuilder().Build())
+            .WithNetworkAliases(EventHubNetworkAlias)
             .WithPortBinding(EventHubsPort, true)
-            .WithAzurite()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
                 .AddCustomWaitStrategy(new WaitTwoSeconds()));
