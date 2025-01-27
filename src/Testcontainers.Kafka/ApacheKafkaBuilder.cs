@@ -52,8 +52,8 @@ public sealed class ApacheKafkaBuilder : BaseKafkaBuilder<ApacheKafkaBuilder>
         return $"""
                 #!/bin/bash
                 export KAFKA_ADVERTISED_LISTENERS={kafkaListener},{brokerListener},{additionalAdvertisedListeners}
-                echo '' > /etc/confluent/docker/ensure
-                exec /etc/confluent/docker/run
+                echo '' > /etc/kafka/docker/ensure
+                exec /etc/kafka/docker/run
                 """;
     }
 
