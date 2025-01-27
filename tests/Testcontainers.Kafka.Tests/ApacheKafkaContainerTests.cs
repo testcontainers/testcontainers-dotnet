@@ -3,7 +3,7 @@ namespace Testcontainers.Kafka;
 public class ApacheKafkaContainerTests
 {
     private const string ApacheKafkaImage = "apache/kafka:3.7.2";
-    private const string ApacheNativeKafkaImage = "apache/kafka:3.7.2";
+    private const string ApacheNativeKafkaImage = "apache/kafka-native:3.9.0";
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
