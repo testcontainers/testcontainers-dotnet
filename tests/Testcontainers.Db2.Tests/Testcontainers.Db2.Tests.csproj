@@ -1,40 +1,24 @@
-<!-- -8<- [start:RunSettingsGeneration] -->
 <Project Sdk="Microsoft.NET.Sdk">
-    <Target Condition="$([MSBuild]::IsOSPlatform('Linux'))" Name="TestPrepare" BeforeTargets="RunTests;VSTest">
-      <XmlPoke
-        XmlInputPath="linux.runsettings"
-        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib:$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib/icc"
-        Query="/RunSettings/RunConfiguration/EnvironmentVariables/LD_LIBRARY_PATH"
-      />
-      <XmlPoke
-        XmlInputPath="linux.runsettings"
-        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/bin"
-        Query="/RunSettings/RunConfiguration/EnvironmentVariables/PATH"
-      />
-      <XmlPoke
-        XmlInputPath="linux.runsettings"
-        Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver"
-        Query="/RunSettings/RunConfiguration/EnvironmentVariables/DB2_CLI_DRIVER_INSTALL_PATH"
-      />
-    </Target>
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
-        <ProcessorArchitecture>amd64</ProcessorArchitecture>
-        <RunSettingsFilePath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(MSBuildProjectDirectory)/linux.runsettings</RunSettingsFilePath>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="Net.IBM.Data.Db2" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
-        <PackageReference Include="Net.IBM.Data.Db2-lnx" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
-        <PackageReference Include="xunit.runner.visualstudio" />
-        <PackageReference Include="xunit" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <PackageReference Include="Net.IBM.Data.Db2-lnx"/>
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <PackageReference Include="Net.IBM.Data.Db2"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
-        <ProjectReference Include="..\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj" />
+        <ProjectReference Include="../../src/Testcontainers.Db2/Testcontainers.Db2.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <Import Project="Testcontainers.Db2.Tests.targets" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
 </Project>
-<!-- -8<- [end:RunSettingsGeneration] -->

@@ -48,6 +48,7 @@ jobs:
           { name: "Testcontainers.CosmosDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Couchbase", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.CouchDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Db2", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.DynamoDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Elasticsearch", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.EventStoreDb", runs-on: "ubuntu-22.04" },

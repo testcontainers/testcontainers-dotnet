@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Couchbase", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.CouchDb", "src\Testcontainers.CouchDb\Testcontainers.CouchDb.csproj", "{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Db2", "src\Testcontainers.Db2\Testcontainers.Db2.csproj", "{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.DynamoDb", "src\Testcontainers.DynamoDb\Testcontainers.DynamoDb.csproj", "{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Elasticsearch", "src\Testcontainers.Elasticsearch\Testcontainers.Elasticsearch.csproj", "{641DDEA5-B6E0-41E6-BA11-7A28C0913127}"
@@ -79,9 +81,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle", "src\Testcontainers.Oracle\Testcontainers.Oracle.csproj", "{596EAFC1-0496-495C-B382-D57415FA456A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Papercut", "src\Testcontainers.Papercut\Testcontainers.Papercut.csproj", "{B2608563-8EE4-49AA-A9A0-B1614486AEEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Papercut", "src\Testcontainers.Papercut\Testcontainers.Papercut.csproj", "{B2608563-8EE4-49AA-A9A0-B1614486AEEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.PostgreSql", "src\Testcontainers.PostgreSql\Testcontainers.PostgreSql.csproj", "{8AB91636-9055-4900-A72A-7CFFACDFDBF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.PostgreSql", "src\Testcontainers.PostgreSql\Testcontainers.PostgreSql.csproj", "{8AB91636-9055-4900-A72A-7CFFACDFDBF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.PubSub", "src\Testcontainers.PubSub\Testcontainers.PubSub.csproj", "{E6642255-667D-476B-B584-089AA5E6C0B1}"
 EndProject
@@ -95,15 +97,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redis", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redpanda", "src\Testcontainers.Redpanda\Testcontainers.Redpanda.csproj", "{45D6F69C-4D87-4130-AA90-0DB2F7460DAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ServiceBus", "src\Testcontainers.ServiceBus\Testcontainers.ServiceBus.csproj", "{2E39E532-B81E-4B48-A004-FAE18EDF9E79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.ServiceBus", "src\Testcontainers.ServiceBus\Testcontainers.ServiceBus.csproj", "{2E39E532-B81E-4B48-A004-FAE18EDF9E79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver", "src\Testcontainers.WebDriver\Testcontainers.WebDriver.csproj", "{64A87DE5-29B0-4A54-9E74-560484D8C7C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.WebDriver", "src\Testcontainers.WebDriver\Testcontainers.WebDriver.csproj", "{64A87DE5-29B0-4A54-9E74-560484D8C7C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Xunit", "src\Testcontainers.Xunit\Testcontainers.Xunit.csproj", "{380BB29B-F556-404D-B13B-CA250599C565}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Xunit", "src\Testcontainers.Xunit\Testcontainers.Xunit.csproj", "{380BB29B-F556-404D-B13B-CA250599C565}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.XunitV3", "src\Testcontainers.XunitV3\Testcontainers.XunitV3.csproj", "{84911C93-C2A9-46E9-AE5E-D567306589E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.XunitV3", "src\Testcontainers.XunitV3\Testcontainers.XunitV3.csproj", "{84911C93-C2A9-46E9-AE5E-D567306589E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers", "src\Testcontainers\Testcontainers.csproj", "{EC76857B-A3B8-4B7A-A1B0-8D867A4D1733}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.ActiveMq.Tests", "tests\Testcontainers.ActiveMq.Tests\Testcontainers.ActiveMq.Tests.csproj", "{AB93C67F-0A53-4525-AE6C-29B065820ABE}"
 EndProject
@@ -130,6 +132,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.CouchDb.Tests", "tests\Testcontainers.CouchDb.Tests\Testcontainers.CouchDb.Tests.csproj", "{E4520FB1-4466-4DCA-AD08-4075102C68D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Databases.Tests", "tests\Testcontainers.Databases.Tests\Testcontainers.Databases.Tests.csproj", "{DA54916E-1128-4200-B6AE-9F5BF02D832D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Db2.Tests", "tests\Testcontainers.Db2.Tests\Testcontainers.Db2.Tests.csproj", "{AF9853AB-86E7-49DE-8DF8-454838E90D6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.DynamoDb.Tests", "tests\Testcontainers.DynamoDb.Tests\Testcontainers.DynamoDb.Tests.csproj", "{101515E6-74C1-40F9-85C8-871F742A378D}"
 EndProject
@@ -175,9 +179,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Neo4j.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Oracle.Tests", "tests\Testcontainers.Oracle.Tests\Testcontainers.Oracle.Tests.csproj", "{4AC1088B-9965-4497-AC8E-570F1AD5631F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Papercut.Tests", "tests\Testcontainers.Papercut.Tests\Testcontainers.Papercut.Tests.csproj", "{F03FA970-BE2B-4AE2-96FE-7E1F805CEA20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Papercut.Tests", "tests\Testcontainers.Papercut.Tests\Testcontainers.Papercut.Tests.csproj", "{F03FA970-BE2B-4AE2-96FE-7E1F805CEA20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Platform.Linux.Tests", "tests\Testcontainers.Platform.Linux.Tests\Testcontainers.Platform.Linux.Tests.csproj", "{DA1D7ADE-452C-4369-83CC-56289176EACD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Platform.Windows.Tests", "tests\Testcontainers.Platform.Windows.Tests\Testcontainers.Platform.Windows.Tests.csproj", "{3E55CBE8-AFE8-426D-9470-49D63CD1051C}"
 EndProject
@@ -197,17 +201,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Redpanda.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.ResourceReaper.Tests", "tests\Testcontainers.ResourceReaper.Tests\Testcontainers.ResourceReaper.Tests.csproj", "{9E8E6AA5-65D1-498F-BEAB-BA34723A0050}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ServiceBus.Tests", "tests\Testcontainers.ServiceBus.Tests\Testcontainers.ServiceBus.Tests.csproj", "{232DD918-46ED-4BA8-B383-1A9146D83064}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.ServiceBus.Tests", "tests\Testcontainers.ServiceBus.Tests\Testcontainers.ServiceBus.Tests.csproj", "{232DD918-46ED-4BA8-B383-1A9146D83064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.WebDriver.Tests", "tests\Testcontainers.WebDriver.Tests\Testcontainers.WebDriver.Tests.csproj", "{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Xunit.Tests", "tests\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj", "{E901DF14-6F05-4FC2-825A-3055FAD33561}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Db2", "src\Testcontainers.Db2\Testcontainers.Db2.csproj", "{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Db2.Tests", "tests\Testcontainers.Db2.Tests\Testcontainers.Db2.Tests.csproj", "{AF9853AB-86E7-49DE-8DF8-454838E90D6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testcontainers.Xunit.Tests", "tests\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj", "{E901DF14-6F05-4FC2-825A-3055FAD33561}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -259,6 +259,10 @@ Global
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -451,6 +455,10 @@ Global
 		{DA54916E-1128-4200-B6AE-9F5BF02D832D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA54916E-1128-4200-B6AE-9F5BF02D832D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA54916E-1128-4200-B6AE-9F5BF02D832D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{101515E6-74C1-40F9-85C8-871F742A378D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{101515E6-74C1-40F9-85C8-871F742A378D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{101515E6-74C1-40F9-85C8-871F742A378D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -599,14 +607,6 @@ Global
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF9853AB-86E7-49DE-8DF8-454838E90D6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -620,6 +620,7 @@ Global
 		{A724806F-8C94-4438-8011-04A9A1575318} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{58E94721-2681-4D82-8D94-0B2F9DB0D575} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{DCECB1F6-D9AA-431F-AE42-25D56B9E7DFC} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{2EAFA567-9F68-4C52-9DBC-8F3EC11BB2CE} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{641DDEA5-B6E0-41E6-BA11-7A28C0913127} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{84D707E0-C9FA-4327-85DC-0AFEBEA73572} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -668,6 +669,7 @@ Global
 		{809322BA-D690-4F2B-B884-23F895663963} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{E4520FB1-4466-4DCA-AD08-4075102C68D3} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{DA54916E-1128-4200-B6AE-9F5BF02D832D} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{AF9853AB-86E7-49DE-8DF8-454838E90D6F} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{101515E6-74C1-40F9-85C8-871F742A378D} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{DD5B3678-468F-4D73-AECE-705E3D66CD43} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{64F8E9B9-78FD-4E13-BDDF-0340E2D4E1D0} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
@@ -705,7 +707,5 @@ Global
 		{27CDB869-A150-4593-958F-6F26E5391E7C} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{E901DF14-6F05-4FC2-825A-3055FAD33561} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
-		{ED3C611F-DFE2-4AB7-A323-B500E95B4FF9} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
-		{AF9853AB-86E7-49DE-8DF8-454838E90D6F} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
