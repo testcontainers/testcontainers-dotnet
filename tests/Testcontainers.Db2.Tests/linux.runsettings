@@ -2,9 +2,9 @@
 <RunSettings>
     <RunConfiguration>
         <EnvironmentVariables>
-            <LD_LIBRARY_PATH>Filled by msbuild</LD_LIBRARY_PATH>
-            <PATH>Filled by msbuild</PATH>
-            <DB2_CLI_DRIVER_INSTALL_PATH>Filled by msbuild</DB2_CLI_DRIVER_INSTALL_PATH>
+            <LD_LIBRARY_PATH>Set by MSBuild</LD_LIBRARY_PATH>
+            <PATH>Set by MSBuild</PATH>
+            <DB2_CLI_DRIVER_INSTALL_PATH>Set by MSBuild</DB2_CLI_DRIVER_INSTALL_PATH>
         </EnvironmentVariables>
     </RunConfiguration>
 </RunSettings>
