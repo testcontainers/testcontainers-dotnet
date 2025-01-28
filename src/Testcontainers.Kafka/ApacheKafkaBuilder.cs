@@ -25,14 +25,7 @@ public sealed class ApacheKafkaBuilder : BaseKafkaBuilder<ApacheKafkaBuilder>
     {
         DockerResourceConfiguration = resourceConfiguration;
     }
-
-    /// <inheritdoc />
-    public override KafkaContainer Build()
-    {
-        Validate();
-        return new KafkaContainer(DockerResourceConfiguration);
-    }
-
+    
     /// <inheritdoc />
     protected override KafkaConfiguration DockerResourceConfiguration { get; }
 
@@ -56,19 +49,7 @@ public sealed class ApacheKafkaBuilder : BaseKafkaBuilder<ApacheKafkaBuilder>
                 exec /etc/kafka/docker/run
                 """;
     }
-
-    /// <inheritdoc />
-    protected override ApacheKafkaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-    {
-        return Merge(DockerResourceConfiguration, new KafkaConfiguration(resourceConfiguration));
-    }
-
-    /// <inheritdoc />
-    protected override ApacheKafkaBuilder Clone(IContainerConfiguration resourceConfiguration)
-    {
-        return Merge(DockerResourceConfiguration, new KafkaConfiguration(resourceConfiguration));
-    }
-
+    
     /// <inheritdoc />
     protected override ApacheKafkaBuilder Merge(KafkaConfiguration oldValue, KafkaConfiguration newValue)
     {
