@@ -4,7 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    public const string PulsarImage = "apachepulsar/pulsar:3.0.6";
+    public const string PulsarImage = "apachepulsar/pulsar:3.0.8";
 
     public const ushort PulsarBrokerDataPort = 6650;
 
@@ -12,7 +12,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
 
     public const string StartupScriptFilePath = "/testcontainers.sh";
 
-    public const string SecretKeyFilePath = "/pulsar/secret.key";
+    public const string SecretKeyFilePath = "/tmp/secret.key";
 
     public const string Username = "test-user";
 
