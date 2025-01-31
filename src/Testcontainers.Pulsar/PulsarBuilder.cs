@@ -4,7 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
-    public const string PulsarImage = "apachepulsar/pulsar:3.0.8";
+    public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
     public const ushort PulsarBrokerDataPort = 6650;
 
