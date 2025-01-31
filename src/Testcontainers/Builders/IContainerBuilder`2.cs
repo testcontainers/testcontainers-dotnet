@@ -378,7 +378,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Assigns the specified network to the container.
     /// </summary>
-    /// <param name="network">The network to connect container to.</param>
+    /// <param name="network">The network to connect the container to.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithNetwork(INetwork network);

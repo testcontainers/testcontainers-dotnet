@@ -52,23 +52,43 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
-    
-    [UsedImplicitly]
-    public sealed class ServiceBusContainerWithDefaultMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
-        .WithAcceptLicenseAgreement(true)
-        .Build());
 
     [UsedImplicitly]
-    public sealed class ServiceBusContainerWithCustomMsSqlTest() : ServiceBusContainerTest(new ServiceBusBuilder()
-        .WithNetwork(Network)
-        .WithAcceptLicenseAgreement(true)
-        .WithMsSqlContainer(new MsSqlBuilder()
-            .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
-            .WithNetwork(Network)
-            .WithNetworkAliases("sql-server")
-            .Build(), "sql-server")
-        .Build())
+    public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
     {
-        private static readonly INetwork Network = new NetworkBuilder().Build();
+        public ServiceBusDefaultMsSqlConfiguration()
+            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    {
+        public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
+            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).WithMsSqlContainer(fixture.Network, fixture.Container, fixture.DatabaseNetworkAlias).Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class DatabaseFixture
+    {
+        public DatabaseFixture()
+        {
+            Network = new NetworkBuilder()
+                .Build();
+
+            Container = new MsSqlBuilder()
+                .WithNetwork(Network)
+                .WithNetworkAliases(DatabaseNetworkAlias)
+                .Build();
+        }
+
+        public string DatabaseNetworkAlias => ServiceBusBuilder.DatabaseNetworkAlias;
+
+        public INetwork Network { get; }
+
+        public MsSqlContainer Container { get; }
     }
 }

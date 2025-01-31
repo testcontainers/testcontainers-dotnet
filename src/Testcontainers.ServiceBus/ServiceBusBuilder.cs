@@ -58,22 +58,27 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// Sets the dependent MSSQL container for the Azure Service Bus Emulator.
     /// </summary>
     /// <remarks>
-    /// This method allows attaching an existing MSSQL Server container instance to the Azure Service Bus Emulator.
-    /// The containers must be in the same network to enable communication between them.
+    /// This method allows an existing MSSQL container to be attached to the Azure Service
+    /// Bus Emulator. The containers must be on the same network to enable communication
+    /// between them.
     /// </remarks>
-    /// <param name="msSqlContainer">An existing instance of <see cref="MsSqlContainer"/> to use as the database backend.</param>
-    /// <param name="msSqlNetworkAlias">The network alias that will be used to connect to the MSSQL Server container.</param>
-    /// <param name="saPassword">The SA password for the SQL Server container. Defaults to <see cref="MsSqlBuilder.DefaultPassword"/>.</param>
-    /// <returns>A configured instance of <see cref="ServiceBusBuilder"/>.</returns>
+    /// <param name="network">The network to connect the container to.</param>
+    /// <param name="container">The MSSQL container.</param>
+    /// <param name="networkAlias">The MSSQL container network alias.</param>
+    /// <param name="password">The MSSQL container password.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
     public ServiceBusBuilder WithMsSqlContainer(
-        MsSqlContainer msSqlContainer,
-        string msSqlNetworkAlias,
-        string saPassword = MsSqlBuilder.DefaultPassword)
+        INetwork network,
+        MsSqlContainer container,
+        string networkAlias,
+        string password = MsSqlBuilder.DefaultPassword)
     {
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
-            .DependsOn(msSqlContainer)
-            .WithEnvironment("MSSQL_SA_PASSWORD", saPassword)
-            .WithEnvironment("SQL_SERVER", msSqlNetworkAlias);
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: container))
+            .DependsOn(container)
+            .WithNetwork(network)
+            .WithNetworkAliases(ServiceBusNetworkAlias)
+            .WithEnvironment("SQL_SERVER", networkAlias)
+            .WithEnvironment("MSSQL_SA_PASSWORD", password);
     }
 
     /// <inheritdoc />
@@ -81,14 +86,23 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     {
         Validate();
 
-        if (DockerResourceConfiguration.DatabaseContainer is not null)
+        if (DockerResourceConfiguration.DatabaseContainer != null)
         {
             return new ServiceBusContainer(DockerResourceConfiguration);
         }
-        
-        var serviceBusBuilder = WithNetwork(new NetworkBuilder().Build()).WithMsSqlContainer();
-        
-        return new ServiceBusContainer(serviceBusBuilder.DockerResourceConfiguration);
+
+        // If the user has not provided an existing MSSQL container instance,
+        // we configure one.
+        var network = new NetworkBuilder()
+            .Build();
+
+        var container = new MsSqlBuilder()
+            .WithNetwork(network)
+            .WithNetworkAliases(DatabaseNetworkAlias)
+            .Build();
+
+        var serviceBusContainer = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
+        return new ServiceBusContainer(serviceBusContainer.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -110,7 +124,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     {
         return base.Init()
             .WithImage(ServiceBusImage)
-            .WithNetworkAliases(ServiceBusNetworkAlias)
             .WithPortBinding(ServiceBusPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
@@ -135,23 +148,9 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
     }
 
-    /// <summary>
-    /// Configures the dependent MSSQL container.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    private ServiceBusBuilder WithMsSqlContainer()
-    {
-        var msSqlContainer = new MsSqlBuilder()
-            .WithNetwork(DockerResourceConfiguration.Networks.Single())
-            .WithNetworkAliases(DatabaseNetworkAlias)
-            .Build();
-
-        return WithMsSqlContainer(msSqlContainer, DatabaseNetworkAlias);
-    }
-
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// This is a workaround to ensure that the wait strategy does not indicate  
+    /// This is a workaround to ensure that the wait strategy does not indicate
     /// readiness too early:
     /// https://github.com/Azure/azure-service-bus-emulator-installer/issues/35#issuecomment-2497164533.
     /// </remarks>
