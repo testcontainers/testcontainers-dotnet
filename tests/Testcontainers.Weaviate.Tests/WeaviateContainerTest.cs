@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Testcontainers.Weaviate;
 
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
+public sealed class WeaviateContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseWeaviateContainer]
     private readonly WeaviateContainer _weaviateContainer = new WeaviateBuilder().Build();
