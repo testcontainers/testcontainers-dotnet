@@ -188,7 +188,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         try
         {
             using var response = await httpClient.SendAsync(request);
-            Assert.Equal(200, (int)response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
         catch (Exception ex)
         {
