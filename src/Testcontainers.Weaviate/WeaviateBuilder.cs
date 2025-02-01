@@ -1,9 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-
 namespace Testcontainers.Weaviate;
 
 public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, WeaviateContainer, WeaviateConfiguration>

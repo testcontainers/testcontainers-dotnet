@@ -1,9 +1,3 @@
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DotNet.Testcontainers.Commons;
-using Xunit;
-
 namespace Testcontainers.Weaviate;
 
 public sealed class WeaviateContainerTest : IAsyncLifetime
