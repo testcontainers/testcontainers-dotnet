@@ -17,10 +17,10 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_weaviateContainer.GetBaseAddress());
 
         // When
-        using var response = await httpClient.GetAsync("v1/schema")
+        using var httpResponse = await httpClient.GetAsync("v1/schema")
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 }
