@@ -20,11 +20,11 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private EventStoreDbBuilder(EventStoreDbConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private EventStoreDbBuilder(EventStoreDbConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -50,13 +50,13 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     }
 
     /// <inheritdoc />
-    protected override EventStoreDbBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override EventStoreDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new EventStoreDbConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override EventStoreDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override EventStoreDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new EventStoreDbConfiguration(resourceConfiguration));
     }
