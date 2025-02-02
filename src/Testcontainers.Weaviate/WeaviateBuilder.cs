@@ -1,7 +1,7 @@
-// Copyright (c) Microsoft. All rights reserved.
-
 namespace Testcontainers.Weaviate;
 
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+[PublicAPI]
 public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, WeaviateContainer, WeaviateConfiguration>
 {
     public const string WeaviateImage = "semitechnologies/weaviate:1.26.14";
@@ -10,18 +10,30 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
 
     public const ushort WeaviateGrpcPort = 50051;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
     public WeaviateBuilder() : this(new WeaviateConfiguration())
-      => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        => DockerResourceConfiguration = Init().DockerResourceConfiguration;
 
-    private WeaviateBuilder(WeaviateConfiguration dockerResourceConfiguration) : base(dockerResourceConfiguration)
-        => DockerResourceConfiguration = dockerResourceConfiguration;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private WeaviateBuilder(WeaviateConfiguration resourceConfiguration) : base(resourceConfiguration)
+        => DockerResourceConfiguration = resourceConfiguration;
 
+    /// <inheritdoc />
+    protected override WeaviateConfiguration DockerResourceConfiguration { get; }
+
+    /// <inheritdoc />
     public override WeaviateContainer Build()
     {
         Validate();
         return new WeaviateContainer(DockerResourceConfiguration);
     }
 
+    /// <inheritdoc />
     protected override WeaviateBuilder Init()
         => base.Init()
             .WithImage(WeaviateImage)
@@ -32,16 +44,18 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilPortIsAvailable(WeaviateHttpPort)
                 .UntilPortIsAvailable(WeaviateGrpcPort)
-                .UntilHttpRequestIsSucceeded(r => r.ForPath("/v1/.well-known/ready").ForPort(WeaviateHttpPort)));
+                .UntilHttpRequestIsSucceeded(request =>
+                    request.ForPath("/v1/.well-known/ready").ForPort(WeaviateHttpPort)));
 
+    /// <inheritdoc />
     protected override WeaviateBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         => Merge(DockerResourceConfiguration, new WeaviateConfiguration(resourceConfiguration));
 
-    protected override WeaviateBuilder Merge(WeaviateConfiguration oldValue, WeaviateConfiguration newValue)
-        => new(new WeaviateConfiguration(oldValue, newValue));
-
-    protected override WeaviateConfiguration DockerResourceConfiguration { get; }
-
+    /// <inheritdoc />
     protected override WeaviateBuilder Clone(IContainerConfiguration resourceConfiguration)
         => Merge(DockerResourceConfiguration, new WeaviateConfiguration(resourceConfiguration));
+
+    /// <inheritdoc />
+    protected override WeaviateBuilder Merge(WeaviateConfiguration oldValue, WeaviateConfiguration newValue)
+        => new(new WeaviateConfiguration(oldValue, newValue));
 }

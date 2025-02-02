@@ -1,7 +1,7 @@
-// Copyright (c) Microsoft. All rights reserved.
-
 namespace Testcontainers.Weaviate;
 
+/// <inheritdoc cref="ContainerConfiguration" />
+[PublicAPI]
 public sealed class WeaviateConfiguration : ContainerConfiguration
 {
     /// <summary>
@@ -18,6 +18,7 @@ public sealed class WeaviateConfiguration : ContainerConfiguration
     public WeaviateConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -27,6 +28,7 @@ public sealed class WeaviateConfiguration : ContainerConfiguration
     public WeaviateConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -36,6 +38,7 @@ public sealed class WeaviateConfiguration : ContainerConfiguration
     public WeaviateConfiguration(WeaviateConfiguration resourceConfiguration)
         : this(new WeaviateConfiguration(), resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
