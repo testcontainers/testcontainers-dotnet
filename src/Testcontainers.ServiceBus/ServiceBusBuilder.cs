@@ -54,11 +54,55 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
+    /// <summary>
+    /// Sets the dependent MSSQL container for the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// This method allows an existing MSSQL container to be attached to the Azure Service
+    /// Bus Emulator. The containers must be on the same network to enable communication
+    /// between them.
+    /// </remarks>
+    /// <param name="network">The network to connect the container to.</param>
+    /// <param name="container">The MSSQL container.</param>
+    /// <param name="networkAlias">The MSSQL container network alias.</param>
+    /// <param name="password">The MSSQL container password.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithMsSqlContainer(
+        INetwork network,
+        MsSqlContainer container,
+        string networkAlias,
+        string password = MsSqlBuilder.DefaultPassword)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: container))
+            .DependsOn(container)
+            .WithNetwork(network)
+            .WithNetworkAliases(ServiceBusNetworkAlias)
+            .WithEnvironment("SQL_SERVER", networkAlias)
+            .WithEnvironment("MSSQL_SA_PASSWORD", password);
+    }
+
     /// <inheritdoc />
     public override ServiceBusContainer Build()
     {
         Validate();
-        return new ServiceBusContainer(DockerResourceConfiguration);
+
+        if (DockerResourceConfiguration.DatabaseContainer != null)
+        {
+            return new ServiceBusContainer(DockerResourceConfiguration);
+        }
+
+        // If the user has not provided an existing MSSQL container instance,
+        // we configure one.
+        var network = new NetworkBuilder()
+            .Build();
+
+        var container = new MsSqlBuilder()
+            .WithNetwork(network)
+            .WithNetworkAliases(DatabaseNetworkAlias)
+            .Build();
+
+        var serviceBusContainer = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
+        return new ServiceBusContainer(serviceBusContainer.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -80,10 +124,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     {
         return base.Init()
             .WithImage(ServiceBusImage)
-            .WithNetwork(new NetworkBuilder().Build())
-            .WithNetworkAliases(ServiceBusNetworkAlias)
             .WithPortBinding(ServiceBusPort, true)
-            .WithMsSqlContainer()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
                 .AddCustomWaitStrategy(new WaitTwoSeconds()));
@@ -107,25 +148,9 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
     }
 
-    /// <summary>
-    /// Configures the dependent MSSQL container.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    private ServiceBusBuilder WithMsSqlContainer()
-    {
-        var msSqlContainer = new MsSqlBuilder()
-            .WithNetwork(DockerResourceConfiguration.Networks.Single())
-            .WithNetworkAliases(DatabaseNetworkAlias)
-            .Build();
-
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
-            .WithEnvironment("MSSQL_SA_PASSWORD", MsSqlBuilder.DefaultPassword)
-            .WithEnvironment("SQL_SERVER", DatabaseNetworkAlias);
-    }
-
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// This is a workaround to ensure that the wait strategy does not indicate  
+    /// This is a workaround to ensure that the wait strategy does not indicate
     /// readiness too early:
     /// https://github.com/Azure/azure-service-bus-emulator-installer/issues/35#issuecomment-2497164533.
     /// </remarks>
