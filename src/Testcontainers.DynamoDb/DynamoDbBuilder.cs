@@ -20,11 +20,11 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private DynamoDbBuilder(DynamoDbConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private DynamoDbBuilder(DynamoDbConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -48,13 +48,13 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }

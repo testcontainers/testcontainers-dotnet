@@ -35,3 +35,4 @@ testcontainers
 tlsverify
 toml
 vstest
+weaviate

@@ -27,11 +27,11 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
         // When
-        using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
+        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 
     [Fact]
