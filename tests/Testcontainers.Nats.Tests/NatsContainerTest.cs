@@ -24,18 +24,18 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public async Task HealthcheckReturnsHttpStatusCodeOk()
     {
         // Given
-        using var client = new HttpClient();
-        client.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
 
         // When
-        using var response = await client.GetAsync("/healthz")
+        using var httpResponse = await httpClient.GetAsync("/healthz")
             .ConfigureAwait(true);
 
-        var jsonStatusString = await response.Content.ReadAsStringAsync()
+        var jsonStatusString = await httpResponse.Content.ReadAsStringAsync()
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         Assert.Equal("{\"status\":\"ok\"}", jsonStatusString);
     }
 
