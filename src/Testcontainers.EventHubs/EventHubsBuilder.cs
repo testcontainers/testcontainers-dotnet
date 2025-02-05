@@ -140,7 +140,6 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         return base.Init()
             .WithImage(EventHubsImage)
-            .WithNetworkAliases(EventHubsNetworkAlias)
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(KafkaPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer()
