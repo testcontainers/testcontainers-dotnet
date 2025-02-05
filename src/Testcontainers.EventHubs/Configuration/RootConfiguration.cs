@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.EventHubs.Configuration;
+namespace Testcontainers.EventHubs.Configuration;
 
 /// <summary>
 /// Azure Event Hubs emulator JSON configuration.

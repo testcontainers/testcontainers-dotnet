@@ -1,12 +1,12 @@
-﻿namespace Testcontainers.EventHubs.Configuration;
+namespace Testcontainers.EventHubs.Configuration;
 
 public class ConfigurationBuilder
 {
     private const string DefaultNamespace = "emulatorNs1";
     private const string DefaultLoggingType = "file";
-        
+
     private readonly RootConfiguration _rootConfiguration = new RootConfiguration();
-            
+
     private ConfigurationBuilder()
     {
         _rootConfiguration.UserConfig = new UserConfig
@@ -27,7 +27,7 @@ public class ConfigurationBuilder
     {
         return new ConfigurationBuilder();
     }
-        
+
     public ConfigurationBuilder WithEventHub(string entityName, int partitionCount, IEnumerable<string> consumerGroups)
     {
         var namespaceConfig = _rootConfiguration.UserConfig.NamespaceConfig.FirstOrDefault(x => x.Name == DefaultNamespace);

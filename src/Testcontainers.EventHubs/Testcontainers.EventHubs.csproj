@@ -8,6 +8,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
-        <ProjectReference Include="..\Testcontainers.Azurite\Testcontainers.Azurite.csproj" />
+        <ProjectReference Include="../Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
     </ItemGroup>
 </Project>
