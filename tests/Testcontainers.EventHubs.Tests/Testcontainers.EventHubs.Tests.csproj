@@ -10,6 +10,7 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Azure.Messaging.EventHubs"/>
+        <PackageReference Include="Confluent.Kafka"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.EventHubs/Testcontainers.EventHubs.csproj"/>

@@ -55,6 +55,59 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         Assert.NotNull(properties);
     }
     // # --8<-- [end:EventHubsUsage]
+    
+    // # --8<-- [start:EventHubsKafkaUsage]
+    
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task UsingKafkaShouldNotThrowException()
+    {
+        // Given
+        var kafkaPort = _eventHubsContainer.GetMappedPublicPort(EventHubsBuilder.KafkaPort);
+        var bootstrapServer = $"localhost:{kafkaPort}";
+        var connectionString = _eventHubsContainer.GetConnectionString();
+
+        var producerConfig = new ProducerConfig
+        {
+            BootstrapServers = bootstrapServer,
+            SecurityProtocol = SecurityProtocol.SaslPlaintext,
+            SaslMechanism = SaslMechanism.Plain,
+            SaslUsername = "$ConnectionString",
+            SaslPassword = connectionString
+        };
+
+        var consumerConfig = new ConsumerConfig
+        {
+            BootstrapServers = bootstrapServer,
+            SecurityProtocol = SecurityProtocol.SaslPlaintext,
+            SaslMechanism = SaslMechanism.Plain,
+            SaslUsername = "$ConnectionString",
+            SaslPassword = connectionString,
+            GroupId = EventHubsConsumerGroupName,
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+        };
+
+        var message = new Message<string, string>
+        {
+            Value = Guid.NewGuid().ToString("D"),
+        };
+
+        // When
+        using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
+        _ = await producer.ProduceAsync(EventHubsName, message)
+            .ConfigureAwait(true);
+
+        using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
+        consumer.Subscribe(EventHubsName);
+
+        var result = consumer.Consume(TimeSpan.FromSeconds(15));
+
+        // Then
+        Assert.NotNull(result);
+        Assert.Equal(message.Value, result.Message.Value);
+    }
+    
+    // # --8<-- [end:EventHubsKafkaUsage]
 
     // # --8<-- [start:MinimalConfigurationEventHubs]
     [UsedImplicitly]

@@ -33,3 +33,13 @@ This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle
 ```csharp
 --8<-- "tests/Testcontainers.EventHubs.Tests/EventHubsContainerTest.cs:EventHubsUsage"
 ```
+
+=== "Kafka support"
+
+Azure Event Hubs is compatible with Apache Kafka. You can use the Azure Event Hubs Kafka endpoint to connect to the Event Hubs instance.
+The following example demonstrates how to use the Azure Event Hubs Kafka endpoint with the Testcontainers library. Please,
+keep in mind that only consumer and producer API is supported. More information about known limitations can be found [here](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#known-limitations).
+
+```csharp
+--8<-- "tests/Testcontainers.EventHubs.Tests/EventHubsContainerTest.cs:EventHubsKafkaUsage"
+```
