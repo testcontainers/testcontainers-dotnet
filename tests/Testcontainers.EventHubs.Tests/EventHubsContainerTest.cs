@@ -3,68 +3,106 @@ namespace Testcontainers.EventHubs;
 public abstract class EventHubsContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:MinimalConfigurationJson]
-    private static readonly ConfigurationBuilder ConfigurationBuilder = ConfigurationBuilder.Create()
-        .WithEventHub(EventHubName, 2, [EventHubConsumerGroupName]);
-    
-    private const string EventHubName = "eh-1";
-    private const string EventHubConsumerGroupName = "testconsumergroup";
+    private const string EventHubsName = "eh-1";
+
+    private const string EventHubsConsumerGroupName = "cg-1";
+
+    private static readonly ConfigurationBuilder ConfigurationBuilder = ConfigurationBuilder
+        .Create()
+        .WithEventHub(EventHubsName, 2, [EventHubsConsumerGroupName]);
     // # --8<-- [end:MinimalConfigurationJson]
-    
+
     private readonly EventHubsContainer _eventHubsContainer;
 
     private EventHubsContainerTest(EventHubsContainer eventHubsContainer)
     {
         _eventHubsContainer = eventHubsContainer;
     }
-    
+
     // # --8<-- [start:EventHubsUsage]
-    public Task InitializeAsync() => _eventHubsContainer.StartAsync();
-    public Task DisposeAsync() => _eventHubsContainer.DisposeAsync().AsTask();
+    public Task InitializeAsync()
+    {
+        return _eventHubsContainer.StartAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _eventHubsContainer.DisposeAsync().AsTask();
+    }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    
-    public async Task SendEvents()
+    public async Task SendEventDataBatchShouldNotThrowException()
     {
         // Given
-        var eventBody = Encoding.Default.GetBytes("test");
-        var producerClient = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubName);
-        
+        var message = Guid.NewGuid().ToString();
+
+        await using var client = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+
         // When
-        var eventDataBatch = await producerClient.CreateBatchAsync();
-        eventDataBatch.TryAdd(new EventData(eventBody));
-        
-        var thrownExceptionSend = await Record.ExceptionAsync(() => producerClient.SendAsync(eventDataBatch));
+        var properties = await client.GetEventHubPropertiesAsync()
+            .ConfigureAwait(true);
+
+        using var eventDataBatch = await client.CreateBatchAsync()
+            .ConfigureAwait(true);
+
+        eventDataBatch.TryAdd(new EventData(message));
+
+        await client.SendAsync(eventDataBatch)
+            .ConfigureAwait(true);
 
         // Then
-        Assert.Null(thrownExceptionSend);
+        Assert.NotNull(properties);
     }
     // # --8<-- [end:EventHubsUsage]
 
     // # --8<-- [start:MinimalConfigurationEventHubs]
     [UsedImplicitly]
-    public sealed class EventHubsDefaultConfiguration() : EventHubsContainerTest(new EventHubsBuilder()
-        .WithAcceptLicenseAgreement(true)
-        .WithConfigurationBuilder(ConfigurationBuilder)
-        .Build());
+    public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
+    {
+        public EventHubsDefaultAzuriteConfiguration()
+            : base(new EventHubsBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .WithConfigurationBuilder(ConfigurationBuilder)
+                .Build())
+        {
+        }
+    }
     // # --8<-- [end:MinimalConfigurationEventHubs]
-    
+
     // # --8<-- [start:CustomConfigurationEventHubs]
     [UsedImplicitly]
-    public sealed class EventHubsConfigurationWithCustomAzurite() : EventHubsContainerTest(new EventHubsBuilder()
-        .WithAcceptLicenseAgreement(true)
-        .WithConfigurationBuilder(ConfigurationBuilder)
-        .WithAzurite(AzuriteContainer, CustomAlias)
-        .WithNetwork(Network)
-        .Build())
+    public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
     {
-        private const string CustomAlias = "custom-alias";
-        private static readonly INetwork Network = new NetworkBuilder().Build();
-        
-        private static readonly AzuriteContainer AzuriteContainer = new AzuriteBuilder()
-            .WithNetwork(Network)
-            .WithNetworkAliases(CustomAlias)
-            .Build();
-    } 
+        public EventHubsCustomAzuriteConfiguration(DatabaseFixture fixture)
+            : base(new EventHubsBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .WithConfigurationBuilder(ConfigurationBuilder)
+                .WithAzuriteContainer(fixture.Network, fixture.Container, DatabaseFixture.AzuriteNetworkAlias)
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class DatabaseFixture
+    {
+        public DatabaseFixture()
+        {
+            Network = new NetworkBuilder()
+                .Build();
+
+            Container = new AzuriteBuilder()
+                .WithNetwork(Network)
+                .WithNetworkAliases(AzuriteNetworkAlias)
+                .Build();
+        }
+
+        public static string AzuriteNetworkAlias => EventHubsBuilder.AzuriteNetworkAlias;
+
+        public INetwork Network { get; }
+
+        public AzuriteContainer Container { get; }
+    }
     // # --8<-- [end:CustomConfigurationEventHubs]
 }

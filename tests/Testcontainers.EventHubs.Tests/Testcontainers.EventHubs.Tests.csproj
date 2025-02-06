@@ -5,18 +5,14 @@
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Azure.Messaging.EventHubs" />
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
+        <PackageReference Include="Azure.Messaging.EventHubs"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.EventHubs/Testcontainers.EventHubs.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-        <ProjectReference Include="..\..\src\Testcontainers.EventHubs\Testcontainers.EventHubs.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <PackageVersion Update="Azure.Messaging.EventHubs" Version="5.11.3" />
     </ItemGroup>
 </Project>

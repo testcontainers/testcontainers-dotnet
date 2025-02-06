@@ -1,5 +1,3 @@
-using Testcontainers.Azurite;
-
 namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerConfiguration" />
@@ -9,13 +7,13 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsConfiguration" /> class.
     /// </summary>
-    /// <param name="azuriteContainer">The Azurite docker container.</param>
-    /// <param name="configurationBuilder">The configuration builder.</param>
+    /// <param name="azuriteContainer">The Azurite container.</param>
+    /// <param name="configurationBuilder">The Azure Event Hubs Emulator configuration.</param>
     public EventHubsConfiguration(AzuriteContainer azuriteContainer = null,
         ConfigurationBuilder configurationBuilder = null)
     {
-        ConfigurationBuilder = configurationBuilder;
         AzuriteContainer = azuriteContainer;
+        ConfigurationBuilder = configurationBuilder;
     }
 
     /// <summary>
@@ -56,17 +54,17 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     public EventHubsConfiguration(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
         : base(oldValue, newValue)
     {
-        ConfigurationBuilder = BuildConfiguration.Combine(oldValue.ConfigurationBuilder, newValue.ConfigurationBuilder);
         AzuriteContainer = BuildConfiguration.Combine(oldValue.AzuriteContainer, newValue.AzuriteContainer);
+        ConfigurationBuilder = BuildConfiguration.Combine(oldValue.ConfigurationBuilder, newValue.ConfigurationBuilder);
     }
-    
-    /// <summary>
-    /// Gets the configuration builder
-    /// </summary>
-    public ConfigurationBuilder ConfigurationBuilder { get; }
 
     /// <summary>
-    /// Gets the Azurite docker container details
+    /// Gets the Azurite container.
     /// </summary>
-    public AzuriteContainer AzuriteContainer { get; set; }
+    public AzuriteContainer AzuriteContainer { get; }
+
+    /// <summary>
+    /// Gets the Azure Event Hubs Emulator configuration.
+    /// </summary>
+    public ConfigurationBuilder ConfigurationBuilder { get; }
 }
