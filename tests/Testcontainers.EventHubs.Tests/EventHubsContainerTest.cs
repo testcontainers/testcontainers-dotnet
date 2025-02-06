@@ -7,9 +7,9 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
     private const string EventHubsConsumerGroupName = "cg-1";
 
-    private static readonly ConfigurationBuilder ConfigurationBuilder = ConfigurationBuilder
+    private static readonly EventHubsServiceConfiguration ConfigurationBuilder = EventHubsServiceConfiguration
         .Create()
-        .WithEventHub(EventHubsName, 2, [EventHubsConsumerGroupName]);
+        .WithEntity(EventHubsName, 2, [EventHubsConsumerGroupName]);
     // # --8<-- [end:MinimalConfigurationJson]
 
     private readonly EventHubsContainer _eventHubsContainer;

@@ -84,12 +84,12 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <summary>
     /// Sets the Azure Event Hubs Emulator configuration.
     /// </summary>
-    /// <param name="configurationBuilder">The configuration.</param>
+    /// <param name="serviceConfiguration">The configuration.</param>
     /// <returns>A configured instance of <see cref="EventHubsBuilder" />.</returns>
-    public EventHubsBuilder WithConfigurationBuilder(ConfigurationBuilder configurationBuilder)
+    public EventHubsBuilder WithConfigurationBuilder(EventHubsServiceConfiguration serviceConfiguration)
     {
-        var resourceContent = Encoding.Default.GetBytes(configurationBuilder.Build());
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(configurationBuilder: configurationBuilder))
+        var resourceContent = Encoding.Default.GetBytes(serviceConfiguration.Build());
+        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(serviceConfiguration: serviceConfiguration))
             .WithResourceMapping(resourceContent, "Eventhubs_Emulator/ConfigFiles/Config.json");
     }
 
@@ -130,7 +130,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
             .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
 
-        _ = Guard.Argument(DockerResourceConfiguration.ConfigurationBuilder, nameof(DockerResourceConfiguration.ConfigurationBuilder))
+        _ = Guard.Argument(DockerResourceConfiguration.ServiceConfiguration, nameof(DockerResourceConfiguration.ServiceConfiguration))
             .NotNull()
             .ThrowIf(argument => !argument.Value.Validate(), _ => throw new ArgumentException("ConfigurationBuilder is invalid."));
     }

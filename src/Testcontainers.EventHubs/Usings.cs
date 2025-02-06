@@ -1,5 +1,6 @@
 global using System;
 global using System.Collections.Generic;
+global using System.Collections.Immutable;
 global using System.Linq;
 global using System.Text;
 global using System.Text.Json;
@@ -12,4 +13,3 @@ global using DotNet.Testcontainers.Containers;
 global using DotNet.Testcontainers.Networks;
 global using JetBrains.Annotations;
 global using Testcontainers.Azurite;
-global using Testcontainers.EventHubs.Configuration;

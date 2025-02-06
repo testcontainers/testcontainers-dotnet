@@ -8,12 +8,12 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="EventHubsConfiguration" /> class.
     /// </summary>
     /// <param name="azuriteContainer">The Azurite container.</param>
-    /// <param name="configurationBuilder">The Azure Event Hubs Emulator configuration.</param>
+    /// <param name="serviceConfiguration">The Azure Event Hubs Emulator configuration.</param>
     public EventHubsConfiguration(AzuriteContainer azuriteContainer = null,
-        ConfigurationBuilder configurationBuilder = null)
+        EventHubsServiceConfiguration serviceConfiguration = null)
     {
         AzuriteContainer = azuriteContainer;
-        ConfigurationBuilder = configurationBuilder;
+        ServiceConfiguration = serviceConfiguration;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
         AzuriteContainer = BuildConfiguration.Combine(oldValue.AzuriteContainer, newValue.AzuriteContainer);
-        ConfigurationBuilder = BuildConfiguration.Combine(oldValue.ConfigurationBuilder, newValue.ConfigurationBuilder);
+        ServiceConfiguration = BuildConfiguration.Combine(oldValue.ServiceConfiguration, newValue.ServiceConfiguration);
     }
 
     /// <summary>
@@ -66,5 +66,5 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the Azure Event Hubs Emulator configuration.
     /// </summary>
-    public ConfigurationBuilder ConfigurationBuilder { get; }
+    public EventHubsServiceConfiguration ServiceConfiguration { get; }
 }

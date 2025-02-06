@@ -22,12 +22,18 @@ public sealed class EventHubsContainer : DockerContainer
     /// <returns>The Event Hubs connection string.</returns>
     public string GetConnectionString()
     {
-        var properties = new Dictionary<string, string>();
-        properties.Add("Endpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(EventHubsBuilder.EventHubsPort)).ToString());
-        properties.Add("DefaultEndpointsProtocol", Uri.UriSchemeHttp);
-        properties.Add("SharedAccessKeyName", "RootManageSharedAccessKey");
-        properties.Add("SharedAccessKey", "SAS_KEY_VALUE");
-        properties.Add("UseDevelopmentEmulator", "true");
+        var properties = new Dictionary<string, string>
+        {
+            {
+                "Endpoint",
+                new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(EventHubsBuilder.EventHubsPort))
+                    .ToString()
+            },
+            { "DefaultEndpointsProtocol", Uri.UriSchemeHttp },
+            { "SharedAccessKeyName", "RootManageSharedAccessKey" },
+            { "SharedAccessKey", "SAS_KEY_VALUE" },
+            { "UseDevelopmentEmulator", "true" },
+        };
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 }

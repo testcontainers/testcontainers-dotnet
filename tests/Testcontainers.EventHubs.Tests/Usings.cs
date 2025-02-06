@@ -8,5 +8,4 @@ global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Networks;
 global using JetBrains.Annotations;
 global using Testcontainers.Azurite;
-global using Testcontainers.EventHubs.Configuration;
 global using Xunit;

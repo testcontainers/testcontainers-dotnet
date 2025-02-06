@@ -5,6 +5,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="System.Collections.Immutable"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
