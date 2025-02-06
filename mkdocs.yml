@@ -47,7 +47,7 @@ nav:
     - examples/aspnet.md
   - Modules:
     - modules/index.md
-    - modules/azureeventhubs.md
+    - modules/eventhubs.md
     - modules/elasticsearch.md
     - modules/mongodb.md
     - modules/mssql.md
