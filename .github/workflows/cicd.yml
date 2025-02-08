@@ -42,6 +42,7 @@ jobs:
           { name: "Testcontainers.Azurite", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.BigQuery", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Bigtable", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Cassandra", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.ClickHouse", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.CockroachDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Consul", runs-on: "ubuntu-22.04" },

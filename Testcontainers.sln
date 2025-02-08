@@ -209,6 +209,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Xunit.Tests", "tests\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj", "{E901DF14-6F05-4FC2-825A-3055FAD33561}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Cassandra", "src\Testcontainers.Cassandra\Testcontainers.Cassandra.csproj", "{8495D757-5FD7-491C-B941-9D43B3DCF3C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Cassandra.Tests", "tests\Testcontainers.Cassandra.Tests\Testcontainers.Cassandra.Tests.csproj", "{C6A2B99E-BFD5-4510-83D7-A8844142F27D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -610,6 +614,14 @@ Global
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8495D757-5FD7-491C-B941-9D43B3DCF3C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8495D757-5FD7-491C-B941-9D43B3DCF3C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8495D757-5FD7-491C-B941-9D43B3DCF3C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8495D757-5FD7-491C-B941-9D43B3DCF3C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A2B99E-BFD5-4510-83D7-A8844142F27D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A2B99E-BFD5-4510-83D7-A8844142F27D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A2B99E-BFD5-4510-83D7-A8844142F27D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A2B99E-BFD5-4510-83D7-A8844142F27D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -710,5 +722,7 @@ Global
 		{DDB41BC8-5826-4D97-9C5F-001151E3FFD6} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{E901DF14-6F05-4FC2-825A-3055FAD33561} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{8495D757-5FD7-491C-B941-9D43B3DCF3C0} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{C6A2B99E-BFD5-4510-83D7-A8844142F27D} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
