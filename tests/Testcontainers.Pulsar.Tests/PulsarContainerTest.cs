@@ -84,20 +84,20 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         {
         }
     }
-    
+
     [UsedImplicitly]
-    public sealed class PulsarDefaultConfigurationLts4 : PulsarContainerTest
+    public sealed class PulsarV4Configuration : PulsarContainerTest
     {
-        public PulsarDefaultConfigurationLts4()
+        public PulsarV4Configuration()
             : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").Build(), false)
         {
         }
     }
-    
+
     [UsedImplicitly]
-    public sealed class PulsarAuthConfigurationLts4 : PulsarContainerTest
+    public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
-        public PulsarAuthConfigurationLts4()
+        public PulsarV4AuthConfiguration()
             : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").WithAuthentication().Build(), true)
         {
         }
