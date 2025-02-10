@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Sftp;
+namespace Testcontainers.Sftp;
 
 public sealed class SftpContainerTest : IAsyncLifetime
 {
