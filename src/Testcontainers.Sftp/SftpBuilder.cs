@@ -1,18 +1,16 @@
-using System.Text.RegularExpressions;
-
 namespace Testcontainers.Sftp;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, SftpConfiguration>
 {
-    public const string SftpImage = "atmoz/sftp";
+    public const string SftpImage = "atmoz/sftp:alpine";
 
     public const ushort SftpPort = 22;
 
-    public const string DefaultUsername = "foo";
+    public const string DefaultUsername = "sftp";
 
-    public const string DefaultPassword = "bar";
+    public const string DefaultPassword = "sftp";
 
     public const string DefaultUploadDirectory = "upload";
 
@@ -59,9 +57,9 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     }
 
     /// <summary>
-    /// Sets the directory to which files should be uploaded on the server.
+    /// Sets the directory to which files are uploaded.
     /// </summary>
-    /// <param name="uploadDirectory">The Sftp password.</param>
+    /// <param name="uploadDirectory">The upload directory.</param>
     /// <returns>A configured instance of <see cref="SftpBuilder" />.</returns>
     public SftpBuilder WithUploadDirectory(string uploadDirectory)
     {
@@ -71,9 +69,17 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <inheritdoc />
     public override SftpContainer Build()
     {
-        var builder = WithCommand($"{DockerResourceConfiguration.Username}:{DockerResourceConfiguration.Password}:::{DockerResourceConfiguration.UploadDirectory}");
-        builder.Validate();
-        return new SftpContainer(builder.DockerResourceConfiguration);
+        Validate();
+
+        var sftpContainer = WithCommand(string.Join(
+            ":",
+            DockerResourceConfiguration.Username,
+            DockerResourceConfiguration.Password,
+            string.Empty,
+            string.Empty,
+            DockerResourceConfiguration.UploadDirectory));
+
+        return new SftpContainer(sftpContainer.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -85,7 +91,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithUploadDirectory(DefaultUploadDirectory)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(new Regex("Server listening on .+")));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server listening on .+"));
     }
 
     /// <inheritdoc />

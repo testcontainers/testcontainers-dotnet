@@ -1,5 +1,4 @@
-﻿
-namespace Testcontainers.Sftp;
+﻿namespace Testcontainers.Sftp;
 
 public sealed class SftpContainerTest : IAsyncLifetime
 {
@@ -20,14 +19,17 @@ public sealed class SftpContainerTest : IAsyncLifetime
     public async Task IsConnectedReturnsTrue()
     {
         // Given
-        var hostname = _sftpContainer.Hostname;
+        var host = _sftpContainer.Hostname;
+
         var port = _sftpContainer.GetMappedPublicPort(SftpBuilder.SftpPort);
-        var client = new SftpClient(hostname, port, SftpBuilder.DefaultUsername, SftpBuilder.DefaultPassword);
+
+        using var sftpClient = new SftpClient(host, port, SftpBuilder.DefaultUsername, SftpBuilder.DefaultPassword);
 
         // When
-        await client.ConnectAsync(CancellationToken.None);
+        await sftpClient.ConnectAsync(CancellationToken.None)
+            .ConfigureAwait(true);
 
         // Then
-        Assert.True(client.IsConnected);
+        Assert.True(sftpClient.IsConnected);
     }
 }

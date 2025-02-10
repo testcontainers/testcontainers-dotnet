@@ -9,14 +9,16 @@ public sealed class SftpConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The Sftp username.</param>
     /// <param name="password">The Sftp password.</param>
-    /// <param name="uploadDirectory">The directory to which files should be uploaded on the server.</param>
-    public SftpConfiguration(string username = null, string password = null, string uploadDirectory = null)
+    /// <param name="uploadDirectory">The directory to which files are uploaded.</param>
+    public SftpConfiguration(
+        string username = null,
+        string password = null,
+        string uploadDirectory = null)
     {
         Username = username;
         Password = password;
         UploadDirectory = uploadDirectory;
     }
-    
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpConfiguration" /> class.
@@ -62,17 +64,17 @@ public sealed class SftpConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// Gets the sftp username.
+    /// Gets the Sftp username.
     /// </summary>
     public string Username { get; }
 
     /// <summary>
-    /// Gets the sftp password.
+    /// Gets the Sftp password.
     /// </summary>
     public string Password { get; }
-    
+
     /// <summary>
-    /// Gets the directory to which files should be uploaded on the server.
+    /// Gets the directory to which files are uploaded.
     /// </summary>
     public string UploadDirectory { get; }
 }
