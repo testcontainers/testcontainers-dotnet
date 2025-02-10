@@ -4,7 +4,7 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2Configuration>
 {
-    public const string Db2Image = "icr.io/db2_community/db2:latest";
+    public const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
 
     public const ushort Db2Port = 50000;
 
@@ -74,28 +74,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     }
 
     /// <summary>
-    /// Sets the Db2 archive logs.
-    /// </summary>
-    /// <param name="archiveLogs">The Db2 archive logs setting.</param>
-    /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
-    public Db2Builder WithArchiveLogs(bool archiveLogs)
-    {
-        return Merge(DockerResourceConfiguration, new Db2Configuration(archiveLogs: archiveLogs))
-            .WithEnvironment("ARCHIVE_LOGS", archiveLogs.ToString());
-    }
-
-    /// <summary>
-    /// Sets the Db2 autoconfig setting.
-    /// </summary>
-    /// <param name="autoConfig">The Db2 autoconfig setting.</param>
-    /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
-    public Db2Builder WithAutoconfig(bool autoConfig)
-    {
-        return Merge(DockerResourceConfiguration, new Db2Configuration(autoConfig: autoConfig))
-            .WithEnvironment("AUTOCONFIG", autoConfig.ToString());
-    }
-
-    /// <summary>
     /// Accepts the Db2 license agreement.
     /// </summary>
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
@@ -111,7 +89,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
     public Db2Builder WithInMemoryDatabase()
     {
-        return Merge(DockerResourceConfiguration, new Db2Configuration(licenseAgreement: DefaultInMemoryDatabasePath))
+        return Merge(DockerResourceConfiguration, new Db2Configuration(inMemoryDatabasePath: DefaultInMemoryDatabasePath))
             .WithTmpfsMount(DefaultInMemoryDatabasePath);
     }
 
@@ -119,21 +97,10 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     public override Db2Container Build()
     {
         Validate();
-
-        // By default, the base builder waits until the container is running. However, for Db2, a more advanced waiting strategy is necessary
-        // If the user does not provide a custom waiting strategy, append the default Db2 waiting strategy.
-        var db2Builder = DockerResourceConfiguration.WaitStrategies.Count() > 1
-            ? this
-            : WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("All databases are now active")
-                .UntilMessageIsLogged("Setup has completed.")
-                .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
-            );
-
-        return new Db2Container(db2Builder.DockerResourceConfiguration);
+        return new Db2Container(DockerResourceConfiguration);
     }
 
-    /// <inheritdoc />
+  /// <inheritdoc />
     protected override Db2Builder Init() => base.Init()
         .WithImage(Db2Image)
         .WithPortBinding(Db2Port, true)
@@ -141,10 +108,12 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
         .WithUsername(DefaultUsername)
         .WithPassword(DefaultPassword)
         .WithLicenseAgreement()
-        .WithArchiveLogs(false)
-        .WithAutoconfig(false)
         .WithInMemoryDatabase()
-        .WithPrivileged(true);
+        .WithPrivileged(true)
+        .WithWaitStrategy(Wait.ForUnixContainer()
+          .UntilMessageIsLogged("All databases are now active")
+          .UntilMessageIsLogged("Setup has completed.")
+          .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
 
     /// <inheritdoc />
     protected override void Validate()

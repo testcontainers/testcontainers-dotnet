@@ -3,7 +3,15 @@ namespace Testcontainers.Db2;
 public sealed class Db2ContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseDb2Container]
-    private readonly Db2Container _db2Container = new Db2Builder().Build();
+    private readonly Db2Container _db2Container = new Db2Builder()
+      .WithEnvironment("TO_CREATE_SAMPLEDB", "false")
+      .WithEnvironment("PERSISTENT_HOME", "true")
+      .WithEnvironment("REPODB", "false")
+      .WithEnvironment("BLU", "false")
+      .WithEnvironment("HADR_ENABLED", "false")
+      .WithEnvironment("ARCHIVE_LOGS", "false")
+      .WithEnvironment("AUTOCONFIG", "false")
+      .Build();
 
     public Task InitializeAsync()
     {

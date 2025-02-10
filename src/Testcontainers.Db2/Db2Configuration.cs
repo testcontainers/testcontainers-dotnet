@@ -4,6 +4,11 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Configuration : ContainerConfiguration
 {
+    private readonly bool _archiveLogs;
+    private readonly bool _autoConfig;
+    private readonly string _licenseAgreement;
+    private readonly string _inMemoryDatabasePath;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Configuration" /> class.
     /// </summary>
@@ -26,10 +31,10 @@ public sealed class Db2Configuration : ContainerConfiguration
         Database = database;
         Username = username;
         Password = password;
-        ArchiveLogs = archiveLogs;
-        AutoConfig = autoConfig;
-        LicenseAgreement = licenseAgreement;
-        InMemoryDatabasePath = inMemoryDatabasePath;
+        _archiveLogs = archiveLogs;
+        _autoConfig = autoConfig;
+        _licenseAgreement = licenseAgreement;
+        _inMemoryDatabasePath = inMemoryDatabasePath;
     }
 
     /// <summary>
@@ -73,10 +78,10 @@ public sealed class Db2Configuration : ContainerConfiguration
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        ArchiveLogs = BuildConfiguration.Combine(oldValue.ArchiveLogs, newValue.ArchiveLogs);
-        AutoConfig = BuildConfiguration.Combine(oldValue.AutoConfig, newValue.AutoConfig);
-        LicenseAgreement = BuildConfiguration.Combine(oldValue.LicenseAgreement, newValue.LicenseAgreement);
-        InMemoryDatabasePath = BuildConfiguration.Combine(oldValue.InMemoryDatabasePath, newValue.InMemoryDatabasePath);
+        _archiveLogs = BuildConfiguration.Combine(oldValue._archiveLogs, newValue._archiveLogs);
+        _autoConfig = BuildConfiguration.Combine(oldValue._autoConfig, newValue._autoConfig);
+        _licenseAgreement = BuildConfiguration.Combine(oldValue._licenseAgreement, newValue._licenseAgreement);
+        _inMemoryDatabasePath = BuildConfiguration.Combine(oldValue._inMemoryDatabasePath, newValue._inMemoryDatabasePath);
     }
 
     /// <summary>
@@ -93,24 +98,4 @@ public sealed class Db2Configuration : ContainerConfiguration
     /// Gets the Db2 password.
     /// </summary>
     public string Password { get; }
-
-    /// <summary>
-    /// Toggle for archivation of logs.
-    /// </summary>
-    public bool ArchiveLogs { get; }
-
-    /// <summary>
-    /// Toggle for database autoconfiguration.
-    /// </summary>
-    public bool AutoConfig { get; }
-
-    /// <summary>
-    /// License agreement value.
-    /// </summary>
-    public string LicenseAgreement { get; }
-
-    /// <summary>
-    /// Path to the database files that should be mapped into memory (tmpfs).
-    /// </summary>
-    public string InMemoryDatabasePath { get; }
 }
