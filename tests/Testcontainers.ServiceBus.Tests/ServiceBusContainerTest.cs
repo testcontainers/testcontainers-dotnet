@@ -66,7 +66,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
-            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).WithMsSqlContainer(fixture.Network, fixture.Container, fixture.DatabaseNetworkAlias).Build())
+            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias).Build())
         {
         }
     }
@@ -85,7 +85,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
                 .Build();
         }
 
-        public string DatabaseNetworkAlias => ServiceBusBuilder.DatabaseNetworkAlias;
+        public static string DatabaseNetworkAlias => ServiceBusBuilder.DatabaseNetworkAlias;
 
         public INetwork Network { get; }
 
