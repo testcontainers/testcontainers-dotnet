@@ -80,6 +80,7 @@ jobs:
           { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redpanda", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.ServiceBus", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Sftp", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" }
