@@ -14,9 +14,11 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
     public const string DefaultPassword = "db2inst1";
 
-    public const string DefaultLicenseAgreement = "accept";
+    private const string AcceptLicenseAgreementEnvVar = "LICENSE";
 
-    public const string DefaultInMemoryDatabasePath = "/home/db2inst1/data";
+    private const string AcceptLicenseAgreement = "accept";
+
+    private const string DeclineLicenseAgreement = "decline";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
@@ -41,6 +43,20 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     protected override Db2Configuration DockerResourceConfiguration { get; }
 
     /// <summary>
+    /// Accepts the license agreement.
+    /// </summary>
+    /// <remarks>
+    /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Db2 <see href="www.ibm.com/terms/?id=L-SNMD-UVTL8R">license</see> is accepted.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Db2 license agreement is accepted.</param>
+    /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
+    public Db2Builder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    {
+        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+    }
+
+    /// <summary>
     /// Sets the Db2 database name.
     /// </summary>
     /// <param name="database">The Db2 database.</param>
@@ -59,7 +75,8 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     public Db2Builder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new Db2Configuration(username: username))
-            .WithEnvironment("DB2INSTANCE", username);
+            .WithEnvironment("DB2INSTANCE", username)
+            .WithTmpfsMount(string.Join("/", string.Empty, "home", username, "data"));
     }
 
     /// <summary>
@@ -73,26 +90,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
             .WithEnvironment("DB2INST1_PASSWORD", password);
     }
 
-    /// <summary>
-    /// Accepts the Db2 license agreement.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
-    public Db2Builder WithLicenseAgreement()
-    {
-        return Merge(DockerResourceConfiguration, new Db2Configuration(licenseAgreement: DefaultLicenseAgreement))
-            .WithEnvironment("LICENSE", DefaultLicenseAgreement);
-    }
-
-    /// <summary>
-    /// Maps the database to memory.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
-    public Db2Builder WithInMemoryDatabase()
-    {
-        return Merge(DockerResourceConfiguration, new Db2Configuration(inMemoryDatabasePath: DefaultInMemoryDatabasePath))
-            .WithTmpfsMount(DefaultInMemoryDatabasePath);
-    }
-
     /// <inheritdoc />
     public override Db2Container Build()
     {
@@ -100,25 +97,28 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
         return new Db2Container(DockerResourceConfiguration);
     }
 
-  /// <inheritdoc />
+    /// <inheritdoc />
     protected override Db2Builder Init() => base.Init()
         .WithImage(Db2Image)
         .WithPortBinding(Db2Port, true)
         .WithDatabase(DefaultDatabase)
         .WithUsername(DefaultUsername)
         .WithPassword(DefaultPassword)
-        .WithLicenseAgreement()
-        .WithInMemoryDatabase()
         .WithPrivileged(true)
-        .WithWaitStrategy(Wait.ForUnixContainer()
-          .UntilMessageIsLogged("All databases are now active")
-          .UntilMessageIsLogged("Setup has completed.")
-          .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Setup has completed."));
 
     /// <inheritdoc />
     protected override void Validate()
     {
+        const string message = "The image '{0}' requires you to accept a license agreement.";
+
         base.Validate();
+
+        Predicate<Db2Configuration> licenseAgreementNotAccepted = value =>
+            !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
+
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
             .NotNull()
@@ -145,27 +145,5 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     protected override Db2Builder Merge(Db2Configuration oldValue, Db2Configuration newValue)
     {
         return new Db2Builder(new Db2Configuration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
-        /// </summary>
-        /// <param name="configuration">The container configuration.</param>
-        public WaitUntil(Db2Configuration configuration)
-        {
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            var db2Container = (Db2Container)container;
-
-            var execResult = await db2Container.ExecScriptAsync("SELECT 1 FROM SYSIBM.SYSDUMMY1").ConfigureAwait(false);
-
-            return 0L.Equals(execResult.ExitCode);
-        }
     }
 }

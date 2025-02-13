@@ -1,41 +1,31 @@
 # IBM DB2
 
-[IBM DB2](https://www.ibm.com/db2), is a relational database engine developed by IBM. The following example provides .NET developers with a starting point to use a IBM DB2 instance in the [xUnit][xunit] tests.
+[IBM DB2](https://www.ibm.com/db2) is a relational database engine developed by IBM.
 
-The following example (for windows) uses the following NuGet packages:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.Db2
-dotnet add package Net.IBM.Data.Db2
-dotnet add package xunit
 ```
 
-Please note: For linux there are currently some hurdles and the package Net.IBM.Data.Db2-lnx has to be used with the following environment variables being set:
+!!! warning
 
-  - LD_LIBRARY_PATH
-  - PATH
-  - DB2_CLI_DRIVER_INSTALL_PATH
+    The Linux client dependency, [Net.IBM.Data.Db2-lnx](https://www.nuget.org/packages/Net.IBM.Data.Db2-lnx), requires additional configurations. We use the [Testcontainers.Db2.Tests.targets](tests/Testcontainers.Db2.Tests/Testcontainers.Db2.Tests.targets) file to configure the environment variables: `LD_LIBRARY_PATH`, `PATH`, `DB2_CLI_DRIVER_INSTALL_PATH`, at runtime.
 
-One way to achieve this within a test project is to extend the .csproj with a task that writes a .runsettings file. An example is given below:
-
-=== "Example"
-    ```xml
-    --8<-- "tests/Testcontainers.Db2.Tests/Testcontainers.Db2.Tests.csproj:RunSettingsGeneration"
-    ```
-
-IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
-
-Copy and paste the following code into a new `.cs` test file within an existing test project.
+You can start an DB2 container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
 === "Usage Example"
     ```csharp
     --8<-- "tests/Testcontainers.Db2.Tests/Db2ContainerTest.cs:UseDb2Container"
     ```
 
+The test example uses the following NuGet dependencies:
+
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.Db2.Tests/Testcontainers.Db2.Tests.csproj:PackageReferences"
+    ```
+
 To execute the tests, use the command `dotnet test` from a terminal.
 
-## A Note To Developers
-
-Once Testcontainers creates a server instance, developers may use the connection string with any of the popular data-access technologies found in the .NET Ecosystem. Some of these libraries include [Entity Framework Core](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore), [Dapper](https://www.nuget.org/packages/Dapper), and [NHibernate](https://www.nuget.org/packages/NHibernate). At which point, developers can execute database migrations and SQL scripts.
-
-[xunit]: https://xunit.net/
+--8<-- "docs/modules/_call_out_test_projects.txt"

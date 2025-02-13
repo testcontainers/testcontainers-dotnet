@@ -4,37 +4,20 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Configuration : ContainerConfiguration
 {
-    private readonly bool _archiveLogs;
-    private readonly bool _autoConfig;
-    private readonly string _licenseAgreement;
-    private readonly string _inMemoryDatabasePath;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Configuration" /> class.
     /// </summary>
     /// <param name="database">The Db2 database.</param>
     /// <param name="username">The Db2 username.</param>
     /// <param name="password">The Db2 password.</param>
-    /// <param name="archiveLogs">The Db2 archive logs setting.</param>
-    /// <param name="autoConfig">The Db2 auto config setting.</param>
-    /// <param name="licenseAgreement">The Db2 license agreement.</param>
-    /// <param name="inMemoryDatabasePath">The Db2 database path to map into memory (tmpfs).</param>
     public Db2Configuration(
         string database = null,
         string username = null,
-        string password = null,
-        bool archiveLogs = false,
-        bool autoConfig = false,
-        string licenseAgreement = null,
-        string inMemoryDatabasePath = null)
+        string password = null)
     {
         Database = database;
         Username = username;
         Password = password;
-        _archiveLogs = archiveLogs;
-        _autoConfig = autoConfig;
-        _licenseAgreement = licenseAgreement;
-        _inMemoryDatabasePath = inMemoryDatabasePath;
     }
 
     /// <summary>
@@ -78,10 +61,6 @@ public sealed class Db2Configuration : ContainerConfiguration
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        _archiveLogs = BuildConfiguration.Combine(oldValue._archiveLogs, newValue._archiveLogs);
-        _autoConfig = BuildConfiguration.Combine(oldValue._autoConfig, newValue._autoConfig);
-        _licenseAgreement = BuildConfiguration.Combine(oldValue._licenseAgreement, newValue._licenseAgreement);
-        _inMemoryDatabasePath = BuildConfiguration.Combine(oldValue._inMemoryDatabasePath, newValue._inMemoryDatabasePath);
     }
 
     /// <summary>
