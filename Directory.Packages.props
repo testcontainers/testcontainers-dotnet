@@ -58,7 +58,7 @@
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="12.2.8"/>
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
         <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6"/>
-        <PackageVersion Include="MongoDB.Driver" Version="2.19.0"/>
+        <PackageVersion Include="MongoDB.Driver" Version="3.2.0"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
