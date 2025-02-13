@@ -4,13 +4,13 @@
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
+    <!-- -8<- [start:PackageReferences] -->
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
     </ItemGroup>
-    <!-- -8<- [start:PackageReferences] -->
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
         <PackageReference Include="Net.IBM.Data.Db2-lnx"/>
     </ItemGroup>
