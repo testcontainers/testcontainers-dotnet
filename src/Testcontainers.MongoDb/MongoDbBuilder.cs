@@ -190,7 +190,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitInitiateReplicaSet(MongoDbConfiguration configuration)
         {
-            _scriptContent = $"try{{rs.status().ok}}catch(e){{rs.initiate({{'_id':'{configuration.ReplicaSetName}',members:[{{'_id':1,'host':'127.0.0.1:27017'}}]}}).ok}}";
+            _scriptContent = $"try{{rs.status()}}catch(e){{rs.initiate({{_id:'{configuration.ReplicaSetName}',members:[{{_id:0,host:'127.0.0.1:27017'}}]}});throw e;}}";
         }
 
         /// <inheritdoc />
