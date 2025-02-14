@@ -8,7 +8,7 @@
 
         public const ushort CqlPort = 9042;
 
-        public const string DefaultLocalDataCentre = "datacentre1";
+        public const string DefaultLocalDc = "dc1";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
@@ -49,7 +49,7 @@
                 .WithEnvironment("HEAP_NEWSIZE", "128M")
                 .WithEnvironment("MAX_HEAP_SIZE", "1024M")
                 .WithEnvironment("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
-                .WithEnvironment("CASSANDRA_DC", DefaultLocalDataCentre)
+                .WithEnvironment("CASSANDRA_DC", DefaultLocalDc)
                 .WithWaitStrategy(
                     Wait.ForUnixContainer()
                         .UntilPortIsAvailable(CqlPort)
