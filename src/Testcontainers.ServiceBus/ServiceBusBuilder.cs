@@ -12,12 +12,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const ushort ServiceBusPort = 5672;
 
-    private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
-
-    private const string AcceptLicenseAgreement = "Y";
-
-    private const string DeclineLicenseAgreement = "N";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
@@ -40,6 +34,15 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <inheritdoc />
     protected override ServiceBusConfiguration DockerResourceConfiguration { get; }
 
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "ACCEPT_EULA";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "Y";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "N";
+
     /// <summary>
     /// Accepts the license agreement.
     /// </summary>
@@ -48,7 +51,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Azure Service Bus Emulator license agreement is accepted.</param>
     /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    public ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    public override ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
@@ -85,6 +88,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     public override ServiceBusContainer Build()
     {
         Validate();
+        ValidateLicenseAgreement();
 
         if (DockerResourceConfiguration.DatabaseContainer != null)
         {
@@ -103,20 +107,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
         var serviceBusContainer = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
         return new ServiceBusContainer(serviceBusContainer.DockerResourceConfiguration);
-    }
-
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        const string message = "The image '{0}' requires you to accept a license agreement.";
-
-        base.Validate();
-
-        Predicate<ServiceBusConfiguration> licenseAgreementNotAccepted = value =>
-            !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
-
-        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
     }
 
     /// <inheritdoc />

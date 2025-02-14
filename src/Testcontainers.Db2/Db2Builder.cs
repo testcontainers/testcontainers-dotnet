@@ -14,12 +14,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
     public const string DefaultPassword = "db2inst1";
 
-    private const string AcceptLicenseAgreementEnvVar = "LICENSE";
-
-    private const string AcceptLicenseAgreement = "accept";
-
-    private const string DeclineLicenseAgreement = "decline";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
@@ -42,6 +36,15 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <inheritdoc />
     protected override Db2Configuration DockerResourceConfiguration { get; }
 
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "LICENSE";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "accept";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "decline";
+
     /// <summary>
     /// Accepts the license agreement.
     /// </summary>
@@ -50,7 +53,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Db2 license agreement is accepted.</param>
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
-    public Db2Builder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    public override Db2Builder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
@@ -94,6 +97,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     public override Db2Container Build()
     {
         Validate();
+        ValidateLicenseAgreement();
         return new Db2Container(DockerResourceConfiguration);
     }
 
@@ -110,15 +114,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <inheritdoc />
     protected override void Validate()
     {
-        const string message = "The image '{0}' requires you to accept a license agreement.";
-
         base.Validate();
-
-        Predicate<Db2Configuration> licenseAgreementNotAccepted = value =>
-            !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
-
-        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
             .NotNull()
