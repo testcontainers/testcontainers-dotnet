@@ -8,7 +8,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
 
     public const ushort OraclePort = 1521;
 
-    [Obsolete("Not used anymore. Only valid for Oracle images > 11 and < 23")]
+    [Obsolete("This constant is obsolete and should not be used. It is only applicable for Oracle images between versions 11 and 22.")]
     public const string DefaultDatabase = "XEPDB1";
 
     public const string DefaultUsername = "oracle";
@@ -38,6 +38,19 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
+    /// Sets the Oracle database.
+    /// </summary>
+    /// <remarks>
+    /// The database can only be set for Oracle 18 and onwards.
+    /// </remarks>
+    /// <param name="database">The Oracle database.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    public OracleBuilder WithDatabase(string database)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
+    }
+
+    /// <summary>
     /// Sets the Oracle username.
     /// </summary>
     /// <param name="username">The Oracle username.</param>
@@ -60,19 +73,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
             .WithEnvironment("APP_USER_PASSWORD", password);
     }
 
-    /// <summary>
-    /// Sets the Oracle database.
-    /// </summary>
-    /// <remarks>
-    /// The database can only be set for Oracle 18 and onwards.
-    /// </remarks>
-    /// <param name="database">The Oracle database.</param>
-    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
-    public OracleBuilder WithDatabase(string database)
-    {
-        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
-    }
-
     /// <inheritdoc />
     public override OracleContainer Build()
     {
@@ -92,17 +92,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         return new OracleContainer(DockerResourceConfiguration);
     }
 
-    private string GetDefaultServiceName()
-    {
-        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major >= 23))
-            return "FREEPDB1";
-
-        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major > 11))
-            return "XEPDB1";
-
-        return "XE";
-    }
-
     /// <inheritdoc />
     protected override OracleBuilder Init()
     {
@@ -119,12 +108,21 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        const string message = "The image '{0}' does not support configuring the database. It is only supported on Oracle 18 and onwards.";
+
+        Predicate<OracleConfiguration> databaseConfigurationNotSupported = value =>
+            value.Database != null && value.Image.MatchVersion(v => v.Major < 18);
+
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
+            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => throw new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
             .NotNull()
             .NotEmpty();
 
-        if (DockerResourceConfiguration.Database != null && DockerResourceConfiguration.Image.MatchVersion(v => v.Major < 18))
-            throw new NotSupportedException($"Setting the database is not supported with {DockerResourceConfiguration.Image.FullName}. It is only supported on Oracle 18 and onwards.");
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
     }
 
     /// <inheritdoc />
@@ -143,5 +141,20 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Merge(OracleConfiguration oldValue, OracleConfiguration newValue)
     {
         return new OracleBuilder(new OracleConfiguration(oldValue, newValue));
+    }
+
+    private string GetDefaultServiceName()
+    {
+        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major >= 23))
+        {
+            return "FREEPDB1";
+        }
+
+        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major > 11))
+        {
+            return "XEPDB1";
+        }
+
+        return "XE";
     }
 }
