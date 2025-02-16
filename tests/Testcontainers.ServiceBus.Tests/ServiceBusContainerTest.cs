@@ -57,7 +57,9 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
     {
         public ServiceBusDefaultMsSqlConfiguration()
-            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).Build())
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .Build())
         {
         }
     }
@@ -66,7 +68,10 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
-            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias).Build())
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
+                .Build())
         {
         }
     }
