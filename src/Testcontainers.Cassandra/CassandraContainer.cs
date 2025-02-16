@@ -14,21 +14,17 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Gets the Cassandra contact point.
-    /// </summary>
-    /// <returns>The Cassandra contact point.</returns>
-    public IPEndPoint GetContactPoint()
-    {
-        return new IPEndPoint(Dns.GetHostAddresses(Hostname)[0], GetMappedPublicPort(CassandraBuilder.CqlPort));
-    }
-
-    /// <summary>
     /// Gets the Cassandra connection string.
     /// </summary>
     /// <returns>The Cassandra connection string.</returns>
     public string GetConnectionString()
     {
-        throw new NotImplementedException();
+        var properties = new Dictionary<string, string>
+        {
+            { "Contact Points", Hostname },
+            { "Port", GetMappedPublicPort(CassandraBuilder.CqlPort).ToString() },
+        };
+        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 
     /// <summary>

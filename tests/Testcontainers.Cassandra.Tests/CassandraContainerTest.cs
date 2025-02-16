@@ -19,7 +19,7 @@ public sealed class CassandraContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using var cluster = Cluster.Builder().AddContactPoint(_cassandraContainer.GetContactPoint()).Build();
+        using var cluster = Cluster.Builder().WithConnectionString(_cassandraContainer.GetConnectionString()).Build();
 
         // When
         using var session = cluster.Connect();
@@ -35,7 +35,7 @@ public sealed class CassandraContainerTest : IAsyncLifetime
         // Given
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local WHERE key = ?;";
 
-        using var cluster = Cluster.Builder().AddContactPoint(_cassandraContainer.GetContactPoint()).Build();
+        using var cluster = Cluster.Builder().WithConnectionString(_cassandraContainer.GetConnectionString()).Build();
 
         // When
         using var session = cluster.Connect();
