@@ -47,7 +47,8 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
     public OracleBuilder WithDatabase(string database)
     {
-        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database))
+            .WithEnvironment("ORACLE_DATABASE", database);
     }
 
     /// <summary>
@@ -82,11 +83,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         if (DockerResourceConfiguration.Database == null)
         {
             return new OracleContainer(WithDatabase(defaultServiceName).DockerResourceConfiguration);
-        }
-
-        if (DockerResourceConfiguration.Database != defaultServiceName)
-        {
-            return new OracleContainer(WithEnvironment("ORACLE_DATABASE", DockerResourceConfiguration.Database).DockerResourceConfiguration);
         }
 
         return new OracleContainer(DockerResourceConfiguration);
