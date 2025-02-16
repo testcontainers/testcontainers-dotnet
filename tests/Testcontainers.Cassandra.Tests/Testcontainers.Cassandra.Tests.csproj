@@ -9,10 +9,10 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="CassandraCSharpDriver" />
+        <PackageReference Include="CassandraCSharpDriver"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Testcontainers.Cassandra\Testcontainers.Cassandra.csproj" />
-        <ProjectReference Include="..\Testcontainers.Commons\Testcontainers.Commons.csproj" />
+        <ProjectReference Include="../../src/Testcontainers.Cassandra/Testcontainers.Cassandra.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>
