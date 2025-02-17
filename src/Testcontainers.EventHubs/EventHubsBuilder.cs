@@ -115,8 +115,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .WithNetworkAliases(AzuriteNetworkAlias)
             .Build();
 
-        var eventHubsContainer = WithAzuriteContainer(network, container, AzuriteNetworkAlias);
-        return new EventHubsContainer(eventHubsContainer.DockerResourceConfiguration);
+        var eventHubsBuilder = WithAzuriteContainer(network, container, AzuriteNetworkAlias);
+        return new EventHubsContainer(eventHubsBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

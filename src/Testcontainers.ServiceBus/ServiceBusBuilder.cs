@@ -105,8 +105,8 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();
 
-        var serviceBusContainer = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
-        return new ServiceBusContainer(serviceBusContainer.DockerResourceConfiguration);
+        var serviceBusBuilder = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
+        return new ServiceBusContainer(serviceBusBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

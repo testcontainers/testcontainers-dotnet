@@ -4,24 +4,24 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.4.0"/>
+        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.1"/>
         <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.126.1"/>
         <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.126.1"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
         <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
-        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
         <PackageVersion Include="SharpZipLib" Version="1.4.2"/>
-        <PackageVersion Include="SSH.NET" Version="2024.1.0"/>
+        <PackageVersion Include="SSH.NET" Version="2024.2.0"/>
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
         <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.10.0"/>
-        <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
-        <PackageVersion Include="Dapper" Version="2.1.35"/>
+        <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
+        <PackageVersion Include="Dapper" Version="2.1.66"/>
         <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
-        <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0"/>
-        <PackageVersion Include="xunit" Version="2.9.2"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2"/>
+        <PackageVersion Include="xunit" Version="2.9.3"/>
         <!-- xUnit.net extensibility for Testcontainers.Xunit and Testcontainers.XunitV3 packages: -->
-        <PackageVersion Include="xunit.extensibility.execution" Version="2.9.0"/>
+        <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="1.1.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
@@ -46,7 +46,7 @@
         <PackageVersion Include="Net.IBM.Data.Db2-lnx" Version="9.0.0.100"/>
         <PackageVersion Include="Net.IBM.Data.Db2-osx" Version="9.0.0.100"/>
         <PackageVersion Include="Net.IBM.Data.Db2" Version="9.0.0.100"/>
-        <PackageVersion Include="DotPulsar" Version="3.3.2"/>
+        <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
         <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"/>

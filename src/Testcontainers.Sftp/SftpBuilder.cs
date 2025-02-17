@@ -71,7 +71,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     {
         Validate();
 
-        var sftpContainer = WithCommand(string.Join(
+        var sftpBuilder = WithCommand(string.Join(
             ":",
             DockerResourceConfiguration.Username,
             DockerResourceConfiguration.Password,
@@ -79,7 +79,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
             string.Empty,
             DockerResourceConfiguration.UploadDirectory));
 
-        return new SftpContainer(sftpContainer.DockerResourceConfiguration);
+        return new SftpContainer(sftpBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
