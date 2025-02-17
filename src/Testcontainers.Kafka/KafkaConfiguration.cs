@@ -4,6 +4,10 @@ namespace Testcontainers.Kafka;
 [PublicAPI]
 public sealed class KafkaConfiguration : ContainerConfiguration
 {
+    public const ushort KafkaPort = 9092;
+    public const ushort BrokerPort = 9093;
+    public const ushort ControllerPort = 9094;
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
