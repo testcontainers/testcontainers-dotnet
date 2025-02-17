@@ -15,6 +15,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj" />
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>
