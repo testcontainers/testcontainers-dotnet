@@ -36,6 +36,7 @@
         <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.18.2"/>
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
+        <PackageVersion Include="CassandraCSharpDriver" Version="3.22.0"/>
         <PackageVersion Include="ClickHouse.Client" Version="7.9.1"/>
         <PackageVersion Include="Confluent.Kafka" Version="2.8.0"/>
         <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Json" Version="2.8.0"/>
