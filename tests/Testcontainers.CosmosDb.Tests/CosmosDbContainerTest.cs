@@ -1,4 +1,7 @@
-namespace Testcontainers.CosmosDb;
+using System;
+using System.Linq;
+
+namespace Testcontainers.CosmosDb.Tests;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
@@ -14,24 +17,71 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         return _cosmosDbContainer.DisposeAsync().AsTask();
     }
 
-    [Fact(Skip = "The Cosmos DB Linux Emulator Docker image does not run on Microsoft's CI environment (GitHub, Azure DevOps).")] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
+    [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task AccountPropertiesIdReturnsLocalhost()
+    public async Task CreateDatabaseAndContainerSuccessful()
     {
         // Given
-        using var httpClient = _cosmosDbContainer.HttpClient;
+        using var cosmosClient = new CosmosClient(
+            _cosmosDbContainer.GetConnectionString(),
+            new()
+            {
+                ConnectionMode = ConnectionMode.Gateway,
+                HttpClientFactory = () => _cosmosDbContainer.HttpClient
+            });
 
-        var cosmosClientOptions = new CosmosClientOptions();
-        cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
-        cosmosClientOptions.HttpClientFactory = () => httpClient;
-
-        using var cosmosClient = new CosmosClient(_cosmosDbContainer.GetConnectionString(), cosmosClientOptions);
 
         // When
-        var accountProperties = await cosmosClient.ReadAccountAsync()
-            .ConfigureAwait(true);
+        var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("fakedb")).Database;
+        await database.CreateContainerIfNotExistsAsync("fakecontainer", "/id");
+        var databaseProperties = (await cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
+
 
         // Then
-        Assert.Equal("localhost", accountProperties.Id);
+        Assert.Equal("fakedb", databaseProperties.Id);
+    }
+
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task RetrieveItemCreated()
+    {
+        // Given
+        using var cosmosClient = new CosmosClient(
+            _cosmosDbContainer.GetConnectionString(),
+            new()
+            {
+                ConnectionMode = ConnectionMode.Gateway,
+                HttpClientFactory = () => _cosmosDbContainer.HttpClient
+            });
+
+        var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("dbfake")).Database;
+        await database.CreateContainerIfNotExistsAsync("containerfake", "/id");
+        var container = database.GetContainer("containerfake");
+
+        var id = Guid.NewGuid().ToString();
+        var name = Guid.NewGuid().ToString();
+
+
+        // When
+        var response = await container.CreateItemAsync(
+            new FakeItem { id = id, Name = name },
+            new PartitionKey(id));
+
+        var itemResponse = await container.ReadItemAsync<FakeItem>(
+            id,
+            new PartitionKey(id));
+
+
+        // Then
+        Assert.Equal(id, itemResponse.Resource.id);
+        Assert.Equal(name, itemResponse.Resource.Name);
+    }
+
+
+    private class FakeItem
+    {
+        public string id { get; set; }
+        public string Name { get; set; }
     }
 }
