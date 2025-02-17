@@ -1,0 +1,14 @@
+global using Docker.DotNet.Models;
+global using DotNet.Testcontainers;
+global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Configurations;
+global using DotNet.Testcontainers.Containers;
+global using JetBrains.Annotations;
+global using System;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.Linq;
+global using System.Net.Http;
+global using System.Security.Cryptography.X509Certificates;
+global using System.Text.RegularExpressions;
+global using System.Threading.Tasks;
