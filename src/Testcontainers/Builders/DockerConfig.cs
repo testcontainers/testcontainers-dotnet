@@ -77,7 +77,7 @@ namespace DotNet.Testcontainers.Builders
     /// Executes a command equivalent to <c>docker context inspect --format {{.Endpoints.docker.Host}}</c>.
     /// </remarks>
     /// A <see cref="Uri" /> representing the current Docker endpoint if available; otherwise, <c>null</c>.
-    [CanBeNull]
+    [NotNull]
     public Uri GetCurrentEndpoint()
     {
       const string defaultDockerContext = "default";
@@ -99,16 +99,27 @@ namespace DotNet.Testcontainers.Builders
         var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
         var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
 
-        if (!File.Exists(metaFilePath))
+        try
         {
-          return null;
-        }
+          using (var metaFileStream = File.OpenRead(metaFilePath))
+          {
+            var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
+            var host = meta.Endpoints?.Docker?.Host;
+            if (host == null)
+            {
+              throw new DockerConfigurationException($"The Docker host is null in {metaFilePath} (JSONPath: Endpoints.docker.Host)");
+            }
 
-        using (var metaFileStream = File.OpenRead(metaFilePath))
+            return new Uri(host.Replace("npipe:////./", "npipe://./"));
+          }
+        }
+        catch (Exception notFoundException) when (notFoundException is DirectoryNotFoundException or FileNotFoundException)
         {
-          var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
-          var host = meta?.Name == dockerContext ? meta.Endpoints?.Docker?.Host : null;
-          return string.IsNullOrEmpty(host) ? null : new Uri(host.Replace("npipe:////./", "npipe://./"));
+          throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist", notFoundException);
+        }
+        catch (Exception exception) when (exception is not DockerConfigurationException)
+        {
+          throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from {metaFilePath}", exception);
         }
       }
     }
@@ -162,14 +173,10 @@ namespace DotNet.Testcontainers.Builders
     internal sealed class DockerContextMeta
     {
       [JsonConstructor]
-      public DockerContextMeta(string name, DockerContextMetaEndpoints endpoints)
+      public DockerContextMeta(DockerContextMetaEndpoints endpoints)
       {
-        Name = name;
         Endpoints = endpoints;
       }
-
-      [JsonPropertyName("Name")]
-      public string Name { get; }
 
       [JsonPropertyName("Endpoints")]
       public DockerContextMetaEndpoints Endpoints { get; }
