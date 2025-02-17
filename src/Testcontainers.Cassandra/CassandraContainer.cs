@@ -4,13 +4,10 @@
 [PublicAPI]
 public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
 {
-    private readonly CassandraConfiguration _configuration;
-
     /// <inheritdoc cref="DockerContainer" />
     public CassandraContainer(CassandraConfiguration configuration)
         : base(configuration)
     {
-        _configuration = configuration;
     }
 
     /// <summary>
@@ -19,11 +16,9 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     /// <returns>The Cassandra connection string.</returns>
     public string GetConnectionString()
     {
-        var properties = new Dictionary<string, string>
-        {
-            { "Contact Points", Hostname },
-            { "Port", GetMappedPublicPort(CassandraBuilder.CqlPort).ToString() },
-        };
+        var properties = new Dictionary<string, string>();
+        properties.Add("Contact Points", Hostname);
+        properties.Add("Port", GetMappedPublicPort(CassandraBuilder.CqlPort).ToString());
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 

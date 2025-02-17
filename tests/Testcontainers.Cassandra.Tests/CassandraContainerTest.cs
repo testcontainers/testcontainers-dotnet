@@ -19,18 +19,18 @@ public sealed class CassandraContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using var cluster = Cluster.Builder().WithConnectionString(_cassandraContainer.GetConnectionString()).Build();
+        using DbConnection connection = new CqlConnection(_cassandraContainer.GetConnectionString());
 
         // When
-        using var session = cluster.Connect();
+        connection.Open();
 
         // Then
-        Assert.True(session.GetState().GetConnectedHosts().Single().IsUp);
+        Assert.Equal(ConnectionState.Open, connection.State);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void DriverExecutesCqlStatementAndReturnResult()
+    public void ExecuteCqlStatementReturnsExpectedResult()
     {
         // Given
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local WHERE key = ?;";
