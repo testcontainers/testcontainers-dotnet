@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="CassandraCSharpDriver"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.Cassandra/Testcontainers.Cassandra.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+</Project>
