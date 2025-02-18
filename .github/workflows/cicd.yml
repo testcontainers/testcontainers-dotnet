@@ -64,6 +64,7 @@ jobs:
           { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.LowkeyVault", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MariaDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
