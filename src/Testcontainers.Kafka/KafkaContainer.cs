@@ -28,11 +28,5 @@ public sealed class KafkaContainer : DockerContainer
     /// <summary>
     /// Gets a list of advertised listeners.
     /// </summary>
-    public IEnumerable<string> AdvertisedListeners
-    {
-        get
-        {
-            return _configuration.AdvertisedListeners;
-        }
-    }
+    public IEnumerable<string>? AdvertisedListeners => _configuration.AdvertisedListeners;
 }
