@@ -10,12 +10,6 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
     public const ushort Neo4jBoltPort = 7687;
 
-    private const string AcceptLicenseAgreementEnvVar = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
-
-    private const string AcceptLicenseAgreement = "yes";
-
-    private const string DeclineLicenseAgreement = "no";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
@@ -37,6 +31,15 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
     /// <inheritdoc />
     protected override Neo4jConfiguration DockerResourceConfiguration { get; }
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "yes";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "no";
 
     /// <summary>
     /// Sets the image to the Neo4j Enterprise Edition.

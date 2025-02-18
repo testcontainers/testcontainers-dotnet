@@ -1,8 +1,13 @@
 namespace Testcontainers.ServiceBus;
 
-public sealed class ServiceBusContainerTest : IAsyncLifetime
+public abstract class ServiceBusContainerTest : IAsyncLifetime
 {
-    private readonly ServiceBusContainer _serviceBusContainer = new ServiceBusBuilder().WithAcceptLicenseAgreement(true).Build();
+    private readonly ServiceBusContainer _serviceBusContainer;
+
+    private ServiceBusContainerTest(ServiceBusContainer serviceBusContainer)
+    {
+        _serviceBusContainer = serviceBusContainer;
+    }
 
     public Task InitializeAsync()
     {
@@ -46,5 +51,49 @@ public sealed class ServiceBusContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
+    }
+
+    [UsedImplicitly]
+    public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
+    {
+        public ServiceBusDefaultMsSqlConfiguration()
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    {
+        public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class DatabaseFixture
+    {
+        public DatabaseFixture()
+        {
+            Network = new NetworkBuilder()
+                .Build();
+
+            Container = new MsSqlBuilder()
+                .WithNetwork(Network)
+                .WithNetworkAliases(DatabaseNetworkAlias)
+                .Build();
+        }
+
+        public static string DatabaseNetworkAlias => ServiceBusBuilder.DatabaseNetworkAlias;
+
+        public INetwork Network { get; }
+
+        public MsSqlContainer Container { get; }
     }
 }

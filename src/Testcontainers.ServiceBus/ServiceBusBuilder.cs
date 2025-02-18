@@ -12,12 +12,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const ushort ServiceBusPort = 5672;
 
-    private const string AcceptLicenseAgreementEnvVar = "ACCEPT_EULA";
-
-    private const string AcceptLicenseAgreement = "Y";
-
-    private const string DeclineLicenseAgreement = "N";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
@@ -40,6 +34,15 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <inheritdoc />
     protected override ServiceBusConfiguration DockerResourceConfiguration { get; }
 
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "ACCEPT_EULA";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "Y";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "N";
+
     /// <summary>
     /// Accepts the license agreement.
     /// </summary>
@@ -48,31 +51,62 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Azure Service Bus Emulator license agreement is accepted.</param>
     /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    public ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    public override ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+    }
+
+    /// <summary>
+    /// Sets the dependent MSSQL container for the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// This method allows an existing MSSQL container to be attached to the Azure Service
+    /// Bus Emulator. The containers must be on the same network to enable communication
+    /// between them.
+    /// </remarks>
+    /// <param name="network">The network to connect the container to.</param>
+    /// <param name="container">The MSSQL container.</param>
+    /// <param name="networkAlias">The MSSQL container network alias.</param>
+    /// <param name="password">The MSSQL container password.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithMsSqlContainer(
+        INetwork network,
+        MsSqlContainer container,
+        string networkAlias,
+        string password = MsSqlBuilder.DefaultPassword)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: container))
+            .DependsOn(container)
+            .WithNetwork(network)
+            .WithNetworkAliases(ServiceBusNetworkAlias)
+            .WithEnvironment("SQL_SERVER", networkAlias)
+            .WithEnvironment("MSSQL_SA_PASSWORD", password);
     }
 
     /// <inheritdoc />
     public override ServiceBusContainer Build()
     {
         Validate();
-        return new ServiceBusContainer(DockerResourceConfiguration);
-    }
+        ValidateLicenseAgreement();
 
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        const string message = "The image '{0}' requires you to accept a license agreement.";
+        if (DockerResourceConfiguration.DatabaseContainer != null)
+        {
+            return new ServiceBusContainer(DockerResourceConfiguration);
+        }
 
-        base.Validate();
+        // If the user has not provided an existing MSSQL container instance,
+        // we configure one.
+        var network = new NetworkBuilder()
+            .Build();
 
-        Predicate<ServiceBusConfiguration> licenseAgreementNotAccepted = value =>
-            !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
+        var container = new MsSqlBuilder()
+            .WithNetwork(network)
+            .WithNetworkAliases(DatabaseNetworkAlias)
+            .Build();
 
-        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+        var serviceBusBuilder = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
+        return new ServiceBusContainer(serviceBusBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -80,10 +114,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     {
         return base.Init()
             .WithImage(ServiceBusImage)
-            .WithNetwork(new NetworkBuilder().Build())
-            .WithNetworkAliases(ServiceBusNetworkAlias)
             .WithPortBinding(ServiceBusPort, true)
-            .WithMsSqlContainer()
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")
                 .AddCustomWaitStrategy(new WaitTwoSeconds()));
@@ -107,25 +138,9 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
     }
 
-    /// <summary>
-    /// Configures the dependent MSSQL container.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    private ServiceBusBuilder WithMsSqlContainer()
-    {
-        var msSqlContainer = new MsSqlBuilder()
-            .WithNetwork(DockerResourceConfiguration.Networks.Single())
-            .WithNetworkAliases(DatabaseNetworkAlias)
-            .Build();
-
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: msSqlContainer))
-            .WithEnvironment("MSSQL_SA_PASSWORD", MsSqlBuilder.DefaultPassword)
-            .WithEnvironment("SQL_SERVER", DatabaseNetworkAlias);
-    }
-
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// This is a workaround to ensure that the wait strategy does not indicate  
+    /// This is a workaround to ensure that the wait strategy does not indicate
     /// readiness too early:
     /// https://github.com/Azure/azure-service-bus-emulator-installer/issues/35#issuecomment-2497164533.
     /// </remarks>

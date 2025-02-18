@@ -47,6 +47,7 @@ nav:
     - examples/aspnet.md
   - Modules:
     - modules/index.md
+    - modules/db2.md
     - modules/elasticsearch.md
     - modules/mongodb.md
     - modules/mssql.md

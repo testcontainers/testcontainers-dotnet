@@ -41,7 +41,7 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
-                .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
+                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build())
         {
@@ -56,7 +56,7 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
-                .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
+                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
                 .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build())
@@ -76,7 +76,7 @@ public abstract class PortForwardingTest : IAsyncLifetime
             _tcpListener.Start();
         }
 
-        public string Host => "host.testcontainers.internal";
+        public static string Host => "host.testcontainers.internal";
 
         public ushort Port => Convert.ToUInt16(((IPEndPoint)_tcpListener.LocalEndpoint).Port);
 

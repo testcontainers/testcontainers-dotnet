@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>4.1.0</Version>
+    <Version>4.3.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
@@ -13,7 +13,7 @@
     <Summary>Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.</Summary>
     <PackageIcon>docs/logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/testcontainers/testcontainers-dotnet/raw/develop/docs/logo.png</PackageIconUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://dotnet.testcontainers.org/</PackageProjectUrl>
     <PackageTags>automation;docker;dotnet;testcontainers;testcontainers-dotnet;testing</PackageTags>
