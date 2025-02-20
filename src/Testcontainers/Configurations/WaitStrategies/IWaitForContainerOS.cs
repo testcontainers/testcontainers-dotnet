@@ -2,7 +2,9 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Data.Common;
   using System.Text.RegularExpressions;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -111,6 +113,25 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
+    /// Waits until a connection to the database can be successfully opened.
+    /// </summary>
+    /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create the database connection.</param>
+    /// <param name="frequency">
+    /// The retry frequency until either the connection is successfully opened or the <paramref name="timeout" /> is reached.
+    /// Defaults to 1 second if not specified.
+    /// </param>
+    /// <param name="timeout">
+    /// The maximum duration to retry. Once reached, a <see cref="TimeoutException" /> is thrown.
+    /// Defaults to 5 minutes if not specified.
+    /// </param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    /// <remarks>
+    /// This wait strategy must only be applied to containers implementing the <see cref="IDatabaseContainer"/> interface.
+    /// </remarks>
+    [PublicAPI]
+    IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, TimeSpan frequency = default, TimeSpan timeout = default);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.

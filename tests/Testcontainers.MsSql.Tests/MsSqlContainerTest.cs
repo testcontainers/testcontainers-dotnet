@@ -61,4 +61,13 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         }
     }
     // # --8<-- [end:CreateMsSqlContainer]
+
+    [UsedImplicitly]
+    public sealed class MsSqlWaitForDatabase : MsSqlContainerTest
+    {
+        public MsSqlWaitForDatabase()
+            : base(new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(SqlClientFactory.Instance)).Build())
+        {
+        }
+    }
 }

@@ -93,4 +93,13 @@ public abstract class FirebirdSqlContainerTest : IAsyncLifetime
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class FirebirdSqlWaitForDatabase : FirebirdSqlContainerTest
+    {
+        public FirebirdSqlWaitForDatabase()
+            : base(new FirebirdSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(FirebirdClientFactory.Instance)).Build())
+        {
+        }
+    }
 }

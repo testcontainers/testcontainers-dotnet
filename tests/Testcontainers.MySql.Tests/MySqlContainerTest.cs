@@ -76,4 +76,13 @@ public abstract class MySqlContainerTest : IAsyncLifetime
         {
         }
     }
+    
+    [UsedImplicitly]
+    public sealed class MySqlWaitForDatabase : MySqlContainerTest
+    {
+        public MySqlWaitForDatabase()
+            : base(new MySqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(MySqlConnectorFactory.Instance)).Build())
+        {
+        }
+    }
 }

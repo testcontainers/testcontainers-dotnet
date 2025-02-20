@@ -1,26 +1,16 @@
 namespace Testcontainers.PostgreSql;
 
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
+public abstract class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper) : DbContainerTest<PostgreSqlBuilder, PostgreSqlContainer>(testOutputHelper)
 {
+    public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
+
     // # --8<-- [start:UsePostgreSqlContainer]
-    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _postgreSqlContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _postgreSqlContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString());
+        using DbConnection connection = CreateConnection();
 
         // When
         connection.Open();
@@ -37,7 +27,7 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _postgreSqlContainer.ExecScriptAsync(scriptContent)
+        var execResult = await Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then
@@ -84,6 +74,18 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         public PostgreSqlFixture(IMessageSink messageSink)
             : base(messageSink)
         {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlDefaultConfiguration(ITestOutputHelper testOutputHelper) : PostgreSqlContainerTest(testOutputHelper);
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlWaitForDatabase(ITestOutputHelper testOutputHelper) : PostgreSqlContainerTest(testOutputHelper)
+    {
+        protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
+        {
+            return builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
         }
     }
 }

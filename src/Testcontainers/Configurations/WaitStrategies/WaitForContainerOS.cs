@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Data.Common;
   using System.Text.RegularExpressions;
 
   /// <inheritdoc cref="IWaitForContainerOS" />
@@ -78,6 +79,12 @@ namespace DotNet.Testcontainers.Configurations
     public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyModifier);
+    }
+
+    /// <inheritdoc />
+    public virtual IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, TimeSpan frequency, TimeSpan timeout)
+    {
+      return AddCustomWaitStrategy(new UntilDatabaseIsAvailable(dbProviderFactory, frequency, timeout));
     }
 
     /// <inheritdoc />
