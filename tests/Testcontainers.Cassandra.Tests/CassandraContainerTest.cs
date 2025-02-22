@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Cassandra;
+namespace Testcontainers.Cassandra;
 
 public sealed class CassandraContainerTest : IAsyncLifetime
 {
