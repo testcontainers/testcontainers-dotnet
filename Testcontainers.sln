@@ -105,6 +105,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ServiceBus",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Sftp", "src\Testcontainers.Sftp\Testcontainers.Sftp.csproj", "{7D5C6816-0DD2-4E13-A585-033B5D3C80D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tika", "src\Testcontainers.Tika\Testcontainers.Tika.csproj", "{AC084DE2-1857-E200-EF47-8C4ADEB2173D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Weaviate", "src\Testcontainers.Weaviate\Testcontainers.Weaviate.csproj", "{68F8600D-24E9-4E03-9E25-5F6EB338EAC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver", "src\Testcontainers.WebDriver\Testcontainers.WebDriver.csproj", "{64A87DE5-29B0-4A54-9E74-560484D8C7C0}"
@@ -233,13 +235,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Xunit.Tests", "tests\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj", "{E901DF14-6F05-4FC2-825A-3055FAD33561}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tika.Tests", "tests\Testcontainers.Tika.Tests\Testcontainers.Tika.Tests.csproj", "{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -682,6 +683,17 @@ Global
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC084DE2-1857-E200-EF47-8C4ADEB2173D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC084DE2-1857-E200-EF47-8C4ADEB2173D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC084DE2-1857-E200-EF47-8C4ADEB2173D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC084DE2-1857-E200-EF47-8C4ADEB2173D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -794,5 +806,7 @@ Global
 		{DDB41BC8-5826-4D97-9C5F-001151E3FFD6} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{E901DF14-6F05-4FC2-825A-3055FAD33561} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{AC084DE2-1857-E200-EF47-8C4ADEB2173D} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
+		{FDD2E9F5-DAAC-2F8F-B8DD-6924CD1D9091} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal
