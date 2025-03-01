@@ -47,13 +47,14 @@ nav:
     - examples/aspnet.md
   - Modules:
     - modules/index.md
+    - modules/cassandra.md
+    - modules/pulsar.md
     - modules/db2.md
     - modules/elasticsearch.md
     - modules/mongodb.md
     - modules/mssql.md
     - modules/neo4j.md
     - modules/postgres.md
-    - modules/pulsar.md
     - modules/rabbitmq.md
   - contributing.md
   - contributing_docs.md
