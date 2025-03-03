@@ -11,7 +11,17 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 
   private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
-  private readonly IImage _image = new DockerImage("localhost/testcontainers", "weather-forecast", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+  private readonly IImage _image = new DockerImage("localhost/testcontainers/weather-forecast", tag: DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+
+  public string Repository => _image.Repository;
+
+  public string Registry => _image.Registry;
+
+  public string Tag => _image.Tag;
+
+  public string Digest => _image.Digest;
+
+  public string FullName => _image.FullName;
 
   public async Task InitializeAsync()
   {
@@ -41,16 +51,23 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
     return Task.CompletedTask;
   }
 
-  public string Repository => _image.Repository;
-
-  public string Name => _image.Name;
-
-  public string Tag => _image.Tag;
-
-  public string FullName => _image.FullName;
-
   public string GetHostname()
   {
     return _image.GetHostname();
+  }
+
+  public bool MatchLatestOrNightly()
+  {
+    return _image.MatchLatestOrNightly();
+  }
+
+  public bool MatchVersion(Predicate<string> predicate)
+  {
+    return _image.MatchVersion(predicate);
+  }
+
+  public bool MatchVersion(Predicate<Version> predicate)
+  {
+    return _image.MatchVersion(predicate);
   }
 }

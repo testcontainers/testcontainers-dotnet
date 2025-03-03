@@ -22,7 +22,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
   {
     const string weatherForecastStorage = "weatherForecastStorage";
 
-    const string connectionString = $"Host={weatherForecastStorage};Username={PostgreSqlBuilder.DefaultUsername};Password={PostgreSqlBuilder.DefaultPassword};Database={PostgreSqlBuilder.DefaultDatabase}";
+    const string postgreSqlConnectionString = $"Host={weatherForecastStorage};Username={PostgreSqlBuilder.DefaultUsername};Password={PostgreSqlBuilder.DefaultPassword};Database={PostgreSqlBuilder.DefaultDatabase}";
 
     _weatherForecastNetwork = new NetworkBuilder()
       .Build();
@@ -39,7 +39,7 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
       .WithEnvironment("ASPNETCORE_URLS", "https://+")
       .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", WeatherForecastImage.CertificateFilePath)
       .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", WeatherForecastImage.CertificatePassword)
-      .WithEnvironment("ConnectionStrings__DefaultConnection", connectionString)
+      .WithEnvironment("ConnectionStrings__PostgreSQL", postgreSqlConnectionString)
       .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WeatherForecastImage.HttpsPort))
       .Build();
   }

@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Cassandra;
+namespace Testcontainers.Cassandra;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
