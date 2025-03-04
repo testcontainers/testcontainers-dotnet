@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+        <!-- TODO: Is there another way to include the xUnit.Core assembly? Probably, it is better to use the string values. -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="FodyHelpers"/>
+        <PackageReference Include="xunit"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Testcontainers/Testcontainers.csproj"/>
+    </ItemGroup>
+</Project>
