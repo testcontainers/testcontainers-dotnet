@@ -1,9 +1,16 @@
 namespace Testcontainers.PostgreSql;
 
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
+public abstract class PostgreSqlContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UsePostgreSqlContainer]
-    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
+    private readonly PostgreSqlContainer _postgreSqlContainer;
+
+    public PostgreSqlContainer Container { get { return _postgreSqlContainer; } }
+
+    public PostgreSqlContainerTest(PostgreSqlContainer postgreSqlContainer)
+    {
+        _postgreSqlContainer = postgreSqlContainer;
+    }
 
     public Task InitializeAsync()
     {
@@ -46,13 +53,13 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UsePostgreSqlContainer]
 
-    public sealed class ReuseContainerTest : IClassFixture<PostgreSqlFixture>, IDisposable
+    public sealed class ReusePostgres15ContainerTest : IClassFixture<PostgreSql15Fixture>, IDisposable
     {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-        private readonly PostgreSqlFixture _fixture;
+        private readonly PostgreSql15Fixture _fixture;
 
-        public ReuseContainerTest(PostgreSqlFixture fixture)
+        public ReusePostgres15ContainerTest(PostgreSql15Fixture fixture)
         {
             _fixture = fixture;
         }
@@ -79,10 +86,20 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class PostgreSqlFixture : ContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>
+    public sealed class PostgreSql15Fixture : PostgreSqlContainerTest
     {
-        public PostgreSqlFixture(IMessageSink messageSink)
-            : base(messageSink)
+        public PostgreSql15Fixture()
+            : base(new PostgreSqlBuilder().Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class PostgreSql9Fixture : PostgreSqlContainerTest
+    {
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
+        public PostgreSql9Fixture()
+            : base(new PostgreSqlBuilder().WithImage("postgres:9.2").Build())
         {
         }
     }
