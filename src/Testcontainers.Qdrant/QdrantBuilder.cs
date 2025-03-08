@@ -4,7 +4,7 @@ namespace Testcontainers.Qdrant;
 [PublicAPI]
 public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
-    public const string QdrantImage = "qdrant/qdrant:v1.8.3";
+    public const string QdrantImage = "qdrant/qdrant:v1.13.4";
 
     public const ushort QdrantHttpPort = 6333;
 

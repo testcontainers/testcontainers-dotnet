@@ -2,28 +2,29 @@ namespace Testcontainers.Qdrant;
 
 public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
 {
+    // # --8<-- [start:UseQdrantContainer]
     private const string Host = "Testcontainers";
     private const string ApiKey = "password!";
     private static readonly PemCertificate Cert = PemCertificate.Create(Host);
 
-    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder()
+    private readonly QdrantContainer _qdrant = new QdrantBuilder()
         .WithApiKey(ApiKey)
         .WithCertificate(Cert.Certificate, Cert.PrivateKey)
         .Build();
 
     public Task InitializeAsync()
     {
-        return _qdrantContainer.StartAsync();
+        return _qdrant.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _qdrantContainer.DisposeAsync().AsTask();
+        return _qdrant.DisposeAsync().AsTask();
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ListCollectionsReturnsValidResponse()
+    public async Task HealthReturnsValidResponse()
     {
         var httpMessageHandler = new HttpClientHandler
         {
@@ -32,7 +33,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         };
 
         var channel = GrpcChannel.ForAddress(
-            _qdrantContainer.GetGrpcConnectionString(),
+            _qdrant.GetGrpcConnectionString(),
             new GrpcChannelOptions
             {
                 HttpClient = new HttpClient(httpMessageHandler)
@@ -48,14 +49,15 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
 
         var grpcClient = new QdrantGrpcClient(callInvoker);
         var client = new QdrantClient(grpcClient);
-        var response = await client.ListCollectionsAsync();
+        var response = await client.HealthAsync();
         
-        Assert.Empty(response);
+        Assert.NotEmpty(response.Title);
     }
+    // # --8<-- [end:UseQdrantContainer]
     
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ListCollectionsWithoutApiKeyReturnsInvalidResponse()
+    public async Task HealthWithoutApiKeyReturnsInvalidResponse()
     {
         var httpMessageHandler = new HttpClientHandler
         {
@@ -64,7 +66,7 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         };
 
         var channel = GrpcChannel.ForAddress(
-            _qdrantContainer.GetGrpcConnectionString(),
+            _qdrant.GetGrpcConnectionString(),
             new GrpcChannelOptions
             {
                 HttpClient = new HttpClient(httpMessageHandler)
@@ -77,24 +79,24 @@ public sealed class QdrantContainerApiKeyCertificateTest : IAsyncLifetime
         var client = new QdrantClient(grpcClient);
         
         var exception = await Assert.ThrowsAsync<RpcException>(async () => 
-            await client.ListCollectionsAsync());
+            await client.HealthAsync());
         
-        Assert.Equal(StatusCode.PermissionDenied, exception.Status.StatusCode);
+        Assert.Equal(StatusCode.Unauthenticated, exception.Status.StatusCode);
     }
     
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ListCollectionsWithoutCertificateValidationReturnsInvalidResponse()
+    public async Task HealthWithoutCertificateValidationReturnsInvalidResponse()
     {
         var client = new HttpClient
         {
-            BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString()),
+            BaseAddress = new Uri(_qdrant.GetHttpConnectionString()),
             DefaultRequestHeaders = { Host = Host },
         };
         
         client.DefaultRequestHeaders.Add("api-key", ApiKey);
         
         // The SSL connection could not be established
-        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetAsync("/collections"));
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetAsync("/"));
     }
 }
