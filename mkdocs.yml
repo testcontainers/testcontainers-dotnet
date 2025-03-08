@@ -55,6 +55,7 @@ nav:
     - modules/mssql.md
     - modules/neo4j.md
     - modules/postgres.md
+    - modules/qdrant.md
     - modules/rabbitmq.md
   - contributing.md
   - contributing_docs.md

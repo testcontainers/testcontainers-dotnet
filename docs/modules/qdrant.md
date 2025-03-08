@@ -1,7 +1,7 @@
 # Qdrant
 
 [Qdrant](https://qdrant.tech/) is an open source vector database designed for scalable and efficient similarity search
-and nearest neighbor retrieval. It provides a RESTful API and gRPC support, making it easy to integrate with various
+and nearest neighbor retrieval. It provides both RESTful and gRPC APIs, making it easy to integrate with various
 applications, including search, recommendation, AI, and machine learning systems.
 
 Add the following dependency to your project file:
