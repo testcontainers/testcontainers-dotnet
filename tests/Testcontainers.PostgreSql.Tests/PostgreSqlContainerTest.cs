@@ -2,6 +2,7 @@ namespace Testcontainers.PostgreSql;
 
 public sealed class PostgreSqlContainerTest : IAsyncLifetime
 {
+    // # --8<-- [start:UsePostgreSqlContainer]
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
 
     public Task InitializeAsync()
@@ -43,14 +44,15 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+    // # --8<-- [end:UsePostgreSqlContainer]
 
-    public sealed class ReuseContainerTest : IClassFixture<SharedPostgreSqlInstance>, IDisposable
+    public sealed class ReuseContainerTest : IClassFixture<PostgreSqlFixture>, IDisposable
     {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-        private readonly SharedContainerInstance<PostgreSqlContainer> _fixture;
+        private readonly PostgreSqlFixture _fixture;
 
-        public ReuseContainerTest(SharedPostgreSqlInstance fixture)
+        public ReuseContainerTest(PostgreSqlFixture fixture)
         {
             _fixture = fixture;
         }
@@ -77,10 +79,10 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class SharedPostgreSqlInstance : SharedContainerInstance<PostgreSqlContainer>
+    public sealed class PostgreSqlFixture : ContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>
     {
-        public SharedPostgreSqlInstance()
-            : base(new PostgreSqlBuilder().Build())
+        public PostgreSqlFixture(IMessageSink messageSink)
+            : base(messageSink)
         {
         }
     }

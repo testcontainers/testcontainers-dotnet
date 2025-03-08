@@ -24,11 +24,11 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private MinioBuilder(MinioConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private MinioBuilder(MinioConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -91,13 +91,13 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     }
 
     /// <inheritdoc />
-    protected override MinioBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MinioBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }

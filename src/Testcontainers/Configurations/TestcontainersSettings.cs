@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
@@ -101,11 +101,47 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
+    /// Gets or sets the wait strategy retry count.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static ushort? WaitStrategyRetries { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyRetries() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyRetries();
+
+    /// <summary>
+    /// Gets or sets the wait strategy interval.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyInterval { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyInterval() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyInterval();
+
+    /// <summary>
+    /// Gets or sets the wait strategy timeout.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyTimeout { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyTimeout() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
+
+    /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)

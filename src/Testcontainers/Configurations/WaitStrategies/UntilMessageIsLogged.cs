@@ -21,7 +21,8 @@ namespace DotNet.Testcontainers.Configurations
 
     public async Task<bool> UntilAsync(IContainer container)
     {
-      var (stdout, stderr) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
+      var maxTime = container.StoppedTime > container.CreatedTime ? container.StoppedTime : container.CreatedTime;
+      var (stdout, stderr) = await container.GetLogsAsync(since: maxTime, timestampsEnabled: false)
         .ConfigureAwait(false);
 
       return _pattern.IsMatch(stdout) || _pattern.IsMatch(stderr);

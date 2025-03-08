@@ -1,8 +1,8 @@
-#tool nuget:?package=dotnet-sonarscanner&version=5.15.0
+#tool nuget:?package=dotnet-sonarscanner&version=9.0.1
 
-#addin nuget:?package=Cake.Sonar&version=1.1.32
+#addin nuget:?package=Cake.Sonar&version=1.1.33
 
-#addin nuget:?package=Cake.Git&version=3.0.0
+#addin nuget:?package=Cake.Git&version=4.0.0
 
 #load ".cake-scripts/parameters.cake"
 
@@ -71,20 +71,44 @@ Task("Build")
   });
 });
 
-Task("Tests")
+Task("Test")
   .Does(() =>
 {
-  DotNetTest(param.Solution, new DotNetTestSettings
+  var testProject = param.Projects.OnlyTests
+    .Select(testProject => testProject.Path.FullPath)
+    .Single(testProject => testProject.EndsWith(param.TestProject + ".Tests.csproj"));
+
+  DotNetTest(testProject, new DotNetTestSettings
   {
     Configuration = param.Configuration,
     Verbosity = param.Verbosity,
     NoRestore = true,
     NoBuild = true,
     Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
-    Filter = param.TestFilter,
     ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
     ArgumentCustomization = args => args
+      .AppendSwitchQuoted("--blame-hang-timeout", "5m")
   });
+});
+
+Task("Tests")
+  .Does(() =>
+{
+  foreach(var testProject in param.Projects.OnlyTests)
+  {
+    DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
+    {
+      Configuration = param.Configuration,
+      Verbosity = param.Verbosity,
+      NoRestore = true,
+      NoBuild = true,
+      Collectors = new[] { "XPlat Code Coverage;Format=opencover" },
+      Filter = param.TestFilter,
+      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
+      ArgumentCustomization = args => args
+        .AppendSwitchQuoted("--blame-hang-timeout", "5m")
+    });
+  }
 });
 
 Task("Sonar-Begin")
@@ -107,7 +131,10 @@ Task("Sonar-Begin")
     PullRequestBranch = param.SourceBranch,
     PullRequestBase = param.TargetBranch,
     OpenCoverReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml",
-    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx"
+    VsTestReportsPath = $"{MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx",
+    ArgumentCustomization = args => args
+      .Append("/d:sonar.scanner.scanAll=\"false\"")
+      .Append("/d:sonar.scanner.skipJreProvisioning=\"true\"")
   });
 });
 

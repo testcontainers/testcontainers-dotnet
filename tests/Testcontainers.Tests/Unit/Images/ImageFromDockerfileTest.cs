@@ -101,16 +101,39 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task BuildsDockerImage()
+    public async Task BuildsDockerScratchImage()
     {
       // Given
-      IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/scratch")
+        .Build();
 
-      IImage tag2 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      // When
+      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync())
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Null(exception);
+      Assert.NotNull(imageFromDockerfileBuilder.Repository);
+      Assert.NotNull(imageFromDockerfileBuilder.Tag);
+      Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.Null(imageFromDockerfileBuilder.GetHostname());
+    }
+
+    [Theory]
+    [InlineData("Dockerfile")]
+    [InlineData("./Dockerfile")]
+    [InlineData(".\\Dockerfile")]
+    public async Task BuildsDockerAlpineImage(string dockerfile)
+    {
+      // Given
+      IImage tag1 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
+
+      IImage tag2 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
-        .WithDockerfile("Dockerfile")
+        .WithDockerfile(dockerfile)
         .WithDockerfileDirectory("Assets/")
         .WithDeleteIfExists(true)
         .WithCreateParameterModifier(parameterModifier => parameterModifier.Tags.Add(tag2.FullName))
@@ -127,7 +150,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag1.FullName));
       Assert.True(DockerCli.ResourceExists(DockerCli.DockerResource.Image, tag2.FullName));
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());

@@ -175,7 +175,7 @@ branches:
         # Required. Require branches to be up to date before merging.
         strict: true
         # Required. The list of status checks to require in order to merge into this branch
-        contexts: ["analyze (csharp)", "build (ubuntu-22.04)", "build (windows-2022)", "netlify/testcontainers-dotnet/deploy-preview"]
+        contexts: ["Test Report", "analyze (csharp)"]
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
       enforce_admins: false
       # Prevent merge commits from being pushed to matching branches
@@ -207,7 +207,7 @@ branches:
         # Required. Require branches to be up to date before merging.
         strict: true
         # Required. The list of status checks to require in order to merge into this branch
-        contexts: ["analyze (csharp)", "build (ubuntu-22.04)", "build (windows-2022)", "netlify/testcontainers-dotnet/deploy-preview"]
+        contexts: ["Test Report", "analyze (csharp)"]
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
       enforce_admins: false
       # Prevent merge commits from being pushed to matching branches

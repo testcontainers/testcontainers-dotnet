@@ -80,18 +80,18 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Resolves the first CSharp project file upwards the directory tree.
+    /// Resolves the first CSharp, FSharp or Visual Basic project file upwards the directory tree.
     /// </summary>
     /// <remarks>
     /// Start node is the caller file path directory. End node is the root directory.
     /// </remarks>
     /// <param name="filePath">The caller file path.</param>
-    /// <returns>The first CSharp project file upwards the directory tree.</returns>
-    /// <exception cref="DirectoryNotFoundException">Thrown when the CSharp project file was not found upwards the directory tree.</exception>
+    /// <returns>The first CSharp, FSharp or Visual Basic project file upwards the directory tree.</returns>
+    /// <exception cref="DirectoryNotFoundException">Thrown when no CSharp, FSharp or Visual Basic project file was found upwards the directory tree.</exception>
     [PublicAPI]
     public static CommonDirectoryPath GetProjectDirectory([CallerFilePath, NotNull] string filePath = "")
     {
-      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.csproj"));
+      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.csproj", "*.fsproj", "*.vbproj"));
     }
 
     /// <summary>
@@ -105,19 +105,20 @@ namespace DotNet.Testcontainers.Builders
       return new CommonDirectoryPath(Path.GetDirectoryName(filePath));
     }
 
-    private static string GetDirectoryPath(string path, string searchPattern)
+    private static string GetDirectoryPath(string path, params string[] searchPatterns)
     {
-      return GetDirectoryPath(Directory.Exists(path) ? new DirectoryInfo(path) : null, searchPattern);
+      return GetDirectoryPath(Directory.Exists(path) ? new DirectoryInfo(path) : null, searchPatterns);
     }
 
-    private static string GetDirectoryPath(DirectoryInfo path, string searchPattern)
+    private static string GetDirectoryPath(DirectoryInfo path, params string[] searchPatterns)
     {
       if (path != null)
       {
-        return path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly).Any() ? path.FullName : GetDirectoryPath(path.Parent, searchPattern);
+        var paths = searchPatterns.SelectMany(searchPattern => path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly)).Any();
+        return paths ? path.FullName : GetDirectoryPath(path.Parent, searchPatterns);
       }
 
-      var message = $"Cannot find '{searchPattern}' and resolve the base directory in the directory tree.";
+      var message = $"Cannot find '{string.Join(", ", searchPatterns)}' and resolve the base directory in the directory tree.";
       throw new DirectoryNotFoundException(message);
     }
   }

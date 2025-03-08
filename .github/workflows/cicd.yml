@@ -3,8 +3,10 @@ name: Continuous Integration & Delivery
 on:
   push:
     branches: [ develop, main, bugfix/*, feature/* ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
   pull_request:
     branches: [ develop, main ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
   workflow_dispatch:
     inputs:
       publish_nuget_package:
@@ -25,13 +27,72 @@ env:
   TZ: CET # https://stackoverflow.com/q/53510011
 
 jobs:
-  build:
+  ci:
     strategy:
-      fail-fast: false
+      max-parallel: 6
       matrix:
-        os: [ ubuntu-22.04, windows-2022 ]
+        test-projects: [
+          { name: "Testcontainers", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Platform.Linux", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Platform.Windows", runs-on: "windows-2022" },
+          { name: "Testcontainers.Databases", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.ResourceReaper", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.ActiveMq", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.ArangoDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Azurite", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.BigQuery", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Bigtable", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Cassandra", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.ClickHouse", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.CockroachDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Consul", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.CosmosDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Couchbase", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.CouchDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Db2", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.DynamoDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Elasticsearch", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.EventStoreDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.EventHubs", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.FakeGcsServer", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.FirebirdSql", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Firestore", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.InfluxDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.JanusGraph", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.K3s", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Kafka", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.MariaDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.MongoDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.MsSql", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Neo4j", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle11", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle18", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle21", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle23", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Papercut", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.PostgreSql", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.PubSub", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Pulsar", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.RabbitMq", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.RavenDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Redpanda", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.ServiceBus", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Sftp", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" }
+        ]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.test-projects.runs-on }}
 
     steps:
       - name: Checkout Repository
@@ -42,26 +103,8 @@ jobs:
       - name: Cache NuGet Packages
         uses: actions/cache@v4
         with:
-          key: ${{ matrix.os }}-nuget-${{ hashFiles('Directory.Packages.props') }}
+          key: ${{ matrix.test-projects.runs-on }}-nuget-${{ hashFiles('Directory.Packages.props') }}
           path: ~/.nuget/packages
-
-      # Our modules occupy too much disk space. The GitHub-hosted runners ran into the
-      # error: "no space left on device." The pulled images are not cleaned up between
-      # the test runs. One obvious approach is splitting the tests and running them on
-      # multiple runners. However, we need to keep in mind that running too many
-      # simultaneous builds has an impact on others as well. We observed that scheduled
-      # Dependabot builds blocked others in the Testcontainers organization.
-      - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        if: runner.os == 'Linux'
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -76,36 +119,27 @@ jobs:
         run: dotnet cake --target=Build
 
       - name: Run Tests
-        run: dotnet cake --target=Tests --test-filter=${{ startsWith(matrix.os, 'ubuntu') && 'FullyQualifiedName~Testcontainers' || 'DockerPlatform=Windows' }}
-
-      # The Test Reporter GH Action is not compatible with the recent
-      # actions/upload-artifact@v4 updates: https://github.com/dorny/test-reporter/issues/363.
-      - name: Upload Test And Coverage Results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: ${{ matrix.os }}-v3
-          path: test-results
+        run: dotnet cake --target=Test --test-project=${{ matrix.test-projects.name }}
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ matrix.os }}
+          name: ${{ matrix.test-projects.name }}
           path: test-results
 
-  publish:
+  cd:
     if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
 
-    needs: build
+    needs: ci
 
     environment: production
-
-    runs-on: ubuntu-22.04
 
     permissions:
       contents: write
       pull-requests: read
+
+    runs-on: ubuntu-22.04
 
     env:
       CODE_SIGNING_CERTIFICATE_BASE64: ${{ secrets.CODE_SIGNING_CERTIFICATE_BASE64 }}
@@ -125,20 +159,14 @@ jobs:
           lfs: true
           fetch-depth: 0
 
-      - name: Download Test And Coverage Results (ubuntu-22.04)
+      - name: Download Test And Coverage Results
         uses: actions/download-artifact@v4
         with:
-          name: ubuntu-22.04
-          path: test-results
-
-      - name: Download Test And Coverage Results (windows-2022)
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-2022
+          pattern: Testcontainers*
           path: test-results
 
       - name: Fix Absolute Code Coverage Paths
-        run: Get-ChildItem -Path 'test-results' -Filter *.xml -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content -LiteralPath $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content -LiteralPath $_ }
+        run: Get-ChildItem -Path 'test-results' -Filter '*.xml' -Recurse | Select-Object -ExpandProperty FullName | % { (Get-Content -LiteralPath $_) -Replace 'fullPath="[A-Za-z0-9:\-\/\\]+(src|tests)', 'fullPath="${{ github.workspace }}/$1' | Set-Content -LiteralPath $_ }
         shell: pwsh
 
       - name: Cache NuGet Packages
@@ -151,7 +179,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4

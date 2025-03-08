@@ -4,7 +4,7 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
-    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04";
+    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
 
     public const ushort MsSqlPort = 1433;
 
@@ -126,17 +126,24 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
 
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
+    /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" };
-
         /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
+        public Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
+            return UntilAsync(container as MsSqlContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private static async Task<bool> UntilAsync(MsSqlContainer container)
+        {
+            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
+                .ConfigureAwait(false);
+
+            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);

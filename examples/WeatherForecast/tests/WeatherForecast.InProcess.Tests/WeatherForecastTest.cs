@@ -3,44 +3,31 @@ namespace WeatherForecast.InProcess.Tests;
 [UsedImplicitly]
 public sealed class WeatherForecastTest : IAsyncLifetime
 {
-  private readonly SqlEdgeContainer _sqlEdgeContainer = new SqlEdgeBuilder().Build();
+  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
 
   public Task InitializeAsync()
   {
-    return _sqlEdgeContainer.StartAsync();
+    return _postgreSqlContainer.StartAsync();
   }
 
   public Task DisposeAsync()
   {
-    return _sqlEdgeContainer.DisposeAsync().AsTask();
+    return _postgreSqlContainer.DisposeAsync().AsTask();
   }
 
-  public sealed class Api : IClassFixture<WeatherForecastTest>, IDisposable
+  public sealed class Api : WebApplicationFactory<Program>, IClassFixture<WeatherForecastTest>
   {
-    private readonly WebApplicationFactory<Program> _webApplicationFactory;
-
-    private readonly IServiceScope _serviceScope;
-
-    private readonly HttpClient _httpClient;
+    private readonly string _postgreSqlConnectionString;
 
     public Api(WeatherForecastTest weatherForecastTest)
     {
-      // Instead of using environment variables to bootstrap our application configuration, we can implement a custom WebApplicationFactory<TEntryPoint>
-      // that overrides the ConfigureWebHost(IWebHostBuilder) method to add a WeatherDataContext to the service collection.
-      Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "https://+");
-      Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path", "certificate.crt");
-      Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password", "password");
-      Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", weatherForecastTest._sqlEdgeContainer.GetConnectionString());
-      _webApplicationFactory = new WebApplicationFactory<Program>();
-      _serviceScope = _webApplicationFactory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-      _httpClient = _webApplicationFactory.CreateClient();
+      _postgreSqlConnectionString = weatherForecastTest._postgreSqlContainer.GetConnectionString();
     }
 
-    public void Dispose()
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-      _httpClient.Dispose();
-      _serviceScope.Dispose();
-      _webApplicationFactory.Dispose();
+      builder.UseSetting("URLS", "https://+");
+      builder.UseSetting("ConnectionStrings:PostgreSQL", _postgreSqlConnectionString);
     }
 
     [Fact]
@@ -50,8 +37,10 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       // Given
       const string path = "api/WeatherForecast";
 
+      using var httpClient = CreateClient();
+
       // When
-      var response = await _httpClient.GetAsync(path)
+      var response = await httpClient.GetAsync(path)
         .ConfigureAwait(true);
 
       var weatherForecastStream = await response.Content.ReadAsStreamAsync()
@@ -72,7 +61,9 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       // Given
       const int threeDays = 3;
 
-      var weatherDataReadOnlyRepository = _serviceScope.ServiceProvider.GetRequiredService<IWeatherDataReadOnlyRepository>();
+      using var serviceScope = Services.CreateScope();
+
+      var weatherDataReadOnlyRepository = serviceScope.ServiceProvider.GetRequiredService<IWeatherDataReadOnlyRepository>();
 
       // When
       var weatherForecast = await weatherDataReadOnlyRepository.GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(threeDays))

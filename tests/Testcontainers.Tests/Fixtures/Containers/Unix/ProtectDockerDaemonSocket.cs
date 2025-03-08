@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
     {
       _container = containerConfiguration
-        .WithImage(new DockerImage(string.Empty, "docker", dockerImageVersion + "-dind"))
+        .WithImage(new DockerImage("docker", null, dockerImageVersion + "-dind"))
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)

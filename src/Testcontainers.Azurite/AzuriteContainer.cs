@@ -4,10 +4,6 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteContainer : DockerContainer
 {
-    private const string AccountName = "devstoreaccount1";
-
-    private const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteContainer" /> class.
     /// </summary>
@@ -25,11 +21,38 @@ public sealed class AzuriteContainer : DockerContainer
     {
         var properties = new Dictionary<string, string>();
         properties.Add("DefaultEndpointsProtocol", Uri.UriSchemeHttp);
-        properties.Add("AccountName", AccountName);
-        properties.Add("AccountKey", AccountKey);
-        properties.Add("BlobEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AccountName).ToString());
-        properties.Add("QueueEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AccountName).ToString());
-        properties.Add("TableEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AccountName).ToString());
+        properties.Add("AccountName", AzuriteBuilder.AccountName);
+        properties.Add("AccountKey", AzuriteBuilder.AccountKey);
+        properties.Add("BlobEndpoint", GetBlobEndpoint());
+        properties.Add("QueueEndpoint", GetQueueEndpoint());
+        properties.Add("TableEndpoint", GetTableEndpoint());
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+    }
+
+    /// <summary>
+    /// Gets the blob endpoint
+    /// </summary>
+    /// <returns>The Azurite blob endpoint</returns>
+    public string GetBlobEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AzuriteBuilder.AccountName).ToString();
+    }
+
+    /// <summary>
+    /// Gets the queue endpoint
+    /// </summary>
+    /// <returns>The Azurite queue endpoint</returns>
+    public string GetQueueEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AzuriteBuilder.AccountName).ToString();
+    }
+
+    /// <summary>
+    /// Gets the table endpoint
+    /// </summary>
+    /// <returns>The Azurite table endpoint</returns>
+    public string GetTableEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AzuriteBuilder.AccountName).ToString();
     }
 }

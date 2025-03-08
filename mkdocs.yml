@@ -17,13 +17,18 @@ extra_css:
   - css/extra.css
   - css/tc-header.css
 plugins:
-  - codeinclude
   - markdownextradata
   - search
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.snippets:
+      dedent_subsections: true
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 nav:
   - index.md
   - cicd/index.md
@@ -31,18 +36,25 @@ nav:
   - api/create_docker_image.md
   - api/create_docker_container.md
   - api/create_docker_network.md
+  - api/low_level_api_access.md
   - api/resource_reaper.md
   - api/resource_reuse.md
   - api/wait_strategies.md
   - api/best_practices.md
+  - test_frameworks/xunit_net.md
   - Examples:
     - examples/dind.md
     - examples/aspnet.md
   - Modules:
     - modules/index.md
+    - modules/cassandra.md
+    - modules/pulsar.md
+    - modules/db2.md
     - modules/elasticsearch.md
     - modules/mongodb.md
     - modules/mssql.md
     - modules/neo4j.md
     - modules/postgres.md
     - modules/rabbitmq.md
+  - contributing.md
+  - contributing_docs.md

@@ -43,21 +43,21 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeDeleteAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeDeleteAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />

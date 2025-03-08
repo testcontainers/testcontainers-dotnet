@@ -36,6 +36,28 @@ namespace DotNet.Testcontainers.Builders
     {
     }
 
+    /// <summary>
+    /// Gets the name of the environment variable that must be set to accept the image license agreement.
+    /// </summary>
+    protected virtual string AcceptLicenseAgreementEnvVar { get; }
+
+    /// <summary>
+    /// Gets the expected value of <see cref="AcceptLicenseAgreementEnvVar" /> that indicates acceptance of the license agreement.
+    /// </summary>
+    protected virtual string AcceptLicenseAgreement { get; }
+
+    /// <summary>
+    /// Gets the expected value of <see cref="AcceptLicenseAgreementEnvVar" /> that indicates rejection of the license agreement.
+    /// </summary>
+    protected virtual string DeclineLicenseAgreement { get; }
+
+    /// <inheritdoc />
+    public virtual TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    {
+      const string licenseAgreementNotRequired = "The module does not require you to accept a license agreement.";
+      throw new InvalidOperationException(licenseAgreementNotRequired);
+    }
+
     /// <inheritdoc />
     public TBuilderEntity DependsOn(IContainer container)
     {
@@ -80,7 +102,7 @@ namespace DotNet.Testcontainers.Builders
         return Clone(new ContainerConfiguration(image: image));
       }
 
-      return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Name, image.Tag, TestcontainersSettings.HubImageNamePrefix)));
+      return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, TestcontainersSettings.HubImageNamePrefix)));
     }
 
     /// <inheritdoc />
@@ -374,7 +396,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, ct) => Task.CompletedTask);
+      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _) => Task.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -388,6 +410,21 @@ namespace DotNet.Testcontainers.Builders
 
       _ = Guard.Argument(DockerResourceConfiguration.Image, nameof(IContainerConfiguration.Image))
         .NotNull();
+    }
+
+    /// <summary>
+    /// Validates the license agreement.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the license agreement is not accepted.</exception>
+    protected virtual void ValidateLicenseAgreement()
+    {
+      const string message = "The image '{0}' requires you to accept a license agreement.";
+
+      Predicate<TConfigurationEntity> licenseAgreementNotAccepted = value =>
+        !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
+
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
     }
 
     /// <summary>

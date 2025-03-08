@@ -1,9 +1,16 @@
 namespace Testcontainers.Tests;
 
-public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
+// We cannot run these tests in parallel because they interfere with the port
+// forwarding tests. When the port forwarding container is running, Testcontainers
+// automatically inject the necessary extra hosts into the builder configuration
+// using `WithPortForwarding()` internally. Depending on when the test framework
+// starts the port forwarding container, these extra hosts can lead to flakiness.
+// This happens because the reuse hash changes, resulting in two containers with
+// the same labels running instead of one.
+[CollectionDefinition(nameof(ReusableResourceTest), DisableParallelization = true)]
+[Collection(nameof(ReusableResourceTest))]
+public sealed class ReusableResourceTest : IAsyncLifetime
 {
-    private readonly DockerClient _dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid()).CreateClient();
-
     private readonly FilterByProperty _filters = new FilterByProperty();
 
     private readonly IList<IAsyncDisposable> _disposables = new List<IAsyncDisposable>();
@@ -51,29 +58,57 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
 
     public Task DisposeAsync()
     {
-        return Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()));
-    }
-
-    public void Dispose()
-    {
-        _dockerClient.Dispose();
+        return Task.WhenAll(_disposables
+            .Take(3)
+            .Select(disposable =>
+            {
+                // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
+                // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
+                // reflection afterward to delete the container, network, and volume.
+                disposable.AsDynamic()._configuration.SessionId = ResourceReaper.DefaultSessionId;
+                return disposable.DisposeAsync().AsTask();
+            }));
     }
 
     [Fact]
     public async Task ShouldReuseExistingResource()
     {
-        var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { Filters = _filters })
+        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
+
+        using var client = clientConfiguration.CreateClient();
+
+        var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
+
+        var networksListParameters = new NetworksListParameters { Filters = _filters };
+
+        var volumesListParameters = new VolumesListParameters { Filters = _filters };
+
+        var containers = await client.Containers.ListContainersAsync(containersListParameters)
             .ConfigureAwait(true);
 
-        var networks = await _dockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = _filters })
+        var networks = await client.Networks.ListNetworksAsync(networksListParameters)
             .ConfigureAwait(true);
 
-        var response = await _dockerClient.Volumes.ListAsync(new VolumesListParameters { Filters = _filters })
+        var response = await client.Volumes.ListAsync(volumesListParameters)
             .ConfigureAwait(true);
 
         Assert.Single(containers);
         Assert.Single(networks);
         Assert.Single(response.Volumes);
+    }
+
+    public static class ReuseHashTest
+    {
+        public sealed class NotEqualTest
+        {
+            [Fact]
+            public void ForDifferentNames()
+            {
+                var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
+                var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
+                Assert.NotEqual(hash1, hash2);
+            }
+        }
     }
 
     public static class UnsupportedBuilderConfigurationTest
@@ -142,5 +177,31 @@ public sealed class ReusableResourceTest : IAsyncLifetime, IDisposable
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
             }
         }
+    }
+
+    private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
+    {
+        public ReuseHashContainerBuilder() : this(new ContainerConfiguration())
+            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+
+        private ReuseHashContainerBuilder(ContainerConfiguration configuration) : base(configuration)
+            => DockerResourceConfiguration = configuration;
+
+        protected override ContainerConfiguration DockerResourceConfiguration { get; }
+
+        public string GetReuseHash()
+            => DockerResourceConfiguration.GetReuseHash();
+
+        public override DockerContainer Build()
+            => new(DockerResourceConfiguration);
+
+        protected override ReuseHashContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+
+        protected override ReuseHashContainerBuilder Clone(IContainerConfiguration resourceConfiguration)
+            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+
+        protected override ReuseHashContainerBuilder Merge(ContainerConfiguration oldValue, ContainerConfiguration newValue)
+            => new(new ContainerConfiguration(oldValue, newValue));
     }
 }

@@ -4,11 +4,15 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
 {
     private readonly MongoDbContainer _mongoDbContainer;
 
-    private MongoDbContainerTest(MongoDbContainer mongoDbContainer)
+    private readonly bool _replicaSetEnabled;
+
+    private MongoDbContainerTest(MongoDbContainer mongoDbContainer, bool replicaSetEnabled = false)
     {
         _mongoDbContainer = mongoDbContainer;
+        _replicaSetEnabled = replicaSetEnabled;
     }
 
+    // # --8<-- [start:UseMongoDbContainer]
     public Task InitializeAsync()
     {
         return _mongoDbContainer.StartAsync();
@@ -48,7 +52,33 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+    // # --8<-- [end:UseMongoDbContainer]
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ReplicaSetStatus()
+    {
+        // Given
+        const string scriptContent = "rs.status().ok;";
+
+        // When
+        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
+            .ConfigureAwait(true);
+
+        // Then
+        if (_replicaSetEnabled)
+        {
+            Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+            Assert.Empty(execResult.Stderr);
+        }
+        else
+        {
+            Assert.True(1L.Equals(execResult.ExitCode), execResult.Stdout);
+            Assert.Equal("MongoServerError: not running with --replSet\n", execResult.Stderr);
+        }
+    }
+
+    // # --8<-- [start:CreateMongoDbContainer]
     [UsedImplicitly]
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
@@ -66,6 +96,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:CreateMongoDbContainer]
 
     [UsedImplicitly]
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
@@ -80,8 +111,28 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build())
+            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class MongoDbReplicaSetDefaultConfiguration : MongoDbContainerTest
+    {
+        public MongoDbReplicaSetDefaultConfiguration()
+            : base(new MongoDbBuilder().WithReplicaSet().Build(), true)
+        {
+        }
+    }
+
+    // # --8<-- [start:ReplicaSetContainerConfiguration]
+    [UsedImplicitly]
+    public sealed class MongoDbNamedReplicaSetConfiguration : MongoDbContainerTest
+    {
+        public MongoDbNamedReplicaSetConfiguration()
+            : base(new MongoDbBuilder().WithReplicaSet("rs1").Build(), true)
+        {
+        }
+    }
+    // # --8<-- [end:ReplicaSetContainerConfiguration]
 }

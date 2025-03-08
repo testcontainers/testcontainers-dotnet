@@ -75,13 +75,13 @@ The following example adds tests to an ASP.NET Core Blazor application. The test
 
 To use Testcontainers' pre-configured Microsoft SQL Server module, add the [Testcontainers.MsSql](https://www.nuget.org/packages/Testcontainers.MsSql) NuGet dependency to your test project:
 
-```console
+```shell
 dotnet add package Testcontainers.MsSql --version 3.0.0
 ```
 
 !!! note
 
-    The Microsoft SQL Server Docker image is not compatible with ARM devices, such as Macs with Apple Silicon. Instead, you can use the [SqlEdge](https://www.nuget.org/packages/Testcontainers.SqlEdge) module or [Testcontainers Cloud](https://www.testcontainers.cloud/).
+    When running on Macs with Apple Silicon, make sure that you are using Docker Desktop for macOS version 4.16 or newer, and that the Virtualization Framework is enabled, with Rosetta 2 installed to run [x86-64](https://techcommunity.microsoft.com/t5/sql-server-blog/azure-sql-edge-update-september-2023/ba-p/3930827) based containers.
 
 The `WeatherForecastContainer` class configures in the default constructor all dependencies to start the container that hosts our application.
 

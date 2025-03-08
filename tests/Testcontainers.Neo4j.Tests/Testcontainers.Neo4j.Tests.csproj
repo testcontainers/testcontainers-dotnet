@@ -1,15 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
+        <!-- -8<- [start:PackageReferences] -->
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Neo4j.Driver"/>
+        <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Neo4j/Testcontainers.Neo4j.csproj"/>

@@ -33,23 +33,23 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ContainerInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Containers.InspectContainerAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Containers.InspectContainerAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _ = await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
 
-      return response != null;
+        return true;
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        return false;
+      }
     }
 
     public async Task<long> GetExitCodeAsync(string id, CancellationToken ct = default)
@@ -91,6 +91,18 @@ namespace DotNet.Testcontainers.Clients
       return DockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
     }
 
+    public Task PauseAsync(string id, CancellationToken ct = default)
+    {
+      Logger.PauseDockerContainer(id);
+      return DockerClient.Containers.PauseContainerAsync(id, ct);
+    }
+
+    public Task UnpauseAsync(string id, CancellationToken ct = default)
+    {
+      Logger.UnpauseDockerContainer(id);
+      return DockerClient.Containers.UnpauseContainerAsync(id, ct);
+    }
+
     public Task RemoveAsync(string id, CancellationToken ct = default)
     {
       Logger.DeleteDockerContainer(id);
@@ -100,7 +112,7 @@ namespace DotNet.Testcontainers.Clients
     public Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default)
     {
       Logger.CopyArchiveToDockerContainer(id, tarStream.ContentLength);
-      return DockerClient.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path, AllowOverwriteDirWithFile = false }, tarStream, ct);
+      return DockerClient.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path }, tarStream, ct);
     }
 
     public async Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default)
