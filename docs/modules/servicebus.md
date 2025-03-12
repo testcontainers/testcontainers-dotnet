@@ -1,6 +1,6 @@
 # Azure Service Bus
 
-Azure [Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) emulator⁠ is designed to offer a local development experience for Azure Service Bus⁠, enabling you to develop and test code against our services in isolation, free from cloud interference.
+Azure [Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) emulator⁠ is designed to offer a local development experience for Azure Service Bus⁠, enabling you to develop and test code against the service in isolation, free from cloud interference.
 
 Add the following dependency to your project file:
 
