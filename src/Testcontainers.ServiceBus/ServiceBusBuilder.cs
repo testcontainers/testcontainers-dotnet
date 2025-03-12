@@ -12,6 +12,8 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const ushort ServiceBusPort = 5672;
 
+    public const ushort ServiceBusHttpPort = 5300;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
@@ -115,9 +117,10 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return base.Init()
             .WithImage(ServiceBusImage)
             .WithPortBinding(ServiceBusPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Emulator Service is Successfully Up!")
-                .AddCustomWaitStrategy(new WaitTwoSeconds()));
+            .WithPortBinding(ServiceBusHttpPort, true)
+            .WithEnvironment("SQL_WAIT_INTERVAL", "0")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health").ForPort(ServiceBusHttpPort)));
     }
 
     /// <inheritdoc />

@@ -12,6 +12,8 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     public const ushort EventHubsPort = 5672;
 
+    public const ushort EventHubsHttpPort = 5300;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
@@ -135,9 +137,9 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         return base.Init()
             .WithImage(EventHubsImage)
             .WithPortBinding(EventHubsPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Emulator Service is Successfully Up!")
-                .AddCustomWaitStrategy(new WaitTwoSeconds()));
+            .WithPortBinding(EventHubsHttpPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health").ForPort(EventHubsHttpPort)));
     }
 
     /// <inheritdoc />
