@@ -42,7 +42,7 @@ public sealed class Db2Container : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new [] { "/bin/sh", "-c", db2ShellCommand}, ct)
+        return await ExecAsync(new[] { "/bin/sh", "-c", db2ShellCommand}, ct)
             .ConfigureAwait(false);
     }
 }

@@ -12,6 +12,8 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const ushort ServiceBusPort = 5672;
 
+    public const ushort ServiceBusHttpPort = 5300;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
@@ -115,9 +117,10 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         return base.Init()
             .WithImage(ServiceBusImage)
             .WithPortBinding(ServiceBusPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Emulator Service is Successfully Up!")
-                .AddCustomWaitStrategy(new WaitTwoSeconds()));
+            .WithPortBinding(ServiceBusHttpPort, true)
+            .WithEnvironment("SQL_WAIT_INTERVAL", "0")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(ServiceBusHttpPort).ForPath("/health")));
     }
 
     /// <inheritdoc />
@@ -136,23 +139,5 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     protected override ServiceBusBuilder Merge(ServiceBusConfiguration oldValue, ServiceBusConfiguration newValue)
     {
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// This is a workaround to ensure that the wait strategy does not indicate
-    /// readiness too early:
-    /// https://github.com/Azure/azure-service-bus-emulator-installer/issues/35#issuecomment-2497164533.
-    /// </remarks>
-    private sealed class WaitTwoSeconds : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(2))
-                .ConfigureAwait(false);
-
-            return true;
-        }
     }
 }

@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Images
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Runtime.InteropServices;
   using System.Text;
   using System.Text.RegularExpressions;
   using System.Threading;
@@ -150,7 +149,7 @@ namespace DotNet.Testcontainers.Images
               {
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
                 entry.TarHeader.Size = inputStream.Length;
-                entry.TarHeader.Mode = GetFileMode(absoluteFilePath);
+                entry.TarHeader.Mode = GetUnixFileMode(absoluteFilePath);
 
                 await tarOutputStream.PutNextEntryAsync(entry, ct)
                   .ConfigureAwait(false);
@@ -188,21 +187,22 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <summary>
-    /// Gets the file mode for a given file.
+    /// Gets the Unix file mode of the file on the path.
     /// </summary>
-    /// <param name="path">The path to the file.</param>
-    /// <returns>The file mode for the <see cref="TarEntry"/></returns>
-    private static int GetFileMode(string path)
+    /// <param name="filePath">The path to the file.</param>
+    /// <returns>The Unix file mode of the file on the path.</returns>
+    private static int GetUnixFileMode(string filePath)
     {
 #if NET7_0_OR_GREATER
-      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      if (!OperatingSystem.IsWindows())
       {
-        return (int)File.GetUnixFileMode(path);
+        return (int)File.GetUnixFileMode(filePath);
       }
 #endif
 
-      // Default to 755 for Windows and fallback to 755 for Unix when
-      // `GetUnixFileMode` is not available.
+      // Default to 755 for Windows and fall back to 755 for Unix when `GetUnixFileMode`
+      // is not available.
+      _ = filePath;
       return (int)Unix.FileMode755;
     }
   }
