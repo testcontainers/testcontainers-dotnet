@@ -94,7 +94,7 @@ namespace DotNet.Testcontainers.Images
 
       var stages = lines
         .Select(line => line.Value)
-        .Select(line => line.Split(new [] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
+        .Select(line => line.Split(new[] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
         .Where(substrings => substrings.Length > 1)
         .Select(substrings => substrings[substrings.Length - 1])
         .Distinct()
@@ -150,11 +150,7 @@ namespace DotNet.Testcontainers.Images
               {
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
                 entry.TarHeader.Size = inputStream.Length;
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                  entry.TarHeader.Mode = (int)Unix.FileMode755;
-                }
+                entry.TarHeader.Mode = GetFileMode(absoluteFilePath);
 
                 await tarOutputStream.PutNextEntryAsync(entry, ct)
                   .ConfigureAwait(false);
@@ -189,6 +185,25 @@ namespace DotNet.Testcontainers.Images
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)
         .ToArray();
+    }
+
+    /// <summary>
+    /// Gets the file mode for a given file.
+    /// </summary>
+    /// <param name="path">The path to the file.</param>
+    /// <returns>The file mode for the <see cref="TarEntry"/></returns>
+    private static int GetFileMode(string path)
+    {
+#if NET7_0_OR_GREATER
+      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        return (int)File.GetUnixFileMode(path);
+      }
+#endif
+
+      // Default to 755 for Windows and fallback to 755 for Unix when
+      // `GetUnixFileMode` is not available.
+      return (int)Unix.FileMode755;
     }
   }
 }
