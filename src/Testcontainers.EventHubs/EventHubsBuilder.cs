@@ -139,7 +139,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health").ForPort(EventHubsHttpPort)));
+                request.ForPort(EventHubsHttpPort).ForPath("/health")));
     }
 
     /// <inheritdoc />
@@ -158,23 +158,5 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
     {
         return new EventHubsBuilder(new EventHubsConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// This is a workaround to ensure that the wait strategy does not indicate
-    /// readiness too early:
-    /// https://github.com/Azure/azure-service-bus-emulator-installer/issues/35#issuecomment-2497164533.
-    /// </remarks>
-    private sealed class WaitTwoSeconds : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(2))
-                .ConfigureAwait(false);
-
-            return true;
-        }
     }
 }
