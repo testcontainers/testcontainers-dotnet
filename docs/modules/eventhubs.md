@@ -1,6 +1,6 @@
 # Azure Event Hubs
 
-Azure [Event Hubs](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) emulator⁠ is designed to offer a local development experience for Azure Event Hubs⁠, enabling you to develop and test code against our services in isolation, free from cloud interference.
+Azure [Event Hubs](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) emulator⁠ is designed to offer a local development experience for Azure Event Hubs⁠, enabling you to develop and test code against the service in isolation, free from cloud interference.
 
 Add the following dependency to your project file:
 
