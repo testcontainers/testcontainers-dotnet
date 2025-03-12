@@ -202,6 +202,7 @@ namespace DotNet.Testcontainers.Images
 
       // Default to 755 for Windows and fall back to 755 for Unix when `GetUnixFileMode`
       // is not available.
+      _ = filePath;
       return (int)Unix.FileMode755;
     }
   }
