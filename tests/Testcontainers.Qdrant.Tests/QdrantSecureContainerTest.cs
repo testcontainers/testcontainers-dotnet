@@ -58,7 +58,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         using var grpcClient = new QdrantGrpcClient(grpcChannel);
 
         using var client = new QdrantClient(grpcClient);
-        // # --8<-- [start:ConfigureQdrantClientCertificate-2]
+        // # --8<-- [end:ConfigureQdrantClientCertificate-2]
 
         // When
         var response = await client.HealthAsync()

@@ -44,7 +44,7 @@ Make sure the underlying Qdrant HTTP or gRPC client adds the API key to the HTTP
 
 ## Configure TLS
 
-The following example generates a self-signed certificate and configures the Testcontainers module to use TLS with the certificate and private key:
+The following example generates a self-signed certificate and configures the module to use TLS with the certificate and private key:
 
 === "Configure the TLS certificate"
     ```csharp
@@ -61,10 +61,10 @@ The Qdrant client is configured to validate the TLS certificate using its thumbp
 
 ## A Note To Developers
 
-The Testcontainers module creates a container that listens to requests over **HTTP**. The official Qdrant client uses the gRPC APIs to communicate with Qdrant. **.NET Core** and **.NET** support the above example with no additional configuration. However, **.NET Framework** has limited supported for gRPC over HTTP/2, but it can be enabled by:
+The module creates a container that listens to requests over **HTTP**. The official Qdrant client uses the gRPC APIs to communicate with Qdrant. **.NET Core** and **.NET** support the above example with no additional configuration. However, **.NET Framework** has limited supported for gRPC over HTTP/2, but it can be enabled by:
 
-1. Configuring the Testcontainers module to use TLS.
+1. Configuring the module to use TLS.
 1. Configuring server certificate validation.
 1. Reference [`System.Net.Http.WinHttpHandler`](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler) version `6.0.1` or later, and configure `WinHttpHandler` as the handler for `GrpcChannelOptions` in the Qdrant client.
 
-Refer to the [official Qdrant .NET SDK](https://github.com/qdrant/qdrant-dotnet) for more information.
+Refer to the official [Qdrant .NET SDK](https://github.com/qdrant/qdrant-dotnet) for more information.
