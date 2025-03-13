@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Qdrant;
+namespace Testcontainers.Qdrant;
 
 public sealed class QdrantSecureContainerTest : IAsyncLifetime
 {
