@@ -7,11 +7,17 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="QdrantConfiguration" /> class.
     /// </summary>
-    public QdrantConfiguration(string apiKey = null, string certificate = null, string privateKey = null)
+    /// <param name="apiKey">The API key.</param>
+    /// <param name="certificate">The public certificate in PEM format.</param>
+    /// <param name="certificateKey">The private key associated with the certificate in PEM format.</param>
+    public QdrantConfiguration(
+        string apiKey = null,
+        string certificate = null,
+        string certificateKey = null)
     {
         ApiKey = apiKey;
         Certificate = certificate;
-        PrivateKey = privateKey;
+        CertificateKey = certificateKey;
     }
 
     /// <summary>
@@ -21,6 +27,7 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     public QdrantConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -30,6 +37,7 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     public QdrantConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -39,6 +47,7 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     public QdrantConfiguration(QdrantConfiguration resourceConfiguration)
         : this(new QdrantConfiguration(), resourceConfiguration)
     {
+        // Passes the configuration upwards to the base implementations to create an updated immutable copy.
     }
 
     /// <summary>
@@ -51,21 +60,26 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     {
         ApiKey = BuildConfiguration.Combine(oldValue.ApiKey, newValue.ApiKey);
         Certificate = BuildConfiguration.Combine(oldValue.Certificate, newValue.Certificate);
-        PrivateKey = BuildConfiguration.Combine(oldValue.PrivateKey, newValue.PrivateKey);
+        CertificateKey = BuildConfiguration.Combine(oldValue.CertificateKey, newValue.CertificateKey);
     }
 
     /// <summary>
-    /// Gets the API key used to secure Qdrant.
+    /// Gets a value indicating whether TLS is enabled or not.
+    /// </summary>
+    public bool TlsEnabled => Certificate != null;
+
+    /// <summary>
+    /// Gets the API key that secures the instance.
     /// </summary>
     public string ApiKey { get; }
 
     /// <summary>
-    /// Gets the certificate used to configure Transport Layer Security. Certificate must be in PEM format.
+    /// Gets the public certificate in PEM format.
     /// </summary>
     public string Certificate { get; }
 
     /// <summary>
-    /// Gets the private key used to configure Transport Layer Security. Private key must be in PEM format.
+    /// Gets the private key associated with the certificate in PEM format.
     /// </summary>
-    public string PrivateKey { get; }
+    public string CertificateKey { get; }
 }

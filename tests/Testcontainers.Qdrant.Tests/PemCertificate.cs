@@ -1,24 +1,35 @@
-namespace Testcontainers.Qdrant;
+﻿namespace Testcontainers.Qdrant;
 
-public record PemCertificate(string Certificate, string PrivateKey, string Thumbprint)
+public sealed class PemCertificate
 {
-    public static PemCertificate Create(string commonName)
+    static PemCertificate()
     {
-        using var key = RSA.Create(2048);
-        var utcNow = DateTimeOffset.UtcNow;
-        var request = new CertificateRequest(
-            $"CN={commonName}",
-            key,
-            HashAlgorithmName.SHA256,
-            RSASignaturePadding.Pkcs1)
-        {
-            CertificateExtensions = { new X509BasicConstraintsExtension(false, false, 0, true) },
-        };
-
-        var certificate = request.CreateSelfSigned(utcNow, utcNow.AddYears(1));
-        return new PemCertificate(
-            certificate.ExportCertificatePem(), 
-            certificate.GetRSAPrivateKey().ExportPkcs8PrivateKeyPem(),
-            certificate.GetCertHashString(HashAlgorithmName.SHA256));
     }
+
+    private PemCertificate(string commonName)
+    {
+        using var rsa = RSA.Create(2048);
+
+        var subjectName = new X500DistinguishedName($"CN={commonName}");
+
+        var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+        CommonName = commonName;
+        Thumbprint = certificate.GetCertHashString(HashAlgorithmName.SHA256);
+        Certificate = certificate.ExportCertificatePem();
+        CertificateKey = rsa.ExportPkcs8PrivateKeyPem();
+    }
+
+    public static PemCertificate Instance { get; }
+        = new PemCertificate("localhost");
+
+    public string CommonName { get; }
+
+    public string Thumbprint { get; }
+
+    public string Certificate { get; }
+
+    public string CertificateKey { get; }
 }
