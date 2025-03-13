@@ -56,8 +56,13 @@ The Qdrant client is configured to validate the TLS certificate using its thumbp
 === "Configure the Qdrant client"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientCertificate-1"
+
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientCertificate-2"
     ```
+
+!!! note
+
+    Please ensure that both the certificate and private key are provided in PEM format.
 
 ## A Note To Developers
 
