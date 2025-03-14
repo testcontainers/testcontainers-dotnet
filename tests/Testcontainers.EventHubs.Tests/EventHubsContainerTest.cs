@@ -13,6 +13,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         _eventHubsContainer = eventHubsContainer;
     }
 
+    // # --8<-- [start:UseEventHubsContainer]
     public Task InitializeAsync()
     {
         return _eventHubsContainer.StartAsync();
@@ -52,7 +53,9 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(properties);
     }
+    // # --8<-- [end:UseEventHubsContainer]
 
+    // # --8<-- [start:CreateEventHubsContainer]
     [UsedImplicitly]
     public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
     {
@@ -64,6 +67,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:CreateEventHubsContainer]
 
     [UsedImplicitly]
     public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
@@ -72,7 +76,9 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             : base(new EventHubsBuilder()
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
+                // # --8<-- [start:ReuseExistingAzuriteContainer]
                 .WithAzuriteContainer(fixture.Network, fixture.Container, DatabaseFixture.AzuriteNetworkAlias)
+                // # --8<-- [end:ReuseExistingAzuriteContainer]
                 .Build())
         {
         }
