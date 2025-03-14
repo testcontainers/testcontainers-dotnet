@@ -9,6 +9,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         _serviceBusContainer = serviceBusContainer;
     }
 
+    // # --8<-- [start:UseServiceBusContainer]
     public Task InitializeAsync()
     {
         return _serviceBusContainer.StartAsync();
@@ -52,7 +53,9 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
+    // # --8<-- [end:UseServiceBusContainer]
 
+    // # --8<-- [start:CreateServiceBusContainer]
     [UsedImplicitly]
     public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
     {
@@ -63,6 +66,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:CreateServiceBusContainer]
 
     [UsedImplicitly]
     public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
@@ -70,7 +74,9 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
             : base(new ServiceBusBuilder()
                 .WithAcceptLicenseAgreement(true)
+                // # --8<-- [start:ReuseExistingMsSqlContainer]
                 .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
+                // # --8<-- [end:ReuseExistingMsSqlContainer]
                 .Build())
         {
         }

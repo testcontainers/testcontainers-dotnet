@@ -1,7 +1,8 @@
-﻿namespace Testcontainers.Cassandra;
+namespace Testcontainers.Cassandra;
 
 public sealed class CassandraContainerTest : IAsyncLifetime
 {
+    // # --8<-- [start:UseCassandraContainer]
     private readonly CassandraContainer _cassandraContainer = new CassandraBuilder().Build();
 
     public Task InitializeAsync()
@@ -50,6 +51,7 @@ public sealed class CassandraContainerTest : IAsyncLifetime
         Assert.Single(rows);
         Assert.Equal("COMPLETED", rows[0]["bootstrapped"]);
     }
+    // # --8<-- [end:UseCassandraContainer]
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]

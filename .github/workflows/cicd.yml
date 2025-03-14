@@ -82,6 +82,7 @@ jobs:
           { name: "Testcontainers.PostgreSql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.PubSub", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Pulsar", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Qdrant", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.RabbitMq", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.RavenDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
