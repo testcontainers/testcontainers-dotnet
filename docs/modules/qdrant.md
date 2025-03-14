@@ -28,7 +28,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 ## Configure API key
 
-To set and configure an API key, use the following builder method:
+To set and configure an API key, use the following container builder method:
 
 === "Configure the API key"
     ```csharp
@@ -46,6 +46,10 @@ Make sure the underlying Qdrant HTTP or gRPC client adds the API key to the HTTP
 
 The following example generates a self-signed certificate and configures the module to use TLS with the certificate and private key:
 
+!!! note
+
+    Please ensure that both the certificate and private key are provided in PEM format.
+
 === "Configure the TLS certificate"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantContainerCertificate"
@@ -59,10 +63,6 @@ The Qdrant client is configured to validate the TLS certificate using its thumbp
 
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientCertificate-2"
     ```
-
-!!! note
-
-    Please ensure that both the certificate and private key are provided in PEM format.
 
 ## A Note To Developers
 
