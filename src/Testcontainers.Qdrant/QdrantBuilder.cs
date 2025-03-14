@@ -40,6 +40,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// Sets the API key to secure the instance.
     /// </summary>
     /// <param name="apiKey">The API key.</param>
+    /// <returns>A configured instance of <see cref="QdrantBuilder" />.</returns>
     public QdrantBuilder WithApiKey(string apiKey)
     {
         return Merge(DockerResourceConfiguration, new QdrantConfiguration(apiKey: apiKey))
@@ -51,6 +52,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// </summary>
     /// <param name="certificate">The public certificate in PEM format.</param>
     /// <param name="certificateKey">The private key associated with the certificate in PEM format.</param>
+    /// <returns>A configured instance of <see cref="QdrantBuilder" />.</returns>
     public QdrantBuilder WithCertificate(string certificate, string certificateKey)
     {
         return Merge(DockerResourceConfiguration, new QdrantConfiguration(certificate: certificate, certificateKey: certificateKey))
