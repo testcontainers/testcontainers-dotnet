@@ -20,3 +20,77 @@ services:
 variables:
   DOCKER_HOST: tcp://docker:2375
 ```
+
+## Bitbucket CI/CD
+
+Enable your bitbucket CI/CD pipeline as usual on the admin-pipelines-settings page. After enabling your pipeline, replace the content of *bitbucket-pipelines.yml* (you can find this file in the root of your source folder) with:
+
+```yml
+image: mcr.microsoft.com/dotnet/sdk:9.0
+
+options:
+  docker: true
+
+pipelines:
+  default:
+    - step:
+        name: Build and Test
+        services:
+          - docker
+        caches:
+          - dotnetcore
+        script:
+          - dotnet restore
+          - dotnet build --configuration Release
+          - dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+        artifacts:
+          - test-results.trx
+```
+
+In your code, you can use a [standard hello world xUnit application](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test). Replace the test code with the following code:
+
+```csharp
+[Fact]
+public async Task Test_HelloWorldContainer()
+{
+    //https://github.com/testcontainers/testcontainers-dotnet/issues/492
+    TestcontainersSettings.ResourceReaperEnabled = false;
+    //Arrange
+    
+    // Create a new instance of a container.
+    var container = new ContainerBuilder()
+      // Set the image for the container to "testcontainers/helloworld:1.1.0".
+      .WithImage("testcontainers/helloworld:1.1.0")
+      // Bind port 8080 of the container to a random port on the host.
+      .WithPortBinding(8080, true)
+      // Wait until the HTTP endpoint of the container is available.
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(8080)))
+      // Build the container configuration.
+      .Build();
+    
+    await container.StartAsync();
+
+    // Act
+    var httpClient = new HttpClient
+    {
+        BaseAddress = new Uri($"http://{container.Hostname}:{container.GetMappedPublicPort(8080)}")
+    };
+
+    var response = await httpClient.GetAsync("/");
+    var content = await response.Content.ReadAsStringAsync();
+
+    // Assert
+    Assert.True(response.IsSuccessStatusCode, "Expected a successful HTTP response");
+    Assert.Contains("Hello world", content, StringComparison.OrdinalIgnoreCase);
+}
+```
+
+Note the *Reaper* config:
+
+```csharp
+TestcontainersSettings.ResourceReaperEnabled = false;
+```
+
+If you don't enable this config, the test container will not function correctly.
+
+Run the pipeline by pushing code or by clicking *Run pipeline* on the Pipelines page.
