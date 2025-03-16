@@ -1,4 +1,12 @@
+global using System.IO;
+global using System.Linq;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Containers;
+global using Fody;
+global using ICSharpCode.Decompiler;
+global using ICSharpCode.Decompiler.CSharp;
+global using ICSharpCode.Decompiler.Metadata;
+global using ICSharpCode.Decompiler.TypeSystem;
+global using Mono.Cecil;
 global using Xunit;

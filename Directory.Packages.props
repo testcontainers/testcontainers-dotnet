@@ -15,6 +15,7 @@
 
         <PackageVersion Include="Fody" Version="6.9.2"/>
         <PackageVersion Include="FodyHelpers" Version="6.9.2"/>
+        <PackageVersion Include="ICSharpCode.Decompiler" Version="9.0.0.7889"/>
 
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>

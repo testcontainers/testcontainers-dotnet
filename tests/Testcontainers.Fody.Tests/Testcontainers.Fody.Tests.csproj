@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net9.0</TargetFrameworks>
+        <DisableFody>true</DisableFody>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
@@ -10,6 +11,7 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Fody"/>
+        <PackageReference Include="ICSharpCode.Decompiler"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Fody/Testcontainers.Fody.csproj"/>
