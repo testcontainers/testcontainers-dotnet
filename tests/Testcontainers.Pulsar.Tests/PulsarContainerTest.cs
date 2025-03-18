@@ -41,7 +41,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             _ = clientBuilder.Authentication(new TokenAuthentication(authToken));
         }
 
-        var client = clientBuilder.Build();
+        await using var client = clientBuilder.Build();
 
         await using var producer = client.NewProducer(Schema.String)
             .Topic(topic)
@@ -50,7 +50,6 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         await using var consumer = client.NewConsumer(Schema.String)
             .Topic(topic)
             .SubscriptionName(name)
-            .InitialPosition(SubscriptionInitialPosition.Earliest)
             .Create();
 
         // When
@@ -81,6 +80,24 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     {
         public PulsarAuthConfiguration()
             : base(new PulsarBuilder().WithAuthentication().Build(), true)
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class PulsarV4Configuration : PulsarContainerTest
+    {
+        public PulsarV4Configuration()
+            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").Build(), false)
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
+    {
+        public PulsarV4AuthConfiguration()
+            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").WithAuthentication().Build(), true)
         {
         }
     }

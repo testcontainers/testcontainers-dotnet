@@ -73,7 +73,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         }
         else
         {
-            Assert.Equal(1L, execResult.ExitCode);
+            Assert.True(1L.Equals(execResult.ExitCode), execResult.Stdout);
             Assert.Equal("MongoServerError: not running with --replSet\n", execResult.Stderr);
         }
     }

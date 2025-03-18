@@ -27,11 +27,11 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
         // When
-        using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
+        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 
     [Fact]
@@ -62,6 +62,15 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     {
         public KeycloakV25Configuration()
             : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KeycloakV26Configuration : KeycloakContainerTest
+    {
+        public KeycloakV26Configuration()
+            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
         {
         }
     }

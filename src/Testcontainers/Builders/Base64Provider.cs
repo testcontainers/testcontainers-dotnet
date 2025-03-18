@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Gets a predicate that determines whether or not a <see cref="JsonProperty" /> contains a Docker registry key.
+    /// Gets a predicate that determines whether a <see cref="JsonProperty" /> contains a Docker registry key.
     /// </summary>
     public static Func<JsonProperty, string, bool> HasDockerRegistryKey { get; }
       = (property, hostname) => property.Name.Equals(hostname, StringComparison.OrdinalIgnoreCase) || property.Name.EndsWith("://" + hostname, StringComparison.OrdinalIgnoreCase);
@@ -47,7 +47,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(_rootElement) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
     }
 
     /// <inheritdoc />
