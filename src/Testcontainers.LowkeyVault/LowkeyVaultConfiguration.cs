@@ -7,18 +7,9 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultConfiguration" /> class.
     /// </summary>
-    /// <param name="vaultNames">The vault names.</param>
-    /// <param name="aliasMap">The vault aliases.</param>
-    /// <param name="externalConfigFilePath">The external config file path.</param>
     /// <param name="additionalArguments">The additional arguments to be passed via environment variables to the container.</param>
-    public LowkeyVaultConfiguration(HashSet<string> vaultNames = null,
-                                    Dictionary<string, HashSet<string>> aliasMap = null,
-                                    string externalConfigFilePath = null,
-                                    List<string> additionalArguments = null)
+    public LowkeyVaultConfiguration(List<string> additionalArguments = null)
     {
-        VaultNames = vaultNames;
-        AliasMap = aliasMap;
-        ExternalConfigFilePath = externalConfigFilePath;
         AdditionalArguments = additionalArguments;
     }
 
@@ -60,26 +51,8 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     public LowkeyVaultConfiguration(LowkeyVaultConfiguration oldValue, LowkeyVaultConfiguration newValue)
         : base(oldValue, newValue)
     {
-        VaultNames = BuildConfiguration.Combine(oldValue.VaultNames, newValue.VaultNames);
-        AliasMap = BuildConfiguration.Combine(oldValue.AliasMap, newValue.AliasMap);
-        ExternalConfigFilePath = BuildConfiguration.Combine(oldValue.ExternalConfigFilePath, newValue.ExternalConfigFilePath);
         AdditionalArguments = BuildConfiguration.Combine(oldValue.AdditionalArguments, newValue.AdditionalArguments);
     }
-
-    /// <summary>
-    /// Gets the Vault names.
-    /// </summary>
-    internal HashSet<string> VaultNames { get; } = [];
-
-    /// <summary>
-    /// Gets the Alias Map.
-    /// </summary>
-    internal Dictionary<string, HashSet<string>> AliasMap { get; } = [];
-
-    /// <summary>
-    /// Gets the External Config File Path.
-    /// </summary>
-    internal string ExternalConfigFilePath { get; }
 
     /// <summary>
     /// Gets Additional Arguments.

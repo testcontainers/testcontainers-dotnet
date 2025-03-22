@@ -4,8 +4,6 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultContainer : DockerContainer
 {
-    private const string LocalHost = "localhost";
-
     /// <summary>
     /// Gets a configured HTTP client
     /// </summary>
@@ -36,20 +34,6 @@ public sealed class LowkeyVaultContainer : DockerContainer
     public string GetTokenEndpointUrl()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort), LowkeyVaultBuilder.TokenEndPointPath).ToString();
-    }
-
-    /// <summary>
-    /// Gets the URL of the vault with a given name.
-    /// <param name="vaultName">the name of the vault.</param>
-    /// </summary>
-    /// <returns>The vault base URL.</returns>
-    public string GetVaultBaseUrl(string vaultName)
-    {
-        // Using `LocalHost` here instead of `Hostname` (which resolves to `127.0.0.1` in this environment) 
-        // to address a compatibility issue with the Java URI parser utilized by the Lowkey Vault client. 
-        // The parser fails to properly handle URIs containing a mix of DNS names and IP addresses, leading to errors. 
-        // For more details, refer to: https://github.com/nagyesta/lowkey-vault/issues/1319#issuecomment-2600214768
-        return new UriBuilder(Uri.UriSchemeHttps, $"{vaultName}.{LocalHost}", GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultPort)).ToString();
     }
 
     /// <summary>
