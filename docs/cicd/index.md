@@ -20,3 +20,23 @@ services:
 variables:
   DOCKER_HOST: tcp://docker:2375
 ```
+
+## Bitbucket Pipelines
+
+Enable Bitbucket Pipelines as usual on the **Repository settings → Pipelines → Settings** page. After enabling your pipeline, replace the contents of the `bitbucket-pipelines.yml` file, located at the root of your repository, with the following:
+
+```yml
+image: mcr.microsoft.com/dotnet/sdk:8.0
+options:
+  docker: true
+pipelines:
+  default:
+    - step:
+      script:
+        # Bitbucket Pipelines does not support Ryuk:
+        # https://dotnet.testcontainers.org/api/resource_reaper/.
+        - export TESTCONTAINERS_RYUK_DISABLED=true
+        - dotnet test
+      services:
+        - docker
+```

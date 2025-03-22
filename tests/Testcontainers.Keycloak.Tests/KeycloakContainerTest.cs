@@ -65,4 +65,13 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class KeycloakV26Configuration : KeycloakContainerTest
+    {
+        public KeycloakV26Configuration()
+            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
+        {
+        }
+    }
 }
