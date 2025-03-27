@@ -4,9 +4,9 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Testcontainers.BigQuery" VersionOverride="[*,$(Version)]"/>
-        <PackageReference Include="Testcontainers.Bigtable" VersionOverride="[*,$(Version)]"/>
-        <PackageReference Include="Testcontainers.Firestore" VersionOverride="[*,$(Version)]"/>
-        <PackageReference Include="Testcontainers.PubSub" VersionOverride="[*,$(Version)]"/>
+        <ProjectReference Include="../Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
+        <ProjectReference Include="../Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
+        <ProjectReference Include="../Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>
+        <ProjectReference Include="../Testcontainers.PubSub/Testcontainers.PubSub.csproj"/>
     </ItemGroup>
 </Project>
