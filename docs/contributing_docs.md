@@ -16,7 +16,8 @@ We publish our documentation using Netlify.
 * Once Python dependencies have been installed, run `mkdocs serve` to start a local auto-updating MkDocs server.
 
 ### Using Docker
-The root of the project contains a `compose.yml` file. Simply run `docker compose up` and then access the docs at http://localhost:8000.
+
+The root of the project contains a `compose.yml` file. Simply run `docker compose up` and access the docs at: `http://localhost:8000`.
 
 ### PR preview deployments
 
