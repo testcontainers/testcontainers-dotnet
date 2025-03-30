@@ -1,6 +1,6 @@
-# Running inside another container
+# Running inside a container
 
-## 'Docker wormhole' pattern - Sibling Docker containers
+## 'Docker Wormhole' pattern - Sibling Docker containers
 
 ### Docker-only example
 
