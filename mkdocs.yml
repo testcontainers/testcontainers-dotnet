@@ -41,9 +41,10 @@ nav:
   - api/resource_reuse.md
   - api/wait_strategies.md
   - api/best_practices.md
+  - dind/index.md
+  - full_framework/index.md
   - test_frameworks/xunit_net.md
   - Examples:
-    - examples/dind.md
     - examples/aspnet.md
   - Modules:
     - modules/index.md
