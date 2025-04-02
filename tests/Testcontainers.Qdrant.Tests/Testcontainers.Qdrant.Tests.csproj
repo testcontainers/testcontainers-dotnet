@@ -10,11 +10,11 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="Azure.Messaging.ServiceBus"/>
+        <PackageReference Include="Qdrant.Client"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Qdrant/Testcontainers.Qdrant.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

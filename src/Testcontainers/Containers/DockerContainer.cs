@@ -505,7 +505,7 @@ namespace DotNet.Testcontainers.Containers
       await _client.StartAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      _ = await CheckReadinessAsync(new [] { portBindingsMapped }, ct)
+      _ = await CheckReadinessAsync(new[] { portBindingsMapped }, ct)
         .ConfigureAwait(false);
 
       Starting?.Invoke(this, EventArgs.Empty);

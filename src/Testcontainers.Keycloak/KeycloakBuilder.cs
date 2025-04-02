@@ -44,6 +44,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(username: username))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", username)
             .WithEnvironment("KEYCLOAK_ADMIN", username);
     }
 
@@ -55,6 +56,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(password: password))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
     }
 

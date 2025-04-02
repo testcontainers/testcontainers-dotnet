@@ -41,19 +41,24 @@ nav:
   - api/resource_reuse.md
   - api/wait_strategies.md
   - api/best_practices.md
+  - dind/index.md
+  - full_framework/index.md
   - test_frameworks/xunit_net.md
   - Examples:
-    - examples/dind.md
     - examples/aspnet.md
   - Modules:
     - modules/index.md
+    - modules/cassandra.md
+    - modules/pulsar.md
+    - modules/eventhubs.md
+    - modules/servicebus.md
     - modules/db2.md
     - modules/elasticsearch.md
     - modules/mongodb.md
     - modules/mssql.md
     - modules/neo4j.md
     - modules/postgres.md
-    - modules/pulsar.md
+    - modules/qdrant.md
     - modules/rabbitmq.md
   - contributing.md
   - contributing_docs.md
