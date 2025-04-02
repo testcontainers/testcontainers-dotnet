@@ -68,10 +68,15 @@ namespace DotNet.Testcontainers.Containers
       var cmd = string.Join(" & ", DockerResourceConfiguration.Targets
         .Select(entry => $"socat TCP-LISTEN:{entry.Key},fork,reuseaddr TCP:{entry.Value}"));
       var socatBuilder = WithCommand("-c", cmd);
+      var waitFor = Wait.ForUnixContainer();
       foreach (var target in DockerResourceConfiguration.Targets)
       {
-        socatBuilder = socatBuilder.WithPortBinding(target.Key, true);
+        var port = target.Key;
+        socatBuilder = socatBuilder.WithPortBinding(port, true);
+        waitFor.UntilPortIsAvailable(port);
       }
+
+      socatBuilder.WithWaitStrategy(waitFor);
       return new SocatContainer(socatBuilder.DockerResourceConfiguration);
     }
 
