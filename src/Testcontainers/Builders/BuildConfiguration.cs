@@ -27,7 +27,6 @@ namespace DotNet.Testcontainers.Builders
     /// <typeparam name="T">Type of <see cref="IEnumerable{T}" />.</typeparam>
     /// <returns>An updated configuration.</returns>
     public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
-      where T : class
     {
       if (newValue == null && oldValue == null)
       {
@@ -51,7 +50,6 @@ namespace DotNet.Testcontainers.Builders
     /// <typeparam name="T">Type of <see cref="IReadOnlyList{T}" />.</typeparam>
     /// <returns>An updated configuration.</returns>
     public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
-      where T : class
     {
       if (newValue == null && oldValue == null)
       {
@@ -75,8 +73,6 @@ namespace DotNet.Testcontainers.Builders
     /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
     /// <returns>An updated configuration.</returns>
     public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> oldValue, IReadOnlyDictionary<TKey, TValue> newValue)
-      where TKey : class
-      where TValue : class
     {
       if (newValue == null && oldValue == null)
       {
