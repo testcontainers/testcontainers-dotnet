@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-
 namespace DotNet.Testcontainers.Containers
 {
+  using System.Collections.Generic;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
@@ -14,9 +13,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Initializes a new instance of the <see cref="SocatConfiguration" /> class.
     /// </summary>
-    /// <param name="targets">The Socat targets.</param>
+    /// <param name="targets">A list of target addresses.</param>
     public SocatConfiguration(
-      Dictionary<int, string> targets = null)
+      IReadOnlyDictionary<int, string> targets = null)
     {
       Targets = targets;
     }
@@ -63,8 +62,8 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Gets the Socat exposed port.
+    /// Gets a list of target addresses.
     /// </summary>
-    public Dictionary<int, string> Targets { get; }
+    public IReadOnlyDictionary<int, string> Targets { get; }
   }
 }

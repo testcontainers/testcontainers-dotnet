@@ -1,8 +1,8 @@
 namespace DotNet.Testcontainers.Containers
 {
   using System;
-  using System.Linq;
   using System.Collections.Generic;
+  using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
@@ -56,27 +56,25 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A configured instance of <see cref="SocatBuilder" />.</returns>
     public SocatBuilder WithTarget(int exposedPort, string host, int internalPort)
     {
-      var targets = DockerResourceConfiguration.Targets ?? new Dictionary<int, string>();
-      targets.Add(exposedPort, $"{host}:{internalPort}");
-      return Merge(DockerResourceConfiguration, new SocatConfiguration(targets));
+      var targets = new Dictionary<int, string> { { exposedPort, $"{host}:{internalPort}" } };
+      return Merge(DockerResourceConfiguration, new SocatConfiguration(targets))
+        .WithPortBinding(exposedPort, true);
     }
 
     /// <inheritdoc />
     public override SocatContainer Build()
     {
       Validate();
-      var cmd = string.Join(" & ", DockerResourceConfiguration.Targets
-        .Select(entry => $"socat TCP-LISTEN:{entry.Key},fork,reuseaddr TCP:{entry.Value}"));
-      var socatBuilder = WithCommand("-c", cmd);
-      var waitFor = Wait.ForUnixContainer();
-      foreach (var target in DockerResourceConfiguration.Targets)
-      {
-        var port = target.Key;
-        socatBuilder = socatBuilder.WithPortBinding(port, true);
-        waitFor.UntilPortIsAvailable(port);
-      }
 
-      socatBuilder.WithWaitStrategy(waitFor);
+      const string argument = "socat TCP-LISTEN:{0},fork,reuseaddr TCP:{1}";
+
+      var command = string.Join(" & ", DockerResourceConfiguration.Targets
+        .Select(item => string.Format(argument, item.Key, item.Value)));
+
+      var waitStrategy = DockerResourceConfiguration.Targets
+        .Aggregate(Wait.ForUnixContainer(), (waitStrategy, item) => waitStrategy.UntilPortIsAvailable(item.Key));
+
+      var socatBuilder = WithCommand(command).WithWaitStrategy(waitStrategy);
       return new SocatContainer(socatBuilder.DockerResourceConfiguration);
     }
 
@@ -85,7 +83,7 @@ namespace DotNet.Testcontainers.Containers
     {
       return base.Init()
         .WithImage(SocatImage)
-        .WithEntrypoint("/bin/sh");
+        .WithEntrypoint("/bin/sh", "-c");
     }
 
     /// <inheritdoc />
