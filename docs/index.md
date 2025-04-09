@@ -21,7 +21,7 @@ await container.StartAsync()
   .ConfigureAwait(false);
 
 // Create a new instance of HttpClient to send HTTP requests.
-using httpClient = new HttpClient();
+using var httpClient = new HttpClient();
 
 // Construct the request URI by specifying the scheme, hostname, assigned random host port, and the endpoint "uuid".
 var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").Uri;
