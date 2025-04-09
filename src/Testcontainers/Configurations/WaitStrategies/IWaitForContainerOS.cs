@@ -118,20 +118,13 @@ namespace DotNet.Testcontainers.Configurations
     /// Waits until a connection to the database can be successfully opened.
     /// </summary>
     /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create the database connection.</param>
-    /// <param name="frequency">
-    /// The retry frequency until either the connection is successfully opened or the <paramref name="timeout" /> is reached.
-    /// Defaults to 1 second if not specified.
-    /// </param>
-    /// <param name="timeout">
-    /// The maximum duration to retry. Once reached, a <see cref="TimeoutException" /> is thrown.
-    /// Defaults to 5 minutes if not specified.
-    /// </param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     /// <remarks>
     /// This wait strategy must only be applied to containers implementing the <see cref="IDatabaseContainer"/> interface.
     /// </remarks>
     [PublicAPI]
-    IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, TimeSpan frequency = default, TimeSpan timeout = default);
+    IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.

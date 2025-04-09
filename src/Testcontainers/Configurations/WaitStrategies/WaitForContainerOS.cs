@@ -82,9 +82,9 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, TimeSpan frequency, TimeSpan timeout)
+    public virtual IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilDatabaseIsAvailable(dbProviderFactory, frequency, timeout));
+      return AddCustomWaitStrategy(new UntilDatabaseIsAvailable(dbProviderFactory), waitStrategyModifier);
     }
 
     /// <inheritdoc />
