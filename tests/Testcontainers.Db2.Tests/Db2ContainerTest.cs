@@ -1,26 +1,15 @@
 namespace Testcontainers.Db2;
 
-public sealed class Db2ContainerTest : IAsyncLifetime
+public sealed class Db2ContainerTest(Db2ContainerTest.Db2Fixture fixture) : IClassFixture<Db2ContainerTest.Db2Fixture>
 {
     // # --8<-- [start:UseDb2Container]
-    private readonly Db2Container _db2Container = new Db2Builder().WithAcceptLicenseAgreement(true).Build();
-
-    public Task InitializeAsync()
-    {
-        return _db2Container.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _db2Container.DisposeAsync().AsTask();
-    }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new DB2Connection(_db2Container.GetConnectionString());
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -37,7 +26,7 @@ public sealed class Db2ContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1 FROM SYSIBM.SYSDUMMY1;";
 
         // When
-        var execResult = await _db2Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then
@@ -45,4 +34,12 @@ public sealed class Db2ContainerTest : IAsyncLifetime
         Assert.Empty(execResult.Stderr);
     }
     // # --8<-- [end:UseDb2Container]
+
+    [UsedImplicitly]
+    public class Db2Fixture(IMessageSink messageSink) : DbContainerFixture<Db2Builder, Db2Container>(messageSink)
+    {
+        public override DbProviderFactory DbProviderFactory => DB2Factory.Instance;
+
+        protected override Db2Builder Configure(Db2Builder builder) => builder.WithAcceptLicenseAgreement(true);
+    }
 }
