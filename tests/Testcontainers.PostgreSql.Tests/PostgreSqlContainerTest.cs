@@ -1,16 +1,14 @@
 namespace Testcontainers.PostgreSql;
 
-public abstract class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper) : DbContainerTest<PostgreSqlBuilder, PostgreSqlContainer>(testOutputHelper)
+public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSqlDefaultFixture fixture)
 {
-    public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
-
     // # --8<-- [start:UsePostgreSqlContainer]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = CreateConnection();
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -27,7 +25,7 @@ public abstract class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then
@@ -36,13 +34,13 @@ public abstract class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper
     }
     // # --8<-- [end:UsePostgreSqlContainer]
 
-    public sealed class ReuseContainerTest : IClassFixture<PostgreSqlFixture>, IDisposable
+    public sealed class ReuseContainerTest : IClassFixture<PostgreSqlDefaultFixture>, IDisposable
     {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-        private readonly PostgreSqlFixture _fixture;
+        private readonly PostgreSqlDefaultFixture _fixture;
 
-        public ReuseContainerTest(PostgreSqlFixture fixture)
+        public ReuseContainerTest(PostgreSqlDefaultFixture fixture)
         {
             _fixture = fixture;
         }
@@ -68,24 +66,26 @@ public abstract class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper
         }
     }
 
-    [UsedImplicitly]
-    public sealed class PostgreSqlFixture : ContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>
+    public class PostgreSqlDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>(messageSink)
     {
-        public PostgreSqlFixture(IMessageSink messageSink)
-            : base(messageSink)
-        {
-        }
+        public override DbProviderFactory DbProviderFactory
+            => NpgsqlFactory.Instance;
     }
 
     [UsedImplicitly]
-    public sealed class PostgreSqlDefaultConfiguration(ITestOutputHelper testOutputHelper) : PostgreSqlContainerTest(testOutputHelper);
-
-    [UsedImplicitly]
-    public sealed class PostgreSqlWaitForDatabase(ITestOutputHelper testOutputHelper) : PostgreSqlContainerTest(testOutputHelper)
+    public class PostgreSqlWaitForDatabaseFixture(IMessageSink messageSink)
+        : PostgreSqlDefaultFixture(messageSink)
     {
         protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
-        {
-            return builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
-        }
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlDefaultConfiguration(PostgreSqlDefaultFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlWaitForDatabaseConfiguration(PostgreSqlWaitForDatabaseFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlWaitForDatabaseFixture>;
 }

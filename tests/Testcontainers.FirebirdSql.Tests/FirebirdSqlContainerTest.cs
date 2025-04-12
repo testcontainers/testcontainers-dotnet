@@ -1,6 +1,6 @@
 namespace Testcontainers.FirebirdSql;
 
-public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.FirebirdSqlFixture fixture)
+public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.FirebirdSqlDefaultFixture fixture)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -32,53 +32,74 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         Assert.Empty(execResult.Stderr);
     }
 
-    public abstract class FirebirdSqlFixture(IMessageSink messageSink) : DbContainerFixture<FirebirdSqlBuilder, FirebirdSqlContainer>(messageSink)
+    public class FirebirdSqlDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<FirebirdSqlBuilder, FirebirdSqlContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory => FirebirdClientFactory.Instance;
+        public override DbProviderFactory DbProviderFactory
+            => FirebirdClientFactory.Instance;
     }
 
     [UsedImplicitly]
-    public sealed class FirebirdSqlDefault(FirebirdSqlDefaultFixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlDefaultFixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSqlDefaultFixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink);
-
-    [UsedImplicitly]
-    public sealed class FirebirdSql25Sc(FirebirdSql25ScFixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql25ScFixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSql25ScFixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink)
+    public class FirebirdSqlWaitForDatabaseFixture(IMessageSink messageSink)
+        : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder) => builder.WithImage("jacobalberty/firebird:2.5-sc");
+        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]
-    public sealed class FirebirdSql25Ss(FirebirdSql25SsFixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql25SsFixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSql25SsFixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink)
+    public class FirebirdSql25ScFixture(IMessageSink messageSink)
+        : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder) => builder.WithImage("jacobalberty/firebird:2.5-ss");
+        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
+            => builder.WithImage("jacobalberty/firebird:2.5-sc");
     }
 
     [UsedImplicitly]
-    public sealed class FirebirdSql30(FirebirdSql30Fixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql30Fixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSql30Fixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink)
+    public class FirebirdSql25SsFixture(IMessageSink messageSink)
+        : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder) => builder.WithImage("jacobalberty/firebird:v3.0");
+        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
+            => builder.WithImage("jacobalberty/firebird:2.5-ss");
     }
 
     [UsedImplicitly]
-    public sealed class FirebirdSqlSysdba(FirebirdSqlSysdbaFixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlSysdbaFixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSqlSysdbaFixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink)
+    public class FirebirdSql30Fixture(IMessageSink messageSink)
+        : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder) => builder.WithUsername("sysdba").WithPassword("some-password");
+        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
+            => builder.WithImage("jacobalberty/firebird:v3.0");
     }
 
     [UsedImplicitly]
-    public sealed class FirebirdSqlWaitForDatabase(FirebirdSqlWaitForDatabaseFixture fixture) : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlWaitForDatabaseFixture>;
-    [UsedImplicitly]
-    public sealed class FirebirdSqlWaitForDatabaseFixture(IMessageSink messageSink) : FirebirdSqlFixture(messageSink)
+    public class FirebirdSqlSysdbaFixture(IMessageSink messageSink)
+        : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder) => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
+            => builder.WithUsername("sysdba").WithPassword("some-password");
     }
+
+    [UsedImplicitly]
+    public sealed class FirebirdSqlDefaultConfiguration(FirebirdSqlDefaultFixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class FirebirdSqlWaitForDatabaseConfiguration(FirebirdSqlWaitForDatabaseFixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlWaitForDatabaseFixture>;
+
+    [UsedImplicitly]
+    public sealed class FirebirdSql25ScConfiguration(FirebirdSql25ScFixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql25ScFixture>;
+
+    [UsedImplicitly]
+    public sealed class FirebirdSql25SsConfiguration(FirebirdSql25SsFixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql25SsFixture>;
+
+    [UsedImplicitly]
+    public sealed class FirebirdSql30Configuration(FirebirdSql30Fixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql30Fixture>;
+
+    [UsedImplicitly]
+    public sealed class FirebirdSqlSysdbaConfiguration(FirebirdSqlSysdbaFixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSqlSysdbaFixture>;
 }

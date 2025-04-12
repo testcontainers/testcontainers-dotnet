@@ -1,31 +1,13 @@
 namespace Testcontainers.MsSql;
 
-public abstract class MsSqlContainerTest : IAsyncLifetime
+public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture fixture)
 {
-    private readonly MsSqlContainer _msSqlContainer;
-
-    public MsSqlContainerTest(MsSqlContainer msSqlContainer)
-    {
-        _msSqlContainer = msSqlContainer;
-    }
-
-    // # --8<-- [start:UseMsSqlContainer]
-    public Task InitializeAsync()
-    {
-        return _msSqlContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _msSqlContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new SqlConnection(_msSqlContainer.GetConnectionString());
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -42,7 +24,7 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _msSqlContainer.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then
@@ -51,23 +33,26 @@ public abstract class MsSqlContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UseMsSqlContainer]
 
-    // # --8<-- [start:CreateMsSqlContainer]
-    [UsedImplicitly]
-    public sealed class MsSqlDefaultConfiguration : MsSqlContainerTest
+    public class MsSqlDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
-        public MsSqlDefaultConfiguration()
-            : base(new MsSqlBuilder().Build())
-        {
-        }
+        public override DbProviderFactory DbProviderFactory
+            => SqlClientFactory.Instance;
     }
-    // # --8<-- [end:CreateMsSqlContainer]
 
     [UsedImplicitly]
-    public sealed class MsSqlWaitForDatabase : MsSqlContainerTest
+    public class MsSqlWaitForDatabaseFixture(IMessageSink messageSink)
+        : MsSqlDefaultFixture(messageSink)
     {
-        public MsSqlWaitForDatabase()
-            : base(new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(SqlClientFactory.Instance)).Build())
-        {
-        }
+        protected override MsSqlBuilder Configure(MsSqlBuilder builder)
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
+
+    [UsedImplicitly]
+    public sealed class MsSqlDefaultConfiguration(MsSqlDefaultFixture fixture)
+        : MsSqlContainerTest(fixture), IClassFixture<MsSqlDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class MsSqlWaitForDatabaseConfiguration(MsSqlWaitForDatabaseFixture fixture)
+        : MsSqlContainerTest(fixture), IClassFixture<MsSqlWaitForDatabaseFixture>;
 }

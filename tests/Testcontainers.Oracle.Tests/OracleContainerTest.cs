@@ -1,13 +1,13 @@
 namespace Testcontainers.Oracle;
 
-public abstract class OracleContainerTest(OracleContainerTest.OracleFixture oracleFixture)
+public abstract class OracleContainerTest(OracleContainerTest.OracleFixture fixture)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = oracleFixture.CreateConnection();
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -24,7 +24,7 @@ public abstract class OracleContainerTest(OracleContainerTest.OracleFixture orac
         const string scriptContent = "SELECT 1 FROM DUAL;";
 
         // When
-        var execResult = await oracleFixture.Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
         // Then

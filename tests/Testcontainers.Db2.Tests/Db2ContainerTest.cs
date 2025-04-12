@@ -1,9 +1,8 @@
 namespace Testcontainers.Db2;
 
-public sealed class Db2ContainerTest(Db2ContainerTest.Db2Fixture fixture) : IClassFixture<Db2ContainerTest.Db2Fixture>
+public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixture)
 {
     // # --8<-- [start:UseDb2Container]
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
@@ -35,11 +34,26 @@ public sealed class Db2ContainerTest(Db2ContainerTest.Db2Fixture fixture) : ICla
     }
     // # --8<-- [end:UseDb2Container]
 
-    [UsedImplicitly]
-    public class Db2Fixture(IMessageSink messageSink) : DbContainerFixture<Db2Builder, Db2Container>(messageSink)
+    public class Db2DefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<Db2Builder, Db2Container>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory => DB2Factory.Instance;
-
-        protected override Db2Builder Configure(Db2Builder builder) => builder.WithAcceptLicenseAgreement(true);
+        public override DbProviderFactory DbProviderFactory
+            => DB2Factory.Instance;
     }
+
+    [UsedImplicitly]
+    public class Db2WaitForDatabaseFixture(IMessageSink messageSink)
+        : Db2DefaultFixture(messageSink)
+    {
+        protected override Db2Builder Configure(Db2Builder builder)
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+    }
+
+    [UsedImplicitly]
+    public sealed class Db2DefaultConfiguration(Db2DefaultFixture fixture)
+        : Db2ContainerTest(fixture), IClassFixture<Db2DefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class Db2WaitForDatabaseConfiguration(Db2WaitForDatabaseFixture fixture)
+        : Db2ContainerTest(fixture), IClassFixture<Db2WaitForDatabaseFixture>;
 }

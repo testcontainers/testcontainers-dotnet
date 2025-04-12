@@ -1,6 +1,6 @@
 namespace Testcontainers.CockroachDb;
 
-public abstract class CockroachDbContainerTest(CockroachDbContainerTest.CockroachDbFixture fixture)
+public abstract class CockroachDbContainerTest(CockroachDbContainerTest.CockroachDbDefaultFixture fixture)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -31,24 +31,27 @@ public abstract class CockroachDbContainerTest(CockroachDbContainerTest.Cockroac
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
-    
-    [UsedImplicitly]
-    public sealed class CockroachDbContainerDefaultConfiguration(CockroachDbFixture fixture) : CockroachDbContainerTest(fixture), IClassFixture<CockroachDbFixture>;
 
-    [UsedImplicitly]
-    public sealed class CockroachDbContainerWaitForDatabase(CockroachDbFixtureWaitForDatabase fixture) : CockroachDbContainerTest(fixture), IClassFixture<CockroachDbFixtureWaitForDatabase>;
-
-    public class CockroachDbFixture(IMessageSink messageSink) : DbContainerFixture<CockroachDbBuilder, CockroachDbContainer>(messageSink)
+    public class CockroachDbDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<CockroachDbBuilder, CockroachDbContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
+        public override DbProviderFactory DbProviderFactory
+            => NpgsqlFactory.Instance;
     }
 
     [UsedImplicitly]
-    public sealed class CockroachDbFixtureWaitForDatabase(IMessageSink messageSink) : CockroachDbFixture(messageSink)
+    public class CockroachDbWaitForDatabaseFixture(IMessageSink messageSink)
+        : CockroachDbDefaultFixture(messageSink)
     {
         protected override CockroachDbBuilder Configure(CockroachDbBuilder builder)
-        {
-            return builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
-        }
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
+
+    [UsedImplicitly]
+    public sealed class CockroachDbDefaultConfiguration(CockroachDbDefaultFixture fixture)
+        : CockroachDbContainerTest(fixture), IClassFixture<CockroachDbDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class CockroachDbWaitForDatabaseConfiguration(CockroachDbWaitForDatabaseFixture fixture)
+        : CockroachDbContainerTest(fixture), IClassFixture<CockroachDbWaitForDatabaseFixture>;
 }

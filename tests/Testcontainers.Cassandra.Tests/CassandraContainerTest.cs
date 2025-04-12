@@ -1,6 +1,6 @@
 namespace Testcontainers.Cassandra;
 
-public abstract class CassandraContainerTest(CassandraContainerTest.CassandraFixture fixture)
+public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDefaultFixture fixture)
 {
     // # --8<-- [start:UseCassandraContainer]
     [Fact]
@@ -57,23 +57,26 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraFix
         Assert.Empty(execResult.Stderr);
     }
 
-    [UsedImplicitly]
-    public sealed class CassandraContainerDefaultConfiguration(CassandraFixture fixture) : CassandraContainerTest(fixture), IClassFixture<CassandraFixture>;
-
-    [UsedImplicitly]
-    public sealed class CassandraContainerWaitForDatabase(CassandraFixtureWaitForDatabase fixture) : CassandraContainerTest(fixture), IClassFixture<CassandraFixtureWaitForDatabase>;
-
-    public class CassandraFixture(IMessageSink messageSink) : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
+    public class CassandraDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory => CqlProviderFactory.Instance;
+        public override DbProviderFactory DbProviderFactory
+            => CqlProviderFactory.Instance;
     }
 
     [UsedImplicitly]
-    public sealed class CassandraFixtureWaitForDatabase(IMessageSink messageSink) : CassandraFixture(messageSink)
+    public class CassandraWaitForDatabaseFixture(IMessageSink messageSink)
+        : CassandraDefaultFixture(messageSink)
     {
         protected override CassandraBuilder Configure(CassandraBuilder builder)
-        {
-            return builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
-        }
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
+
+    [UsedImplicitly]
+    public sealed class CassandraDefaultConfiguration(CassandraDefaultFixture fixture)
+        : CassandraContainerTest(fixture), IClassFixture<CassandraDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class CassandraWaitForDatabaseConfiguration(CassandraWaitForDatabaseFixture fixture)
+        : CassandraContainerTest(fixture), IClassFixture<CassandraWaitForDatabaseFixture>;
 }
