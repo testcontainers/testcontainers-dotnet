@@ -39,6 +39,9 @@ public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixtur
     {
         public override DbProviderFactory DbProviderFactory
             => DB2Factory.Instance;
+
+        protected override Db2Builder Configure(Db2Builder builder)
+            => builder.WithAcceptLicenseAgreement(true);
     }
 
     [UsedImplicitly]
@@ -46,7 +49,7 @@ public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixtur
         : Db2DefaultFixture(messageSink)
     {
         protected override Db2Builder Configure(Db2Builder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+            => base.Configure(builder).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]
