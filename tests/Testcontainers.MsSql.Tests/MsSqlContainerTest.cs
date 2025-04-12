@@ -2,6 +2,7 @@ namespace Testcontainers.MsSql;
 
 public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture fixture)
 {
+    // # --8<-- [start:UseMsSqlContainer]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
