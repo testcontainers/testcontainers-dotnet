@@ -10,12 +10,11 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
-        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="CassandraCSharpDriver"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj"/>
-        <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Cassandra/Testcontainers.Cassandra.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

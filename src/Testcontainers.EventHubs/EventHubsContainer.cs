@@ -4,8 +4,6 @@ namespace Testcontainers.EventHubs;
 [PublicAPI]
 public sealed class EventHubsContainer : DockerContainer
 {
-    private readonly EventHubsConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsContainer" /> class.
     /// </summary>
@@ -13,7 +11,6 @@ public sealed class EventHubsContainer : DockerContainer
     public EventHubsContainer(EventHubsConfiguration configuration)
         : base(configuration)
     {
-        _configuration = configuration;
     }
 
     /// <summary>
