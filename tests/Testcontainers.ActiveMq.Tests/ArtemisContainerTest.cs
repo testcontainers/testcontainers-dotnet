@@ -1,5 +1,6 @@
 namespace Testcontainers.ActiveMq;
 
+// # --8<-- [start:UseArtemisContainer]
 public abstract class ArtemisContainerTest : IAsyncLifetime
 {
     private readonly ArtemisContainer _artemisContainer;
@@ -24,7 +25,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     {
         return _artemisContainer.DisposeAsync().AsTask();
     }
+    // # --8<-- [end:UseArtemisContainer]
 
+    // # --8<-- [start:ArtemisContainerEstablishesConnection]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesConnection()
@@ -67,7 +70,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
+    // # --8<-- [end:ArtemisContainerEstablishesConnection]
 
+    // # --8<-- [start:UseArtemisContainerDefaultAuth]
     [UsedImplicitly]
     public sealed class DefaultCredentialsConfiguration : ArtemisContainerTest
     {
@@ -76,7 +81,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerDefaultAuth]
 
+    // # --8<-- [start:UseArtemisContainerCustomAuth]
     [UsedImplicitly]
     public sealed class CustomCredentialsConfiguration : ArtemisContainerTest
     {
@@ -89,7 +96,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerCustomAuth]
 
+    // # --8<-- [start:UseArtemisContainerNoAuth]
     [UsedImplicitly]
     public sealed class NoAuthCredentialsConfiguration : ArtemisContainerTest
     {
@@ -98,4 +107,5 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerNoAuth]
 }

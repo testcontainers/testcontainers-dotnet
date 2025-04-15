@@ -11,7 +11,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     private WebDriverContainerTest(WebDriverContainer webDriverContainer)
     {
         _helloWorldContainer = new ContainerBuilder()
-            .WithImage("testcontainers/helloworld:1.1.0")
+            .WithImage(CommonImages.HelloWorld)
             .WithNetwork(webDriverContainer.GetNetwork())
             .WithNetworkAliases(_helloWorldBaseAddress.Host)
             .WithPortBinding(_helloWorldBaseAddress.Port, true)
