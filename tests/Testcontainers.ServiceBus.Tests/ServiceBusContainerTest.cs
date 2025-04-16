@@ -20,6 +20,8 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         return _serviceBusContainer.DisposeAsync().AsTask();
     }
 
+    protected virtual string QueueName => "queue.1";
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ReceiveMessageReturnsSentMessage()
@@ -33,15 +35,14 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Upload a custom configuration before the container starts using the
         // `WithResourceMapping(string, string)` API or one of its overloads:
         // `WithResourceMapping("Config.json", "/ServiceBus_Emulator/ConfigFiles/")`.
-        const string queueName = "queue.1";
 
         var message = new ServiceBusMessage(helloServiceBus);
 
         await using var client = new ServiceBusClient(_serviceBusContainer.GetConnectionString());
 
-        var sender = client.CreateSender(queueName);
+        var sender = client.CreateSender(QueueName);
 
-        var receiver = client.CreateReceiver(queueName);
+        var receiver = client.CreateReceiver(QueueName);
 
         // When
         await sender.SendMessageAsync(message)
@@ -77,6 +78,22 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
                 // # --8<-- [start:ReuseExistingMsSqlContainer]
                 .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
                 // # --8<-- [end:ReuseExistingMsSqlContainer]
+                .Build())
+        {
+        }
+    }
+    
+    [UsedImplicitly]
+    public sealed class ServiceBusCustomConfig : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    {
+        protected override string QueueName => "custom-queue.1";
+
+        public ServiceBusCustomConfig()
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                // # --8<-- [start:UseCustomConfiguration]
+                .WithConfig("customConfig.json")
+                // # --8<-- [end:UseCustomConfiguration]
                 .Build())
         {
         }

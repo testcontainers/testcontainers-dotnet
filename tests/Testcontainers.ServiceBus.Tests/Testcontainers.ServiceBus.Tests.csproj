@@ -17,4 +17,10 @@
         <ProjectReference Include="../../src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+      <None Remove="customConfig.json" />
+      <Content Include="customConfig.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>
