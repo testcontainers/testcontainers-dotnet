@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace Testcontainers.ServiceBus;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -87,16 +85,18 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithEnvironment("SQL_SERVER", networkAlias)
             .WithEnvironment("MSSQL_SA_PASSWORD", password);
     }
-    
+
     /// <summary>
-    /// Sets the configuration file for the Azure Service Bus Emulator.
+    /// Sets the configuration for the Azure Service Bus Emulator.
     /// </summary>
-    /// <param name="customConfigFile">The JSON file containing desired Azure Service Bus configuration</param>
+    /// <remarks>
+    /// Default emulator configuration: https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator?tabs=automated-script#interact-with-the-emulator.
+    /// </remarks>
+    /// <param name="configFilePath">The path to the JSON file containing the Azure Service Bus Emulator configuration.</param>
     /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
-    public ServiceBusBuilder WithConfig(string customConfigFile)
+    public ServiceBusBuilder WithConfig(string configFilePath)
     {
-        return WithResourceMapping(new FileInfo(customConfigFile),
-            new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json"));
+        return WithResourceMapping(new FileInfo(configFilePath), new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json"));
     }
 
     /// <inheritdoc />

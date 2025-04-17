@@ -9,6 +9,8 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         _serviceBusContainer = serviceBusContainer;
     }
 
+    protected virtual string QueueName => "queue.1";
+
     // # --8<-- [start:UseServiceBusContainer]
     public Task InitializeAsync()
     {
@@ -19,8 +21,6 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     {
         return _serviceBusContainer.DisposeAsync().AsTask();
     }
-
-    protected virtual string QueueName => "queue.1";
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -82,21 +82,21 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         {
         }
     }
-    
-    [UsedImplicitly]
-    public sealed class ServiceBusCustomConfig : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
-    {
-        protected override string QueueName => "custom-queue.1";
 
-        public ServiceBusCustomConfig()
+    [UsedImplicitly]
+    public sealed class ServiceBusCustomQueueConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    {
+        public ServiceBusCustomQueueConfiguration()
             : base(new ServiceBusBuilder()
                 .WithAcceptLicenseAgreement(true)
                 // # --8<-- [start:UseCustomConfiguration]
-                .WithConfig("customConfig.json")
+                .WithConfig("custom-queue-config.json")
                 // # --8<-- [end:UseCustomConfiguration]
                 .Build())
         {
         }
+
+        protected override string QueueName => "custom-queue.1";
     }
 
     [UsedImplicitly]
