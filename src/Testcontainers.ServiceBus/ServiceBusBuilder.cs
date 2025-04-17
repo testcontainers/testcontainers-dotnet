@@ -86,6 +86,19 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithEnvironment("MSSQL_SA_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Sets the configuration for the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// Default emulator configuration: https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator?tabs=automated-script#interact-with-the-emulator.
+    /// </remarks>
+    /// <param name="configFilePath">The path to the JSON file containing the Azure Service Bus Emulator configuration.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithConfig(string configFilePath)
+    {
+        return WithResourceMapping(new FileInfo(configFilePath), new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json"));
+    }
+
     /// <inheritdoc />
     public override ServiceBusContainer Build()
     {
