@@ -1,8 +1,14 @@
 # Testing with xUnit.net
 
-The [Testcontainers.Xunit](https://www.nuget.org/packages/Testcontainers.Xunit) package simplifies writing tests with containers in [xUnit.net](https://xunit.net). By leveraging xUnit.net's [shared context](https://xunit.net/docs/shared-context), this package automates the setup and teardown of test resources, creating and disposing of containers as needed. This reduces repetitive code and avoids common patterns that developers would otherwise need to implement repeatedly.
+The [Testcontainers.Xunit](https://www.nuget.org/packages/Testcontainers.Xunit) and [Testcontainers.XunitV3](https://www.nuget.org/packages/Testcontainers.XunitV3) packages simplify writing tests with containers in [xUnit.net](https://xunit.net). By leveraging xUnit.net's [shared context](https://xunit.net/docs/shared-context), this package automates the setup and teardown of test resources, creating and disposing of containers as needed. This reduces repetitive code and avoids common patterns that developers would otherwise need to implement repeatedly.
 
-To get started, add the following dependency to your project file:
+To get started, add the following dependency to your project file for xUnit.net v3:
+
+```shell title="NuGet"
+dotnet add package Testcontainers.XunitV3
+```
+
+Or, if you're using xUnit.net v2:
 
 ```shell title="NuGet"
 dotnet add package Testcontainers.Xunit
@@ -43,7 +49,7 @@ be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 
 ## Creating a shared test context
 
-Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class.
+Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class, or even within the assembly, if you use xUnit.net V3 or a compatible V2 extension like [the one from the examples-repo](https://github.com/xunit/samples.xunit/tree/main/v2/AssemblyFixtureExample).
 
 xUnit.net's fixture implementation does not rely on the `ITestOutputHelper` interface to capture and forward log messages; instead, it expects an implementation of `IMessageSink`. Make sure your fixture's default constructor accepts the interface implementation and forwards it to the base class.
 
@@ -74,6 +80,8 @@ CONTAINER ID   IMAGE                       COMMAND                  CREATED
 d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
 e878f0b8f4bc   testcontainers/ryuk:0.9.0   "/bin/ryuk"              3 seconds ago
 ```
+
+To use a single container-fixture across all tests of a test-assembly (using xUnit.net V3 or an extension), add the `[assembly: AssemblyFixture(typeof(TContainerFixtureEntity))]` annotation referring to your subclass to the assembly. The fixture can then be injected into test class constructors (as shown above), or accessed using the `TestContext.Current.GetFixture<TContainerFixtureEntity>()` method (v3 only) in any test.
 
 ## Testing ADO.NET services
 
