@@ -239,6 +239,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.WebDriver.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Xunit.Tests", "tests\Testcontainers.Xunit.Tests\Testcontainers.Xunit.Tests.csproj", "{E901DF14-6F05-4FC2-825A-3055FAD33561}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.XunitV3.Tests", "tests\Testcontainers.XunitV3.Tests\Testcontainers.XunitV3.Tests.csproj", "{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -700,6 +702,10 @@ Global
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901DF14-6F05-4FC2-825A-3055FAD33561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
@@ -815,5 +821,6 @@ Global
 		{DDB41BC8-5826-4D97-9C5F-001151E3FFD6} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{EBA72C3B-57D5-43FF-A5B4-3D55B3B6D4C2} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 		{E901DF14-6F05-4FC2-825A-3055FAD33561} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
+		{B2E8B7FB-7D1E-4DD3-A25E-34DE4386B1EB} = {7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}
 	EndGlobalSection
 EndGlobal

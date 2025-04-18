@@ -11,7 +11,8 @@
         <PackageReference Include="xunit"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"/>
+        <ProjectReference Include="../Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"
+                          Exclude="../Testcontainers.XunitV3.Tests/Testcontainers.XunitV3.Tests.csproj"/>
         <ProjectReference Remove="Testcontainers.Databases.Tests.csproj"/>
     </ItemGroup>
 </Project>
