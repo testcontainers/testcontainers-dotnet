@@ -31,14 +31,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return Task.WhenAll(_container1.StartAsync(), _container2.StartAsync());
+      await Task.WhenAll(_container1.StartAsync(), _container2.StartAsync());
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return Task.WhenAll(_container1.DisposeAsync().AsTask(), _container2.DisposeAsync().AsTask());
+      await Task.WhenAll(_container1.DisposeAsync().AsTask(), _container2.DisposeAsync().AsTask());
     }
 
     [Fact]
@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       const string destination = nameof(_container2) + AliasSuffix;
 
       // When
-      var execResult = await _container1.ExecAsync(new[] { "ping", "-c", "1", destination })
+      var execResult = await _container1.ExecAsync(new[] { "ping", "-c", "1", destination }, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

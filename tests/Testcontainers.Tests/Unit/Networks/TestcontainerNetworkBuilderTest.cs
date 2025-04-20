@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await client.Network.ByIdAsync(_network.Name)
+      var networkResponse = await client.Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var networkResponse = await client.Network.ByIdAsync(_network.Name)
+      var networkResponse = await client.Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -86,15 +86,14 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public string Name => _network.Name;
 
-      public Task InitializeAsync()
+      public async ValueTask InitializeAsync()
       {
-        return CreateAsync();
+        await CreateAsync();
       }
 
-      public Task DisposeAsync()
+      public ValueTask DisposeAsync()
       {
-        IAsyncDisposable asyncDisposable = this;
-        return asyncDisposable.DisposeAsync().AsTask();
+        return _network.DisposeAsync();
       }
 
       public Task CreateAsync(CancellationToken ct = default)
@@ -105,11 +104,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       public Task DeleteAsync(CancellationToken ct = default)
       {
         return _network.DeleteAsync(ct);
-      }
-
-      ValueTask IAsyncDisposable.DisposeAsync()
-      {
-        return _network.DisposeAsync();
       }
     }
   }

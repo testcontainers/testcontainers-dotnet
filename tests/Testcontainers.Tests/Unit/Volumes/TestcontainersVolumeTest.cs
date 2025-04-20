@@ -36,28 +36,28 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return Task.WhenAll(_testcontainer1.StartAsync(), _testcontainer2.StartAsync());
+      await Task.WhenAll(_testcontainer1.StartAsync(), _testcontainer2.StartAsync());
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return Task.WhenAll(_testcontainer1.DisposeAsync().AsTask(), _testcontainer2.DisposeAsync().AsTask());
+      await Task.WhenAll(_testcontainer1.DisposeAsync().AsTask(), _testcontainer2.DisposeAsync().AsTask());
     }
 
     [Fact]
     public async Task WithVolumeMount()
     {
-      Assert.Equal(0, (await _testcontainer1.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(_testcontainer2)) })).ExitCode);
-      Assert.Equal(0, (await _testcontainer2.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(_testcontainer1)) })).ExitCode);
+      Assert.Equal(0, (await _testcontainer1.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(_testcontainer2)) }, TestContext.Current.CancellationToken)).ExitCode);
+      Assert.Equal(0, (await _testcontainer2.ExecAsync(new[] { "test", "-f", Path.Combine(Destination, nameof(_testcontainer1)) }, TestContext.Current.CancellationToken)).ExitCode);
     }
 
     [Fact]
     public async Task WithTmpfsVolumeMount()
     {
-      Assert.Equal(0, (await _testcontainer1.ExecAsync(new[] { "test", "-d", TmpfsDestination })).ExitCode);
-      Assert.Equal(0, (await _testcontainer2.ExecAsync(new[] { "test", "-d", TmpfsDestination })).ExitCode);
+      Assert.Equal(0, (await _testcontainer1.ExecAsync(new[] { "test", "-d", TmpfsDestination }, TestContext.Current.CancellationToken)).ExitCode);
+      Assert.Equal(0, (await _testcontainer2.ExecAsync(new[] { "test", "-d", TmpfsDestination }, TestContext.Current.CancellationToken)).ExitCode);
     }
   }
 }

@@ -4,14 +4,14 @@ public sealed class RedisContainerTest : IAsyncLifetime
 {
     private readonly RedisContainer _redisContainer = new RedisBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _redisContainer.StartAsync();
+        await _redisContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _redisContainer.DisposeAsync().AsTask();
+        return _redisContainer.DisposeAsync();
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public sealed class RedisContainerTest : IAsyncLifetime
         const string scriptContent = "return 'Hello, scripting!'";
 
         // When
-        var execResult = await _redisContainer.ExecScriptAsync(scriptContent)
+        var execResult = await _redisContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

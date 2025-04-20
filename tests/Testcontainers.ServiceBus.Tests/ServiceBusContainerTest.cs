@@ -12,14 +12,14 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     protected virtual string QueueName => "queue.1";
 
     // # --8<-- [start:UseServiceBusContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _serviceBusContainer.StartAsync();
+        await _serviceBusContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _serviceBusContainer.DisposeAsync().AsTask();
+        return _serviceBusContainer.DisposeAsync();
     }
 
     [Fact]
@@ -45,10 +45,10 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         var receiver = client.CreateReceiver(QueueName);
 
         // When
-        await sender.SendMessageAsync(message)
+        await sender.SendMessageAsync(message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var receivedMessage = await receiver.ReceiveMessageAsync()
+        var receivedMessage = await receiver.ReceiveMessageAsync(cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

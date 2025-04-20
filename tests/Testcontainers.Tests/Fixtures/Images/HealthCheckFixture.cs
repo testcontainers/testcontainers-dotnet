@@ -45,14 +45,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       return _image.MatchVersion(predicate);
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _image.CreateAsync();
+      await _image.CreateAsync();
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return _image.DeleteAsync();
+      await _image.DeleteAsync();
     }
   }
 }

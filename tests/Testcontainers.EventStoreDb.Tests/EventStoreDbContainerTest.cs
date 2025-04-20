@@ -4,14 +4,14 @@ public sealed class EventStoreDbContainerTest : IAsyncLifetime
 {
     private readonly EventStoreDbContainer _eventStoreDbContainer = new EventStoreDbBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _eventStoreDbContainer.StartAsync();
+        await _eventStoreDbContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _eventStoreDbContainer.DisposeAsync().AsTask();
+        return _eventStoreDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -30,12 +30,12 @@ public sealed class EventStoreDbContainerTest : IAsyncLifetime
         var eventData = new EventData(Uuid.NewUuid(), eventType, Array.Empty<byte>());
 
         // When
-        _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, new[] { eventData })
+        _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, new[] { eventData }, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var resolvedEvents = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start);
+        var resolvedEvents = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start, cancellationToken: TestContext.Current.CancellationToken);
 
-        var resolvedEvent = await resolvedEvents.FirstAsync()
+        var resolvedEvent = await resolvedEvents.FirstAsync(cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

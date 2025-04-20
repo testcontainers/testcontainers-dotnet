@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -74,10 +74,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -97,7 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -115,10 +115,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -135,10 +135,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -163,7 +163,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -185,7 +185,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -206,7 +206,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -224,7 +224,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -248,7 +248,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -277,7 +277,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -296,7 +296,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
 
         // Then
@@ -339,18 +339,18 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds))
           .Build();
 
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         consumer.Stdout.Seek(0, SeekOrigin.Begin);
         consumer.Stderr.Seek(0, SeekOrigin.Begin);
 
         using var stdoutReader = new StreamReader(consumer.Stdout, leaveOpen: true);
-        var stdout = await stdoutReader.ReadToEndAsync()
+        var stdout = await stdoutReader.ReadToEndAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         using var stderrReader = new StreamReader(consumer.Stderr, leaveOpen: true);
-        var stderr = await stderrReader.ReadToEndAsync()
+        var stderr = await stderrReader.ReadToEndAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -369,7 +369,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
 
         // Then
@@ -386,10 +386,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" })
+        var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -406,10 +406,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.com" })
+        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.com" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -426,10 +426,10 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.invalid" })
+        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.invalid" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -450,13 +450,13 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath)
+        await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath, ct: TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath })
+        var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -475,12 +475,12 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         var id = container.Id;
 
-        await Task.Delay(TimeSpan.FromSeconds(1))
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -499,15 +499,15 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         var id = container.Id;
 
-        await container.StopAsync()
+        await container.StopAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        await Task.Delay(TimeSpan.FromSeconds(1))
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -528,7 +528,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -545,7 +545,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .Build();
 
         // When
-        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
 
         // Then
@@ -561,7 +561,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithImagePullPolicy(PullPolicy.Never)
           .Build();
 
-        await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync())
+        await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
       }
     }

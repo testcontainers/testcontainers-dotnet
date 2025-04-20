@@ -16,14 +16,14 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         _password = password;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _artemisContainer.StartAsync();
+        await _artemisContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _artemisContainer.DisposeAsync().AsTask();
+        return _artemisContainer.DisposeAsync();
     }
     // # --8<-- [end:UseArtemisContainer]
 

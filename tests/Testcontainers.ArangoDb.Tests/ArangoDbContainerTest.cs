@@ -4,14 +4,14 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
 {
     private readonly ArangoDbContainer _arangoDbContainer = new ArangoDbBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _arangoDbContainer.StartAsync();
+        await _arangoDbContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _arangoDbContainer.DisposeAsync().AsTask();
+        return _arangoDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
         using var client = new ArangoDBClient(transport);
 
         // When
-        var response = await client.Database.GetDatabasesAsync()
+        var response = await client.Database.GetDatabasesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

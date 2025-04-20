@@ -12,14 +12,14 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public abstract string Edition { get; }
 
     // # --8<-- [start:UseNeo4jContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _neo4jContainer.StartAsync();
+        await _neo4jContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _neo4jContainer.DisposeAsync().AsTask();
+        return _neo4jContainer.DisposeAsync();
     }
 
     [Fact]

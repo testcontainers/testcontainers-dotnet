@@ -3,14 +3,14 @@ namespace Testcontainers.Databases;
 public sealed class DatabaseContainersTest
 {
     [Theory]
-    [MemberData(nameof(GetContainerImplementations), parameters: true)]
+    [MemberData(nameof(GetContainerImplementations), arguments: true)]
     public void ShouldImplementIDatabaseContainer(Type type)
     {
         Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does not implement the database interface.");
     }
 
     [Theory]
-    [MemberData(nameof(GetContainerImplementations), parameters: false)]
+    [MemberData(nameof(GetContainerImplementations), arguments: false)]
     public void ShouldNotImplementIDatabaseContainer(Type type)
     {
         Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does implement the database interface.");
@@ -21,7 +21,6 @@ public sealed class DatabaseContainersTest
         var theoryData = new TheoryData<Type>();
 
         var testAssemblies = Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
-            .Where(fileName => !fileName.Contains("Testcontainers.Xunit.Tests"))
             .Select(Path.GetFullPath)
             .Select(Assembly.LoadFrom)
             .ToDictionary(assembly => assembly, assembly => assembly.GetReferencedAssemblies()

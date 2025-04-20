@@ -13,14 +13,14 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     }
 
     // # --8<-- [start:UseMongoDbContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _mongoDbContainer.StartAsync();
+        await _mongoDbContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _mongoDbContainer.DisposeAsync().AsTask();
+        return _mongoDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -31,10 +31,10 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         var client = new MongoClient(_mongoDbContainer.GetConnectionString());
 
         // When
-        using var databases = client.ListDatabases();
+        using var databases = client.ListDatabases(TestContext.Current.CancellationToken);
 
         // Then
-        Assert.Contains(databases.ToEnumerable(), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
+        Assert.Contains(databases.ToEnumerable(TestContext.Current.CancellationToken), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         const string scriptContent = "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
 
         // When
-        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
+        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -62,7 +62,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         const string scriptContent = "rs.status().ok;";
 
         // When
-        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent)
+        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

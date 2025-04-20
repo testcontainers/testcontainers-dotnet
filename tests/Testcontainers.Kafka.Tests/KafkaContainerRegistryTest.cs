@@ -55,7 +55,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _kafkaContainer.StartAsync()
             .ConfigureAwait(false);
@@ -64,7 +64,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _kafkaContainer.StartAsync()
             .ConfigureAwait(false);
@@ -109,7 +109,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
             .SetValueSerializer(new JsonSerializer<User>(schemaRegistry))
             .Build();
 
-        _ = await producer.ProduceAsync(topic, message)
+        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, User>(consumerConfig)

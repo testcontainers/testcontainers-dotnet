@@ -24,14 +24,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _container.StartAsync(_cts.Token);
+      await _container.StartAsync(_cts.Token);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.StartAsync();
+      return _container.DisposeAsync();
     }
 
     public void Dispose()

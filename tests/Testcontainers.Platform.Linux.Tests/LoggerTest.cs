@@ -9,9 +9,9 @@ public abstract class LoggerTest : IAsyncLifetime
         _fakeLogger = fakeLogger;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return new ContainerBuilder()
+        await new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
             .WithLogger(_fakeLogger)
@@ -19,9 +19,9 @@ public abstract class LoggerTest : IAsyncLifetime
             .StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     [Theory]

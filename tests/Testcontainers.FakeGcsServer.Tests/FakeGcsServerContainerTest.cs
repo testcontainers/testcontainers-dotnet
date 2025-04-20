@@ -4,14 +4,14 @@ public sealed class FakeGcsServerContainerTest : IAsyncLifetime
 {
     private readonly FakeGcsServerContainer _fakeGcsServerContainer = new FakeGcsServerBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _fakeGcsServerContainer.StartAsync();
+        await _fakeGcsServerContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _fakeGcsServerContainer.DisposeAsync().AsTask();
+        return _fakeGcsServerContainer.DisposeAsync();
     }
 
     [Fact]
@@ -36,16 +36,16 @@ public sealed class FakeGcsServerContainerTest : IAsyncLifetime
         storageClientBuilder.BaseUri = _fakeGcsServerContainer.GetConnectionString();
 
         // When
-        var client = await storageClientBuilder.BuildAsync()
+        var client = await storageClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.CreateBucketAsync(project, bucket)
+        _ = await client.CreateBucketAsync(project, bucket, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.UploadObjectAsync(bucket, fileName, "text/plain", writeStream)
+        _ = await client.UploadObjectAsync(bucket, fileName, "text/plain", writeStream, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.DownloadObjectAsync(bucket, fileName, readStream)
+        _ = await client.DownloadObjectAsync(bucket, fileName, readStream, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

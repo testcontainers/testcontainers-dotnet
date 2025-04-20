@@ -64,15 +64,15 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       }
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
       _ = Directory.CreateDirectory(_hostCertsDirectoryPath);
-      return _container.StartAsync();
+      await _container.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync().AsTask();
+      return _container.DisposeAsync();
     }
 
     private sealed class UntilListenOn : IWaitUntil

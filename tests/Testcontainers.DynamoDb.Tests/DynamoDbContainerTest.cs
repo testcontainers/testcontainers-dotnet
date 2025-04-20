@@ -10,14 +10,14 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _dynamoDbContainer.StartAsync();
+        await _dynamoDbContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _dynamoDbContainer.DisposeAsync().AsTask();
+        return _dynamoDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         using var client = new AmazonDynamoDBClient(config);
 
         // When
-        var tables = await client.ListTablesAsync()
+        var tables = await client.ListTablesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -67,13 +67,13 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest)
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest)
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest)
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

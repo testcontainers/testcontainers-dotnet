@@ -4,14 +4,14 @@ public sealed class KustoContainerTest : IAsyncLifetime
 {
     private readonly KustoContainer _kustoContainer = new KustoBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _kustoContainer.StartAsync();
+        await _kustoContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _kustoContainer.DisposeAsync().AsTask();
+        return _kustoContainer.DisposeAsync();
     }
 
     [Fact]

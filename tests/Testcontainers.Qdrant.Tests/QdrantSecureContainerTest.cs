@@ -22,14 +22,14 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         // # --8<-- [end:ConfigureQdrantContainerCertificate]
         .Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _qdrantContainer.StartAsync();
+        await _qdrantContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _qdrantContainer.DisposeAsync().AsTask();
+        return _qdrantContainer.DisposeAsync();
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         // # --8<-- [end:ConfigureQdrantClientCertificate-2]
 
         // When
-        var response = await client.HealthAsync()
+        var response = await client.HealthAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -89,7 +89,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         using var client = new QdrantClient(grpcClient);
 
         // When
-        var exception = await Assert.ThrowsAsync<RpcException>(() => client.HealthAsync())
+        var exception = await Assert.ThrowsAsync<RpcException>(() => client.HealthAsync(TestContext.Current.CancellationToken))
             .ConfigureAwait(true);
 
         // Then
@@ -107,7 +107,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         httpClient.DefaultRequestHeaders.Add("api-key", ApiKey);
 
         // When
-        var exception = await Assert.ThrowsAsync<HttpRequestException>(() => httpClient.GetAsync("/"))
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(() => httpClient.GetAsync("/", TestContext.Current.CancellationToken))
             .ConfigureAwait(true);
 
         // Then

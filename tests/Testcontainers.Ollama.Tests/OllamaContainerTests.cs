@@ -4,14 +4,14 @@ public sealed class OllamaContainerTest : IAsyncLifetime
 {
     private readonly OllamaContainer _ollamaContainer = new OllamaBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _ollamaContainer.StartAsync();
+        await _ollamaContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _ollamaContainer.DisposeAsync().AsTask();
+        return _ollamaContainer.DisposeAsync();
     }
 
     [Fact]
@@ -27,10 +27,10 @@ public sealed class OllamaContainerTest : IAsyncLifetime
         embedRequest.Input = new List<string> { "Hello, World!" };
 
         // When
-        await foreach (var _ in ollamaClient.PullModelAsync(model)
+        await foreach (var _ in ollamaClient.PullModelAsync(model, TestContext.Current.CancellationToken)
             .ConfigureAwait(true));
 
-        var embedResponse = await ollamaClient.EmbedAsync(embedRequest)
+        var embedResponse = await ollamaClient.EmbedAsync(embedRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

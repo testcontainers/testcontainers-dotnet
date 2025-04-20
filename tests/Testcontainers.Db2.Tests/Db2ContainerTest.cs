@@ -25,7 +25,7 @@ public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixtur
         const string scriptContent = "SELECT 1 FROM SYSIBM.SYSDUMMY1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

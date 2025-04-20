@@ -6,14 +6,14 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
     protected abstract TokenCredential GetTokenCredential();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _lowkeyVaultContainer.StartAsync();
+        await _lowkeyVaultContainer.StartAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _lowkeyVaultContainer.DisposeAsync().AsTask();
+        return _lowkeyVaultContainer.DisposeAsync();
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         // When
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "management/vault");
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -54,11 +54,11 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
         var secretClient = new SecretClient(new Uri(baseAddress), GetTokenCredential(), GetSecretClientOptions());
 
-        await secretClient.SetSecretAsync(secretName, secretValue)
+        await secretClient.SetSecretAsync(secretName, secretValue, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // When
-        var keyVaultSecret = await secretClient.GetSecretAsync(secretName)
+        var keyVaultSecret = await secretClient.GetSecretAsync(secretName, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -88,13 +88,13 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         certificatePolicy.ValidityInMonths = 12;
 
         // When
-        var certificateOperation = await certificateClient.StartCreateCertificateAsync(certificateName, certificatePolicy)
+        var certificateOperation = await certificateClient.StartCreateCertificateAsync(certificateName, certificatePolicy, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        await certificateOperation.WaitForCompletionAsync()
+        await certificateOperation.WaitForCompletionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await certificateClient.DownloadCertificateAsync(certificateName)
+        var response = await certificateClient.DownloadCertificateAsync(certificateName, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var certificate = response!.Value;
