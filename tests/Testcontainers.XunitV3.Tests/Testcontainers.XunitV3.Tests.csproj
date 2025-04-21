@@ -25,7 +25,7 @@
         <Compile Include="../Testcontainers.Xunit.Tests/*.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <None Update="Chinook_PostgreSql_AutoIncrementPKs.sql">
+        <None Include="../Testcontainers.Xunit.Tests/Chinook_PostgreSql_AutoIncrementPKs.sql">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
