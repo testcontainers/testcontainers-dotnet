@@ -25,7 +25,7 @@ variables:
 
 Enable Bitbucket Pipelines as usual on the **Repository settings → Pipelines → Settings** page. After enabling your pipeline, replace the contents of the `bitbucket-pipelines.yml` file, located at the root of your repository, with the following:
 
-```yml
+```yml title="bitbucket-pipelines.yml file"
 image: mcr.microsoft.com/dotnet/sdk:8.0
 options:
   docker: true

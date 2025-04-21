@@ -68,12 +68,19 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     {
         Validate();
 
-        var waitStrategy = Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault()));
+        var waitStrategy = Wait.ForUnixContainer();
+
+        if (DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault())
+        {
+            waitStrategy = waitStrategy.UntilFileExists(SecretKeyFilePath, FileSystem.Container);
+        }
 
         if (DockerResourceConfiguration.FunctionsWorkerEnabled.GetValueOrDefault())
         {
             waitStrategy = waitStrategy.UntilMessageIsLogged("Function worker service started");
         }
+
+        waitStrategy = waitStrategy.AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault()));
 
         var pulsarBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);

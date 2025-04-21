@@ -1,6 +1,6 @@
-# Running inside another container
+# Running inside a container
 
-## 'Docker wormhole' pattern - Sibling Docker containers
+## 'Docker Wormhole' pattern - Sibling Docker containers
 
 ### Docker-only example
 
@@ -33,5 +33,5 @@ services:
     # environment:
     #   - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock.raw:/var/run/docker.sock
 ```
