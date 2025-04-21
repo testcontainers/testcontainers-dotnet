@@ -9,21 +9,23 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="Dapper"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="StackExchange.Redis"/>
+        <PackageReference Include="Dapper"/>
         <PackageReference Include="Npgsql"/>
+        <PackageReference Include="StackExchange.Redis"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
         <ProjectReference Include="../../src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="../Testcontainers.Xunit.Tests/*.cs"/>
-        <None Include="../Testcontainers.Xunit.Tests/Chinook_PostgreSql_AutoIncrementPKs.sql">
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Chinook_PostgreSql_AutoIncrementPKs.sql">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
