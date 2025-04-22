@@ -1,6 +1,7 @@
 global using System;
 global using System.Threading.Tasks;
 global using Azure.Messaging.EventHubs;
+global using Azure.Messaging.EventHubs.Consumer;
 global using Azure.Messaging.EventHubs.Producer;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;

@@ -26,7 +26,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
     {
-        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, EventHubsConsumerGroupName);
+        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, [EventHubConsumerClient.DefaultConsumerGroupName, EventHubsConsumerGroupName]);
     }
 
     [Fact]
@@ -37,6 +37,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         var message = Guid.NewGuid().ToString();
 
         await using var client = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+        await using var consumer = new EventHubConsumerClient(EventHubsConsumerGroupName, _eventHubsContainer.GetConnectionString(), EventHubsName);
 
         // When
         var properties = await client.GetEventHubPropertiesAsync()
@@ -50,7 +51,25 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         await client.SendAsync(eventDataBatch)
             .ConfigureAwait(true);
 
+        var options = new ReadEventOptions
+        {
+            MaximumWaitTime = TimeSpan.FromSeconds(5)
+        };
+
+        var messageCount = 0;
+        await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(options)
+            .ConfigureAwait(true))
+        {
+            if (partitionEvent.Data != null)
+            {
+                messageCount++;
+            }
+
+            break;
+        }
+
         // Then
+        Assert.Equal(1, messageCount);
         Assert.NotNull(properties);
     }
     // # --8<-- [end:UseEventHubsContainer]
