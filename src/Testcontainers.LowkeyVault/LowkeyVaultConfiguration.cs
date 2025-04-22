@@ -7,10 +7,10 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultConfiguration" /> class.
     /// </summary>
-    /// <param name="additionalArguments">The additional arguments to be passed via environment variables to the container.</param>
-    public LowkeyVaultConfiguration(List<string> additionalArguments = null)
+    /// <param name="arguments">The arguments to add to the <c>LOWKEY_ARGS</c> environment variable.</param>
+    public LowkeyVaultConfiguration(IEnumerable<string> arguments = null)
     {
-        AdditionalArguments = additionalArguments;
+        Arguments = arguments;
     }
 
     /// <summary>
@@ -51,11 +51,11 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     public LowkeyVaultConfiguration(LowkeyVaultConfiguration oldValue, LowkeyVaultConfiguration newValue)
         : base(oldValue, newValue)
     {
-        AdditionalArguments = BuildConfiguration.Combine(oldValue.AdditionalArguments, newValue.AdditionalArguments);
+        Arguments = BuildConfiguration.Combine(oldValue.Arguments, newValue.Arguments);
     }
 
     /// <summary>
-    /// Gets Additional Arguments.
+    /// Gets the arguments that are added to the <c>LOWKEY_ARGS</c> environment variable.
     /// </summary>
-    internal List<string> AdditionalArguments { get; } = [];
+    public IEnumerable<string> Arguments { get; }
 }

@@ -22,11 +22,11 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         const string Alias = "lowkey-vault.local";
 
         // When
-        var tokenEndpoint = _fakeLowkeyVaultContainer.GetTokenEndpointUrl();
+        var tokenEndpoint = _fakeLowkeyVaultContainer.GetAuthTokenUrl();
 
-        var keyStore = await _fakeLowkeyVaultContainer.GetDefaultKeyStore();
+        var keyStore = await _fakeLowkeyVaultContainer.GetDefaultCertificate();
 
-        var password = await _fakeLowkeyVaultContainer.GetDefaultKeyStorePassword();
+        var password = await _fakeLowkeyVaultContainer.GetDefaultCertificatePassword();
 
         // Then
         await VerifyTokenEndpointIsWorking(tokenEndpoint, CreateHttpClientHandlerWithDisabledSslValidation());
@@ -49,7 +49,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
     public async Task TestThatSetAndGetSecretWorksWithManagedIdentity()
     {
         // Set ENV vars to configure the token provider endpoint of the managed identity credential
-        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetTokenEndpointUrl());
+        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetAuthTokenUrl());
         Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header");
 
         await VerifyThatSetAndGetSecretWorks(CreateDefaultAzureCredential());
@@ -67,7 +67,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
     public async Task TestThatCreateAndDownloadCertificateWorksWithManagedIdentity()
     {
         // Set ENV vars to configure the token provider endpoint of the managed identity credential
-        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetTokenEndpointUrl());
+        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetAuthTokenUrl());
         Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header");
 
         await VerifyThatCreateAndDownloadCertificateWorks(CreateDefaultAzureCredential());
@@ -79,7 +79,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         const string SecretName = "name";
         const string SecretValue = "value";
 
-        var vaultUrl = _fakeLowkeyVaultContainer.GetDefaultVaultBaseUrl();
+        var vaultUrl = _fakeLowkeyVaultContainer.GetBaseAddress();
 
         var secretClient = new SecretClient(new Uri(vaultUrl), credential, CreateSecretClientOption());
 
@@ -100,7 +100,7 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         const string CertificateName = "certificate";
         const string Subject = "CN=example.com";
 
-        var vaultUrl = _fakeLowkeyVaultContainer.GetDefaultVaultBaseUrl();
+        var vaultUrl = _fakeLowkeyVaultContainer.GetBaseAddress();
 
         var certificateClient = new CertificateClient(new Uri(vaultUrl), credential, CreateCertificateClientOption());
 
@@ -178,11 +178,11 @@ public sealed class LowkeyVaultContainerTest : IAsyncLifetime
         return new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
     }
 
-    private static async Task VerifyTokenEndpointIsWorking(string endpointUrl, HttpClientHandler httpClientHandler)
+    private async Task VerifyTokenEndpointIsWorking(string endpointUrl, HttpClientHandler httpClientHandler)
     {
         using var httpClient = new HttpClient(httpClientHandler);
 
-        var requestUri = $"{endpointUrl}?resource=https://localhost";
+        var requestUri = $"{endpointUrl}?resource=https://{_fakeLowkeyVaultContainer.Hostname}";
         using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
         try
