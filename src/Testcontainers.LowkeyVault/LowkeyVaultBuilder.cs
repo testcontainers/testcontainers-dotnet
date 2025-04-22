@@ -37,6 +37,7 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// </summary>
     /// <remarks>
     /// The method adds the provided arguments to the <c>LOWKEY_ARGS</c> environment variable.
+    /// E.g. <c>--LOWKEY_DEBUG_REQUEST_LOG=true</c>.
     /// </remarks>
     /// <param name="arguments">The arguments to add to the <c>LOWKEY_ARGS</c> environment variable.</param>
     /// <returns>A configured instance of <see cref="LowkeyVaultBuilder" />.</returns>
