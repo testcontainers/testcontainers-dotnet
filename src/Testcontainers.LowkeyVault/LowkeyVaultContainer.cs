@@ -57,9 +57,12 @@ public sealed class LowkeyVaultContainer : DockerContainer
         var certificatePassword = await GetDefaultCertificatePassword()
             .ConfigureAwait(false);
 
+#if NET9_0_OR_GREATER
+        return X509CertificateLoader.LoadPkcs12Collection(certificateBytes, certificatePassword);
+#else
         var certificate = new X509Certificate2(certificateBytes, certificatePassword);
-
         return new X509Certificate2Collection(certificate);
+#endif
     }
 
     /// <summary>
