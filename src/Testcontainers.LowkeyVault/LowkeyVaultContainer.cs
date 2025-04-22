@@ -36,7 +36,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// Gets the default certificate from the Lowkey Vault service.
     /// </summary>
     /// <returns>A collection containing the default <see cref="X509Certificate2" />.</returns>
-    public async Task<X509Certificate2Collection> GetDefaultCertificate()
+    public async Task<X509Certificate2Collection> GetCertificateAsync()
     {
         const string defaultCertFilePathUriPath = "/metadata/default-cert/lowkey-vault.p12";
 
@@ -54,7 +54,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
         var certificateBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync()
             .ConfigureAwait(false);
 
-        var certificatePassword = await GetDefaultCertificatePassword()
+        var certificatePassword = await GetCertificatePasswordAsync()
             .ConfigureAwait(false);
 
 #if NET9_0_OR_GREATER
@@ -69,7 +69,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// Gets the password for the default certificate from the Lowkey Vault service.
     /// </summary>
     /// <returns>The default certificate password.</returns>
-    public async Task<string> GetDefaultCertificatePassword()
+    public async Task<string> GetCertificatePasswordAsync()
     {
         const string defaultCertPasswordUriPath = "/metadata/default-cert/password";
 

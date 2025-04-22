@@ -1,216 +1,165 @@
 namespace Testcontainers.LowkeyVault;
 
-public sealed class LowkeyVaultContainerTest : IAsyncLifetime
+public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 {
-    private readonly LowkeyVaultContainer _fakeLowkeyVaultContainer = new LowkeyVaultBuilder().Build();
+    private readonly LowkeyVaultContainer _lowkeyVaultContainer = new LowkeyVaultBuilder().Build();
+
+    protected abstract TokenCredential GetTokenCredential();
 
     public Task InitializeAsync()
     {
-        return _fakeLowkeyVaultContainer.StartAsync();
+        return _lowkeyVaultContainer.StartAsync();
     }
 
     public Task DisposeAsync()
     {
-        return _fakeLowkeyVaultContainer.DisposeAsync().AsTask();
+        return _lowkeyVaultContainer.DisposeAsync().AsTask();
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task TestContainerDefaults()
+    public async Task ServerCertificateValidationSucceedsWithTrustedCertificate()
     {
         // Given
-        const string Alias = "lowkey-vault.local";
+        var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
+
+        var certificates = await _lowkeyVaultContainer.GetCertificateAsync();
+
+        using var httpMessageHandler = new HttpClientHandler();
+        httpMessageHandler.ServerCertificateCustomValidationCallback = (_, cert, _, _) => certificates.IndexOf(cert) > -1;
+
+        using var httpClient = new HttpClient(httpMessageHandler);
+        httpClient.BaseAddress = new Uri(baseAddress);
 
         // When
-        var tokenEndpoint = _fakeLowkeyVaultContainer.GetAuthTokenUrl();
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "management/vault");
 
-        var keyStore = await _fakeLowkeyVaultContainer.GetDefaultCertificate();
-
-        var password = await _fakeLowkeyVaultContainer.GetDefaultCertificatePassword();
+        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+            .ConfigureAwait(true);
 
         // Then
-        await VerifyTokenEndpointIsWorking(tokenEndpoint, CreateHttpClientHandlerWithDisabledSslValidation());
-
-        Assert.NotNull(keyStore);
-        Assert.NotNull(password);
-        Assert.Contains(keyStore, cert => cert.Subject.Split('=')?.LastOrDefault() == Alias);
-    }
-
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task TestThatSetAndGetSecretWorksWithNoOpCredential()
-    {
-        await VerifyThatSetAndGetSecretWorks(CreateNoOpCredential());
+        Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task TestThatSetAndGetSecretWorksWithManagedIdentity()
+    public async Task GetSecretReturnsSetSecret()
     {
-        // Set ENV vars to configure the token provider endpoint of the managed identity credential
-        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetAuthTokenUrl());
-        Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header");
+        // Given
+        const string secretName = "name";
 
-        await VerifyThatSetAndGetSecretWorks(CreateDefaultAzureCredential());
+        const string secretValue = "value";
+
+        var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
+
+        var secretClient = new SecretClient(new Uri(baseAddress), GetTokenCredential(), GetSecretClientOptions());
+
+        await secretClient.SetSecretAsync(secretName, secretValue)
+            .ConfigureAwait(true);
+
+        // When
+        var keyVaultSecret = await secretClient.GetSecretAsync(secretName)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.NotNull(keyVaultSecret.Value);
+        Assert.Equal(secretName, keyVaultSecret.Value.Name);
+        Assert.Equal(secretValue, keyVaultSecret.Value.Value);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task TestThatCreateAndDownloadCertificateWorksWithNoOpCredential()
+    public async Task DownloadCertificateReturnsCreatedCertificate()
     {
-        await VerifyThatCreateAndDownloadCertificateWorks(CreateNoOpCredential());
-    }
+        // Given
+        const string certificateName = "certificate";
 
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task TestThatCreateAndDownloadCertificateWorksWithManagedIdentity()
-    {
-        // Set ENV vars to configure the token provider endpoint of the managed identity credential
-        Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _fakeLowkeyVaultContainer.GetAuthTokenUrl());
-        Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header");
+        const string subject = "CN=localhost";
 
-        await VerifyThatCreateAndDownloadCertificateWorks(CreateDefaultAzureCredential());
-    }
+        var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
 
-    private async Task VerifyThatSetAndGetSecretWorks(TokenCredential credential)
-    {
-        //Given
-        const string SecretName = "name";
-        const string SecretValue = "value";
+        var certificateClient = new CertificateClient(new Uri(baseAddress), GetTokenCredential(), GetCertificateClientOptions());
 
-        var vaultUrl = _fakeLowkeyVaultContainer.GetBaseAddress();
+        var certificatePolicy = new CertificatePolicy("self", subject);
+        certificatePolicy.KeyType = CertificateKeyType.Rsa;
+        certificatePolicy.KeySize = 2048;
+        certificatePolicy.ContentType = CertificateContentType.Pem;
+        certificatePolicy.Exportable = true;
+        certificatePolicy.ValidityInMonths = 12;
 
-        var secretClient = new SecretClient(new Uri(vaultUrl), credential, CreateSecretClientOption());
+        // When
+        var certificateOperation = await certificateClient.StartCreateCertificateAsync(certificateName, certificatePolicy)
+            .ConfigureAwait(true);
 
-        await secretClient.SetSecretAsync(SecretName, SecretValue);
+        await certificateOperation.WaitForCompletionAsync()
+            .ConfigureAwait(true);
 
-        //When
-        var secret = await secretClient.GetSecretAsync(SecretName);
+        var response = await certificateClient.DownloadCertificateAsync(certificateName)
+            .ConfigureAwait(true);
 
-        //Then
-        Assert.NotNull(secret.Value);
-        Assert.Equal(SecretName, secret.Value.Name);
-        Assert.Equal(SecretValue, secret.Value.Value);
-    }
+        using var certificate = response!.Value;
 
-    private async Task VerifyThatCreateAndDownloadCertificateWorks(TokenCredential credential)
-    {
-        //Given
-        const string CertificateName = "certificate";
-        const string Subject = "CN=example.com";
-
-        var vaultUrl = _fakeLowkeyVaultContainer.GetBaseAddress();
-
-        var certificateClient = new CertificateClient(new Uri(vaultUrl), credential, CreateCertificateClientOption());
-
-        var certificatePolicy = new CertificatePolicy("Self", Subject)
-        {
-            KeyType = CertificateKeyType.Rsa,
-            KeySize = 2048,
-            Exportable = true,
-            ContentType = CertificateContentType.Pkcs12,
-            ValidityInMonths = 12
-        };
-
-        var certOp = await certificateClient.StartCreateCertificateAsync(CertificateName, certificatePolicy);
-
-        await certOp.WaitForCompletionAsync();
-
-        //When
-        var response = await certificateClient.DownloadCertificateAsync(CertificateName);
-
-        var certificate = response?.Value;
-
-        //Then
-        Assert.Equal(Subject, certificate.Subject);
+        // Then
+        Assert.Equal(subject, certificate.Subject);
         Assert.NotNull(certificate.GetRSAPublicKey());
         Assert.NotNull(certificate.GetRSAPrivateKey());
     }
 
-    private static NoopCredentials CreateNoOpCredential()
+    private static SecretClientOptions GetSecretClientOptions()
     {
-        return new NoopCredentials();
+        var httpMessageHandler = new HttpClientHandler();
+        httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+
+        var secretClientOptions = new SecretClientOptions();
+        secretClientOptions.Transport = new HttpClientTransport(httpMessageHandler);
+        secretClientOptions.DisableChallengeResourceVerification = true;
+        return secretClientOptions;
     }
 
-    private static DefaultAzureCredential CreateDefaultAzureCredential()
+    private static CertificateClientOptions GetCertificateClientOptions()
     {
-        return new DefaultAzureCredential();
+        var httpMessageHandler = new HttpClientHandler();
+        httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+
+        var secretClientOptions = new CertificateClientOptions();
+        secretClientOptions.Transport = new HttpClientTransport(httpMessageHandler);
+        secretClientOptions.DisableChallengeResourceVerification = true;
+        return secretClientOptions;
     }
 
-    private static SecretClientOptions CreateSecretClientOption()
+    [UsedImplicitly]
+    public sealed class AzureCredentialConfiguration : LowkeyVaultContainerTest
     {
-        return GetClientOptions(new SecretClientOptions(SecretClientOptions.ServiceVersion.V7_4)
+        protected override TokenCredential GetTokenCredential()
         {
-            DisableChallengeResourceVerification = true,
-            RetryPolicy = new RetryPolicy(0, DelayStrategy.CreateFixedDelayStrategy(TimeSpan.Zero))
-        });
-    }
-
-    private static CertificateClientOptions CreateCertificateClientOption()
-    {
-        return GetClientOptions(new CertificateClientOptions(CertificateClientOptions.ServiceVersion.V7_4)
-        {
-            DisableChallengeResourceVerification = true,
-            RetryPolicy = new RetryPolicy(0, DelayStrategy.CreateFixedDelayStrategy(TimeSpan.Zero))
-        });
-    }
-
-    private static T GetClientOptions<T>(T options) where T : ClientOptions
-    {
-        DisableSslValidationOnClientOptions(options);
-        return options;
-    }
-
-    /// <summary>
-    /// Disables server certification callback.
-    /// <br/>
-    /// <b>WARNING: Do not use in production environments.</b>
-    /// </summary>
-    /// <param name="options"></param>
-    private static void DisableSslValidationOnClientOptions(ClientOptions options)
-    {
-        options.Transport = new HttpClientTransport(CreateHttpClientHandlerWithDisabledSslValidation());
-    }
-
-    private static HttpClientHandler CreateHttpClientHandlerWithDisabledSslValidation()
-    {
-        return new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
-    }
-
-    private async Task VerifyTokenEndpointIsWorking(string endpointUrl, HttpClientHandler httpClientHandler)
-    {
-        using var httpClient = new HttpClient(httpClientHandler);
-
-        var requestUri = $"{endpointUrl}?resource=https://{_fakeLowkeyVaultContainer.Hostname}";
-        using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
-        try
-        {
-            using var response = await httpClient.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-        catch (Exception ex)
-        {
-            Assert.Fail($"Request failed: {ex.Message}");
+            // This isn't a recommended approach. It stops you from running multiple containers
+            // at the same time.
+            const EnvironmentVariableTarget envVarTarget = EnvironmentVariableTarget.Process;
+            Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _lowkeyVaultContainer.GetAuthTokenUrl(), envVarTarget);
+            Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header", envVarTarget);
+            return new DefaultAzureCredential();
         }
     }
-}
 
-/// <summary>
-/// Allows us to bypass authentication when using Lowkey Vault.
-/// <br/>
-/// <b>WARNING: Will not work with real Azure services.</b>
-/// </summary>
-internal class NoopCredentials : TokenCredential
-{
-    public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
+    [UsedImplicitly]
+    public sealed class NoopCredentialConfiguration : LowkeyVaultContainerTest
     {
-        return new AccessToken("noop", DateTimeOffset.MaxValue);
-    }
+        protected override TokenCredential GetTokenCredential()
+        {
+            return new NoopCredential();
+        }
 
-    public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
-    {
-        return new ValueTask<AccessToken>(GetToken(requestContext, cancellationToken));
+        private sealed class NoopCredential : TokenCredential
+        {
+            public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                return new AccessToken("noop", DateTimeOffset.UtcNow.AddHours(1));
+            }
+
+            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                return new ValueTask<AccessToken>(GetToken(requestContext, cancellationToken));
+            }
+        }
     }
 }
