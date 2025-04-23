@@ -58,13 +58,16 @@ public sealed class EventHubsServiceConfiguration
 
     public static EventHubsServiceConfiguration Create()
     {
-        var namespaceConfig = new NamespaceConfig("EventHub", "ns-1", Array.Empty<Entity>());
+        var namespaceConfig = new NamespaceConfig("EventHub", "emulatorns1", Array.Empty<Entity>());
         return new EventHubsServiceConfiguration(namespaceConfig);
     }
 
     public EventHubsServiceConfiguration WithEntity(string name, int partitionCount, params string[] consumerGroupNames)
     {
-        return WithEntity(name, partitionCount, new ReadOnlyCollection<string>(consumerGroupNames));
+        // Filter out the consumer group name `$default` because the `$default` group
+        // is created automatically by the container image.
+        var validConsumerGroupNames = consumerGroupNames.Where(consumerGroupName => !"$default".Equals(consumerGroupName, StringComparison.OrdinalIgnoreCase)).ToList();
+        return WithEntity(name, partitionCount, new ReadOnlyCollection<string>(validConsumerGroupNames));
     }
 
     public EventHubsServiceConfiguration WithEntity(string name, int partitionCount, IEnumerable<string> consumerGroupNames)
@@ -77,8 +80,10 @@ public sealed class EventHubsServiceConfiguration
 
     public bool Validate()
     {
-        Predicate<Entity> isValidEntity = entity => entity.PartitionCount > 0 && entity.PartitionCount <= 32 && entity.ConsumerGroups.Count > 0 && entity.ConsumerGroups.Count <= 20;
-        return _namespaceConfig.Entities.All(entity => isValidEntity(entity));
+        // The emulator provides the usage quotas as described at:
+        // https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#usage-quotas.
+        Predicate<Entity> isValidEntity = entity => entity.PartitionCount > 0 && entity.PartitionCount <= 32 && entity.ConsumerGroups.Count >= 0 && entity.ConsumerGroups.Count <= 20;
+        return _namespaceConfig.Entities.Count > 0 && _namespaceConfig.Entities.Count <= 10 && _namespaceConfig.Entities.All(entity => isValidEntity(entity));
     }
 
     public string Build()
