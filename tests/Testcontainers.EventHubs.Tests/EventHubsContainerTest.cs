@@ -36,41 +36,27 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         // Given
         var message = Guid.NewGuid().ToString();
 
-        await using var client = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+        var readOptions = new ReadEventOptions();
+        readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);
+
+        await using var producer = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+
         await using var consumer = new EventHubConsumerClient(EventHubsConsumerGroupName, _eventHubsContainer.GetConnectionString(), EventHubsName);
 
         // When
-        var properties = await client.GetEventHubPropertiesAsync()
+        using var eventDataBatch = await producer.CreateBatchAsync()
             .ConfigureAwait(true);
 
-        using var eventDataBatch = await client.CreateBatchAsync()
+        _ = eventDataBatch.TryAdd(new EventData(message));
+
+        await producer.SendAsync(eventDataBatch)
             .ConfigureAwait(true);
 
-        eventDataBatch.TryAdd(new EventData(message));
-
-        await client.SendAsync(eventDataBatch)
-            .ConfigureAwait(true);
-
-        var options = new ReadEventOptions
-        {
-            MaximumWaitTime = TimeSpan.FromSeconds(5)
-        };
-
-        var messageCount = 0;
-        await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(options)
-            .ConfigureAwait(true))
-        {
-            if (partitionEvent.Data != null)
-            {
-                messageCount++;
-            }
-
-            break;
-        }
+        var asyncEnumerator = consumer.ReadEventsAsync(readOptions).GetAsyncEnumerator();
+        _ = await asyncEnumerator.MoveNextAsync();
 
         // Then
-        Assert.Equal(1, messageCount);
-        Assert.NotNull(properties);
+        Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
     }
     // # --8<-- [end:UseEventHubsContainer]
 

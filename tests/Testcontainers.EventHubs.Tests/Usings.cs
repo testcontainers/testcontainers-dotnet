@@ -1,4 +1,5 @@
 global using System;
+global using System.Text;
 global using System.Threading.Tasks;
 global using Azure.Messaging.EventHubs;
 global using Azure.Messaging.EventHubs.Consumer;
