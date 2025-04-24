@@ -26,7 +26,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
     {
-        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, [EventHubConsumerClient.DefaultConsumerGroupName, EventHubsConsumerGroupName]);
+        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, EventHubConsumerClient.DefaultConsumerGroupName, EventHubsConsumerGroupName);
     }
 
     [Fact]
