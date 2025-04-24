@@ -1,8 +1,8 @@
-#tool nuget:?package=dotnet-sonarscanner&version=9.0.1
+#tool nuget:?package=dotnet-sonarscanner&version=10.1.2
 
-#addin nuget:?package=Cake.Sonar&version=1.1.33
+#addin nuget:?package=Cake.Sonar&version=5.0.0
 
-#addin nuget:?package=Cake.Git&version=4.0.0
+#addin nuget:?package=Cake.Git&version=5.0.1
 
 #load ".cake-scripts/parameters.cake"
 

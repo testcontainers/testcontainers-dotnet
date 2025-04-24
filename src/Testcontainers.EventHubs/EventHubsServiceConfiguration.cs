@@ -66,7 +66,7 @@ public sealed class EventHubsServiceConfiguration
     {
         // Filter out the consumer group name `$default` because the `$default` group
         // is created automatically by the container image.
-        var validConsumerGroupNames = consumerGroupNames.Where(consumerGroupName => !"$default".Equals(consumerGroupName, StringComparison.OrdinalIgnoreCase)).ToList();
+        var validConsumerGroupNames = consumerGroupNames.Where(consumerGroupName => !"$Default".Equals(consumerGroupName, StringComparison.OrdinalIgnoreCase)).ToList();
         return WithEntity(name, partitionCount, new ReadOnlyCollection<string>(validConsumerGroupNames));
     }
 
@@ -82,7 +82,7 @@ public sealed class EventHubsServiceConfiguration
     {
         // The emulator provides the usage quotas as described at:
         // https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#usage-quotas.
-        Predicate<Entity> isValidEntity = entity => entity.PartitionCount > 0 && entity.PartitionCount <= 32 && entity.ConsumerGroups.Count > 0 && entity.ConsumerGroups.Count <= 20;
+        Predicate<Entity> isValidEntity = entity => entity.PartitionCount > 0 && entity.PartitionCount <= 32 && entity.ConsumerGroups.Count <= 20;
         return _namespaceConfig.Entities.Count > 0 && _namespaceConfig.Entities.Count <= 10 && _namespaceConfig.Entities.All(entity => isValidEntity(entity));
     }
 
