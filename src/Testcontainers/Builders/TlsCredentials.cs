@@ -16,11 +16,11 @@ namespace DotNet.Testcontainers.Builders
       return true;
     }
 
-    public override HttpMessageHandler GetHandler(HttpMessageHandler innerHandler)
+    public override HttpMessageHandler GetHandler(HttpMessageHandler handler)
     {
-      var handler = (ManagedHandler)innerHandler;
-      handler.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
-      return handler;
+      var managedHandler = (ManagedHandler)handler;
+      managedHandler.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+      return managedHandler;
     }
   }
 }
