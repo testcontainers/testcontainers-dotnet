@@ -21,6 +21,7 @@
         <PackageVersion Include="xunit.analyzers" Version="1.21.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2"/>
         <PackageVersion Include="xunit" Version="2.9.3"/>
+        <PackageVersion Include="xunit.v3" Version="2.0.1"/>
         <!-- xUnit.net extensibility for Testcontainers.Xunit and Testcontainers.XunitV3 packages: -->
         <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="1.1.0"/>
@@ -76,5 +77,8 @@
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
+	      <PackageVersion Include="Azure.Identity" Version="1.13.2" />
+        <PackageVersion Include="Azure.Security.KeyVault.Certificates" Version="4.7.0" />
+        <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
     </ItemGroup>
 </Project>
