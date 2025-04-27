@@ -2,6 +2,8 @@ namespace Testcontainers.Pulsar;
 
 public abstract class PulsarContainerTest : IAsyncLifetime
 {
+    private static readonly IReadOnlyDictionary<string, string> MemorySettings = new Dictionary<string, string> { { "PULSAR_MEM", "-Xms256m -Xmx512m" } };
+
     private readonly PulsarContainer _pulsarContainer;
 
     private readonly bool _authenticationEnabled;
@@ -69,7 +71,9 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
         public PulsarDefaultConfiguration()
-            : base(new PulsarBuilder().Build(), false)
+            : base(new PulsarBuilder()
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
         }
     }
@@ -79,7 +83,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarAuthConfiguration : PulsarContainerTest
     {
         public PulsarAuthConfiguration()
-            : base(new PulsarBuilder().WithAuthentication().Build(), true)
+            : base(new PulsarBuilder()
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
         {
         }
     }
@@ -88,7 +95,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4Configuration : PulsarContainerTest
     {
         public PulsarV4Configuration()
-            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").Build(), false)
+            : base(new PulsarBuilder()
+                .WithImage("apachepulsar/pulsar:4.0.2")
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
         }
     }
@@ -97,7 +107,11 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
         public PulsarV4AuthConfiguration()
-            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").WithAuthentication().Build(), true)
+            : base(new PulsarBuilder()
+                .WithImage("apachepulsar/pulsar:4.0.2")
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
         {
         }
     }

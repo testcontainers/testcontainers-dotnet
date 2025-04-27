@@ -6,6 +6,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+        <PackageReference Include="xunit.analyzers" PrivateAssets="all"/>
         <PackageReference Include="xunit.v3.extensibility.core"/>
     </ItemGroup>
     <ItemGroup>

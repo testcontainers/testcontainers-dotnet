@@ -6,8 +6,6 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public sealed class SocatContainer : DockerContainer
   {
-    private readonly SocatConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SocatContainer" /> class.
     /// </summary>
@@ -15,7 +13,6 @@ namespace DotNet.Testcontainers.Containers
     public SocatContainer(SocatConfiguration configuration)
       : base(configuration)
     {
-      _configuration = configuration;
     }
   }
 }
