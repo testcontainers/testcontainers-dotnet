@@ -8,17 +8,17 @@ namespace Testcontainers.Ollama
         /// Gets the default port of the Ollama API.
         /// </summary>
         public const int DefaultPort = 11434;
-        
+
         /// <summary>
         /// Default image name and version tag.
         /// </summary>
         public const string OllamaImage = "ollama/ollama:0.1.22";
-    
+
         /// <summary>
         /// Default volume path.
         /// </summary>
         public const string DefaultVolumePath = "/root/.ollama";
-    
+
         /// <summary>
         /// Default volume name.
         /// </summary>
@@ -28,7 +28,7 @@ namespace Testcontainers.Ollama
         /// The default model name for the OllamaBuilder.
         /// </summary>
         public const string DefaultModelName = OllamaModels.Llama2;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
         /// </summary>
@@ -65,7 +65,7 @@ namespace Testcontainers.Ollama
         public override OllamaContainer Build()
         {
             Validate();
-            return new OllamaContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+            return new OllamaContainer(DockerResourceConfiguration);
         }
 
         /// <inheritdoc />
@@ -102,7 +102,7 @@ namespace Testcontainers.Ollama
         {
             return new OllamaBuilder(new OllamaConfiguration(oldValue, newValue));
         }
-    
+
         /// <summary>
         /// Sets the name of the model to run.
         /// </summary>

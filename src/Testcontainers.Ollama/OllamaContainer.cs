@@ -11,8 +11,8 @@ namespace Testcontainers.Ollama
         /// </summary>
         /// <param name="configuration">The container configuration.</param>
         /// <param name="logger">The logger.</param>
-        public OllamaContainer(OllamaConfiguration configuration, ILogger logger)
-            : base(configuration, logger)
+        public OllamaContainer(OllamaConfiguration configuration)
+            : base(configuration)
         {
             Configuration = configuration;
         }
@@ -23,7 +23,7 @@ namespace Testcontainers.Ollama
         {
             return Run(Configuration.ModelName, ct);
         }
-    
+
         /// <summary>
         /// Starts the Ollama container.
         /// </summary>
@@ -38,19 +38,19 @@ namespace Testcontainers.Ollama
                 "ollama", "run", ModelName,
             }, ct);
         }
-    
+
         /// <summary>
         /// Gets the base URL of the Ollama API.
         /// </summary>
         /// <returns>The base URL of the Ollama API.</returns>
         /// <example>http://localhost:5000/api</example>
         public string GetBaseUrl() => $"http://{Hostname}:{GetMappedPublicPort(OllamaBuilder.DefaultPort)}/api";
-    
+
         /// <summary>
         /// Gets the name of the Docker image to use.
         /// </summary>
         public string ImageName { get; }
-    
+
         /// <summary>
         /// Gets the name of the model to run.
         /// </summary>
