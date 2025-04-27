@@ -4,14 +4,16 @@ namespace Testcontainers.Kafka;
 [PublicAPI]
 public sealed class KafkaContainer : DockerContainer
 {
+    private readonly KafkaConfiguration _configuration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public KafkaContainer(KafkaConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public KafkaContainer(KafkaConfiguration configuration)
+        : base(configuration)
     {
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -21,5 +23,16 @@ public sealed class KafkaContainer : DockerContainer
     public string GetBootstrapAddress()
     {
         return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
+    }
+
+    /// <summary>
+    /// Gets a list of advertised listeners.
+    /// </summary>
+    public IEnumerable<string> AdvertisedListeners
+    {
+        get
+        {
+            return _configuration.AdvertisedListeners;
+        }
     }
 }

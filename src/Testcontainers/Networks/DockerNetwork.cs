@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Networks
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="INetwork" />
   [PublicAPI]
@@ -19,20 +18,16 @@ namespace DotNet.Testcontainers.Networks
 
     private readonly INetworkConfiguration _configuration;
 
-    private readonly ILogger _logger;
-
     private NetworkResponse _network = new NetworkResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerNetwork" /> class.
     /// </summary>
     /// <param name="configuration">The network configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DockerNetwork(INetworkConfiguration configuration, ILogger logger)
+    public DockerNetwork(INetworkConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -48,21 +43,21 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeDeleteAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeDeleteAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -99,11 +94,14 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
+
       string id;
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        _logger.ReusableExperimentalFeature();
+        _configuration.Logger.ReusableExperimentalFeature();
 
         var filters = new FilterByReuseHash(_configuration);
 
@@ -114,13 +112,13 @@ namespace DotNet.Testcontainers.Networks
 
         if (reusableNetwork != null)
         {
-          _logger.ReusableResourceFound();
+          _configuration.Logger.ReusableResourceFound();
 
           id = reusableNetwork.ID;
         }
         else
         {
-          _logger.ReusableResourceNotFound();
+          _configuration.Logger.ReusableResourceNotFound();
 
           id = await _client.Network.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);

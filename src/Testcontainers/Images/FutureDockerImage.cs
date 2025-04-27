@@ -1,12 +1,12 @@
 namespace DotNet.Testcontainers.Images
 {
+  using System;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IFutureDockerImage" />
   [PublicAPI]
@@ -22,10 +22,9 @@ namespace DotNet.Testcontainers.Images
     /// Initializes a new instance of the <see cref="FutureDockerImage" /> class.
     /// </summary>
     /// <param name="configuration">The image configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public FutureDockerImage(IImageFromDockerfileConfiguration configuration, ILogger logger)
+    public FutureDockerImage(IImageFromDockerfileConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
     }
 
@@ -40,12 +39,12 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
-    public string Name
+    public string Registry
     {
       get
       {
         ThrowIfResourceNotFound();
-        return _configuration.Image.Name;
+        return _configuration.Image.Registry;
       }
     }
 
@@ -56,6 +55,16 @@ namespace DotNet.Testcontainers.Images
       {
         ThrowIfResourceNotFound();
         return _configuration.Image.Tag;
+      }
+    }
+
+    /// <inheritdoc />
+    public string Digest
+    {
+      get
+      {
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Digest;
       }
     }
 
@@ -77,23 +86,41 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
+    public bool MatchLatestOrNightly()
+    {
+      return _configuration.Image.MatchLatestOrNightly();
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<string> predicate)
+    {
+      return _configuration.Image.MatchVersion(predicate);
+    }
+
+    /// <inheritdoc />
+    public bool MatchVersion(Predicate<System.Version> predicate)
+    {
+      return _configuration.Image.MatchVersion(predicate);
+    }
+
+    /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeDeleteAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeDeleteAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -111,6 +138,9 @@ namespace DotNet.Testcontainers.Images
       {
         return;
       }
+
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
 
       _ = await _client.BuildAsync(_configuration, ct)
         .ConfigureAwait(false);

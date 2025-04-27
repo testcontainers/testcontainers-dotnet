@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string DockerHost = "DOCKER_HOST";
 
+    private const string DockerContext = "DOCKER_CONTEXT";
+
     private const string DockerAuthConfig = "DOCKER_AUTH_CONFIG";
 
     private const string DockerCertPath = "DOCKER_CERT_PATH";
@@ -34,6 +36,12 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string HubImageNamePrefix = "TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX";
 
+    private const string WaitStrategyRetries = "TESTCONTAINERS_WAIT_STRATEGY_RETRIES";
+
+    private const string WaitStrategyInterval = "TESTCONTAINERS_WAIT_STRATEGY_INTERVAL";
+
+    private const string WaitStrategyTimeout = "TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT";
+
     static EnvironmentConfiguration()
     {
     }
@@ -48,6 +56,7 @@ namespace DotNet.Testcontainers.Configurations
           DockerCertPath,
           DockerConfig,
           DockerHost,
+          DockerContext,
           DockerTls,
           DockerTlsVerify,
           DockerHostOverride,
@@ -56,6 +65,9 @@ namespace DotNet.Testcontainers.Configurations
           RyukContainerPrivileged,
           RyukContainerImage,
           HubImageNamePrefix,
+          WaitStrategyRetries,
+          WaitStrategyInterval,
+          WaitStrategyTimeout,
         }
         .ToDictionary(key => key, Environment.GetEnvironmentVariable))
     {
@@ -77,6 +89,12 @@ namespace DotNet.Testcontainers.Configurations
     public Uri GetDockerHost()
     {
       return GetDockerHost(DockerHost);
+    }
+
+    /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      return GetDockerContext(DockerContext);
     }
 
     /// <inheritdoc />
@@ -122,7 +140,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return GetRyukContainerPrivileged(RyukContainerPrivileged);
     }
@@ -137,6 +155,24 @@ namespace DotNet.Testcontainers.Configurations
     public string GetHubImageNamePrefix()
     {
       return GetHubImageNamePrefix(HubImageNamePrefix);
+    }
+
+    /// <inheritdoc />
+    public ushort? GetWaitStrategyRetries()
+    {
+      return GetWaitStrategyRetries(WaitStrategyRetries);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyInterval()
+    {
+      return GetWaitStrategyInterval(WaitStrategyInterval);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyTimeout()
+    {
+      return GetWaitStrategyTimeout(WaitStrategyTimeout);
     }
   }
 }

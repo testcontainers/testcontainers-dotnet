@@ -55,7 +55,7 @@ namespace DotNet.Testcontainers.Images
         throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
       }
 
-      if (!dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Any())
+      if (dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Length == 0)
       {
         throw new ArgumentException($"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'.");
       }
@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers.Images
 
       var stages = lines
         .Select(line => line.Value)
-        .Select(line => line.Split(new [] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
+        .Select(line => line.Split(new[] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
         .Where(substrings => substrings.Length > 1)
         .Select(substrings => substrings[substrings.Length - 1])
         .Distinct()
@@ -148,7 +148,8 @@ namespace DotNet.Testcontainers.Images
               using (var inputStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read))
               {
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
-                entry.Size = inputStream.Length;
+                entry.TarHeader.Size = inputStream.Length;
+                entry.TarHeader.Mode = GetUnixFileMode(absoluteFilePath);
 
                 await tarOutputStream.PutNextEntryAsync(entry, ct)
                   .ConfigureAwait(false);
@@ -183,6 +184,26 @@ namespace DotNet.Testcontainers.Images
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)
         .ToArray();
+    }
+
+    /// <summary>
+    /// Gets the Unix file mode of the file on the path.
+    /// </summary>
+    /// <param name="filePath">The path to the file.</param>
+    /// <returns>The Unix file mode of the file on the path.</returns>
+    private static int GetUnixFileMode(string filePath)
+    {
+#if NET7_0_OR_GREATER
+      if (!OperatingSystem.IsWindows())
+      {
+        return (int)File.GetUnixFileMode(filePath);
+      }
+#endif
+
+      // Default to 755 for Windows and fall back to 755 for Unix when `GetUnixFileMode`
+      // is not available.
+      _ = filePath;
+      return (int)Unix.FileMode755;
     }
   }
 }

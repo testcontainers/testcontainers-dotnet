@@ -1,36 +1,27 @@
 # PostgreSQL
 
-Here is an example of a pre-configured PostgreSQL [module](https://www.nuget.org/packages/Testcontainers.PostgreSql). In the example, Testcontainers starts a PostgreSQL database in a [xUnit.net][xunit] test and executes a SQL query against it.
+[PostgreSQL](https://www.postgresql.org/) is a powerful, open-source relational database management system (RDBMS) used to store, manage, and retrieve structured data.
 
-```csharp
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
-{
-  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
+Add the following dependency to your project file:
 
-  public Task InitializeAsync()
-  {
-    return _postgreSqlContainer.StartAsync();
-  }
-
-  public Task DisposeAsync()
-  {
-    return _postgreSqlContainer.DisposeAsync().AsTask();
-  }
-
-  [Fact]
-  public void ExecuteCommand()
-  {
-    using (DbConnection connection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString()))
-    {
-      using (DbCommand command = new NpgsqlCommand())
-      {
-        connection.Open();
-        command.Connection = connection;
-        command.CommandText = "SELECT 1";
-      }
-    }
-  }
-}
+```shell title="NuGet"
+dotnet add package Testcontainers.PostgreSql
 ```
 
-[xunit]: https://xunit.net/
+You can start an PostgreSQL container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:UsePostgreSqlContainer"
+    ```
+
+The test example uses the following NuGet dependencies:
+
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.PostgreSql.Tests/Testcontainers.PostgreSql.Tests.csproj:PackageReferences"
+    ```
+
+To execute the tests, use the command `dotnet test` from a terminal.
+
+--8<-- "docs/modules/_call_out_test_projects.txt"

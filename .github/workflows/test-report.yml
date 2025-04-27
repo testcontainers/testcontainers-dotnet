@@ -8,23 +8,19 @@ on:
 
 jobs:
   report:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-22.04, windows-2022 ]
-
-    runs-on: ${{ matrix.os }}
-
     permissions:
       actions: read
       checks: write
       contents: read
 
+    runs-on: ubuntu-22.04
+
     steps:
+      # https://github.com/dorny/test-reporter/issues/363#issuecomment-2381625959.
       - name: Publish Test Report
-        uses: dorny/test-reporter@v1.8.0
+        uses: dorny/test-reporter@v1.9.1
         with:
-          artifact: ${{ matrix.os }}-v3
-          name: report (${{ matrix.os }})
+          artifact: '/Testcontainers.*/'
+          name: Test Report
           path: '*.trx'
           reporter: dotnet-trx

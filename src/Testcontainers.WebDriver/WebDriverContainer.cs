@@ -12,9 +12,8 @@ public sealed class WebDriverContainer : DockerContainer
     /// Initializes a new instance of the <see cref="WebDriverContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public WebDriverContainer(WebDriverConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public WebDriverContainer(WebDriverConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
         _ffmpegContainer = configuration.FFmpegContainer ?? FFmpegContainer.Instance;
@@ -58,7 +57,12 @@ public sealed class WebDriverContainer : DockerContainer
         var bytes = await _ffmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
             .ConfigureAwait(false);
 
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+        await File.WriteAllBytesAsync(target, bytes, ct)
+            .ConfigureAwait(false);
+#else
         File.WriteAllBytes(target, bytes);
+#endif
     }
 
     /// <inheritdoc />
@@ -110,7 +114,7 @@ public sealed class WebDriverContainer : DockerContainer
         /// Initializes a new instance of the <see cref="FFmpegContainer" /> class.
         /// </summary>
         private FFmpegContainer()
-            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")))), NullLogger.Instance)
+            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")), null, null, false, NullLogger.Instance)))
         {
         }
 

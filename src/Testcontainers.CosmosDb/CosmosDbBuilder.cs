@@ -36,7 +36,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     public override CosmosDbContainer Build()
     {
         Validate();
-        return new CosmosDbContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new CosmosDbContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

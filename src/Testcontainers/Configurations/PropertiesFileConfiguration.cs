@@ -71,6 +71,13 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      const string propertyName = "docker.context";
+      return GetDockerContext(propertyName);
+    }
+
+    /// <inheritdoc />
     public string GetDockerHostOverride()
     {
       const string propertyName = "host.override";
@@ -120,7 +127,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       const string propertyName = "ryuk.container.privileged";
       return GetRyukContainerPrivileged(propertyName);
@@ -138,6 +145,27 @@ namespace DotNet.Testcontainers.Configurations
     {
       const string propertyName = "hub.image.name.prefix";
       return GetHubImageNamePrefix(propertyName);
+    }
+
+    /// <inheritdoc />
+    public ushort? GetWaitStrategyRetries()
+    {
+      const string propertyName = "wait.strategy.retries";
+      return GetWaitStrategyRetries(propertyName);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyInterval()
+    {
+      const string propertyName = "wait.strategy.interval";
+      return GetWaitStrategyInterval(propertyName);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyTimeout()
+    {
+      const string propertyName = "wait.strategy.timeout";
+      return GetWaitStrategyTimeout(propertyName);
     }
   }
 }

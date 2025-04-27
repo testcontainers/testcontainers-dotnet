@@ -34,10 +34,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [InlineData("fedora/httpd:version1.0", null)]
     [InlineData("myregistryhost:5000/fedora/httpd:version1.0", "myregistryhost:5000")]
     [InlineData("myregistryhost:5000/httpd:version1.0", "myregistryhost:5000")]
-    [InlineData("baz/.foo/bar:1.0.0", null)]
-    [InlineData("baz/:foo/bar:1.0.0", null)]
     [InlineData("myregistry.azurecr.io/baz.foo/bar:1.0.0", "myregistry.azurecr.io")]
-    [InlineData("myregistry.azurecr.io/baz:foo/bar:1.0.0", "myregistry.azurecr.io")]
     public void GetHostnameFromDockerImage(string dockerImageName, string hostname)
     {
       IImage image = new DockerImage(dockerImageName);
@@ -45,20 +42,22 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
-    [InlineData("", "docker", "stable")]
-    [InlineData("fedora", "httpd", "1.0")]
-    [InlineData("foo/bar", "baz", "1.0.0")]
-    public void GetHostnameFromHubImageNamePrefix(string repository, string name, string tag)
+    [InlineData("baz/foo/bar", null)]
+    [InlineData("baz/foo/bar", "")]
+    [InlineData("baz/foo/bar", "1.0.0")]
+    public void GetHostnameFromHubImageNamePrefix(string repository, string tag)
     {
       const string hubImageNamePrefix = "myregistry.azurecr.io";
-      IImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
+      IImage image = new DockerImage(repository, null, tag, null, hubImageNamePrefix);
       Assert.Equal(hubImageNamePrefix, image.GetHostname());
     }
 
     [Fact]
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
-      var authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", NullLogger.Instance);
+      // Make sure the auth provider does not accidentally read the user's `config.json` file.
+      ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + Path.Combine("C:", "CON") });
+      var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), NullLogger.Instance);
       Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig("index.docker.io"));
     }
 

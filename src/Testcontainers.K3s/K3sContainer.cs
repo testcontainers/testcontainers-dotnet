@@ -8,9 +8,8 @@ public sealed class K3sContainer : DockerContainer
     /// Initializes a new instance of the <see cref="K3sContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public K3sContainer(K3sConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public K3sContainer(K3sConfiguration configuration)
+        : base(configuration)
     {
     }
 

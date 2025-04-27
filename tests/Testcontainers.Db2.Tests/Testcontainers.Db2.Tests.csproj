@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+    </PropertyGroup>
+    <!-- -8<- [start:PackageReferences] -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit"/>
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <PackageReference Include="Net.IBM.Data.Db2-lnx"/>
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <PackageReference Include="Net.IBM.Data.Db2-osx"/>
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <PackageReference Include="Net.IBM.Data.Db2"/>
+    </ItemGroup>
+    <!-- -8<- [end:PackageReferences] -->
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.Db2/Testcontainers.Db2.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+    <Import Project="Testcontainers.Db2.Tests.targets" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
+</Project>

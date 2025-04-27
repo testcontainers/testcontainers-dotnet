@@ -78,7 +78,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
         var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -89,7 +89,8 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
             .WithPortBinding(MySqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithStartupCallback((container, ct) => Task.WhenAll(container.CreateMySqlFilesDirectoryAsync(ct), container.WriteConfigurationFileAsync(ct)));
     }
 
     /// <inheritdoc />
@@ -135,7 +136,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MySqlConfiguration configuration)
         {
-            _command = new List<string> { "mysql", "--protocol=TCP", $"--port={MySqlPort}", $"--user={configuration.Username}", $"--password={configuration.Password}", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string> { "mysql", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
         }
 
         /// <inheritdoc />

@@ -34,7 +34,7 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     public override JanusGraphContainer Build()
     {
         Validate();
-        return new JanusGraphContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new JanusGraphContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

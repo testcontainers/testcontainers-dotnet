@@ -2,20 +2,20 @@ namespace WeatherForecast;
 
 public sealed class DatabaseContainer : IHostedService
 {
-  private readonly SqlEdgeContainer _sqlEdgeContainer = new SqlEdgeBuilder().Build();
+  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
 
   public Task StartAsync(CancellationToken cancellationToken)
   {
-    return _sqlEdgeContainer.StartAsync(cancellationToken);
+    return _postgreSqlContainer.StartAsync(cancellationToken);
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
   {
-    return _sqlEdgeContainer.StopAsync(cancellationToken);
+    return _postgreSqlContainer.StopAsync(cancellationToken);
   }
 
   public string GetConnectionString()
   {
-    return _sqlEdgeContainer.GetConnectionString();
+    return _postgreSqlContainer.GetConnectionString();
   }
 }

@@ -77,7 +77,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
         // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
         var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
-        return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
+        <DefineConstants>$(DefineConstants);ORACLE_DEFAULT</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
@@ -13,6 +14,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Oracle/Testcontainers.Oracle.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Xunit/Testcontainers.Xunit.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

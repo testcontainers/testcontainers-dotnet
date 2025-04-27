@@ -94,6 +94,7 @@ _ = new ImageFromDockerfileBuilder()
 | `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
 | `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
 | `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).      |
+| `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
@@ -101,3 +102,14 @@ _ = new ImageFromDockerfileBuilder()
 !!!tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
+
+## Known issues
+
+- When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user won't automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
+
+   ```Dockerfile
+   FROM mcr.microsoft.com/dotnet/sdk:8.0
+   WORKDIR /app
+   RUN chown app:app .
+   USER app
+   ```

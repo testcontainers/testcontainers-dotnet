@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Volumes
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IVolume" />
   [PublicAPI]
@@ -19,20 +18,16 @@ namespace DotNet.Testcontainers.Volumes
 
     private readonly IVolumeConfiguration _configuration;
 
-    private readonly ILogger _logger;
-
     private VolumeResponse _volume = new VolumeResponse();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerVolume" /> class.
     /// </summary>
     /// <param name="configuration">The volume configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public DockerVolume(IVolumeConfiguration configuration, ILogger logger)
+    public DockerVolume(IVolumeConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, logger);
+      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
       _configuration = configuration;
-      _logger = logger;
     }
 
     /// <inheritdoc />
@@ -48,21 +43,21 @@ namespace DotNet.Testcontainers.Volumes
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeCreateAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeCreateAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using (_ = AcquireLock())
-      {
-        await UnsafeDeleteAsync(ct)
-          .ConfigureAwait(false);
-      }
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeDeleteAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -99,11 +94,14 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
+      await _client.System.LogContainerRuntimeInfoAsync(ct)
+        .ConfigureAwait(false);
+
       string id;
 
       if (_configuration.Reuse.HasValue && _configuration.Reuse.Value)
       {
-        _logger.ReusableExperimentalFeature();
+        _configuration.Logger.ReusableExperimentalFeature();
 
         var filters = new FilterByReuseHash(_configuration);
 
@@ -114,13 +112,13 @@ namespace DotNet.Testcontainers.Volumes
 
         if (reusableVolume != null)
         {
-          _logger.ReusableResourceFound();
+          _configuration.Logger.ReusableResourceFound();
 
           id = reusableVolume.Name;
         }
         else
         {
-          _logger.ReusableResourceNotFound();
+          _configuration.Logger.ReusableResourceNotFound();
 
           id = await _client.Volume.CreateAsync(_configuration, ct)
             .ConfigureAwait(false);

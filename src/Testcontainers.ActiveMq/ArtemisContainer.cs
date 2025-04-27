@@ -10,20 +10,19 @@ public sealed class ArtemisContainer : DockerContainer
     /// Initializes a new instance of the <see cref="ArtemisContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public ArtemisContainer(ActiveMqConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public ArtemisContainer(ActiveMqConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
 
     /// <summary>
-    /// Gets the broker address.
+    /// Gets the ActiveMq broker address.
     /// </summary>
-    /// <returns>The broker address.</returns>
+    /// <returns>The ActiveMq broker address.</returns>
     public string GetBrokerAddress()
     {
-        var endpoint = new UriBuilder("tcp://", Hostname, GetMappedPublicPort(ArtemisBuilder.ArtemisMainPort));
+        var endpoint = new UriBuilder("tcp", Hostname, GetMappedPublicPort(ArtemisBuilder.ArtemisMainPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();

@@ -22,11 +22,11 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private FakeGcsServerBuilder(FakeGcsServerConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private FakeGcsServerBuilder(FakeGcsServerConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -36,7 +36,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     public override FakeGcsServerContainer Build()
     {
         Validate();
-        return new FakeGcsServerContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new FakeGcsServerContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

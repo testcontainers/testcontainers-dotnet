@@ -75,7 +75,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     public override ClickHouseContainer Build()
     {
         Validate();
-        return new ClickHouseContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return new ClickHouseContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -120,7 +120,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
         return new ClickHouseBuilder(new ClickHouseConfiguration(oldValue, newValue));
     }
 
-    private async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
+    private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);

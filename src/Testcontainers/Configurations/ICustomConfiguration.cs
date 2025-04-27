@@ -27,6 +27,14 @@ namespace DotNet.Testcontainers.Configurations
     Uri GetDockerHost();
 
     /// <summary>
+    /// Gets the Docker context custom configuration.
+    /// </summary>
+    /// <returns>The Docker context custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    string GetDockerContext();
+
+    /// <summary>
     /// Gets the Docker host override custom configuration.
     /// </summary>
     /// <returns>The Docker host override custom configuration.</returns>
@@ -84,7 +92,8 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <returns>The Ryuk container privileged custom configuration.</returns>
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
-    bool GetRyukContainerPrivileged();
+    [CanBeNull]
+    bool? GetRyukContainerPrivileged();
 
     /// <summary>
     /// Gets the Ryuk container image custom configuration.
@@ -101,5 +110,29 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
     [CanBeNull]
     string GetHubImageNamePrefix();
+
+    /// <summary>
+    /// Gets the wait strategy retries custom configuration.
+    /// </summary>
+    /// <returns>The wait strategy retries custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    ushort? GetWaitStrategyRetries();
+
+    /// <summary>
+    /// Gets the wait strategy interval custom configuration.
+    /// </summary>
+    /// <returns>The wait strategy interval custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetWaitStrategyInterval();
+
+    /// <summary>
+    /// Gets the wait strategy timeout custom configuration.
+    /// </summary>
+    /// <returns>The wait strategy timeout custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetWaitStrategyTimeout();
   }
 }

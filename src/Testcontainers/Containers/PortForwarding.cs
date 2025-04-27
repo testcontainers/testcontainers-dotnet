@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
   using Renci.SshNet;
 
   /// <inheritdoc cref="DockerContainer" />
@@ -26,9 +25,8 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="PortForwardingContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    private PortForwardingContainer(PortForwardingConfiguration configuration, ILogger logger)
-      : base(configuration, logger)
+    private PortForwardingContainer(PortForwardingConfiguration configuration)
+      : base(configuration)
     {
       _configuration = configuration;
     }
@@ -63,18 +61,9 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     private sealed class PortForwardingBuilder : ContainerBuilder<PortForwardingBuilder, PortForwardingContainer, PortForwardingConfiguration>
     {
-      public const string SshdImage = "testcontainers/sshd:1.1.0";
+      public const string SshdImage = "testcontainers/sshd:1.2.0";
 
       public const ushort SshdPort = 22;
-
-      private const string Command = "echo \"$USERNAME:$PASSWORD\" | chpasswd && /usr/sbin/sshd -D"
-                                     + " -o AddressFamily=inet"
-                                     + " -o AllowAgentForwarding=yes"
-                                     + " -o AllowTcpForwarding=yes"
-                                     + " -o GatewayPorts=yes"
-                                     + " -o HostkeyAlgorithms=+ssh-rsa"
-                                     + " -o KexAlgorithms=+diffie-hellman-group1-sha1"
-                                     + " -o PermitRootLogin=yes";
 
       /// <summary>
       /// Initializes a new instance of the <see cref="PortForwardingConfiguration" /> class.
@@ -107,7 +96,7 @@ namespace DotNet.Testcontainers.Containers
         // instance of the port forwarding container. To improve the user experience, it
         // is preferable to stop supporting `WithDockerEndpoint(string)` and instead rely
         // on the environment variables or the properties file custom configurations.
-        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration);
       }
 
       /// <inheritdoc />
@@ -116,8 +105,6 @@ namespace DotNet.Testcontainers.Containers
         return base.Init()
           .WithImage(SshdImage)
           .WithPortBinding(SshdPort, true)
-          .WithEntrypoint("/bin/sh", "-c")
-          .WithCommand(Command)
           .WithUsername("root")
           .WithPassword("root")
           .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(SshdPort));

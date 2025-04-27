@@ -8,6 +8,8 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
 
     public const ushort KeycloakPort = 8080;
 
+    public const ushort KeycloakHealthPort = 9000;
+
     public const string DefaultUsername = "admin";
 
     public const string DefaultPassword = "admin";
@@ -42,6 +44,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(username: username))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", username)
             .WithEnvironment("KEYCLOAK_ADMIN", username);
     }
 
@@ -53,6 +56,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(password: password))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
     }
 
@@ -60,7 +64,20 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public override KeycloakContainer Build()
     {
         Validate();
-        return new KeycloakContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+
+        Predicate<System.Version> predicate = v => v.Major >= 25;
+
+        var image = DockerResourceConfiguration.Image;
+
+        // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
+        var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
+
+        var waitStrategy = Wait.ForUnixContainer()
+            .UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
+
+        var keycloakBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        return new KeycloakContainer(keycloakBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -70,11 +87,10 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithImage(KeycloakImage)
             .WithCommand("start-dev")
             .WithPortBinding(KeycloakPort, true)
+            .WithPortBinding(KeycloakHealthPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithEnvironment("KC_HEALTH_ENABLED", "true")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health/ready").ForPort(KeycloakPort)));
+            .WithEnvironment("KC_HEALTH_ENABLED", "true");
     }
 
     /// <inheritdoc />

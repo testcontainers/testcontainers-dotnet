@@ -10,9 +10,8 @@ public sealed class MongoDbContainer : DockerContainer
     /// Initializes a new instance of the <see cref="MongoDbContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MongoDbContainer(MongoDbConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MongoDbContainer(MongoDbConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
@@ -24,9 +23,10 @@ public sealed class MongoDbContainer : DockerContainer
     public string GetConnectionString()
     {
         // The MongoDb documentation recommends to use percent-encoding for username and password: https://www.mongodb.com/docs/manual/reference/connection-string/.
-        var endpoint = new UriBuilder("mongodb://", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
+        var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
+        endpoint.Query = "?directConnection=true";
         return endpoint.ToString();
     }
 
@@ -43,7 +43,20 @@ public sealed class MongoDbContainer : DockerContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new MongoDbShellCommand($"load('{scriptFilePath}')", _configuration.Username, _configuration.Password), ct)
+        var whichMongoDbShell = await ExecAsync(new[] { "which", "mongosh" }, ct)
+            .ConfigureAwait(false);
+
+        var command = new[]
+        {
+            whichMongoDbShell.ExitCode == 0 ? "mongosh" : "mongo",
+            "--username", _configuration.Username,
+            "--password", _configuration.Password,
+            "--quiet",
+            "--eval",
+            $"load('{scriptFilePath}')",
+        };
+
+        return await ExecAsync(command, ct)
             .ConfigureAwait(false);
     }
 }

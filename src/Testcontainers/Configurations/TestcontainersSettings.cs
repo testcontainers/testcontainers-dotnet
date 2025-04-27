@@ -2,17 +2,14 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
-  using System.Globalization;
   using System.Linq;
   using System.Runtime.InteropServices;
-  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// This class represents the Testcontainers settings.
@@ -20,8 +17,6 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    private static readonly ManualResetEventSlim ManualResetEvent = new ManualResetEventSlim(false);
-
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
       = new IDockerEndpointAuthenticationProvider[]
@@ -44,64 +39,6 @@ namespace DotNet.Testcontainers.Configurations
 
     static TestcontainersSettings()
     {
-      Task.Run(async () =>
-      {
-        var runtimeInfo = new StringBuilder();
-
-        if (DockerEndpointAuthConfig != null)
-        {
-          using (var dockerClientConfiguration = DockerEndpointAuthConfig.GetDockerClientConfiguration())
-          {
-            using (var dockerClient = dockerClientConfiguration.CreateClient())
-            {
-              try
-              {
-                var byteUnits = new[] { "KB", "MB", "GB" };
-
-                var dockerInfo = await dockerClient.System.GetSystemInfoAsync()
-                  .ConfigureAwait(false);
-
-                var dockerVersion = await dockerClient.System.GetVersionAsync()
-                  .ConfigureAwait(false);
-
-                runtimeInfo.AppendLine("Connected to Docker:");
-
-                runtimeInfo.Append("  Host: ");
-                runtimeInfo.AppendLine(dockerClient.Configuration.EndpointBaseUri.ToString());
-
-                runtimeInfo.Append("  Server Version: ");
-                runtimeInfo.AppendLine(dockerInfo.ServerVersion);
-
-                runtimeInfo.Append("  Kernel Version: ");
-                runtimeInfo.AppendLine(dockerInfo.KernelVersion);
-
-                runtimeInfo.Append("  API Version: ");
-                runtimeInfo.AppendLine(dockerVersion.APIVersion);
-
-                runtimeInfo.Append("  Operating System: ");
-                runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
-
-                runtimeInfo.Append("  Total Memory: ");
-                runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
-              }
-              catch
-              {
-                // Ignore exceptions in auto discovery. Users can provide the Docker endpoint with the builder too.
-              }
-            }
-          }
-        }
-        else
-        {
-          runtimeInfo.AppendLine("Auto discovery did not detect a Docker host configuration");
-        }
-
-#pragma warning disable CA1848, CA2254
-        Logger.LogInformation(runtimeInfo.ToString());
-#pragma warning restore CA1848, CA2254
-
-        ManualResetEvent.Set();
-      });
     }
 
     /// <summary>
@@ -130,7 +67,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
@@ -164,25 +101,47 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
-    /// Gets or sets the logger.
+    /// Gets or sets the wait strategy retry count.
     /// </summary>
-    [NotNull]
-    public static ILogger Logger { get; set; }
-      = ConsoleLogger.Instance;
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static ushort? WaitStrategyRetries { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyRetries() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyRetries();
+
+    /// <summary>
+    /// Gets or sets the wait strategy interval.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyInterval { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyInterval() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyInterval();
+
+    /// <summary>
+    /// Gets or sets the wait strategy timeout.
+    /// </summary>
+    /// <remarks>
+    /// This property represents the default value and applies to all wait strategies.
+    /// Wait strategies can be configured individually using the wait strategy option callback:
+    /// https://dotnet.testcontainers.org/api/wait_strategies/.
+    /// </remarks>
+    [CanBeNull]
+    public static TimeSpan? WaitStrategyTimeout { get; set; }
+      = EnvironmentConfiguration.Instance.GetWaitStrategyTimeout() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
 
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
-
-    /// <summary>
-    /// Gets the wait handle that signals settings initialized.
-    /// </summary>
-    [NotNull]
-    public static WaitHandle SettingsInitialized
-      => ManualResetEvent.WaitHandle;
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)

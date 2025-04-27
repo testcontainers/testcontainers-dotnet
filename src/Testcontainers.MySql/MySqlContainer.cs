@@ -10,9 +10,8 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     /// Initializes a new instance of the <see cref="MySqlContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MySqlContainer(MySqlConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public MySqlContainer(MySqlConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
@@ -45,7 +44,39 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mysql", "--protocol=TCP", $"--port={MySqlBuilder.MySqlPort}", $"--user={_configuration.Username}", $"--password={_configuration.Password}", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
+        return await ExecAsync(new[] { "mysql", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates an empty <c>/var/lib/mysql-files</c> directory.
+    /// </summary>
+    /// <remarks>
+    /// The directory does not exist in the MySql 8.0.28 and earlier Docker images, and
+    /// it is required for the module to start properly.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the directory has been created.</returns>
+    internal Task CreateMySqlFilesDirectoryAsync(CancellationToken ct = default)
+    {
+        return ExecAsync(new[] { "mkdir", "/var/lib/mysql-files" }, ct);
+    }
+
+    /// <summary>
+    /// Write an unobfuscated MySql configuration file that configures the client
+    /// login path. This prevents warnings in the <see cref="ExecScriptAsync" />
+    /// result about using a password on the command line.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the configuration file has been executed.</returns>
+    internal Task WriteConfigurationFileAsync(CancellationToken ct = default)
+    {
+        var config = new StringWriter();
+        config.NewLine = "\n";
+        config.WriteLine("[client]");
+        config.WriteLine("protocol=TCP");
+        config.WriteLine($"user={_configuration.Username}");
+        config.WriteLine($"password={_configuration.Password}");
+        return CopyAsync(Encoding.Default.GetBytes(config.ToString()), "/etc/mysql/my.cnf", UnixFileModes.UserRead | UnixFileModes.UserWrite, ct);
     }
 }

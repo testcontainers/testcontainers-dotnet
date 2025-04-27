@@ -10,9 +10,8 @@ public sealed class RabbitMqContainer : DockerContainer
     /// Initializes a new instance of the <see cref="RabbitMqContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public RabbitMqContainer(RabbitMqConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public RabbitMqContainer(RabbitMqConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
@@ -23,7 +22,7 @@ public sealed class RabbitMqContainer : DockerContainer
     /// <returns>The RabbitMq connection string.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("amqp://", Hostname, GetMappedPublicPort(RabbitMqBuilder.RabbitMqPort));
+        var endpoint = new UriBuilder("amqp", Hostname, GetMappedPublicPort(RabbitMqBuilder.RabbitMqPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();

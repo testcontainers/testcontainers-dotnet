@@ -10,9 +10,8 @@ public sealed class NatsContainer : DockerContainer
     /// Initializes a new instance of the <see cref="NatsContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public NatsContainer(NatsConfiguration configuration, ILogger logger)
-        : base(configuration, logger)
+    public NatsContainer(NatsConfiguration configuration)
+        : base(configuration)
     {
         _configuration = configuration;
     }
@@ -26,7 +25,7 @@ public sealed class NatsContainer : DockerContainer
     /// <returns>A Nats connection string in the format: <c>nats://hostname:port</c>.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("nats://", Hostname, GetMappedPublicPort(NatsBuilder.NatsClientPort));
+        var endpoint = new UriBuilder("nats", Hostname, GetMappedPublicPort(NatsBuilder.NatsClientPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();

@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
+        EnvironmentVariables.Add("DOCKER_CONTEXT");
         EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
         EnvironmentVariables.Add("DOCKER_CERT_PATH");
         EnvironmentVariables.Add("DOCKER_TLS");
@@ -27,6 +28,9 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED");
         EnvironmentVariables.Add("TESTCONTAINERS_RYUK_CONTAINER_IMAGE");
         EnvironmentVariables.Add("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
+        EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
       }
 
       [Theory]
@@ -49,6 +53,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_CONTEXT", "", null)]
+      [InlineData("DOCKER_CONTEXT", "default", "default")]
+      public void GetDockerContextCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
       }
 
       [Theory]
@@ -144,11 +159,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", "", false)]
-      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", false)]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool? expected)
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -175,6 +190,41 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "1", 1)]
+      public void GetWaitStrategyRetriesCustomConfiguration(string propertyName, string propertyValue, int? expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyRetries());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "-00:00:00.001", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "00:00:01", "00:00:01")]
+      public void GetWaitStrategyIntervalCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyInterval()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "-00:00:00.001", null)]
+      [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "00:00:01", "00:00:01")]
+      public void GetWaitStrategyTimeoutCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout()?.ToString());
       }
 
       public void Dispose()
@@ -214,6 +264,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("docker.context=", null)]
+      [InlineData("docker.context=default", "default")]
+      public void GetDockerContextCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerContext());
       }
 
       [Theory]
@@ -302,11 +362,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", false)]
-      [InlineData("ryuk.container.privileged=", false)]
+      [InlineData("", null)]
+      [InlineData("ryuk.container.privileged=", null)]
       [InlineData("ryuk.container.privileged=false", false)]
       [InlineData("ryuk.container.privileged=true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool? expected)
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());
@@ -330,6 +390,38 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("wait.strategy.retries=", null)]
+      [InlineData("wait.strategy.retries=1", 1)]
+      public void GetWaitStrategyRetriesCustomConfiguration(string configuration, int? expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyRetries());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("wait.strategy.interval=", null)]
+      [InlineData("wait.strategy.interval=-00:00:00.001", null)]
+      [InlineData("wait.strategy.interval=00:00:01", "00:00:01")]
+      public void GetWaitStrategyIntervalCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyInterval()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("wait.strategy.timeout=", null)]
+      [InlineData("wait.strategy.timeout=-00:00:00.001", null)]
+      [InlineData("wait.strategy.timeout=00:00:01", "00:00:01")]
+      public void GetWaitStrategyTimeoutCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout()?.ToString());
       }
     }
   }

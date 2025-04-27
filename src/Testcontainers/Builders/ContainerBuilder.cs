@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Builders
     public override IContainer Build()
     {
       Validate();
-      return new DockerContainer(DockerResourceConfiguration, TestcontainersSettings.Logger);
+      return new DockerContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />

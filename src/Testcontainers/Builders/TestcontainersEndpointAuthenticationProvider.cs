@@ -70,6 +70,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public string GetDockerContext()
+    {
+      return _customConfiguration.GetDockerContext();
+    }
+
+    /// <inheritdoc />
     public string GetDockerHostOverride()
     {
       return _customConfiguration.GetDockerHostOverride();
@@ -112,7 +118,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return _customConfiguration.GetRyukContainerPrivileged();
     }
@@ -127,6 +133,24 @@ namespace DotNet.Testcontainers.Builders
     public string GetHubImageNamePrefix()
     {
       return _customConfiguration.GetHubImageNamePrefix();
+    }
+
+    /// <inheritdoc />
+    public ushort? GetWaitStrategyRetries()
+    {
+      return _customConfiguration.GetWaitStrategyRetries();
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyInterval()
+    {
+      return _customConfiguration.GetWaitStrategyInterval();
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetWaitStrategyTimeout()
+    {
+      return _customConfiguration.GetWaitStrategyTimeout();
     }
 
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration

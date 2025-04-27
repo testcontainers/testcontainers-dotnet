@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
   {
     public async Task InitializeAsync()
     {
-      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig)
+      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig, ConsoleLogger.Instance)
         .ConfigureAwait(false);
 
       await resourceReaper.DisposeAsync()

@@ -44,8 +44,9 @@ public abstract class MySqlContainerTest : IAsyncLifetime
         var execResult = await _mySqlContainer.ExecScriptAsync(scriptContent)
             .ConfigureAwait(true);
 
-        // When
+        // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
     }
 
     [UsedImplicitly]
@@ -62,6 +63,16 @@ public abstract class MySqlContainerTest : IAsyncLifetime
     {
         public MySqlRootConfiguration()
             : base(new MySqlBuilder().WithUsername("root").Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class GitHubIssue1142 : MySqlContainerTest
+    {
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
+        public GitHubIssue1142()
+            : base(new MySqlBuilder().WithImage("mysql:8.0.28").Build())
         {
         }
     }

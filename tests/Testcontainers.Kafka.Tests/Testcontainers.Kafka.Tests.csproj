@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
@@ -10,6 +10,8 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit"/>
         <PackageReference Include="Confluent.Kafka"/>
+        <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json"/>
+        <PackageReference Include="Confluent.SchemaRegistry"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Kafka/Testcontainers.Kafka.csproj"/>
