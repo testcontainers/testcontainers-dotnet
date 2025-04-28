@@ -18,7 +18,9 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     {
         var properties = new Dictionary<string, string>();
         properties.Add("Contact Points", Hostname);
-        properties.Add("Port", GetMappedPublicPort(CassandraBuilder.CqlPort).ToString());
+        var port = GetMappedPublicPort(CassandraBuilder.CqlPort).ToString();
+        properties.Add("Port", port);
+        properties.Add("Cluster Name", $"{Hostname}:{port}");
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 
