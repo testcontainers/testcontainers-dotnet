@@ -15,7 +15,26 @@ public sealed class OllamaContainerTest : IAsyncLifetime
     }
 
     [Fact]
-    public async Task TODO()
+    public async Task GenerateEmbeddingsReturnsEmbeddings()
     {
+        // Given
+        const string model = "all-minilm:22m";
+
+        using var ollamaClient = new OllamaApiClient(_ollamaContainer.GetBaseAddress());
+
+        var embedRequest = new EmbedRequest();
+        embedRequest.Model = model;
+        embedRequest.Input = new List<string> { "Hello, World!" };
+
+        // When
+        await foreach (var _ in ollamaClient.PullModelAsync(model)
+            .ConfigureAwait(true));
+
+        var embedResponse = await ollamaClient.EmbedAsync(embedRequest)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.NotNull(embedResponse);
+        Assert.NotEmpty(embedResponse.Embeddings);
     }
 }
