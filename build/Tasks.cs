@@ -4,6 +4,22 @@ namespace TestContainers.Build;
 public class BuildContext(ICakeContext context) : FrostingContext(context)
 {
   internal BuildParameters Parameters { get; } = BuildParameters.Instance(context);
+
+  public void DotNetTest(SolutionProject project)
+  {
+    this.DotNetTest(project.Path.FullPath, new DotNetTestSettings
+    {
+      Configuration = Parameters.Configuration,
+      Verbosity = Parameters.Verbosity,
+      NoRestore = true,
+      NoBuild = true,
+      Collectors = ["XPlat Code Coverage;Format=opencover"],
+      Filter = Parameters.TestFilter,
+      ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
+      ArgumentCustomization = args => args
+        .AppendSwitchQuoted("--blame-hang-timeout", "5m")
+    });
+  }
 }
 
 [UsedImplicitly]
@@ -95,18 +111,7 @@ public sealed class TestTask : FrostingTask<BuildContext>
     var testProject = param.Projects.OnlyTests
       .Single(testProject => testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj"));
 
-    context.DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
-    {
-      Configuration = param.Configuration,
-      Verbosity = param.Verbosity,
-      NoRestore = true,
-      NoBuild = true,
-      Collectors = ["XPlat Code Coverage;Format=opencover"],
-      Filter = param.TestFilter,
-      ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-      ArgumentCustomization = args => args
-        .AppendSwitchQuoted("--blame-hang-timeout", "5m")
-    });
+    context.DotNetTest(testProject);
   }
 }
 
@@ -118,18 +123,7 @@ public sealed class TestsTask : FrostingTask<BuildContext>
     var param = context.Parameters;
     foreach (var testProject in param.Projects.OnlyTests)
     {
-      context.DotNetTest(testProject.Path.FullPath, new DotNetTestSettings
-      {
-        Configuration = param.Configuration,
-        Verbosity = param.Verbosity,
-        NoRestore = true,
-        NoBuild = true,
-        Collectors = ["XPlat Code Coverage;Format=opencover"],
-        Filter = param.TestFilter,
-        ResultsDirectory = param.Paths.Directories.TestResultsDirectoryPath,
-        ArgumentCustomization = args => args
-          .AppendSwitchQuoted("--blame-hang-timeout", "5m")
-      });
+      context.DotNetTest(testProject);
     }
   }
 }
