@@ -1,7 +1,4 @@
-#load "./credentials.cake"
-#load "./paths.cake"
-#load "./projects.cake"
-#load "./version.cake"
+namespace TestContainers.Build;
 
 internal sealed class BuildParameters
 {

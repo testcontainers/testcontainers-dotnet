@@ -113,17 +113,14 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Restore .NET Tools
-        run: dotnet tool restore
-
       - name: Restore NuGet Packages
-        run: dotnet cake --target=Restore-NuGet-Packages
+        run: ./build.sh --target=Restore-NuGet-Packages
 
       - name: Run Build
-        run: dotnet cake --target=Build
+        run: ./build.sh --target=Build
 
       - name: Run Tests
-        run: dotnet cake --target=Test --test-project=${{ matrix.test-projects.name }}
+        run: ./build.sh --target=Test --test-project=${{ matrix.test-projects.name }}
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
@@ -188,23 +185,20 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Restore .NET Tools
-        run: dotnet tool restore
-
       - name: Restore NuGet Packages
-        run: dotnet cake --target=Restore-NuGet-Packages
+        run: ./build.sh --target=Restore-NuGet-Packages
 
       - name: Run Sonar Analysis
-        run: dotnet cake --target=Sonar-Begin
+        run: ./build.sh --target=Sonar-Begin
 
       - name: Run Build
-        run: dotnet cake --target=Build
+        run: ./build.sh --target=Build
 
       - name: Upload Sonar Results
-        run: dotnet cake --target=Sonar-End
+        run: ./build.sh --target=Sonar-End
 
       - name: Publish NuGet Package
-        run: dotnet cake --target=Publish
+        run: ./build.sh --target=Publish
 
       # Cake sets the semVer environment variable
       - uses: release-drafter/release-drafter@v6

@@ -1,4 +1,4 @@
-#addin nuget:?package=Cake.Git&version=5.0.1
+namespace TestContainers.Build;
 
 internal sealed class BuildInformation
 {

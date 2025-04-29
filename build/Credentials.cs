@@ -1,9 +1,11 @@
+namespace TestContainers.Build;
+
 internal sealed class BuildCredentials
 {
   public string Username { get; private set; }
   public string Password { get; private set; }
 
-  public BuildCredentials(string username, string password)
+  private BuildCredentials(string username, string password)
   {
     Username = username;
     Password = password;

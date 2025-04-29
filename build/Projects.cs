@@ -1,3 +1,5 @@
+namespace TestContainers.Build;
+
 internal sealed class BuildProjects
 {
   private BuildProjects()
