@@ -73,6 +73,7 @@ jobs:
           { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Neo4j", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Ollama", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle11", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle18", runs-on: "ubuntu-22.04" },
