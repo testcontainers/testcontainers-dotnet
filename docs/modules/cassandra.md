@@ -8,7 +8,15 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.Cassandra
 ```
 
-You can start an Apache Cassandra container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+You can start an Apache Cassandra container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
+
+=== "Start a Cassandra container"
+    ```csharp
+    var cassandraContainer = new CassandraBuilder().Build();
+    await cassandraContainer.StartAsync();
+    ```
+
+The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) module to reduce overhead by automatically managing the lifecycle of the dependent container instance. It creates and starts the container using the module-specific builder and injects it as a shared class fixture into the test class.
 
 === "Usage Example"
     ```csharp

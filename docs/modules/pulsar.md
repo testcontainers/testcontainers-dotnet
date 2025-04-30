@@ -8,7 +8,7 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.Pulsar
 ```
 
-You can start a Apache Pulsar container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+You can start an Apache Pulsar container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
 === "Create Container Instance"
     ```csharp
