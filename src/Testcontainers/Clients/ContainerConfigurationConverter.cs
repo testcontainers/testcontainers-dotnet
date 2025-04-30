@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.Linq;
-  using System.Net;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
