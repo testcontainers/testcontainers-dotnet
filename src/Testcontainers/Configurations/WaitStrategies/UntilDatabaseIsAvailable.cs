@@ -18,22 +18,34 @@ namespace DotNet.Testcontainers.Configurations
     {
       if (container is not IDatabaseContainer dbContainer)
       {
-        throw new NotSupportedException($"The \"UntilDatabaseIsAvailable\" wait strategy is only available on database containers. " +
-                                        $"{container.GetType().FullName} does not implement the {nameof(IDatabaseContainer)} interface.");
+        throw new NotSupportedException(
+          $"The 'UntilDatabaseIsAvailable' wait strategy can only be used with database containers. " +
+          $"The provided container type '{container.GetType().FullName}' does not implement '{nameof(IDatabaseContainer)}'.");
       }
 
-      using (var connection = _dbProviderFactory.CreateConnection() ?? throw new InvalidOperationException($"{_dbProviderFactory.GetType().FullName}.CreateConnection() returned null."))
+      var connection = _dbProviderFactory.CreateConnection();
+      if (connection == null)
+      {
+        throw new InvalidOperationException(
+          $"Failed to create a database connection. The factory '{_dbProviderFactory.GetType().FullName}' returned null from 'CreateConnection()'.");
+      }
+
+      try
       {
         connection.ConnectionString = dbContainer.GetConnectionString();
-        try
-        {
-          await connection.OpenAsync();
-          return true;
-        }
-        catch
-        {
-          return false;
-        }
+
+        await connection.OpenAsync()
+          .ConfigureAwait(false);
+
+        return true;
+      }
+      catch
+      {
+        return false;
+      }
+      finally
+      {
+        connection.Dispose();
       }
     }
   }

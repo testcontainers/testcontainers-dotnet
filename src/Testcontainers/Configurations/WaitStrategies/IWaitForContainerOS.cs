@@ -115,14 +115,14 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until a connection to the database can be successfully opened.
+    /// Waits until a successful connection to the database can be established.
     /// </summary>
+    /// <remarks>
+    /// To use this wait strategy, the container must implement the <see cref="IDatabaseContainer" /> interface.
+    /// </remarks>
     /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create the database connection.</param>
     /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    /// <remarks>
-    /// This wait strategy must only be applied to containers implementing the <see cref="IDatabaseContainer"/> interface.
-    /// </remarks>
     [PublicAPI]
     IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null);
 
