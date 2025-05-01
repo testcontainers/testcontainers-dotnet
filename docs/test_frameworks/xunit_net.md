@@ -49,7 +49,7 @@ be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 
 ## Creating a shared test context
 
-Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class, or even within the assembly, if you use xUnit.net V3 or a compatible V2 extension like [the one from the examples-repo](https://github.com/xunit/samples.xunit/tree/main/v2/AssemblyFixtureExample).
+Sometimes, creating and disposing of a test resource can be an expensive operation that you do not want to repeat for every test. By inheriting from the `ContainerFixture<TBuilderEntity, TContainerEntity>` class, you can share the test resource instance across all tests within the same test class, or even within the assembly, if you use xUnit.net v3 or a compatible v2 extension like the one from the [AssemblyFixtureExample](https://github.com/xunit/samples.xunit/tree/main/v2/AssemblyFixtureExample) repository.
 
 xUnit.net's fixture implementation does not rely on the `ITestOutputHelper` interface to capture and forward log messages; instead, it expects an implementation of `IMessageSink`. Make sure your fixture's default constructor accepts the interface implementation and forwards it to the base class.
 
@@ -81,7 +81,7 @@ d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds 
 e878f0b8f4bc   testcontainers/ryuk:0.9.0   "/bin/ryuk"              3 seconds ago
 ```
 
-To use a single container-fixture across all tests of a test-assembly (using xUnit.net V3 or an extension), add the `[assembly: AssemblyFixture(typeof(TContainerFixtureEntity))]` annotation referring to your subclass to the assembly. The fixture can then be injected into test class constructors (as shown above), or accessed using the `TestContext.Current.GetFixture<TContainerFixtureEntity>()` method (v3 only) in any test.
+To use a single container fixture across all tests of a test-assembly (using xUnit.net v3 or an extension), add the `[assembly: AssemblyFixture(typeof(TContainerFixtureEntity))]` annotation referring to your subclass to the assembly. The fixture can then be injected into test class constructors (as shown above), or accessed using the `TestContext.Current.GetFixture<TContainerFixtureEntity>()` method (v3 only) in any test.
 
 ## Testing ADO.NET services
 
