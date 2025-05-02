@@ -5,8 +5,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.126.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.126.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.128.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.128.1"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
         <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
@@ -18,13 +18,15 @@
         <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
         <PackageVersion Include="Dapper" Version="2.1.66"/>
         <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
+        <PackageVersion Include="xunit.analyzers" Version="1.21.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2"/>
         <PackageVersion Include="xunit" Version="2.9.3"/>
+        <PackageVersion Include="xunit.v3" Version="2.0.1"/>
         <!-- xUnit.net extensibility for Testcontainers.Xunit and Testcontainers.XunitV3 packages: -->
         <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="1.1.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
-        <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
+        <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.1"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
         <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="3.7.104.14"/>
         <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.101.42"/>
@@ -32,8 +34,11 @@
         <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.101.7"/>
         <PackageVersion Include="AWSSDK.SQS" Version="3.7.100.71"/>
         <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
+        <PackageVersion Include="Azure.Identity" Version="1.13.2"/>
         <PackageVersion Include="Azure.Messaging.EventHubs" Version="5.11.3"/>
         <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.18.2"/>
+        <PackageVersion Include="Azure.Security.KeyVault.Certificates" Version="4.7.0"/>
+        <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.7.0"/>
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.17.0"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.15.0"/>
         <PackageVersion Include="CassandraCSharpDriver" Version="3.22.0"/>
@@ -43,9 +48,6 @@
         <PackageVersion Include="Confluent.SchemaRegistry" Version="2.8.0"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
         <PackageVersion Include="CouchbaseNetClient" Version="3.6.4"/>
-        <PackageVersion Include="Net.IBM.Data.Db2-lnx" Version="9.0.0.100"/>
-        <PackageVersion Include="Net.IBM.Data.Db2-osx" Version="9.0.0.100"/>
-        <PackageVersion Include="Net.IBM.Data.Db2" Version="9.0.0.100"/>
         <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
@@ -68,7 +70,11 @@
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
         <PackageVersion Include="Neo4j.Driver" Version="5.5.0"/>
+        <PackageVersion Include="Net.IBM.Data.Db2-lnx" Version="9.0.0.100"/>
+        <PackageVersion Include="Net.IBM.Data.Db2-osx" Version="9.0.0.100"/>
+        <PackageVersion Include="Net.IBM.Data.Db2" Version="9.0.0.100"/>
         <PackageVersion Include="Npgsql" Version="6.0.11"/>
+        <PackageVersion Include="OllamaSharp" Version="5.1.13"/>
         <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.7.0"/>
         <PackageVersion Include="Qdrant.Client" Version="1.13.0"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>

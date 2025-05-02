@@ -12,7 +12,15 @@ dotnet add package Testcontainers.Db2
 
     The Linux client dependency, [Net.IBM.Data.Db2-lnx](https://www.nuget.org/packages/Net.IBM.Data.Db2-lnx), requires additional configurations. We use the [Testcontainers.Db2.Tests.targets](https://github.com/testcontainers/testcontainers-dotnet/blob/develop/tests/Testcontainers.Db2.Tests/Testcontainers.Db2.Tests.targets) file to configure the environment variables: `LD_LIBRARY_PATH`, `PATH`, `DB2_CLI_DRIVER_INSTALL_PATH`, at runtime.
 
-You can start an Db2 container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+You can start a Db2 container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
+
+=== "Start a Db2 container"
+    ```csharp
+    var db2Container = new Db2Builder().Build();
+    await db2Container.StartAsync();
+    ```
+
+The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) module to reduce overhead by automatically managing the lifecycle of the dependent container instance. It creates and starts the container using the module-specific builder and injects it as a shared class fixture into the test class.
 
 === "Usage Example"
     ```csharp

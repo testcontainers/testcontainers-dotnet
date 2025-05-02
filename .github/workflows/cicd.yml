@@ -64,6 +64,7 @@ jobs:
           { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.LowkeyVault", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MariaDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
@@ -72,6 +73,7 @@ jobs:
           { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Neo4j", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Ollama", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle11", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle18", runs-on: "ubuntu-22.04" },
@@ -90,7 +92,8 @@ jobs:
           { name: "Testcontainers.Sftp", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" }
+          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.XunitV3", runs-on: "ubuntu-22.04" }
         ]
 
     runs-on: ${{ matrix.test-projects.runs-on }}

@@ -17,4 +17,9 @@
         <ProjectReference Include="../../src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Update="custom-queue-config.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

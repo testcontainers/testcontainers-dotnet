@@ -1,4 +1,5 @@
 global using System.Collections.Generic;
+global using System.Collections.Immutable;
 global using System.Data.Common;
 global using System.Linq;
 global using System.Threading.Tasks;
@@ -9,5 +10,9 @@ global using StackExchange.Redis;
 global using Testcontainers.PostgreSql;
 global using Testcontainers.Redis;
 global using Xunit;
+#if XUNIT_V3
+global using Xunit.v3;
+#else
 global using Xunit.Abstractions;
+#endif
 global using Xunit.Sdk;
