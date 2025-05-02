@@ -5,8 +5,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.126.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.126.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.128.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.128.1"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
         <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
@@ -26,7 +26,7 @@
         <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="1.1.0"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
-        <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.0"/>
+        <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.1"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
         <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="3.7.104.14"/>
         <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.101.42"/>

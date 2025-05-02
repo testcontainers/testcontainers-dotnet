@@ -16,7 +16,8 @@ public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutput
 public sealed partial class PostgreSqlContainerTest
 {
     // # --8<-- [start:ConfigureDbProviderFactory]
-    public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
+    public override DbProviderFactory DbProviderFactory
+        => NpgsqlFactory.Instance;
     // # --8<-- [end:ConfigureDbProviderFactory]
 }
 

@@ -55,6 +55,9 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .Create();
 
         // When
+        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10))
+            .ConfigureAwait(true);
+
         _ = await producer.Send(helloPulsar)
             .ConfigureAwait(true);
 
