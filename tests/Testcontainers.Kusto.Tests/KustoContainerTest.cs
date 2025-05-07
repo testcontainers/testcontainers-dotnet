@@ -6,7 +6,8 @@ public sealed class KustoContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _kustoContainer.StartAsync();
+        await _kustoContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

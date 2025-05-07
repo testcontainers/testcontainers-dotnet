@@ -47,12 +47,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public async ValueTask InitializeAsync()
     {
-      await _image.CreateAsync();
+      await _image.CreateAsync()
+        .ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await _image.DeleteAsync();
+      await _image.DeleteAsync()
+        .ConfigureAwait(false);
     }
   }
 }

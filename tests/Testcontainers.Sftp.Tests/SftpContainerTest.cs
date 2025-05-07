@@ -6,7 +6,8 @@ public sealed class SftpContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _sftpContainer.StartAsync();
+        await _sftpContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

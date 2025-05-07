@@ -13,7 +13,8 @@ public abstract class MilvusContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _milvusContainer.StartAsync();
+        await _milvusContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

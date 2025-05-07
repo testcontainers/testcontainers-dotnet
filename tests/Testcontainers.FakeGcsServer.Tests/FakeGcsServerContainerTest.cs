@@ -6,7 +6,8 @@ public sealed class FakeGcsServerContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _fakeGcsServerContainer.StartAsync();
+        await _fakeGcsServerContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

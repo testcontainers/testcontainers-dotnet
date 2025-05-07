@@ -18,7 +18,8 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _artemisContainer.StartAsync();
+        await _artemisContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

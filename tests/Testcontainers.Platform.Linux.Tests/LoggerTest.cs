@@ -16,7 +16,8 @@ public abstract class LoggerTest : IAsyncLifetime
             .WithCommand(CommonCommands.SleepInfinity)
             .WithLogger(_fakeLogger)
             .Build()
-            .StartAsync();
+            .StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

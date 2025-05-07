@@ -14,7 +14,8 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     // # --8<-- [start:UseServiceBusContainer]
     public async ValueTask InitializeAsync()
     {
-        await _serviceBusContainer.StartAsync();
+        await _serviceBusContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

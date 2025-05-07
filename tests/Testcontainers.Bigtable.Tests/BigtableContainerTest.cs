@@ -6,7 +6,8 @@ public sealed class BigtableContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _bigtableContainer.StartAsync();
+        await _bigtableContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

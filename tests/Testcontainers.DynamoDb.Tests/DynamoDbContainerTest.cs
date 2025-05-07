@@ -12,7 +12,8 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _dynamoDbContainer.StartAsync();
+        await _dynamoDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

@@ -6,7 +6,8 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _cosmosDbContainer.StartAsync();
+        await _cosmosDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

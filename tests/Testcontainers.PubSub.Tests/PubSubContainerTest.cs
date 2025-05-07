@@ -6,7 +6,8 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _pubSubContainer.StartAsync();
+        await _pubSubContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

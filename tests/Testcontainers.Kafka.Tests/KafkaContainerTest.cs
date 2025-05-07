@@ -6,7 +6,8 @@ public sealed class KafkaContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _kafkaContainer.StartAsync();
+        await _kafkaContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

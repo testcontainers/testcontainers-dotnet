@@ -17,7 +17,8 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     // # --8<-- [start:UsePulsarContainer]
     public async ValueTask InitializeAsync()
     {
-        await _pulsarContainer.StartAsync();
+        await _pulsarContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

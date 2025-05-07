@@ -16,7 +16,8 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     // # --8<-- [start:UseEventHubsContainer]
     public async ValueTask InitializeAsync()
     {
-        await _eventHubsContainer.StartAsync();
+        await _eventHubsContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

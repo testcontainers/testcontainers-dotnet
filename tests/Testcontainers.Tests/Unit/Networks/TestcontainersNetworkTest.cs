@@ -33,12 +33,14 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public async ValueTask InitializeAsync()
     {
-      await Task.WhenAll(_container1.StartAsync(), _container2.StartAsync());
+      await Task.WhenAll(_container1.StartAsync(), _container2.StartAsync())
+        .ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await Task.WhenAll(_container1.DisposeAsync().AsTask(), _container2.DisposeAsync().AsTask());
+      await Task.WhenAll(_container1.DisposeAsync().AsTask(), _container2.DisposeAsync().AsTask())
+        .ConfigureAwait(false);
     }
 
     [Fact]

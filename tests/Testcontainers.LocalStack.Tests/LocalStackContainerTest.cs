@@ -19,7 +19,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _localStackContainer.StartAsync();
+        await _localStackContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

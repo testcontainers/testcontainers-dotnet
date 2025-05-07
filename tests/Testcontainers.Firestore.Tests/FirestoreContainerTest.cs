@@ -6,7 +6,8 @@ public sealed class FirestoreContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _firestoreContainer.StartAsync();
+        await _firestoreContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

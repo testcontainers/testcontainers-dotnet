@@ -6,7 +6,8 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _bigQueryContainer.StartAsync();
+        await _bigQueryContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

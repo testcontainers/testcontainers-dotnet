@@ -17,12 +17,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public async ValueTask InitializeAsync()
     {
-      await Volume.CreateAsync();
+      await Volume.CreateAsync()
+        .ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await Volume.DeleteAsync();
+      await Volume.DeleteAsync()
+        .ConfigureAwait(false);
     }
   }
 }

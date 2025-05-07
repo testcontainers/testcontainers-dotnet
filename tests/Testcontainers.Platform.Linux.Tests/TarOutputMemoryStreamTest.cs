@@ -88,7 +88,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
 
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(this);
+            await _tarOutputMemoryStream.AddAsync(this)
+                .ConfigureAwait(false);
         }
 
         public ValueTask DisposeAsync()
@@ -161,7 +162,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .ConfigureAwait(true);
 
             // Then
-            var execResults = await Task.WhenAll(targetFilePaths.Select(containerFilePath => container.ExecAsync(new[] { "test", "-f", containerFilePath })))
+            var execResults = await Task.WhenAll(targetFilePaths.Select(containerFilePath => container.ExecAsync(new[] { "test", "-f", containerFilePath }, TestContext.Current.CancellationToken)))
                 .ConfigureAwait(true);
 
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
@@ -185,7 +186,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
 
             public async ValueTask InitializeAsync()
             {
-                await _container.StartAsync();
+                await _container.StartAsync()
+                    .ConfigureAwait(false);
             }
 
             public ValueTask DisposeAsync()
@@ -200,7 +202,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644);
+            await _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644)
+                .ConfigureAwait(false);
         }
 
         public ValueTask DisposeAsync()
@@ -214,7 +217,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644);
+            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644)
+                .ConfigureAwait(false);
         }
 
         public ValueTask DisposeAsync()

@@ -6,7 +6,8 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _minioContainer.StartAsync();
+        await _minioContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

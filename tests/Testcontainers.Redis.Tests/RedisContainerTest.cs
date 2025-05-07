@@ -6,7 +6,8 @@ public sealed class RedisContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _redisContainer.StartAsync();
+        await _redisContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

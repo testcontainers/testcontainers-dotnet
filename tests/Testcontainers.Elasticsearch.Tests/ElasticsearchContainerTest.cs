@@ -7,7 +7,8 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _elasticsearchContainer.StartAsync();
+        await _elasticsearchContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

@@ -125,5 +125,6 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
         Assert.Equal(message.Value, result.Message.Value);
     }
 
+    [UsedImplicitly]
     private record User(string FirstName, string LastName);
 }

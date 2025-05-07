@@ -6,7 +6,8 @@ public sealed class EventStoreDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _eventStoreDbContainer.StartAsync();
+        await _eventStoreDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

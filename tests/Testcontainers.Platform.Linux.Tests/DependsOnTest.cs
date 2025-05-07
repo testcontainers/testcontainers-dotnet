@@ -56,7 +56,8 @@ public sealed class DependsOnTest : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()));
+        await Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()))
+            .ConfigureAwait(false);
     }
 
     [Fact]

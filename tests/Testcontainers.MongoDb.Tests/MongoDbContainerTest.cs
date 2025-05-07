@@ -15,7 +15,8 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     // # --8<-- [start:UseMongoDbContainer]
     public async ValueTask InitializeAsync()
     {
-        await _mongoDbContainer.StartAsync();
+        await _mongoDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

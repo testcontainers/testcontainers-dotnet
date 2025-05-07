@@ -6,7 +6,8 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _ravenDbContainer.StartAsync();
+        await _ravenDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

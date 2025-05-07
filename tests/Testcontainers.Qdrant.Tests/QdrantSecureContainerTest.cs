@@ -24,7 +24,8 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _qdrantContainer.StartAsync();
+        await _qdrantContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

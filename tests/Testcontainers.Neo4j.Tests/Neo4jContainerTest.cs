@@ -14,7 +14,8 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     // # --8<-- [start:UseNeo4jContainer]
     public async ValueTask InitializeAsync()
     {
-        await _neo4jContainer.StartAsync();
+        await _neo4jContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

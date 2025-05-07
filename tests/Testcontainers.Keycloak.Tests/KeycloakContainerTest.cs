@@ -11,7 +11,8 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _keycloakContainer.StartAsync();
+        await _keycloakContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

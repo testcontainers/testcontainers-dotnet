@@ -11,7 +11,8 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _azuriteContainer.StartAsync();
+        await _azuriteContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

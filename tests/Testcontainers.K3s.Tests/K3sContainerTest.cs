@@ -6,7 +6,8 @@ public sealed class K3sContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _k3sConainter.StartAsync();
+        await _k3sConainter.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

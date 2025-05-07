@@ -6,7 +6,8 @@ public sealed class OllamaContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _ollamaContainer.StartAsync();
+        await _ollamaContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

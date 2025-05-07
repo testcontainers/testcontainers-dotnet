@@ -6,7 +6,8 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _couchbaseContainer.StartAsync();
+        await _couchbaseContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

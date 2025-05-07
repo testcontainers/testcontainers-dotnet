@@ -6,7 +6,8 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _arangoDbContainer.StartAsync();
+        await _arangoDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

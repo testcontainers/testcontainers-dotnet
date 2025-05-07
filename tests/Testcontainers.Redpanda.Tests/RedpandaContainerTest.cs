@@ -6,7 +6,8 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _redpandaContainer.StartAsync();
+        await _redpandaContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

@@ -8,7 +8,8 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _lowkeyVaultContainer.StartAsync();
+        await _lowkeyVaultContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

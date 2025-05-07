@@ -8,7 +8,8 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _influxDbContainer.StartAsync();
+        await _influxDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

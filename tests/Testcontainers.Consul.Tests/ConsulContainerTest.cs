@@ -6,7 +6,8 @@ public sealed class ConsulContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _consulContainer.StartAsync();
+        await _consulContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

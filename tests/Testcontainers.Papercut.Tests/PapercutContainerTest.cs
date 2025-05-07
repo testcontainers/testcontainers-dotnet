@@ -6,7 +6,8 @@ public sealed class PapercutContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _papercutContainer.StartAsync();
+        await _papercutContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

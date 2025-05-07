@@ -67,7 +67,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     public async ValueTask InitializeAsync()
     {
       _ = Directory.CreateDirectory(_hostCertsDirectoryPath);
-      await _container.StartAsync();
+
+      await _container.StartAsync()
+        .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

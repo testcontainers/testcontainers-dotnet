@@ -4,9 +4,16 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
 {
     private readonly WeaviateContainer _weaviateContainer = new WeaviateBuilder().Build();
 
-    public async ValueTask InitializeAsync() => await _weaviateContainer.StartAsync();
+    public async ValueTask InitializeAsync()
+    {
+        await _weaviateContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
 
-    public ValueTask DisposeAsync() => _weaviateContainer.DisposeAsync();
+    public ValueTask DisposeAsync()
+    {
+        return _weaviateContainer.DisposeAsync();
+    }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]

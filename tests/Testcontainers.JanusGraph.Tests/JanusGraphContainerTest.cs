@@ -6,7 +6,8 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _janusGraphContainer.StartAsync();
+        await _janusGraphContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

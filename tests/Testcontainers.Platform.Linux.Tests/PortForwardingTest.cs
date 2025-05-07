@@ -11,7 +11,8 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _container.StartAsync();
+        await _container.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -82,7 +83,8 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
         public async ValueTask InitializeAsync()
         {
-            await Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync());
+            await Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync())
+                .ConfigureAwait(false);
         }
 
         public ValueTask DisposeAsync()

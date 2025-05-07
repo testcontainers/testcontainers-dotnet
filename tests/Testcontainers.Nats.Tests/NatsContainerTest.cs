@@ -11,7 +11,8 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _natsContainer.StartAsync();
+        await _natsContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

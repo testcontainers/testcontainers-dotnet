@@ -71,7 +71,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public async ValueTask InitializeAsync()
       {
-        await CreateAsync();
+        await CreateAsync()
+          .ConfigureAwait(false);
       }
 
       public ValueTask DisposeAsync()
