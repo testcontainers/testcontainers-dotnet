@@ -4,14 +4,15 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
 {
     private readonly JanusGraphContainer _janusGraphContainer = new JanusGraphBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _janusGraphContainer.StartAsync();
+        await _janusGraphContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _janusGraphContainer.DisposeAsync().AsTask();
+        return _janusGraphContainer.DisposeAsync();
     }
 
     [Fact]
@@ -28,10 +29,10 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
         var graphTraversalSource = AnonymousTraversalSource.Traversal().WithRemote(connection);
 
         // When
-        await graphTraversalSource.AddV(label).Promise(traversal => traversal.Iterate())
+        await graphTraversalSource.AddV(label).Promise(traversal => traversal.Iterate(), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var count = await graphTraversalSource.V().HasLabel(label).Count().Promise(traversal => traversal.Next())
+        var count = await graphTraversalSource.V().HasLabel(label).Count().Promise(traversal => traversal.Next(), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
