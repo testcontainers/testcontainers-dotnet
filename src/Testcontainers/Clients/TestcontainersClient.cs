@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersReuseHashLabel = TestcontainersLabel + ".reuse-hash";
 
-    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
     private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 

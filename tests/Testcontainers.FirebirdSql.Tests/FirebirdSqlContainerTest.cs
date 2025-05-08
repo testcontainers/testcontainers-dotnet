@@ -24,7 +24,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         const string scriptContent = "SELECT 1 FROM RDB$DATABASE;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

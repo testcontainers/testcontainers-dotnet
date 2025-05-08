@@ -6,14 +6,15 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
     private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder().WithAdminToken(AdminToken).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _influxDbContainer.StartAsync();
+        await _influxDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _influxDbContainer.DisposeAsync().AsTask();
+        return _influxDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -55,10 +56,10 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
             .Timestamp(DateTime.UtcNow, WritePrecision.Ns);
 
         // When
-        await writeApi.WritePointAsync(point, InfluxDbBuilder.DefaultBucket, InfluxDbBuilder.DefaultOrganization)
+        await writeApi.WritePointAsync(point, InfluxDbBuilder.DefaultBucket, InfluxDbBuilder.DefaultOrganization, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var fluxTables = await queryApi.QueryAsync(query, InfluxDbBuilder.DefaultOrganization)
+        var fluxTables = await queryApi.QueryAsync(query, InfluxDbBuilder.DefaultOrganization, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         var recordValues = fluxTables.Single().Records.Single().Values;
