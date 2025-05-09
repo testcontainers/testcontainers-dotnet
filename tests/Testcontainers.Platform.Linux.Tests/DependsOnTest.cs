@@ -15,7 +15,7 @@ public sealed class DependsOnTest : IAsyncLifetime
         _filters.Add("label", string.Join("=", _labelKey, _labelValue));
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var childContainer1 = new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
@@ -54,9 +54,10 @@ public sealed class DependsOnTest : IAsyncLifetime
         _disposables.Add(volume);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()));
+        await Task.WhenAll(_disposables.Select(disposable => disposable.DisposeAsync().AsTask()))
+            .ConfigureAwait(false);
     }
 
     [Fact]
@@ -75,13 +76,13 @@ public sealed class DependsOnTest : IAsyncLifetime
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
         // When
-        var containers = await client.Containers.ListContainersAsync(containersListParameters)
+        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters)
+        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters)
+        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

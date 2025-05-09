@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using DotNet.Testcontainers.Images;
-  using Xunit.Abstractions;
+  using Xunit.Sdk;
 
   public sealed class DockerImageFixtureSerializable : IXunitSerializable
   {

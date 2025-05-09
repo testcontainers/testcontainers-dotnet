@@ -2,7 +2,9 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Data.Common;
   using System.Text.RegularExpressions;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -111,6 +113,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
+    /// Waits until a successful connection to the database can be established.
+    /// </summary>
+    /// <remarks>
+    /// To use this wait strategy, the container must implement the <see cref="IDatabaseContainer" /> interface.
+    /// </remarks>
+    /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create the database connection.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.

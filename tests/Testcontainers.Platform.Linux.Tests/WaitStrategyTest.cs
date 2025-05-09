@@ -10,7 +10,7 @@ public sealed class WaitStrategyTest
             .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithTimeout(TimeSpan.FromSeconds(1))))
             .Build()
-            .StartAsync());
+            .StartAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public sealed class WaitStrategyTest
             .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithRetries(1)))
             .Build()
-            .StartAsync());
+            .StartAsync(TestContext.Current.CancellationToken));
     }
 
     private sealed class FailingWaitStrategy : IWaitUntil

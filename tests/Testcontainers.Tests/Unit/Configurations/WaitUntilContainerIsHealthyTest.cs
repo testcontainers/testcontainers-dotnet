@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await container.StartAsync()
+      await container.StartAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -45,7 +45,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      _ = await Record.ExceptionAsync(() => container.StartAsync())
+      _ = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then

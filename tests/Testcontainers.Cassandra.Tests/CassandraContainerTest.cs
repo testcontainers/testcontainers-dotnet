@@ -1,26 +1,14 @@
 namespace Testcontainers.Cassandra;
 
-public sealed class CassandraContainerTest : IAsyncLifetime
+public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDefaultFixture fixture)
 {
     // # --8<-- [start:UseCassandraContainer]
-    private readonly CassandraContainer _cassandraContainer = new CassandraBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _cassandraContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _cassandraContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new CqlConnection(_cassandraContainer.GetConnectionString());
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -36,7 +24,7 @@ public sealed class CassandraContainerTest : IAsyncLifetime
         // Given
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local WHERE key = ?;";
 
-        using var cluster = Cluster.Builder().WithConnectionString(_cassandraContainer.GetConnectionString()).Build();
+        using var cluster = Cluster.Builder().WithConnectionString(fixture.Container.GetConnectionString()).Build();
 
         // When
         using var session = cluster.Connect();
@@ -61,11 +49,34 @@ public sealed class CassandraContainerTest : IAsyncLifetime
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local;";
 
         // When
-        var execResult = await _cassandraContainer.ExecScriptAsync(selectFromSystemLocalStatement)
+        var execResult = await fixture.Container.ExecScriptAsync(selectFromSystemLocalStatement, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+
+    public class CassandraDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
+    {
+        public override DbProviderFactory DbProviderFactory
+            => CqlProviderFactory.Instance;
+    }
+
+    [UsedImplicitly]
+    public class CassandraWaitForDatabaseFixture(IMessageSink messageSink)
+        : CassandraDefaultFixture(messageSink)
+    {
+        protected override CassandraBuilder Configure(CassandraBuilder builder)
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+    }
+
+    [UsedImplicitly]
+    public sealed class CassandraDefaultConfiguration(CassandraDefaultFixture fixture)
+        : CassandraContainerTest(fixture), IClassFixture<CassandraDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class CassandraWaitForDatabaseConfiguration(CassandraWaitForDatabaseFixture fixture)
+        : CassandraContainerTest(fixture), IClassFixture<CassandraWaitForDatabaseFixture>;
 }

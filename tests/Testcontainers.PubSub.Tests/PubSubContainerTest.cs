@@ -4,14 +4,15 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 {
     private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _pubSubContainer.StartAsync();
+        await _pubSubContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _pubSubContainer.DisposeAsync().AsTask();
+        return _pubSubContainer.DisposeAsync();
     }
 
     [Fact]
@@ -43,13 +44,13 @@ public sealed class PubSubContainerTest : IAsyncLifetime
         subscriberClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         // When
-        var publisher = await publisherClientBuilder.BuildAsync()
+        var publisher = await publisherClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await publisher.CreateTopicAsync(topicName)
             .ConfigureAwait(true);
 
-        var subscriber = await subscriberClientBuilder.BuildAsync()
+        var subscriber = await subscriberClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await subscriber.CreateSubscriptionAsync(subscriptionName, topicName, null, 60)

@@ -92,17 +92,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithImage(IImage image)
     {
-      if (string.IsNullOrEmpty(TestcontainersSettings.HubImageNamePrefix))
-      {
-        return Clone(new ContainerConfiguration(image: image));
-      }
-
-      if (!string.IsNullOrEmpty(image.GetHostname()))
-      {
-        return Clone(new ContainerConfiguration(image: image));
-      }
-
-      return Clone(new ContainerConfiguration(image: new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, TestcontainersSettings.HubImageNamePrefix)));
+      return Clone(new ContainerConfiguration(image: image.ApplyHubImageNamePrefix()));
     }
 
     /// <inheritdoc />

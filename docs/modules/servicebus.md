@@ -41,3 +41,12 @@ The Service Bus module depends on an MSSQL container instance. The module automa
     ```csharp
     --8<-- "tests/Testcontainers.ServiceBus.Tests/ServiceBusContainerTest.cs:ReuseExistingMsSqlContainer"
     ```
+
+## Use a custom Config.json
+
+The Azure Service Bus Emulator provides a [default](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator?tabs=automated-script#interact-with-the-emulator) configuration. If a custom configuration is desired, you can use the following method to provide a custom JSON file to the builder accordingly:
+
+=== "Use Custom Configuration"
+    ```csharp
+    --8<-- "tests/Testcontainers.ServiceBus.Tests/ServiceBusContainerTest.cs:UseCustomConfiguration"
+    ```

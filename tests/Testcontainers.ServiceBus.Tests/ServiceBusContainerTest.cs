@@ -9,15 +9,18 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         _serviceBusContainer = serviceBusContainer;
     }
 
+    protected virtual string QueueName => "queue.1";
+
     // # --8<-- [start:UseServiceBusContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _serviceBusContainer.StartAsync();
+        await _serviceBusContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _serviceBusContainer.DisposeAsync().AsTask();
+        return _serviceBusContainer.DisposeAsync();
     }
 
     [Fact]
@@ -33,21 +36,20 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Upload a custom configuration before the container starts using the
         // `WithResourceMapping(string, string)` API or one of its overloads:
         // `WithResourceMapping("Config.json", "/ServiceBus_Emulator/ConfigFiles/")`.
-        const string queueName = "queue.1";
 
         var message = new ServiceBusMessage(helloServiceBus);
 
         await using var client = new ServiceBusClient(_serviceBusContainer.GetConnectionString());
 
-        var sender = client.CreateSender(queueName);
+        var sender = client.CreateSender(QueueName);
 
-        var receiver = client.CreateReceiver(queueName);
+        var receiver = client.CreateReceiver(QueueName);
 
         // When
-        await sender.SendMessageAsync(message)
+        await sender.SendMessageAsync(message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var receivedMessage = await receiver.ReceiveMessageAsync()
+        var receivedMessage = await receiver.ReceiveMessageAsync(cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -80,6 +82,22 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
                 .Build())
         {
         }
+    }
+
+    [UsedImplicitly]
+    public sealed class ServiceBusCustomQueueConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    {
+        public ServiceBusCustomQueueConfiguration()
+            : base(new ServiceBusBuilder()
+                .WithAcceptLicenseAgreement(true)
+                // # --8<-- [start:UseCustomConfiguration]
+                .WithConfig("custom-queue-config.json")
+                // # --8<-- [end:UseCustomConfiguration]
+                .Build())
+        {
+        }
+
+        protected override string QueueName => "custom-queue.1";
     }
 
     [UsedImplicitly]

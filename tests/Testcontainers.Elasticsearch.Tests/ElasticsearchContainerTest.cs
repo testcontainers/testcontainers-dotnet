@@ -5,14 +5,15 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
     // # --8<-- [start:UseElasticsearchContainer]
     private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _elasticsearchContainer.StartAsync();
+        await _elasticsearchContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _elasticsearchContainer.DisposeAsync().AsTask();
+        return _elasticsearchContainer.DisposeAsync();
     }
 
     [Fact]

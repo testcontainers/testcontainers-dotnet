@@ -6,7 +6,6 @@ global using System.Security.Cryptography.X509Certificates;
 global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Commons;
 global using Grpc.Core;
-global using Grpc.Core.Interceptors;
 global using Grpc.Net.Client;
 global using Qdrant.Client;
 global using Qdrant.Client.Grpc;

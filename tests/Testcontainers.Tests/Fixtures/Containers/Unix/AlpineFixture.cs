@@ -18,14 +18,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         .WithStartupCallback((_, ct) => Task.Delay(TimeSpan.FromMinutes(1), ct))
         .Build();
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-      return Task.CompletedTask;
+      return ValueTask.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return Container.DisposeAsync().AsTask();
+      return Container.DisposeAsync();
     }
   }
 }

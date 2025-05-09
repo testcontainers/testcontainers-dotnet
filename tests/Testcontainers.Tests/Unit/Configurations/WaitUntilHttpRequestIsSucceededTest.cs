@@ -37,14 +37,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       return theoryData;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _container.StartAsync();
+      await _container.StartAsync()
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync().AsTask();
+      return _container.DisposeAsync();
     }
 
     [Theory]
@@ -73,10 +74,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
         .ConfigureAwait(true);
 
-      await Task.Delay(TimeSpan.FromSeconds(1))
+      await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      var (_, stderr) = await _container.GetLogsAsync()
+      var (_, stderr) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -103,10 +104,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
         .ConfigureAwait(true);
 
-      await Task.Delay(TimeSpan.FromSeconds(1))
+      await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      var (_, stderr) = await _container.GetLogsAsync()
+      var (_, stderr) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

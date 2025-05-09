@@ -19,28 +19,28 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task QueryNotExistingDockerContainerById()
     {
-      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageById()
     {
-      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkById()
     {
-      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeById()
     {
-      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
@@ -53,7 +53,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await container.StartAsync()
+      await container.StartAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

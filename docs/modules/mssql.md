@@ -8,14 +8,15 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.MsSql
 ```
 
-You can start a MSSQL container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+You can start a MSSQL container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Create Container Instance"
+=== "Start a MSSQL container"
     ```csharp
-    --8<-- "tests/Testcontainers.MsSql.Tests/MsSqlContainerTest.cs:CreateMsSqlContainer"
+    var msSqlContainer = new MsSqlBuilder().Build();
+    await msSqlContainer.StartAsync();
     ```
 
-This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) module to reduce overhead by automatically managing the lifecycle of the dependent container instance. It creates and starts the container using the module-specific builder and injects it as a shared class fixture into the test class.
 
 === "Usage Example"
     ```csharp

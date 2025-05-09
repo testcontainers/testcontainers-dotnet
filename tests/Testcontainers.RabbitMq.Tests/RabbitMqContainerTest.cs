@@ -5,14 +5,15 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
     // # --8<-- [start:UseRabbitMqContainer]
     private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _rabbitMqContainer.StartAsync();
+        await _rabbitMqContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _rabbitMqContainer.DisposeAsync().AsTask();
+        return _rabbitMqContainer.DisposeAsync();
     }
 
     [Fact]
