@@ -18,5 +18,3 @@ global using Cake.Core.IO;
 global using Cake.Frosting;
 global using Cake.Git;
 global using Cake.Sonar;
-global using JetBrains.Annotations;
-global using TestContainers.Build;

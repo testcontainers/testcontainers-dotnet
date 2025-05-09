@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-769
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj", "{84C38720-3397-4012-8C38-822D1D367BAB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ActiveMq", "src\Testcontainers.ActiveMq\Testcontainers.ActiveMq.csproj", "{5365F780-0E6C-41F0-B1B9-7DC34368F80C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ArangoDb", "src\Testcontainers.ArangoDb\Testcontainers.ArangoDb.csproj", "{AB9C1563-07C7-4685-BACD-BB1FF64B3611}"
@@ -257,10 +255,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{84C38720-3397-4012-8C38-822D1D367BAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84C38720-3397-4012-8C38-822D1D367BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84C38720-3397-4012-8C38-822D1D367BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84C38720-3397-4012-8C38-822D1D367BAB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -738,7 +732,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{84C38720-3397-4012-8C38-822D1D367BAB} = {AF017206-CE20-4DDF-8301-CAC68CED1BE6}
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{AB9C1563-07C7-4685-BACD-BB1FF64B3611} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
