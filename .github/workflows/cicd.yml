@@ -115,12 +115,15 @@ jobs:
 
       - name: Restore NuGet Packages
         run: ./build.sh --target=Restore-NuGet-Packages
+        shell: bash
 
       - name: Run Build
         run: ./build.sh --target=Build
+        shell: bash
 
       - name: Run Tests
         run: ./build.sh --target=Test --test-project=${{ matrix.test-projects.name }}
+        shell: bash
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
@@ -187,18 +190,23 @@ jobs:
 
       - name: Restore NuGet Packages
         run: ./build.sh --target=Restore-NuGet-Packages
+        shell: bash
 
       - name: Run Sonar Analysis
         run: ./build.sh --target=Sonar-Begin
+        shell: bash
 
       - name: Run Build
         run: ./build.sh --target=Build
+        shell: bash
 
       - name: Upload Sonar Results
         run: ./build.sh --target=Sonar-End
+        shell: bash
 
       - name: Publish NuGet Package
         run: ./build.sh --target=Publish
+        shell: bash
 
       # Cake sets the semVer environment variable
       - uses: release-drafter/release-drafter@v6
