@@ -49,7 +49,7 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(selectFromSystemLocalStatement)
+        var execResult = await fixture.Container.ExecScriptAsync(selectFromSystemLocalStatement, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

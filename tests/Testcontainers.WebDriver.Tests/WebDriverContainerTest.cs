@@ -22,7 +22,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         _webDriverContainer = webDriverContainer;
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _webDriverContainer.StartAsync()
             .ConfigureAwait(false);
@@ -31,7 +31,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _helloWorldContainer.DisposeAsync()
             .ConfigureAwait(false);
@@ -69,10 +69,10 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
             var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
 
             // When
-            await _webDriverContainer.StopAsync()
+            await _webDriverContainer.StopAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            await _webDriverContainer.ExportVideoAsync(videoFilePath)
+            await _webDriverContainer.ExportVideoAsync(videoFilePath, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // Then
@@ -82,7 +82,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         [Fact]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty));
+            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 
@@ -97,7 +97,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         [Fact]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty));
+            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 }

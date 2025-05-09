@@ -15,14 +15,15 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     }
 
     // # --8<-- [start:UsePulsarContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _pulsarContainer.StartAsync();
+        await _pulsarContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _pulsarContainer.DisposeAsync().AsTask();
+        return _pulsarContainer.DisposeAsync();
     }
 
     [Fact]
@@ -39,7 +40,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         if (_authenticationEnabled)
         {
-            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan);
+            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan, TestContext.Current.CancellationToken);
             _ = clientBuilder.Authentication(new TokenAuthentication(authToken));
         }
 
@@ -55,13 +56,13 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .Create();
 
         // When
-        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10))
+        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await producer.Send(helloPulsar)
+        _ = await producer.Send(helloPulsar, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var message = await consumer.Receive()
+        var message = await consumer.Receive(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

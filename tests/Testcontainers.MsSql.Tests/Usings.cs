@@ -7,4 +7,4 @@ global using JetBrains.Annotations;
 global using Microsoft.Data.SqlClient;
 global using Testcontainers.Xunit;
 global using Xunit;
-global using Xunit.Abstractions;
+global using Xunit.Sdk;

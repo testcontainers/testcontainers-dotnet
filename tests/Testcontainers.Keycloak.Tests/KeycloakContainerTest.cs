@@ -9,14 +9,15 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         _keycloakContainer = keycloakContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _keycloakContainer.StartAsync();
+        await _keycloakContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _keycloakContainer.DisposeAsync().AsTask();
+        return _keycloakContainer.DisposeAsync();
     }
 
     [Fact]
@@ -27,7 +28,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
+        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -41,7 +42,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
 
         // When
-        var masterRealm = await keycloakClient.GetRealmAsync("master")
+        var masterRealm = await keycloakClient.GetRealmAsync("master", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

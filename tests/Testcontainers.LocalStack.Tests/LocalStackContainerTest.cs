@@ -17,14 +17,15 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         _localStackContainer = localStackContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _localStackContainer.StartAsync();
+        await _localStackContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _localStackContainer.DisposeAsync().AsTask();
+        return _localStackContainer.DisposeAsync();
     }
 
     [Fact]
@@ -41,7 +42,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When
-        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -78,13 +79,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest)
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest)
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest)
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -103,7 +104,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonS3Client(config);
 
         // When
-        var buckets = await client.ListBucketsAsync()
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -122,7 +123,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
         // When
-        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"))
+        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -141,7 +142,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSQSClient(config);
 
         // When
-        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

@@ -4,14 +4,15 @@ public sealed class KafkaContainerTest : IAsyncLifetime
 {
     private readonly KafkaContainer _kafkaContainer = new KafkaBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _kafkaContainer.StartAsync();
+        await _kafkaContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _kafkaContainer.DisposeAsync().AsTask();
+        return _kafkaContainer.DisposeAsync();
     }
 
     [Fact]
@@ -36,7 +37,7 @@ public sealed class KafkaContainerTest : IAsyncLifetime
 
         // When
         using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
-        _ = await producer.ProduceAsync(topic, message)
+        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();

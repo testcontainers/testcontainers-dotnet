@@ -10,9 +10,9 @@ global using StackExchange.Redis;
 global using Testcontainers.PostgreSql;
 global using Testcontainers.Redis;
 global using Xunit;
+global using Xunit.Sdk;
 #if XUNIT_V3
 global using Xunit.v3;
 #else
 global using Xunit.Abstractions;
 #endif
-global using Xunit.Sdk;

@@ -9,4 +9,4 @@ global using IBM.Data.Db2;
 global using JetBrains.Annotations;
 global using Testcontainers.Xunit;
 global using Xunit;
-global using Xunit.Abstractions;
+global using Xunit.Sdk;

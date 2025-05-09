@@ -4,14 +4,15 @@ public sealed class SftpContainerTest : IAsyncLifetime
 {
     private readonly SftpContainer _sftpContainer = new SftpBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _sftpContainer.StartAsync();
+        await _sftpContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _sftpContainer.DisposeAsync().AsTask();
+        return _sftpContainer.DisposeAsync();
     }
 
     [Fact]
