@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync()
+        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync()
+        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -95,7 +95,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync()
+        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then

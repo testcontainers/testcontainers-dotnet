@@ -9,14 +9,15 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         _azuriteContainer = azuriteContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _azuriteContainer.StartAsync();
+        await _azuriteContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _azuriteContainer.DisposeAsync().AsTask();
+        return _azuriteContainer.DisposeAsync();
     }
 
     [Fact]
@@ -27,7 +28,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -42,7 +43,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -57,7 +58,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -106,7 +107,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         public async Task MemoryLimitIsConfigured()
         {
             // Given
-            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false)
+            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // When

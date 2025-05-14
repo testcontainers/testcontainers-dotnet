@@ -8,4 +8,4 @@ global using JetBrains.Annotations;
 global using Oracle.ManagedDataAccess.Client;
 global using Testcontainers.Xunit;
 global using Xunit;
-global using Xunit.Abstractions;
+global using Xunit.Sdk;

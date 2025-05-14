@@ -4,9 +4,16 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
 {
     private readonly WeaviateContainer _weaviateContainer = new WeaviateBuilder().Build();
 
-    public Task InitializeAsync() => _weaviateContainer.StartAsync();
+    public async ValueTask InitializeAsync()
+    {
+        await _weaviateContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
 
-    public Task DisposeAsync() => _weaviateContainer.DisposeAsync().AsTask();
+    public ValueTask DisposeAsync()
+    {
+        return _weaviateContainer.DisposeAsync();
+    }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -17,7 +24,7 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_weaviateContainer.GetBaseAddress());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("v1/schema")
+        using var httpResponse = await httpClient.GetAsync("v1/schema", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

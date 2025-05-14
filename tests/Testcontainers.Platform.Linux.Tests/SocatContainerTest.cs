@@ -28,7 +28,7 @@ public sealed class SocatContainerTest : IAsyncLifetime
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _helloWorldContainer.StartAsync()
             .ConfigureAwait(false);
@@ -37,7 +37,7 @@ public sealed class SocatContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _socatContainer.DisposeAsync()
             .ConfigureAwait(false);
@@ -59,10 +59,10 @@ public sealed class SocatContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, _socatContainer.Hostname, _socatContainer.GetMappedPublicPort(containerPort)).Uri;
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/ping")
+        using var httpResponse = await httpClient.GetAsync("/ping", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await httpResponse.Content.ReadAsStringAsync()
+        var response = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
