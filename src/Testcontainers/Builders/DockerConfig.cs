@@ -105,21 +105,22 @@ namespace DotNet.Testcontainers.Builders
           {
             var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
             var host = meta.Endpoints?.Docker?.Host;
-            if (host == null)
+
+            if (string.IsNullOrEmpty(host))
             {
-              throw new DockerConfigurationException($"The Docker host is null in {metaFilePath} (JSONPath: Endpoints.docker.Host)");
+              throw new DockerConfigurationException($"The Docker host is null or empty in '{metaFilePath}' (JSONPath: Endpoints.docker.Host).");
             }
 
             return new Uri(host.Replace("npipe:////./", "npipe://./"));
           }
         }
-        catch (Exception notFoundException) when (notFoundException is DirectoryNotFoundException or FileNotFoundException)
+        catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
         {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist", notFoundException);
+          throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist.", e);
         }
-        catch (Exception exception) when (exception is not DockerConfigurationException)
+        catch (Exception e) when (e is not DockerConfigurationException)
         {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from {metaFilePath}", exception);
+          throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from '{metaFilePath}'.", e);
         }
       }
     }
