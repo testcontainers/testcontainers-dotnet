@@ -24,7 +24,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

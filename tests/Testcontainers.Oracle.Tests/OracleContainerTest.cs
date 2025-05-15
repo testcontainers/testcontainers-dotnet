@@ -24,7 +24,7 @@ public abstract class OracleContainerTest(OracleContainerTest.OracleFixture fixt
         const string scriptContent = "SELECT 1 FROM DUAL;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

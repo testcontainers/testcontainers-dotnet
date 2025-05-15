@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
 
-      var dockerfileArchiveFilePath = await dockerfileArchive.Tar()
+      var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // When
@@ -75,7 +75,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then
@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then
@@ -109,7 +109,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync())
+      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then
@@ -140,10 +140,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await imageFromDockerfileBuilder.CreateAsync()
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      await imageFromDockerfileBuilder.CreateAsync()
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

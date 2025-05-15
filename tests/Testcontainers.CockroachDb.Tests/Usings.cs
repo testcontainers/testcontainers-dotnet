@@ -7,4 +7,4 @@ global using JetBrains.Annotations;
 global using Npgsql;
 global using Testcontainers.Xunit;
 global using Xunit;
-global using Xunit.Abstractions;
+global using Xunit.Sdk;

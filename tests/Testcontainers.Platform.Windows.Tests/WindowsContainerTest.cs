@@ -9,14 +9,15 @@ public abstract class WindowsContainerTest : IAsyncLifetime
         _container = container;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _container.StartAsync();
+        await _container.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync().AsTask();
+        return _container.DisposeAsync();
     }
 
     [SkipOnLinuxEngine]
