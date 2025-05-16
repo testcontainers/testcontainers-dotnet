@@ -17,17 +17,8 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider;
-
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig;
-
-    internal static readonly IReadOnlyList<(Uri Uri, Exception Exception)> UnavailableEndpoints;
-
-    static TestcontainersSettings()
-    {
-      var providers = new IDockerEndpointAuthenticationProvider[]
+    internal static readonly List<DockerEndpointAuthenticationProvider> DockerEndpointAuthProviders
+      = new List<DockerEndpointAuthenticationProvider>
       {
         new TestcontainersEndpointAuthenticationProvider(),
         new MTlsEndpointAuthenticationProvider(),
@@ -39,20 +30,16 @@ namespace DotNet.Testcontainers.Configurations
         new RootlessUnixEndpointAuthenticationProvider(),
       };
 
-      DockerEndpointAuthProvider = providers.Where(authProvider => authProvider.IsApplicable()).FirstOrDefault(authProvider => authProvider.IsAvailable());
-      DockerEndpointAuthConfig = DockerEndpointAuthProvider?.GetAuthConfig();
-      UnavailableEndpoints = providers.OfType<DockerEndpointAuthenticationProvider>().Select(e => e.UnavailableEndpoint).Where(e => e.HasValue).Select(e => e.Value).ToList();
-      if (DockerEndpointAuthProvider is ICustomConfiguration config)
-      {
-        DockerHostOverride = config.GetDockerHostOverride();
-        DockerSocketOverride = config.GetDockerSocketOverride();
-      }
-      else
-      {
-        DockerHostOverride = EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
-        DockerSocketOverride = EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
-      }
-      OS = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+    [CanBeNull]
+    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
+      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
+
+    [CanBeNull]
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
+      = DockerEndpointAuthProvider?.GetAuthConfig();
+
+    static TestcontainersSettings()
+    {
     }
 
     /// <summary>
@@ -60,12 +47,16 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [CanBeNull]
     public static string DockerHostOverride { get; set; }
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
     [CanBeNull]
     public static string DockerSocketOverride { get; set; }
+      = DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -151,6 +142,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
