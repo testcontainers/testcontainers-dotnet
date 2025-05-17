@@ -53,8 +53,13 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
     public TypesenseBuilder EnableCors(bool enableCors)
     {
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(enableCors: enableCors))
-          .WithCommand("--enable-cors");
+        if (enableCors)
+        {
+            return Merge(DockerResourceConfiguration, new TypesenseConfiguration(enableCors: enableCors))
+              .WithCommand("--enable-cors");
+        }
+
+        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(enableCors: enableCors));
     }
 
     /// <summary>

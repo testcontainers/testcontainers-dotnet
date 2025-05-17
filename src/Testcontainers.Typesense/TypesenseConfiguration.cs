@@ -57,6 +57,8 @@ public class TypesenseConfiguration : ContainerConfiguration
     {
         ApiKey = BuildConfiguration.Combine(oldValue.ApiKey, newValue.ApiKey);
         Port = BuildConfiguration.Combine(oldValue.Port, newValue.Port);
+        EnableCors = BuildConfiguration.Combine(oldValue.EnableCors, newValue.EnableCors);
+        Volume = BuildConfiguration.Combine(oldValue.Volume, newValue.Volume);
     }
 
     public string ApiKey { get; }
