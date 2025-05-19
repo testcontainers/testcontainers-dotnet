@@ -55,6 +55,7 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumesProducedKafkaMessage()
     {
         _ = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath }, TestContext.Current.CancellationToken)

@@ -22,9 +22,12 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _artemisContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
     // # --8<-- [end:UseArtemisContainer]
 
@@ -72,6 +75,11 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
     // # --8<-- [end:ArtemisContainerEstablishesConnection]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _artemisContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:UseArtemisContainerDefaultAuth]
     [UsedImplicitly]

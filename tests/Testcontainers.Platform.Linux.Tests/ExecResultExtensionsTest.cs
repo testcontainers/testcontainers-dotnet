@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Tests;
+namespace Testcontainers.Tests;
 
 public sealed class ExecResultExtensionsTest : IAsyncLifetime
 {
@@ -19,6 +19,7 @@ public sealed class ExecResultExtensionsTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ExecAsyncShouldSucceedWhenCommandReturnsZeroExitCode()
     {
         // Given
@@ -33,6 +34,7 @@ public sealed class ExecResultExtensionsTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ExecAsyncShouldThrowExecFailedExceptionWhenCommandFails()
     {
         // Given

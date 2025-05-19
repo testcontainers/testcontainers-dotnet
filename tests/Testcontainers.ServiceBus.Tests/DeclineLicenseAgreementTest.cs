@@ -6,6 +6,7 @@ public sealed partial class DeclineLicenseAgreementTest
     private static partial Regex LicenseAgreementNotAccepted();
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void WithoutAcceptingLicenseAgreementThrowsArgumentException()
     {
         var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder().Build());
@@ -13,6 +14,7 @@ public sealed partial class DeclineLicenseAgreementTest
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void WithLicenseAgreementDeclinedThrowsArgumentException()
     {
         var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder().WithAcceptLicenseAgreement(false).Build());

@@ -19,9 +19,12 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _mongoDbContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -77,6 +80,11 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
             Assert.True(1L.Equals(execResult.ExitCode), execResult.Stdout);
             Assert.Equal("MongoServerError: not running with --replSet\n", execResult.Stderr);
         }
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _mongoDbContainer.DisposeAsync();
     }
 
     // # --8<-- [start:CreateMongoDbContainer]

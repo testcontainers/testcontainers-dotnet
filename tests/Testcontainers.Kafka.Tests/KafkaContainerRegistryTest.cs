@@ -77,6 +77,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReturnsProducerMessage()
     {
         // Given

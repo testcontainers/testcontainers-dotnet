@@ -21,12 +21,16 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _pulsarContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReceivesSendMessage()
     {
         // Given
@@ -69,6 +73,11 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
     }
     // # --8<-- [end:UsePulsarContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _pulsarContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreatePulsarContainer]
     [UsedImplicitly]

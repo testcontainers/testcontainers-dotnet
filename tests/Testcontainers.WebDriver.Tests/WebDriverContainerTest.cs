@@ -33,14 +33,14 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await _helloWorldContainer.DisposeAsync()
+        await DisposeAsyncCore()
             .ConfigureAwait(false);
 
-        await _webDriverContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void HeadingElementReturnsHelloWorld()
     {
         // Given
@@ -54,6 +54,15 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         Assert.Equal("Hello world", headingElementText);
     }
 
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        await _helloWorldContainer.DisposeAsync()
+            .ConfigureAwait(false);
+
+        await _webDriverContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
     [UsedImplicitly]
     public sealed class RecordingEnabled : WebDriverContainerTest
     {
@@ -63,6 +72,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task ExportVideoWritesFile()
         {
             // Given
@@ -80,9 +90,11 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(()
+                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 
@@ -95,9 +107,11 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(()
+                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 }
