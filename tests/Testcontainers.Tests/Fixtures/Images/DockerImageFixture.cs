@@ -37,8 +37,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(new DockerImageFixtureSerializable(new DockerImage(FedoraHttpd, PortSeparatorRegistry, CustomTag1, null)), $"{PortSeparatorRegistry}/{FedoraHttpd}:{CustomTag1}", $"{PortSeparatorRegistry}/{FedoraHttpd}:{CustomTag1}");
       Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, DotSeparatorRegistry, SemVerTag, Digest)), $"{DotSeparatorRegistry}/{FooBarBaz}:{SemVerTag}@{Digest}", $"{DotSeparatorRegistry}/{FooBarBaz}:{SemVerTag}@{Digest}");
       Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, DotSeparatorRegistry, null, Digest)), $"{DotSeparatorRegistry}/{FooBarBaz}@{Digest}", $"{DotSeparatorRegistry}/{FooBarBaz}@{Digest}");
-      Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, null, null, null, HubImageNamePrefixImplicitLibrary)), $"{HubImageNamePrefixImplicitLibrary}/{FooBarBaz}", $"{HubImageNamePrefixImplicitLibrary}/{FooBarBaz}:{LatestTag}");
-      Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, null, null, null, HubImageNamePrefixExplicitLibrary)), $"{HubImageNamePrefixExplicitLibrary}/{FooBarBaz}", $"{HubImageNamePrefixExplicitLibrary}/{FooBarBaz}:{LatestTag}");
+      Add(new DockerImageFixtureSerializable(new DockerImage(BarBaz, null, null, null, HubImageNamePrefixImplicitLibrary)), $"{HubImageNamePrefixImplicitLibrary}/{BarBaz}", $"{HubImageNamePrefixImplicitLibrary}/{BarBaz}:{LatestTag}");
+      Add(new DockerImageFixtureSerializable(new DockerImage(BarBaz, null, null, null, HubImageNamePrefixExplicitLibrary)), $"{HubImageNamePrefixExplicitLibrary}/{BarBaz}", $"{HubImageNamePrefixExplicitLibrary}/{BarBaz}:{LatestTag}");
     }
   }
 }
