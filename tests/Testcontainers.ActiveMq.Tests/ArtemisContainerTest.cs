@@ -29,7 +29,6 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
         GC.SuppressFinalize(this);
     }
-
     // # --8<-- [end:UseArtemisContainer]
 
     // # --8<-- [start:ArtemisContainerEstablishesConnection]
