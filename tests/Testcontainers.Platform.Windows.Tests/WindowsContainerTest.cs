@@ -15,9 +15,12 @@ public abstract class WindowsContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [SkipOnLinuxEngine]
@@ -25,6 +28,11 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     public void ContainerIsRunning()
     {
         Assert.Equal(TestcontainersStates.Running, _container.State);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _container.DisposeAsync();
     }
 
     [UsedImplicitly]

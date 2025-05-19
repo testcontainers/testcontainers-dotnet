@@ -15,9 +15,12 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _azuriteContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -65,6 +68,11 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         Assert.False(HasError(properties));
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _azuriteContainer.DisposeAsync();
+    }
+
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
     {
         using (var rawResponse = response.GetRawResponse())
@@ -104,6 +112,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task MemoryLimitIsConfigured()
         {
             // Given

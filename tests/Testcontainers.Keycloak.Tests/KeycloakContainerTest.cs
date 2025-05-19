@@ -15,12 +15,16 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _keycloakContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task GetOpenIdEndpointReturnsHttpStatusCodeOk()
     {
         // Given
@@ -36,6 +40,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task MasterRealmIsEnabled()
     {
         // Given
@@ -47,6 +52,11 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(masterRealm.Enabled);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _keycloakContainer.DisposeAsync();
     }
 
     [UsedImplicitly]

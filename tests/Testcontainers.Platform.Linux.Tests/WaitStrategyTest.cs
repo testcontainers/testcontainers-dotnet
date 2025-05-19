@@ -3,6 +3,7 @@ namespace Testcontainers.Tests;
 public sealed class WaitStrategyTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithTimeout()
     {
         return Assert.ThrowsAsync<TimeoutException>(() => new ContainerBuilder()
@@ -14,6 +15,7 @@ public sealed class WaitStrategyTest
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithRetries()
     {
         return Assert.ThrowsAsync<RetryLimitExceededException>(() => new ContainerBuilder()

@@ -72,9 +72,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync();
+      await DisposeAsyncCore()
+        .ConfigureAwait(false);
+
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+      await _container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
     private sealed class UntilListenOn : IWaitUntil

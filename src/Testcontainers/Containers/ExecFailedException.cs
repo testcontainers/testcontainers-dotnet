@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Containers
+namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Linq;
@@ -17,7 +17,7 @@
     /// <summary>
     /// Initializes a new instance of the <see cref="ExecFailedException" /> class.
     /// </summary>
-    /// <param name="execResult">The result of the failed command execution.</param>
+    /// <param name="execResult">The result of the failed command.</param>
     public ExecFailedException(ExecResult execResult)
       : base(CreateMessage(execResult))
     {
@@ -25,7 +25,7 @@
     }
 
     /// <summary>
-    /// Gets the result of the failed command execution inside the container.
+    /// Gets the result of the failed command.
     /// </summary>
     public ExecResult ExecResult { get; }
 

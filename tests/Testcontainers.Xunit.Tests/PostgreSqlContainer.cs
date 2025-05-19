@@ -37,6 +37,7 @@ public sealed partial class PostgreSqlContainerTest
 public sealed partial class PostgreSqlContainerTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ImageShouldMatchDefaultModuleImage()
     {
         Assert.Equal(PostgreSqlBuilder.PostgreSqlImage, Container.Image.FullName);
@@ -44,6 +45,7 @@ public sealed partial class PostgreSqlContainerTest
 
     // # --8<-- [start:RunTests]
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test1()
     {
         const string sql = "SELECT title FROM album ORDER BY album_id";

@@ -15,9 +15,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -32,6 +35,11 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
         Assert.Equal(0, exitCode);
         Assert.Equal(bool.TrueString, stdout);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _container.DisposeAsync();
     }
 
     [UsedImplicitly]
