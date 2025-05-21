@@ -18,9 +18,12 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _serviceBusContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -56,6 +59,11 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
     // # --8<-- [end:UseServiceBusContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _serviceBusContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreateServiceBusContainer]
     [UsedImplicitly]

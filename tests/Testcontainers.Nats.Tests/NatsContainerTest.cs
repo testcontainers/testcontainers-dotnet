@@ -15,9 +15,12 @@ public abstract class NatsContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _natsContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -62,6 +65,11 @@ public abstract class NatsContainerTest : IAsyncLifetime
         Assert.Equal(message, actualMessage);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _natsContainer.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
@@ -80,12 +88,14 @@ public abstract class NatsContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfUsernameIsMissing()
         {
             Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfPasswordIsMissing()
         {
             Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());

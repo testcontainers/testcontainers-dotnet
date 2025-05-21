@@ -19,6 +19,7 @@ public sealed class PauseUnpauseTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task PausesAndUnpausesContainerSuccessfully()
     {
         await _container.PauseAsync(TestContext.Current.CancellationToken)
@@ -31,6 +32,7 @@ public sealed class PauseUnpauseTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task UnpausingRunningContainerThrowsDockerApiException()
     {
         return Assert.ThrowsAsync<DockerApiException>(() => _container.UnpauseAsync(TestContext.Current.CancellationToken));

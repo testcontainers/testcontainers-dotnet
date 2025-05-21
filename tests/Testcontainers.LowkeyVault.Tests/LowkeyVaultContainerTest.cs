@@ -12,9 +12,12 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _lowkeyVaultContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -104,6 +107,11 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         Assert.Equal(subject, certificate.Subject);
         Assert.NotNull(certificate.GetRSAPublicKey());
         Assert.NotNull(certificate.GetRSAPrivateKey());
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _lowkeyVaultContainer.DisposeAsync();
     }
 
     private static SecretClientOptions GetSecretClientOptions()

@@ -17,9 +17,12 @@ public abstract class MilvusContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _milvusContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -35,6 +38,11 @@ public abstract class MilvusContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(MilvusVersion, version);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _milvusContainer.DisposeAsync();
     }
 
     [UsedImplicitly]

@@ -20,9 +20,12 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _eventHubsContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
@@ -62,6 +65,11 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
     }
     // # --8<-- [end:UseEventHubsContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _eventHubsContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreateEventHubsContainer]
     [UsedImplicitly]

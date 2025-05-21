@@ -23,9 +23,12 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _localStackContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -147,6 +150,11 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _localStackContainer.DisposeAsync();
     }
 
     [UsedImplicitly]
