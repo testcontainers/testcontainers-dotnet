@@ -1,20 +1,14 @@
 namespace Testcontainers.Typesense;
 
-public class TypesenseConfiguration : ContainerConfiguration
+/// <inheritdoc cref="ContainerConfiguration" />
+[PublicAPI]
+public sealed class TypesenseConfiguration : ContainerConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseConfiguration" /> class.
     /// </summary>
-    public TypesenseConfiguration(
-      int port = TypesenseBuilder.DefaultPort,
-      string apiKey = TypesenseBuilder.DefaultApiKey,
-      bool enableCors = TypesenseBuilder.DefaultCors,
-      string volume = TypesenseBuilder.DefaultVolume)
+    public TypesenseConfiguration()
     {
-        Port = port;
-        ApiKey = apiKey;
-        EnableCors = enableCors;
-        Volume = volume;
     }
 
     /// <summary>
@@ -55,17 +49,5 @@ public class TypesenseConfiguration : ContainerConfiguration
     public TypesenseConfiguration(TypesenseConfiguration oldValue, TypesenseConfiguration newValue)
         : base(oldValue, newValue)
     {
-        ApiKey = BuildConfiguration.Combine(oldValue.ApiKey, newValue.ApiKey);
-        Port = BuildConfiguration.Combine(oldValue.Port, newValue.Port);
-        EnableCors = BuildConfiguration.Combine(oldValue.EnableCors, newValue.EnableCors);
-        Volume = BuildConfiguration.Combine(oldValue.Volume, newValue.Volume);
     }
-
-    public string ApiKey { get; }
-
-    public int Port { get; }
-
-    public bool EnableCors { get; }
-
-    public string Volume { get; }
 }

@@ -1,9 +1,9 @@
 namespace Testcontainers.Typesense;
 
-public class TypesenseContainer : DockerContainer
+/// <inheritdoc cref="DockerContainer" />
+[PublicAPI]
+public sealed class TypesenseContainer : DockerContainer
 {
-    private readonly TypesenseConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseContainer" /> class.
     /// </summary>
@@ -11,26 +11,14 @@ public class TypesenseContainer : DockerContainer
     public TypesenseContainer(TypesenseConfiguration configuration)
         : base(configuration)
     {
-        _configuration = configuration;
     }
 
     /// <summary>
-    /// Gets the blob endpoint
+    /// Gets the Typesense base address.
     /// </summary>
-    /// <returns>The Azurite blob endpoint</returns>
-    public TypesenseNode GetNode()
+    /// <returns>The Typesense base address.</returns>
+    public string GetBaseAddress()
     {
-        var mappedPort = GetMappedPublicPort(_configuration.Port);
-
-        var baseAddress = new UriBuilder(Uri.UriSchemeHttp, Hostname, mappedPort).Uri;
-
-        return new TypesenseNode()
-        {
-            BaseAddress = baseAddress,
-            Protocol = Uri.UriSchemeHttp,
-            Host = Hostname,
-            Port = mappedPort.ToString(),
-            ApiKey = _configuration.ApiKey
-        };
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(TypesenseBuilder.TypesensePort)).ToString();
     }
 }

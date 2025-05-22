@@ -6,13 +6,11 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
 {
     public const string TypesenseImage = "typesense/typesense:28.0";
 
-    public const ushort DefaultPort = 8108;
+    public const ushort TypesensePort = 8108;
 
-    public const string DefaultApiKey = "iXy3xHM!KRogYBLg&nRg0V";
+    public const string DefaultDataDirectory = "/tmp";
 
-    public const bool DefaultCors = true;
-
-    public const string DefaultVolume = "/data";
+    public const string DefaultApiKey = "testcontainers";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
@@ -37,39 +35,23 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     protected override TypesenseConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Sets the Api key.
+    /// Sets the data directory.
     /// </summary>
-    /// <param name="apiKey">The Api key.</param>
+    /// <param name="dataDirectoryPath">The data directory path.</param>
+    /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
+    public TypesenseBuilder WithDataDirectory(string dataDirectoryPath)
+    {
+        return WithEnvironment("TYPESENSE_DATA_DIR", dataDirectoryPath);
+    }
+
+    /// <summary>
+    /// Sets the API key.
+    /// </summary>
+    /// <param name="apiKey">The API key.</param>
     /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
     public TypesenseBuilder WithApiKey(string apiKey)
     {
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(apiKey: apiKey))
-          .WithCommand("--api-key", apiKey);
-    }
-
-    /// <summary>
-    /// Enables Cors.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
-    public TypesenseBuilder EnableCors(bool enableCors)
-    {
-        if (enableCors)
-        {
-            return Merge(DockerResourceConfiguration, new TypesenseConfiguration(enableCors: enableCors))
-              .WithCommand("--enable-cors");
-        }
-
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(enableCors: enableCors));
-    }
-
-    /// <summary>
-    /// Enables Cors.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
-    public TypesenseBuilder WithDataDirectory(string volume)
-    {
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(volume: volume))
-          .WithCommand("--data-dir", volume);
+        return WithEnvironment("TYPESENSE_API_KEY", apiKey);
     }
 
     /// <inheritdoc />
@@ -84,12 +66,11 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     {
         return base.Init()
             .WithImage(TypesenseImage)
-            .WithPortBinding(DefaultPort, true)
+            .WithPortBinding(TypesensePort, true)
+            .WithDataDirectory(DefaultDataDirectory)
             .WithApiKey(DefaultApiKey)
-            .EnableCors(DefaultCors)
-            .WithTmpfsMount(DefaultVolume)
-            .WithDataDirectory(DefaultVolume)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Peer refresh succeeded"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(TypesensePort).ForPath("/health").ForResponseMessageMatching(IsNodeReadyAsync)));
     }
 
     /// <inheritdoc />
@@ -97,7 +78,11 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.ApiKey, nameof(DockerResourceConfiguration.ApiKey))
+        _ = Guard.Argument(DockerResourceConfiguration.Environments["TYPESENSE_DATA_DIR"], "DataDirectory")
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Environments["TYPESENSE_API_KEY"], "ApiKey")
             .NotNull()
             .NotEmpty();
     }
@@ -118,5 +103,13 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     protected override TypesenseBuilder Merge(TypesenseConfiguration oldValue, TypesenseConfiguration newValue)
     {
         return new TypesenseBuilder(new TypesenseConfiguration(oldValue, newValue));
+    }
+
+    private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
+    {
+        var content = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        return "{\"ok\":true}".Equals(content, StringComparison.OrdinalIgnoreCase);
     }
 }
