@@ -1,9 +1,13 @@
+using System.Net;
+
 namespace Testcontainers.OpenSearch;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
 public sealed class OpenSearchContainer : DockerContainer
 {
+    private readonly OpenSearchConfiguration _configuration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchContainer" /> class.
     /// </summary>
@@ -11,6 +15,7 @@ public sealed class OpenSearchContainer : DockerContainer
     public OpenSearchContainer(OpenSearchConfiguration configuration)
         : base(configuration)
     {
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -24,5 +29,14 @@ public sealed class OpenSearchContainer : DockerContainer
             Hostname,
             GetMappedPublicPort(OpenSearchBuilder.OpenSearchApiPort)
         ).ToString();
+    }
+
+    /// <summary>
+    /// Gets the credentials for OpenSearch cluster connections.
+    /// </summary>
+    /// <returns></returns> 
+    public NetworkCredential GetConnectionCredentials()
+    {
+        return new NetworkCredential(_configuration.Username, _configuration.Password);
     }
 }

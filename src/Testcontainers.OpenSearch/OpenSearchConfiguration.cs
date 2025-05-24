@@ -8,8 +8,9 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="password">Password for default user 'admin'.</param>
-    public OpenSearchConfiguration(string password = null)
+    public OpenSearchConfiguration(string password = null) : base()
     {
+        Username = OpenSearchBuilder.DefaultUsername;
         Password = password;
     }
 
@@ -51,6 +52,7 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(OpenSearchConfiguration oldValue, OpenSearchConfiguration newValue)
         : base(oldValue, newValue)
     {
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
@@ -58,4 +60,9 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// Gets the password for default user 'admin'.
     /// </summary>
     public string Password { get; }
+
+    /// <summary>
+    /// Gets the default username 'admin'.
+    /// </summary>
+    public string Username { get; }
 }
