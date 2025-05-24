@@ -12,57 +12,20 @@ You can start a ClickHouse container instance from any .NET application. This ex
 
 === "Test class"
     ```csharp
-    public sealed class ClickHouseContainerTest : IAsyncLifetime
-    {
-        private readonly ClickHouseContainer _clickHouseContainer = new ClickHouseBuilder().Build();
-
-        public Task InitializeAsync()
-        {
-            return _clickHouseContainer.StartAsync();
-        }
-
-        public Task DisposeAsync()
-        {
-            return _clickHouseContainer.DisposeAsync().AsTask();
-        }
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:Class"
     }
     ```
 
+Connecting to container example:
 === "Connecting to ClickHouse"
     ```csharp
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void ConnectionStateReturnsOpen()
-    {
-        // Given
-        using DbConnection connection = new ClickHouseConnection(_clickHouseContainer.GetConnectionString());
-
-        // When
-        connection.Open();
-
-        // Then
-        Assert.Equal(ConnectionState.Open, connection.State);
-    }
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:Connecting"
     ```
 
 Execute SQL script example:
 === "SQL Script"
     ```csharp
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ExecScriptReturnsSuccessful()
-    {
-        // Given
-        const string scriptContent = "SELECT 1;";
-
-        // When
-        var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
-        Assert.Empty(execResult.Stderr);
-    }
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:SQLScript"
     ```
 
 The test example uses the following NuGet dependencies:
