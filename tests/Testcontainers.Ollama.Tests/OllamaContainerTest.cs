@@ -16,6 +16,7 @@ public sealed class OllamaContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task GenerateEmbeddingsReturnsEmbeddings()
     {
         // Given

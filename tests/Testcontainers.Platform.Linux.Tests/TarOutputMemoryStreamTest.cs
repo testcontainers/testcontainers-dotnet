@@ -41,6 +41,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void TestFileExistsInTarFile()
     {
         // Given
@@ -113,6 +114,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task TestFileExistsInContainer()
         {
             // Given

@@ -25,12 +25,14 @@ public sealed partial class RedisContainerTest(RedisContainerFixture fixture)
 public sealed partial class RedisContainerTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ImageShouldMatchDefaultModuleImage()
     {
         Assert.Equal(RedisBuilder.RedisImage, fixture.Container.Image.FullName);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test1()
     {
         using var redis = await ConnectionMultiplexer.ConnectAsync(fixture.Container.GetConnectionString());
@@ -40,6 +42,7 @@ public sealed partial class RedisContainerTest
 
     // # --8<-- [start:RunTests]
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test2()
     {
         using var redis = await ConnectionMultiplexer.ConnectAsync(fixture.Container.GetConnectionString());

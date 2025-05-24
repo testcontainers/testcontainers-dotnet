@@ -71,6 +71,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldReuseExistingResource()
     {
         using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
@@ -102,6 +103,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class NotEqualTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void ForDifferentNames()
             {
                 var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
@@ -120,6 +122,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class ContainerBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
@@ -133,6 +136,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
             }
 
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledAutoRemoveThrowsException()
             {
                 // Given
@@ -149,6 +153,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class NetworkBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
@@ -165,6 +170,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class VolumeBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
