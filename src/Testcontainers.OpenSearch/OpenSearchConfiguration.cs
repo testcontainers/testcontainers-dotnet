@@ -8,10 +8,11 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="password">Password for default user 'admin'.</param>
-    public OpenSearchConfiguration(string password = null) : base()
+    public OpenSearchConfiguration(string password = null, bool? disabledSecurity = null) : base()
     {
         Username = OpenSearchBuilder.DefaultUsername;
         Password = password;
+        DisabledSecurity = disabledSecurity;
     }
 
     /// <summary>
@@ -54,6 +55,7 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+        DisabledSecurity = BuildConfiguration.Combine(oldValue.DisabledSecurity, newValue.DisabledSecurity);
     }
 
     /// <summary>
@@ -65,4 +67,10 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// Gets the default username 'admin'.
     /// </summary>
     public string Username { get; }
+
+    /// <summary>
+    /// Gets the status of security plugin.
+    /// Returns 'true' if security plugin is disabled and connection should go over 'http' protocol and 'false' otherwise.
+    /// </summary>
+    public bool? DisabledSecurity { get; }
 }

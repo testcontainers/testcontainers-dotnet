@@ -1,39 +1,41 @@
-using JetBrains.Annotations;
-using OpenSearch.Net;
-
 namespace Testcontainers.OpenSearch;
 
-public abstract partial class OpenSearchContainerTest : IAsyncLifetime
+public abstract class OpenSearchContainerTest : IAsyncLifetime
 {
-    protected readonly OpenSearchContainer _opensearchContainer = new OpenSearchBuilder().Build();
+    private const string INDEX_NAME = "testcontainers";
+
+    protected OpenSearchContainer OpensearchContainer { get; init; }
+
+    protected abstract OpenSearchClient CreateOpenSearchClient();
+
+    protected OpenSearchContainerTest()
+    {
+        OpensearchContainer = new OpenSearchBuilder().Build();
+    }
 
     public async ValueTask InitializeAsync()
     {
-        await _opensearchContainer.StartAsync(TestContext.Current.CancellationToken);
+        await OpensearchContainer.StartAsync(TestContext.Current.CancellationToken);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _opensearchContainer.DisposeAsync();
+        await OpensearchContainer.DisposeAsync();
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void PingReturnsValidResponse()
+    public async Task PingReturnsValidResponse()
     {
         // Given
         OpenSearchClient client = CreateOpenSearchClient();
 
         // When
-        var response = client.Ping();
+        var response = await client.PingAsync(ct: TestContext.Current.CancellationToken);
 
         // Then
         Assert.True(response.IsValid);
     }
-
-    protected abstract OpenSearchClient CreateOpenSearchClient();
-
-    private const string indexName = "testcontainers";
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -43,11 +45,11 @@ public abstract partial class OpenSearchContainerTest : IAsyncLifetime
         OpenSearchClient client = CreateOpenSearchClient();
 
         // When
-        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, indexName);
+        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, INDEX_NAME);
 
         var createIndexAliasResponse = await client.Indices.PutAliasAsync(
-            Indices.Index(indexName),
-            new Name($"{indexName}-alias"),
+            Indices.Index(INDEX_NAME),
+            new Name($"{INDEX_NAME}-alias"),
             ct: TestContext.Current.CancellationToken);
 
         // Then
@@ -64,7 +66,7 @@ public abstract partial class OpenSearchContainerTest : IAsyncLifetime
         OpenSearchClient client = CreateOpenSearchClient();
 
         // When
-        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, indexName);
+        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, INDEX_NAME);
 
         var doc = new OpenSearchContainerTestDocument()
         {
@@ -75,14 +77,14 @@ public abstract partial class OpenSearchContainerTest : IAsyncLifetime
         var indexDocumentResponse = await client.IndexAsync(
             doc,
             s => s
-                .Index(indexName)
+                .Index(INDEX_NAME)
                 .Id(doc.DocId) // set document id explicitly
                 .Refresh(Refresh.True), // allows to search for this doc immideately
             TestContext.Current.CancellationToken);
 
         var searchResponse = await client.SearchAsync<OpenSearchContainerTestDocument>(
             s => s
-                .Index(indexName)
+                .Index(INDEX_NAME)
                 .Query(q => q.Match(
                         s => s
                             .Field("title")
@@ -101,7 +103,9 @@ public abstract partial class OpenSearchContainerTest : IAsyncLifetime
         Assert.Single(searchResponse.Documents, c => c.DocId == doc.DocId);
     }
 
-    private static async Task<CreateIndexResponse> CreateTestIndex(OpenSearchClient client, string indexName = "testcontainers")
+    private static async Task<CreateIndexResponse> CreateTestIndex(
+        OpenSearchClient client,
+        string indexName = "testcontainers")
     {
         return await client.Indices.CreateAsync(Indices.Index(indexName),
             c => c
@@ -115,11 +119,8 @@ public abstract partial class OpenSearchContainerTest : IAsyncLifetime
             TestContext.Current.CancellationToken
         );
     }
-}
 
-public partial class OpenSearchContainerTest
-{
-    internal class OpenSearchContainerTestDocument
+    private sealed class OpenSearchContainerTestDocument
     {
         public long DocId { get; set; }
         public string Title { get; set; }
@@ -132,11 +133,30 @@ public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
 {
     protected override OpenSearchClient CreateOpenSearchClient()
     {
-        var credentials = _opensearchContainer.GetConnectionCredentials();
-        var clientSettings = new ConnectionSettings(new Uri(_opensearchContainer.GetConnection()))
-            .DisableDirectStreaming() // for debugging
+        var credentials = OpensearchContainer.GetConnectionCredentials();
+        var uri = new Uri(OpensearchContainer.GetConnection());
+        Assert.Equal(Uri.UriSchemeHttps, uri.Scheme);
+        var clientSettings = new ConnectionSettings(uri)
             .BasicAuthentication(credentials.UserName, credentials.SecurePassword)
-            .ServerCertificateValidationCallback((_, _, _, _) => true); // self-signed certificate
+            .ServerCertificateValidationCallback((_, _, _, _) => true); // validate self-signed certificate
+
+        return new OpenSearchClient(clientSettings);
+    }
+}
+
+[UsedImplicitly]
+public sealed class OpenSearchInsecureNoAuth : OpenSearchContainerTest
+{
+    public OpenSearchInsecureNoAuth()
+    {
+        OpensearchContainer = new OpenSearchBuilder().WithDisabledSecurity().Build();
+    }
+
+    protected override OpenSearchClient CreateOpenSearchClient()
+    {
+        var uri = new Uri(OpensearchContainer.GetConnection());
+        Assert.Equal(Uri.UriSchemeHttp, uri.Scheme);
+        var clientSettings = new ConnectionSettings(uri);
 
         return new OpenSearchClient(clientSettings);
     }

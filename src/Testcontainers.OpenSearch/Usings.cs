@@ -1,4 +1,6 @@
 global using System;
+global using System.Net;
+global using System.Net.Http;
 global using Docker.DotNet.Models;
 global using DotNet.Testcontainers;
 global using DotNet.Testcontainers.Builders;

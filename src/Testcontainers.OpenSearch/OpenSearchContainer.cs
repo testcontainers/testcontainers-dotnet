@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Testcontainers.OpenSearch;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -25,9 +23,9 @@ public sealed class OpenSearchContainer : DockerContainer
     public string GetConnection()
     {
         return new UriBuilder(
-            Uri.UriSchemeHttps,
+            _configuration.DisabledSecurity == true ? Uri.UriSchemeHttp : Uri.UriSchemeHttps,
             Hostname,
-            GetMappedPublicPort(OpenSearchBuilder.OpenSearchApiPort)
+            GetMappedPublicPort(OpenSearchBuilder.OpenSearchHttpApiPort)
         ).ToString();
     }
 

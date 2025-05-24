@@ -8,9 +8,15 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
 
     public const string DefaultPassword = "VeryStrongP@ssw0rd!";
 
+    public const string DefaultOldInsecurePassword = "admin";
+
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
-    public const ushort OpenSearchApiPort = 9200;
+    // Default HTTP port.
+    public const ushort OpenSearchHttpApiPort = 9200;
+
+    // Default TCP port (deprecated and may be removed in future versions).
+    public const ushort OpenSearchTcpPort = 9300;
 
     public const ushort OpenSearchPerfAnalyzerPort = 9600;
 
@@ -47,6 +53,32 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
             .WithEnvironment("OPENSEARCH_INITIAL_ADMIN_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Disables build-in security plugin.
+    /// Connections returned by container's GetConnection() method will also use 'http' protocol instead of 'https'.
+    /// </summary>
+    /// <param name="disabled">'True' for disabling security pligin. Default value is 'true'.</param>
+    /// <returns></returns>
+    public OpenSearchBuilder WithDisabledSecurity(bool disabled = true)
+    {
+        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(disabledSecurity: disabled))
+            .WithEnvironment("plugins.security.disabled", disabled.ToString().ToLowerInvariant())
+            .WithWaitStrategy(Wait
+                .ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(
+                    r => r
+                        .UsingTls(!disabled)
+                        .UsingHttpMessageHandler(new HttpClientHandler()
+                        {
+                            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+                        })
+                        .WithBasicAuthentication(DefaultUsername, DockerResourceConfiguration.Password ?? DefaultPassword)
+                        .ForPort(OpenSearchHttpApiPort)
+                        .ForStatusCodeMatching(s => s == HttpStatusCode.OK || s == HttpStatusCode.Unauthorized)
+                )
+            );
+    }
+
     /// <inheritdoc />
     public override OpenSearchContainer Build()
     {
@@ -59,11 +91,12 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     {
         return base.Init()
             .WithImage(OpenSearchImage)
-            .WithPortBinding(OpenSearchApiPort, true)
+            .WithPortBinding(OpenSearchTcpPort, true)
+            .WithPortBinding(OpenSearchHttpApiPort, true)
             .WithPortBinding(OpenSearchPerfAnalyzerPort, true)
-            .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Node '.*' initialized"));
+            .WithPassword(DefaultPassword)
+            .WithDisabledSecurity(false);
     }
 
     /// <inheritdoc />
