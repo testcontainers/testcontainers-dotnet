@@ -10,41 +10,53 @@ namespace Testcontainers.Toxiproxy;
 public sealed class ToxiproxyContainer : DockerContainer
 {
     private readonly ToxiproxyConfiguration _configuration;
+    private readonly IEnumerable<Proxy> _initialProxies;
+    private ToxiproxyNetClient? _client;
 
-    private ToxiproxyNetClient _client;
-
-    public ToxiproxyContainer(ToxiproxyConfiguration configuration)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToxiproxyContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="initialProxies">Optional proxies to be created automatically after startup.</param>
+    public ToxiproxyContainer(ToxiproxyConfiguration configuration, IEnumerable<Proxy>? initialProxies = null)
         : base(configuration)
     {
         _configuration = configuration;
+        _initialProxies = initialProxies ?? Enumerable.Empty<Proxy>();
     }
 
     /// <summary>
-    /// Gets the Toxiproxy connection string.
+    /// Gets the Toxiproxy client. Must call <see cref="StartAsync" /> before accessing.
     /// </summary>
-    /// <returns>The Toxiproxy control endpoint URL.</returns>
-    public string GetConnectionString()
+    public ToxiproxyNetClient Client =>
+        _client ?? throw new InvalidOperationException("Toxiproxy client is not initialized. Call StartAsync() first.");
+
+    /// <summary>
+    /// Gets the full URI of the Toxiproxy control endpoint.
+    /// </summary>
+    public Uri GetControlUri()
     {
-        return $"http://{Hostname}:{GetMappedPublicPort(ToxiproxyBuilder.ControlPort)}";
+        return new Uri($"http://{Hostname}:{GetMappedPublicPort(ToxiproxyBuilder.ControlPort)}");
     }
 
-    /// <summary>
-    /// Starts the container and initializes the Toxiproxy client.
-    /// </summary>
+    /// <inheritdoc />
     public override async Task StartAsync(CancellationToken ct = default)
     {
         await base.StartAsync(ct);
-        var connection = new Connection(Hostname, GetMappedPublicPort(ToxiproxyBuilder.ControlPort));
-        _client = connection.Client();
-    }
+        
+        try
+        {
+            var connection = new Connection(Hostname, GetMappedPublicPort(ToxiproxyBuilder.ControlPort));
+            _client = connection.Client();
 
-    public string GetHost()
-    {
-        return Hostname;
-    }
-
-    public int GetControlPort()
-    {
-        return GetMappedPublicPort(ToxiproxyBuilder.ControlPort);
+            foreach (var proxy in _initialProxies)
+            {
+                _client.Add(proxy);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to initialize Toxiproxy client or create initial proxies.", ex);
+        }
     }
 }
