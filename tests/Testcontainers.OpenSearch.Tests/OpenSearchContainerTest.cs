@@ -1,5 +1,6 @@
 namespace Testcontainers.OpenSearch;
 
+// <!-- -8<- [start:BaseClass] -->
 public abstract class OpenSearchContainerTest : IAsyncLifetime
 {
     private const string INDEX_NAME = "testcontainers";
@@ -10,7 +11,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
     protected OpenSearchContainerTest()
     {
-        OpensearchContainer = new OpenSearchBuilder().Build();
+        OpensearchContainer = new OpenSearchBuilder().Build(); // by default, OpenSearch uses https and credentials for connections.
     }
 
     public async ValueTask InitializeAsync()
@@ -22,7 +23,9 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     {
         await OpensearchContainer.DisposeAsync();
     }
+    // <!-- -8<- [end:BaseClass] -->
 
+    // <!-- -8<- [start:PingExample] -->
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task PingReturnsValidResponse()
@@ -36,7 +39,9 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         // Then
         Assert.True(response.IsValid);
     }
+    // <!-- -8<- [end:PingExample] -->
 
+    // <!-- -8<- [start:IndexAndAliasCreation] -->
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldCreateIndexAndAlias()
@@ -57,7 +62,9 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
         Assert.True(createIndexAliasResponse.IsValid);
     }
+    // <!-- -8<- [end:IndexAndAliasCreation] -->
 
+    // <!-- -8<- [start:IndexingDocument] -->
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldIndexAndSearchForDocument()
@@ -102,7 +109,9 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         Assert.True(searchResponse.IsValid);
         Assert.Single(searchResponse.Documents, c => c.DocId == doc.DocId);
     }
+    // <!-- -8<- [end:IndexingDocument] -->
 
+    // <!-- -8<- [start:CreateTestIndexImpl] -->
     private static async Task<CreateIndexResponse> CreateTestIndex(
         OpenSearchClient client,
         string indexName = "testcontainers")
@@ -119,6 +128,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
             TestContext.Current.CancellationToken
         );
     }
+    // <!-- -8<- [end:CreateTestIndexImpl] -->
 
     private sealed class OpenSearchContainerTestDocument
     {
@@ -128,6 +138,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     }
 }
 
+// <!-- -8<- [start:SslBasicAuth] -->
 [UsedImplicitly]
 public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
 {
@@ -143,13 +154,17 @@ public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
         return new OpenSearchClient(clientSettings);
     }
 }
+// <!-- -8<- [end:SslBasicAuth] -->
 
+// <!-- -8<- [start:InsecureNoAuth] -->
 [UsedImplicitly]
 public sealed class OpenSearchInsecureNoAuth : OpenSearchContainerTest
 {
     public OpenSearchInsecureNoAuth()
     {
-        OpensearchContainer = new OpenSearchBuilder().WithDisabledSecurity().Build();
+        OpensearchContainer = new OpenSearchBuilder()
+            .WithDisabledSecurity() // <-- this disables https and auth
+            .Build();
     }
 
     protected override OpenSearchClient CreateOpenSearchClient()
@@ -161,3 +176,4 @@ public sealed class OpenSearchInsecureNoAuth : OpenSearchContainerTest
         return new OpenSearchClient(clientSettings);
     }
 }
+// <!-- -8<- [end:InsecureNoAuth] -->

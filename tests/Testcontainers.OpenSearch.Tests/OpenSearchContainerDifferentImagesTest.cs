@@ -10,10 +10,12 @@ public sealed class OpenSearchContainerDifferentImagesTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldConnectWithAdminPassword(string image)
     {
+        // <!-- -8<- [start:LegacyImageAdminPassword] -->
         var opensearchContainer = new OpenSearchBuilder()
             .WithImage(image)
             .WithPassword(OpenSearchBuilder.DefaultOldInsecurePassword) // old images have hardcoded admin password
             .Build();
+        // <!-- -8<- [end:LegacyImageAdminPassword] -->
         await opensearchContainer.StartAsync(TestContext.Current.CancellationToken);
         var credentials = opensearchContainer.GetConnectionCredentials();
         Assert.Equal(OpenSearchBuilder.DefaultOldInsecurePassword, credentials.Password); // check that creds have 'admin' pw set
