@@ -25,8 +25,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public string FullName => _image.FullName;
 
-    public string Name => _image.Name;
-
     public string GetHostname()
     {
       return _image.GetHostname();
@@ -47,14 +45,16 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       return _image.MatchVersion(predicate);
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _image.CreateAsync();
+      await _image.CreateAsync()
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return _image.DeleteAsync();
+      await _image.DeleteAsync()
+        .ConfigureAwait(false);
     }
   }
 }

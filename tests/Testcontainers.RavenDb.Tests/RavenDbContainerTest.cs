@@ -4,14 +4,15 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
 {
     private readonly RavenDbContainer _ravenDbContainer = new RavenDbBuilder().Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _ravenDbContainer.StartAsync();
+        await _ravenDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _ravenDbContainer.DisposeAsync().AsTask();
+        return _ravenDbContainer.DisposeAsync();
     }
 
     [Fact]

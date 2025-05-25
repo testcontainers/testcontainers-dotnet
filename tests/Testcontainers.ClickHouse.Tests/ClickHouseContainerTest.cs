@@ -1,25 +1,13 @@
 namespace Testcontainers.ClickHouse;
 
-public sealed class ClickHouseContainerTest : IAsyncLifetime
+public abstract class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
 {
-    private readonly ClickHouseContainer _clickHouseContainer = new ClickHouseBuilder().Build();
-
-    public Task InitializeAsync()
-    {
-        return _clickHouseContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _clickHouseContainer.DisposeAsync().AsTask();
-    }
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        using DbConnection connection = new ClickHouseConnection(_clickHouseContainer.GetConnectionString());
+        using DbConnection connection = fixture.CreateConnection();
 
         // When
         connection.Open();
@@ -36,11 +24,34 @@ public sealed class ClickHouseContainerTest : IAsyncLifetime
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+
+    public class ClickHouseDefaultFixture(IMessageSink messageSink)
+        : DbContainerFixture<ClickHouseBuilder, ClickHouseContainer>(messageSink)
+    {
+        public override DbProviderFactory DbProviderFactory
+            => ClickHouseConnectionFactory.Instance;
+    }
+
+    [UsedImplicitly]
+    public class ClickHouseWaitForDatabaseFixture(IMessageSink messageSink)
+        : ClickHouseDefaultFixture(messageSink)
+    {
+        protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
+            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+    }
+
+    [UsedImplicitly]
+    public sealed class ClickHouseDefaultConfiguration(ClickHouseDefaultFixture fixture)
+        : ClickHouseContainerTest(fixture), IClassFixture<ClickHouseDefaultFixture>;
+
+    [UsedImplicitly]
+    public sealed class ClickHouseWaitForDatabaseConfiguration(ClickHouseWaitForDatabaseFixture fixture)
+        : ClickHouseContainerTest(fixture), IClassFixture<ClickHouseWaitForDatabaseFixture>;
 }

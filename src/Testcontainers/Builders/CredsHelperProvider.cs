@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(_rootElement) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => Base64Provider.HasDockerRegistryKey(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => Base64Provider.HasDockerRegistryKey(property, hostname));
     }
 
     /// <inheritdoc />

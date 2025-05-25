@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Containers
   /// Represents a database container instance that can be accessed with an ADO.NET provider.
   /// </summary>
   [PublicAPI]
-  public interface IDatabaseContainer
+  public interface IDatabaseContainer : IContainer
   {
     /// <summary>
     /// Gets the database connection string.

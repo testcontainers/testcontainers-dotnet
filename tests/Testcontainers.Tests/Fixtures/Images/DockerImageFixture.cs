@@ -16,6 +16,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     private const string DotSeparatorRegistry = "myregistry.azurecr.io";
     private const string PortSeparatorRegistry = "myregistry:5000";
     private const string Digest = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    private const string HubImageNamePrefixImplicitLibrary = "myregistry.azurecr.io";
+    private const string HubImageNamePrefixExplicitLibrary = "myregistry.azurecr.io/library";
 
     public DockerImageFixture()
     {
@@ -35,6 +37,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(new DockerImageFixtureSerializable(new DockerImage(FedoraHttpd, PortSeparatorRegistry, CustomTag1, null)), $"{PortSeparatorRegistry}/{FedoraHttpd}:{CustomTag1}", $"{PortSeparatorRegistry}/{FedoraHttpd}:{CustomTag1}");
       Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, DotSeparatorRegistry, SemVerTag, Digest)), $"{DotSeparatorRegistry}/{FooBarBaz}:{SemVerTag}@{Digest}", $"{DotSeparatorRegistry}/{FooBarBaz}:{SemVerTag}@{Digest}");
       Add(new DockerImageFixtureSerializable(new DockerImage(FooBarBaz, DotSeparatorRegistry, null, Digest)), $"{DotSeparatorRegistry}/{FooBarBaz}@{Digest}", $"{DotSeparatorRegistry}/{FooBarBaz}@{Digest}");
+      Add(new DockerImageFixtureSerializable(new DockerImage(BarBaz, null, null, null, HubImageNamePrefixImplicitLibrary)), $"{HubImageNamePrefixImplicitLibrary}/{BarBaz}", $"{HubImageNamePrefixImplicitLibrary}/{BarBaz}:{LatestTag}");
+      Add(new DockerImageFixtureSerializable(new DockerImage(BarBaz, null, null, null, HubImageNamePrefixExplicitLibrary)), $"{HubImageNamePrefixExplicitLibrary}/{BarBaz}", $"{HubImageNamePrefixExplicitLibrary}/{BarBaz}:{LatestTag}");
     }
   }
 }

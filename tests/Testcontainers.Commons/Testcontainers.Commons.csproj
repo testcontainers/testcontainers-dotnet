@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
         <IsTestProject>false</IsTestProject>
@@ -9,7 +9,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0"/>
-        <PackageReference Include="xunit"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers/Testcontainers.csproj"/>

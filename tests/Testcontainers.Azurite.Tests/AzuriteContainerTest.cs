@@ -9,14 +9,18 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         _azuriteContainer = azuriteContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _azuriteContainer.StartAsync();
+        await _azuriteContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _azuriteContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -27,7 +31,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -42,7 +46,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -57,11 +61,16 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         var client = new TableServiceClient(_azuriteContainer.GetConnectionString());
 
         // When
-        var properties = await client.GetPropertiesAsync()
+        var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.False(HasError(properties));
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _azuriteContainer.DisposeAsync();
     }
 
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
@@ -103,10 +112,11 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task MemoryLimitIsConfigured()
         {
             // Given
-            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false)
+            var (stdout, _) = await _azuriteContainer.GetLogsAsync(timestampsEnabled: false, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // When

@@ -26,7 +26,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
     {
       _container = containerConfiguration
-        .WithImage(new DockerImage(string.Empty, "docker", dockerImageVersion + "-dind"))
+        .WithImage(new DockerImage("docker", null, dockerImageVersion + "-dind"))
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)
@@ -64,15 +64,26 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       }
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
       _ = Directory.CreateDirectory(_hostCertsDirectoryPath);
-      return _container.StartAsync();
+
+      await _container.StartAsync()
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync().AsTask();
+      await DisposeAsyncCore()
+        .ConfigureAwait(false);
+
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+      await _container.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
     private sealed class UntilListenOn : IWaitUntil

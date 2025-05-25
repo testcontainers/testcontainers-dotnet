@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
 
-      var dockerfileArchiveFilePath = await dockerfileArchive.Tar()
+      var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // When
@@ -75,7 +75,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then
@@ -93,23 +93,43 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync())
+      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then
       Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
     }
 
+    [Fact]
+    public async Task BuildsDockerScratchImage()
+    {
+      // Given
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/scratch")
+        .Build();
+
+      // When
+      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Null(exception);
+      Assert.NotNull(imageFromDockerfileBuilder.Repository);
+      Assert.NotNull(imageFromDockerfileBuilder.Tag);
+      Assert.NotNull(imageFromDockerfileBuilder.FullName);
+      Assert.Null(imageFromDockerfileBuilder.GetHostname());
+    }
+
     [Theory]
     [InlineData("Dockerfile")]
     [InlineData("./Dockerfile")]
     [InlineData(".\\Dockerfile")]
-    public async Task BuildsDockerImage(string dockerfile)
+    public async Task BuildsDockerAlpineImage(string dockerfile)
     {
       // Given
-      IImage tag1 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag1 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
 
-      IImage tag2 = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage tag2 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
@@ -120,10 +140,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await imageFromDockerfileBuilder.CreateAsync()
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      await imageFromDockerfileBuilder.CreateAsync()
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -132,7 +152,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.NotNull(imageFromDockerfileBuilder.Repository);
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
-      Assert.NotNull(imageFromDockerfileBuilder.Name);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
     }
   }
