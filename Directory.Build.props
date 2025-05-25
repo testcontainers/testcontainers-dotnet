@@ -21,6 +21,7 @@
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src/strongname.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
