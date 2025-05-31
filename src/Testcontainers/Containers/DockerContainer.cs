@@ -458,7 +458,7 @@ namespace DotNet.Testcontainers.Containers
       _container = await _client.Container.ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      CreatedTime = DateTime.UtcNow;
+      CreatedTime = _container.Created;
       Created?.Invoke(this, EventArgs.Empty);
     }
 
@@ -520,7 +520,7 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      StartedTime = DateTime.UtcNow;
+      StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -556,7 +556,7 @@ namespace DotNet.Testcontainers.Containers
         _container = new ContainerInspectResponse();
       }
 
-      StoppedTime = DateTime.UtcNow;
+      StoppedTime = DateTime.TryParse(_container.State.FinishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
     }
 
