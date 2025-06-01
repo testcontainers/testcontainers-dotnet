@@ -7,12 +7,17 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
-    /// <param name="password">Password for default user 'admin'.</param>
-    public OpenSearchConfiguration(string password = null, bool? disabledSecurity = null) : base()
+    /// <param name="tlsEnabled">A boolean value indicating whether TLS is enabled.</param>
+    /// <param name="username">The OpenSearch username.</param>
+    /// <param name="password">The OpenSearch password.</param>
+    public OpenSearchConfiguration(
+        bool? tlsEnabled = null,
+        string username = null,
+        string password = null)
     {
-        Username = OpenSearchBuilder.DefaultUsername;
+        TlsEnabled = tlsEnabled;
+        Username = username;
         Password = password;
-        DisabledSecurity = disabledSecurity;
     }
 
     /// <summary>
@@ -22,7 +27,6 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
         : base(resourceConfiguration)
     {
-
     }
 
     /// <summary>
@@ -32,7 +36,6 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(IContainerConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
-
     }
 
     /// <summary>
@@ -42,7 +45,6 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(OpenSearchConfiguration resourceConfiguration)
         : this(new OpenSearchConfiguration(), resourceConfiguration)
     {
-
     }
 
     /// <summary>
@@ -53,24 +55,23 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(OpenSearchConfiguration oldValue, OpenSearchConfiguration newValue)
         : base(oldValue, newValue)
     {
+        TlsEnabled = BuildConfiguration.Combine(oldValue.TlsEnabled, newValue.TlsEnabled);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        DisabledSecurity = BuildConfiguration.Combine(oldValue.DisabledSecurity, newValue.DisabledSecurity);
     }
 
     /// <summary>
-    /// Gets the password for default user 'admin'.
+    /// Gets a value indicating whether TLS is enabled or not.
     /// </summary>
-    public string Password { get; }
+    public bool? TlsEnabled { get; }
 
     /// <summary>
-    /// Gets the default username 'admin'.
+    /// Gets the OpenSearch username.
     /// </summary>
     public string Username { get; }
 
     /// <summary>
-    /// Gets the status of security plugin.
-    /// Returns 'true' if security plugin is disabled and connection should go over 'http' protocol and 'false' otherwise.
+    /// Gets the OpenSearch password.
     /// </summary>
-    public bool? DisabledSecurity { get; }
+    public string Password { get; }
 }

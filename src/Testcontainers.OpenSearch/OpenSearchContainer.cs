@@ -7,7 +7,7 @@ public sealed class OpenSearchContainer : DockerContainer
     private readonly OpenSearchConfiguration _configuration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OpenSearchContainer" /> class.
+    /// Initializes a new instance of the <see cref="OpenSearch" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public OpenSearchContainer(OpenSearchConfiguration configuration)
@@ -17,24 +17,21 @@ public sealed class OpenSearchContainer : DockerContainer
     }
 
     /// <summary>
-    /// Returns the url which is used to connect to OpenSearch cluster.
+    /// Gets the OpenSearch credentials.
     /// </summary>
-    /// <returns></returns>
-    public string GetConnection()
+    /// <returns>The OpenSearch credentials.</returns>
+    public NetworkCredential GetCredentials()
     {
-        return new UriBuilder(
-            _configuration.DisabledSecurity == true ? Uri.UriSchemeHttp : Uri.UriSchemeHttps,
-            Hostname,
-            GetMappedPublicPort(OpenSearchBuilder.OpenSearchHttpApiPort)
-        ).ToString();
+        return new NetworkCredential(_configuration.Username, _configuration.Password);
     }
 
     /// <summary>
-    /// Gets the credentials for OpenSearch cluster connections.
+    /// Gets the OpenSearch connection string.
     /// </summary>
-    /// <returns></returns> 
-    public NetworkCredential GetConnectionCredentials()
+    /// <returns>The OpenSearch connection string.</returns>
+    public string GetConnectionString()
     {
-        return new NetworkCredential(_configuration.Username, _configuration.Password);
+        var schema = _configuration.TlsEnabled.GetValueOrDefault() ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+        return new UriBuilder(schema, Hostname, GetMappedPublicPort(OpenSearchBuilder.OpenSearchRestApiPort)).ToString();
     }
 }

@@ -4,21 +4,19 @@ namespace Testcontainers.OpenSearch;
 [PublicAPI]
 public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
 {
-    public const string DefaultUsername = "admin";
-
-    public const string DefaultPassword = "VeryStrongP@ssw0rd!";
-
-    public const string DefaultOldInsecurePassword = "admin";
-
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
-    // Default HTTP port.
-    public const ushort OpenSearchHttpApiPort = 9200;
+    public const int OpenSearchRestApiPort = 9200;
 
-    // Default TCP port (deprecated and may be removed in future versions).
-    public const ushort OpenSearchTcpPort = 9300;
+    public const int OpenSearchTransportPort = 9300;
 
-    public const ushort OpenSearchPerfAnalyzerPort = 9600;
+    public const int OpenSearchPerformanceAnalyzerPort = 9600;
+
+    public const string DefaultUsername = "admin";
+
+    public const string DefaultPassword = "yourStrong(!)P@ssw0rd";
+
+    public const string DefaultOldInsecurePassword = "admin";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
@@ -39,13 +37,23 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
         DockerResourceConfiguration = resourceConfiguration;
     }
 
-    // /// <inheritdoc />
+    /// <inheritdoc />
     protected override OpenSearchConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Sets the password for 'admin' user.
+    /// Sets the password for the <c>admin</c> user.
     /// </summary>
-    /// <param name="password">Password requires a minimum of 8 characters and must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.</param>
+    /// <remarks>
+    /// The password must meet the following complexity requirements:
+    /// <list type="bullet">
+    ///     <item><description>Minimum of 8 characters</description></item>
+    ///     <item><description>At least one uppercase letter</description></item>
+    ///     <item><description>At least one lowercase letter</description></item>
+    ///     <item><description>At least one digit</description></item>
+    ///     <item><description>At least one special character</description></item>
+    /// </list>
+    /// </remarks>
+    /// <param name="password">The <c>admin</c> user password.</param>
     /// <returns>A configured instance of <see cref="OpenSearchBuilder" />.</returns>
     public OpenSearchBuilder WithPassword(string password)
     {
@@ -54,36 +62,29 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     }
 
     /// <summary>
-    /// Disables build-in security plugin.
-    /// Connections returned by container's GetConnection() method will also use 'http' protocol instead of 'https'.
+    /// Enables or disables the built-in security plugin in OpenSearch.
     /// </summary>
-    /// <param name="disabled">'True' for disabling security pligin. Default value is 'true'.</param>
-    /// <returns></returns>
-    public OpenSearchBuilder WithDisabledSecurity(bool disabled = true)
+    /// <remarks>
+    /// When disabled, the <see cref="OpenSearchContainer.GetConnectionString" /> method
+    /// will use the <c>http</c> protocol instead of <c>https</c>.
+    /// </remarks>
+    /// <param name="securityEnabled"><c>true</c> to enable the security plugin; <c>false</c> to disable it.</param>
+    /// <returns>A configured instance of <see cref="OpenSearchBuilder" />.</returns>
+    public OpenSearchBuilder WithSecurityEnabled(bool securityEnabled = true)
     {
-        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(disabledSecurity: disabled))
-            .WithEnvironment("plugins.security.disabled", disabled.ToString().ToLowerInvariant())
-            .WithWaitStrategy(Wait
-                .ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(
-                    r => r
-                        .UsingTls(!disabled)
-                        .UsingHttpMessageHandler(new HttpClientHandler()
-                        {
-                            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-                        })
-                        .WithBasicAuthentication(DefaultUsername, DockerResourceConfiguration.Password ?? DefaultPassword)
-                        .ForPort(OpenSearchHttpApiPort)
-                        .ForStatusCodeMatching(s => s == HttpStatusCode.OK || s == HttpStatusCode.Unauthorized)
-                )
-            );
+        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(tlsEnabled: securityEnabled))
+            .WithEnvironment("plugins.security.disabled", (!securityEnabled).ToString().ToLowerInvariant());
     }
 
     /// <inheritdoc />
     public override OpenSearchContainer Build()
     {
         Validate();
-        return new OpenSearchContainer(DockerResourceConfiguration);
+
+        // By default, the base builder waits until the container is running. However, for OpenSearch, a more advanced waiting strategy is necessary that requires access to the password.
+        // If the user does not provide a custom waiting strategy, append the default OpenSearch waiting strategy.
+        var openSearchBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new OpenSearchContainer(openSearchBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -91,12 +92,13 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     {
         return base.Init()
             .WithImage(OpenSearchImage)
-            .WithPortBinding(OpenSearchTcpPort, true)
-            .WithPortBinding(OpenSearchHttpApiPort, true)
-            .WithPortBinding(OpenSearchPerfAnalyzerPort, true)
+            .WithPortBinding(OpenSearchRestApiPort, true)
+            .WithPortBinding(OpenSearchTransportPort, true)
+            .WithPortBinding(OpenSearchPerformanceAnalyzerPort, true)
             .WithEnvironment("discovery.type", "single-node")
-            .WithPassword(DefaultPassword)
-            .WithDisabledSecurity(false);
+            .WithSecurityEnabled()
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword);
     }
 
     /// <inheritdoc />
@@ -125,5 +127,55 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     protected override OpenSearchBuilder Merge(OpenSearchConfiguration oldValue, OpenSearchConfiguration newValue)
     {
         return new OpenSearchBuilder(new OpenSearchConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// Sets the OpenSearch username.
+    /// </summary>
+    /// <remarks>
+    /// The Docker image does not allow to configure the username.
+    /// </remarks>
+    /// <param name="username">The OpenSearch username.</param>
+    /// <returns>A configured instance of <see cref="OpenSearchBuilder" />.</returns>
+    private OpenSearchBuilder WithUsername(string username)
+    {
+        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(username: username));
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private readonly bool _tlsEnabled;
+
+        private readonly string _username;
+
+        private readonly string _password;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(OpenSearchConfiguration configuration)
+        {
+            _tlsEnabled = configuration.TlsEnabled.GetValueOrDefault();
+            _username = configuration.Username;
+            _password = configuration.Password;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            using var httpMessageHandler = new HttpClientHandler();
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+
+            var httpWaitStrategy = new HttpWaitStrategy()
+                .UsingHttpMessageHandler(httpMessageHandler)
+                .UsingTls(_tlsEnabled)
+                .WithBasicAuthentication(_username, _password)
+                .ForPort(OpenSearchRestApiPort);
+
+            return await httpWaitStrategy.UntilAsync(container)
+                .ConfigureAwait(false);
+        }
     }
 }

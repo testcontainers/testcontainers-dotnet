@@ -144,8 +144,8 @@ public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
 {
     protected override OpenSearchClient CreateOpenSearchClient()
     {
-        var credentials = OpensearchContainer.GetConnectionCredentials();
-        var uri = new Uri(OpensearchContainer.GetConnection());
+        var credentials = OpensearchContainer.GetCredentials();
+        var uri = new Uri(OpensearchContainer.GetConnectionString());
         Assert.Equal(Uri.UriSchemeHttps, uri.Scheme);
         var clientSettings = new ConnectionSettings(uri)
             .BasicAuthentication(credentials.UserName, credentials.SecurePassword)
@@ -163,13 +163,13 @@ public sealed class OpenSearchInsecureNoAuth : OpenSearchContainerTest
     public OpenSearchInsecureNoAuth()
     {
         OpensearchContainer = new OpenSearchBuilder()
-            .WithDisabledSecurity() // <-- this disables https and auth
+            .WithSecurityEnabled(false) // <-- this disables https and auth
             .Build();
     }
 
     protected override OpenSearchClient CreateOpenSearchClient()
     {
-        var uri = new Uri(OpensearchContainer.GetConnection());
+        var uri = new Uri(OpensearchContainer.GetConnectionString());
         Assert.Equal(Uri.UriSchemeHttp, uri.Scheme);
         var clientSettings = new ConnectionSettings(uri);
 

@@ -17,10 +17,10 @@ public sealed class OpenSearchContainerDifferentImagesTest
             .Build();
         // <!-- -8<- [end:LegacyImageAdminPassword] -->
         await opensearchContainer.StartAsync(TestContext.Current.CancellationToken);
-        var credentials = opensearchContainer.GetConnectionCredentials();
+        var credentials = opensearchContainer.GetCredentials();
         Assert.Equal(OpenSearchBuilder.DefaultOldInsecurePassword, credentials.Password); // check that creds have 'admin' pw set
         var client = new OpenSearchClient(
-            new ConnectionSettings(new Uri(opensearchContainer.GetConnection()))
+            new ConnectionSettings(new Uri(opensearchContainer.GetConnectionString()))
                 .BasicAuthentication(credentials.UserName, credentials.SecurePassword)
                 .ServerCertificateValidationCallback((_, _, _, _) => true));
         var pingResponse = await client.PingAsync(ct: TestContext.Current.CancellationToken);
@@ -39,10 +39,10 @@ public sealed class OpenSearchContainerDifferentImagesTest
             .WithPassword(password) // newer images can use custom admin password
             .Build();
         await opensearchContainer.StartAsync(TestContext.Current.CancellationToken);
-        var credentials = opensearchContainer.GetConnectionCredentials();
+        var credentials = opensearchContainer.GetCredentials();
         Assert.Equal(password, credentials.Password); // check that creds have custom pw set
         var client = new OpenSearchClient(
-            new ConnectionSettings(new Uri(opensearchContainer.GetConnection()))
+            new ConnectionSettings(new Uri(opensearchContainer.GetConnectionString()))
                 .BasicAuthentication(credentials.UserName, credentials.SecurePassword)
                 .ServerCertificateValidationCallback((_, _, _, _) => true));
         var pingResponse = await client.PingAsync(ct: TestContext.Current.CancellationToken);
