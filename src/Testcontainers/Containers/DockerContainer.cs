@@ -520,7 +520,7 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      StartedTime = DateTime.TryParse(_container.State.StartedAt, null, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+      StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -556,7 +556,7 @@ namespace DotNet.Testcontainers.Containers
         _container = new ContainerInspectResponse();
       }
 
-      StoppedTime = DateTime.TryParse(_container.State.FinishedAt, null, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
+      StoppedTime = DateTime.TryParse(_container.State.FinishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
     }
 
