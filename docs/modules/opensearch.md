@@ -27,6 +27,10 @@ This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuth"
     ```
+=== "SslBasicAuth CustomPassword"
+    ```csharp
+    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthCustomPassword"
+    ```
 === "InsecureNoAuth"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:InsecureNoAuth"
@@ -64,12 +68,3 @@ The test example uses the following NuGet dependencies:
 To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
-
-## Using legacy docker images
-
-Before version `2.12.0` OpenSearch docker images have a hardcoded password for default 'admin' user. If you are using such an image, set password explicitly like this:
-
-=== "LegacyImageAdminPassword"
-    ```xml
-    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerDifferentImagesTest.cs:LegacyImageAdminPassword"
-    ```

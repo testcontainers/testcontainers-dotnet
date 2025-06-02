@@ -140,7 +140,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
 // <!-- -8<- [start:SslBasicAuth] -->
 [UsedImplicitly]
-public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
+public class OpenSearchSslBasicAuth : OpenSearchContainerTest
 {
     protected override OpenSearchClient CreateOpenSearchClient()
     {
@@ -155,6 +155,19 @@ public sealed class OpenSearchSslBasicAuth : OpenSearchContainerTest
     }
 }
 // <!-- -8<- [end:SslBasicAuth] -->
+
+// <!-- -8<- [start:SslBasicAuthCustomPassword] -->
+[UsedImplicitly]
+public sealed class OpenSearchSslBasicAuthCustomPassword : OpenSearchSslBasicAuth
+{
+    public OpenSearchSslBasicAuthCustomPassword()
+    {
+        OpensearchContainer = new OpenSearchBuilder()
+            .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
+            .Build();
+    }
+}
+// <!-- -8<- [end:SslBasicAuthCustomPassword] -->
 
 // <!-- -8<- [start:InsecureNoAuth] -->
 [UsedImplicitly]
