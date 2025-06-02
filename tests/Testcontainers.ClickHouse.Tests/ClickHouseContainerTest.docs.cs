@@ -45,7 +45,7 @@ public abstract partial class ClickHouseContainerTest
             const string scriptContent = "SELECT 1;";
 
             // When
-            var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent, CancellationToken.None)
+            var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // Then
