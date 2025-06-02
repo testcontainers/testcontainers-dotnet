@@ -12,20 +12,22 @@ You can start a ClickHouse container instance from any .NET application. This ex
 
 === "Test class"
     ```csharp
-    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:Class"
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:UseClickHouseContainer"
     }
     ```
 
-Connecting to container example:
-=== "Connecting to ClickHouse"
+Connect to the container:
+
+=== "Establish connection"
     ```csharp
-    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:Connecting"
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:EstablishConnection"
     ```
 
-Execute SQL script example:
-=== "SQL Script"
+Execute a SQL script:
+
+=== "Run SQL script"
     ```csharp
-    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:SQLScript"
+    --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:RunSQLScript"
     ```
 
 The test example uses the following NuGet dependencies:
