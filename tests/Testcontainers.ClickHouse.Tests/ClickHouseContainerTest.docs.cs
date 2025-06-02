@@ -7,15 +7,15 @@ public abstract partial class ClickHouseContainerTest
     {
         private readonly ClickHouseContainer _clickHouseContainer = new ClickHouseBuilder().Build();
 
-        public async ValueTask DisposeAsync()
-        {
-            await _clickHouseContainer.DisposeAsync()
-                .ConfigureAwait(false);
-        }
-
         public async ValueTask InitializeAsync()
         {
             await _clickHouseContainer.StartAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _clickHouseContainer.DisposeAsync()
                 .ConfigureAwait(false);
         }
         // <!-- -8<- [end:UseClickHouseContainer] -->
