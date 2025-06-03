@@ -1,6 +1,6 @@
 namespace Testcontainers.ClickHouse;
 
-public abstract class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
+public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
