@@ -52,11 +52,15 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         // Given
         var client = CreateClient();
 
+        var index = Indices.Index(IndexName);
+
+        var alias = new Name(IndexName + "-alias");
+
         // When
         var createIndexResponse = await CreateIndexAsync(client)
             .ConfigureAwait(true);
 
-        var createAliasResponse = await client.Indices.PutAliasAsync(Indices.Index(IndexName), new Name($"{IndexName}-alias"), ct: TestContext.Current.CancellationToken)
+        var createAliasResponse = await client.Indices.PutAliasAsync(index, alias, ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -76,24 +80,20 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         var document = new Document(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
         // When
+        Func<IndexDescriptor<Document>, IIndexRequest<Document>> indexRequest = i =>
+            i.Index(IndexName).Id(document.Id).Refresh(Refresh.True);
+
+        Func<SearchDescriptor<Document>, ISearchRequest> searchRequest = s =>
+            s.Index(IndexName).Query(q => q.Match(m => m.Field("title").Query(document.Title)));
+
         var createIndexResponse = await CreateIndexAsync(client)
             .ConfigureAwait(true);
 
-        var indexResponse = await client.IndexAsync(
-            document,
-            i => i.Index(IndexName)
-                .Id(document.Id)
-                .Refresh(Refresh.True),
-            TestContext.Current.CancellationToken
-        ).ConfigureAwait(true);
+        var indexResponse = await client.IndexAsync(document, indexRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-        var searchResponse = await client.SearchAsync<Document>(
-            s => s.Index(IndexName)
-                .Query(q => q.Match(m =>
-                    m.Field("title")
-                        .Query(document.Title))),
-            TestContext.Current.CancellationToken
-        ).ConfigureAwait(true);
+        var searchResponse = await client.SearchAsync(searchRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(createIndexResponse.IsValid);
@@ -109,15 +109,10 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     // <!-- -8<- [start:CreateIndexImplementation] -->
     private static Task<CreateIndexResponse> CreateIndexAsync(OpenSearchClient client)
     {
-        return client.Indices.CreateAsync(
-            Indices.Index(IndexName),
-            c => c
-                .Settings(s => s
-                    .NumberOfReplicas(0)
-                    .NumberOfShards(1))
-                .Map<Document>(m => m.AutoMap()),
-            TestContext.Current.CancellationToken
-        );
+        Func<CreateIndexDescriptor, ICreateIndexRequest> createIndexRequest = c =>
+            c.Settings(s => s.NumberOfReplicas(0).NumberOfShards(1)).Map<Document>(m => m.AutoMap());
+
+        return client.Indices.CreateAsync(Indices.Index(IndexName), createIndexRequest, TestContext.Current.CancellationToken);
     }
     // <!-- -8<- [end:CreateIndexImplementation] -->
 
