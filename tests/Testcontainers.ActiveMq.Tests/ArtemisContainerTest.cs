@@ -31,7 +31,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UseArtemisContainer]
 
-    // # --8<-- [start:ArtemisContainerEstablishesConnection]
+    // # --8<-- [start:EstablishConnection]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesConnection()
@@ -74,7 +74,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
-    // # --8<-- [end:ArtemisContainerEstablishesConnection]
+    // # --8<-- [end:EstablishConnection]
 
     protected virtual ValueTask DisposeAsyncCore()
     {
