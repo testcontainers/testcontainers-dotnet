@@ -3,25 +3,27 @@ namespace Testcontainers.OpenSearch;
 // <!-- -8<- [start:BaseClass] -->
 public abstract class OpenSearchContainerTest : IAsyncLifetime
 {
-    private const string INDEX_NAME = "testcontainers";
+    private const string IndexName = "testcontainers";
 
-    protected OpenSearchContainer OpensearchContainer { get; init; }
+    private readonly OpenSearchContainer _openSearchContainer;
 
-    protected abstract OpenSearchClient CreateOpenSearchClient();
-
-    protected OpenSearchContainerTest()
+    private OpenSearchContainerTest(OpenSearchContainer openSearchContainer)
     {
-        OpensearchContainer = new OpenSearchBuilder().Build(); // by default, OpenSearch uses https and credentials for connections.
+        _openSearchContainer = openSearchContainer;
     }
 
     public async ValueTask InitializeAsync()
     {
-        await OpensearchContainer.StartAsync(TestContext.Current.CancellationToken);
+        await _openSearchContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await OpensearchContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
     // <!-- -8<- [end:BaseClass] -->
 
@@ -31,38 +33,37 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public async Task PingReturnsValidResponse()
     {
         // Given
-        OpenSearchClient client = CreateOpenSearchClient();
+        var client = CreateClient();
 
         // When
-        var response = await client.PingAsync(ct: TestContext.Current.CancellationToken);
+        var response = await client.PingAsync(ct: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(response.IsValid);
     }
     // <!-- -8<- [end:PingExample] -->
 
-    // <!-- -8<- [start:IndexAndAliasCreation] -->
+    // <!-- -8<- [start:CreateIndexAndAlias] -->
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldCreateIndexAndAlias()
     {
         // Given
-        OpenSearchClient client = CreateOpenSearchClient();
+        var client = CreateClient();
 
         // When
-        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, INDEX_NAME);
+        var createIndexResponse = await CreateIndexAsync(client)
+            .ConfigureAwait(true);
 
-        var createIndexAliasResponse = await client.Indices.PutAliasAsync(
-            Indices.Index(INDEX_NAME),
-            new Name($"{INDEX_NAME}-alias"),
-            ct: TestContext.Current.CancellationToken);
+        var createAliasResponse = await client.Indices.PutAliasAsync(Indices.Index(IndexName), new Name($"{IndexName}-alias"), ct: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(createIndexResponse.IsValid);
-
-        Assert.True(createIndexAliasResponse.IsValid);
+        Assert.True(createAliasResponse.IsValid);
     }
-    // <!-- -8<- [end:IndexAndAliasCreation] -->
+    // <!-- -8<- [end:CreateIndexAndAlias] -->
 
     // <!-- -8<- [start:IndexingDocument] -->
     [Fact]
@@ -70,123 +71,120 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public async Task ShouldIndexAndSearchForDocument()
     {
         // Given
-        OpenSearchClient client = CreateOpenSearchClient();
+        var client = CreateClient();
+
+        var document = new Document(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
         // When
-        CreateIndexResponse createIndexResponse = await CreateTestIndex(client, INDEX_NAME);
+        var createIndexResponse = await CreateIndexAsync(client)
+            .ConfigureAwait(true);
 
-        var doc = new OpenSearchContainerTestDocument()
-        {
-            DocId = 100,
-            Title = "testcontainers-1",
-            Text = "some long text"
-        };
-        var indexDocumentResponse = await client.IndexAsync(
-            doc,
-            s => s
-                .Index(INDEX_NAME)
-                .Id(doc.DocId) // set document id explicitly
-                .Refresh(Refresh.True), // allows to search for this doc immideately
-            TestContext.Current.CancellationToken);
+        var indexResponse = await client.IndexAsync(
+            document,
+            i => i.Index(IndexName)
+                .Id(document.Id)
+                .Refresh(Refresh.True),
+            TestContext.Current.CancellationToken
+        ).ConfigureAwait(true);
 
-        var searchResponse = await client.SearchAsync<OpenSearchContainerTestDocument>(
-            s => s
-                .Index(INDEX_NAME)
-                .Query(q => q.Match(
-                        s => s
-                            .Field("title")
-                            .Query(doc.Title)
-                    )
-                ),
-            TestContext.Current.CancellationToken);
+        var searchResponse = await client.SearchAsync<Document>(
+            s => s.Index(IndexName)
+                .Query(q => q.Match(m =>
+                    m.Field("title")
+                        .Query(document.Title))),
+            TestContext.Current.CancellationToken
+        ).ConfigureAwait(true);
 
         // Then
         Assert.True(createIndexResponse.IsValid);
 
-        Assert.True(indexDocumentResponse.IsValid);
-        Assert.Equal(doc.DocId.ToString(), indexDocumentResponse.Id);
+        Assert.True(indexResponse.IsValid);
+        Assert.Equal(document.Id, indexResponse.Id);
 
         Assert.True(searchResponse.IsValid);
-        Assert.Single(searchResponse.Documents, c => c.DocId == doc.DocId);
+        Assert.Single(searchResponse.Documents, item => document.Id.Equals(item.Id));
     }
     // <!-- -8<- [end:IndexingDocument] -->
 
-    // <!-- -8<- [start:CreateTestIndexImpl] -->
-    private static async Task<CreateIndexResponse> CreateTestIndex(
-        OpenSearchClient client,
-        string indexName = "testcontainers")
+    // <!-- -8<- [start:CreateIndexImplementation] -->
+    private static Task<CreateIndexResponse> CreateIndexAsync(OpenSearchClient client)
     {
-        return await client.Indices.CreateAsync(Indices.Index(indexName),
+        return client.Indices.CreateAsync(
+            Indices.Index(IndexName),
             c => c
-                .Settings(
-                    s => s
+                .Settings(s => s
                     .NumberOfReplicas(0)
-                    .NumberOfShards(1)
-                )
-                .Map<OpenSearchContainerTestDocument>(
-                    m => m.AutoMap()),
+                    .NumberOfShards(1))
+                .Map<Document>(m => m.AutoMap()),
             TestContext.Current.CancellationToken
         );
     }
-    // <!-- -8<- [end:CreateTestIndexImpl] -->
+    // <!-- -8<- [end:CreateIndexImplementation] -->
 
-    private sealed class OpenSearchContainerTestDocument
+    protected virtual ValueTask DisposeAsyncCore()
     {
-        public long DocId { get; set; }
-        public string Title { get; set; }
-        public string Text { get; set; }
+        return _openSearchContainer.DisposeAsync();
     }
+
+    protected virtual OpenSearchClient CreateClient()
+    {
+        var credentials = _openSearchContainer.GetCredentials();
+
+        var connectionString = new Uri(_openSearchContainer.GetConnectionString());
+        Assert.Equal(Uri.UriSchemeHttps, connectionString.Scheme);
+
+        var connectionSettings = new ConnectionSettings(connectionString)
+            .BasicAuthentication(credentials.UserName, credentials.Password)
+            .ServerCertificateValidationCallback((_, _, _, _) => true);
+
+        return new OpenSearchClient(connectionSettings);
+    }
+
+    // <!-- -8<- [start:InsecureNoAuth] -->
+    [UsedImplicitly]
+    public sealed class InsecureNoAuthConfiguration : OpenSearchContainerTest
+    {
+        public InsecureNoAuthConfiguration()
+            : base(new OpenSearchBuilder()
+                .WithSecurityEnabled(false)
+                .Build())
+        {
+        }
+
+        protected override OpenSearchClient CreateClient()
+        {
+            var connectionString = new Uri(_openSearchContainer.GetConnectionString());
+            Assert.Equal(Uri.UriSchemeHttp, connectionString.Scheme);
+            return new OpenSearchClient(connectionString);
+        }
+    }
+    // <!-- -8<- [end:InsecureNoAuth] -->
+
+    // <!-- -8<- [start:SslBasicAuthDefaultCredentials] -->
+    [UsedImplicitly]
+    public sealed class SslBasicAuthDefaultCredentialsConfiguration : OpenSearchContainerTest
+    {
+        public SslBasicAuthDefaultCredentialsConfiguration()
+            : base(new OpenSearchBuilder()
+                .Build())
+        {
+        }
+    }
+    // <!-- -8<- [end:SslBasicAuthDefaultCredentials] -->
+
+    // <!-- -8<- [start:SslBasicAuthCustomCredentials] -->
+    [UsedImplicitly]
+    public sealed class SslBasicAuthCustomCredentialsConfiguration : OpenSearchContainerTest
+    {
+        public SslBasicAuthCustomCredentialsConfiguration()
+            : base(new OpenSearchBuilder()
+                .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
+                .Build())
+        {
+        }
+    }
+    // <!-- -8<- [end:SslBasicAuthCustomCredentials] -->
+
+    [UsedImplicitly]
+    private record Document(string Id, string Title);
 }
-
-// <!-- -8<- [start:SslBasicAuth] -->
-[UsedImplicitly]
-public class OpenSearchSslBasicAuth : OpenSearchContainerTest
-{
-    protected override OpenSearchClient CreateOpenSearchClient()
-    {
-        var credentials = OpensearchContainer.GetCredentials();
-        var uri = new Uri(OpensearchContainer.GetConnectionString());
-        Assert.Equal(Uri.UriSchemeHttps, uri.Scheme);
-        var clientSettings = new ConnectionSettings(uri)
-            .BasicAuthentication(credentials.UserName, credentials.SecurePassword)
-            .ServerCertificateValidationCallback((_, _, _, _) => true); // validate self-signed certificate
-
-        return new OpenSearchClient(clientSettings);
-    }
-}
-// <!-- -8<- [end:SslBasicAuth] -->
-
-// <!-- -8<- [start:SslBasicAuthCustomPassword] -->
-[UsedImplicitly]
-public sealed class OpenSearchSslBasicAuthCustomPassword : OpenSearchSslBasicAuth
-{
-    public OpenSearchSslBasicAuthCustomPassword()
-    {
-        OpensearchContainer = new OpenSearchBuilder()
-            .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
-            .Build();
-    }
-}
-// <!-- -8<- [end:SslBasicAuthCustomPassword] -->
-
-// <!-- -8<- [start:InsecureNoAuth] -->
-[UsedImplicitly]
-public sealed class OpenSearchInsecureNoAuth : OpenSearchContainerTest
-{
-    public OpenSearchInsecureNoAuth()
-    {
-        OpensearchContainer = new OpenSearchBuilder()
-            .WithSecurityEnabled(false) // <-- this disables https and auth
-            .Build();
-    }
-
-    protected override OpenSearchClient CreateOpenSearchClient()
-    {
-        var uri = new Uri(OpensearchContainer.GetConnectionString());
-        Assert.Equal(Uri.UriSchemeHttp, uri.Scheme);
-        var clientSettings = new ConnectionSettings(uri);
-
-        return new OpenSearchClient(clientSettings);
-    }
-}
-// <!-- -8<- [end:InsecureNoAuth] -->

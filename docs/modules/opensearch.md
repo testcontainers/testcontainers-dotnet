@@ -23,37 +23,40 @@ This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:BaseClass"
     }
     ```
-=== "SslBasicAuth"
-    ```csharp
-    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuth"
-    ```
-=== "SslBasicAuth CustomPassword"
-    ```csharp
-    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthCustomPassword"
-    ```
-=== "InsecureNoAuth"
+=== "Insecure no auth"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:InsecureNoAuth"
     ```
+=== "SSL default credentials"
+    ```csharp
+    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthDefaultCredentials"
+    ```
+=== "SSL custom credentials"
+    ```csharp
+    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthCustomCredentials"
+    ```
 
-How to check that client established connection:
-=== "PingExample"
+How to check if the client has established a connection:
+
+=== "Ping example"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:PingExample"
     ```
 
-Creating index and index alias:
-=== "IndexAndAliasCreation"
+Creating an index and alias:
+
+=== "Create index and alias"
     ```csharp
-    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:IndexAndAliasCreation"
+    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:CreateIndexAndAlias"
     ```
-=== "CreateTestIndexImpl"
+=== "Create index implementation"
     ```csharp
-    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:CreateTestIndexImpl"
+    --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:CreateIndexImplementation"
     ```
 
-Indexing and searching for document:
-=== "IndexingDocument"
+Indexing and searching a document:
+
+=== "Indexing document"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:IndexingDocument"
     ```

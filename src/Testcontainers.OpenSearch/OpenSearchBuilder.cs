@@ -6,11 +6,11 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
 {
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
-    public const int OpenSearchRestApiPort = 9200;
+    public const ushort OpenSearchRestApiPort = 9200;
 
-    public const int OpenSearchTransportPort = 9300;
+    public const ushort OpenSearchTransportPort = 9300;
 
-    public const int OpenSearchPerformanceAnalyzerPort = 9600;
+    public const ushort OpenSearchPerformanceAnalyzerPort = 9600;
 
     public const string DefaultUsername = "admin";
 
@@ -79,22 +79,26 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     {
         Validate();
 
-        var openSearchBuilder = this;
+        OpenSearchBuilder openSearchBuilder;
 
-        const string oldInsecurePassword = "admin";
-        var imageIsBefore_v2_12 = DockerResourceConfiguration.Image.MatchVersion(p => (p.Major == 2 && p.Minor < 12) || p.Major == 1);
-        // OpenSearch images before v2.12.0 have hardcoded default password.
-        // If password have not been set (it equals DefaultPassword), set it to "admin".
-        if (imageIsBefore_v2_12 && string.Equals(DockerResourceConfiguration.Password, DefaultPassword, StringComparison.Ordinal))
+        Predicate<System.Version> predicate = v => v.Major == 1 || (v.Major == 2 && v.Minor < 12);
+
+        var image = DockerResourceConfiguration.Image;
+
+        // Images before version 2.12.0 use a hardcoded default password.
+        var requiresHardcodedDefaultPassword = image.MatchVersion(predicate);
+        if (requiresHardcodedDefaultPassword)
         {
-            openSearchBuilder = WithPassword(oldInsecurePassword);
+            openSearchBuilder = WithPassword("admin");
+        }
+        else
+        {
+            openSearchBuilder = this;
         }
 
         // By default, the base builder waits until the container is running. However, for OpenSearch, a more advanced waiting strategy is necessary that requires access to the password.
         // If the user does not provide a custom waiting strategy, append the default OpenSearch waiting strategy.
-        openSearchBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ?
-            openSearchBuilder :
-            openSearchBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(openSearchBuilder.DockerResourceConfiguration)));
+        openSearchBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? openSearchBuilder : openSearchBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new OpenSearchContainer(openSearchBuilder.DockerResourceConfiguration);
     }
 
