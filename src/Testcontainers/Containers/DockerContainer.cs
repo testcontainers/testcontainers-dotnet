@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Globalization;
   using System.IO;
   using System.Linq;
+  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
@@ -635,6 +636,9 @@ namespace DotNet.Testcontainers.Containers
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
+      await ThrowIfExitedAsync(ct)
+        .ConfigureAwait(false);
+
       return await waitStrategy.UntilAsync(this, ct)
         .ConfigureAwait(false);
     }
@@ -658,6 +662,39 @@ namespace DotNet.Testcontainers.Containers
       }
 
       return true;
+    }
+
+    private async Task ThrowIfExitedAsync(CancellationToken ct = default)
+    {
+      if (State == TestcontainersStates.Exited)
+      {
+        var message = new StringBuilder($"The {Image.FullName} container has exited.");
+        try
+        {
+          var (stdout, stderr) = await GetLogsAsync(ct: ct)
+            .ConfigureAwait(false);
+
+          stdout = stdout.Trim();
+          stderr = stderr.Trim();
+
+          message.AppendLine();
+
+          if (stderr.Length > 0)
+          {
+            message.AppendLine().AppendLine($"=== stderr of {Name.TrimStart('/')} ({Id}) ===").AppendLine(stderr);
+          }
+
+          if (stdout.Length > 0)
+          {
+            message.AppendLine().AppendLine($"=== stdout of {Name.TrimStart('/')} ({Id}) ===").AppendLine(stdout);
+          }
+        }
+        catch
+        {
+          message.AppendLine(" Please look at the container logs.");
+        }
+        throw new ContainerException(message.ToString());
+      }
     }
 
     private sealed class WaitUntilPortBindingsMapped : WaitStrategy

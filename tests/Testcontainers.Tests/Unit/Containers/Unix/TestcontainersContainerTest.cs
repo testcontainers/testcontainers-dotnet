@@ -293,6 +293,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         await using var container = new ContainerBuilder()
           .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
           .WithImage(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When

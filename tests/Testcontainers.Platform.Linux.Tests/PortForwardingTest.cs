@@ -51,7 +51,6 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build())
         {
         }
@@ -67,7 +66,6 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
                 .Build())
         {
         }
@@ -113,14 +111,6 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
             _ = await socket.SendAsync(sendBytes, SocketFlags.None, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
-        }
-    }
-
-    private sealed class WaitUntil : IWaitUntil
-    {
-        public Task<bool> UntilAsync(IContainer container)
-        {
-            return Task.FromResult(TestcontainersStates.Exited.Equals(container.State));
         }
     }
 }
