@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.OpenSearch;
+namespace Testcontainers.OpenSearch;
 
 public sealed class OpenSearchBuilderTest
 {
