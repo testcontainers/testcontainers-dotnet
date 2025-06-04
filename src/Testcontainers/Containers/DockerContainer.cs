@@ -200,7 +200,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), _container.State.Status, true);
+#else
+          return Enum.Parse<TestcontainersStates>(_container.State.Status, true);
+#endif
         }
         catch (Exception)
         {
@@ -226,7 +230,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), _container.State.Health.Status, true);
+#else
+          return Enum.Parse<TestcontainersHealthStatus>(_container.State.Health.Status, true);
+#endif
         }
         catch (Exception)
         {
