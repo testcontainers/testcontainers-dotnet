@@ -19,11 +19,13 @@ public sealed class DependsOnTest : IAsyncLifetime
     {
         var childContainer1 = new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
+            .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
         var childContainer2 = new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
+            .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
@@ -41,6 +43,7 @@ public sealed class DependsOnTest : IAsyncLifetime
             .DependsOn(network)
             .DependsOn(volume, "/workdir")
             .WithImage(CommonImages.Alpine)
+            .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
