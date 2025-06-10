@@ -4,7 +4,7 @@ namespace Testcontainers.Nats;
 [PublicAPI]
 public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, NatsConfiguration>
 {
-    public const string NatsImage = "nats:2.9";
+    public const string NatsImage = "nats:2.11";
 
     public const ushort NatsClientPort = 4222;
 
