@@ -10,11 +10,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class ContainerConfigurationConverter
   {
-    private const string UdpPortSuffix = "/udp";
+    private const string UdpProtocolSuffix = "/udp";
 
-    private const string TcpPortSuffix = "/tcp";
+    private const string TcpProtocolSuffix = "/tcp";
 
-    private const string SctpPortSuffix = "/sctp";
+    private const string SctpProtocolSuffix = "/sctp";
+
+    private static readonly string[] Protocols = new[] { UdpProtocolSuffix, TcpProtocolSuffix, SctpProtocolSuffix };
 
     public ContainerConfigurationConverter(IContainerConfiguration configuration)
     {
@@ -49,7 +51,8 @@ namespace DotNet.Testcontainers.Clients
 
     public static string GetQualifiedPort(string containerPort)
     {
-      return Array.Exists(new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)) ? containerPort.ToLowerInvariant() : containerPort + TcpPortSuffix;
+      return Array.Exists(Protocols, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase))
+        ? containerPort.ToLowerInvariant() : containerPort + TcpProtocolSuffix;
     }
 
     private sealed class ToCollection : CollectionConverter<string, string>
