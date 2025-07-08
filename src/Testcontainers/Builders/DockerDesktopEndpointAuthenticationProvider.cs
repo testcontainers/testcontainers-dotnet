@@ -125,5 +125,11 @@ namespace DotNet.Testcontainers.Builders
     {
       return null;
     }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      return null;
+    }
   }
 }
