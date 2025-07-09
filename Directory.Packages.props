@@ -51,7 +51,7 @@
         <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Json" Version="2.8.0"/>
         <PackageVersion Include="Confluent.SchemaRegistry" Version="2.8.0"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
-        <PackageVersion Include="CouchbaseNetClient" Version="3.6.4"/>
+        <PackageVersion Include="CouchbaseNetClient" Version="3.7.2"/>
         <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
