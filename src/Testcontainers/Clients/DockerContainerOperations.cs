@@ -88,7 +88,7 @@ namespace DotNet.Testcontainers.Clients
     public Task StopAsync(string id, CancellationToken ct = default)
     {
       Logger.StopDockerContainer(id);
-      return DockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
+      return DockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters(), ct);
     }
 
     public Task PauseAsync(string id, CancellationToken ct = default)
