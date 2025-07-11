@@ -164,6 +164,12 @@ namespace DotNet.Testcontainers.Containers
     long HealthCheckFailingStreak { get; }
 
     /// <summary>
+    /// Resolves the first public assigned host port.
+    /// </summary>
+    /// <returns>Returns the first public assigned host port.</returns>
+    ushort GetMappedPublicPort();
+
+    /// <summary>
     /// Resolves the public assigned host port.
     /// </summary>
     /// <remarks>
@@ -184,6 +190,12 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     ushort GetMappedPublicPort(string containerPort);
+
+    /// <summary>
+    /// Resolves all public assigned host ports.
+    /// </summary>
+    /// <returns>Returns all public assigned host ports.</returns>
+    IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts();
 
     /// <summary>
     /// Gets the container exit code.
@@ -284,7 +296,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="filePath">An absolute path or a name value within the container.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the file has been read.</returns>
+    /// <returns>A task that completes when the file has been read.</returns>
     Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
 
     /// <summary>
@@ -292,7 +304,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="command">Shell command.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the shell command has been executed.</returns>
+    /// <returns>A task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }

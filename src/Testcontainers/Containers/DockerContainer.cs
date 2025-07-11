@@ -253,6 +253,12 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public ushort GetMappedPublicPort()
+    {
+      return GetMappedPublicPorts().Values.First();
+    }
+
+    /// <inheritdoc />
     public ushort GetMappedPublicPort(int containerPort)
     {
       return GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
@@ -265,14 +271,38 @@ namespace DotNet.Testcontainers.Containers
 
       var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
 
-      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
       {
-        return publicPort;
+        return hostPort;
       }
       else
       {
         throw new InvalidOperationException($"Exposed port {qualifiedContainerPort} is not mapped.");
       }
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
+    {
+      ThrowIfResourceNotFound();
+
+      return _container.NetworkSettings.Ports
+        .Where(
+          kvp =>
+          {
+            return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
+          })
+        .ToDictionary(
+          kvp =>
+          {
+            var containerPort = kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
+            return ushort.Parse(containerPort);
+          },
+          kvp =>
+          {
+            var hostPort = kvp.Value[0].HostPort;
+            return ushort.Parse(hostPort);
+          });
     }
 
     /// <inheritdoc />
