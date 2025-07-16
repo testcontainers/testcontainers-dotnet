@@ -7,10 +7,11 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Containers;
   using Xunit;
 
-  public sealed class WaitUntilTcpConnectionIsSucceededTest : IAsyncLifetime
+  public sealed class WaitUntilTcpConnectedTest : IAsyncLifetime
   {
     private const int listeningPort = 49152;
     private const int mappedPort = 49153;
+    private const int unmappedPort = 49154;
     private IContainer _container = new ContainerBuilder()
       .WithImage(CommonImages.Socat)
       .WithCommand("-v")
@@ -18,7 +19,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       .WithCommand("EXEC:cat")
       .WithPortBinding(listeningPort, true)
       .WithPortBinding(mappedPort, true)
-      .WithWaitStrategy(Wait.ForUnixContainer())
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilTcpConnected(listeningPort))
       .Build();
 
     public async ValueTask InitializeAsync()
@@ -33,32 +34,31 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task TcpWaitStrategyUntilConnectionIsSucceeded()
+    public async Task UntilTcpConnectedIsSucceeded()
     {
-      var tcpWaitStrategy = new UntilTcpConnected(listeningPort);
+      var untilTcpConnected = new UntilTcpConnected(listeningPort);
 
-      var succeeded = await tcpWaitStrategy.UntilAsync(_container);
+      var succeeded = await untilTcpConnected.UntilAsync(_container);
 
       Assert.True(succeeded);
     }
 
     [Fact]
-    public async Task TcpWaitStrategyUntilConnectionIsFailed()
+    public async Task UntilTcpConnectedIsFailed()
     {
-      var tcpWaitStrategy = new UntilTcpConnected(mappedPort);
+      var untilTcpConnected = new UntilTcpConnected(mappedPort);
 
-      var succeeded = await tcpWaitStrategy.UntilAsync(_container);
+      var succeeded = await untilTcpConnected.UntilAsync(_container);
 
       Assert.False(succeeded);
     }
 
     [Fact]
-    public async Task TcpWaitStrategyUntilConnectionFailsWhenPortNotMapped()
+    public async Task UntilTcpConnectedFailsWhenPortNotMapped()
     {
-      const int unmappedPort = 49153;
-      var tcpWaitStrategy = new UntilTcpConnected(unmappedPort);
+      var untilTcpConnected = new UntilTcpConnected(unmappedPort);
 
-      var succeeded = await tcpWaitStrategy.UntilAsync(_container);
+      var succeeded = await untilTcpConnected.UntilAsync(_container);
 
       Assert.False(succeeded);
     }

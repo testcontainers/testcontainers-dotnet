@@ -70,7 +70,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilTcpConnectionIsSucceeded(int port, Action<IWaitStrategy> waitStrategyModifier = null)
+    public virtual IWaitForContainerOS UntilTcpConnected(int port, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilTcpConnected(port), waitStrategyModifier);
     }
