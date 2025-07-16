@@ -177,7 +177,7 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
-    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    /// <exception cref="InvalidOperationException">Container has not been created, or no mapped port was found.</exception>
     ushort GetMappedPublicPort(int containerPort);
 
     /// <summary>
@@ -195,6 +195,7 @@ namespace DotNet.Testcontainers.Containers
     /// Resolves all public assigned host ports.
     /// </summary>
     /// <returns>Returns all public assigned host ports.</returns>
+    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts();
 
     /// <summary>

@@ -255,7 +255,8 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public ushort GetMappedPublicPort()
     {
-      return GetMappedPublicPorts().Values.First();
+      using var enumerator = GetMappedPublicPorts().Values.GetEnumerator();
+      return enumerator.MoveNext() ? enumerator.Current : throw new InvalidOperationException("No mapped port found.");
     }
 
     /// <inheritdoc />
