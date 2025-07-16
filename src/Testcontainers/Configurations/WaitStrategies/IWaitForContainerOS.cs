@@ -96,6 +96,15 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
+    /// Waits until the tcp connection is established successfully from host.
+    /// </summary>
+    /// <param name="port">The container port to be checked.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilTcpConnectionIsSucceeded(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
     /// Waits until the http request is completed successfully.
     /// </summary>
     /// <param name="request">The http request to be executed.</param>
