@@ -45,7 +45,11 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/");
+  # copy to the `/app` directory
+  .WithResourceMapping(new FileInfo("appsettings.json"), "/app")
+
+  # copy to a specific file
+  .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
 Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
