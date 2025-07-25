@@ -62,6 +62,7 @@ jobs:
           { name: "Testcontainers.K3s", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Kafka", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.KurrentDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.LowkeyVault", runs-on: "ubuntu-22.04" },
