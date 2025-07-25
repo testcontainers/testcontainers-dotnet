@@ -4,9 +4,17 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
+  /// <summary>
+  /// Defines a condition that is repeatedly evaluated while it remains true.
+  /// </summary>
   [PublicAPI]
   public interface IWaitWhile
   {
+    /// <summary>
+    /// Evaluates the condition asynchronously against the specified container.
+    /// </summary>
+    /// <param name="container">The container instance to check readiness against.</param>
+    /// <returns>A task that returns <c>true</c> while the condition holds; otherwise, <c>false</c>.</returns>
     Task<bool> WhileAsync(IContainer container);
   }
 }

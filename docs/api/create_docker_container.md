@@ -45,10 +45,9 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  # copy to the `/app` directory
-  .WithResourceMapping(new FileInfo("appsettings.json"), "/app")
-
-  # copy to a specific file
+  # Copy 'appsettings.json' into the '/app' directory.
+  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
+  # Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
   .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
