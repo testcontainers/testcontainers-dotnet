@@ -6,7 +6,11 @@ namespace DotNet.Testcontainers.Configurations
 {
     /// <summary>
     /// Wait for a TCP connection to be established.
-    /// </summary>s
+    /// </summary>
+    /// <remarks>
+    /// Some docker configurations (DockerForMac & Rancher on Mac & Windows) allow establishing a connection to any mapped port.
+    /// https://forums.docker.com/t/port-forwarding-of-exposed-ports-behaves-unexpectedly/15807
+    /// </remarks>
     internal sealed class UntilTcpConnected(int port) : IWaitUntil
     {
         private readonly int _containerPort = port;
