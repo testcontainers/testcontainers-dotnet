@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task UntilTcpConnectedIsFailed()
+    public async Task UntilTcpConnectedFailsWhenPortNotListening()
     {
       var untilTcpConnected = new UntilTcpConnected(mappedPort);
 
