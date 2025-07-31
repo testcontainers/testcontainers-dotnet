@@ -19,18 +19,6 @@ public sealed class SpiceDBContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ContainerStartsSuccessfully()
-    {
-        // Given
-        var containerState = await _spicedbContainer.GetStateAsync(TestContext.Current.CancellationToken)
-            .ConfigureAwait(false);
-
-        // When & Then
-        Assert.Equal(containerState, "started");
-    }
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ExpectedPortIsMapped()
     {
         // Given & When

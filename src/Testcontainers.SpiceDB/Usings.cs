@@ -6,5 +6,4 @@ global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Containers;
 global using JetBrains.Annotations;
 global using Grpc.Health.V1;
-global using Grpc.Net.Client;
 global using Grpc.Core; 

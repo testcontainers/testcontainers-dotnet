@@ -25,19 +25,4 @@ public sealed class SpiceDBContainer : DockerContainer
         var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(SpiceDBBuilder.SpiceDBPort));
         return endpoint.ToString();
     }
-
-    public GrpcChannel GetGrpcChannel()
-    {
-        return GrpcChannel.ForAddress(GetGrpcConnectionString());
-    }
-
-    public async Task<string> GetStateAsync(CancellationToken cancellationToken = default)
-    {
-        var healthClient = new Health.HealthClient(GetGrpcChannel());
-        var response = await healthClient.CheckAsync(new HealthCheckRequest
-        {
-            Service = string.Empty, 
-        }, null, null, cancellationToken);
-        return response.Status.ToString();
-    }
 }

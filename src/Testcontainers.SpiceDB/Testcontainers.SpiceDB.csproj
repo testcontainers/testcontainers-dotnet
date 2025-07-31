@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.HealthCheck" />
-        <PackageReference Include="Grpc.Net.Client" />
         <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
     </ItemGroup>
 
