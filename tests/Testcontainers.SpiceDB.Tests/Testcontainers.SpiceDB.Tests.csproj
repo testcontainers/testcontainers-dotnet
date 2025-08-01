@@ -6,6 +6,8 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Grpc.Core" />
+        <PackageReference Include="Grpc.Net.Client" />
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>

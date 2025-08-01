@@ -1,4 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Grpc.Core;
+using Grpc.Net.Client;
+using Xunit;
 
 namespace Testcontainers.SpiceDB;
 
@@ -30,26 +36,10 @@ public sealed class SpiceDBContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task ExecCommandReturnsSuccessful()
+    public async Task VersionCommandReturnsSuccessful()
     {
         // Given
-        List<string> commands = ["spicedb-cli", "version"];
-
-        // When
-        var execResult = await _spicedbContainer.ExecAsync(commands, TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
-        Assert.Contains("spicedb", execResult.Stdout);
-    }
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task PingCommandReturnsSuccessful()
-    {
-        // Given
-        List<string> commands = ["spicedb-cli", "ping"];
+        List<string> commands = ["spicedb", "version"];
 
         // When
         var execResult = await _spicedbContainer.ExecAsync(commands, TestContext.Current.CancellationToken)
@@ -61,13 +51,36 @@ public sealed class SpiceDBContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void GetGrpcConnectionStringReturnsExpectedFormat()
+    public void GetGrpcConnectionStringNotNull()
     {
         // Given & When
         var connectionString = _spicedbContainer.GetGrpcConnectionString();
 
         // Then
-        // Note: This test will need to be updated once GetConnectionString() is properly implemented
         Assert.NotNull(connectionString);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ShouldConnectToSpiceDB()
+    {
+        // Given
+        var connectionString = _spicedbContainer.GetGrpcConnectionString();
+        var handler = new SocketsHttpHandler();
+        handler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+        // When
+        using var channel = GrpcChannel.ForAddress(connectionString, new GrpcChannelOptions
+        {
+            HttpHandler = handler
+        });
+
+        // Then
+        Assert.NotNull(connectionString);
+        Assert.NotNull(channel);
+
+        // Test connectivity by attempting to connect
+        await channel.ConnectAsync();
+        Assert.Equal(ConnectivityState.Ready, channel.State);
     }
 }
