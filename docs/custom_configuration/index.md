@@ -67,13 +67,11 @@ Testcontainers can automatically add a registry prefix to Docker Hub image names
 You can set this up in two ways:
 
 === "Environment Variable"
-
     ```
     TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
     ```
 
 === "Properties File"
-
     ```
     hub.image.name.prefix=registry.mycompany.com/mirror/
     ```
