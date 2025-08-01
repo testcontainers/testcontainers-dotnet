@@ -120,7 +120,7 @@ jobs:
         shell: bash
 
       - name: Run Build
-        run: ./build.sh --target=Build
+        run: ./build.sh --target=Build --test-project=${{ matrix.test-projects.name }}
         shell: bash
 
       - name: Run Tests
