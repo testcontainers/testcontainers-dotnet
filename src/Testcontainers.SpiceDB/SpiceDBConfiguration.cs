@@ -7,12 +7,19 @@ public sealed class SpiceDBConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="SpiceDBConfiguration" /> class.
     /// </summary>
-    public SpiceDBConfiguration(bool? tslEnabled = false)
+    public SpiceDBConfiguration(string grpcPresharedKey = "mysecret", string datastoreEngine = "memory", bool? tslEnabled = false)
     {
+        GrpcPresharedKey = grpcPresharedKey;
+        DatastoreEngine = datastoreEngine;
         TslEnabled = tslEnabled.GetValueOrDefault(false);
     }
 
     public bool TslEnabled { get; set; }
+
+    public string GrpcPresharedKey { get; set; }
+
+    public string DatastoreEngine { get; set; }
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpiceDBConfiguration" /> class.

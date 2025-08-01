@@ -22,7 +22,7 @@ public sealed class SpiceDBContainerTest : IAsyncLifetime
     public void ExpectedPortIsMapped()
     {
         // Given & When
-        var mappedPort = _spicedbContainer.GetMappedPublicPort(SpiceDBBuilder.SpiceDBPort);
+        var mappedPort = _spicedbContainer.GetMappedPublicPort(SpiceDBBuilder.SpiceDBgRPCPort);
 
         // Then
         Assert.True(mappedPort > 0);

@@ -22,7 +22,7 @@ public sealed class SpiceDBContainer : DockerContainer
     public string GetGrpcConnectionString()
     {
         var scheme = _configuration.TslEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
-        var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(SpiceDBBuilder.SpiceDBPort));
+        var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(SpiceDBBuilder.SpiceDBgRPCPort));
         return endpoint.ToString();
     }
 }

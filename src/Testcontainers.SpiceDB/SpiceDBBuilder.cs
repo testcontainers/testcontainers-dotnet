@@ -6,7 +6,10 @@ public sealed class SpiceDBBuilder : ContainerBuilder<SpiceDBBuilder, SpiceDBCon
 {
     public const string SpiceDBImage = "authzed/spicedb:v1.45.1";
 
-    public const ushort SpiceDBPort = 50051;
+    public const ushort SpiceDBgRPCPort = 50051;
+
+    public const ushort SpiceDBgHTTPPort = 8443;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpiceDBBuilder" /> class.
@@ -42,8 +45,10 @@ public sealed class SpiceDBBuilder : ContainerBuilder<SpiceDBBuilder, SpiceDBCon
     {
         return base.Init()
             .WithImage(SpiceDBImage)
-            .WithPortBinding(SpiceDBPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("SpiceDB-cli", "ping"));
+            .WithPortBinding(SpiceDBgRPCPort, true)
+            .WithPortBinding(SpiceDBgHTTPPort, true)
+            .WithCommand("serve", $"--grpc-preshared-key={DockerResourceConfiguration.GrpcPresharedKey}", $"--datastore-engine={DockerResourceConfiguration.DatastoreEngine}", $"--log-level=info")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("grpc server started serving"));
     }
 
     /// <inheritdoc />
