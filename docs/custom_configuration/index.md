@@ -68,15 +68,15 @@ You can set this up in two ways:
 
 === "Environment Variable"
 
-```bash
-TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
-```
+    ```
+    TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
+    ```
 
 === "Properties File"
 
-```properties
-hub.image.name.prefix=registry.mycompany.com/mirror/
-```
+    ```
+    hub.image.name.prefix=registry.mycompany.com/mirror/
+    ```
 
 Once configured, Testcontainers will rewrite Docker Hub image names by adding the prefix.
 
