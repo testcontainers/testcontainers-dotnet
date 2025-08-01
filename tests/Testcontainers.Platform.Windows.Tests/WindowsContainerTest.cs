@@ -62,4 +62,18 @@ public abstract class WindowsContainerTest : IAsyncLifetime
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class UntilHostPortIsAvailable : WindowsContainerTest
+    {
+        public UntilHostPortIsAvailable()
+            : base(new ContainerBuilder()
+                .WithImage(CommonImages.ServerCore)
+                .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilHostPortAvailable(80))
+                .Build())
+        {
+        }
+    }
 }

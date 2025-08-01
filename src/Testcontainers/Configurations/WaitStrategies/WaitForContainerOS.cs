@@ -70,12 +70,6 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilTcpConnected(int port, Action<IWaitStrategy> waitStrategyModifier = null)
-    {
-      return AddCustomWaitStrategy(new UntilTcpConnected(port), waitStrategyModifier);
-    }
-
-    /// <inheritdoc />
     public virtual IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()), waitStrategyModifier);
@@ -98,5 +92,8 @@ namespace DotNet.Testcontainers.Configurations
     {
       return _waitStrategies;
     }
+
+    /// <inheritdoc />
+    abstract public IWaitForContainerOS UntilHostPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
   }
 }

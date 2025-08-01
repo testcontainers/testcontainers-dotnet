@@ -5,21 +5,22 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class WaitUntilTcpConnectedTest : IAsyncLifetime
+  public sealed class HostPortWaitStrategyTest : IAsyncLifetime
   {
     private const int listeningPort = 49152;
     private const int mappedPort = 49153;
     private const int unmappedPort = 49154;
-    private IContainer _container = new ContainerBuilder()
+    private readonly IContainer _container = new ContainerBuilder()
       .WithImage(CommonImages.Socat)
       .WithCommand("-v")
       .WithCommand($"TCP-LISTEN:{listeningPort},crlf,reuseaddr,fork")
       .WithCommand("EXEC:cat")
       .WithPortBinding(listeningPort, true)
       .WithPortBinding(mappedPort, true)
-      .WithWaitStrategy(Wait.ForUnixContainer().UntilTcpConnected(listeningPort))
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilHostPortAvailable(listeningPort))
       .Build();
 
     public async ValueTask InitializeAsync()
@@ -34,11 +35,11 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task UntilTcpConnectedIsSucceeded()
+    public async Task hostPortWaitStrategyIsSucceeded()
     {
-      var untilTcpConnected = new UntilTcpConnected(listeningPort);
+      var hostPortWaitStrategy = new HostPortWaitStrategy(listeningPort);
 
-      var succeeded = await untilTcpConnected.UntilAsync(_container);
+      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 
       Assert.True(succeeded);
     }
@@ -48,24 +49,23 @@ namespace DotNet.Testcontainers.Tests.Unit
     /// This test might fail in docker configurations where mapped ports are always listened eg. DockerForMac (https://forums.docker.com/t/port-forwarding-of-exposed-ports-behaves-unexpectedly/15807/2)
     /// </summary>
     [Fact]
-    public async Task UntilTcpConnectedFailsWhenPortNotListening()
+    public async Task hostPortWaitStrategyFailsWhenPortNotListening()
     {
-      var untilTcpConnected = new UntilTcpConnected(mappedPort);
+      var hostPortWaitStrategy = new HostPortWaitStrategy(mappedPort);
 
-      var succeeded = await untilTcpConnected.UntilAsync(_container);
+      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 
       Assert.False(succeeded);
     }
 
     [Fact]
-    public async Task UntilTcpConnectedFailsWhenPortNotMapped()
+    public async Task hostPortWaitStrategyFailsWhenPortNotMapped()
     {
-      var untilTcpConnected = new UntilTcpConnected(unmappedPort);
+      var hostPortWaitStrategy = new HostPortWaitStrategy(unmappedPort);
 
-      var succeeded = await untilTcpConnected.UntilAsync(_container);
+      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 
       Assert.False(succeeded);
     }
-
   }
 }

@@ -68,6 +68,20 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
+    /// Waits until the tcp connection is established successfully from host.
+    /// </summary>
+    /// <remarks>
+    /// Some docker configurations (DockerForMac & Rancher on Mac & Windows) allow establishing a connection to any mapped port.
+    /// The test will always succeed in these cases.
+    /// </remarks>
+    /// <param name="port">The container port to be checked.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilHostPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+
+
+    /// <summary>
     /// Waits until the file exists.
     /// </summary>
     /// <param name="filePath">The file path to be checked.</param>
@@ -94,19 +108,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
     IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null);
-
-    /// <summary>
-    /// Waits until the tcp connection is established successfully from host.
-    /// </summary>
-    /// <remarks>
-    /// Some docker configurations (DockerForMac & Rancher on Mac & Windows) allow establishing a connection to any mapped port.
-    /// The test will always succeed in these cases.
-    /// </remarks>
-    /// <param name="port">The container port to be checked.</param>
-    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
-    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    [PublicAPI]
-    IWaitForContainerOS UntilTcpConnected(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Waits until the http request is completed successfully.
