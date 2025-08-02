@@ -9,7 +9,7 @@ public static class CommonImages
 
     public static readonly IImage Alpine = new DockerImage("alpine:3.17");
 
-    public static readonly IImage Socat = new DockerImage("alpine/socat:1.8.0.0");
+    public static readonly IImage Socat = new DockerImage("alpine/socat:1.8.0.3");
 
     public static readonly IImage Curl = new DockerImage("curlimages/curl:8.00.1");
 
