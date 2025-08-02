@@ -128,7 +128,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       public IContainer Container { get; } = new ContainerBuilder()
         .WithImage(CommonImages.Socat)
         .WithCommand("-v")
-        .WithCommand($"TCP-LISTEN:{HttpPort},reuseaddr,fork")
+        .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
         .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
         .WithPortBinding(HttpPort, true)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
