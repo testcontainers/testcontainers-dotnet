@@ -10,46 +10,33 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class WaitUntilHttpRequestIsSucceededTest : IAsyncLifetime
+  public sealed class WaitUntilHttpRequestIsSucceededTest : IClassFixture<WaitUntilHttpRequestIsSucceededTest.HttpFixture>
   {
     private const ushort HttpPort = 80;
 
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage(CommonImages.Socat)
-      .WithCommand("-v")
-      .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
-      .WithCommand("EXEC:\"echo -e 'HTTP/1.1 200 OK'\n\n\"")
-      .WithPortBinding(HttpPort, true)
-      .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
-      .Build();
+    private readonly IContainer _container;
 
-    public static TheoryData<HttpWaitStrategy> GetHttpWaitStrategies()
+    public WaitUntilHttpRequestIsSucceededTest(HttpFixture httpFixture)
     {
-      var theoryData = new TheoryData<HttpWaitStrategy>();
-      theoryData.Add(new HttpWaitStrategy());
-      theoryData.Add(new HttpWaitStrategy().ForPort(HttpPort));
-      theoryData.Add(new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK));
-      theoryData.Add(new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)));
-      theoryData.Add(new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)));
-      theoryData.Add(new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)));
-      return theoryData;
+      _container = httpFixture.Container;
     }
 
-    public async ValueTask InitializeAsync()
-    {
-      await _container.StartAsync()
-        .ConfigureAwait(false);
-    }
-
-    public ValueTask DisposeAsync()
-    {
-      return _container.DisposeAsync();
-    }
+    public static TheoryData<HttpWaitStrategy> HttpWaitStrategies { get; }
+      = new TheoryData<HttpWaitStrategy>
+      {
+        new HttpWaitStrategy(),
+        new HttpWaitStrategy().ForPort(HttpPort),
+        new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK),
+        new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)),
+        new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)),
+        new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)),
+      };
 
     [Theory]
-    [MemberData(nameof(GetHttpWaitStrategies))]
+    [MemberData(nameof(HttpWaitStrategies))]
     public async Task HttpWaitStrategyReceivesStatusCode(HttpWaitStrategy httpWaitStrategy)
     {
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
@@ -133,6 +120,29 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.Null(exceptionOnSubsequentCall);
+    }
+
+    [UsedImplicitly]
+    public sealed class HttpFixture : IAsyncLifetime
+    {
+      public IContainer Container { get; } = new ContainerBuilder()
+        .WithImage(CommonImages.Socat)
+        .WithCommand("-v")
+        .WithCommand($"TCP-LISTEN:{HttpPort},reuseaddr,fork")
+        .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
+        .WithPortBinding(HttpPort, true)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
+        .Build();
+
+      public ValueTask InitializeAsync()
+      {
+        return new ValueTask(Container.StartAsync());
+      }
+
+      public ValueTask DisposeAsync()
+      {
+        return Container.DisposeAsync();
+      }
     }
   }
 }
