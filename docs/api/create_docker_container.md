@@ -100,6 +100,35 @@ _ = new ContainerBuilder()
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
 
+## Composing command arguments
+
+Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
+
+Because builders are immutable, this feature allows you to extend or override predefined configurations, such as those in Testcontainers [modules](), without modifying the original builder.
+
+`ComposableEnumerable<T>` lets you decide how new command arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
+
+If a builder module applies default commands and you need to override or remove them entirely, you can do this by explicitly resetting the command list. For example:
+
+```csharp title="Resetting command arguments"
+// Default PostgreSQL builder configuration:
+//
+// base.Init()
+//   .WithCommand("-c", "fsync=off")
+//   .WithCommand("-c", "full_page_writes=off")
+//   .WithCommand("-c", "synchronous_commit=off")
+
+var postgreSqlContainer = new PostgreSqlBuilder()
+  .WithCommand(new OverwriteEnumerable<string>(Array.Empty<string>()))
+  .Build();
+```
+
+Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default command configurations. This is useful when you want full control over the PostgreSQL startup options or when the default configurations do not match your requirements.
+
+!!!tip
+
+    You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
