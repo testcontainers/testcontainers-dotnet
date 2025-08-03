@@ -134,7 +134,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithCommand(params string[] command)
     {
-      return Clone(new ContainerConfiguration(command: command));
+      return Clone(new ContainerConfiguration(command: new AppendOnlyEnumerable<string>(command)));
     }
 
     /// <inheritdoc />

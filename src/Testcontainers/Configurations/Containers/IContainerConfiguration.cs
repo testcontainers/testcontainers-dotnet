@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the command.
     /// </summary>
-    IEnumerable<string> Command { get; }
+    ComposableEnumerable<string> Command { get; }
 
     /// <summary>
     /// Gets a dictionary of environment variables.
