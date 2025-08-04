@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     /// Verifies that the Wait fails when the port is mapped but not listening.
     /// This test might fail in docker configurations where mapped ports are always listened eg. DockerForMac (https://forums.docker.com/t/port-forwarding-of-exposed-ports-behaves-unexpectedly/15807/2)
     /// </summary>
-    [Fact]
+    [Fact(Skip = "The GitHub Action runner allows establishing a connection to any mapped port.")]
     public async Task HostTcpPortWaitStrategyFailsWhenPortNotListening()
     {
       var hostPortWaitStrategy = new HostTcpPortWaitStrategy(mappedPort);
