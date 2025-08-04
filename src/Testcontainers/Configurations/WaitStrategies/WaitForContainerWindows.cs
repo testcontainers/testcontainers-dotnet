@@ -25,12 +25,6 @@ namespace DotNet.Testcontainers.Configurations
       return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command.ToArray()), waitStrategyModifier);
     }
 
-    public override IWaitForContainerOS UntilHostPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
-    {
-      UntilPortIsAvailable(port, waitStrategyModifier);
-      return AddCustomWaitStrategy(new HostPortWaitStrategy(port), waitStrategyModifier);
-    }
-
     /// <inheritdoc />
     public override IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
     {

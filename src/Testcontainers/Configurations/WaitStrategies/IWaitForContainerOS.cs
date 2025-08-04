@@ -68,17 +68,13 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the tcp connection is established successfully from host.
+    /// Waits until the TCP port is available in the container and a connection can be established from the host to the container.
     /// </summary>
-    /// <remarks>
-    /// Some docker configurations (DockerForMac & Rancher on Mac & Windows) allow establishing a connection to any mapped port.
-    /// The test will always succeed in these cases.
-    /// </remarks>
     /// <param name="port">The container port to be checked.</param>
     /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilHostPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+    IWaitForContainerOS UntilHostTcpPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
 
     /// <summary>

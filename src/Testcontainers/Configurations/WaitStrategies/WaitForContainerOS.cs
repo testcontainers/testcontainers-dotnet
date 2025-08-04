@@ -94,6 +94,10 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    abstract public IWaitForContainerOS UntilHostPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+    public IWaitForContainerOS UntilHostTcpPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      UntilPortIsAvailable(port, waitStrategyModifier);
+      return AddCustomWaitStrategy(new HostTcpPortWaitStrategy(port), waitStrategyModifier);
+    }
   }
 }
