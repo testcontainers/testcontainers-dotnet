@@ -71,7 +71,8 @@ public abstract class WindowsContainerTest : IAsyncLifetime
                 .WithImage(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start();$client = $tcpListener.AcceptTcpClient(); Start-Sleep -Seconds 120")
-                .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(80))
+                .WithPortBinding(80, true)
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilHostTcpPortAvailable(80))
                 .Build())
         {
         }
