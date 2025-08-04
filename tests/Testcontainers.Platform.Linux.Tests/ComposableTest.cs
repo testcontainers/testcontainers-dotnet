@@ -1,47 +1,45 @@
-﻿namespace Testcontainers.Tests;
+namespace Testcontainers.Tests;
 
 public sealed class ComposableTest
 {
-    private const string InitCommand = "foo";
+    private static readonly ComposableEnumerable<string> AppendListFlag =
+        new AppendEnumerable<string>(new[] { "-l" });
 
-    private static readonly ComposableEnumerable<string> AppendOnly =
-        new AppendOnlyEnumerable<string>(new[] { "bar" });
-
-    private static readonly ComposableEnumerable<string> Overwrite =
-        new OverwriteEnumerable<string>(new[] { "baz" });
+    private static readonly ComposableEnumerable<string> OverwriteWithSearchArg =
+        new OverwriteEnumerable<string>(new[] { "pattern", "*.log" });
 
     [Fact]
-    public void AppendsBarAfterFoo_WhenAppendOnlyAfterInitAndFoo()
+    public void AppendsFlagAfterInitialArgument()
     {
         var command = new ComposableContainerBuilder()
-            .WithCommand(InitCommand)
-            .WithCommand(AppendOnly)
+            .WithCommand("foo")
+            .WithCommand(AppendListFlag)
             .GetCommand();
 
-        Assert.Equal(new[] { "foo", "bar" }, command);
+        Assert.Equal(new[] { "foo", "-l" }, command);
     }
 
     [Fact]
-    public void OverwritesWithBar_WhenOverwriteIsLastAfterInitAndFoo()
+    public void OverwritesArgumentCompletely()
     {
         var command = new ComposableContainerBuilder()
-            .WithCommand(InitCommand)
-            .WithCommand(Overwrite)
+            .WithCommand("foo")
+            .WithCommand(OverwriteWithSearchArg)
             .GetCommand();
 
-        Assert.Equal(new[] { "baz" }, command);
+        Assert.Equal(new[] { "pattern", "*.log" }, command);
     }
 
     [Fact]
-    public void AppendsBazAfterBar_WhenAppendOnlyIsLastAfterOverwrite()
+    public void OverwritesThenAppendsFlag()
     {
         var command = new ComposableContainerBuilder()
-            .WithCommand(InitCommand)
-            .WithCommand(Overwrite)
-            .WithCommand(AppendOnly)
+            .WithCommand("foo")
+            .WithCommand(OverwriteWithSearchArg)
+            .WithCommand(AppendListFlag)
             .GetCommand();
 
-        Assert.Equal(new[] { "baz", "bar" }, command);
+        Assert.Equal(new[] { "pattern", "*.log", "-l" }, command);
     }
 
     private sealed class ComposableContainerBuilder : ContainerBuilder<ComposableContainerBuilder, DockerContainer, ContainerConfiguration>

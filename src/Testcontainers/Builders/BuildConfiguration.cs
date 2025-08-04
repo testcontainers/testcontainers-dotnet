@@ -95,7 +95,7 @@ namespace DotNet.Testcontainers.Builders
     {
       if (newValue == null && oldValue == null)
       {
-        return new AppendOnlyEnumerable<T>(Array.Empty<T>());
+        return new AppendEnumerable<T>(Array.Empty<T>());
       }
 
       if (newValue == null || oldValue == null)

@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
   using JetBrains.Annotations;
@@ -11,13 +11,13 @@
   /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
   /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
   [PublicAPI]
-  public sealed class AppendOnlyDictionary<TKey, TValue> : ComposableDictionary<TKey, TValue>
+  public sealed class AppendDictionary<TKey, TValue> : ComposableDictionary<TKey, TValue>
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AppendOnlyDictionary{TKey, TValue}" /> class.
+    /// Initializes a new instance of the <see cref="AppendDictionary{TKey,TValue}" /> class.
     /// </summary>
     /// <param name="dictionary">The dictionary whose elements are copied to the new dictionary.</param>
-    public AppendOnlyDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
+    public AppendDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
       : base(dictionary)
     {
     }
@@ -25,7 +25,7 @@
     /// <inheritdoc />
     public override ComposableDictionary<TKey, TValue> Compose(IReadOnlyDictionary<TKey, TValue> other)
     {
-      return new AppendOnlyDictionary<TKey, TValue>(BuildConfiguration.Combine(other, this));
+      return new AppendDictionary<TKey, TValue>(BuildConfiguration.Combine(other, this));
     }
   }
 }

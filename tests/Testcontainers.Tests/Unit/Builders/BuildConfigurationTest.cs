@@ -68,14 +68,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
-    [ClassData(typeof(AppendOnlyEnumerableTestData))]
-    public void AppendOnlyEnumerableCompose(
+    [ClassData(typeof(AppendEnumerableTestData))]
+    public void AppendEnumerableCompose(
       IEnumerable<string> oldValue,
       IEnumerable<string> newValue,
       IEnumerable<string> expected)
     {
-      var appendOnly = new AppendOnlyEnumerable<string>(newValue);
-      var result = appendOnly.Compose(oldValue);
+      var append = new AppendEnumerable<string>(newValue);
+      var result = append.Compose(oldValue);
       Assert.Equal(expected, result);
     }
 
@@ -92,14 +92,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
-    [ClassData(typeof(AppendOnlyDictionaryTestData))]
-    public void AppendOnlyDictionaryCompose(
+    [ClassData(typeof(AppendDictionaryTestData))]
+    public void AppendDictionaryCompose(
       IReadOnlyDictionary<string, string> oldValue,
       IReadOnlyDictionary<string, string> newValue,
       IReadOnlyDictionary<string, string> expected)
     {
-      var appendOnly = new AppendOnlyDictionary<string, string>(newValue);
-      var result = appendOnly.Compose(oldValue);
+      var append = new AppendDictionary<string, string>(newValue);
+      var result = append.Compose(oldValue);
       Assert.Equal(expected, result);
     }
 
@@ -118,8 +118,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void ComposableEnumerableHandlesNullCollection()
     {
-      var appendOnly = new AppendOnlyEnumerable<string>(null);
-      Assert.Empty(appendOnly);
+      var append = new AppendEnumerable<string>(null);
+      Assert.Empty(append);
 
       var overwrite = new OverwriteEnumerable<string>(null);
       Assert.Empty(overwrite);
@@ -128,8 +128,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void ComposableDictionaryHandlesNullDictionary()
     {
-      var appendOnly = new AppendOnlyDictionary<string, string>(null);
-      Assert.Empty(appendOnly);
+      var append = new AppendDictionary<string, string>(null);
+      Assert.Empty(append);
 
       var overwrite = new OverwriteDictionary<string, string>(null);
       Assert.Empty(overwrite);
@@ -238,35 +238,35 @@ namespace DotNet.Testcontainers.Tests.Unit
             Array.Empty<string>());
 
         Add(null,
-            new AppendOnlyEnumerable<string>(new[] { "2" }),
+            new AppendEnumerable<string>(new[] { "2" }),
             new[] { "2" });
 
-        Add(new AppendOnlyEnumerable<string>(new[] { "1" }),
+        Add(new AppendEnumerable<string>(new[] { "1" }),
             null,
             new[] { "1" });
 
-        Add(new AppendOnlyEnumerable<string>(new[] { "1" }),
-            new AppendOnlyEnumerable<string>(new[] { "2" }),
+        Add(new AppendEnumerable<string>(new[] { "1" }),
+            new AppendEnumerable<string>(new[] { "2" }),
             new[] { "1", "2" });
 
-        Add(new AppendOnlyEnumerable<string>(new[] { "1", "2" }),
+        Add(new AppendEnumerable<string>(new[] { "1", "2" }),
             new OverwriteEnumerable<string>(new[] { "3", "4" }),
             new[] { "3", "4" });
 
-        Add(new AppendOnlyEnumerable<string>(new[] { "1", "2", "3" }),
-            new AppendOnlyEnumerable<string>(new[] { "4", "5" }),
+        Add(new AppendEnumerable<string>(new[] { "1", "2", "3" }),
+            new AppendEnumerable<string>(new[] { "4", "5" }),
             new[] { "1", "2", "3", "4", "5" });
       }
     }
 
-    private sealed class AppendOnlyEnumerableTestData
+    private sealed class AppendEnumerableTestData
       : TheoryData<
           IEnumerable<string>,
           IEnumerable<string>,
           IEnumerable<string>
         >
     {
-      public AppendOnlyEnumerableTestData()
+      public AppendEnumerableTestData()
       {
         Add(Array.Empty<string>(),
             Array.Empty<string>(),
@@ -329,14 +329,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    private sealed class AppendOnlyDictionaryTestData
+    private sealed class AppendDictionaryTestData
       : TheoryData<
           IReadOnlyDictionary<string, string>,
           IReadOnlyDictionary<string, string>,
           IReadOnlyDictionary<string, string>
         >
     {
-      public AppendOnlyDictionaryTestData()
+      public AppendDictionaryTestData()
       {
         Add(new Dictionary<string, string>(),
             new Dictionary<string, string>(),
