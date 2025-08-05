@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class HostTcpPortWaitStrategyTest : IAsyncLifetime
+  public sealed class UntilHostTcpPortIsAvailableTest : IAsyncLifetime
   {
     private const int listeningPort = 49152;
     private const int mappedPort = 49153;
@@ -35,9 +35,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task HostTcpPortWaitStrategyIsSucceeded()
+    public async Task SucceededWhenPortIsAvailable()
     {
-      var hostPortWaitStrategy = new HostTcpPortWaitStrategy(listeningPort);
+      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(listeningPort);
 
       var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 
@@ -49,9 +49,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     /// This test might fail in docker configurations where mapped ports are always listened eg. DockerForMac (https://forums.docker.com/t/port-forwarding-of-exposed-ports-behaves-unexpectedly/15807/2)
     /// </summary>
     [Fact(Skip = "The GitHub Action runner allows establishing a connection to any mapped port.")]
-    public async Task HostTcpPortWaitStrategyFailsWhenPortNotListening()
+    public async Task FailsWhenPortNotListening()
     {
-      var hostPortWaitStrategy = new HostTcpPortWaitStrategy(mappedPort);
+      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(mappedPort);
 
       var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 
@@ -59,9 +59,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public async Task HostTcpPortWaitStrategyFailsWhenPortNotMapped()
+    public async Task FailsWhenPortNotMapped()
     {
-      var hostPortWaitStrategy = new HostTcpPortWaitStrategy(unmappedPort);
+      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(unmappedPort);
 
       var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
 

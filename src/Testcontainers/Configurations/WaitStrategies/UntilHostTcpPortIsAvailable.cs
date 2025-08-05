@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
   /// In these cases, the mapped port is always available even if the container is not listening on it.
   /// </remarks>
   /// <param name="port">The container port to check.</param>
-  internal sealed class HostTcpPortWaitStrategy(int port) : IWaitUntil
+  internal sealed class UntilHostTcpPortIsAvailable(int port) : IWaitUntil
   {
     // We don't have access to all mapped ports, so we need the user to provide the container port.
     private readonly int _containerPort = port;
