@@ -93,9 +93,13 @@ namespace DotNet.Testcontainers.Builders
       ComposableEnumerable<T> oldValue,
       ComposableEnumerable<T> newValue)
     {
+      // Creating a new container configuration before merging will follow this branch
+      // and return the default value. If we use the overwrite implementation,
+      // merging will reset the collection, we should either return null or use
+      // the append implementation.
       if (newValue == null && oldValue == null)
       {
-        return new OverwriteEnumerable<T>(Array.Empty<T>());
+        return new AppendEnumerable<T>(Array.Empty<T>());
       }
 
       if (newValue == null || oldValue == null)
