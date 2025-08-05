@@ -37,9 +37,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task SucceededWhenPortIsAvailable()
     {
-      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(listeningPort);
+      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(listeningPort);
 
-      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
+      var succeeded = await untilHostTcpPortIsAvailable.UntilAsync(_container);
 
       Assert.True(succeeded);
     }
@@ -51,9 +51,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact(Skip = "The GitHub Action runner allows establishing a connection to any mapped port.")]
     public async Task FailsWhenPortNotListening()
     {
-      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(mappedPort);
+      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(mappedPort);
 
-      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
+      var succeeded = await untilHostTcpPortIsAvailable.UntilAsync(_container);
 
       Assert.False(succeeded);
     }
@@ -61,11 +61,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task FailsWhenPortNotMapped()
     {
-      var hostPortWaitStrategy = new UntilHostTcpPortIsAvailable(unmappedPort);
+      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(unmappedPort);
 
-      var succeeded = await hostPortWaitStrategy.UntilAsync(_container);
-
-      Assert.False(succeeded);
+      await Assert.ThrowsAsync<System.InvalidOperationException>(() => untilHostTcpPortIsAvailable.UntilAsync(_container));
     }
   }
 }
