@@ -20,15 +20,7 @@ namespace DotNet.Testcontainers.Configurations
 
     public async Task<bool> UntilAsync(IContainer container)
     {
-      ushort hostPort;
-      try
-      {
-        hostPort = container.GetMappedPublicPort(_containerPort);
-      }
-      catch
-      {
-        return false;
-      }
+      var hostPort = container.GetMappedPublicPort(_containerPort);
 
       using var tcpClient = new TcpClient();
       try
