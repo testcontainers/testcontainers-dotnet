@@ -141,6 +141,17 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithCommand(params string[] command);
 
     /// <summary>
+    /// Overrides the container's command arguments.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ComposableEnumerable{T}" /> allows to choose how existing builder configurations are composed.
+    /// </remarks>
+    /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithCommand(ComposableEnumerable<string> command);
+
+    /// <summary>
     /// Sets the environment variable.
     /// </summary>
     /// <param name="name">The environment variable name.</param>

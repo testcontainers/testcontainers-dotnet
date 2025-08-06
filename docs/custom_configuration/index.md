@@ -60,6 +60,36 @@ Setting the context to `tcc` in this example will use the Docker host running at
     docker.context=tcc
     ```
 
+## Automatically modify Docker Hub image names
+
+Testcontainers can automatically add a registry prefix to Docker Hub image names used in your tests. This is handy if you use a private registry that mirrors Docker Hub images with predictable naming.
+
+You can set this up in two ways:
+
+=== "Environment Variable"
+    ```
+    TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
+    ```
+
+=== "Properties File"
+    ```
+    hub.image.name.prefix=registry.mycompany.com/mirror/
+    ```
+
+Once configured, Testcontainers will rewrite Docker Hub image names by adding the prefix.
+
+For example, the image:
+
+```
+testcontainers/helloworld:1.2.0
+```
+
+will automatically become:
+
+```
+registry.mycompany.com/mirror/testcontainers/helloworld:1.2.0
+```
+
 ## Enable logging
 
 In .NET logging usually goes through the test framework. Testcontainers is not aware of the project's test framework and may not forward log messages to the appropriate output stream. The default implementation forwards log messages to the `Console` (respectively `stdout` and `stderr`). The output should at least pop up in the IDE running tests in the `Debug` configuration. To override the default implementation, use the builder's `WithLogger(ILogger)` method and provide an `ILogger` instance to replace the default console logger.
