@@ -57,6 +57,7 @@ jobs:
           { name: "Testcontainers.FakeGcsServer", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.FirebirdSql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Firestore", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Grafana", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.InfluxDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.JanusGraph", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.K3s", runs-on: "ubuntu-22.04" },
