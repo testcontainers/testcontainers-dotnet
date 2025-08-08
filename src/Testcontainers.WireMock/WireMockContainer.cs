@@ -37,12 +37,22 @@ public sealed class WireMockContainer : DockerContainer
     /// <param name="mappingJson">The mapping JSON content.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the mapping has been added.</returns>
-    public async Task AddMappingFromJsonAsync(string mappingJson, CancellationToken ct = default)
+    public async Task<ExecResult> AddMappingFromJsonAsync(string mappingJson, CancellationToken ct = default)
     {
-        var mappingFilePath = $"/home/wiremock/mappings/{Guid.NewGuid():N}.json";
-        
-        await CopyAsync(Encoding.UTF8.GetBytes(mappingJson), mappingFilePath, Unix.FileMode644, ct)
+        // Write mapping to a temporary file first, then use curl to post it
+        var tempFile = $"/tmp/mapping_{Guid.NewGuid():N}.json";
+        await CopyAsync(Encoding.UTF8.GetBytes(mappingJson), tempFile, Unix.FileMode644, ct)
             .ConfigureAwait(false);
+        
+        var result = await ExecAsync(new[] { "curl", "-X", "POST", "http://localhost:8080/__admin/mappings", 
+            "-H", "Content-Type: application/json", "-d", $"@{tempFile}" }, ct)
+            .ConfigureAwait(false);
+        
+        // Clean up temp file
+        await ExecAsync(new[] { "rm", tempFile }, ct)
+            .ConfigureAwait(false);
+        
+        return result;
     }
 
     /// <summary>

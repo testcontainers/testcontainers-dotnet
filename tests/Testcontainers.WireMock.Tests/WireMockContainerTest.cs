@@ -53,12 +53,11 @@ public sealed class WireMockContainerTest : IAsyncLifetime
         }";
 
         // When
-        await _wireMockContainer.AddMappingFromJsonAsync(mappingJson)
+        var result = await _wireMockContainer.AddMappingFromJsonAsync(mappingJson)
             .ConfigureAwait(false);
-
-        // Give WireMock time to process the mapping
-        await Task.Delay(1000)
-            .ConfigureAwait(false);
+        
+        // Verify mapping was added successfully
+        Assert.Equal(0, result.ExitCode);
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_wireMockContainer.GetBaseUrl());
@@ -89,8 +88,9 @@ public sealed class WireMockContainerTest : IAsyncLifetime
             }
         }";
 
-        await _wireMockContainer.AddMappingFromJsonAsync(mappingJson)
+        var addResult = await _wireMockContainer.AddMappingFromJsonAsync(mappingJson)
             .ConfigureAwait(false);
+        Assert.Equal(0, addResult.ExitCode);
 
         // When
         var execResult = await _wireMockContainer.ResetAsync()
