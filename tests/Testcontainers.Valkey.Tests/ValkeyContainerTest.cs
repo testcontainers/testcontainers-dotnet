@@ -17,29 +17,30 @@ public sealed class ValkeyContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void ConnectionStateReturnsOpen()
+    public async Task ConnectionStateReturnsOpen()
     {
-        using var connection = ConnectionMultiplexer.Connect(_valkeyContainer.GetConnectionString());
+        using var connection = await ConnectionMultiplexer.ConnectAsync(_valkeyContainer.GetConnectionString());
         Assert.True(connection.IsConnected);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void Can_Set_And_Retrieve_Key()
+    public async Task Can_Set_And_Retrieve_Key()
     {
-      using var connection = ConnectionMultiplexer.Connect(_valkeyContainer.GetConnectionString());
+      using var connection = await ConnectionMultiplexer.ConnectAsync(_valkeyContainer.GetConnectionString());
 
       var db = connection.GetDatabase();
       const string key = "test-key";
       const string value = "test-value";
 
-      Assert.True(db.StringGet(key).IsNull);
+      var redisValue = await db.StringGetAsync(key);
+      Assert.True(redisValue.IsNull);
 
-      db.StringSet(key, value);
+      await db.StringSetAsync(key, value);
 
-      var retrievedValue = db.StringGet(key);
+      var updatedValue = await db.StringGetAsync(key);
 
-      Assert.Equal(value, retrievedValue);
+      Assert.Equal(value, updatedValue);
     }
 
     [Fact]
