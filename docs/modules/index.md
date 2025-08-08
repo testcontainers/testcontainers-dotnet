@@ -73,6 +73,7 @@ await moduleNameContainer.StartAsync();
 | Typesense         | `typesense/typesense:28.0`                                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Typesense)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Typesense)     |
 | Weaviate          | `semitechnologies/weaviate:1.26.14`                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.Weaviate)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Weaviate)      |
 | WebDriver         | `selenium/standalone-chrome:110.0`                                  | [NuGet](https://www.nuget.org/packages/Testcontainers.WebDriver)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.WebDriver)     |
+| WireMock          | `wiremock/wiremock:3.5.4`                                           | [NuGet](https://www.nuget.org/packages/Testcontainers.WireMock)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.WireMock)      |
 
 ## Implement a module
 

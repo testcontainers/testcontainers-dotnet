@@ -94,6 +94,7 @@ jobs:
           { name: "Testcontainers.Typesense", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.WireMock", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.XunitV3", runs-on: "ubuntu-22.04" }
         ]
