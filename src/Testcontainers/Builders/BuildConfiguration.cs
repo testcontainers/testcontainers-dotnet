@@ -4,30 +4,38 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
+  using DotNet.Testcontainers.Configurations;
 
+  /// <summary>
+  /// Provides static utility methods for combining old and new configuration values
+  /// across various collection and value types.
+  /// </summary>
   public static class BuildConfiguration
   {
     /// <summary>
-    /// Returns the changed configuration object. If there is no change, the previous configuration object is returned.
+    /// Returns the updated configuration value. If the new value is <c>null</c> or
+    /// <c>default</c>, the old value is returned.
     /// </summary>
-    /// <param name="oldValue">The old configuration object.</param>
-    /// <param name="newValue">The new configuration object.</param>
+    /// <param name="oldValue">The old configuration value.</param>
+    /// <param name="newValue">The new configuration value.</param>
     /// <typeparam name="T">Any class.</typeparam>
-    /// <returns>Changed configuration object. If there is no change, the previous configuration object.</returns>
+    /// <returns>The updated value, or the old value if unchanged.</returns>
     public static T Combine<T>(T oldValue, T newValue)
     {
       return Equals(default(T), newValue) ? oldValue : newValue;
     }
 
     /// <summary>
-    /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
+    /// Combines all existing and new configuration changes. If there are no changes,
+    /// the previous configurations are returned.
     /// </summary>
     /// <param name="oldValue">The old configuration.</param>
     /// <param name="newValue">The new configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IEnumerable{T}" />.</typeparam>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
-      where T : class
+    public static IEnumerable<T> Combine<T>(
+      IEnumerable<T> oldValue,
+      IEnumerable<T> newValue)
     {
       if (newValue == null && oldValue == null)
       {
@@ -43,15 +51,17 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Combines all existing and new configuration changes while preserving the order of insertion.
-    /// If there are no changes, the previous configurations are returned.
+    /// Combines all existing and new configuration changes while preserving the
+    /// order of insertion. If there are no changes, the previous configurations
+    /// are returned.
     /// </summary>
     /// <param name="oldValue">The old configuration.</param>
     /// <param name="newValue">The new configuration.</param>
-    /// <typeparam name="T">Type of <see cref="IReadOnlyList{T}" />.</typeparam>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
-      where T : class
+    public static IReadOnlyList<T> Combine<T>(
+      IReadOnlyList<T> oldValue,
+      IReadOnlyList<T> newValue)
     {
       if (newValue == null && oldValue == null)
       {
@@ -67,16 +77,51 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Combines all existing and new configuration changes. If there are no changes, the previous configurations are returned.
+    /// Combines all existing and new configuration changes. If there are no changes,
+    /// the previous configuration is returned.
+    /// </summary>
+    /// <remarks>
+    /// Uses <see cref="ComposableEnumerable{T}.Compose" /> on <paramref name="newValue" />
+    /// to combine configurations. The existing <paramref name="oldValue" /> is passed as
+    /// an argument to that method.
+    /// </remarks>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
+    /// <returns>An updated configuration.</returns>
+    public static ComposableEnumerable<T> Combine<T>(
+      ComposableEnumerable<T> oldValue,
+      ComposableEnumerable<T> newValue)
+    {
+      // Creating a new container configuration before merging will follow this branch
+      // and return the default value. If we use the overwrite implementation,
+      // merging will reset the collection, we should either return null or use
+      // the append implementation.
+      if (newValue == null && oldValue == null)
+      {
+        return new AppendEnumerable<T>(Array.Empty<T>());
+      }
+
+      if (newValue == null || oldValue == null)
+      {
+        return newValue ?? oldValue;
+      }
+
+      return newValue.Compose(oldValue);
+    }
+
+    /// <summary>
+    /// Combines all existing and new configuration changes. If there are no changes,
+    /// the previous configurations are returned.
     /// </summary>
     /// <param name="oldValue">The old configuration.</param>
     /// <param name="newValue">The new configuration.</param>
-    /// <typeparam name="TKey">The type of keys in the read-only dictionary.</typeparam>
-    /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
+    /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> oldValue, IReadOnlyDictionary<TKey, TValue> newValue)
-      where TKey : class
-      where TValue : class
+    public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(
+      IReadOnlyDictionary<TKey, TValue> oldValue,
+      IReadOnlyDictionary<TKey, TValue> newValue)
     {
       if (newValue == null && oldValue == null)
       {
@@ -88,7 +133,19 @@ namespace DotNet.Testcontainers.Builders
         return newValue ?? oldValue;
       }
 
-      return newValue.Concat(oldValue.Where(item => !newValue.Keys.Contains(item.Key))).ToDictionary(item => item.Key, item => item.Value);
+      var result = new Dictionary<TKey, TValue>(oldValue.Count + newValue.Count);
+
+      foreach (var kvp in oldValue)
+      {
+        result[kvp.Key] = kvp.Value;
+      }
+
+      foreach (var kvp in newValue)
+      {
+        result[kvp.Key] = kvp.Value;
+      }
+
+      return new ReadOnlyDictionary<TKey, TValue>(result);
     }
   }
 }

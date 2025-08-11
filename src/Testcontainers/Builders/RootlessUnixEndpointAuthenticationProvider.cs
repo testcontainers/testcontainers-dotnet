@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Builders
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   [PublicAPI]
-  internal class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
+  internal partial class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
   {
     private const string DockerSocket = "docker.sock";
 
@@ -28,6 +28,15 @@ namespace DotNet.Testcontainers.Builders
     {
       var socketPath = Array.Find(socketPaths, File.Exists);
       DockerEngine = socketPath == null ? null : new Uri("unix://" + socketPath);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
+    /// </summary>
+    /// <param name="dockerEngine">The Docker Engine endpoint.</param>
+    public RootlessUnixEndpointAuthenticationProvider(Uri dockerEngine)
+    {
+      DockerEngine = dockerEngine;
     }
 
     /// <summary>
@@ -95,10 +104,17 @@ namespace DotNet.Testcontainers.Builders
 
     /// <inheritdoc cref="IUserIdentity" />
     [PublicAPI]
-    private sealed class Darwin : IUserIdentity
+    private sealed partial class Darwin : IUserIdentity
     {
-      [DllImport("libSystem")]
+      private const string LibraryName = "libSystem";
+
+#if NET7_0_OR_GREATER
+      [LibraryImport(LibraryName)]
+      private static partial ushort getuid();
+#else
+      [DllImport(LibraryName)]
       private static extern ushort getuid();
+#endif
 
       /// <inheritdoc />
       public ushort GetUid()
@@ -109,10 +125,17 @@ namespace DotNet.Testcontainers.Builders
 
     /// <inheritdoc cref="IUserIdentity" />
     [PublicAPI]
-    private sealed class Linux : IUserIdentity
+    private sealed partial class Linux : IUserIdentity
     {
-      [DllImport("libc")]
+      private const string LibraryName = "libc";
+
+#if NET7_0_OR_GREATER
+      [LibraryImport(LibraryName)]
+      private static partial ushort getuid();
+#else
+      [DllImport(LibraryName)]
       private static extern ushort getuid();
+#endif
 
       /// <inheritdoc />
       public ushort GetUid()

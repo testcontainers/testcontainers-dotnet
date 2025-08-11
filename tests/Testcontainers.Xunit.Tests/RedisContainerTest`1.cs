@@ -12,10 +12,15 @@ public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelpe
 }
 // # --8<-- [end:ConfigureRedisContainer]
 
+#if XUNIT_V3
+[TestCaseOrderer(ordererType: typeof(Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer))]
+#else
 [TestCaseOrderer(ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer", ordererAssemblyName: "Testcontainers.Xunit.Tests")]
+#endif
 public sealed partial class RedisContainerTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ImageShouldMatchDefaultModuleImage()
     {
         Assert.Equal(RedisBuilder.RedisImage, Container.Image.FullName);
@@ -23,6 +28,7 @@ public sealed partial class RedisContainerTest
 
     // # --8<-- [start:RunTests]
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test1()
     {
         // 👆 A new container instance is created and started before this method (test) runs.
@@ -33,6 +39,7 @@ public sealed partial class RedisContainerTest
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test2()
     {
         // 👆 A new container instance is created and started before this method (test) runs.

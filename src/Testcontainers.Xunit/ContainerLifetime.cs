@@ -71,12 +71,16 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
         return builder;
     }
 
-    /// <inheritdoc cref="IAsyncLifetime" />
+    /// <inheritdoc cref="IAsyncLifetime.InitializeAsync" />
     protected virtual async LifetimeTask InitializeAsync()
     {
         try
         {
+#if XUNIT_V3
+            await Container.StartAsync(TestContext.Current.CancellationToken)
+#else
             await Container.StartAsync()
+#endif
                 .ConfigureAwait(false);
         }
         catch (Exception e)
@@ -85,7 +89,11 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
         }
     }
 
-    /// <inheritdoc cref="IAsyncLifetime" />
+#if XUNIT_V3
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+#else 
+    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync" /> 
+#endif
     protected virtual async LifetimeTask DisposeAsyncCore()
     {
         if (_exception == null)

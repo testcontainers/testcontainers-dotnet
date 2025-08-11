@@ -42,14 +42,17 @@ jobs:
           { name: "Testcontainers.Azurite", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.BigQuery", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Bigtable", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Cassandra", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.ClickHouse", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.CockroachDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Consul", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.CosmosDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Couchbase", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.CouchDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Db2", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.DynamoDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Elasticsearch", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.EventHubs", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.EventStoreDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.FakeGcsServer", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.FirebirdSql", runs-on: "ubuntu-22.04" },
@@ -61,6 +64,7 @@ jobs:
           { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.LowkeyVault", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MariaDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
@@ -69,18 +73,29 @@ jobs:
           { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Neo4j", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Ollama", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.OpenSearch", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Oracle", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle11", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle18", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle21", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Oracle23", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Papercut", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.PostgreSql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.PubSub", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Pulsar", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Qdrant", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.RabbitMq", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.RavenDb", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Redpanda", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.ServiceBus", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Sftp", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Typesense", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" }
+          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.XunitV3", runs-on: "ubuntu-22.04" }
         ]
 
     runs-on: ${{ matrix.test-projects.runs-on }}
@@ -100,17 +115,17 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Restore .NET Tools
-        run: dotnet tool restore
-
       - name: Restore NuGet Packages
-        run: dotnet cake --target=Restore-NuGet-Packages
+        run: ./build.sh --target=Restore-NuGet-Packages
+        shell: bash
 
       - name: Run Build
-        run: dotnet cake --target=Build
+        run: ./build.sh --target=Build --test-project=${{ matrix.test-projects.name }}
+        shell: bash
 
       - name: Run Tests
-        run: dotnet cake --target=Test --test-project=${{ matrix.test-projects.name }}
+        run: ./build.sh --target=Test --test-project=${{ matrix.test-projects.name }}
+        shell: bash
 
       - name: Upload Test And Coverage Results
         uses: actions/upload-artifact@v4
@@ -175,23 +190,25 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Restore .NET Tools
-        run: dotnet tool restore
-
       - name: Restore NuGet Packages
-        run: dotnet cake --target=Restore-NuGet-Packages
+        run: ./build.sh --target=Restore-NuGet-Packages
+        shell: bash
 
       - name: Run Sonar Analysis
-        run: dotnet cake --target=Sonar-Begin
+        run: ./build.sh --target=Sonar-Begin
+        shell: bash
 
       - name: Run Build
-        run: dotnet cake --target=Build
+        run: ./build.sh --target=Build
+        shell: bash
 
       - name: Upload Sonar Results
-        run: dotnet cake --target=Sonar-End
+        run: ./build.sh --target=Sonar-End
+        shell: bash
 
       - name: Publish NuGet Package
-        run: dotnet cake --target=Publish
+        run: ./build.sh --target=Publish
+        shell: bash
 
       # Cake sets the semVer environment variable
       - uses: release-drafter/release-drafter@v6

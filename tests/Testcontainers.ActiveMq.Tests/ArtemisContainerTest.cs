@@ -1,5 +1,6 @@
 namespace Testcontainers.ActiveMq;
 
+// # --8<-- [start:UseArtemisContainer]
 public abstract class ArtemisContainerTest : IAsyncLifetime
 {
     private readonly ArtemisContainer _artemisContainer;
@@ -15,16 +16,22 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         _password = password;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _artemisContainer.StartAsync();
+        await _artemisContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _artemisContainer.DisposeAsync().AsTask();
-    }
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
 
+        GC.SuppressFinalize(this);
+    }
+    // # --8<-- [end:UseArtemisContainer]
+
+    // # --8<-- [start:EstablishConnection]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesConnection()
@@ -67,7 +74,14 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
+    // # --8<-- [end:EstablishConnection]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _artemisContainer.DisposeAsync();
+    }
+
+    // # --8<-- [start:UseArtemisContainerDefaultAuth]
     [UsedImplicitly]
     public sealed class DefaultCredentialsConfiguration : ArtemisContainerTest
     {
@@ -76,7 +90,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerDefaultAuth]
 
+    // # --8<-- [start:UseArtemisContainerCustomAuth]
     [UsedImplicitly]
     public sealed class CustomCredentialsConfiguration : ArtemisContainerTest
     {
@@ -89,7 +105,9 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerCustomAuth]
 
+    // # --8<-- [start:UseArtemisContainerNoAuth]
     [UsedImplicitly]
     public sealed class NoAuthCredentialsConfiguration : ArtemisContainerTest
     {
@@ -98,4 +116,5 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:UseArtemisContainerNoAuth]
 }

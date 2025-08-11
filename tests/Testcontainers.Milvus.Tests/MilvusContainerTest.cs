@@ -11,14 +11,18 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         _milvusContainer = milvusContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _milvusContainer.StartAsync();
+        await _milvusContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _milvusContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -29,11 +33,16 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         using var client = new MilvusClient(_milvusContainer.GetEndpoint());
 
         // When
-        var version = await client.GetVersionAsync()
+        var version = await client.GetVersionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(MilvusVersion, version);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _milvusContainer.DisposeAsync();
     }
 
     [UsedImplicitly]

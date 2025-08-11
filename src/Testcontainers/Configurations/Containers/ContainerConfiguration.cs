@@ -49,7 +49,7 @@ namespace DotNet.Testcontainers.Configurations
       string macAddress = null,
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
-      IEnumerable<string> command = null,
+      ComposableEnumerable<string> command = null,
       IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
@@ -173,7 +173,7 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> Entrypoint { get; }
 
     /// <inheritdoc />
-    public IEnumerable<string> Command { get; }
+    public ComposableEnumerable<string> Command { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> Environments { get; }

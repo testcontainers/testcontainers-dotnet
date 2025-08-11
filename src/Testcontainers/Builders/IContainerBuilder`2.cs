@@ -22,6 +22,18 @@ namespace DotNet.Testcontainers.Builders
   public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
     /// <summary>
+    /// Accepts the license agreement.
+    /// </summary>
+    /// <remarks>
+    /// Modules that require a license agreement must override and implement this
+    /// method to enforce proper license acceptance behavior.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the license agreement is accepted.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not require a license agreement.</exception>
+    TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement);
+
+    /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
     /// <param name="container">The dependent container.</param>
@@ -127,6 +139,17 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithCommand(params string[] command);
+
+    /// <summary>
+    /// Overrides the container's command arguments.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ComposableEnumerable{T}" /> allows to choose how existing builder configurations are composed.
+    /// </remarks>
+    /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithCommand(ComposableEnumerable<string> command);
 
     /// <summary>
     /// Sets the environment variable.
@@ -378,7 +401,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Assigns the specified network to the container.
     /// </summary>
-    /// <param name="network">The network to connect container to.</param>
+    /// <param name="network">The network to connect the container to.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithNetwork(INetwork network);

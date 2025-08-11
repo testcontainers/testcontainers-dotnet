@@ -17,21 +17,22 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
+    internal static readonly List<DockerEndpointAuthenticationProvider> DockerEndpointAuthProviders
+      = new List<DockerEndpointAuthenticationProvider>
+      {
+        new TestcontainersEndpointAuthenticationProvider(),
+        new MTlsEndpointAuthenticationProvider(),
+        new TlsEndpointAuthenticationProvider(),
+        new EnvironmentEndpointAuthenticationProvider(),
+        new NpipeEndpointAuthenticationProvider(),
+        new UnixEndpointAuthenticationProvider(),
+        new DockerDesktopEndpointAuthenticationProvider(),
+        new RootlessUnixEndpointAuthenticationProvider(),
+      };
+
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = new IDockerEndpointAuthenticationProvider[]
-        {
-          new TestcontainersEndpointAuthenticationProvider(),
-          new MTlsEndpointAuthenticationProvider(),
-          new TlsEndpointAuthenticationProvider(),
-          new EnvironmentEndpointAuthenticationProvider(),
-          new NpipeEndpointAuthenticationProvider(),
-          new UnixEndpointAuthenticationProvider(),
-          new DockerDesktopEndpointAuthenticationProvider(),
-          new RootlessUnixEndpointAuthenticationProvider(),
-        }
-        .Where(authProvider => authProvider.IsApplicable())
-        .FirstOrDefault(authProvider => authProvider.IsAvailable());
+      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
 
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig

@@ -153,6 +153,12 @@ namespace DotNet.Testcontainers.Builders
       return _customConfiguration.GetWaitStrategyTimeout();
     }
 
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      return _customConfiguration.GetNamedPipeConnectionTimeout();
+    }
+
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration
     {
       public TestcontainersConfiguration()

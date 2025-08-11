@@ -33,7 +33,7 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _kafkaContainer.StartAsync()
             .ConfigureAwait(false);
@@ -42,7 +42,7 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _kafkaContainer.StartAsync()
             .ConfigureAwait(false);
@@ -55,12 +55,13 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumesProducedKafkaMessage()
     {
-        _ = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath })
+        _ = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath }, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var execResult = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-C", "-t", "msgs", "-c", "1" })
+        var execResult = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-C", "-t", "msgs", "-c", "1" }, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Equal(Message, execResult.Stdout.Trim());

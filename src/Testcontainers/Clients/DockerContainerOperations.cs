@@ -71,7 +71,7 @@ namespace DotNet.Testcontainers.Clients
         Timestamps = timestampsEnabled,
       };
 
-      using (var stdOutAndErrStream = await DockerClient.Containers.GetContainerLogsAsync(id, false, logsParameters, ct)
+      using (var stdOutAndErrStream = await DockerClient.Containers.GetContainerLogsAsync(id, logsParameters, ct)
         .ConfigureAwait(false))
       {
         return await stdOutAndErrStream.ReadOutputToEndAsync(ct)
@@ -88,7 +88,7 @@ namespace DotNet.Testcontainers.Clients
     public Task StopAsync(string id, CancellationToken ct = default)
     {
       Logger.StopDockerContainer(id);
-      return DockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters { WaitBeforeKillSeconds = 15 }, ct);
+      return DockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters(), ct);
     }
 
     public Task PauseAsync(string id, CancellationToken ct = default)
@@ -119,7 +119,7 @@ namespace DotNet.Testcontainers.Clients
     {
       Logger.ReadArchiveFromDockerContainer(id, path);
 
-      var tarResponse = await DockerClient.Containers.GetArchiveFromContainerAsync(id, new GetArchiveFromContainerParameters { Path = path }, false, ct)
+      var tarResponse = await DockerClient.Containers.GetArchiveFromContainerAsync(id, new ContainerPathStatParameters { Path = path }, false, ct)
         .ConfigureAwait(false);
 
       return tarResponse.Stream;
@@ -141,7 +141,7 @@ namespace DotNet.Testcontainers.Clients
         Stream = true,
       };
 
-      var stream = await DockerClient.Containers.AttachContainerAsync(id, false, attachParameters, ct)
+      var stream = await DockerClient.Containers.AttachContainerAsync(id, attachParameters, ct)
         .ConfigureAwait(false);
 
       _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, ct)
@@ -159,10 +159,10 @@ namespace DotNet.Testcontainers.Clients
         AttachStderr = true,
       };
 
-      var execCreateResponse = await DockerClient.Exec.ExecCreateContainerAsync(id, execCreateParameters, ct)
+      var execCreateResponse = await DockerClient.Exec.CreateContainerExecAsync(id, execCreateParameters, ct)
         .ConfigureAwait(false);
 
-      using (var stdOutAndErrStream = await DockerClient.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, ct)
+      using (var stdOutAndErrStream = await DockerClient.Exec.StartContainerExecAsync(execCreateResponse.ID, new ContainerExecStartParameters(), ct)
         .ConfigureAwait(false))
       {
         var (stdout, stderr) = await stdOutAndErrStream.ReadOutputToEndAsync(ct)

@@ -45,7 +45,10 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/");
+  # Copy 'appsettings.json' into the '/app' directory.
+  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
+  # Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
+  .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
 Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
@@ -96,6 +99,37 @@ _ = new ContainerBuilder()
 ```
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
+
+## Composing command arguments
+
+Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
+
+Because our builders are immutable, this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
+
+`ComposableEnumerable<T>` lets you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
+
+If a module applies default commands and you need to override or remove them entirely, you can do this e.g. by explicitly resetting the command list:
+
+```csharp title="Resetting command arguments"
+// Default PostgreSQL builder configuration:
+//
+// base.Init()
+//   ...
+//   .WithCommand("-c", "fsync=off")
+//   .WithCommand("-c", "full_page_writes=off")
+//   .WithCommand("-c", "synchronous_commit=off")
+//   ...
+
+var postgreSqlContainer = new PostgreSqlBuilder()
+  .WithCommand(new OverwriteEnumerable<string>(Array.Empty<string>()))
+  .Build();
+```
+
+Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default command configurations. This is useful when you want full control over the PostgreSQL startup or when the default configurations do not match your requirements.
+
+!!!tip
+
+    You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
 ## Examples
 

@@ -1,8 +1,5 @@
 global using System;
-global using System.Collections.Generic;
-global using System.Diagnostics;
 global using System.Text;
-global using System.Threading;
 global using System.Threading.Tasks;
 global using Confluent.Kafka;
 global using Confluent.Kafka.SyncOverAsync;
@@ -12,4 +9,5 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Containers;
 global using DotNet.Testcontainers.Networks;
+global using JetBrains.Annotations;
 global using Xunit;

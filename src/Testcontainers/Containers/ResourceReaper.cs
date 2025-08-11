@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.9.0");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.12.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -363,15 +363,25 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+                      .ConfigureAwait(false);
+#endif
 
                     hasAcknowledge = false;
                   }
                   else
                   {
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+                      .ConfigureAwait(false);
+#endif
 
                     hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);

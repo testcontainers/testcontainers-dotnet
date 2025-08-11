@@ -23,10 +23,10 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Sets the name.
     /// </summary>
-    /// <param name="name">The name.</param>
+    /// <param name="image">The image.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithName(IImage name);
+    TBuilderEntity WithName(IImage image);
 
     /// <summary>
     /// Sets the Dockerfile.
