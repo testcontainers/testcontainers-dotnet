@@ -129,6 +129,25 @@ public sealed class TestsTask : FrostingTask<BuildContext>
     }
 }
 
+[TaskName("Format")]
+public sealed class CheckFormatTask : FrostingTask<BuildContext>
+{    public override void Run(BuildContext context)
+    {
+        var param = context.Parameters;
+        context.DotNetTool("./", "csharpier", "format .");
+    }
+}
+
+[TaskName("Check-Format")]
+public sealed class FormatTask : FrostingTask<BuildContext>
+{
+    public override void Run(BuildContext context)
+    {
+        var param = context.Parameters;
+        context.DotNetTool("./", "csharpier", "check .");
+    }
+}
+
 [TaskName("Sonar-Begin")]
 public sealed class SonarBeginTask : FrostingTask<BuildContext>
 {
@@ -241,6 +260,7 @@ public sealed class PublishNuGetPackagesTask : FrostingTask<BuildContext>
 [TaskName("Default")]
 [IsDependentOn(typeof(CleanTask))]
 [IsDependentOn(typeof(RestoreNuGetPackagesTask))]
+[IsDependentOn(typeof(FormatTask))]
 [IsDependentOn(typeof(BuildTask))]
 [IsDependentOn(typeof(TestsTask))]
 public sealed class DefaultTask : FrostingTask;
@@ -249,6 +269,7 @@ public sealed class DefaultTask : FrostingTask;
 [IsDependentOn(typeof(CleanTask))]
 [IsDependentOn(typeof(RestoreNuGetPackagesTask))]
 [IsDependentOn(typeof(SonarBeginTask))]
+[IsDependentOn(typeof(FormatTask))]
 [IsDependentOn(typeof(BuildTask))]
 [IsDependentOn(typeof(TestsTask))]
 [IsDependentOn(typeof(SonarEndTask))]
