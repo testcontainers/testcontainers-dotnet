@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Kafka;
+namespace Testcontainers.Kafka;
 
 public sealed class KafkaBuilderTests
 {
