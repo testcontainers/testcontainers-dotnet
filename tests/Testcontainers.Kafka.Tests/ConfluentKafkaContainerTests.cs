@@ -14,20 +14,20 @@ public class ConfluentKafkaContainerTests
 
         await TestHelper.AssertKafkaProducerConsumer(kafkaContainer);
     }
-    
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task WorksWithInternalZookeeper()
     {
         await using var kafkaContainer = new KafkaBuilder()
             .WithImage(NewConfluentImage)
-            .WithZookeeper()
+            .WithZooKeeper()
             .Build();
         await kafkaContainer.StartAsync();
 
         await TestHelper.AssertKafkaProducerConsumer(kafkaContainer);
     }
-    
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task WorksWithKRaft()
@@ -40,7 +40,7 @@ public class ConfluentKafkaContainerTests
 
         await TestHelper.AssertKafkaProducerConsumer(kafkaContainer);
     }
-    
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task DoesNotAllowKRaftToBeUsedWithOldImage()

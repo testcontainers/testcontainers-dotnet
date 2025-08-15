@@ -1,7 +1,17 @@
 namespace Testcontainers.Kafka;
 
-public enum KafkaConsensusProtocol
+/// <summary>
+/// Represents the consensus protocols.
+/// </summary>
+public enum ConsensusProtocol
 {
-    Zookeeper,
+    /// <summary>
+    /// Represents the KRaft consensus protocol.
+    /// </summary>
     KRaft,
+
+    /// <summary>
+    /// Represents the ZooKeeper-based consensus protocol.
+    /// </summary>
+    ZooKeeper,
 }

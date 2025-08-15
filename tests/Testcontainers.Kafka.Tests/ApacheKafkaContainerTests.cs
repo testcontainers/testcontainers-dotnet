@@ -25,10 +25,10 @@ public class ApacheKafkaContainerTests
             .WithImage(ApacheNativeKafkaImage)
             .Build();
         await kafkaContainer.StartAsync();
-        
+
         await TestHelper.AssertKafkaProducerConsumer(kafkaContainer);
     }
-    
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task DoesNotAllowToUseEmbeddedZookeeper()
@@ -37,7 +37,7 @@ public class ApacheKafkaContainerTests
         {
             await using var kafkaContainer = new KafkaBuilder()
                 .WithImage(ApacheKafkaImage)
-                .WithZookeeper()
+                .WithZooKeeper()
                 .Build();
             await kafkaContainer.StartAsync();
         });
