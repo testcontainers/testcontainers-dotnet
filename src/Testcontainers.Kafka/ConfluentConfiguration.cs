@@ -55,7 +55,7 @@ internal sealed class ConfluentConfiguration : KafkaVendorConfiguration
 
         var hasLocalZooKeeper = isZooKeeperConsensus && resourceConfiguration.Environments.TryGetValue("KAFKA_ZOOKEEPER_CONNECT", out var connectionString) && connectionString.StartsWith("localhost");
 
-        using var startupScript = new StringWriter();
+        var startupScript = new StringWriter();
         startupScript.NewLine = "\n";
         startupScript.WriteLine("#!/bin/bash");
 

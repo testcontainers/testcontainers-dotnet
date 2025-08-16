@@ -52,7 +52,7 @@ internal sealed class ApacheConfiguration : KafkaVendorConfiguration
     {
         var additionalAdvertisedListeners = string.Join(",", container.AdvertisedListeners ?? Array.Empty<string>());
 
-        using var startupScript = new StringWriter();
+        var startupScript = new StringWriter();
         startupScript.NewLine = "\n";
         startupScript.WriteLine("#!/bin/bash");
         startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaBuilder.KafkaPort) + ",BROKER://" + container.IpAddress + ":" + KafkaBuilder.BrokerPort + "," + additionalAdvertisedListeners);
