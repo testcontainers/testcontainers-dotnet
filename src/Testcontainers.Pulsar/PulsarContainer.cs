@@ -95,7 +95,7 @@ public sealed class PulsarContainer : DockerContainer
     /// <returns>A task that completes when the startup script has been copied.</returns>
     internal Task CopyStartupScriptAsync(CancellationToken ct = default)
     {
-        var startupScript = new StringWriter();
+        using var startupScript = new StringWriter();
         startupScript.NewLine = "\n";
         startupScript.WriteLine("#!/bin/bash");
 

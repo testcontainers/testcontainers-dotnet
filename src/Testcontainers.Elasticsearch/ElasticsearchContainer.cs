@@ -34,11 +34,10 @@ public sealed class ElasticsearchContainer : DockerContainer
         var hasHttpSslEnabled = _configuration.Environments
             .TryGetValue("xpack.security.http.ssl.enabled", out var httpSslEnabled);
 
-        var httpsDisabled =
-            hasSecurityEnabled &&
-            hasHttpSslEnabled &&
-            "false".Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
-            "false".Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
+        var httpsDisabled = hasSecurityEnabled
+            && hasHttpSslEnabled
+            && "false".Equals(securityEnabled, StringComparison.OrdinalIgnoreCase)
+            && "false".Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
 
         var scheme = httpsDisabled ? Uri.UriSchemeHttp : Uri.UriSchemeHttps;
 

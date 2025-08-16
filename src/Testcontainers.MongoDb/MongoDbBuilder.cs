@@ -71,7 +71,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithReplicaSet(string replicaSetName = "rs0")
     {
-        var initKeyFileScript = new StringWriter();
+        using var initKeyFileScript = new StringWriter();
         initKeyFileScript.NewLine = "\n";
         initKeyFileScript.WriteLine("#!/bin/bash");
         initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFileFilePath + "\"");

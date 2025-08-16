@@ -71,7 +71,7 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     /// <returns>Task that completes when the configuration file has been executed.</returns>
     internal Task WriteConfigurationFileAsync(CancellationToken ct = default)
     {
-        var config = new StringWriter();
+        using var config = new StringWriter();
         config.NewLine = "\n";
         config.WriteLine("[client]");
         config.WriteLine("protocol=TCP");
