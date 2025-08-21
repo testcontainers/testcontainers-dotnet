@@ -56,8 +56,8 @@ public abstract class WindowsContainerTest : IAsyncLifetime
             : base(new ContainerBuilder()
                 .WithImage(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 80); $tcpListener.Start(); Start-Sleep -Seconds 120")
-                .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(80))
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(8080))
                 .Build())
         {
         }
@@ -69,10 +69,10 @@ public abstract class WindowsContainerTest : IAsyncLifetime
         public UntilExternalTcpPortIsAvailable()
             : base(new ContainerBuilder()
                 .WithImage(CommonImages.ServerCore)
-                .WithPortBinding(80, true)
+                .WithPortBinding(8080, true)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 80); $tcpListener.Start(); Start-Sleep -Seconds 120")
-                .WithWaitStrategy(Wait.ForWindowsContainer().UntilExternalTcpPortIsAvailable(80))
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilExternalTcpPortIsAvailable(8080))
                 .Build())
         {
         }
