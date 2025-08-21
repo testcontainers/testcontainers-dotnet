@@ -24,7 +24,7 @@ namespace DotNet.Testcontainers.Configurations
         await tcpClient.ConnectAsync(container.Hostname, hostPort)
           .ConfigureAwait(false);
 
-        return tcpClient.Connected;
+        return true;
       }
       catch
       {

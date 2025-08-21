@@ -3,7 +3,7 @@
   internal class UntilInternalTcpPortIsAvailableOnWindows : UntilUnixCommandIsCompleted
   {
     public UntilInternalTcpPortIsAvailableOnWindows(int containerPort)
-      : base(string.Format("true && (grep -i ':0*{0:X}' /proc/net/tcp* || nc -vz -w 1 localhost {0:D} || /bin/bash -c '</dev/tcp/localhost/{0:D}')", containerPort))
+      : base($"Exit(-Not((Test-NetConnection -ComputerName 'localhost' -Port {containerPort}).TcpTestSucceeded))")
     {
     }
   }
