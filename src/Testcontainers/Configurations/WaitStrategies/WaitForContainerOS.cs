@@ -31,6 +31,9 @@ namespace DotNet.Testcontainers.Configurations
     public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
+    public abstract IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <inheritdoc />
     public virtual IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       var waitStrategy = new WaitStrategy(waitUntil);
@@ -42,6 +45,12 @@ namespace DotNet.Testcontainers.Configurations
 
       _waitStrategies.Add(waitStrategy);
       return this;
+    }
+
+    /// <inheritdoc />
+    public IWaitForContainerOS UntilExternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilExternalTcpPortIsAvailable(containerPort), waitStrategyModifier);
     }
 
     /// <inheritdoc />
@@ -91,13 +100,6 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<WaitStrategy> Build()
     {
       return _waitStrategies;
-    }
-
-    /// <inheritdoc />
-    public IWaitForContainerOS UntilHostTcpPortAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
-    {
-      UntilPortIsAvailable(port, waitStrategyModifier);
-      return AddCustomWaitStrategy(new UntilHostTcpPortIsAvailable(port), waitStrategyModifier);
     }
   }
 }

@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class UntilHostTcpPortIsAvailableTest : IAsyncLifetime
+  public sealed class UntilExternalTcpPortIsAvailableTest : IAsyncLifetime
   {
     private const int listeningPort = 49152;
     private const int mappedPort = 49153;
@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       .WithCommand("EXEC:cat")
       .WithPortBinding(listeningPort, true)
       .WithPortBinding(mappedPort, true)
-      .WithWaitStrategy(Wait.ForUnixContainer().UntilHostTcpPortAvailable(listeningPort))
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(listeningPort))
       .Build();
 
     public async ValueTask InitializeAsync()
@@ -37,7 +37,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task SucceededWhenPortIsAvailable()
     {
-      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(listeningPort);
+      var untilHostTcpPortIsAvailable = new UntilExternalTcpPortIsAvailable(listeningPort);
 
       var succeeded = await untilHostTcpPortIsAvailable.UntilAsync(_container);
 
@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact(Skip = "The GitHub Action runner allows establishing a connection to any mapped port.")]
     public async Task FailsWhenPortNotListening()
     {
-      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(mappedPort);
+      var untilHostTcpPortIsAvailable = new UntilExternalTcpPortIsAvailable(mappedPort);
 
       var succeeded = await untilHostTcpPortIsAvailable.UntilAsync(_container);
 
@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task FailsWhenPortNotMapped()
     {
-      var untilHostTcpPortIsAvailable = new UntilHostTcpPortIsAvailable(unmappedPort);
+      var untilHostTcpPortIsAvailable = new UntilExternalTcpPortIsAvailable(unmappedPort);
 
       await Assert.ThrowsAsync<System.InvalidOperationException>(() => untilHostTcpPortIsAvailable.UntilAsync(_container));
     }

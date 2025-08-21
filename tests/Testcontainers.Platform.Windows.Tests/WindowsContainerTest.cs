@@ -11,7 +11,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _container.StartAsync().WaitAsync(TimeSpan.FromSeconds(30))
+        await _container.StartAsync()
             .ConfigureAwait(false);
     }
 
@@ -50,13 +50,13 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class UntilPortIsAvailable : WindowsContainerTest
+    public sealed class UntilInternalTcpPortIsAvailable : WindowsContainerTest
     {
-        public UntilPortIsAvailable()
+        public UntilInternalTcpPortIsAvailable()
             : base(new ContainerBuilder()
                 .WithImage(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start();$client = $tcpListener.AcceptTcpClient(); Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(80))
                 .Build())
         {
@@ -64,15 +64,15 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class UntilHostTcpPortIsAvailable : WindowsContainerTest
+    public sealed class UntilExternalTcpPortIsAvailable : WindowsContainerTest
     {
-        public UntilHostTcpPortIsAvailable()
+        public UntilExternalTcpPortIsAvailable()
             : base(new ContainerBuilder()
                 .WithImage(CommonImages.ServerCore)
+                .WithPortBinding(80, true)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start();$client = $tcpListener.AcceptTcpClient(); Start-Sleep -Seconds 120")
-                .WithPortBinding(80, true)
-                .WithWaitStrategy(Wait.ForWindowsContainer().UntilHostTcpPortAvailable(80))
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilExternalTcpPortIsAvailable(80))
                 .Build())
         {
         }
