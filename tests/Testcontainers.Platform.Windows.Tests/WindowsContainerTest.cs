@@ -56,7 +56,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
             : base(new ContainerBuilder()
                 .WithImage(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start();$client = $tcpListener.AcceptTcpClient(); Start-Sleep -Seconds 120")
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 80); $tcpListener.Start(); Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(80))
                 .Build())
         {
@@ -71,7 +71,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
                 .WithImage(CommonImages.ServerCore)
                 .WithPortBinding(80, true)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start();$client = $tcpListener.AcceptTcpClient(); Start-Sleep -Seconds 120")
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 80); $tcpListener.Start(); Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilExternalTcpPortIsAvailable(80))
                 .Build())
         {
