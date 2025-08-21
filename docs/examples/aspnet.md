@@ -106,7 +106,7 @@ _weatherForecastContainer = new ContainerBuilder()
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", WeatherForecastImage.CertificateFilePath)
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", WeatherForecastImage.CertificatePassword)
   .WithEnvironment("ConnectionStrings__DefaultConnection", connectionString)
-  .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(WeatherForecastImage.HttpsPort))
+  .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(WeatherForecastImage.HttpsPort))
   .Build();
 ```
 

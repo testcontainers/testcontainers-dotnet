@@ -28,7 +28,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
     {
-      return AddCustomWaitStrategy(new UntilUnixPortIsAvailable(port), waitStrategyModifier);
+      return UntilInternalTcpPortIsAvailable(port, waitStrategyModifier);
+    }
+
+    /// <inheritdoc />
+    public override IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilInternalTcpPortIsAvailableOnUnix(containerPort), waitStrategyModifier);
     }
   }
 }
