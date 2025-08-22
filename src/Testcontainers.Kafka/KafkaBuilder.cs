@@ -22,7 +22,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
 
     private const string ProtocolPrefix = "TC";
 
-    private static readonly KafkaVendorConfiguration[] VendorConfigurations = new[] { ApacheConfiguration.Instance, ConfluentConfiguration.Instance };
+    private static readonly IKafkaVendorConfiguration[] VendorConfigurations = new[] { ApacheConfiguration.Instance, ConfluentConfiguration.Instance };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.

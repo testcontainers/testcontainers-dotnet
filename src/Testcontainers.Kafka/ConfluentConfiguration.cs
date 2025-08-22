@@ -1,7 +1,7 @@
 namespace Testcontainers.Kafka;
 
-/// <inheritdoc cref="KafkaVendorConfiguration" />
-internal sealed class ConfluentConfiguration : KafkaVendorConfiguration
+/// <inheritdoc cref="IKafkaVendorConfiguration" />
+internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
 {
     static ConfluentConfiguration()
     {
@@ -17,25 +17,25 @@ internal sealed class ConfluentConfiguration : KafkaVendorConfiguration
     /// <summary>
     /// Gets the singleton instance of the Confluent vendor configuration.
     /// </summary>
-    public static KafkaVendorConfiguration Instance { get; }
+    public static IKafkaVendorConfiguration Instance { get; }
         = new ConfluentConfiguration();
 
     /// <inheritdoc />
-    public override KafkaVendor Vendor
+    public KafkaVendor Vendor
         => KafkaVendor.Confluent;
 
     /// <inheritdoc />
-    public override ConsensusProtocol ConsensusProtocol
+    public ConsensusProtocol ConsensusProtocol
         => ConsensusProtocol.ZooKeeper;
 
     /// <inheritdoc />
-    public override bool IsImageFromVendor(IImage image)
+    public bool IsImageFromVendor(IImage image)
     {
         return image.Repository.Contains("confluentinc");
     }
 
     /// <inheritdoc />
-    public override void Validate(KafkaConfiguration resourceConfiguration)
+    public void Validate(KafkaConfiguration resourceConfiguration)
     {
         const string message = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0.";
 
@@ -47,7 +47,7 @@ internal sealed class ConfluentConfiguration : KafkaVendorConfiguration
     }
 
     /// <inheritdoc />
-    public override string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
+    public string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
     {
         var additionalAdvertisedListeners = string.Join(",", container.AdvertisedListeners ?? Array.Empty<string>());
 

@@ -1,7 +1,7 @@
 namespace Testcontainers.Kafka;
 
-/// <inheritdoc cref="KafkaVendorConfiguration" />
-internal sealed class ApacheConfiguration : KafkaVendorConfiguration
+/// <inheritdoc cref="IKafkaVendorConfiguration" />
+internal sealed class ApacheConfiguration : IKafkaVendorConfiguration
 {
     static ApacheConfiguration()
     {
@@ -17,25 +17,25 @@ internal sealed class ApacheConfiguration : KafkaVendorConfiguration
     /// <summary>
     /// Gets the singleton instance of the Apache vendor configuration.
     /// </summary>
-    public static KafkaVendorConfiguration Instance { get; }
+    public static IKafkaVendorConfiguration Instance { get; }
         = new ApacheConfiguration();
 
     /// <inheritdoc />
-    public override KafkaVendor Vendor
+    public KafkaVendor Vendor
         => KafkaVendor.ApacheSoftwareFoundation;
 
     /// <inheritdoc />
-    public override ConsensusProtocol ConsensusProtocol
+    public ConsensusProtocol ConsensusProtocol
         => ConsensusProtocol.KRaft;
 
     /// <inheritdoc />
-    public override bool IsImageFromVendor(IImage image)
+    public bool IsImageFromVendor(IImage image)
     {
         return image.Repository.Contains("apache") || image.Repository.Contains("bitnami");
     }
 
     /// <inheritdoc />
-    public override void Validate(KafkaConfiguration resourceConfiguration)
+    public void Validate(KafkaConfiguration resourceConfiguration)
     {
         const string message = "Local ZooKeeper is not supported for Apache Kafka images. Configure an external ZooKeeper.";
 
@@ -48,7 +48,7 @@ internal sealed class ApacheConfiguration : KafkaVendorConfiguration
     }
 
     /// <inheritdoc />
-    public override string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
+    public string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
     {
         var additionalAdvertisedListeners = string.Join(",", container.AdvertisedListeners ?? Array.Empty<string>());
 
