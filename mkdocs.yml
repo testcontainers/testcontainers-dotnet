@@ -59,6 +59,7 @@ nav:
     - modules/mongodb.md
     - modules/mssql.md
     - modules/neo4j.md
+    - modules/opensearch.md
     - modules/postgres.md
     - modules/qdrant.md
     - modules/rabbitmq.md

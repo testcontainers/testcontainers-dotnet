@@ -5,6 +5,9 @@
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
     <PackageReference Include="Docker.DotNet.Enhanced.X509"/>

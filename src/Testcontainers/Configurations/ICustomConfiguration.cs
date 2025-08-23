@@ -134,5 +134,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
     [CanBeNull]
     TimeSpan? GetWaitStrategyTimeout();
+
+    /// <summary>
+    /// Gets the named pipe connection timeout custom configuration.
+    /// </summary>
+    /// <returns>The named pipe connection timeout custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetNamedPipeConnectionTimeout();
   }
 }

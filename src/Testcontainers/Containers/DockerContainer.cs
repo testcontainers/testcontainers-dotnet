@@ -201,7 +201,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), _container.State.Status, true);
+#else
+          return Enum.Parse<TestcontainersStates>(_container.State.Status, true);
+#endif
         }
         catch (Exception)
         {
@@ -227,7 +231,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), _container.State.Health.Status, true);
+#else
+          return Enum.Parse<TestcontainersHealthStatus>(_container.State.Health.Status, true);
+#endif
         }
         catch (Exception)
         {
@@ -246,6 +254,13 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public ushort GetMappedPublicPort()
+    {
+      using var enumerator = GetMappedPublicPorts().Values.GetEnumerator();
+      return enumerator.MoveNext() ? enumerator.Current : throw new InvalidOperationException("No mapped port found.");
+    }
+
+    /// <inheritdoc />
     public ushort GetMappedPublicPort(int containerPort)
     {
       return GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
@@ -258,14 +273,38 @@ namespace DotNet.Testcontainers.Containers
 
       var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
 
-      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
       {
-        return publicPort;
+        return hostPort;
       }
       else
       {
         throw new InvalidOperationException($"Exposed port {qualifiedContainerPort} is not mapped.");
       }
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
+    {
+      ThrowIfResourceNotFound();
+
+      return _container.NetworkSettings.Ports
+        .Where(
+          kvp =>
+          {
+            return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
+          })
+        .ToDictionary(
+          kvp =>
+          {
+            var containerPort = kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
+            return ushort.Parse(containerPort);
+          },
+          kvp =>
+          {
+            var hostPort = kvp.Value[0].HostPort;
+            return ushort.Parse(hostPort);
+          });
     }
 
     /// <inheritdoc />
@@ -521,7 +560,7 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+      StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -557,7 +596,7 @@ namespace DotNet.Testcontainers.Containers
         _container = new ContainerInspectResponse();
       }
 
-      StoppedTime = DateTime.TryParse(_container.State.FinishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
+      StoppedTime = DateTime.TryParse(_container.State?.FinishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
       Stopped?.Invoke(this, EventArgs.Empty);
     }
 

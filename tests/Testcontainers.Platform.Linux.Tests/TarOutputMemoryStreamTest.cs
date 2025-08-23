@@ -170,6 +170,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
         }
 
+        [UsedImplicitly]
         public sealed class HttpFixture : IAsyncLifetime
         {
             private const ushort HttpPort = 80;
@@ -178,7 +179,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithImage(CommonImages.Socat)
                 .WithCommand("-v")
                 .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
-                .WithCommand("EXEC:\"echo -e 'HTTP/1.1 200 OK'\n\n\"")
+                .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
                 .WithPortBinding(HttpPort, true)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
                 .Build();
@@ -186,10 +187,9 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             public string BaseAddress
                 => new UriBuilder(Uri.UriSchemeHttp, _container.Hostname, _container.GetMappedPublicPort(HttpPort)).ToString();
 
-            public async ValueTask InitializeAsync()
+            public ValueTask InitializeAsync()
             {
-                await _container.StartAsync()
-                    .ConfigureAwait(false);
+                return new ValueTask(_container.StartAsync());
             }
 
             public ValueTask DisposeAsync()
