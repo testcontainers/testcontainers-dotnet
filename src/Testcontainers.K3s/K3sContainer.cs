@@ -9,9 +9,7 @@ public sealed class K3sContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public K3sContainer(K3sConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Kubeconfig.
@@ -24,8 +22,18 @@ public sealed class K3sContainer : DockerContainer
 
         var kubeconfig = Encoding.Default.GetString(kubeconfigBytes);
 
-        var server = new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(K3sBuilder.KubeSecurePort)).ToString();
+        var server = new UriBuilder(
+            Uri.UriSchemeHttps,
+            Hostname,
+            GetMappedPublicPort(K3sBuilder.KubeSecurePort)
+        ).ToString();
 
-        return Regex.Replace(kubeconfig, "server:\\s?[:/\\.\\d\\w]+", "server: " + server, RegexOptions.None, TimeSpan.FromSeconds(1));
+        return Regex.Replace(
+            kubeconfig,
+            "server:\\s?[:/\\.\\d\\w]+",
+            "server: " + server,
+            RegexOptions.None,
+            TimeSpan.FromSeconds(1)
+        );
     }
 }

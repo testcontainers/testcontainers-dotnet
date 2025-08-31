@@ -1,16 +1,20 @@
 namespace DotNet.Testcontainers.Tests.Unit
 {
   using System.IO;
-  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using Xunit;
 
   public sealed class CommonDirectoryPathTest
   {
     public static TheoryData<CommonDirectoryPath> CommonDirectoryPaths()
     {
-      using var fsprojFileStream = File.Create(Path.Combine(TestSession.TempDirectoryPath, "Testcontainers.fsproj"));
-      using var vbprojFileStream = File.Create(Path.Combine(TestSession.TempDirectoryPath, "Testcontainers.vbproj"));
+      using var fsprojFileStream = File.Create(
+        Path.Combine(TestSession.TempDirectoryPath, "Testcontainers.fsproj")
+      );
+      using var vbprojFileStream = File.Create(
+        Path.Combine(TestSession.TempDirectoryPath, "Testcontainers.vbproj")
+      );
       var theoryData = new TheoryData<CommonDirectoryPath>();
       theoryData.Add(CommonDirectoryPath.GetBinDirectory());
       theoryData.Add(CommonDirectoryPath.GetGitDirectory());
@@ -33,7 +37,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void CommonDirectoryPathNotExists()
     {
       var callerFilePath = Path.GetPathRoot(Directory.GetCurrentDirectory());
-      Assert.Throws<DirectoryNotFoundException>(() => CommonDirectoryPath.GetGitDirectory(callerFilePath!));
+      Assert.Throws<DirectoryNotFoundException>(() =>
+        CommonDirectoryPath.GetGitDirectory(callerFilePath!)
+      );
     }
   }
 }

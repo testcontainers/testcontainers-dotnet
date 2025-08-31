@@ -22,7 +22,14 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
+  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
+    : AbstractBuilder<
+      TBuilderEntity,
+      TContainerEntity,
+      CreateContainerParameters,
+      TConfigurationEntity
+    >,
+      IContainerBuilder<TBuilderEntity, TContainerEntity>
     where TBuilderEntity : ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
@@ -32,9 +39,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
     protected ContainerBuilder(TConfigurationEntity dockerResourceConfiguration)
-      : base(dockerResourceConfiguration)
-    {
-    }
+      : base(dockerResourceConfiguration) { }
 
     /// <summary>
     /// Gets the name of the environment variable that must be set to accept the image license agreement.
@@ -54,7 +59,8 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public virtual TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
-      const string licenseAgreementNotRequired = "The module does not require you to accept a license agreement.";
+      const string licenseAgreementNotRequired =
+        "The module does not require you to accept a license agreement.";
       throw new InvalidOperationException(licenseAgreementNotRequired);
     }
 
@@ -179,7 +185,10 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithPortBinding(int hostPort, int containerPort)
     {
-      return WithPortBinding(hostPort.ToString(CultureInfo.InvariantCulture), containerPort.ToString(CultureInfo.InvariantCulture));
+      return WithPortBinding(
+        hostPort.ToString(CultureInfo.InvariantCulture),
+        containerPort.ToString(CultureInfo.InvariantCulture)
+      );
     }
 
     /// <inheritdoc />
@@ -197,7 +206,8 @@ namespace DotNet.Testcontainers.Builders
       hostPort = "0".Equals(hostPort, StringComparison.OrdinalIgnoreCase) ? string.Empty : hostPort;
 
       var portBindings = new Dictionary<string, string> { { containerPort, hostPort } };
-      return Clone(new ContainerConfiguration(portBindings: portBindings)).WithExposedPort(containerPort);
+      return Clone(new ContainerConfiguration(portBindings: portBindings))
+        .WithExposedPort(containerPort);
     }
 
     /// <inheritdoc />
@@ -208,15 +218,27 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      byte[] resourceContent,
+      string filePath,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
       return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      string source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
-      if (Uri.IsWellFormedUriString(source, UriKind.Absolute) && Uri.TryCreate(source, UriKind.Absolute, out var uri) && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme))
+      if (
+        Uri.IsWellFormedUriString(source, UriKind.Absolute)
+        && Uri.TryCreate(source, UriKind.Absolute, out var uri)
+        && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme)
+      )
       {
         return WithResourceMapping(uri, target, fileMode);
       }
@@ -234,19 +256,31 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      DirectoryInfo source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
       return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      FileInfo source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
       return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      FileInfo source,
+      FileInfo target,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
       using (var fileStream = source.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       {
@@ -259,7 +293,11 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(
+      Uri source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    )
     {
       if (source.IsFile)
       {
@@ -385,15 +423,26 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback)
+    public TBuilderEntity WithStartupCallback(
+      Func<TContainerEntity, CancellationToken, Task> startupCallback
+    )
     {
-      return Clone(new ContainerConfiguration(startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)));
+      return Clone(
+        new ContainerConfiguration(
+          startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)
+        )
+      );
     }
 
     /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _) => Task.CompletedTask);
+      return base.Init()
+        .WithImagePullPolicy(PullPolicy.Missing)
+        .WithPortForwarding()
+        .WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr())
+        .WithWaitStrategy(Wait.ForUnixContainer())
+        .WithStartupCallback((_, _) => Task.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -401,11 +450,21 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      const string reuseNotSupported = "Reuse cannot be used in conjunction with WithAutoRemove(true).";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IContainerConfiguration.Reuse))
-        .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && argument.Value.AutoRemove.HasValue && argument.Value.AutoRemove.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
+      const string reuseNotSupported =
+        "Reuse cannot be used in conjunction with WithAutoRemove(true).";
+      _ = Guard
+        .Argument(DockerResourceConfiguration, nameof(IContainerConfiguration.Reuse))
+        .ThrowIf(
+          argument =>
+            argument.Value.Reuse.HasValue
+            && argument.Value.Reuse.Value
+            && argument.Value.AutoRemove.HasValue
+            && argument.Value.AutoRemove.Value,
+          argument => new ArgumentException(reuseNotSupported, argument.Name)
+        );
 
-      _ = Guard.Argument(DockerResourceConfiguration.Image, nameof(IContainerConfiguration.Image))
+      _ = Guard
+        .Argument(DockerResourceConfiguration.Image, nameof(IContainerConfiguration.Image))
         .NotNull();
     }
 
@@ -418,10 +477,19 @@ namespace DotNet.Testcontainers.Builders
       const string message = "The image '{0}' requires you to accept a license agreement.";
 
       Predicate<TConfigurationEntity> licenseAgreementNotAccepted = value =>
-        !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
+        !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue)
+        || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
 
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+      _ = Guard
+        .Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+        .ThrowIf(
+          argument => licenseAgreementNotAccepted(argument.Value),
+          argument =>
+            throw new ArgumentException(
+              string.Format(message, DockerResourceConfiguration.Image.FullName),
+              argument.Name
+            )
+        );
     }
 
     /// <summary>
@@ -434,7 +502,11 @@ namespace DotNet.Testcontainers.Builders
     private TBuilderEntity WithPortForwarding()
     {
       const string hostname = "host.testcontainers.internal";
-      return PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State) ? WithExtraHost(hostname, PortForwardingContainer.Instance.IpAddress) : Clone(new ContainerConfiguration());
+      return
+        PortForwardingContainer.Instance != null
+        && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State)
+        ? WithExtraHost(hostname, PortForwardingContainer.Instance.IpAddress)
+        : Clone(new ContainerConfiguration());
     }
 
     /// <inheritdoc cref="NetworkBuilder" />
@@ -443,18 +515,14 @@ namespace DotNet.Testcontainers.Builders
       /// <summary>
       /// Initializes a new instance of the <see cref="FromExistingNetwork" /> class.
       /// </summary>
-      public FromExistingNetwork()
-      {
-      }
+      public FromExistingNetwork() { }
 
       /// <summary>
       /// Initializes a new instance of the <see cref="FromExistingNetwork" /> class.
       /// </summary>
       /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
       public FromExistingNetwork(INetworkConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
-      {
-      }
+        : base(dockerResourceConfiguration) { }
 
       /// <inheritdoc />
       public override INetwork Build()
@@ -463,7 +531,10 @@ namespace DotNet.Testcontainers.Builders
       }
 
       /// <inheritdoc />
-      protected override NetworkBuilder Merge(INetworkConfiguration oldValue, INetworkConfiguration newValue)
+      protected override NetworkBuilder Merge(
+        INetworkConfiguration oldValue,
+        INetworkConfiguration newValue
+      )
       {
         return new FromExistingNetwork(new NetworkConfiguration(oldValue, newValue));
       }
@@ -509,18 +580,14 @@ namespace DotNet.Testcontainers.Builders
       /// <summary>
       /// Initializes a new instance of the <see cref="FromExistingVolume" /> class.
       /// </summary>
-      public FromExistingVolume()
-      {
-      }
+      public FromExistingVolume() { }
 
       /// <summary>
       /// Initializes a new instance of the <see cref="FromExistingVolume" /> class.
       /// </summary>
       /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
       public FromExistingVolume(IVolumeConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
-      {
-      }
+        : base(dockerResourceConfiguration) { }
 
       /// <inheritdoc />
       public override IVolume Build()
@@ -529,7 +596,10 @@ namespace DotNet.Testcontainers.Builders
       }
 
       /// <inheritdoc />
-      protected override VolumeBuilder Merge(IVolumeConfiguration oldValue, IVolumeConfiguration newValue)
+      protected override VolumeBuilder Merge(
+        IVolumeConfiguration oldValue,
+        IVolumeConfiguration newValue
+      )
       {
         return new FromExistingVolume(new VolumeConfiguration(oldValue, newValue));
       }

@@ -6,7 +6,8 @@ namespace Testcontainers.Kusto;
 /// https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview.
 /// </remarks>
 [PublicAPI]
-public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
+public sealed class KustoBuilder
+    : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
 {
     public const string KustoImage = "mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest";
 
@@ -48,15 +49,28 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
             .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request
-                .WithMethod(HttpMethod.Post)
-                .ForPort(KustoPort)
-                .ForPath("/v1/rest/mgmt")
-                .WithContent(() => new StringContent("{\"csl\":\".show cluster\"}", Encoding.Default, "application/json"))));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .WithMethod(HttpMethod.Post)
+                            .ForPort(KustoPort)
+                            .ForPath("/v1/rest/mgmt")
+                            .WithContent(() =>
+                                new StringContent(
+                                    "{\"csl\":\".show cluster\"}",
+                                    Encoding.Default,
+                                    "application/json"
+                                )
+                            )
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override KustoBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override KustoBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new KustoConfiguration(resourceConfiguration));
     }

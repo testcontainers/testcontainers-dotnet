@@ -16,9 +16,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="collection">The collection of items. If <c>null</c>, an empty collection is used.</param>
     public OverwriteEnumerable(IEnumerable<T> collection)
-      : base(collection)
-    {
-    }
+      : base(collection) { }
 
     /// <inheritdoc />
     public override ComposableEnumerable<T> Compose(IEnumerable<T> other)

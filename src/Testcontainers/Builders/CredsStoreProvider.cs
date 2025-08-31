@@ -19,9 +19,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public CredsStoreProvider(JsonDocument jsonDocument, ILogger logger)
-      : this(jsonDocument.RootElement, logger)
-    {
-    }
+      : this(jsonDocument.RootElement, logger) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CredsStoreProvider" /> class.
@@ -31,14 +29,17 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     public CredsStoreProvider(JsonElement jsonElement, ILogger logger)
     {
-      _rootElement = jsonElement.TryGetProperty("credsStore", out var credsStore) ? credsStore : default;
+      _rootElement = jsonElement.TryGetProperty("credsStore", out var credsStore)
+        ? credsStore
+        : default;
       _logger = logger;
     }
 
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !string.IsNullOrEmpty(_rootElement.GetString());
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind)
+        && !string.IsNullOrEmpty(_rootElement.GetString());
     }
 
     /// <inheritdoc />
@@ -51,7 +52,10 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var credentialProviderOutput = DockerCredentialProcess.Get(_rootElement.GetString(), hostname);
+      var credentialProviderOutput = DockerCredentialProcess.Get(
+        _rootElement.GetString(),
+        hostname
+      );
       if (string.IsNullOrEmpty(credentialProviderOutput))
       {
         return null;

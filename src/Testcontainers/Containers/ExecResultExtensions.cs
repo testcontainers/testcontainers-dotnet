@@ -15,12 +15,17 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="successExitCodes">A list of exit codes that should be treated as successful. If none are provided, only exit code <c>0</c> is treated as successful.</param>
     /// <returns>The <see cref="ExecResult" /> if the exit code is in the list of success exit codes.</returns>
     /// <exception cref="ExecFailedException">Thrown if the exit code is not in the list of success exit codes.</exception>
-    public static async Task<ExecResult> ThrowOnFailure(this Task<ExecResult> execTask, params long[] successExitCodes)
+    public static async Task<ExecResult> ThrowOnFailure(
+      this Task<ExecResult> execTask,
+      params long[] successExitCodes
+    )
     {
-      successExitCodes = successExitCodes == null || successExitCodes.Length == 0 ? new long[] { 0 } : successExitCodes;
+      successExitCodes =
+        successExitCodes == null || successExitCodes.Length == 0
+          ? new long[] { 0 }
+          : successExitCodes;
 
-      var execResult = await execTask
-        .ConfigureAwait(false);
+      var execResult = await execTask.ConfigureAwait(false);
 
       if (Array.IndexOf(successExitCodes, execResult.ExitCode) < 0)
       {

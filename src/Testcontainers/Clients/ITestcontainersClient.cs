@@ -60,7 +60,13 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="timestampsEnabled">Determines whether every log line contains a timestamp or not.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that gets the container logs.</returns>
-    Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default);
+    Task<(string Stdout, string Stderr)> GetContainerLogsAsync(
+      string id,
+      DateTime since = default,
+      DateTime until = default,
+      bool timestampsEnabled = true,
+      CancellationToken ct = default
+    );
 
     /// <summary>
     /// Starts the container.
@@ -138,7 +144,13 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
-    Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
+    Task CopyAsync(
+      string id,
+      DirectoryInfo source,
+      string target,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    );
 
     /// <summary>
     /// Copies a test host file to the container.
@@ -149,7 +161,13 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>
-    Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
+    Task CopyAsync(
+      string id,
+      FileInfo source,
+      string target,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    );
 
     /// <summary>
     /// Reads a file from the container.
@@ -174,6 +192,9 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="configuration">The Dockerfile configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
-    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+    Task<string> BuildAsync(
+      IImageFromDockerfileConfiguration configuration,
+      CancellationToken ct = default
+    );
   }
 }

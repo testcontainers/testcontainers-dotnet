@@ -9,9 +9,7 @@ public sealed class RabbitMqConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The RabbitMq username.</param>
     /// <param name="password">The RabbitMq password.</param>
-    public RabbitMqConfiguration(
-        string username = null,
-        string password = null)
+    public RabbitMqConfiguration(string username = null, string password = null)
     {
         Username = username;
         Password = password;
@@ -21,7 +19,9 @@ public sealed class RabbitMqConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="RabbitMqConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public RabbitMqConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public RabbitMqConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

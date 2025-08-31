@@ -17,8 +17,7 @@ namespace DotNet.Testcontainers.Configurations
     {
       try
       {
-        _ = await container.ReadFileAsync(_file)
-          .ConfigureAwait(false);
+        _ = await container.ReadFileAsync(_file).ConfigureAwait(false);
 
         return true;
       }

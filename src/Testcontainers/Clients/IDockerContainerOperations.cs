@@ -9,11 +9,18 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
 
-  internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse, ContainerInspectResponse>
+  internal interface IDockerContainerOperations
+    : IHasListOperations<ContainerListResponse, ContainerInspectResponse>
   {
     Task<long> GetExitCodeAsync(string id, CancellationToken ct = default);
 
-    Task<(string Stdout, string Stderr)> GetLogsAsync(string id, TimeSpan since, TimeSpan until, bool timestampsEnabled = true, CancellationToken ct = default);
+    Task<(string Stdout, string Stderr)> GetLogsAsync(
+      string id,
+      TimeSpan since,
+      TimeSpan until,
+      bool timestampsEnabled = true,
+      CancellationToken ct = default
+    );
 
     Task StartAsync(string id, CancellationToken ct = default);
 
@@ -25,9 +32,18 @@ namespace DotNet.Testcontainers.Clients
 
     Task RemoveAsync(string id, CancellationToken ct = default);
 
-    Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default);
+    Task ExtractArchiveToContainerAsync(
+      string id,
+      string path,
+      TarOutputMemoryStream tarStream,
+      CancellationToken ct = default
+    );
 
-    Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default);
+    Task<Stream> GetArchiveFromContainerAsync(
+      string id,
+      string path,
+      CancellationToken ct = default
+    );
 
     Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 

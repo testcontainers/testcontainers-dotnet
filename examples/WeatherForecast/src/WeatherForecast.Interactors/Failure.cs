@@ -4,7 +4,5 @@ namespace WeatherForecast.Interactors;
 public sealed class Failure : ResultInfo
 {
   public Failure()
-    : base(StatusCode.Failure, new Error())
-  {
-  }
+    : base(StatusCode.Failure, new Error()) { }
 }

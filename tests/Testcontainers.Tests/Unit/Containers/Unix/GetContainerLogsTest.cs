@@ -10,14 +10,14 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private readonly IContainer _container = new ContainerBuilder()
       .WithImage("amazon/dynamodb-local:1.20.0")
-      .WithWaitStrategy(Wait.ForUnixContainer()
-        .UntilPortIsAvailable(8000))
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(8000))
       .Build();
 
     [Fact]
     public async Task GetLogsShouldNotBeEmpty()
     {
-      var (stdout, _) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
+      var (stdout, _) = await _container
+        .GetLogsAsync(ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       Assert.NotEmpty(stdout);
@@ -26,7 +26,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenSinceIsOutOfDateRage()
     {
-      var (stdout, stderr) = await _container.GetLogsAsync(since: DateTime.Now.AddDays(1), ct: TestContext.Current.CancellationToken)
+      var (stdout, stderr) = await _container
+        .GetLogsAsync(since: DateTime.Now.AddDays(1), ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       Assert.Empty(stdout);
@@ -36,7 +37,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task GetLogsShouldBeEmptyWhenUntilIsOutOfDateRage()
     {
-      var (stdout, stderr) = await _container.GetLogsAsync(until: DateTime.Now.AddDays(-1), ct: TestContext.Current.CancellationToken)
+      var (stdout, stderr) = await _container
+        .GetLogsAsync(until: DateTime.Now.AddDays(-1), ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       Assert.Empty(stdout);
@@ -45,8 +47,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public async ValueTask InitializeAsync()
     {
-      await _container.StartAsync()
-        .ConfigureAwait(false);
+      await _container.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

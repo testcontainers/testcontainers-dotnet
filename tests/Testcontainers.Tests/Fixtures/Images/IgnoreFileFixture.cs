@@ -13,9 +13,25 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var ignoreAllFilesAndDirectories = new IgnoreFile(new[] { "*", "!README*.md" }, logger);
       var ignoreNonRecursiveFiles = new IgnoreFile(new[] { "*/temp*" }, logger);
       var ignoreNonRecursiveNestedFiles = new IgnoreFile(new[] { "*/*/temp*" }, logger);
-      var ignoreRecursiveFiles = new IgnoreFile(new[] { "**/*.txt", "**/.idea", "**/.vs", "**/.git", "!**/.gitignore", "!.git/HEAD", "!.git/refs/heads/**", "src/**/lipsum.config" }, logger);
+      var ignoreRecursiveFiles = new IgnoreFile(
+        new[]
+        {
+          "**/*.txt",
+          "**/.idea",
+          "**/.vs",
+          "**/.git",
+          "!**/.gitignore",
+          "!.git/HEAD",
+          "!.git/refs/heads/**",
+          "src/**/lipsum.config",
+        },
+        logger
+      );
       var ignoreSingleCharacterFiles = new IgnoreFile(new[] { "temp?" }, logger);
-      var ignoreExceptionFiles = new IgnoreFile(new[] { "*.md", "!README*.md", "README-secret.md" }, logger);
+      var ignoreExceptionFiles = new IgnoreFile(
+        new[] { "*.md", "!README*.md", "README-secret.md" },
+        logger
+      );
       Add(ignoreFilesAndDirectories, "bin/Debug", false);
       Add(ignoreFilesAndDirectories, "obj/Debug", false);
       Add(ignoreFilesAndDirectories, "README.md", true);

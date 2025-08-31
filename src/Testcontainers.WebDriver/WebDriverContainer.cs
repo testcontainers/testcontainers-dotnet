@@ -25,7 +25,11 @@ public sealed class WebDriverContainer : DockerContainer
     /// <returns>The Selenium Grid connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WebDriverBuilder.WebDriverPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(WebDriverBuilder.WebDriverPort)
+        ).ToString();
     }
 
     /// <summary>
@@ -48,18 +52,30 @@ public sealed class WebDriverContainer : DockerContainer
     /// <exception cref="InvalidOperationException">The video recording is either not enabled or the container has not been stopped.</exception>
     public async Task ExportVideoAsync(string target, CancellationToken ct = default)
     {
-        Guard.Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
-            .ThrowIf(argument => TestcontainersStates.Undefined.Equals(argument.Value), _ => new InvalidOperationException("Could not export video. Please enable the video recording first."));
+        Guard
+            .Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
+            .ThrowIf(
+                argument => TestcontainersStates.Undefined.Equals(argument.Value),
+                _ => new InvalidOperationException(
+                    "Could not export video. Please enable the video recording first."
+                )
+            );
 
-        Guard.Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
-            .ThrowIf(argument => !TestcontainersStates.Exited.Equals(argument.Value), _ => new InvalidOperationException("Could not export video. Please stop the WebDriver container first."));
+        Guard
+            .Argument(_ffmpegContainer.State, nameof(_ffmpegContainer.State))
+            .ThrowIf(
+                argument => !TestcontainersStates.Exited.Equals(argument.Value),
+                _ => new InvalidOperationException(
+                    "Could not export video. Please stop the WebDriver container first."
+                )
+            );
 
-        var bytes = await _ffmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
+        var bytes = await _ffmpegContainer
+            .ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
             .ConfigureAwait(false);
 
 #if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
-        await File.WriteAllBytesAsync(target, bytes, ct)
-            .ConfigureAwait(false);
+        await File.WriteAllBytesAsync(target, bytes, ct).ConfigureAwait(false);
 #else
         File.WriteAllBytes(target, bytes);
 #endif
@@ -68,11 +84,9 @@ public sealed class WebDriverContainer : DockerContainer
     /// <inheritdoc />
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
-        await _configuration.Networks.Single().CreateAsync(ct)
-            .ConfigureAwait(false);
+        await _configuration.Networks.Single().CreateAsync(ct).ConfigureAwait(false);
 
-        await base.UnsafeCreateAsync(ct)
-            .ConfigureAwait(false);
+        await base.UnsafeCreateAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -84,21 +98,17 @@ public sealed class WebDriverContainer : DockerContainer
     /// <inheritdoc />
     protected override async Task UnsafeStartAsync(CancellationToken ct = default)
     {
-        await base.UnsafeStartAsync(ct)
-            .ConfigureAwait(false);
+        await base.UnsafeStartAsync(ct).ConfigureAwait(false);
 
-        await _ffmpegContainer.StartAsync(ct)
-            .ConfigureAwait(false);
+        await _ffmpegContainer.StartAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async Task UnsafeStopAsync(CancellationToken ct = default)
     {
-        await _ffmpegContainer.StopAsync(ct)
-            .ConfigureAwait(false);
+        await _ffmpegContainer.StopAsync(ct).ConfigureAwait(false);
 
-        await base.UnsafeStopAsync(ct)
-            .ConfigureAwait(false);
+        await base.UnsafeStopAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -106,23 +116,28 @@ public sealed class WebDriverContainer : DockerContainer
     /// </summary>
     private sealed class FFmpegContainer : DockerContainer
     {
-        static FFmpegContainer()
-        {
-        }
+        static FFmpegContainer() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FFmpegContainer" /> class.
         /// </summary>
         private FFmpegContainer()
-            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")), null, null, false, NullLogger.Instance)))
-        {
-        }
+            : base(
+                new ContainerConfiguration(
+                    new ResourceConfiguration<CreateContainerParameters>(
+                        new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")),
+                        null,
+                        null,
+                        false,
+                        NullLogger.Instance
+                    )
+                )
+            ) { }
 
         /// <summary>
         /// Gets the <see cref="IContainer" /> instance.
         /// </summary>
-        public static IContainer Instance { get; }
-            = new FFmpegContainer();
+        public static IContainer Instance { get; } = new FFmpegContainer();
 
         /// <inheritdoc />
         public override Task StartAsync(CancellationToken ct = default)

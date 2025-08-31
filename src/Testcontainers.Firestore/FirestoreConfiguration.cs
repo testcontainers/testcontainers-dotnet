@@ -7,15 +7,15 @@ public sealed class FirestoreConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreConfiguration" /> class.
     /// </summary>
-    public FirestoreConfiguration()
-    {
-    }
+    public FirestoreConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public FirestoreConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public FirestoreConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class FirestoreConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public FirestoreConfiguration(FirestoreConfiguration oldValue, FirestoreConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

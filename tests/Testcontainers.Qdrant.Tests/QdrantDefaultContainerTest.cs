@@ -7,8 +7,7 @@ public sealed class QdrantDefaultContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _qdrantContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _qdrantContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -24,12 +23,14 @@ public sealed class QdrantDefaultContainerTest : IAsyncLifetime
         using var client = new QdrantClient(new Uri(_qdrantContainer.GetGrpcConnectionString()));
 
         // When
-        var response = await client.HealthAsync(TestContext.Current.CancellationToken)
+        var response = await client
+            .HealthAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.NotEmpty(response.Title);
     }
+
     // # --8<-- [end:UseQdrantContainer]
 
     [Fact]
@@ -41,7 +42,8 @@ public sealed class QdrantDefaultContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_qdrantContainer.GetHttpConnectionString());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync("/", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

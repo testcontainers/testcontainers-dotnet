@@ -13,15 +13,28 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
-  public sealed class TestcontainerNetworkBuilderTest : IClassFixture<TestcontainerNetworkBuilderTest.DockerNetwork>
+  public sealed class TestcontainerNetworkBuilderTest
+    : IClassFixture<TestcontainerNetworkBuilderTest.DockerNetwork>
   {
     private static readonly string NetworkName = Guid.NewGuid().ToString("D");
 
-    private static readonly KeyValuePair<string, string> Option = new KeyValuePair<string, string>("mtu", "1350");
+    private static readonly KeyValuePair<string, string> Option = new KeyValuePair<string, string>(
+      "mtu",
+      "1350"
+    );
 
-    private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".network.test", Guid.NewGuid().ToString("D"));
+    private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(
+      TestcontainersClient.TestcontainersLabel + ".network.test",
+      Guid.NewGuid().ToString("D")
+    );
 
-    private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
+    private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<
+      string,
+      string
+    >(
+      TestcontainersClient.TestcontainersLabel + ".parameter.modifier",
+      Guid.NewGuid().ToString("D")
+    );
 
     private readonly INetwork _network;
 
@@ -33,10 +46,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameThrowsInvalidOperationException()
     {
-      _ = Assert.Throws<InvalidOperationException>(() => new NetworkBuilder()
-        .WithName(NetworkName)
-        .Build()
-        .Name);
+      _ = Assert.Throws<InvalidOperationException>(() =>
+        new NetworkBuilder().WithName(NetworkName).Build().Name
+      );
     }
 
     [Fact]
@@ -49,10 +61,15 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateNetworkAssignsOptions()
     {
       // Given
-      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      var client = new TestcontainersClient(
+        ResourceReaper.DefaultSessionId,
+        TestcontainersSettings.OS.DockerEndpointAuthConfig,
+        NullLogger.Instance
+      );
 
       // When
-      var networkResponse = await client.Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
+      var networkResponse = await client
+        .Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -63,15 +80,23 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateNetworkAssignsLabels()
     {
       // Given
-      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      var client = new TestcontainersClient(
+        ResourceReaper.DefaultSessionId,
+        TestcontainersSettings.OS.DockerEndpointAuthConfig,
+        NullLogger.Instance
+      );
 
       // When
-      var networkResponse = await client.Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
+      var networkResponse = await client
+        .Network.ByIdAsync(_network.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
       Assert.Equal(Label.Value, Assert.Contains(Label.Key, networkResponse.Labels));
-      Assert.Equal(ParameterModifier.Value, Assert.Contains(ParameterModifier.Key, networkResponse.Labels));
+      Assert.Equal(
+        ParameterModifier.Value,
+        Assert.Contains(ParameterModifier.Key, networkResponse.Labels)
+      );
     }
 
     [UsedImplicitly]
@@ -81,15 +106,16 @@ namespace DotNet.Testcontainers.Tests.Unit
         .WithName(NetworkName)
         .WithOption(Option.Key, Option.Value)
         .WithLabel(Label.Key, Label.Value)
-        .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
+        .WithCreateParameterModifier(parameterModifier =>
+          parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value)
+        )
         .Build();
 
       public string Name => _network.Name;
 
       public async ValueTask InitializeAsync()
       {
-        await CreateAsync()
-          .ConfigureAwait(false);
+        await CreateAsync().ConfigureAwait(false);
       }
 
       public ValueTask DisposeAsync()

@@ -14,27 +14,48 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilCommandIsCompleted(string command, Action<IWaitStrategy> waitStrategyModifier = null)
+    public override IWaitForContainerOS UntilCommandIsCompleted(
+      string command,
+      Action<IWaitStrategy> waitStrategyModifier = null
+    )
     {
-      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command), waitStrategyModifier);
+      return AddCustomWaitStrategy(
+        new UntilWindowsCommandIsCompleted(command),
+        waitStrategyModifier
+      );
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null)
+    public override IWaitForContainerOS UntilCommandIsCompleted(
+      IEnumerable<string> command,
+      Action<IWaitStrategy> waitStrategyModifier = null
+    )
     {
-      return AddCustomWaitStrategy(new UntilWindowsCommandIsCompleted(command.ToArray()), waitStrategyModifier);
+      return AddCustomWaitStrategy(
+        new UntilWindowsCommandIsCompleted(command.ToArray()),
+        waitStrategyModifier
+      );
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null)
+    public override IWaitForContainerOS UntilPortIsAvailable(
+      int port,
+      Action<IWaitStrategy> waitStrategyModifier = null
+    )
     {
       return UntilInternalTcpPortIsAvailable(port, waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public override IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null)
+    public override IWaitForContainerOS UntilInternalTcpPortIsAvailable(
+      int containerPort,
+      Action<IWaitStrategy> waitStrategyModifier = null
+    )
     {
-      return AddCustomWaitStrategy(new UntilInternalTcpPortIsAvailableOnWindows(containerPort), waitStrategyModifier);
+      return AddCustomWaitStrategy(
+        new UntilInternalTcpPortIsAvailableOnWindows(containerPort),
+        waitStrategyModifier
+      );
     }
   }
 }

@@ -9,15 +9,15 @@ namespace DotNet.Testcontainers.Builders
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   [PublicAPI]
-  internal sealed class DockerDesktopEndpointAuthenticationProvider : RootlessUnixEndpointAuthenticationProvider, ICustomConfiguration
+  internal sealed class DockerDesktopEndpointAuthenticationProvider
+    : RootlessUnixEndpointAuthenticationProvider,
+      ICustomConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerDesktopEndpointAuthenticationProvider" /> class.
     /// </summary>
     public DockerDesktopEndpointAuthenticationProvider()
-      : base(DockerConfig.Instance.GetCurrentEndpoint())
-    {
-    }
+      : base(DockerConfig.Instance.GetCurrentEndpoint()) { }
 
     /// <inheritdoc />
     public override bool IsApplicable()

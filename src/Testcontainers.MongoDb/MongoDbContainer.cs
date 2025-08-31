@@ -23,7 +23,11 @@ public sealed class MongoDbContainer : DockerContainer
     public string GetConnectionString()
     {
         // The MongoDb documentation recommends to use percent-encoding for username and password: https://www.mongodb.com/docs/manual/reference/connection-string/.
-        var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
+        var endpoint = new UriBuilder(
+            "mongodb",
+            Hostname,
+            GetMappedPublicPort(MongoDbBuilder.MongoDbPort)
+        );
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         endpoint.Query = "?directConnection=true";
@@ -36,11 +40,25 @@ public sealed class MongoDbContainer : DockerContainer
     /// <param name="scriptContent">The content of the JavaScript script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the JavaScript script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
         var whichMongoDbShell = await ExecAsync(new[] { "which", "mongosh" }, ct)
@@ -49,14 +67,15 @@ public sealed class MongoDbContainer : DockerContainer
         var command = new[]
         {
             whichMongoDbShell.ExitCode == 0 ? "mongosh" : "mongo",
-            "--username", _configuration.Username,
-            "--password", _configuration.Password,
+            "--username",
+            _configuration.Username,
+            "--password",
+            _configuration.Password,
             "--quiet",
             "--eval",
             $"load('{scriptFilePath}')",
         };
 
-        return await ExecAsync(command, ct)
-            .ConfigureAwait(false);
+        return await ExecAsync(command, ct).ConfigureAwait(false);
     }
 }

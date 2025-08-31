@@ -10,21 +10,17 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class VolumeFixture : IAsyncLifetime
   {
-    public IVolume Volume { get; }
-      = new VolumeBuilder()
-        .WithName(Guid.NewGuid().ToString("D"))
-        .Build();
+    public IVolume Volume { get; } =
+      new VolumeBuilder().WithName(Guid.NewGuid().ToString("D")).Build();
 
     public async ValueTask InitializeAsync()
     {
-      await Volume.CreateAsync()
-        .ConfigureAwait(false);
+      await Volume.CreateAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await Volume.DeleteAsync()
-        .ConfigureAwait(false);
+      await Volume.DeleteAsync().ConfigureAwait(false);
     }
   }
 }

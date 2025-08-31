@@ -2,7 +2,8 @@ namespace Testcontainers.Weaviate;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class WeaviateContainer(WeaviateConfiguration configuration) : DockerContainer(configuration)
+public sealed class WeaviateContainer(WeaviateConfiguration configuration)
+    : DockerContainer(configuration)
 {
     /// <summary>
     /// Gets the Weaviate base address.
@@ -10,6 +11,10 @@ public sealed class WeaviateContainer(WeaviateConfiguration configuration) : Doc
     /// <returns>The Weaviate base address.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(WeaviateBuilder.WeaviateHttpPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(WeaviateBuilder.WeaviateHttpPort)
+        ).ToString();
     }
 }

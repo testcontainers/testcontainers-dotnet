@@ -45,14 +45,22 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public HttpWaitStrategy()
     {
-      _ = WithMethod(HttpMethod.Get).UsingTls(false).ForPath("/").ForResponseMessageMatching(_ => Task.FromResult(true)).WithContent(() => null);
+      _ = WithMethod(HttpMethod.Get)
+        .UsingTls(false)
+        .ForPath("/")
+        .ForResponseMessageMatching(_ => Task.FromResult(true))
+        .WithContent(() => null);
     }
 
     /// <inheritdoc />
     public async Task<bool> UntilAsync(IContainer container)
     {
       // Java falls back to the first exposed port. The .NET wait strategies do not have access to the exposed port information yet.
-      var containerPort = _portNumber.GetValueOrDefault(Uri.UriSchemeHttp.Equals(_schemeName, StringComparison.OrdinalIgnoreCase) ? HttpPort : HttpsPort);
+      var containerPort = _portNumber.GetValueOrDefault(
+        Uri.UriSchemeHttp.Equals(_schemeName, StringComparison.OrdinalIgnoreCase)
+          ? HttpPort
+          : HttpsPort
+      );
 
       string host;
 
@@ -68,9 +76,19 @@ namespace DotNet.Testcontainers.Configurations
         return false;
       }
 
-      using (var httpClient = new HttpClient(_httpMessageHandler ?? new HttpClientHandler(), disposeHandler: _httpMessageHandler == null))
+      using (
+        var httpClient = new HttpClient(
+          _httpMessageHandler ?? new HttpClientHandler(),
+          disposeHandler: _httpMessageHandler == null
+        )
+      )
       {
-        using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, new UriBuilder(_schemeName, host, port, _pathValue).Uri))
+        using (
+          var httpRequestMessage = new HttpRequestMessage(
+            _httpMethod,
+            new UriBuilder(_schemeName, host, port, _pathValue).Uri
+          )
+        )
         {
           foreach (var httpHeader in _httpHeaders)
           {
@@ -83,7 +101,8 @@ namespace DotNet.Testcontainers.Configurations
 
             try
             {
-              httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+              httpResponseMessage = await httpClient
+                .SendAsync(httpRequestMessage)
                 .ConfigureAwait(false);
             }
             catch (HttpRequestException)
@@ -103,7 +122,9 @@ namespace DotNet.Testcontainers.Configurations
             }
             else if (_httpStatusCodes.Any())
             {
-              predicate = statusCode => _httpStatusCodes.Contains(statusCode) || _httpStatusCodePredicate.Invoke(statusCode);
+              predicate = statusCode =>
+                _httpStatusCodes.Contains(statusCode)
+                || _httpStatusCodePredicate.Invoke(statusCode);
             }
             else
             {
@@ -112,7 +133,8 @@ namespace DotNet.Testcontainers.Configurations
 
             try
             {
-              var responseMessagePredicate = await _httpResponseMessagePredicate.Invoke(httpResponseMessage)
+              var responseMessagePredicate = await _httpResponseMessagePredicate
+                .Invoke(httpResponseMessage)
                 .ConfigureAwait(false);
 
               return responseMessagePredicate && predicate.Invoke(httpResponseMessage.StatusCode);
@@ -157,7 +179,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="responseMessagePredicate">The predicate to test the HTTP response against.</param>
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
-    public HttpWaitStrategy ForResponseMessageMatching(Func<HttpResponseMessage, Task<bool>> responseMessagePredicate)
+    public HttpWaitStrategy ForResponseMessageMatching(
+      Func<HttpResponseMessage, Task<bool>> responseMessagePredicate
+    )
     {
       _httpResponseMessagePredicate = responseMessagePredicate;
       return this;
@@ -235,7 +259,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy WithBasicAuthentication(string username, string password)
     {
-      return WithHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(string.Join(":", username, password))));
+      return WithHeader(
+        "Authorization",
+        "Basic "
+          + Convert.ToBase64String(
+            Encoding.GetEncoding("ISO-8859-1").GetBytes(string.Join(":", username, password))
+          )
+      );
     }
 
     /// <summary>
@@ -257,7 +287,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>A configured instance of <see cref="HttpWaitStrategy" />.</returns>
     public HttpWaitStrategy WithHeaders(IReadOnlyDictionary<string, string> headers)
     {
-      return headers.Aggregate(this, (httpWaitStrategy, header) => httpWaitStrategy.WithHeader(header.Key, header.Value));
+      return headers.Aggregate(
+        this,
+        (httpWaitStrategy, header) => httpWaitStrategy.WithHeader(header.Key, header.Value)
+      );
     }
 
     /// <summary>

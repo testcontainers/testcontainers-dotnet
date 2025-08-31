@@ -36,9 +36,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     /// <param name="image">The image.</param>
     public DockerImage(IImage image)
-      : this(image.Repository, image.Registry, image.Tag, image.Digest)
-    {
-    }
+      : this(image.Repository, image.Registry, image.Tag, image.Digest) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -46,9 +44,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="image">The image.</param>
     /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
     public DockerImage(string image)
-      : this(GetDockerImage(image))
-    {
-    }
+      : this(GetDockerImage(image)) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
@@ -64,30 +60,31 @@ namespace DotNet.Testcontainers.Images
       string registry = null,
       string tag = null,
       string digest = null,
-      string hubImageNamePrefix = null)
+      string hubImageNamePrefix = null
+    )
       : this(
         TrimOrDefault(repository),
         TrimOrDefault(registry),
         TrimOrDefault(tag, tag == null && digest == null ? LatestTag : null),
         TrimOrDefault(digest),
-        hubImageNamePrefix == null ? [] : hubImageNamePrefix.Trim(TrimChars).Split(SlashChar, 2, StringSplitOptions.RemoveEmptyEntries))
-    {
-    }
+        hubImageNamePrefix == null
+          ? []
+          : hubImageNamePrefix
+            .Trim(TrimChars)
+            .Split(SlashChar, 2, StringSplitOptions.RemoveEmptyEntries)
+      ) { }
 
     private DockerImage(
       string repository,
       string registry,
       string tag,
       string digest,
-      string[] substitutions)
+      string[] substitutions
+    )
     {
-      _ = Guard.Argument(repository, nameof(repository))
-        .NotNull()
-        .NotEmpty()
-        .NotUppercase();
+      _ = Guard.Argument(repository, nameof(repository)).NotNull().NotEmpty().NotUppercase();
 
-      _ = Guard.Argument(substitutions, nameof(substitutions))
-        .NotNull();
+      _ = Guard.Argument(substitutions, nameof(substitutions)).NotNull();
 
       // The Docker Hub image name prefix may include namespaces, which we need to extract
       // and prepend to the repository name. The registry itself contains only the hostname.
@@ -161,7 +158,12 @@ namespace DotNet.Testcontainers.Images
         return false;
       }
 
-      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+      var versionMatch = Regex.Match(
+        Tag,
+        "^(\\d+)(\\.\\d+)?(\\.\\d+)?",
+        RegexOptions.None,
+        TimeSpan.FromSeconds(1)
+      );
 
       if (!versionMatch.Success)
       {

@@ -14,8 +14,17 @@ public sealed class CouchbaseContainer : DockerContainer
         : base(configuration)
     {
         _configuration = configuration;
-        Starting += (_, _) => Logger.LogInformation("Couchbase container is starting, performing configuration.");
-        Started += (_, _) => Logger.LogInformation("Couchbase container is ready! UI available at {Url}.", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CouchbaseBuilder.MgmtPort)));
+        Starting += (_, _) =>
+            Logger.LogInformation("Couchbase container is starting, performing configuration.");
+        Started += (_, _) =>
+            Logger.LogInformation(
+                "Couchbase container is ready! UI available at {Url}.",
+                new UriBuilder(
+                    Uri.UriSchemeHttp,
+                    Hostname,
+                    GetMappedPublicPort(CouchbaseBuilder.MgmtPort)
+                )
+            );
     }
 
     /// <summary>
@@ -29,6 +38,8 @@ public sealed class CouchbaseContainer : DockerContainer
     /// <returns>The Couchbase connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("couchbase", Hostname, GetMappedPublicPort(CouchbaseBuilder.KvPort)).Uri.Authority;
+        return new UriBuilder("couchbase", Hostname, GetMappedPublicPort(CouchbaseBuilder.KvPort))
+            .Uri
+            .Authority;
     }
 }

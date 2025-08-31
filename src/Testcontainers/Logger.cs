@@ -61,13 +61,15 @@ namespace DotNet.Testcontainers
 
     private LogLevel _minLogLevel = LogLevel.Information;
 
-    static ConsoleLogger()
-    {
-    }
+    static ConsoleLogger() { }
 
     private ConsoleLogger()
     {
-      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected && !Console.IsErrorRedirected)
+      if (
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        && !Console.IsOutputRedirected
+        && !Console.IsErrorRedirected
+      )
       {
         Console.BufferWidth = short.MaxValue - 1;
       }
@@ -76,23 +78,15 @@ namespace DotNet.Testcontainers
     /// <summary>
     /// Gets the <see cref="ConsoleLogger" /> instance.
     /// </summary>
-    public static ConsoleLogger Instance { get; }
-      = new ConsoleLogger();
+    public static ConsoleLogger Instance { get; } = new ConsoleLogger();
 
     /// <summary>
     /// Gets a value indicating whether the debug log level is enabled or not.
     /// </summary>
     public bool DebugLogLevelEnabled
     {
-      get
-      {
-        return LogLevel.Debug.Equals(_minLogLevel);
-      }
-
-      set
-      {
-        _minLogLevel = value ? LogLevel.Debug : LogLevel.Information;
-      }
+      get { return LogLevel.Debug.Equals(_minLogLevel); }
+      set { _minLogLevel = value ? LogLevel.Debug : LogLevel.Information; }
     }
 
     /// <inheritdoc />
@@ -102,12 +96,25 @@ namespace DotNet.Testcontainers
     }
 
     /// <inheritdoc />
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(
+      LogLevel logLevel,
+      EventId eventId,
+      TState state,
+      Exception exception,
+      Func<TState, Exception, string> formatter
+    )
     {
       if (IsEnabled(logLevel))
       {
-        var message = exception == null ? formatter.Invoke(state, null) : string.Join(Environment.NewLine, formatter.Invoke(state, exception), exception);
-        Console.Out.WriteLine("[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}", _stopwatch.Elapsed, message);
+        var message =
+          exception == null
+            ? formatter.Invoke(state, null)
+            : string.Join(Environment.NewLine, formatter.Invoke(state, exception), exception);
+        Console.Out.WriteLine(
+          "[testcontainers.org {0:hh\\:mm\\:ss\\.ff}] {1}",
+          _stopwatch.Elapsed,
+          message
+        );
       }
     }
 

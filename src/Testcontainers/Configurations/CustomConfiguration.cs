@@ -22,7 +22,12 @@ namespace DotNet.Testcontainers.Configurations
 
     protected virtual Uri GetDockerHost(string propertyName)
     {
-      return _properties.TryGetValue(propertyName, out var propertyValue) && !string.IsNullOrEmpty(propertyValue) && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost) ? dockerHost : null;
+      return
+        _properties.TryGetValue(propertyName, out var propertyValue)
+        && !string.IsNullOrEmpty(propertyValue)
+        && Uri.TryCreate(propertyValue, UriKind.RelativeOrAbsolute, out var dockerHost)
+        ? dockerHost
+        : null;
     }
 
     protected virtual string GetDockerContext(string propertyName)
@@ -138,19 +143,36 @@ namespace DotNet.Testcontainers.Configurations
 
       if (typeof(TimeSpan) == type)
       {
-        return (T)(object)(hasValue && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result) && result > TimeSpan.Zero ? result : null);
+        return (T)
+          (object)(
+            hasValue
+            && TimeSpan.TryParse(propertyValue, CultureInfo.InvariantCulture, out var result)
+            && result > TimeSpan.Zero
+              ? result
+              : null
+          );
       }
 
       switch (Type.GetTypeCode(type))
       {
         case TypeCode.Boolean:
         {
-          return (T)(object)(hasValue && bool.TryParse(propertyValue, out var result) ? result : isNullable ? null : "1".Equals(propertyValue, StringComparison.Ordinal));
+          return (T)
+            (object)(
+              hasValue && bool.TryParse(propertyValue, out var result) ? result
+              : isNullable ? null
+              : "1".Equals(propertyValue, StringComparison.Ordinal)
+            );
         }
 
         case TypeCode.UInt16:
         {
-          return (T)(object)(hasValue && ushort.TryParse(propertyValue, out var result) ? result : isNullable ? null : 0);
+          return (T)
+            (object)(
+              hasValue && ushort.TryParse(propertyValue, out var result) ? result
+              : isNullable ? null
+              : 0
+            );
         }
 
         case TypeCode.String:

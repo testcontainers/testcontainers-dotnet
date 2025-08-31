@@ -17,13 +17,20 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private const ushort TlsPort = 2376;
 
-    private readonly string _hostCertsDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"), CertsDirectoryName);
+    private readonly string _hostCertsDirectoryPath = Path.Combine(
+      Path.GetTempPath(),
+      Guid.NewGuid().ToString("D"),
+      CertsDirectoryName
+    );
 
     private readonly string _containerCertsDirectoryPath = Path.Combine("/", CertsDirectoryName);
 
     private readonly IContainer _container;
 
-    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration, string dockerImageVersion)
+    protected ProtectDockerDaemonSocket(
+      ContainerBuilder containerConfiguration,
+      string dockerImageVersion
+    )
     {
       _container = containerConfiguration
         .WithImage(new DockerImage("docker", null, dockerImageVersion + "-dind"))
@@ -39,7 +46,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       get
       {
         var customProperties = new List<string>();
-        customProperties.Add($"docker.host={new UriBuilder("tcp", _container.Hostname, _container.GetMappedPublicPort(TlsPort))}");
+        customProperties.Add(
+          $"docker.host={new UriBuilder("tcp", _container.Hostname, _container.GetMappedPublicPort(TlsPort))}"
+        );
         customProperties.Add($"docker.cert.path={Path.Combine(_hostCertsDirectoryPath, "client")}");
         return customProperties;
       }
@@ -47,17 +56,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public IImage Image
     {
-      get
-      {
-        return _container.Image;
-      }
+      get { return _container.Image; }
     }
 
     public object TlsKey
     {
       get
       {
-        using (var tlsKeyStream = new StreamReader(Path.Combine(_hostCertsDirectoryPath, "client", "key.pem")))
+        using (
+          var tlsKeyStream = new StreamReader(
+            Path.Combine(_hostCertsDirectoryPath, "client", "key.pem")
+          )
+        )
         {
           return new PemReader(tlsKeyStream).ReadObject();
         }
@@ -68,30 +78,26 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       _ = Directory.CreateDirectory(_hostCertsDirectoryPath);
 
-      await _container.StartAsync()
-        .ConfigureAwait(false);
+      await _container.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await DisposeAsyncCore()
-        .ConfigureAwait(false);
+      await DisposeAsyncCore().ConfigureAwait(false);
 
       GC.SuppressFinalize(this);
     }
 
     protected virtual async ValueTask DisposeAsyncCore()
     {
-      await _container.DisposeAsync()
-        .ConfigureAwait(false);
+      await _container.DisposeAsync().ConfigureAwait(false);
     }
 
     private sealed class UntilListenOn : IWaitUntil
     {
       public async Task<bool> UntilAsync(IContainer container)
       {
-        var (_, stderr) = await container.GetLogsAsync()
-          .ConfigureAwait(false);
+        var (_, stderr) = await container.GetLogsAsync().ConfigureAwait(false);
 
         return stderr != null && stderr.Contains("API listen on [::]:2376");
       }

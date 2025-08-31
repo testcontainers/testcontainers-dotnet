@@ -9,7 +9,9 @@ public sealed class CouchbaseBucket
     /// <summary>
     /// Gets the default bucket.
     /// </summary>
-    public static readonly CouchbaseBucket Default = new CouchbaseBucket(Guid.NewGuid().ToString("D"));
+    public static readonly CouchbaseBucket Default = new CouchbaseBucket(
+        Guid.NewGuid().ToString("D")
+    );
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBucket" /> struct.
@@ -24,7 +26,8 @@ public sealed class CouchbaseBucket
         bool flushEnabled = false,
         bool primaryIndexEnabled = true,
         ushort quotaMiB = 100,
-        ushort replicaNumber = 0)
+        ushort replicaNumber = 0
+    )
     {
         Name = name;
         FlushEnabled = flushEnabled;

@@ -9,9 +9,7 @@ public sealed class RavenDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public RavenDbContainer(RavenDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the RavenDb connection string.
@@ -19,6 +17,10 @@ public sealed class RavenDbContainer : DockerContainer
     /// <returns>The RavenDb connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RavenDbBuilder.RavenDbPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(RavenDbBuilder.RavenDbPort)
+        ).ToString();
     }
 }

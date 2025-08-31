@@ -51,7 +51,10 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="dockerfileDirectory">A relative path or a name value to the Docker build context.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
+    TBuilderEntity WithDockerfileDirectory(
+      CommonDirectoryPath commonDirectoryPath,
+      string dockerfileDirectory
+    );
 
     /// <summary>
     /// Sets the image build policy.

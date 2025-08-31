@@ -9,9 +9,7 @@ public sealed class ServiceBusContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public ServiceBusContainer(ServiceBusConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Service Bus connection string.
@@ -20,10 +18,20 @@ public sealed class ServiceBusContainer : DockerContainer
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("Endpoint", new UriBuilder("amqp", Hostname, GetMappedPublicPort(ServiceBusBuilder.ServiceBusPort)).ToString());
+        properties.Add(
+            "Endpoint",
+            new UriBuilder(
+                "amqp",
+                Hostname,
+                GetMappedPublicPort(ServiceBusBuilder.ServiceBusPort)
+            ).ToString()
+        );
         properties.Add("SharedAccessKeyName", "RootManageSharedAccessKey");
         properties.Add("SharedAccessKey", "SAS_KEY_VALUE");
         properties.Add("UseDevelopmentEmulator", "true");
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 }

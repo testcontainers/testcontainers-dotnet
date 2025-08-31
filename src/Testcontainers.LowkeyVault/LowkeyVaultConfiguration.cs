@@ -17,7 +17,9 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="LowkeyVaultConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public LowkeyVaultConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public LowkeyVaultConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -48,7 +50,10 @@ public sealed class LowkeyVaultConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public LowkeyVaultConfiguration(LowkeyVaultConfiguration oldValue, LowkeyVaultConfiguration newValue)
+    public LowkeyVaultConfiguration(
+        LowkeyVaultConfiguration oldValue,
+        LowkeyVaultConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         Arguments = BuildConfiguration.Combine(oldValue.Arguments, newValue.Arguments);

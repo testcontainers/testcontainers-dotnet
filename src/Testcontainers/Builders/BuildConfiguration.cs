@@ -33,9 +33,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="newValue">The new configuration.</param>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IEnumerable<T> Combine<T>(
-      IEnumerable<T> oldValue,
-      IEnumerable<T> newValue)
+    public static IEnumerable<T> Combine<T>(IEnumerable<T> oldValue, IEnumerable<T> newValue)
     {
       if (newValue == null && oldValue == null)
       {
@@ -59,9 +57,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="newValue">The new configuration.</param>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>An updated configuration.</returns>
-    public static IReadOnlyList<T> Combine<T>(
-      IReadOnlyList<T> oldValue,
-      IReadOnlyList<T> newValue)
+    public static IReadOnlyList<T> Combine<T>(IReadOnlyList<T> oldValue, IReadOnlyList<T> newValue)
     {
       if (newValue == null && oldValue == null)
       {
@@ -91,7 +87,8 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>An updated configuration.</returns>
     public static ComposableEnumerable<T> Combine<T>(
       ComposableEnumerable<T> oldValue,
-      ComposableEnumerable<T> newValue)
+      ComposableEnumerable<T> newValue
+    )
     {
       // Creating a new container configuration before merging will follow this branch
       // and return the default value. If we use the overwrite implementation,
@@ -121,7 +118,8 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>An updated configuration.</returns>
     public static IReadOnlyDictionary<TKey, TValue> Combine<TKey, TValue>(
       IReadOnlyDictionary<TKey, TValue> oldValue,
-      IReadOnlyDictionary<TKey, TValue> newValue)
+      IReadOnlyDictionary<TKey, TValue> newValue
+    )
     {
       if (newValue == null && oldValue == null)
       {

@@ -11,50 +11,52 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   internal class PropertiesFileConfiguration : CustomConfiguration, ICustomConfiguration
   {
-    static PropertiesFileConfiguration()
-    {
-    }
+    static PropertiesFileConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertiesFileConfiguration" /> class.
     /// </summary>
     public PropertiesFileConfiguration()
-      : this(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".testcontainers.properties"))
-    {
-    }
+      : this(
+        Path.Combine(
+          Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+          ".testcontainers.properties"
+        )
+      ) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertiesFileConfiguration" /> class.
     /// </summary>
     /// <param name="propertiesFilePath">The Java properties file path.</param>
     public PropertiesFileConfiguration(string propertiesFilePath)
-      : this(File.Exists(propertiesFilePath)
-        ? File.ReadAllLines(propertiesFilePath)
-        : Array.Empty<string>())
-    {
-    }
+      : this(
+        File.Exists(propertiesFilePath)
+          ? File.ReadAllLines(propertiesFilePath)
+          : Array.Empty<string>()
+      ) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertiesFileConfiguration" /> class.
     /// </summary>
     /// <param name="lines">A list of Java properties file lines.</param>
     public PropertiesFileConfiguration(params string[] lines)
-      : base(lines
-        .Select(line => line.Trim())
-        .Where(line => !string.IsNullOrEmpty(line))
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
-        .Where(line => !line.StartsWith("!", StringComparison.Ordinal))
-        .Select(line => line.Split(new[] { '=', ':', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries))
-        .Where(property => 2.Equals(property.Length))
-        .ToDictionary(property => property[0], property => property[1]))
-    {
-    }
+      : base(
+        lines
+          .Select(line => line.Trim())
+          .Where(line => !string.IsNullOrEmpty(line))
+          .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+          .Where(line => !line.StartsWith("!", StringComparison.Ordinal))
+          .Select(line =>
+            line.Split(new[] { '=', ':', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries)
+          )
+          .Where(property => 2.Equals(property.Length))
+          .ToDictionary(property => property[0], property => property[1])
+      ) { }
 
     /// <summary>
     /// Gets the <see cref="ICustomConfiguration" /> instance.
     /// </summary>
-    public static ICustomConfiguration Instance { get; }
-      = new PropertiesFileConfiguration();
+    public static ICustomConfiguration Instance { get; } = new PropertiesFileConfiguration();
 
     /// <inheritdoc />
     public string GetDockerConfig()

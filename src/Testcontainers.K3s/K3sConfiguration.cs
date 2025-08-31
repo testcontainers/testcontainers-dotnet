@@ -7,9 +7,7 @@ public sealed class K3sConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sConfiguration" /> class.
     /// </summary>
-    public K3sConfiguration()
-    {
-    }
+    public K3sConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sConfiguration" /> class.
@@ -47,7 +45,5 @@ public sealed class K3sConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public K3sConfiguration(K3sConfiguration oldValue, K3sConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

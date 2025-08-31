@@ -2,13 +2,16 @@ namespace Testcontainers.Oracle;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
+public sealed class OracleBuilder
+    : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
     public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
 
     public const ushort OraclePort = 1521;
 
-    [Obsolete("This constant is obsolete and should not be used. It is only applicable for Oracle images between versions 11 and 22.")]
+    [Obsolete(
+        "This constant is obsolete and should not be used. It is only applicable for Oracle images between versions 11 and 22."
+    )]
     public const string DefaultDatabase = "XEPDB1";
 
     public const string DefaultUsername = "oracle";
@@ -81,12 +84,19 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         var defaultServiceName = GetDefaultServiceName();
         if (DockerResourceConfiguration.Database == null)
         {
-            return new OracleContainer(WithDatabase(defaultServiceName).DockerResourceConfiguration);
+            return new OracleContainer(
+                WithDatabase(defaultServiceName).DockerResourceConfiguration
+            );
         }
 
         if (DockerResourceConfiguration.Database != defaultServiceName)
         {
-            return new OracleContainer(WithEnvironment("ORACLE_DATABASE", DockerResourceConfiguration.Database).DockerResourceConfiguration);
+            return new OracleContainer(
+                WithEnvironment(
+                    "ORACLE_DATABASE",
+                    DockerResourceConfiguration.Database
+                ).DockerResourceConfiguration
+            );
         }
 
         return new OracleContainer(DockerResourceConfiguration);
@@ -100,7 +110,9 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
             .WithPortBinding(OraclePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("DATABASE IS READY TO USE!"));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("DATABASE IS READY TO USE!")
+            );
     }
 
     /// <inheritdoc />
@@ -108,25 +120,43 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     {
         base.Validate();
 
-        const string message = "The image '{0}' does not support configuring the database. It is only supported on Oracle 18 and onwards.";
+        const string message =
+            "The image '{0}' does not support configuring the database. It is only supported on Oracle 18 and onwards.";
 
         Predicate<OracleConfiguration> databaseConfigurationNotSupported = value =>
             value.Database != null && value.Image.MatchVersion(v => v.Major < 18);
 
-        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
-            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => throw new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
+        _ = Guard
+            .Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
+            .ThrowIf(
+                argument => databaseConfigurationNotSupported(argument.Value),
+                _ =>
+                    throw new NotSupportedException(
+                        string.Format(message, DockerResourceConfiguration.Image.FullName)
+                    )
+            );
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override OracleBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override OracleBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new OracleConfiguration(resourceConfiguration));
     }
@@ -138,7 +168,10 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     }
 
     /// <inheritdoc />
-    protected override OracleBuilder Merge(OracleConfiguration oldValue, OracleConfiguration newValue)
+    protected override OracleBuilder Merge(
+        OracleConfiguration oldValue,
+        OracleConfiguration newValue
+    )
     {
         return new OracleBuilder(new OracleConfiguration(oldValue, newValue));
     }

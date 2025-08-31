@@ -5,7 +5,8 @@ namespace Testcontainers.WebDriver;
 /// Find further information about the Selenium Grid image, including its configurations, here: https://github.com/SeleniumHQ/docker-selenium.
 /// </remarks>
 [PublicAPI]
-public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDriverContainer, WebDriverConfiguration>
+public sealed class WebDriverBuilder
+    : ContainerBuilder<WebDriverBuilder, WebDriverContainer, WebDriverConfiguration>
 {
     public const string WebDriverNetworkAlias = "standalone-container";
 
@@ -17,7 +18,12 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     public const ushort VncServerPort = 5900;
 
-    public static readonly string VideoFilePath = string.Join("/", string.Empty, "videos", "video.mp4");
+    public static readonly string VideoFilePath = string.Join(
+        "/",
+        string.Empty,
+        "videos",
+        "video.mp4"
+    );
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
@@ -64,7 +70,10 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithConfigurationFromTomlFile(string configTomlFilePath)
     {
-        return WithResourceMapping(new FileInfo(configTomlFilePath), new FileInfo("/opt/bin/config.toml"));
+        return WithResourceMapping(
+            new FileInfo(configTomlFilePath),
+            new FileInfo("/opt/bin/config.toml")
+        );
     }
 
     /// <summary>
@@ -81,7 +90,10 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithEnvironment("DISPLAY_CONTAINER_NAME", WebDriverNetworkAlias)
             .Build();
 
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(ffmpegContainer: ffmpegContainer));
+        return Merge(
+            DockerResourceConfiguration,
+            new WebDriverConfiguration(ffmpegContainer: ffmpegContainer)
+        );
     }
 
     /// <inheritdoc />
@@ -100,24 +112,42 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithNetworkAliases(WebDriverNetworkAlias)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/wd/hub/status").ForPort(WebDriverPort).ForResponseMessageMatching(IsGridReadyAsync)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPath("/wd/hub/status")
+                            .ForPort(WebDriverPort)
+                            .ForResponseMessageMatching(IsGridReadyAsync)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override WebDriverBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override WebDriverBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new WebDriverConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override WebDriverBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new WebDriverConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new WebDriverConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override WebDriverBuilder Merge(WebDriverConfiguration oldValue, WebDriverConfiguration newValue)
+    protected override WebDriverBuilder Merge(
+        WebDriverConfiguration oldValue,
+        WebDriverConfiguration newValue
+    )
     {
         return new WebDriverBuilder(new WebDriverConfiguration(oldValue, newValue));
     }
@@ -132,14 +162,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A value indicating whether the Selenium Grid is ready.</returns>
     private static async Task<bool> IsGridReadyAsync(HttpResponseMessage response)
     {
-        var jsonString = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         try
         {
-            return JsonDocument.Parse(jsonString)
-                .RootElement
-                .GetProperty("value")
+            return JsonDocument
+                .Parse(jsonString)
+                .RootElement.GetProperty("value")
                 .GetProperty("ready")
                 .GetBoolean();
         }

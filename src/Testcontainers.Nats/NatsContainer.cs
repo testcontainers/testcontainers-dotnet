@@ -25,7 +25,11 @@ public sealed class NatsContainer : DockerContainer
     /// <returns>A Nats connection string in the format: <c>nats://hostname:port</c>.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("nats", Hostname, GetMappedPublicPort(NatsBuilder.NatsClientPort));
+        var endpoint = new UriBuilder(
+            "nats",
+            Hostname,
+            GetMappedPublicPort(NatsBuilder.NatsClientPort)
+        );
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();
@@ -37,6 +41,10 @@ public sealed class NatsContainer : DockerContainer
     /// <returns>An HTTP address in the format: <c>http://hostname:port</c>.</returns>
     public string GetManagementEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(NatsBuilder.NatsHttpManagementPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(NatsBuilder.NatsHttpManagementPort)
+        ).ToString();
     }
 }

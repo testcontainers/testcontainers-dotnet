@@ -6,8 +6,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _redpandaContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _redpandaContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -37,7 +36,8 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
 
         // When
         using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
-        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
+        _ = await producer
+            .ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();

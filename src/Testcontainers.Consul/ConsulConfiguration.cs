@@ -7,15 +7,15 @@ public sealed class ConsulConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulConfiguration" /> class.
     /// </summary>
-    public ConsulConfiguration()
-    {
-    }
+    public ConsulConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ConsulConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ConsulConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class ConsulConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public ConsulConfiguration(ConsulConfiguration oldValue, ConsulConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

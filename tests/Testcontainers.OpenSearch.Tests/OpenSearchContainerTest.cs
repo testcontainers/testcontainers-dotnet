@@ -14,17 +14,16 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _openSearchContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _openSearchContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
+
     // <!-- -8<- [end:BaseClass] -->
 
     // <!-- -8<- [start:PingExample] -->
@@ -36,12 +35,14 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         var client = CreateClient();
 
         // When
-        var response = await client.PingAsync(ct: TestContext.Current.CancellationToken)
+        var response = await client
+            .PingAsync(ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(response.IsValid);
     }
+
     // <!-- -8<- [end:PingExample] -->
 
     // <!-- -8<- [start:CreateIndexAndAlias] -->
@@ -57,16 +58,17 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         var alias = new Name(IndexName + "-alias");
 
         // When
-        var createIndexResponse = await CreateIndexAsync(client)
-            .ConfigureAwait(true);
+        var createIndexResponse = await CreateIndexAsync(client).ConfigureAwait(true);
 
-        var createAliasResponse = await client.Indices.PutAliasAsync(index, alias, ct: TestContext.Current.CancellationToken)
+        var createAliasResponse = await client
+            .Indices.PutAliasAsync(index, alias, ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(createIndexResponse.IsValid);
         Assert.True(createAliasResponse.IsValid);
     }
+
     // <!-- -8<- [end:CreateIndexAndAlias] -->
 
     // <!-- -8<- [start:IndexingDocument] -->
@@ -86,13 +88,14 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         Func<SearchDescriptor<Document>, ISearchRequest> searchRequest = s =>
             s.Index(IndexName).Query(q => q.Match(m => m.Field("title").Query(document.Title)));
 
-        var createIndexResponse = await CreateIndexAsync(client)
+        var createIndexResponse = await CreateIndexAsync(client).ConfigureAwait(true);
+
+        var indexResponse = await client
+            .IndexAsync(document, indexRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var indexResponse = await client.IndexAsync(document, indexRequest, TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        var searchResponse = await client.SearchAsync(searchRequest, TestContext.Current.CancellationToken)
+        var searchResponse = await client
+            .SearchAsync(searchRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -104,16 +107,23 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         Assert.True(searchResponse.IsValid);
         Assert.Single(searchResponse.Documents, item => document.Id.Equals(item.Id));
     }
+
     // <!-- -8<- [end:IndexingDocument] -->
 
     // <!-- -8<- [start:CreateIndexImplementation] -->
     private static Task<CreateIndexResponse> CreateIndexAsync(OpenSearchClient client)
     {
         Func<CreateIndexDescriptor, ICreateIndexRequest> createIndexRequest = c =>
-            c.Settings(s => s.NumberOfReplicas(0).NumberOfShards(1)).Map<Document>(m => m.AutoMap());
+            c.Settings(s => s.NumberOfReplicas(0).NumberOfShards(1))
+                .Map<Document>(m => m.AutoMap());
 
-        return client.Indices.CreateAsync(Indices.Index(IndexName), createIndexRequest, TestContext.Current.CancellationToken);
+        return client.Indices.CreateAsync(
+            Indices.Index(IndexName),
+            createIndexRequest,
+            TestContext.Current.CancellationToken
+        );
     }
+
     // <!-- -8<- [end:CreateIndexImplementation] -->
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -140,11 +150,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class InsecureNoAuthConfiguration : OpenSearchContainerTest
     {
         public InsecureNoAuthConfiguration()
-            : base(new OpenSearchBuilder()
-                .WithSecurityEnabled(false)
-                .Build())
-        {
-        }
+            : base(new OpenSearchBuilder().WithSecurityEnabled(false).Build()) { }
 
         protected override OpenSearchClient CreateClient()
         {
@@ -153,6 +159,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
             return new OpenSearchClient(connectionString);
         }
     }
+
     // <!-- -8<- [end:InsecureNoAuth] -->
 
     // <!-- -8<- [start:SslBasicAuthDefaultCredentials] -->
@@ -160,11 +167,9 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class SslBasicAuthDefaultCredentialsConfiguration : OpenSearchContainerTest
     {
         public SslBasicAuthDefaultCredentialsConfiguration()
-            : base(new OpenSearchBuilder()
-                .Build())
-        {
-        }
+            : base(new OpenSearchBuilder().Build()) { }
     }
+
     // <!-- -8<- [end:SslBasicAuthDefaultCredentials] -->
 
     // <!-- -8<- [start:SslBasicAuthCustomCredentials] -->
@@ -172,12 +177,13 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class SslBasicAuthCustomCredentialsConfiguration : OpenSearchContainerTest
     {
         public SslBasicAuthCustomCredentialsConfiguration()
-            : base(new OpenSearchBuilder()
-                .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
-                .Build())
-        {
-        }
+            : base(
+                new OpenSearchBuilder()
+                    .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
+                    .Build()
+            ) { }
     }
+
     // <!-- -8<- [end:SslBasicAuthCustomCredentials] -->
 
     [UsedImplicitly]

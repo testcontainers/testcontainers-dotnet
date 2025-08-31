@@ -55,7 +55,9 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
     public override Db2Builder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
-        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        var licenseAgreement = acceptLicenseAgreement
+            ? AcceptLicenseAgreement
+            : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
@@ -102,31 +104,42 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     }
 
     /// <inheritdoc />
-    protected override Db2Builder Init() => base.Init()
-        .WithImage(Db2Image)
-        .WithPortBinding(Db2Port, true)
-        .WithDatabase(DefaultDatabase)
-        .WithUsername(DefaultUsername)
-        .WithPassword(DefaultPassword)
-        .WithPrivileged(true)
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Setup has completed."));
+    protected override Db2Builder Init() =>
+        base.Init()
+            .WithImage(Db2Image)
+            .WithPortBinding(Db2Port, true)
+            .WithDatabase(DefaultDatabase)
+            .WithUsername(DefaultUsername)
+            .WithPassword(DefaultPassword)
+            .WithPrivileged(true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Setup has completed."));
 
     /// <inheritdoc />
     protected override void Validate()
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override Db2Builder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override Db2Builder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new Db2Configuration(resourceConfiguration));
     }

@@ -13,7 +13,8 @@ public sealed class SftpConfiguration : ContainerConfiguration
     public SftpConfiguration(
         string username = null,
         string password = null,
-        string uploadDirectory = null)
+        string uploadDirectory = null
+    )
     {
         Username = username;
         Password = password;
@@ -24,7 +25,9 @@ public sealed class SftpConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="SftpConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public SftpConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public SftpConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -60,7 +63,10 @@ public sealed class SftpConfiguration : ContainerConfiguration
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        UploadDirectory = BuildConfiguration.Combine(oldValue.UploadDirectory, newValue.UploadDirectory);
+        UploadDirectory = BuildConfiguration.Combine(
+            oldValue.UploadDirectory,
+            newValue.UploadDirectory
+        );
     }
 
     /// <summary>

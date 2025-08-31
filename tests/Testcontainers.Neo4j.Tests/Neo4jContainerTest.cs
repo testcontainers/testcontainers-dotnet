@@ -14,14 +14,12 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     // # --8<-- [start:UseNeo4jContainer]
     public async ValueTask InitializeAsync()
     {
-        await _neo4jContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _neo4jContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -36,13 +34,15 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         using var driver = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
 
         // When
-        using var session = driver.AsyncSession(sessionConfigBuilder => sessionConfigBuilder.WithDatabase(neo4jDatabase));
+        using var session = driver.AsyncSession(sessionConfigBuilder =>
+            sessionConfigBuilder.WithDatabase(neo4jDatabase)
+        );
 
-        var result = await session.RunAsync("CALL dbms.components() YIELD edition RETURN edition")
+        var result = await session
+            .RunAsync("CALL dbms.components() YIELD edition RETURN edition")
             .ConfigureAwait(true);
 
-        var record = await result.SingleAsync()
-            .ConfigureAwait(true);
+        var record = await result.SingleAsync().ConfigureAwait(true);
 
         var edition = record["edition"].As<string>();
 
@@ -50,6 +50,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         Assert.Equal(neo4jDatabase, session.SessionConfig.Database);
         Assert.Equal(Edition, edition);
     }
+
     // # --8<-- [end:UseNeo4jContainer]
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -62,9 +63,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jDefaultConfiguration : Neo4jContainerTest
     {
         public Neo4jDefaultConfiguration()
-            : base(new Neo4jBuilder().Build())
-        {
-        }
+            : base(new Neo4jBuilder().Build()) { }
 
         public override string Edition => "community";
     }
@@ -73,9 +72,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jEnterpriseEditionConfiguration : Neo4jContainerTest
     {
         public Neo4jEnterpriseEditionConfiguration()
-            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build())
-        {
-        }
+            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build()) { }
 
         public override string Edition => "enterprise";
     }

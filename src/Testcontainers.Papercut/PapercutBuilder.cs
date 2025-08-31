@@ -2,7 +2,8 @@ namespace Testcontainers.Papercut;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
+public sealed class PapercutBuilder
+    : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
 {
     public const string PapercutImage = "changemakerstudiosus/papercut-smtp:latest";
 
@@ -46,12 +47,21 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
             .WithImage(PapercutImage)
             .WithPortBinding(SmtpPort, true)
             .WithPortBinding(HttpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health").ForPort(HttpPort).ForResponseMessageMatching(IsInstanceHealthyAsync)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPath("/health")
+                            .ForPort(HttpPort)
+                            .ForResponseMessageMatching(IsInstanceHealthyAsync)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override PapercutBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override PapercutBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new PapercutConfiguration(resourceConfiguration));
     }
@@ -63,7 +73,10 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     }
 
     /// <inheritdoc />
-    protected override PapercutBuilder Merge(PapercutConfiguration oldValue, PapercutConfiguration newValue)
+    protected override PapercutBuilder Merge(
+        PapercutConfiguration oldValue,
+        PapercutConfiguration newValue
+    )
     {
         return new PapercutBuilder(new PapercutConfiguration(oldValue, newValue));
     }
@@ -75,9 +88,11 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     /// <returns>A value indicating whether the instance is healthy or not.</returns>
     private static async Task<bool> IsInstanceHealthyAsync(HttpResponseMessage response)
     {
-        var body = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return "Papercut WebUI server started successfully.".Equals(body, StringComparison.OrdinalIgnoreCase);
+        return "Papercut WebUI server started successfully.".Equals(
+            body,
+            StringComparison.OrdinalIgnoreCase
+        );
     }
 }

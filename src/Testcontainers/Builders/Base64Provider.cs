@@ -22,9 +22,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public Base64Provider(JsonDocument jsonDocument, ILogger logger)
-      : this(jsonDocument.RootElement, logger)
-    {
-    }
+      : this(jsonDocument.RootElement, logger) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Base64Provider" /> class.
@@ -59,9 +57,16 @@ namespace DotNet.Testcontainers.Builders
         return true;
       }
 
-      if (TryGetHost(propertyName, out var propertyNameNormalized) && TryGetHost(registryHost, out var registryHostNormalized))
+      if (
+        TryGetHost(propertyName, out var propertyNameNormalized)
+        && TryGetHost(registryHost, out var registryHostNormalized)
+      )
       {
-        return string.Equals(propertyNameNormalized, registryHostNormalized, StringComparison.OrdinalIgnoreCase);
+        return string.Equals(
+          propertyNameNormalized,
+          registryHostNormalized,
+          StringComparison.OrdinalIgnoreCase
+        );
       }
       else
       {
@@ -72,7 +77,11 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryName(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind)
+        && !JsonValueKind.Null.Equals(_rootElement.ValueKind)
+        && _rootElement
+          .EnumerateObject()
+          .Any(property => HasDockerRegistryName(property, hostname));
     }
 
     /// <inheritdoc />
@@ -85,21 +94,31 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var authProperty = _rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryName(property, hostname));
+      var authProperty = _rootElement
+        .EnumerateObject()
+        .LastOrDefault(property => HasDockerRegistryName(property, hostname));
 
       if (JsonValueKind.Undefined.Equals(authProperty.Value.ValueKind))
       {
         return null;
       }
 
-      if (authProperty.Value.TryGetProperty("identitytoken", out var identityToken) && JsonValueKind.String.Equals(identityToken.ValueKind))
+      if (
+        authProperty.Value.TryGetProperty("identitytoken", out var identityToken)
+        && JsonValueKind.String.Equals(identityToken.ValueKind)
+      )
       {
         var identityTokenValue = identityToken.GetString();
 
         if (!string.IsNullOrEmpty(identityTokenValue))
         {
           _logger.DockerRegistryCredentialFound(hostname);
-          return new DockerRegistryAuthenticationConfiguration(authProperty.Name, null, null, identityTokenValue);
+          return new DockerRegistryAuthenticationConfiguration(
+            authProperty.Name,
+            null,
+            null,
+            identityTokenValue
+          );
         }
       }
 
@@ -108,7 +127,9 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      if (!JsonValueKind.String.Equals(auth.ValueKind) && !JsonValueKind.Null.Equals(auth.ValueKind))
+      if (
+        !JsonValueKind.String.Equals(auth.ValueKind) && !JsonValueKind.Null.Equals(auth.ValueKind)
+      )
       {
         _logger.DockerRegistryAuthPropertyValueKindInvalid(hostname, auth.ValueKind);
         return null;
@@ -143,7 +164,11 @@ namespace DotNet.Testcontainers.Builders
       }
 
       _logger.DockerRegistryCredentialFound(hostname);
-      return new DockerRegistryAuthenticationConfiguration(authProperty.Name, credential[0], credential[1]);
+      return new DockerRegistryAuthenticationConfiguration(
+        authProperty.Name,
+        credential[0],
+        credential[1]
+      );
     }
 
     /// <summary>

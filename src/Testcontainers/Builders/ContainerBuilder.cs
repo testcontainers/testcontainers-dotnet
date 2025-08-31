@@ -26,7 +26,8 @@ namespace DotNet.Testcontainers.Builders
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ContainerBuilder : ContainerBuilder<ContainerBuilder, IContainer, IContainerConfiguration>
+  public class ContainerBuilder
+    : ContainerBuilder<ContainerBuilder, IContainer, IContainerConfiguration>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
@@ -64,7 +65,9 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    protected override ContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ContainerBuilder Clone(
+      IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
       return Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
     }
@@ -76,7 +79,10 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    protected override ContainerBuilder Merge(IContainerConfiguration oldValue, IContainerConfiguration newValue)
+    protected override ContainerBuilder Merge(
+      IContainerConfiguration oldValue,
+      IContainerConfiguration newValue
+    )
     {
       return new ContainerBuilder(new ContainerConfiguration(oldValue, newValue));
     }

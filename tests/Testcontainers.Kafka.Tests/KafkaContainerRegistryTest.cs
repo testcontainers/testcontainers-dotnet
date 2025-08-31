@@ -2,7 +2,8 @@ namespace Testcontainers.Kafka;
 
 public sealed class KafkaContainerRegistryTest : IAsyncLifetime
 {
-    private const string Schema = @"
+    private const string Schema =
+        @"
     {
         ""$schema"": ""http://json-schema.org/draft-04/schema#"",
         ""title"": ""User"",
@@ -32,8 +33,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
 
     public KafkaContainerRegistryTest()
     {
-        _network = new NetworkBuilder()
-            .Build();
+        _network = new NetworkBuilder().Build();
 
         _kafkaContainer = new KafkaBuilder()
             .WithImage("confluentinc/cp-kafka:6.1.9")
@@ -48,32 +48,34 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
             .WithNetworkAliases(SchemaRegistryNetworkAlias)
             .WithEnvironment("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:" + RestPort)
             .WithEnvironment("SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL", "PLAINTEXT")
-            .WithEnvironment("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "PLAINTEXT://" + Listener)
+            .WithEnvironment(
+                "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS",
+                "PLAINTEXT://" + Listener
+            )
             .WithEnvironment("SCHEMA_REGISTRY_HOST_NAME", SchemaRegistryNetworkAlias)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(RestPort).ForPath("/subjects")))
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(RestPort).ForPath("/subjects")
+                    )
+            )
             .Build();
     }
 
     public async ValueTask InitializeAsync()
     {
-        await _kafkaContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kafkaContainer.StartAsync().ConfigureAwait(false);
 
-        await _schemaRegistryContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _schemaRegistryContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _kafkaContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kafkaContainer.StartAsync().ConfigureAwait(false);
 
-        await _schemaRegistryContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _schemaRegistryContainer.StartAsync().ConfigureAwait(false);
 
-        await _network.DisposeAsync()
-            .ConfigureAwait(false);
+        await _network.DisposeAsync().ConfigureAwait(false);
     }
 
     [Fact]
@@ -99,18 +101,24 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
         message.Value = new User("John", "Doe");
 
         var schemaRegistryConfig = new SchemaRegistryConfig();
-        schemaRegistryConfig.Url = new UriBuilder(Uri.UriSchemeHttp, _schemaRegistryContainer.Hostname, _schemaRegistryContainer.GetMappedPublicPort(RestPort)).ToString();
+        schemaRegistryConfig.Url = new UriBuilder(
+            Uri.UriSchemeHttp,
+            _schemaRegistryContainer.Hostname,
+            _schemaRegistryContainer.GetMappedPublicPort(RestPort)
+        ).ToString();
 
         // When
         using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
-        _ = await schemaRegistry.RegisterSchemaAsync(subject, new Schema(Schema, SchemaType.Json))
+        _ = await schemaRegistry
+            .RegisterSchemaAsync(subject, new Schema(Schema, SchemaType.Json))
             .ConfigureAwait(true);
 
         using var producer = new ProducerBuilder<string, User>(producerConfig)
             .SetValueSerializer(new JsonSerializer<User>(schemaRegistry))
             .Build();
 
-        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
+        _ = await producer
+            .ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, User>(consumerConfig)

@@ -9,9 +9,7 @@ public sealed class AzuriteContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public AzuriteContainer(AzuriteConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Azurite connection string.
@@ -26,7 +24,10 @@ public sealed class AzuriteContainer : DockerContainer
         properties.Add("BlobEndpoint", GetBlobEndpoint());
         properties.Add("QueueEndpoint", GetQueueEndpoint());
         properties.Add("TableEndpoint", GetTableEndpoint());
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
@@ -35,7 +36,12 @@ public sealed class AzuriteContainer : DockerContainer
     /// <returns>The Azurite blob endpoint</returns>
     public string GetBlobEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(AzuriteBuilder.BlobPort),
+            AzuriteBuilder.AccountName
+        ).ToString();
     }
 
     /// <summary>
@@ -44,7 +50,12 @@ public sealed class AzuriteContainer : DockerContainer
     /// <returns>The Azurite queue endpoint</returns>
     public string GetQueueEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(AzuriteBuilder.QueuePort),
+            AzuriteBuilder.AccountName
+        ).ToString();
     }
 
     /// <summary>
@@ -53,6 +64,11 @@ public sealed class AzuriteContainer : DockerContainer
     /// <returns>The Azurite table endpoint</returns>
     public string GetTableEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(AzuriteBuilder.TablePort),
+            AzuriteBuilder.AccountName
+        ).ToString();
     }
 }

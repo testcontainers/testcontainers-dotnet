@@ -17,7 +17,9 @@ public sealed class CouchbaseConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="CouchbaseConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public CouchbaseConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public CouchbaseConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

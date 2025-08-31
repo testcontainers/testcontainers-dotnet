@@ -9,9 +9,7 @@ public sealed class InfluxDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public InfluxDbContainer(InfluxDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the InfluxDb address.
@@ -19,6 +17,10 @@ public sealed class InfluxDbContainer : DockerContainer
     /// <returns>The InfluxDb address.</returns>
     public string GetAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(InfluxDbBuilder.InfluxDbPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(InfluxDbBuilder.InfluxDbPort)
+        ).ToString();
     }
 }

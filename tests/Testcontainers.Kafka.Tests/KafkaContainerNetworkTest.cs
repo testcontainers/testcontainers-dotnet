@@ -16,8 +16,7 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
 
     public KafkaContainerNetworkTest()
     {
-        _network = new NetworkBuilder()
-            .Build();
+        _network = new NetworkBuilder().Build();
 
         _kafkaContainer = new KafkaBuilder()
             .WithImage("confluentinc/cp-kafka:6.1.9")
@@ -35,33 +34,36 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _kafkaContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kafkaContainer.StartAsync().ConfigureAwait(false);
 
-        await _kCatContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kCatContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _kafkaContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kafkaContainer.StartAsync().ConfigureAwait(false);
 
-        await _kCatContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kCatContainer.StartAsync().ConfigureAwait(false);
 
-        await _network.DisposeAsync()
-            .ConfigureAwait(false);
+        await _network.DisposeAsync().ConfigureAwait(false);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumesProducedKafkaMessage()
     {
-        _ = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath }, TestContext.Current.CancellationToken)
+        _ = await _kCatContainer
+            .ExecAsync(
+                new[] { "kafkacat", "-b", Listener, "-t", "msgs", "-P", "-l", DataFilePath },
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var execResult = await _kCatContainer.ExecAsync(new[] { "kafkacat", "-b", Listener, "-C", "-t", "msgs", "-c", "1" }, TestContext.Current.CancellationToken)
+        var execResult = await _kCatContainer
+            .ExecAsync(
+                new[] { "kafkacat", "-b", Listener, "-C", "-t", "msgs", "-c", "1" },
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         Assert.Equal(Message, execResult.Stdout.Trim());

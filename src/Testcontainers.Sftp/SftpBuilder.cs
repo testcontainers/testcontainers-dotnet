@@ -63,7 +63,10 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <returns>A configured instance of <see cref="SftpBuilder" />.</returns>
     public SftpBuilder WithUploadDirectory(string uploadDirectory)
     {
-        return Merge(DockerResourceConfiguration, new SftpConfiguration(uploadDirectory: uploadDirectory));
+        return Merge(
+            DockerResourceConfiguration,
+            new SftpConfiguration(uploadDirectory: uploadDirectory)
+        );
     }
 
     /// <inheritdoc />
@@ -71,13 +74,16 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     {
         Validate();
 
-        var sftpBuilder = WithCommand(string.Join(
-            ":",
-            DockerResourceConfiguration.Username,
-            DockerResourceConfiguration.Password,
-            string.Empty,
-            string.Empty,
-            DockerResourceConfiguration.UploadDirectory));
+        var sftpBuilder = WithCommand(
+            string.Join(
+                ":",
+                DockerResourceConfiguration.Username,
+                DockerResourceConfiguration.Password,
+                string.Empty,
+                string.Empty,
+                DockerResourceConfiguration.UploadDirectory
+            )
+        );
 
         return new SftpContainer(sftpBuilder.DockerResourceConfiguration);
     }
@@ -91,7 +97,9 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithUploadDirectory(DefaultUploadDirectory)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server listening on .+"));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("Server listening on .+")
+            );
     }
 
     /// <inheritdoc />
@@ -99,21 +107,35 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.UploadDirectory, nameof(DockerResourceConfiguration.UploadDirectory))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.UploadDirectory,
+                nameof(DockerResourceConfiguration.UploadDirectory)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override SftpBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override SftpBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new SftpConfiguration(resourceConfiguration));
     }

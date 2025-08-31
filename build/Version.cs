@@ -2,9 +2,7 @@ namespace Testcontainers.Build;
 
 internal sealed class BuildInformation
 {
-    private BuildInformation()
-    {
-    }
+    private BuildInformation() { }
 
     public string Sha { get; private set; }
     public string Branch { get; private set; }
@@ -27,7 +25,10 @@ internal sealed class BuildInformation
 
         var publishNuGetPackage = context.EnvironmentVariable("PUBLISH_NUGET_PACKAGE");
 
-        var version = context.XmlPeek(propertiesFilePath, "/Project/PropertyGroup[1]/Version/text()");
+        var version = context.XmlPeek(
+            propertiesFilePath,
+            "/Project/PropertyGroup[1]/Version/text()"
+        );
 
         var git = context.GitBranchCurrent(".");
 
@@ -51,11 +52,17 @@ internal sealed class BuildInformation
         {
             branch = environment.Workflow.RefName;
             isPullRequest = environment.PullRequest.IsPullRequest;
-            isFork = "fork".Equals(environment.Workflow.EventName, StringComparison.OrdinalIgnoreCase);
+            isFork = "fork".Equals(
+                environment.Workflow.EventName,
+                StringComparison.OrdinalIgnoreCase
+            );
             buildId = environment.Workflow.RunId;
 
             // Set build system environment variables and parameters.
-            buildSystem.GitHubActions.Commands.SetEnvironmentVariable("semVer", version.Substring(0, 5));
+            buildSystem.GitHubActions.Commands.SetEnvironmentVariable(
+                "semVer",
+                version.Substring(0, 5)
+            );
         }
 
         if (isPullRequest)
@@ -67,11 +74,18 @@ internal sealed class BuildInformation
 
         var isReleaseBuild = GetIsReleaseBuild(branch);
 
-        var shouldPublish = GetShouldPublish(branch) && ("1".Equals(publishNuGetPackage, StringComparison.Ordinal) || (bool.TryParse(publishNuGetPackage, out var result) && result));
+        var shouldPublish =
+            GetShouldPublish(branch)
+            && (
+                "1".Equals(publishNuGetPackage, StringComparison.Ordinal)
+                || (bool.TryParse(publishNuGetPackage, out var result) && result)
+            );
 
         if (isFork && isPullRequest && shouldPublish)
         {
-            throw new ArgumentException("Use 'feature/' or 'bugfix/' prefix for pull request branches.");
+            throw new ArgumentException(
+                "Use 'feature/' or 'bugfix/' prefix for pull request branches."
+            );
         }
 
         if (!isReleaseBuild)

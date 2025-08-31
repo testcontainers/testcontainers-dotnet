@@ -17,19 +17,13 @@ namespace DotNet.Testcontainers.Clients
   public sealed class FilterByReuseHash : FilterByProperty
   {
     public FilterByReuseHash(IContainerConfiguration resourceConfiguration)
-      : this(resourceConfiguration.GetReuseHash())
-    {
-    }
+      : this(resourceConfiguration.GetReuseHash()) { }
 
     public FilterByReuseHash(INetworkConfiguration resourceConfiguration)
-      : this(resourceConfiguration.GetReuseHash())
-    {
-    }
+      : this(resourceConfiguration.GetReuseHash()) { }
 
     public FilterByReuseHash(IVolumeConfiguration resourceConfiguration)
-      : this(resourceConfiguration.GetReuseHash())
-    {
-    }
+      : this(resourceConfiguration.GetReuseHash()) { }
 
     private FilterByReuseHash(string hash)
     {

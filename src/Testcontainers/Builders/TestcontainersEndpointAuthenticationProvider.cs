@@ -16,7 +16,9 @@ namespace DotNet.Testcontainers.Builders
   /// Testcontainers Cloud if it is running.
   /// </summary>
   [PublicAPI]
-  internal sealed class TestcontainersEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider, ICustomConfiguration
+  internal sealed class TestcontainersEndpointAuthenticationProvider
+    : DockerEndpointAuthenticationProvider,
+      ICustomConfiguration
   {
     private readonly ICustomConfiguration _customConfiguration;
 
@@ -26,18 +28,14 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="TestcontainersEndpointAuthenticationProvider" /> class.
     /// </summary>
     public TestcontainersEndpointAuthenticationProvider()
-      : this(new TestcontainersConfiguration())
-    {
-    }
+      : this(new TestcontainersConfiguration()) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestcontainersEndpointAuthenticationProvider" /> class.
     /// </summary>
     /// <param name="lines">A list of Java properties file lines.</param>
     public TestcontainersEndpointAuthenticationProvider(params string[] lines)
-      : this(new TestcontainersConfiguration(lines))
-    {
-    }
+      : this(new TestcontainersConfiguration(lines)) { }
 
     private TestcontainersEndpointAuthenticationProvider(ICustomConfiguration customConfiguration)
     {
@@ -48,7 +46,8 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public override bool IsApplicable()
     {
-      return _dockerEngine != null && "tcp".Equals(_dockerEngine.Scheme, StringComparison.OrdinalIgnoreCase);
+      return _dockerEngine != null
+        && "tcp".Equals(_dockerEngine.Scheme, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <inheritdoc />
@@ -161,14 +160,10 @@ namespace DotNet.Testcontainers.Builders
 
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration
     {
-      public TestcontainersConfiguration()
-      {
-      }
+      public TestcontainersConfiguration() { }
 
       public TestcontainersConfiguration(params string[] lines)
-        : base(lines)
-      {
-      }
+        : base(lines) { }
 
       protected override Uri GetDockerHost(string propertyName)
       {

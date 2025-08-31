@@ -6,8 +6,7 @@ public sealed class RedisContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _redisContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _redisContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -31,7 +30,8 @@ public sealed class RedisContainerTest : IAsyncLifetime
         const string scriptContent = "return 'Hello, scripting!'";
 
         // When
-        var execResult = await _redisContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await _redisContainer
+            .ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

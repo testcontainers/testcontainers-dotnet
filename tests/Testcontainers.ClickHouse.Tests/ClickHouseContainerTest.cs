@@ -1,6 +1,8 @@
 namespace Testcontainers.ClickHouse;
 
-public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
+public abstract partial class ClickHouseContainerTest(
+    ClickHouseContainerTest.ClickHouseDefaultFixture fixture
+)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -24,7 +26,8 @@ public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.Cl
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await fixture
+            .Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -35,23 +38,26 @@ public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.Cl
     public class ClickHouseDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<ClickHouseBuilder, ClickHouseContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory
-            => ClickHouseConnectionFactory.Instance;
+        public override DbProviderFactory DbProviderFactory => ClickHouseConnectionFactory.Instance;
     }
 
     [UsedImplicitly]
     public class ClickHouseWaitForDatabaseFixture(IMessageSink messageSink)
         : ClickHouseDefaultFixture(messageSink)
     {
-        protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override ClickHouseBuilder Configure(ClickHouseBuilder builder) =>
+            builder.WithWaitStrategy(
+                Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory)
+            );
     }
 
     [UsedImplicitly]
     public sealed class ClickHouseDefaultConfiguration(ClickHouseDefaultFixture fixture)
-        : ClickHouseContainerTest(fixture), IClassFixture<ClickHouseDefaultFixture>;
+        : ClickHouseContainerTest(fixture),
+            IClassFixture<ClickHouseDefaultFixture>;
 
     [UsedImplicitly]
-    public sealed class ClickHouseWaitForDatabaseConfiguration(ClickHouseWaitForDatabaseFixture fixture)
-        : ClickHouseContainerTest(fixture), IClassFixture<ClickHouseWaitForDatabaseFixture>;
+    public sealed class ClickHouseWaitForDatabaseConfiguration(
+        ClickHouseWaitForDatabaseFixture fixture
+    ) : ClickHouseContainerTest(fixture), IClassFixture<ClickHouseWaitForDatabaseFixture>;
 }

@@ -9,9 +9,7 @@ public sealed class EventHubsContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public EventHubsContainer(EventHubsConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Event Hubs connection string.
@@ -20,11 +18,21 @@ public sealed class EventHubsContainer : DockerContainer
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("Endpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(EventHubsBuilder.EventHubsPort)).ToString());
+        properties.Add(
+            "Endpoint",
+            new UriBuilder(
+                Uri.UriSchemeHttp,
+                Hostname,
+                GetMappedPublicPort(EventHubsBuilder.EventHubsPort)
+            ).ToString()
+        );
         properties.Add("DefaultEndpointsProtocol", Uri.UriSchemeHttp);
         properties.Add("SharedAccessKeyName", "RootManageSharedAccessKey");
         properties.Add("SharedAccessKey", "SAS_KEY_VALUE");
         properties.Add("UseDevelopmentEmulator", "true");
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 }

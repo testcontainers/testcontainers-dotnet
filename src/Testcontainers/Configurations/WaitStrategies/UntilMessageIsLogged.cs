@@ -10,9 +10,7 @@ namespace DotNet.Testcontainers.Configurations
     private readonly Regex _pattern;
 
     public UntilMessageIsLogged(string pattern)
-      : this(new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(5)))
-    {
-    }
+      : this(new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(5))) { }
 
     public UntilMessageIsLogged(Regex pattern)
     {
@@ -21,9 +19,13 @@ namespace DotNet.Testcontainers.Configurations
 
     public async Task<bool> UntilAsync(IContainer container)
     {
-      var maxTime = container.StoppedTime > container.CreatedTime ? container.StoppedTime : container.CreatedTime;
+      var maxTime =
+        container.StoppedTime > container.CreatedTime
+          ? container.StoppedTime
+          : container.CreatedTime;
 
-      var (stdout, stderr) = await container.GetLogsAsync(since: maxTime, timestampsEnabled: false)
+      var (stdout, stderr) = await container
+        .GetLogsAsync(since: maxTime, timestampsEnabled: false)
         .ConfigureAwait(false);
 
       return _pattern.IsMatch(stdout) || _pattern.IsMatch(stderr);

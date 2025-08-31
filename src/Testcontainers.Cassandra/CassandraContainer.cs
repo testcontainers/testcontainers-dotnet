@@ -6,9 +6,7 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
 {
     /// <inheritdoc cref="DockerContainer" />
     public CassandraContainer(CassandraConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Cassandra connection string.
@@ -22,7 +20,10 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
         properties.Add("Contact Points", Hostname);
         properties.Add("Port", publicPort);
         properties.Add("Cluster Name", $"{Hostname}:{publicPort}");
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
@@ -31,11 +32,25 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     /// <param name="scriptContent">The content of the CQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the CQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "cqlsh", "--file", scriptFilePath }, ct)

@@ -7,15 +7,15 @@ public sealed class OllamaConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaConfiguration" /> class.
     /// </summary>
-    public OllamaConfiguration()
-    {
-    }
+    public OllamaConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public OllamaConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public OllamaConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class OllamaConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public OllamaConfiguration(OllamaConfiguration oldValue, OllamaConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

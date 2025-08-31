@@ -21,8 +21,7 @@ namespace DotNet.Testcontainers.Configurations
 
       try
       {
-        await tcpClient.ConnectAsync(container.Hostname, hostPort)
-          .ConfigureAwait(false);
+        await tcpClient.ConnectAsync(container.Hostname, hostPort).ConfigureAwait(false);
 
         return true;
       }

@@ -7,15 +7,15 @@ public sealed class CassandraConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="CassandraConfiguration" /> class.
     /// </summary>
-    public CassandraConfiguration()
-    {
-    }
+    public CassandraConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CassandraConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public CassandraConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public CassandraConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class CassandraConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public CassandraConfiguration(CassandraConfiguration oldValue, CassandraConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

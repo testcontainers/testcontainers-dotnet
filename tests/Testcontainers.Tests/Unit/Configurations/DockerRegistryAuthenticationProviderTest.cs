@@ -56,9 +56,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
       // Make sure the auth provider does not accidentally read the user's `config.json` file.
-      ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + Path.Combine("C:", "CON") });
-      var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), NullLogger.Instance);
-      Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig("index.docker.io"));
+      ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+        new[] { "docker.config=" + Path.Combine("C:", "CON") }
+      );
+      var authenticationProvider = new DockerRegistryAuthenticationProvider(
+        new DockerConfig(customConfiguration),
+        NullLogger.Instance
+      );
+      Assert.Equal(
+        default(DockerRegistryAuthenticationConfiguration),
+        authenticationProvider.GetAuthConfig("index.docker.io")
+      );
     }
 
     public sealed class Base64ProviderTest
@@ -70,11 +78,19 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("{\"auths\":{\"ghcr.io\":{}}}", "ghcr", false)]
       [InlineData("{\"auths\":{\"http://ghcr.io\":{}}}", "ghcr.io", true)]
       [InlineData("{\"auths\":{\"https://ghcr.io\":{}}}", "ghcr.io", true)]
-      [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData(
+        "{\"auths\":{\"registry.example.com:5000\":{}}}",
+        "registry.example.com:5000",
+        true
+      )]
       [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost:5000", true)]
       [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com", false)]
       [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost", false)]
-      [InlineData("{\"auths\":{\"https://registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData(
+        "{\"auths\":{\"https://registry.example.com:5000\":{}}}",
+        "registry.example.com:5000",
+        true
+      )]
       [InlineData("{\"auths\":{\"http://localhost:8080\":{}}}", "localhost:8080", true)]
       [InlineData("{\"auths\":{\"docker.io\":{}}}", "docker.io", true)]
       [InlineData("{\"auths\":{\"docker.io\":{}}}", "index.docker.io", false)]
@@ -87,8 +103,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("{\"auths\":{\"localhost\":{}}}", "localhost", true)]
       [InlineData("{\"auths\":{\"127.0.0.1:5000\":{}}}", "127.0.0.1:5000", true)]
       [InlineData("{\"auths\":{\"[::1]:5000\":{}}}", "[::1]:5000", true)]
-      [InlineData("{\"auths\":{\"https://registry.example.com/v2\":{}}}", "registry.example.com", true)]
-      public void ResolvePartialDockerRegistry(string jsonDocument, string hostname, bool expectedResult)
+      [InlineData(
+        "{\"auths\":{\"https://registry.example.com/v2\":{}}}",
+        "registry.example.com",
+        true
+      )]
+      public void ResolvePartialDockerRegistry(
+        string jsonDocument,
+        string hostname,
+        bool expectedResult
+      )
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
@@ -106,11 +130,31 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("{\"auths\":{}}", false, null)]
       [InlineData("{\"auths\":{\"ghcr.io\":{}}}", false, null)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{}}}", true, null)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ not found")]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ not found")]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}", true, "The \"auth\" property value kind for https://index.docker.io/v1/ is invalid: Object")]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"Not_Base64_encoded\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ is not a valid Base64 string")]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}", true, "The \"auth\" property value for https://index.docker.io/v1/ should contain one colon separating the username and the password (basic authentication)")]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":null}}}",
+        true,
+        "The \"auth\" property value for https://index.docker.io/v1/ not found"
+      )]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"\"}}}",
+        true,
+        "The \"auth\" property value for https://index.docker.io/v1/ not found"
+      )]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":{}}}}",
+        true,
+        "The \"auth\" property value kind for https://index.docker.io/v1/ is invalid: Object"
+      )]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"Not_Base64_encoded\"}}}",
+        true,
+        "The \"auth\" property value for https://index.docker.io/v1/ is not a valid Base64 string"
+      )]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU=\"}}}",
+        true,
+        "The \"auth\" property value for https://index.docker.io/v1/ should contain one colon separating the username and the password (basic authentication)"
+      )]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":null}}}", true, null)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"\"}}}", true, null)]
       [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":{}}}}", true, null)]
@@ -138,9 +182,24 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}", "username", "password", null)]
-      [InlineData("{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}", null, null, "identitytoken")]
-      public void ShouldGetAuthConfig(string jsonDocument, string expectedUsername, string expectedPassword, string expectedIdentityToken)
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"auth\":\"dXNlcm5hbWU6cGFzc3dvcmQ=\"}}}",
+        "username",
+        "password",
+        null
+      )]
+      [InlineData(
+        "{\"auths\":{\"" + DockerRegistry + "\":{\"identitytoken\":\"identitytoken\"}}}",
+        null,
+        null,
+        "identitytoken"
+      )]
+      public void ShouldGetAuthConfig(
+        string jsonDocument,
+        string expectedUsername,
+        string expectedPassword,
+        string expectedIdentityToken
+      )
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
@@ -184,7 +243,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ShouldGetAuthConfig()
       {
         // Given
-        var credsStoreScriptName = Path.ChangeExtension("desktop", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
+        var credsStoreScriptName = Path.ChangeExtension(
+          "desktop",
+          RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"
+        );
         var jsonDocument = "{\"credsStore\":\"" + credsStoreScriptName + "\"}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
@@ -229,11 +291,20 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Theory]
       [InlineData("password", "username", "password", null)]
       [InlineData("token", null, null, "identitytoken")]
-      public void ShouldGetAuthConfig(string credHelperName, string expectedUsername, string expectedPassword, string expectedIdentityToken)
+      public void ShouldGetAuthConfig(
+        string credHelperName,
+        string expectedUsername,
+        string expectedPassword,
+        string expectedIdentityToken
+      )
       {
         // Given
-        var credHelpersScriptName = Path.ChangeExtension(credHelperName, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
-        var jsonDocument = "{\"credHelpers\":{\"" + DockerRegistry + "\":\"" + credHelpersScriptName + "\"}}";
+        var credHelpersScriptName = Path.ChangeExtension(
+          credHelperName,
+          RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"
+        );
+        var jsonDocument =
+          "{\"credHelpers\":{\"" + DockerRegistry + "\":\"" + credHelpersScriptName + "\"}}";
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
 
         // When
@@ -254,39 +325,45 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       static SetEnvVarPath()
       {
-        Environment.SetEnvironmentVariable("PATH", string.Join(Path.PathSeparator, (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
-          .Split(Path.PathSeparator)
-          .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers"))
-          .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credsStore"))
-          .Distinct()));
+        Environment.SetEnvironmentVariable(
+          "PATH",
+          string.Join(
+            Path.PathSeparator,
+            (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+              .Split(Path.PathSeparator)
+              .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credHelpers"))
+              .Prepend(Path.Combine(Environment.CurrentDirectory, "Assets", "credsStore"))
+              .Distinct()
+          )
+        );
       }
     }
 
     private sealed class Disposable : IDisposable
     {
-      static Disposable()
-      {
-      }
+      static Disposable() { }
 
-      private Disposable()
-      {
-      }
+      private Disposable() { }
 
-      public static IDisposable Empty { get; }
-        = new Disposable();
+      public static IDisposable Empty { get; } = new Disposable();
 
-      public void Dispose()
-      {
-      }
+      public void Dispose() { }
     }
 
     private sealed class WarnLogger : ILogger
     {
-      private readonly IList<Tuple<LogLevel, string>> _logMessages = new List<Tuple<LogLevel, string>>();
+      private readonly IList<Tuple<LogLevel, string>> _logMessages =
+        new List<Tuple<LogLevel, string>>();
 
       public IEnumerable<Tuple<LogLevel, string>> LogMessages => _logMessages;
 
-      public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+      public void Log<TState>(
+        LogLevel logLevel,
+        EventId eventId,
+        TState state,
+        Exception exception,
+        Func<TState, Exception, string> formatter
+      )
       {
         if (IsEnabled(logLevel))
         {

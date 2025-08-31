@@ -2,9 +2,11 @@ namespace Testcontainers.PubSub;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
+public sealed class PubSubBuilder
+    : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
 {
-    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
+    public const string GoogleCloudCliImage =
+        "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort PubSubPort = 8085;
 
@@ -44,12 +46,21 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
             .WithImage(GoogleCloudCliImage)
             .WithPortBinding(PubSubPort, true)
             .WithEntrypoint("gcloud")
-            .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort)
+            .WithCommand(
+                "beta",
+                "emulators",
+                "pubsub",
+                "start",
+                "--host-port",
+                "0.0.0.0:" + PubSubPort
+            )
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*started.*$"));
     }
 
     /// <inheritdoc />
-    protected override PubSubBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override PubSubBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new PubSubConfiguration(resourceConfiguration));
     }
@@ -61,7 +72,10 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     }
 
     /// <inheritdoc />
-    protected override PubSubBuilder Merge(PubSubConfiguration oldValue, PubSubConfiguration newValue)
+    protected override PubSubBuilder Merge(
+        PubSubConfiguration oldValue,
+        PubSubConfiguration newValue
+    )
     {
         return new PubSubBuilder(new PubSubConfiguration(oldValue, newValue));
     }

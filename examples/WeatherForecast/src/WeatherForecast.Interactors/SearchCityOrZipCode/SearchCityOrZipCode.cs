@@ -7,7 +7,10 @@ public sealed class SearchCityOrZipCode : ISearchCityOrZipCode
 
   private readonly IWeatherDataWriteOnlyRepository _writeOnlyRepository;
 
-  public SearchCityOrZipCode(IWeatherDataReadOnlyRepository readOnlyRepository, IWeatherDataWriteOnlyRepository writeOnlyRepository)
+  public SearchCityOrZipCode(
+    IWeatherDataReadOnlyRepository readOnlyRepository,
+    IWeatherDataWriteOnlyRepository writeOnlyRepository
+  )
   {
     _readOnlyRepository = readOnlyRepository;
     _writeOnlyRepository = writeOnlyRepository;
@@ -21,7 +24,8 @@ public sealed class SearchCityOrZipCode : ISearchCityOrZipCode
 
     try
     {
-      var weatherData = await _readOnlyRepository.GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(7))
+      var weatherData = await _readOnlyRepository
+        .GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(7))
         .ConfigureAwait(false);
 
       result = new Success<IEnumerable<WeatherData>>(weatherData);

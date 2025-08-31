@@ -2,7 +2,8 @@ namespace Testcontainers.Keycloak;
 
 /// <inheritdoc />
 [PublicAPI]
-public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
+public sealed class KeycloakBuilder
+    : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
 {
     public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1";
 
@@ -70,13 +71,20 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         var image = DockerResourceConfiguration.Image;
 
         // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
-        var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
+        var isMajorVersionGreaterOrEqual25 =
+            image.MatchLatestOrNightly() || image.MatchVersion(predicate);
 
         var waitStrategy = Wait.ForUnixContainer()
             .UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
+                request
+                    .ForPath("/health/ready")
+                    .ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort)
+            );
 
-        var keycloakBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        var keycloakBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(waitStrategy);
         return new KeycloakContainer(keycloakBuilder.DockerResourceConfiguration);
     }
 
@@ -98,17 +106,27 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override KeycloakBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override KeycloakBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(resourceConfiguration));
     }
@@ -120,7 +138,10 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     }
 
     /// <inheritdoc />
-    protected override KeycloakBuilder Merge(KeycloakConfiguration oldValue, KeycloakConfiguration newValue)
+    protected override KeycloakBuilder Merge(
+        KeycloakConfiguration oldValue,
+        KeycloakConfiguration newValue
+    )
     {
         return new KeycloakBuilder(new KeycloakConfiguration(oldValue, newValue));
     }

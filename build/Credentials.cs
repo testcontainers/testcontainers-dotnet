@@ -13,8 +13,7 @@ internal sealed class BuildCredentials
 
     public static BuildCredentials GetCodeSigningCertificateCredentials(ICakeContext context)
     {
-        return new BuildCredentials
-        (
+        return new BuildCredentials(
             null,
             context.EnvironmentVariable("CODE_SIGNING_CERTIFICATE_PASSWORD")
         );
@@ -38,8 +37,7 @@ internal sealed class SonarQubeCredentials
 
     public static SonarQubeCredentials GetSonarQubeCredentials(ICakeContext context)
     {
-        return new SonarQubeCredentials
-        (
+        return new SonarQubeCredentials(
             context.EnvironmentVariable("SONARCLOUD_URL"),
             context.EnvironmentVariable("SONARCLOUD_KEY"),
             context.EnvironmentVariable("SONARCLOUD_TOKEN"),
@@ -61,8 +59,7 @@ internal sealed class NuGetCredentials
 
     public static NuGetCredentials GetNuGetCredentials(ICakeContext context)
     {
-        return new NuGetCredentials
-        (
+        return new NuGetCredentials(
             context.EnvironmentVariable("FEED_SOURCE"),
             context.EnvironmentVariable("FEED_API_KEY")
         );

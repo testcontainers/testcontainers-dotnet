@@ -17,8 +17,8 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
-    internal static readonly List<DockerEndpointAuthenticationProvider> DockerEndpointAuthProviders
-      = new List<DockerEndpointAuthenticationProvider>
+    internal static readonly List<DockerEndpointAuthenticationProvider> DockerEndpointAuthProviders =
+      new List<DockerEndpointAuthenticationProvider>
       {
         new TestcontainersEndpointAuthenticationProvider(),
         new MTlsEndpointAuthenticationProvider(),
@@ -31,51 +31,59 @@ namespace DotNet.Testcontainers.Configurations
       };
 
     [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
+    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider =
+      DockerEndpointAuthProviders.FirstOrDefault(authProvider =>
+        authProvider.IsApplicable() && authProvider.IsAvailable()
+      );
 
     [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
-      = DockerEndpointAuthProvider?.GetAuthConfig();
+    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig =
+      DockerEndpointAuthProvider?.GetAuthConfig();
 
-    static TestcontainersSettings()
-    {
-    }
+    static TestcontainersSettings() { }
 
     /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
     [CanBeNull]
-    public static string DockerHostOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
+    public static string DockerHostOverride { get; set; } =
+      DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerHostOverride()
+        : EnvironmentConfiguration.Instance.GetDockerHostOverride()
+          ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
     [CanBeNull]
-    public static string DockerSocketOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
+    public static string DockerSocketOverride { get; set; } =
+      DockerEndpointAuthProvider is ICustomConfiguration config
+        ? config.GetDockerSocketOverride()
+        : EnvironmentConfiguration.Instance.GetDockerSocketOverride()
+          ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
     /// </summary>
-    public static bool ResourceReaperEnabled { get; set; }
-      = !EnvironmentConfiguration.Instance.GetRyukDisabled() && !PropertiesFileConfiguration.Instance.GetRyukDisabled();
+    public static bool ResourceReaperEnabled { get; set; } =
+      !EnvironmentConfiguration.Instance.GetRyukDisabled()
+      && !PropertiesFileConfiguration.Instance.GetRyukDisabled();
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
-    public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
+    public static bool ResourceReaperPrivilegedModeEnabled { get; set; } =
+      EnvironmentConfiguration.Instance.GetRyukContainerPrivileged()
+      ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged()
+      ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
     /// </summary>
     [CanBeNull]
-    public static IImage ResourceReaperImage { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerImage() ?? PropertiesFileConfiguration.Instance.GetRyukContainerImage();
+    public static IImage ResourceReaperImage { get; set; } =
+      EnvironmentConfiguration.Instance.GetRyukContainerImage()
+      ?? PropertiesFileConfiguration.Instance.GetRyukContainerImage();
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> public host port.
@@ -87,9 +95,13 @@ namespace DotNet.Testcontainers.Configurations
     /// - https://github.com/docker/for-win/issues/11584.
     /// </remarks>
     [NotNull]
-    [Obsolete("The Resource Reaper will use Docker's assigned random host port. This property is no longer supported. For DinD configurations see: https://dotnet.testcontainers.org/examples/dind/.")]
-    public static Func<IDockerEndpointAuthenticationConfiguration, ushort> ResourceReaperPublicHostPort { get; set; }
-      = _ => 0;
+    [Obsolete(
+      "The Resource Reaper will use Docker's assigned random host port. This property is no longer supported. For DinD configurations see: https://dotnet.testcontainers.org/examples/dind/."
+    )]
+    public static Func<
+      IDockerEndpointAuthenticationConfiguration,
+      ushort
+    > ResourceReaperPublicHostPort { get; set; } = _ => 0;
 
     /// <summary>
     /// Gets or sets a prefix that applies to every image that is pulled from Docker Hub.
@@ -98,8 +110,9 @@ namespace DotNet.Testcontainers.Configurations
     /// Please verify that all required images exist in your registry.
     /// </remarks>
     [CanBeNull]
-    public static string HubImageNamePrefix { get; set; }
-      = EnvironmentConfiguration.Instance.GetHubImageNamePrefix() ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
+    public static string HubImageNamePrefix { get; set; } =
+      EnvironmentConfiguration.Instance.GetHubImageNamePrefix()
+      ?? PropertiesFileConfiguration.Instance.GetHubImageNamePrefix();
 
     /// <summary>
     /// Gets or sets the wait strategy retry count.
@@ -110,8 +123,9 @@ namespace DotNet.Testcontainers.Configurations
     /// https://dotnet.testcontainers.org/api/wait_strategies/.
     /// </remarks>
     [CanBeNull]
-    public static ushort? WaitStrategyRetries { get; set; }
-      = EnvironmentConfiguration.Instance.GetWaitStrategyRetries() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyRetries();
+    public static ushort? WaitStrategyRetries { get; set; } =
+      EnvironmentConfiguration.Instance.GetWaitStrategyRetries()
+      ?? PropertiesFileConfiguration.Instance.GetWaitStrategyRetries();
 
     /// <summary>
     /// Gets or sets the wait strategy interval.
@@ -122,8 +136,9 @@ namespace DotNet.Testcontainers.Configurations
     /// https://dotnet.testcontainers.org/api/wait_strategies/.
     /// </remarks>
     [CanBeNull]
-    public static TimeSpan? WaitStrategyInterval { get; set; }
-      = EnvironmentConfiguration.Instance.GetWaitStrategyInterval() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyInterval();
+    public static TimeSpan? WaitStrategyInterval { get; set; } =
+      EnvironmentConfiguration.Instance.GetWaitStrategyInterval()
+      ?? PropertiesFileConfiguration.Instance.GetWaitStrategyInterval();
 
     /// <summary>
     /// Gets or sets the wait strategy timeout.
@@ -134,28 +149,32 @@ namespace DotNet.Testcontainers.Configurations
     /// https://dotnet.testcontainers.org/api/wait_strategies/.
     /// </remarks>
     [CanBeNull]
-    public static TimeSpan? WaitStrategyTimeout { get; set; }
-      = EnvironmentConfiguration.Instance.GetWaitStrategyTimeout() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
+    public static TimeSpan? WaitStrategyTimeout { get; set; } =
+      EnvironmentConfiguration.Instance.GetWaitStrategyTimeout()
+      ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
 
     /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]
-    public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+    public static IOperatingSystem OS { get; set; } =
+      RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        ? new Windows(DockerEndpointAuthConfig)
+        : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
-    public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
-      => ExposeHostPortsAsync(new[] { port }, ct);
+    public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default) =>
+      ExposeHostPortsAsync(new[] { port }, ct);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
-    public static async Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
+    public static async Task ExposeHostPortsAsync(
+      IEnumerable<ushort> ports,
+      CancellationToken ct = default
+    )
     {
-      await PortForwardingContainer.Instance.StartAsync(ct)
-        .ConfigureAwait(false);
+      await PortForwardingContainer.Instance.StartAsync(ct).ConfigureAwait(false);
 
-      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports, ct)
-        .ConfigureAwait(false);
+      await PortForwardingContainer.Instance.ExposeHostPortsAsync(ports, ct).ConfigureAwait(false);
     }
   }
 }

@@ -22,7 +22,9 @@ namespace DotNet.Testcontainers.Builders
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class NetworkBuilder : AbstractBuilder<NetworkBuilder, INetwork, NetworksCreateParameters, INetworkConfiguration>, INetworkBuilder<NetworkBuilder>
+  public class NetworkBuilder
+    : AbstractBuilder<NetworkBuilder, INetwork, NetworksCreateParameters, INetworkConfiguration>,
+      INetworkBuilder<NetworkBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkBuilder" /> class.
@@ -83,19 +85,25 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
+      _ = Guard
+        .Argument(DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
         .NotNull()
         .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override NetworkBuilder Clone(IResourceConfiguration<NetworksCreateParameters> resourceConfiguration)
+    protected override NetworkBuilder Clone(
+      IResourceConfiguration<NetworksCreateParameters> resourceConfiguration
+    )
     {
       return Merge(DockerResourceConfiguration, new NetworkConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override NetworkBuilder Merge(INetworkConfiguration oldValue, INetworkConfiguration newValue)
+    protected override NetworkBuilder Merge(
+      INetworkConfiguration oldValue,
+      INetworkConfiguration newValue
+    )
     {
       return new NetworkBuilder(new NetworkConfiguration(oldValue, newValue));
     }

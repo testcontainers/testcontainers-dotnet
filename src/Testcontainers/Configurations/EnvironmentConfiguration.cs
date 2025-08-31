@@ -42,17 +42,17 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string WaitStrategyTimeout = "TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT";
 
-    private const string NamedPipeConnectionTimeout = "TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT";
+    private const string NamedPipeConnectionTimeout =
+      "TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT";
 
-    static EnvironmentConfiguration()
-    {
-    }
+    static EnvironmentConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EnvironmentConfiguration" /> class.
     /// </summary>
     public EnvironmentConfiguration()
-      : base(new[]
+      : base(
+        new[]
         {
           DockerAuthConfig,
           DockerCertPath,
@@ -71,16 +71,13 @@ namespace DotNet.Testcontainers.Configurations
           WaitStrategyInterval,
           WaitStrategyTimeout,
           NamedPipeConnectionTimeout,
-        }
-        .ToDictionary(key => key, Environment.GetEnvironmentVariable))
-    {
-    }
+        }.ToDictionary(key => key, Environment.GetEnvironmentVariable)
+      ) { }
 
     /// <summary>
     /// Gets the <see cref="ICustomConfiguration" /> instance.
     /// </summary>
-    public static ICustomConfiguration Instance { get; }
-      = new EnvironmentConfiguration();
+    public static ICustomConfiguration Instance { get; } = new EnvironmentConfiguration();
 
     /// <inheritdoc />
     public string GetDockerConfig()

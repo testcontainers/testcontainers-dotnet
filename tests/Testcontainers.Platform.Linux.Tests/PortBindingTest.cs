@@ -6,20 +6,22 @@ public abstract class PortBindingTest : IAsyncLifetime
 
     private PortBindingTest(ushort[] expectedPorts)
     {
-        var containerBuilder = new ContainerBuilder().WithImage(CommonImages.Alpine).WithEntrypoint(CommonCommands.SleepInfinity);
-        _container = expectedPorts.Aggregate(containerBuilder, (builder, port) => builder.WithPortBinding(port, true)).Build();
+        var containerBuilder = new ContainerBuilder()
+            .WithImage(CommonImages.Alpine)
+            .WithEntrypoint(CommonCommands.SleepInfinity);
+        _container = expectedPorts
+            .Aggregate(containerBuilder, (builder, port) => builder.WithPortBinding(port, true))
+            .Build();
     }
 
     public async ValueTask InitializeAsync()
     {
-        await _container.StartAsync()
-            .ConfigureAwait(false);
+        await _container.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -54,12 +56,9 @@ public abstract class PortBindingTest : IAsyncLifetime
         }
     }
 
-    public sealed class NoPortBindingTest()
-        : MappedPublicPorts(Array.Empty<ushort>());
+    public sealed class NoPortBindingTest() : MappedPublicPorts(Array.Empty<ushort>());
 
-    public sealed class SinglePortBindingTest()
-        : MappedPublicPorts(new ushort[] { 8080 });
+    public sealed class SinglePortBindingTest() : MappedPublicPorts(new ushort[] { 8080 });
 
-    public sealed class MultiplePortBindingTest()
-        : MappedPublicPorts(new ushort[] { 8080, 8081 });
+    public sealed class MultiplePortBindingTest() : MappedPublicPorts(new ushort[] { 8080, 8081 });
 }

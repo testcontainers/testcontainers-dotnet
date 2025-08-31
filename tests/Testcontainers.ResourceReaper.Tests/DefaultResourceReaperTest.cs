@@ -11,11 +11,14 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
   {
     public async ValueTask InitializeAsync()
     {
-      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig, ConsoleLogger.Instance)
+      var resourceReaper = await ResourceReaper
+        .GetAndStartDefaultAsync(
+          TestcontainersSettings.OS.DockerEndpointAuthConfig,
+          ConsoleLogger.Instance
+        )
         .ConfigureAwait(false);
 
-      await resourceReaper.DisposeAsync()
-        .ConfigureAwait(false);
+      await resourceReaper.DisposeAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -38,14 +41,18 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
         .Build();
 
       // When
-      await container.StartAsync(TestContext.Current.CancellationToken)
-        .ConfigureAwait(true);
+      await container.StartAsync(TestContext.Current.CancellationToken).ConfigureAwait(true);
 
-      await container.StopAsync(TestContext.Current.CancellationToken)
-        .ConfigureAwait(true);
+      await container.StopAsync(TestContext.Current.CancellationToken).ConfigureAwait(true);
 
       // Then
-      Assert.Equal(resourceReaperEnabled, DockerCli.ResourceExists(DockerCli.DockerResource.Container, "testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D")));
+      Assert.Equal(
+        resourceReaperEnabled,
+        DockerCli.ResourceExists(
+          DockerCli.DockerResource.Container,
+          "testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D")
+        )
+      );
     }
   }
 }

@@ -2,9 +2,7 @@ namespace Testcontainers.Build;
 
 internal sealed class BuildPaths
 {
-    private BuildPaths()
-    {
-    }
+    private BuildPaths() { }
 
     public BuildFiles Files { get; private set; }
     public BuildDirectories Directories { get; private set; }
@@ -55,7 +53,8 @@ internal sealed class BuildDirectories
         DirectoryPath testResultsDir,
         DirectoryPath testCoverageDir,
         DirectoryPath nugetDir,
-        DirectoryPath artifactsDir)
+        DirectoryPath artifactsDir
+    )
     {
         TestResultsDirectoryPath = testResultsDir;
         TestCoverageDirectoryPath = testCoverageDir;

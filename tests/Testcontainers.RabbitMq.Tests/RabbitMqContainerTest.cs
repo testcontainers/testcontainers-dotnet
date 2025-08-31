@@ -7,8 +7,7 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _rabbitMqContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _rabbitMqContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

@@ -6,8 +6,7 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _janusGraphContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _janusGraphContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -22,17 +21,29 @@ public sealed class JanusGraphContainerTest : IAsyncLifetime
         // Given
         var label = Guid.NewGuid().ToString("D");
 
-        using var client = new GremlinClient(new GremlinServer(_janusGraphContainer.Hostname, _janusGraphContainer.GetMappedPublicPort(JanusGraphBuilder.JanusGraphPort)), new JanusGraphGraphSONMessageSerializer());
+        using var client = new GremlinClient(
+            new GremlinServer(
+                _janusGraphContainer.Hostname,
+                _janusGraphContainer.GetMappedPublicPort(JanusGraphBuilder.JanusGraphPort)
+            ),
+            new JanusGraphGraphSONMessageSerializer()
+        );
 
         using var connection = new DriverRemoteConnection(client);
 
         var graphTraversalSource = AnonymousTraversalSource.Traversal().WithRemote(connection);
 
         // When
-        await graphTraversalSource.AddV(label).Promise(traversal => traversal.Iterate(), TestContext.Current.CancellationToken)
+        await graphTraversalSource
+            .AddV(label)
+            .Promise(traversal => traversal.Iterate(), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var count = await graphTraversalSource.V().HasLabel(label).Count().Promise(traversal => traversal.Next(), TestContext.Current.CancellationToken)
+        var count = await graphTraversalSource
+            .V()
+            .HasLabel(label)
+            .Count()
+            .Promise(traversal => traversal.Next(), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

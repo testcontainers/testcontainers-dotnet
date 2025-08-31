@@ -10,6 +10,7 @@ public sealed class RedisContainerFixture(IMessageSink messageSink)
         return builder.WithImage("redis:7.0");
     }
 }
+
 // # --8<-- [end:ConfigureRedisContainer]
 
 // # --8<-- [start:InjectContainerFixture]
@@ -20,7 +21,10 @@ public sealed partial class RedisContainerTest(RedisContainerFixture fixture)
 #if XUNIT_V3
 [TestCaseOrderer(ordererType: typeof(Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer))]
 #else
-[TestCaseOrderer(ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer", ordererAssemblyName: "Testcontainers.Xunit.Tests")]
+[TestCaseOrderer(
+    ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer",
+    ordererAssemblyName: "Testcontainers.Xunit.Tests"
+)]
 #endif
 public sealed partial class RedisContainerTest
 {
@@ -35,7 +39,9 @@ public sealed partial class RedisContainerTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test1()
     {
-        using var redis = await ConnectionMultiplexer.ConnectAsync(fixture.Container.GetConnectionString());
+        using var redis = await ConnectionMultiplexer.ConnectAsync(
+            fixture.Container.GetConnectionString()
+        );
         await redis.GetDatabase().StringSetAsync("key", "value");
         Assert.True(redis.IsConnected);
     }
@@ -45,7 +51,9 @@ public sealed partial class RedisContainerTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test2()
     {
-        using var redis = await ConnectionMultiplexer.ConnectAsync(fixture.Container.GetConnectionString());
+        using var redis = await ConnectionMultiplexer.ConnectAsync(
+            fixture.Container.GetConnectionString()
+        );
         var redisValue = await redis.GetDatabase().StringGetAsync("key");
         Assert.Equal("value", redisValue);
     }

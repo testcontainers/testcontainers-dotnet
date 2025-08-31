@@ -6,8 +6,7 @@ public sealed class PapercutContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _papercutContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _papercutContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -22,7 +21,10 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // Given
         const string subject = "Test";
 
-        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
+        using var smtpClient = new SmtpClient(
+            _papercutContainer.Hostname,
+            _papercutContainer.SmtpPort
+        );
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_papercutContainer.GetBaseAddress());
@@ -30,7 +32,8 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // When
         smtpClient.Send("from@example.com", "to@example.com", subject, "A test message");
 
-        var messagesJson = await httpClient.GetStringAsync("/api/messages", TestContext.Current.CancellationToken)
+        var messagesJson = await httpClient
+            .GetStringAsync("/api/messages", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         var jsonDocument = JsonDocument.Parse(messagesJson);

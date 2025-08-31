@@ -9,9 +9,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public LowkeyVaultContainer(LowkeyVaultConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the base HTTPS address for the Lowkey Vault service.
@@ -19,7 +17,11 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// <returns>The base address URL.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttps,
+            Hostname,
+            GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultPort)
+        ).ToString();
     }
 
     /// <summary>
@@ -29,7 +31,12 @@ public sealed class LowkeyVaultContainer : DockerContainer
     public string GetAuthTokenUrl()
     {
         const string identityAuthTokenUriPath = "/metadata/identity/oauth2/token";
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort), identityAuthTokenUriPath).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort),
+            identityAuthTokenUriPath
+        ).ToString();
     }
 
     /// <summary>
@@ -40,22 +47,28 @@ public sealed class LowkeyVaultContainer : DockerContainer
     {
         const string defaultCertFilePathUriPath = "/metadata/default-cert/lowkey-vault.p12";
 
-        var requestUri = new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort), defaultCertFilePathUriPath).Uri;
+        var requestUri = new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort),
+            defaultCertFilePathUriPath
+        ).Uri;
 
         using var httpClient = new HttpClient();
 
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+        using var httpResponseMessage = await httpClient
+            .SendAsync(httpRequestMessage)
             .ConfigureAwait(false);
 
         httpResponseMessage.EnsureSuccessStatusCode();
 
-        var certificateBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync()
+        var certificateBytes = await httpResponseMessage
+            .Content.ReadAsByteArrayAsync()
             .ConfigureAwait(false);
 
-        var certificatePassword = await GetCertificatePasswordAsync()
-            .ConfigureAwait(false);
+        var certificatePassword = await GetCertificatePasswordAsync().ConfigureAwait(false);
 
 #if NET9_0_OR_GREATER
         return X509CertificateLoader.LoadPkcs12Collection(certificateBytes, certificatePassword);
@@ -73,18 +86,23 @@ public sealed class LowkeyVaultContainer : DockerContainer
     {
         const string defaultCertPasswordUriPath = "/metadata/default-cert/password";
 
-        var requestUri = new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort), defaultCertPasswordUriPath).Uri;
+        var requestUri = new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(LowkeyVaultBuilder.LowkeyVaultTokenPort),
+            defaultCertPasswordUriPath
+        ).Uri;
 
         using var httpClient = new HttpClient();
 
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+        using var httpResponseMessage = await httpClient
+            .SendAsync(httpRequestMessage)
             .ConfigureAwait(false);
 
         httpResponseMessage.EnsureSuccessStatusCode();
 
-        return await httpResponseMessage.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        return await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
     }
 }

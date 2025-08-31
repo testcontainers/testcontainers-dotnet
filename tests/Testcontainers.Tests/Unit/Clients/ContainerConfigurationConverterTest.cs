@@ -16,10 +16,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ShouldAddTcpPortSuffix()
       {
         // Given
-        var containerConfiguration = new ContainerConfiguration(exposedPorts: new Dictionary<string, string> { { Port, null } });
+        var containerConfiguration = new ContainerConfiguration(
+          exposedPorts: new Dictionary<string, string> { { Port, null } }
+        );
 
         // When
-        var exposedPort = new ContainerConfigurationConverter(containerConfiguration).ExposedPorts.Single().Key;
+        var exposedPort = new ContainerConfigurationConverter(containerConfiguration)
+          .ExposedPorts.Single()
+          .Key;
 
         // Then
         Assert.Equal($"{Port}/tcp", exposedPort);
@@ -34,10 +38,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var qualifiedPort = $"{Port}/{portSuffix}";
 
-        var containerConfiguration = new ContainerConfiguration(exposedPorts: new Dictionary<string, string> { { qualifiedPort, null } });
+        var containerConfiguration = new ContainerConfiguration(
+          exposedPorts: new Dictionary<string, string> { { qualifiedPort, null } }
+        );
 
         // When
-        var exposedPort = new ContainerConfigurationConverter(containerConfiguration).ExposedPorts.Single().Key;
+        var exposedPort = new ContainerConfigurationConverter(containerConfiguration)
+          .ExposedPorts.Single()
+          .Key;
 
         // Then
         Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), exposedPort);
@@ -50,10 +58,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       public void ShouldAddTcpPortSuffix()
       {
         // Given
-        var containerConfiguration = new ContainerConfiguration(portBindings: new Dictionary<string, string> { { Port, Port } });
+        var containerConfiguration = new ContainerConfiguration(
+          portBindings: new Dictionary<string, string> { { Port, Port } }
+        );
 
         // When
-        var portBinding = new ContainerConfigurationConverter(containerConfiguration).PortBindings.Single().Key;
+        var portBinding = new ContainerConfigurationConverter(containerConfiguration)
+          .PortBindings.Single()
+          .Key;
 
         // Then
         Assert.Equal($"{Port}/tcp", portBinding);
@@ -68,10 +80,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var qualifiedPort = $"{Port}/{portSuffix}";
 
-        var containerConfiguration = new ContainerConfiguration(portBindings: new Dictionary<string, string> { { qualifiedPort, Port } });
+        var containerConfiguration = new ContainerConfiguration(
+          portBindings: new Dictionary<string, string> { { qualifiedPort, Port } }
+        );
 
         // When
-        var portBinding = new ContainerConfigurationConverter(containerConfiguration).PortBindings.Single().Key;
+        var portBinding = new ContainerConfigurationConverter(containerConfiguration)
+          .PortBindings.Single()
+          .Key;
 
         // Then
         Assert.Equal($"{Port}/{portSuffix}".ToLowerInvariant(), portBinding);

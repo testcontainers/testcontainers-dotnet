@@ -6,8 +6,7 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _weaviateContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _weaviateContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -24,7 +23,8 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_weaviateContainer.GetBaseAddress());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("v1/schema", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync("v1/schema", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

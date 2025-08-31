@@ -38,14 +38,18 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     public static CommonDirectoryPath GetBinDirectory()
     {
-      var indexOfBinDirectory = WorkingDirectoryPath.LastIndexOf("bin", StringComparison.OrdinalIgnoreCase);
+      var indexOfBinDirectory = WorkingDirectoryPath.LastIndexOf(
+        "bin",
+        StringComparison.OrdinalIgnoreCase
+      );
 
       if (indexOfBinDirectory > -1)
       {
         return new CommonDirectoryPath(WorkingDirectoryPath.Substring(0, indexOfBinDirectory));
       }
 
-      const string message = "Cannot find 'bin' and resolve the base directory in the directory tree.";
+      const string message =
+        "Cannot find 'bin' and resolve the base directory in the directory tree.";
       throw new DirectoryNotFoundException(message);
     }
 
@@ -59,7 +63,9 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>The first Git directory upwards the directory tree.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the Git directory was not found upwards the directory tree.</exception>
     [PublicAPI]
-    public static CommonDirectoryPath GetGitDirectory([CallerFilePath, NotNull] string filePath = "")
+    public static CommonDirectoryPath GetGitDirectory(
+      [CallerFilePath, NotNull] string filePath = ""
+    )
     {
       return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), ".git"));
     }
@@ -74,9 +80,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>The first Visual Studio solution file upwards the directory tree.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the Visual Studio solution file was not found upwards the directory tree.</exception>
     [PublicAPI]
-    public static CommonDirectoryPath GetSolutionDirectory([CallerFilePath, NotNull] string filePath = "")
+    public static CommonDirectoryPath GetSolutionDirectory(
+      [CallerFilePath, NotNull] string filePath = ""
+    )
     {
-      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.sln", "*.slnx"));
+      return new CommonDirectoryPath(
+        GetDirectoryPath(Path.GetDirectoryName(filePath), "*.sln", "*.slnx")
+      );
     }
 
     /// <summary>
@@ -89,9 +99,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>The first CSharp, FSharp or Visual Basic project file upwards the directory tree.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when no CSharp, FSharp or Visual Basic project file was found upwards the directory tree.</exception>
     [PublicAPI]
-    public static CommonDirectoryPath GetProjectDirectory([CallerFilePath, NotNull] string filePath = "")
+    public static CommonDirectoryPath GetProjectDirectory(
+      [CallerFilePath, NotNull] string filePath = ""
+    )
     {
-      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.csproj", "*.fsproj", "*.vbproj"));
+      return new CommonDirectoryPath(
+        GetDirectoryPath(Path.GetDirectoryName(filePath), "*.csproj", "*.fsproj", "*.vbproj")
+      );
     }
 
     /// <summary>
@@ -100,25 +114,35 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="filePath">The caller file path.</param>
     /// <returns>The caller file path directory.</returns>
     [PublicAPI]
-    public static CommonDirectoryPath GetCallerFileDirectory([CallerFilePath, NotNull] string filePath = "")
+    public static CommonDirectoryPath GetCallerFileDirectory(
+      [CallerFilePath, NotNull] string filePath = ""
+    )
     {
       return new CommonDirectoryPath(Path.GetDirectoryName(filePath));
     }
 
     private static string GetDirectoryPath(string path, params string[] searchPatterns)
     {
-      return GetDirectoryPath(Directory.Exists(path) ? new DirectoryInfo(path) : null, searchPatterns);
+      return GetDirectoryPath(
+        Directory.Exists(path) ? new DirectoryInfo(path) : null,
+        searchPatterns
+      );
     }
 
     private static string GetDirectoryPath(DirectoryInfo path, params string[] searchPatterns)
     {
       if (path != null)
       {
-        var paths = searchPatterns.SelectMany(searchPattern => path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly)).Any();
+        var paths = searchPatterns
+          .SelectMany(searchPattern =>
+            path.EnumerateFileSystemInfos(searchPattern, SearchOption.TopDirectoryOnly)
+          )
+          .Any();
         return paths ? path.FullName : GetDirectoryPath(path.Parent, searchPatterns);
       }
 
-      var message = $"Cannot find '{string.Join(", ", searchPatterns)}' and resolve the base directory in the directory tree.";
+      var message =
+        $"Cannot find '{string.Join(", ", searchPatterns)}' and resolve the base directory in the directory tree.";
       throw new DirectoryNotFoundException(message);
     }
   }

@@ -8,16 +8,19 @@ public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutput
     {
         return builder
             .WithImage("postgres:15.1")
-            .WithResourceMapping("Chinook_PostgreSql_AutoIncrementPKs.sql", "/docker-entrypoint-initdb.d/");
+            .WithResourceMapping(
+                "Chinook_PostgreSql_AutoIncrementPKs.sql",
+                "/docker-entrypoint-initdb.d/"
+            );
     }
 }
+
 // # --8<-- [end:ConfigurePostgreSqlContainer]
 
 public sealed partial class PostgreSqlContainerTest
 {
     // # --8<-- [start:ConfigureDbProviderFactory]
-    public override DbProviderFactory DbProviderFactory
-        => NpgsqlFactory.Instance;
+    public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
     // # --8<-- [end:ConfigureDbProviderFactory]
 }
 

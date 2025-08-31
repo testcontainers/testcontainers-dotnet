@@ -14,47 +14,60 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private static readonly string ResourceIdOrName = Guid.NewGuid().ToString("D");
 
-    private static readonly ITestcontainersClient Client = new TestcontainersClient(Guid.Empty, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+    private static readonly ITestcontainersClient Client = new TestcontainersClient(
+      Guid.Empty,
+      TestcontainersSettings.OS.DockerEndpointAuthConfig,
+      NullLogger.Instance
+    );
 
     [Fact]
     public async Task QueryNotExistingDockerContainerById()
     {
-      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
-        .ConfigureAwait(true));
+      Assert.False(
+        await Client
+          .Container.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
+          .ConfigureAwait(true)
+      );
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageById()
     {
-      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
-        .ConfigureAwait(true));
+      Assert.False(
+        await Client
+          .Image.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
+          .ConfigureAwait(true)
+      );
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkById()
     {
-      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
-        .ConfigureAwait(true));
+      Assert.False(
+        await Client
+          .Network.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
+          .ConfigureAwait(true)
+      );
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeById()
     {
-      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
-        .ConfigureAwait(true));
+      Assert.False(
+        await Client
+          .Volume.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
+          .ConfigureAwait(true)
+      );
     }
 
     [Fact]
     public async Task QueryContainerInformationOfCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
-        .Build();
+      var container = new ContainerBuilder().WithImage(CommonImages.Nginx).Build();
 
       // When
-      await container.StartAsync(TestContext.Current.CancellationToken)
-        .ConfigureAwait(true);
+      await container.StartAsync(TestContext.Current.CancellationToken).ConfigureAwait(true);
 
       // Then
       Assert.NotEmpty(container.Id);
@@ -68,13 +81,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryContainerInformationOfNotCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
-        .Build();
+      var container = new ContainerBuilder().WithImage(CommonImages.Nginx).Build();
 
       // When
-      await Task.CompletedTask
-        .ConfigureAwait(true);
+      await Task.CompletedTask.ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => container.Id);
@@ -90,12 +100,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryImageInformationOfNotCreatedImage()
     {
       // Given
-      var image = new ImageFromDockerfileBuilder()
-        .Build();
+      var image = new ImageFromDockerfileBuilder().Build();
 
       // When
-      await Task.CompletedTask
-        .ConfigureAwait(true);
+      await Task.CompletedTask.ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => image.Repository);
@@ -113,8 +121,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var network = new NetworkBuilder().Build();
 
       // When
-      await Task.CompletedTask
-        .ConfigureAwait(true);
+      await Task.CompletedTask.ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => network.Name);
@@ -127,8 +134,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var volume = new VolumeBuilder().Build();
 
       // When
-      await Task.CompletedTask
-        .ConfigureAwait(true);
+      await Task.CompletedTask.ConfigureAwait(true);
 
       // Then
       Assert.Throws<InvalidOperationException>(() => volume.Name);

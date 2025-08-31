@@ -7,15 +7,15 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
-    public LocalStackConfiguration()
-    {
-    }
+    public LocalStackConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public LocalStackConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public LocalStackConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -46,8 +46,9 @@ public sealed class LocalStackConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public LocalStackConfiguration(LocalStackConfiguration oldValue, LocalStackConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+    public LocalStackConfiguration(
+        LocalStackConfiguration oldValue,
+        LocalStackConfiguration newValue
+    )
+        : base(oldValue, newValue) { }
 }

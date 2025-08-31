@@ -28,8 +28,8 @@ public sealed class RespawnTest : IClassFixture<DbFixture>, IDisposable
         var respawner = await Respawner.CreateAsync(_dbConnection, respawnerOptions);
         await respawner.ResetAsync(_dbConnection);
 
-        // This test runs twice and inserts a record into the `users` table for each run.  
-        // The test counts the number of users and expects it to always be 1. If the database  
+        // This test runs twice and inserts a record into the `users` table for each run.
+        // The test counts the number of users and expects it to always be 1. If the database
         // state is not clean, the assertion fails.
         using var insertCommand = _dbConnection.CreateCommand();
 
@@ -45,7 +45,8 @@ public sealed class RespawnTest : IClassFixture<DbFixture>, IDisposable
         dbParamAge.ParameterName = "@age";
         dbParamAge.Value = age;
 
-        insertCommand.CommandText = "INSERT INTO users (username, email, age) VALUES (@username, @email, @age)";
+        insertCommand.CommandText =
+            "INSERT INTO users (username, email, age) VALUES (@username, @email, @age)";
         insertCommand.Parameters.Add(dbParamUsername);
         insertCommand.Parameters.Add(dbParamEmail);
         insertCommand.Parameters.Add(dbParamAge);

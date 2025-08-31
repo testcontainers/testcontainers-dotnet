@@ -38,7 +38,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("DOCKER_CONFIG", "", null)]
       [InlineData("DOCKER_CONFIG", "~/.docker/", "~/.docker/")]
-      public void GetDockerConfigCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetDockerConfigCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -49,7 +53,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("DOCKER_HOST", "", null)]
       [InlineData("DOCKER_HOST", "tcp://127.0.0.1:2375/", "tcp://127.0.0.1:2375/")]
-      public void GetDockerHostCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetDockerHostCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -60,7 +68,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("DOCKER_CONTEXT", "", null)]
       [InlineData("DOCKER_CONTEXT", "default", "default")]
-      public void GetDockerContextCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetDockerContextCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -71,7 +83,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_HOST_OVERRIDE", "", null)]
       [InlineData("TESTCONTAINERS_HOST_OVERRIDE", "docker.svc.local", "docker.svc.local")]
-      public void GetDockerHostOverrideCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetDockerHostOverrideCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -81,8 +97,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Theory]
       [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "", null)]
-      [InlineData("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock", "/var/run/docker.sock")]
-      public void GetDockerSocketOverrideCustomConfiguration(string propertyName, string propertyValue, string expected)
+      [InlineData(
+        "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE",
+        "/var/run/docker.sock",
+        "/var/run/docker.sock"
+      )]
+      public void GetDockerSocketOverrideCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -96,8 +120,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("DOCKER_AUTH_CONFIG", "{}", "{}")]
       [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":null}", "{\"auths\":null}")]
       [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":{}}", "{\"auths\":{}}")]
-      [InlineData("DOCKER_AUTH_CONFIG", "{\"auths\":{\"ghcr.io\":{}}}", "{\"auths\":{\"ghcr.io\":{}}}")]
-      public void GetDockerAuthConfigCustomConfiguration(string propertyName, string propertyValue, string expected)
+      [InlineData(
+        "DOCKER_AUTH_CONFIG",
+        "{\"auths\":{\"ghcr.io\":{}}}",
+        "{\"auths\":{\"ghcr.io\":{}}}"
+      )]
+      public void GetDockerAuthConfigCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -108,7 +140,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("DOCKER_CERT_PATH", "", null)]
       [InlineData("DOCKER_CERT_PATH", "/home/docker/.docker/certs", "/home/docker/.docker/certs")]
-      public void GetDockerCertPathCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetDockerCertPathCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -124,7 +160,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("DOCKER_TLS", "1", true)]
       [InlineData("DOCKER_TLS", "TRUE", true)]
       [InlineData("DOCKER_TLS", "true", true)]
-      public void GetDockerTlsCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetDockerTlsCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        bool expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -140,7 +180,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("DOCKER_TLS_VERIFY", "1", true)]
       [InlineData("DOCKER_TLS_VERIFY", "TRUE", true)]
       [InlineData("DOCKER_TLS_VERIFY", "true", true)]
-      public void GetDockerTlsVerifyCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetDockerTlsVerifyCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        bool expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -152,7 +196,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("TESTCONTAINERS_RYUK_DISABLED", "", false)]
       [InlineData("TESTCONTAINERS_RYUK_DISABLED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_DISABLED", "true", true)]
-      public void GetRyukDisabledCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetRyukDisabledCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        bool expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -164,7 +212,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool? expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        bool? expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -175,7 +227,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_IMAGE", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_IMAGE", "alpine:latest", "alpine:latest")]
-      public void GetRyukContainerImageCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetRyukContainerImageCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -186,7 +242,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", "", null)]
       [InlineData("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", "my.proxy.com", "my.proxy.com")]
-      public void GetHubImageNamePrefixCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetHubImageNamePrefixCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -197,7 +257,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("", "", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_RETRIES", "1", 1)]
-      public void GetWaitStrategyRetriesCustomConfiguration(string propertyName, string propertyValue, int? expected)
+      public void GetWaitStrategyRetriesCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        int? expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -209,7 +273,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "-00:00:00.001", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL", "00:00:01", "00:00:01")]
-      public void GetWaitStrategyIntervalCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetWaitStrategyIntervalCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -221,7 +289,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "-00:00:00.001", null)]
       [InlineData("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT", "00:00:01", "00:00:01")]
-      public void GetWaitStrategyTimeoutCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetWaitStrategyTimeoutCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -233,7 +305,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "", null)]
       [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "-00:00:00.001", null)]
       [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "00:00:01", "00:00:01")]
-      public void GetNamedPipeConnectionTimeoutCustomConfiguration(string propertyName, string propertyValue, string expected)
+      public void GetNamedPipeConnectionTimeoutCustomConfiguration(
+        string propertyName,
+        string propertyValue,
+        string expected
+      )
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -265,7 +341,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.config=~/.docker/", "~/.docker/")]
       public void GetDockerConfigCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerConfig());
       }
 
@@ -275,7 +353,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.host=tcp://127.0.0.1:2375/", "tcp://127.0.0.1:2375/")]
       public void GetDockerHostCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerHost()?.ToString());
       }
 
@@ -285,7 +365,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.context=default", "default")]
       public void GetDockerContextCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerContext());
       }
 
@@ -295,7 +377,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("host.override=docker.svc.local", "docker.svc.local")]
       public void GetDockerHostOverrideCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerHostOverride());
       }
 
@@ -305,7 +389,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.socket.override=/var/run/docker.sock", "/var/run/docker.sock")]
       public void GetDockerSocketOverrideCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerSocketOverride());
       }
 
@@ -316,10 +402,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.auth.config={}", "{}")]
       [InlineData("docker.auth.config={\"auths\":null}", "{\"auths\":null}")]
       [InlineData("docker.auth.config={\"auths\":{}}", "{\"auths\":{}}")]
-      [InlineData("docker.auth.config={\"auths\":{\"ghcr.io\":{}}}", "{\"auths\":{\"ghcr.io\":{}}}")]
+      [InlineData(
+        "docker.auth.config={\"auths\":{\"ghcr.io\":{}}}",
+        "{\"auths\":{\"ghcr.io\":{}}}"
+      )]
       public void GetDockerAuthConfigCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerAuthConfig()?.RootElement.ToString());
       }
 
@@ -329,7 +420,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.cert.path=/home/docker/.docker/certs", "/home/docker/.docker/certs")]
       public void GetDockerCertPathCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerCertPath());
       }
 
@@ -344,7 +437,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.tls=true", true)]
       public void GetDockerTlsCustomConfiguration(string configuration, bool expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerTls());
       }
 
@@ -359,7 +454,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("docker.tls.verify=true", true)]
       public void GetDockerTlsVerifyCustomConfiguration(string configuration, bool expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetDockerTlsVerify());
       }
 
@@ -370,7 +467,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("ryuk.disabled=true", true)]
       public void GetRyukDisabledCustomConfiguration(string configuration, bool expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetRyukDisabled());
       }
 
@@ -379,9 +478,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("ryuk.container.privileged=", null)]
       [InlineData("ryuk.container.privileged=false", false)]
       [InlineData("ryuk.container.privileged=true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool? expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(
+        string configuration,
+        bool? expected
+      )
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());
       }
 
@@ -391,7 +495,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("ryuk.container.image=alpine:latest", "alpine:latest")]
       public void GetRyukContainerImageCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetRyukContainerImage()?.FullName);
       }
 
@@ -401,7 +507,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("hub.image.name.prefix=my.proxy.com", "my.proxy.com")]
       public void GetHubImageNamePrefixCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetHubImageNamePrefix());
       }
 
@@ -411,7 +519,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("wait.strategy.retries=1", 1)]
       public void GetWaitStrategyRetriesCustomConfiguration(string configuration, int? expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetWaitStrategyRetries());
       }
 
@@ -422,7 +532,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("wait.strategy.interval=00:00:01", "00:00:01")]
       public void GetWaitStrategyIntervalCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetWaitStrategyInterval()?.ToString());
       }
 
@@ -433,7 +545,9 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("wait.strategy.timeout=00:00:01", "00:00:01")]
       public void GetWaitStrategyTimeoutCustomConfiguration(string configuration, string expected)
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout()?.ToString());
       }
 
@@ -442,9 +556,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("named.pipe.connection.timeout=", null)]
       [InlineData("named.pipe.connection.timeout=-00:00:00.001", null)]
       [InlineData("named.pipe.connection.timeout=00:00:01", "00:00:01")]
-      public void GetNamedPipeConnectionTimeoutCustomConfiguration(string configuration, string expected)
+      public void GetNamedPipeConnectionTimeoutCustomConfiguration(
+        string configuration,
+        string expected
+      )
       {
-        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(
+          new[] { configuration }
+        );
         Assert.Equal(expected, customConfiguration.GetNamedPipeConnectionTimeout()?.ToString());
       }
     }

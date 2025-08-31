@@ -10,7 +10,8 @@ namespace DotNet.Testcontainers.Containers
 
   /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
   [PublicAPI]
-  public sealed class SocatBuilder : ContainerBuilder<SocatBuilder, SocatContainer, SocatConfiguration>
+  public sealed class SocatBuilder
+    : ContainerBuilder<SocatBuilder, SocatContainer, SocatConfiguration>
   {
     public const string SocatImage = "alpine/socat:1.7.4.3-r0";
 
@@ -68,11 +69,17 @@ namespace DotNet.Testcontainers.Containers
 
       const string argument = "socat TCP-LISTEN:{0},fork,reuseaddr TCP:{1}";
 
-      var command = string.Join(" & ", DockerResourceConfiguration.Targets
-        .Select(item => string.Format(argument, item.Key, item.Value)));
+      var command = string.Join(
+        " & ",
+        DockerResourceConfiguration.Targets.Select(item =>
+          string.Format(argument, item.Key, item.Value)
+        )
+      );
 
-      var waitStrategy = DockerResourceConfiguration.Targets
-        .Aggregate(Wait.ForUnixContainer(), (waitStrategy, item) => waitStrategy.UntilPortIsAvailable(item.Key));
+      var waitStrategy = DockerResourceConfiguration.Targets.Aggregate(
+        Wait.ForUnixContainer(),
+        (waitStrategy, item) => waitStrategy.UntilPortIsAvailable(item.Key)
+      );
 
       var socatBuilder = WithCommand(command).WithWaitStrategy(waitStrategy);
       return new SocatContainer(socatBuilder.DockerResourceConfiguration);
@@ -81,9 +88,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     protected override SocatBuilder Init()
     {
-      return base.Init()
-        .WithImage(SocatImage)
-        .WithEntrypoint("/bin/sh", "-c");
+      return base.Init().WithImage(SocatImage).WithEntrypoint("/bin/sh", "-c");
     }
 
     /// <inheritdoc />
@@ -93,12 +98,18 @@ namespace DotNet.Testcontainers.Containers
 
       base.Validate();
 
-      _ = Guard.Argument(DockerResourceConfiguration.Targets, nameof(DockerResourceConfiguration.Targets))
-        .ThrowIf(argument => argument.Value.Count == 0, argument => new ArgumentException(message, argument.Name));
+      _ = Guard
+        .Argument(DockerResourceConfiguration.Targets, nameof(DockerResourceConfiguration.Targets))
+        .ThrowIf(
+          argument => argument.Value.Count == 0,
+          argument => new ArgumentException(message, argument.Name)
+        );
     }
 
     /// <inheritdoc />
-    protected override SocatBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override SocatBuilder Clone(
+      IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
       return Merge(DockerResourceConfiguration, new SocatConfiguration(resourceConfiguration));
     }

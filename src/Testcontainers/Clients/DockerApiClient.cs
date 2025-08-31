@@ -18,7 +18,8 @@ namespace DotNet.Testcontainers.Clients
   /// </summary>
   internal class DockerApiClient
   {
-    private static readonly ConcurrentDictionary<Uri, Lazy<IDockerClient>> Clients = new ConcurrentDictionary<Uri, Lazy<IDockerClient>>();
+    private static readonly ConcurrentDictionary<Uri, Lazy<IDockerClient>> Clients =
+      new ConcurrentDictionary<Uri, Lazy<IDockerClient>>();
 
     private static readonly ISet<int> ProcessedHashCodes = new HashSet<int>();
 
@@ -30,10 +31,20 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="sessionId">The test session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
-    protected DockerApiClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : this(Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ => new Lazy<IDockerClient>(() => GetDockerClient(sessionId, dockerEndpointAuthConfig))).Value, logger)
-    {
-    }
+    protected DockerApiClient(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      ILogger logger
+    )
+      : this(
+        Clients
+          .GetOrAdd(
+            dockerEndpointAuthConfig.Endpoint,
+            _ => new Lazy<IDockerClient>(() => GetDockerClient(sessionId, dockerEndpointAuthConfig))
+          )
+          .Value,
+        logger
+      ) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerApiClient" /> class.
@@ -70,8 +81,7 @@ namespace DotNet.Testcontainers.Clients
     {
       var hashCode = HashCode.Combine(DockerClient, Logger);
 
-      await RuntimeInitialized.WaitAsync(ct)
-        .ConfigureAwait(false);
+      await RuntimeInitialized.WaitAsync(ct).ConfigureAwait(false);
 
       try
       {
@@ -84,11 +94,9 @@ namespace DotNet.Testcontainers.Clients
 
         var byteUnits = new[] { "KB", "MB", "GB" };
 
-        var dockerInfo = await DockerClient.System.GetSystemInfoAsync(ct)
-          .ConfigureAwait(false);
+        var dockerInfo = await DockerClient.System.GetSystemInfoAsync(ct).ConfigureAwait(false);
 
-        var dockerVersion = await DockerClient.System.GetVersionAsync(ct)
-          .ConfigureAwait(false);
+        var dockerVersion = await DockerClient.System.GetVersionAsync(ct).ConfigureAwait(false);
 
         runtimeInfo.AppendLine("Connected to Docker:");
 
@@ -108,18 +116,25 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine(dockerInfo.OperatingSystem);
 
         runtimeInfo.Append("  Total Memory: ");
-        runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
+        runtimeInfo.AppendFormat(
+          CultureInfo.InvariantCulture,
+          "{0:F} {1}",
+          dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length),
+          byteUnits[byteUnits.Length - 1]
+        );
 
         var labels = dockerInfo.Labels;
         if (labels != null && labels.Count > 0)
         {
           runtimeInfo.AppendLine();
           runtimeInfo.AppendLine("  Labels: ");
-          runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
+          runtimeInfo.Append(
+            string.Join(Environment.NewLine, labels.Select(label => "    " + label))
+          );
         }
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         Logger.LogError(e, "Failed to retrieve Docker container runtime information");
       }
@@ -130,9 +145,16 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    private static IDockerClient GetDockerClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    private static IDockerClient GetDockerClient(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig
+    )
     {
-      using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
+      using (
+        var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(
+          sessionId
+        )
+      )
       {
         return dockerClientConfiguration.CreateClient();
       }

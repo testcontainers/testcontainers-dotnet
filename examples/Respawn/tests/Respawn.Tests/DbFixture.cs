@@ -16,7 +16,8 @@ public sealed class DbFixture : IAsyncLifetime
             .Build();
     }
 
-    public DbConnection DbConnection => new NpgsqlConnection(((PostgreSqlContainer)_postgreSqlContainer).GetConnectionString());
+    public DbConnection DbConnection =>
+        new NpgsqlConnection(((PostgreSqlContainer)_postgreSqlContainer).GetConnectionString());
 
     public Task InitializeAsync()
     {

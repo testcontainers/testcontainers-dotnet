@@ -36,8 +36,8 @@ namespace DotNet.Testcontainers.Containers
 
       if (!string.IsNullOrEmpty(execResult.Stdout))
       {
-        var stdoutLines = execResult.Stdout
-          .Split(LineEndings, StringSplitOptions.RemoveEmptyEntries)
+        var stdoutLines = execResult
+          .Stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries)
           .Select(line => "    " + line);
 
         exceptionInfo.AppendLine();
@@ -47,8 +47,8 @@ namespace DotNet.Testcontainers.Containers
 
       if (!string.IsNullOrEmpty(execResult.Stderr))
       {
-        var stderrLines = execResult.Stderr
-          .Split(LineEndings, StringSplitOptions.RemoveEmptyEntries)
+        var stderrLines = execResult
+          .Stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries)
           .Select(line => "    " + line);
 
         exceptionInfo.AppendLine();

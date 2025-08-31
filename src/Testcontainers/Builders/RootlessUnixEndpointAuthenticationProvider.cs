@@ -8,7 +8,8 @@ namespace DotNet.Testcontainers.Builders
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationProvider" />
   [PublicAPI]
-  internal partial class RootlessUnixEndpointAuthenticationProvider : DockerEndpointAuthenticationProvider
+  internal partial class RootlessUnixEndpointAuthenticationProvider
+    : DockerEndpointAuthenticationProvider
   {
     private const string DockerSocket = "docker.sock";
 
@@ -16,9 +17,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
     /// </summary>
     public RootlessUnixEndpointAuthenticationProvider()
-      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeRunDir(), GetSocketPathFromRunDir())
-    {
-    }
+      : this(GetSocketPathFromEnv(), GetSocketPathFromHomeRunDir(), GetSocketPathFromRunDir()) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RootlessUnixEndpointAuthenticationProvider" /> class.
@@ -64,12 +63,24 @@ namespace DotNet.Testcontainers.Builders
 
     protected static string GetSocketPathFromHomeDesktopDir()
     {
-      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "desktop", DockerSocket);
+      return string.Join(
+        "/",
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        ".docker",
+        "desktop",
+        DockerSocket
+      );
     }
 
     protected static string GetSocketPathFromHomeRunDir()
     {
-      return string.Join("/", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker", "run", DockerSocket);
+      return string.Join(
+        "/",
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        ".docker",
+        "run",
+        DockerSocket
+      );
     }
 
     protected static string GetSocketPathFromRunDir()

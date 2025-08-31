@@ -4,12 +4,13 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 {
     private const string AdminToken = "YOUR_API_TOKEN";
 
-    private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder().WithAdminToken(AdminToken).Build();
+    private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder()
+        .WithAdminToken(AdminToken)
+        .Build();
 
     public async ValueTask InitializeAsync()
     {
-        await _influxDbContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _influxDbContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -25,8 +26,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
         using var client = new InfluxDBClient(_influxDbContainer.GetAddress(), AdminToken);
 
         // When
-        var result = await client.PingAsync()
-            .ConfigureAwait(true);
+        var result = await client.PingAsync().ConfigureAwait(true);
 
         // Then
         Assert.True(result);
@@ -37,7 +37,8 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
     public async Task PointQueryReturnsWrittenPoint()
     {
         // Given
-        const string query = "from(bucket:\"" + InfluxDbBuilder.DefaultBucket + "\") |> range(start: 0)";
+        const string query =
+            "from(bucket:\"" + InfluxDbBuilder.DefaultBucket + "\") |> range(start: 0)";
 
         const string regionTagName = "region";
 
@@ -56,10 +57,21 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
             .Timestamp(DateTime.UtcNow, WritePrecision.Ns);
 
         // When
-        await writeApi.WritePointAsync(point, InfluxDbBuilder.DefaultBucket, InfluxDbBuilder.DefaultOrganization, TestContext.Current.CancellationToken)
+        await writeApi
+            .WritePointAsync(
+                point,
+                InfluxDbBuilder.DefaultBucket,
+                InfluxDbBuilder.DefaultOrganization,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var fluxTables = await queryApi.QueryAsync(query, InfluxDbBuilder.DefaultOrganization, TestContext.Current.CancellationToken)
+        var fluxTables = await queryApi
+            .QueryAsync(
+                query,
+                InfluxDbBuilder.DefaultOrganization,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         var recordValues = fluxTables.Single().Records.Single().Values;

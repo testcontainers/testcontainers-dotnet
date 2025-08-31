@@ -15,7 +15,8 @@ public sealed class KafkaConfiguration : ContainerConfiguration
         KafkaVendor? vendor = null,
         ConsensusProtocol? consensusProtocol = null,
         IEnumerable<string> listeners = null,
-        IEnumerable<string> advertisedListeners = null)
+        IEnumerable<string> advertisedListeners = null
+    )
     {
         Vendor = vendor;
         ConsensusProtocol = consensusProtocol;
@@ -27,7 +28,9 @@ public sealed class KafkaConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public KafkaConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public KafkaConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -62,9 +65,15 @@ public sealed class KafkaConfiguration : ContainerConfiguration
         : base(oldValue, newValue)
     {
         Vendor = BuildConfiguration.Combine(oldValue.Vendor, newValue.Vendor);
-        ConsensusProtocol = BuildConfiguration.Combine(oldValue.ConsensusProtocol, newValue.ConsensusProtocol);
+        ConsensusProtocol = BuildConfiguration.Combine(
+            oldValue.ConsensusProtocol,
+            newValue.ConsensusProtocol
+        );
         Listeners = BuildConfiguration.Combine(oldValue.Listeners, newValue.Listeners);
-        AdvertisedListeners = BuildConfiguration.Combine(oldValue.AdvertisedListeners, newValue.AdvertisedListeners);
+        AdvertisedListeners = BuildConfiguration.Combine(
+            oldValue.AdvertisedListeners,
+            newValue.AdvertisedListeners
+        );
     }
 
     /// <summary>

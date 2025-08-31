@@ -2,7 +2,8 @@ namespace Testcontainers.Kafka;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
+public sealed class KafkaBuilder
+    : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
 {
     public const string KafkaImage = "confluentinc/cp-kafka:7.5.9";
 
@@ -22,7 +23,11 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
 
     private const string ProtocolPrefix = "TC";
 
-    private static readonly IKafkaVendorConfiguration[] VendorConfigurations = new[] { ApacheConfiguration.Instance, ConfluentConfiguration.Instance };
+    private static readonly IKafkaVendorConfiguration[] VendorConfigurations = new[]
+    {
+        ApacheConfiguration.Instance,
+        ConfluentConfiguration.Instance,
+    };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
@@ -88,7 +93,10 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <returns>A configured instance of <see cref="KafkaBuilder" />.</returns>
     public KafkaBuilder WithListener(string kafka)
     {
-        var index = DockerResourceConfiguration.Listeners == null ? 0 : DockerResourceConfiguration.Listeners.Count();
+        var index =
+            DockerResourceConfiguration.Listeners == null
+                ? 0
+                : DockerResourceConfiguration.Listeners.Count();
         var protocol = $"{ProtocolPrefix}-{index}";
         var listener = $"{protocol}://{kafka}";
         var listenerSecurityProtocolMap = $"{protocol}:PLAINTEXT";
@@ -98,17 +106,25 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
 
         var host = kafka.Split(':')[0];
 
-        var updatedListeners = DockerResourceConfiguration.Environments["KAFKA_LISTENERS"]
+        var updatedListeners = DockerResourceConfiguration
+            .Environments["KAFKA_LISTENERS"]
             .Split(',')
             .Concat(listeners);
 
-        var updatedListenersSecurityProtocolMap = DockerResourceConfiguration.Environments["KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"]
+        var updatedListenersSecurityProtocolMap = DockerResourceConfiguration
+            .Environments["KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"]
             .Split(',')
             .Concat(listenersSecurityProtocolMap);
 
-        return Merge(DockerResourceConfiguration, new KafkaConfiguration(listeners: listeners, advertisedListeners: listeners))
+        return Merge(
+                DockerResourceConfiguration,
+                new KafkaConfiguration(listeners: listeners, advertisedListeners: listeners)
+            )
             .WithEnvironment("KAFKA_LISTENERS", string.Join(",", updatedListeners))
-            .WithEnvironment("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", string.Join(",", updatedListenersSecurityProtocolMap))
+            .WithEnvironment(
+                "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
+                string.Join(",", updatedListenersSecurityProtocolMap)
+            )
             .WithNetworkAliases(host);
     }
 
@@ -119,7 +135,10 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <returns>A configured instance of <see cref="KafkaBuilder" />.</returns>
     private KafkaBuilder WithConsensusProtocol(ConsensusProtocol consensusProtocol)
     {
-        return Merge(DockerResourceConfiguration, new KafkaConfiguration(consensusProtocol: consensusProtocol));
+        return Merge(
+            DockerResourceConfiguration,
+            new KafkaConfiguration(consensusProtocol: consensusProtocol)
+        );
     }
 
     /// <summary>
@@ -131,7 +150,10 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         return WithConsensusProtocol(ConsensusProtocol.KRaft)
             .WithEnvironment("KAFKA_CONTROLLER_LISTENER_NAMES", "CONTROLLER")
             .WithEnvironment("KAFKA_PROCESS_ROLES", "broker,controller")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(".*Transitioning from RECOVERY to RUNNING.*"));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilMessageIsLogged(".*Transitioning from RECOVERY to RUNNING.*")
+            );
     }
 
     /// <summary>
@@ -143,8 +165,13 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     {
         return WithConsensusProtocol(ConsensusProtocol.ZooKeeper)
             .WithPortBinding(ZooKeeperPort, connectionString == null)
-            .WithEnvironment("KAFKA_ZOOKEEPER_CONNECT", connectionString ?? $"localhost:{ZooKeeperPort}")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("\\[KafkaServer id=\\d+\\] started"));
+            .WithEnvironment(
+                "KAFKA_ZOOKEEPER_CONNECT",
+                connectionString ?? $"localhost:{ZooKeeperPort}"
+            )
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("\\[KafkaServer id=\\d+\\] started")
+            );
     }
 
     /// <summary>
@@ -181,7 +208,10 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         KafkaBuilder kafkaBuilder;
 
         // Instead of this approach, should we consider using a builder for each vendor?
-        var vendorConfiguration = VendorConfigurations.Single(v => v.Vendor.Equals(DockerResourceConfiguration.Vendor) || v.IsImageFromVendor(DockerResourceConfiguration.Image));
+        var vendorConfiguration = VendorConfigurations.Single(v =>
+            v.Vendor.Equals(DockerResourceConfiguration.Vendor)
+            || v.IsImageFromVendor(DockerResourceConfiguration.Image)
+        );
 
         // If the user hasn't set a consensus protocol, use the vendor's default configuration.
         if (DockerResourceConfiguration.ConsensusProtocol.HasValue)
@@ -198,17 +228,29 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         }
         else
         {
-            throw new ArgumentException($"No default configuration available for vendor '{vendorConfiguration.Vendor}'.");
+            throw new ArgumentException(
+                $"No default configuration available for vendor '{vendorConfiguration.Vendor}'."
+            );
         }
 
         // Validate that the configuration is compatible with the vendor's image.
         vendorConfiguration.Validate(DockerResourceConfiguration);
 
-        var startupKafkaBuilder = kafkaBuilder.WithStartupCallback((container, ct) =>
-        {
-            var startupScript = vendorConfiguration.CreateStartupScript(kafkaBuilder.DockerResourceConfiguration, container);
-            return container.CopyAsync(Encoding.Default.GetBytes(startupScript), StartupScriptFilePath, Unix.FileMode755, ct);
-        });
+        var startupKafkaBuilder = kafkaBuilder.WithStartupCallback(
+            (container, ct) =>
+            {
+                var startupScript = vendorConfiguration.CreateStartupScript(
+                    kafkaBuilder.DockerResourceConfiguration,
+                    container
+                );
+                return container.CopyAsync(
+                    Encoding.Default.GetBytes(startupScript),
+                    StartupScriptFilePath,
+                    Unix.FileMode755,
+                    ct
+                );
+            }
+        );
 
         return new KafkaContainer(startupKafkaBuilder.DockerResourceConfiguration);
     }
@@ -220,12 +262,21 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithImage(KafkaImage)
             .WithPortBinding(KafkaPort, true)
             .WithPortBinding(BrokerPort, true)
-            .WithEnvironment("KAFKA_LISTENERS", $"PLAINTEXT://:{KafkaPort},BROKER://:{BrokerPort},CONTROLLER://:{ControllerPort}")
-            .WithEnvironment("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT")
+            .WithEnvironment(
+                "KAFKA_LISTENERS",
+                $"PLAINTEXT://:{KafkaPort},BROKER://:{BrokerPort},CONTROLLER://:{ControllerPort}"
+            )
+            .WithEnvironment(
+                "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
+                "BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+            )
             .WithEnvironment("KAFKA_INTER_BROKER_LISTENER_NAME", "BROKER")
             .WithEnvironment("KAFKA_BROKER_ID", "1")
             .WithEnvironment("KAFKA_NODE_ID", NodeId)
-            .WithEnvironment("KAFKA_CONTROLLER_QUORUM_VOTERS", $"{NodeId}@localhost:{ControllerPort}")
+            .WithEnvironment(
+                "KAFKA_CONTROLLER_QUORUM_VOTERS",
+                $"{NodeId}@localhost:{ControllerPort}"
+            )
             .WithEnvironment("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
             .WithEnvironment("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
             .WithEnvironment("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
@@ -234,7 +285,9 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithEnvironment("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
             .WithEnvironment("CLUSTER_ID", ClusterId)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; {StartupScriptFilePath}");
+            .WithCommand(
+                $"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; {StartupScriptFilePath}"
+            );
     }
 
     /// <inheritdoc />
@@ -244,14 +297,27 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
 
         base.Validate();
 
-        Predicate<KafkaVendor?> vendorNotFound = value => value == null && !VendorConfigurations.Any(v => v.IsImageFromVendor(DockerResourceConfiguration.Image));
+        Predicate<KafkaVendor?> vendorNotFound = value =>
+            value == null
+            && !VendorConfigurations.Any(v =>
+                v.IsImageFromVendor(DockerResourceConfiguration.Image)
+            );
 
-        _ = Guard.Argument(DockerResourceConfiguration.Vendor, nameof(DockerResourceConfiguration.Vendor))
-            .ThrowIf(argument => vendorNotFound(argument.Value), argument => new ArgumentException(message, argument.Name));
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Vendor,
+                nameof(DockerResourceConfiguration.Vendor)
+            )
+            .ThrowIf(
+                argument => vendorNotFound(argument.Value),
+                argument => new ArgumentException(message, argument.Name)
+            );
     }
 
     /// <inheritdoc />
-    protected override KafkaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override KafkaBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new KafkaConfiguration(resourceConfiguration));
     }

@@ -6,9 +6,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   public abstract class DockerMTls : ProtectDockerDaemonSocket
   {
     public DockerMTls(string dockerImageVersion)
-      : base(new ContainerBuilder(), dockerImageVersion)
-    {
-    }
+      : base(new ContainerBuilder(), dockerImageVersion) { }
 
     public override IList<string> CustomProperties
     {

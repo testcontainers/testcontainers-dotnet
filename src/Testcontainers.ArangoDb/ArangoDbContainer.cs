@@ -9,9 +9,7 @@ public sealed class ArangoDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public ArangoDbContainer(ArangoDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the transport address.
@@ -19,6 +17,10 @@ public sealed class ArangoDbContainer : DockerContainer
     /// <returns>The transport address.</returns>
     public string GetTransportAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ArangoDbBuilder.ArangoDbPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(ArangoDbBuilder.ArangoDbPort)
+        ).ToString();
     }
 }

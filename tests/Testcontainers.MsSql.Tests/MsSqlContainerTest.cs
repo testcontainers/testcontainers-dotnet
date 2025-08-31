@@ -25,35 +25,40 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await fixture
+            .Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+
     // # --8<-- [end:UseMsSqlContainer]
 
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory
-            => SqlClientFactory.Instance;
+        public override DbProviderFactory DbProviderFactory => SqlClientFactory.Instance;
     }
 
     [UsedImplicitly]
     public class MsSqlWaitForDatabaseFixture(IMessageSink messageSink)
         : MsSqlDefaultFixture(messageSink)
     {
-        protected override MsSqlBuilder Configure(MsSqlBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override MsSqlBuilder Configure(MsSqlBuilder builder) =>
+            builder.WithWaitStrategy(
+                Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory)
+            );
     }
 
     [UsedImplicitly]
     public sealed class MsSqlDefaultConfiguration(MsSqlDefaultFixture fixture)
-        : MsSqlContainerTest(fixture), IClassFixture<MsSqlDefaultFixture>;
+        : MsSqlContainerTest(fixture),
+            IClassFixture<MsSqlDefaultFixture>;
 
     [UsedImplicitly]
     public sealed class MsSqlWaitForDatabaseConfiguration(MsSqlWaitForDatabaseFixture fixture)
-        : MsSqlContainerTest(fixture), IClassFixture<MsSqlWaitForDatabaseFixture>;
+        : MsSqlContainerTest(fixture),
+            IClassFixture<MsSqlWaitForDatabaseFixture>;
 }

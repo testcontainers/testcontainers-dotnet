@@ -2,7 +2,8 @@ namespace Testcontainers.JanusGraph;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
+public sealed class JanusGraphBuilder
+    : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
 {
     public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0";
 
@@ -44,23 +45,36 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
             .WithImage(JanusGraphImage)
             .WithPortBinding(JanusGraphPort, true)
             .WithEnvironment("janusgraph.storage.backend", "inmemory")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Channel started at port"));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("Channel started at port")
+            );
     }
 
     /// <inheritdoc />
-    protected override JanusGraphBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override JanusGraphBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new JanusGraphConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new JanusGraphConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override JanusGraphBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new JanusGraphConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new JanusGraphConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override JanusGraphBuilder Merge(JanusGraphConfiguration oldValue, JanusGraphConfiguration newValue)
+    protected override JanusGraphBuilder Merge(
+        JanusGraphConfiguration oldValue,
+        JanusGraphConfiguration newValue
+    )
     {
         return new JanusGraphBuilder(new JanusGraphConfiguration(oldValue, newValue));
     }

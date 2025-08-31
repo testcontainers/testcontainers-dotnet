@@ -2,9 +2,7 @@ namespace Testcontainers.Build;
 
 internal sealed class BuildParameters
 {
-    private BuildParameters()
-    {
-    }
+    private BuildParameters() { }
 
     public string Solution { get; private set; }
     public string Target { get; private set; }
@@ -39,7 +37,10 @@ internal sealed class BuildParameters
         {
             Solution = context.MakeAbsolute(new DirectoryPath(solutionFilePath)).FullPath,
             Target = context.Argument("target", "Default"),
-            Configuration = context.Argument("configuration", buildInformation.IsReleaseBuild ? "Release" : "Debug"),
+            Configuration = context.Argument(
+                "configuration",
+                buildInformation.IsReleaseBuild ? "Release" : "Debug"
+            ),
             Sha = buildInformation.Sha,
             Branch = buildInformation.Branch,
             SourceBranch = buildInformation.SourceBranch,
@@ -53,7 +54,8 @@ internal sealed class BuildParameters
             IsPullRequest = buildInformation.IsPullRequest,
             ShouldPublish = !buildInformation.IsLocalBuild && buildInformation.ShouldPublish,
             Verbosity = DotNetVerbosity.Minimal,
-            CodeSigningCertificateCredentials = BuildCredentials.GetCodeSigningCertificateCredentials(context),
+            CodeSigningCertificateCredentials =
+                BuildCredentials.GetCodeSigningCertificateCredentials(context),
             SonarQubeCredentials = SonarQubeCredentials.GetSonarQubeCredentials(context),
             NuGetCredentials = NuGetCredentials.GetNuGetCredentials(context),
             Projects = BuildProjects.Instance(context, solutionFilePath),

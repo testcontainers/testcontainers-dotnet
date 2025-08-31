@@ -25,10 +25,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
       // When
-      _ = await _container.ExecAsync(new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" }, TestContext.Current.CancellationToken)
+      _ = await _container
+        .ExecAsync(
+          new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" },
+          TestContext.Current.CancellationToken
+        )
         .ConfigureAwait(true);
 
-      var fileContent = await _container.ReadFileAsync(dayOfWeekFilePath, TestContext.Current.CancellationToken)
+      var fileContent = await _container
+        .ReadFileAsync(dayOfWeekFilePath, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -38,19 +43,22 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public Task AccessNotExistingFileThrowsFileNotFoundException()
     {
-      return Assert.ThrowsAsync<FileNotFoundException>(() => _container.ReadFileAsync("/tmp/fileNotFound", TestContext.Current.CancellationToken));
+      return Assert.ThrowsAsync<FileNotFoundException>(() =>
+        _container.ReadFileAsync("/tmp/fileNotFound", TestContext.Current.CancellationToken)
+      );
     }
 
     [Fact]
     public Task AccessDirectoryThrowsInvalidOperationException()
     {
-      return Assert.ThrowsAsync<InvalidOperationException>(() => _container.ReadFileAsync("/tmp", TestContext.Current.CancellationToken));
+      return Assert.ThrowsAsync<InvalidOperationException>(() =>
+        _container.ReadFileAsync("/tmp", TestContext.Current.CancellationToken)
+      );
     }
 
     public async ValueTask InitializeAsync()
     {
-      await _container.StartAsync()
-          .ConfigureAwait(false);
+      await _container.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

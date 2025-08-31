@@ -5,7 +5,8 @@ namespace Testcontainers.Couchbase;
 /// The Couchbase module runs the following services: Data, Index, Query, Search and creates the <see cref="CouchbaseBucket.Default" /> bucket during the start.
 /// </remarks>
 [PublicAPI]
-public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
+public sealed class CouchbaseBuilder
+    : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
     public const string CouchbaseImage = "couchbase:community-7.0.2";
 
@@ -41,11 +42,23 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
     public const string DefaultPassword = "password";
 
-    private static readonly KeyValuePair<string, string> BasicAuthenticationHeader = new KeyValuePair<string, string>("Authorization", "Basic " + Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(string.Join(":", DefaultUsername, DefaultPassword))));
+    private static readonly KeyValuePair<string, string> BasicAuthenticationHeader =
+        new KeyValuePair<string, string>(
+            "Authorization",
+            "Basic "
+                + Convert.ToBase64String(
+                    Encoding
+                        .GetEncoding("ISO-8859-1")
+                        .GetBytes(string.Join(":", DefaultUsername, DefaultPassword))
+                )
+        );
 
-    private static readonly IWaitUntil WaitUntilNodeIsReady = new HttpWaitStrategy().ForPath("/pools").ForPort(MgmtPort);
+    private static readonly IWaitUntil WaitUntilNodeIsReady = new HttpWaitStrategy()
+        .ForPath("/pools")
+        .ForPort(MgmtPort);
 
-    private static readonly ISet<CouchbaseService> EnabledServices = new HashSet<CouchbaseService>();
+    private static readonly ISet<CouchbaseService> EnabledServices =
+        new HashSet<CouchbaseService>();
 
     static CouchbaseBuilder()
     {
@@ -86,42 +99,49 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
         if (EnabledServices.Any())
         {
-            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
+            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request =>
+                request
                     .ForPath("/pools/default")
                     .ForPort(MgmtPort)
                     .ForResponseMessageMatching(IsNodeHealthyAsync)
-                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value));
+                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value)
+            );
         }
 
         if (EnabledServices.Contains(CouchbaseService.Query))
         {
-            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
+            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request =>
+                request
                     .ForPath("/admin/ping")
                     .ForPort(QueryPort)
-                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value));
+                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value)
+            );
         }
 
         if (EnabledServices.Contains(CouchbaseService.Analytics))
         {
-            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
+            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request =>
+                request
                     .ForPath("/admin/ping")
                     .ForPort(AnalyticsPort)
-                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value));
+                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value)
+            );
         }
 
         if (EnabledServices.Contains(CouchbaseService.Eventing))
         {
-            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
+            waitStrategy = waitStrategy.UntilHttpRequestIsSucceeded(request =>
+                request
                     .ForPath("/api/v1/config")
                     .ForPort(EventingPort)
-                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value));
+                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value)
+            );
         }
 
-        var couchbaseBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        var couchbaseBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(waitStrategy);
         return new CouchbaseContainer(couchbaseBuilder.DockerResourceConfiguration);
     }
 
@@ -149,19 +169,30 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     }
 
     /// <inheritdoc />
-    protected override CouchbaseBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override CouchbaseBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new CouchbaseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CouchbaseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override CouchbaseBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new CouchbaseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CouchbaseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override CouchbaseBuilder Merge(CouchbaseConfiguration oldValue, CouchbaseConfiguration newValue)
+    protected override CouchbaseBuilder Merge(
+        CouchbaseConfiguration oldValue,
+        CouchbaseConfiguration newValue
+    )
     {
         return new CouchbaseBuilder(new CouchbaseConfiguration(oldValue, newValue));
     }
@@ -183,50 +214,58 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <param name="ct">Cancellation token.</param>
     private async Task ConfigureCouchbaseAsync(IContainer container, CancellationToken ct = default)
     {
-        await WaitStrategy.WaitUntilAsync(() => WaitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+        await WaitStrategy
+            .WaitUntilAsync(
+                () => WaitUntilNodeIsReady.UntilAsync(container),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromMinutes(5),
+                -1,
+                ct
+            )
             .ConfigureAwait(false);
 
         using (var httpClient = new HttpClient(new RetryHandler()))
         {
-            httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MgmtPort)).Uri;
+            httpClient.BaseAddress = new UriBuilder(
+                Uri.UriSchemeHttp,
+                container.Hostname,
+                container.GetMappedPublicPort(MgmtPort)
+            ).Uri;
 
             using (var request = new RenameNodeRequest(container))
             {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
+                using (var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCodeAsync(response)
-                        .ConfigureAwait(false);
+                    await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                 }
             }
 
             using (var request = new SetupNodeServicesRequest(EnabledServices.ToArray()))
             {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
+                using (var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCodeAsync(response)
-                        .ConfigureAwait(false);
+                    await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                 }
             }
 
             using (var request = new SetupMemoryQuotasRequest(EnabledServices.ToArray()))
             {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
+                using (var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCodeAsync(response)
-                        .ConfigureAwait(false);
+                    await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                 }
             }
 
-            using (var request = new ConfigureExternalAddressesRequest(container, EnabledServices.ToArray()))
+            using (
+                var request = new ConfigureExternalAddressesRequest(
+                    container,
+                    EnabledServices.ToArray()
+                )
+            )
             {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
+                using (var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCodeAsync(response)
-                        .ConfigureAwait(false);
+                    await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                 }
             }
 
@@ -234,11 +273,11 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             {
                 using (var request = new CreateBucketRequest(bucket))
                 {
-                    using (var response = await httpClient.SendAsync(request, ct)
-                        .ConfigureAwait(false))
+                    using (
+                        var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false)
+                    )
                     {
-                        await EnsureSuccessStatusCodeAsync(response)
-                            .ConfigureAwait(false);
+                        await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                     }
                 }
             }
@@ -249,27 +288,40 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             // We got frequently: System.IO.IOException The response ended prematurely.
             using (var request = new SetupCredentialsRequest())
             {
-                using (var response = await httpClient.SendAsync(request, ct)
-                    .ConfigureAwait(false))
+                using (var response = await httpClient.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    await EnsureSuccessStatusCodeAsync(response)
-                        .ConfigureAwait(false);
+                    await EnsureSuccessStatusCodeAsync(response).ConfigureAwait(false);
                 }
             }
         }
 
         // As long as we do not expose the bucket API, we do not need to iterate over all of them.
-        var waitUntilBucketIsCreated = DockerResourceConfiguration.Buckets.Aggregate(Wait.ForUnixContainer(), (waitStrategy, bucket)
-            => waitStrategy.UntilHttpRequestIsSucceeded(request
-                => request
-                    .ForPath("/pools/default/buckets/" + bucket.Name)
-                    .ForPort(MgmtPort)
-                    .ForResponseMessageMatching(AllServicesEnabledAsync)
-                    .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value)))
+        var waitUntilBucketIsCreated = DockerResourceConfiguration
+            .Buckets.Aggregate(
+                Wait.ForUnixContainer(),
+                (waitStrategy, bucket) =>
+                    waitStrategy.UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPath("/pools/default/buckets/" + bucket.Name)
+                            .ForPort(MgmtPort)
+                            .ForResponseMessageMatching(AllServicesEnabledAsync)
+                            .WithHeader(
+                                BasicAuthenticationHeader.Key,
+                                BasicAuthenticationHeader.Value
+                            )
+                    )
+            )
             .Build()
             .Last();
 
-        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container, ct), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+        await WaitStrategy
+            .WaitUntilAsync(
+                () => waitUntilBucketIsCreated.UntilAsync(container, ct),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromMinutes(5),
+                -1,
+                ct
+            )
             .ConfigureAwait(false);
     }
 
@@ -283,14 +335,13 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <returns>A value indicating whether the single-node is healthy or not.</returns>
     private static async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
     {
-        var jsonString = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         try
         {
-            var status = JsonDocument.Parse(jsonString)
-                .RootElement
-                .GetProperty("nodes")
+            var status = JsonDocument
+                .Parse(jsonString)
+                .RootElement.GetProperty("nodes")
                 .EnumerateArray()
                 .ElementAt(0)
                 .GetProperty("status")
@@ -314,14 +365,13 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <returns>A value indicating whether all services are enabled for a bucket or not.</returns>
     private static async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
     {
-        var jsonString = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         try
         {
-            var services = JsonDocument.Parse(jsonString)
-                .RootElement
-                .GetProperty("nodes")
+            var services = JsonDocument
+                .Parse(jsonString)
+                .RootElement.GetProperty("nodes")
                 .EnumerateArray()
                 .ElementAt(0)
                 .GetProperty("services")
@@ -329,7 +379,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 .Select(service => service.GetString())
                 .Where(service => service != null);
 
-            return EnabledServices.All(enabledService => services.Any(service => service.StartsWith(enabledService.Identifier)));
+            return EnabledServices.All(enabledService =>
+                services.Any(service => service.StartsWith(enabledService.Identifier))
+            );
         }
         catch
         {
@@ -350,8 +402,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         }
         catch (Exception e)
         {
-            var content = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             throw new InvalidOperationException(content, e);
         }
@@ -394,7 +445,13 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             : base(HttpMethod.Post, "/node/controller/setupServices")
         {
             IDictionary<string, string> content = new Dictionary<string, string>();
-            content.Add("services", string.Join(",", enabledServices.Select(enabledService => enabledService.Identifier)));
+            content.Add(
+                "services",
+                string.Join(
+                    ",",
+                    enabledServices.Select(enabledService => enabledService.Identifier)
+                )
+            );
             Content = new FormUrlEncodedContent(content);
         }
     }
@@ -429,7 +486,10 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 }
                 else
                 {
-                    content.Add(enabledService.Identifier + "MemoryQuota", enabledService.MinimumQuotaMb.ToString());
+                    content.Add(
+                        enabledService.Identifier + "MemoryQuota",
+                        enabledService.MinimumQuotaMb.ToString()
+                    );
                 }
             }
 
@@ -450,7 +510,10 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// </remarks>
         /// <param name="container">The Couchbase container.</param>
         /// <param name="enabledServices">The enabled Couchbase node services.</param>
-        public ConfigureExternalAddressesRequest(IContainer container, params CouchbaseService[] enabledServices)
+        public ConfigureExternalAddressesRequest(
+            IContainer container,
+            params CouchbaseService[] enabledServices
+        )
             : base(HttpMethod.Put, "/node/controller/setupAlternateAddresses/external")
         {
             IDictionary<string, string> content = new Dictionary<string, string>();
@@ -487,8 +550,14 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
             if (enabledServices.Contains(CouchbaseService.Eventing))
             {
-                content.Add("eventingAdminPort", container.GetMappedPublicPort(EventingPort).ToString());
-                content.Add("eventingSSL", container.GetMappedPublicPort(EventingSslPort).ToString());
+                content.Add(
+                    "eventingAdminPort",
+                    container.GetMappedPublicPort(EventingPort).ToString()
+                );
+                content.Add(
+                    "eventingSSL",
+                    container.GetMappedPublicPort(EventingSslPort).ToString()
+                );
             }
 
             Content = new FormUrlEncodedContent(content);
@@ -559,19 +628,19 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
         /// Initializes a new instance of the <see cref="RetryHandler" /> class.
         /// </summary>
         public RetryHandler()
-            : base(new HttpClientHandler())
-        {
-        }
+            : base(new HttpClientHandler()) { }
 
         /// <inheritdoc />
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken
+        )
         {
             for (var _ = 0; _ < MaxRetries; _++)
             {
                 try
                 {
-                    return await base.SendAsync(request, cancellationToken)
-                        .ConfigureAwait(false);
+                    return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 }
                 catch (HttpRequestException)
                 {
@@ -580,7 +649,9 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
                 }
             }
 
-            throw new HttpRequestException($"Unable to configure Couchbase. The HTTP request '{request.RequestUri}' did not complete successfully.");
+            throw new HttpRequestException(
+                $"Unable to configure Couchbase. The HTTP request '{request.RequestUri}' did not complete successfully."
+            );
         }
     }
 }

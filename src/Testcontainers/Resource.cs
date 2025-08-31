@@ -24,8 +24,7 @@ namespace DotNet.Testcontainers
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-      await DisposeAsyncCore()
-        .ConfigureAwait(false);
+      await DisposeAsyncCore().ConfigureAwait(false);
 
       GC.SuppressFinalize(this);
     }
@@ -63,8 +62,7 @@ namespace DotNet.Testcontainers
     /// <returns>A <see cref="IDisposable" /> that releases the lock on <see cref="IDisposable.Dispose" />.</returns>
     protected virtual async Task<IDisposable> AcquireLockAsync(CancellationToken ct = default)
     {
-      await _semaphoreSlim.WaitAsync(ct)
-        .ConfigureAwait(false);
+      await _semaphoreSlim.WaitAsync(ct).ConfigureAwait(false);
 
       return new Lock(_semaphoreSlim);
     }
@@ -75,9 +73,16 @@ namespace DotNet.Testcontainers
     /// <exception cref="InvalidOperationException">The resource was not found.</exception>
     protected virtual void ThrowIfResourceNotFound()
     {
-      const string message = "Could not find resource '{0}'. Please create the resource by calling StartAsync(CancellationToken) or CreateAsync(CancellationToken).";
-      _ = Guard.Argument(this, GetType().Name)
-        .ThrowIf(argument => !argument.Value.Exists(), argument => new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, message, argument.Name)));
+      const string message =
+        "Could not find resource '{0}'. Please create the resource by calling StartAsync(CancellationToken) or CreateAsync(CancellationToken).";
+      _ = Guard
+        .Argument(this, GetType().Name)
+        .ThrowIf(
+          argument => !argument.Value.Exists(),
+          argument => new InvalidOperationException(
+            string.Format(CultureInfo.InvariantCulture, message, argument.Name)
+          )
+        );
     }
 
     /// <summary>
@@ -87,8 +92,12 @@ namespace DotNet.Testcontainers
     protected virtual void ThrowIfLockNotAcquired()
     {
       const string message = "Unsafe method call requires lock.";
-      _ = Guard.Argument(_semaphoreSlim, nameof(_semaphoreSlim))
-        .ThrowIf(argument => argument.Value.CurrentCount > 0, _ => new InvalidOperationException(message));
+      _ = Guard
+        .Argument(_semaphoreSlim, nameof(_semaphoreSlim))
+        .ThrowIf(
+          argument => argument.Value.CurrentCount > 0,
+          _ => new InvalidOperationException(message)
+        );
     }
 
     /// <summary>

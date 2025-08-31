@@ -2,9 +2,11 @@ namespace Testcontainers.Firestore;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
+public sealed class FirestoreBuilder
+    : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
 {
-    public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
+    public const string GoogleCloudCliImage =
+        "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort FirestorePort = 8080;
 
@@ -44,24 +46,42 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
             .WithImage(GoogleCloudCliImage)
             .WithPortBinding(FirestorePort, true)
             .WithEntrypoint("gcloud")
-            .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort)
+            .WithCommand(
+                "beta",
+                "emulators",
+                "firestore",
+                "start",
+                "--host-port",
+                "0.0.0.0:" + FirestorePort
+            )
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*running.*$"));
     }
 
     /// <inheritdoc />
-    protected override FirestoreBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override FirestoreBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new FirestoreConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new FirestoreConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override FirestoreBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new FirestoreConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new FirestoreConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override FirestoreBuilder Merge(FirestoreConfiguration oldValue, FirestoreConfiguration newValue)
+    protected override FirestoreBuilder Merge(
+        FirestoreConfiguration oldValue,
+        FirestoreConfiguration newValue
+    )
     {
         return new FirestoreBuilder(new FirestoreConfiguration(oldValue, newValue));
     }

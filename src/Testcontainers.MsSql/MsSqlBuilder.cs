@@ -2,7 +2,8 @@ namespace Testcontainers.MsSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
+public sealed class MsSqlBuilder
+    : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
     public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
 
@@ -73,13 +74,19 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override MsSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MsSqlBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new MsSqlConfiguration(resourceConfiguration));
     }
@@ -140,10 +147,10 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
         private static async Task<bool> UntilAsync(MsSqlContainer container)
         {
-            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
-                .ConfigureAwait(false);
+            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync().ConfigureAwait(false);
 
-            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
+            var execResult = await container
+                .ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);

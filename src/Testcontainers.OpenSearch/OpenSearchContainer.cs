@@ -31,7 +31,13 @@ public sealed class OpenSearchContainer : DockerContainer
     /// <returns>The OpenSearch connection string.</returns>
     public string GetConnectionString()
     {
-        var schema = _configuration.TlsEnabled.GetValueOrDefault() ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
-        return new UriBuilder(schema, Hostname, GetMappedPublicPort(OpenSearchBuilder.OpenSearchRestApiPort)).ToString();
+        var schema = _configuration.TlsEnabled.GetValueOrDefault()
+            ? Uri.UriSchemeHttps
+            : Uri.UriSchemeHttp;
+        return new UriBuilder(
+            schema,
+            Hostname,
+            GetMappedPublicPort(OpenSearchBuilder.OpenSearchRestApiPort)
+        ).ToString();
     }
 }

@@ -13,7 +13,8 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     public OpenSearchConfiguration(
         bool? tlsEnabled = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         TlsEnabled = tlsEnabled;
         Username = username;
@@ -24,35 +25,34 @@ public sealed class OpenSearchConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public OpenSearchConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-        : base(resourceConfiguration)
-    {
-    }
+    public OpenSearchConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
+        : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public OpenSearchConfiguration(IContainerConfiguration resourceConfiguration)
-        : base(resourceConfiguration)
-    {
-    }
+        : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public OpenSearchConfiguration(OpenSearchConfiguration resourceConfiguration)
-        : this(new OpenSearchConfiguration(), resourceConfiguration)
-    {
-    }
+        : this(new OpenSearchConfiguration(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public OpenSearchConfiguration(OpenSearchConfiguration oldValue, OpenSearchConfiguration newValue)
+    public OpenSearchConfiguration(
+        OpenSearchConfiguration oldValue,
+        OpenSearchConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         TlsEnabled = BuildConfiguration.Combine(oldValue.TlsEnabled, newValue.TlsEnabled);

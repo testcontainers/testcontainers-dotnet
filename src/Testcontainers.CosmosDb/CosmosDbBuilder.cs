@@ -2,13 +2,16 @@ namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
+public sealed class CosmosDbBuilder
+    : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
-    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+    public const string CosmosDbImage =
+        "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
 
     public const ushort CosmosDbPort = 8081;
 
-    public const string DefaultAccountKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+    public const string DefaultAccountKey =
+        "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
@@ -49,7 +52,9 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     }
 
     /// <inheritdoc />
-    protected override CosmosDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override CosmosDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new CosmosDbConfiguration(resourceConfiguration));
     }
@@ -61,7 +66,10 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     }
 
     /// <inheritdoc />
-    protected override CosmosDbBuilder Merge(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
+    protected override CosmosDbBuilder Merge(
+        CosmosDbConfiguration oldValue,
+        CosmosDbConfiguration newValue
+    )
     {
         return new CosmosDbBuilder(new CosmosDbConfiguration(oldValue, newValue));
     }
@@ -79,7 +87,8 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
 
             try
             {
-                using var httpResponse = await httpClient.GetAsync(requestUri)
+                using var httpResponse = await httpClient
+                    .GetAsync(requestUri)
                     .ConfigureAwait(false);
 
                 return httpResponse.IsSuccessStatusCode;

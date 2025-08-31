@@ -17,9 +17,7 @@ namespace DotNet.Testcontainers.Containers
   {
     private readonly PortForwardingConfiguration _configuration;
 
-    static PortForwardingContainer()
-    {
-    }
+    static PortForwardingContainer() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PortForwardingContainer" /> class.
@@ -34,8 +32,7 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Gets the <see cref="PortForwardingContainer" /> instance.
     /// </summary>
-    public static PortForwardingContainer Instance { get; }
-      = new PortForwardingBuilder().Build();
+    public static PortForwardingContainer Instance { get; } = new PortForwardingBuilder().Build();
 
     /// <summary>
     /// Exposes the host ports using SSH port forwarding.
@@ -45,10 +42,22 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A task that completes when the host ports are forwarded.</returns>
     public Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
     {
-      var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
+      var sshClient = new SshClient(
+        Hostname,
+        GetMappedPublicPort(PortForwardingBuilder.SshdPort),
+        _configuration.Username,
+        _configuration.Password
+      );
       sshClient.Connect();
 
-      foreach (var forwardedPort in ports.Select(port => new ForwardedPortRemote(IPAddress.Loopback, port, IPAddress.Loopback, port)))
+      foreach (
+        var forwardedPort in ports.Select(port => new ForwardedPortRemote(
+          IPAddress.Loopback,
+          port,
+          IPAddress.Loopback,
+          port
+        ))
+      )
       {
         sshClient.AddForwardedPort(forwardedPort);
         forwardedPort.Start();
@@ -59,7 +68,12 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
     [PublicAPI]
-    private sealed class PortForwardingBuilder : ContainerBuilder<PortForwardingBuilder, PortForwardingContainer, PortForwardingConfiguration>
+    private sealed class PortForwardingBuilder
+      : ContainerBuilder<
+        PortForwardingBuilder,
+        PortForwardingContainer,
+        PortForwardingConfiguration
+      >
     {
       public const string SshdImage = "testcontainers/sshd:1.2.0";
 
@@ -96,7 +110,9 @@ namespace DotNet.Testcontainers.Containers
         // instance of the port forwarding container. To improve the user experience, it
         // is preferable to stop supporting `WithDockerEndpoint(string)` and instead rely
         // on the environment variables or the properties file custom configurations.
-        return DockerResourceConfiguration.DockerEndpointAuthConfig == null ? null : new PortForwardingContainer(DockerResourceConfiguration);
+        return DockerResourceConfiguration.DockerEndpointAuthConfig == null
+          ? null
+          : new PortForwardingContainer(DockerResourceConfiguration);
       }
 
       /// <inheritdoc />
@@ -111,19 +127,30 @@ namespace DotNet.Testcontainers.Containers
       }
 
       /// <inheritdoc />
-      protected override PortForwardingBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+      protected override PortForwardingBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+      )
       {
-        return Merge(DockerResourceConfiguration, new PortForwardingConfiguration(resourceConfiguration));
+        return Merge(
+          DockerResourceConfiguration,
+          new PortForwardingConfiguration(resourceConfiguration)
+        );
       }
 
       /// <inheritdoc />
       protected override PortForwardingBuilder Clone(IContainerConfiguration resourceConfiguration)
       {
-        return Merge(DockerResourceConfiguration, new PortForwardingConfiguration(resourceConfiguration));
+        return Merge(
+          DockerResourceConfiguration,
+          new PortForwardingConfiguration(resourceConfiguration)
+        );
       }
 
       /// <inheritdoc />
-      protected override PortForwardingBuilder Merge(PortForwardingConfiguration oldValue, PortForwardingConfiguration newValue)
+      protected override PortForwardingBuilder Merge(
+        PortForwardingConfiguration oldValue,
+        PortForwardingConfiguration newValue
+      )
       {
         return new PortForwardingBuilder(new PortForwardingConfiguration(oldValue, newValue));
       }
@@ -135,7 +162,10 @@ namespace DotNet.Testcontainers.Containers
       /// <returns>A configured instance of <see cref="PortForwardingBuilder" />.</returns>
       private PortForwardingBuilder WithUsername(string username)
       {
-        return Merge(DockerResourceConfiguration, new PortForwardingConfiguration(username: username))
+        return Merge(
+            DockerResourceConfiguration,
+            new PortForwardingConfiguration(username: username)
+          )
           .WithEnvironment("USERNAME", username);
       }
 
@@ -146,7 +176,10 @@ namespace DotNet.Testcontainers.Containers
       /// <returns>A configured instance of <see cref="PortForwardingBuilder" />.</returns>
       private PortForwardingBuilder WithPassword(string password)
       {
-        return Merge(DockerResourceConfiguration, new PortForwardingConfiguration(password: password))
+        return Merge(
+            DockerResourceConfiguration,
+            new PortForwardingConfiguration(password: password)
+          )
           .WithEnvironment("PASSWORD", password);
       }
     }
@@ -160,9 +193,7 @@ namespace DotNet.Testcontainers.Containers
       /// </summary>
       /// <param name="username">The OpenSSH daemon username.</param>
       /// <param name="password">The OpenSSH daemon password.</param>
-      public PortForwardingConfiguration(
-        string username = null,
-        string password = null)
+      public PortForwardingConfiguration(string username = null, string password = null)
       {
         Username = username;
         Password = password;
@@ -172,7 +203,9 @@ namespace DotNet.Testcontainers.Containers
       /// Initializes a new instance of the <see cref="PortForwardingConfiguration" /> class.
       /// </summary>
       /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-      public PortForwardingConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+      public PortForwardingConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+      )
         : base(resourceConfiguration)
       {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -203,7 +236,10 @@ namespace DotNet.Testcontainers.Containers
       /// </summary>
       /// <param name="oldValue">The old Docker resource configuration.</param>
       /// <param name="newValue">The new Docker resource configuration.</param>
-      public PortForwardingConfiguration(PortForwardingConfiguration oldValue, PortForwardingConfiguration newValue)
+      public PortForwardingConfiguration(
+        PortForwardingConfiguration oldValue,
+        PortForwardingConfiguration newValue
+      )
         : base(oldValue, newValue)
       {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);

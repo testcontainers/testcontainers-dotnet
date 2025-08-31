@@ -9,15 +9,16 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerSystemOperations : DockerApiClient, IDockerSystemOperations
   {
-    public DockerSystemOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(sessionId, dockerEndpointAuthConfig, logger)
-    {
-    }
+    public DockerSystemOperations(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      ILogger logger
+    )
+      : base(sessionId, dockerEndpointAuthConfig, logger) { }
 
     public async Task<bool> GetIsWindowsEngineEnabled(CancellationToken ct = default)
     {
-      var version = await GetVersionAsync(ct)
-        .ConfigureAwait(false);
+      var version = await GetVersionAsync(ct).ConfigureAwait(false);
 
       return version.Os.IndexOf("Windows", StringComparison.OrdinalIgnoreCase) > -1;
     }

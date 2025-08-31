@@ -16,7 +16,10 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   internal sealed class DockerConfig
   {
-    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
+    private static readonly string UserProfileDockerConfigDirectoryPath = Path.Combine(
+      Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+      ".docker"
+    );
 
     private readonly ICustomConfiguration[] _customConfigurations;
 
@@ -29,9 +32,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     [PublicAPI]
     public DockerConfig()
-      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
-    {
-    }
+      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerConfig" /> class.
@@ -48,8 +49,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Gets the <see cref="DockerConfig" /> instance.
     /// </summary>
-    public static DockerConfig Instance { get; }
-      = new DockerConfig();
+    public static DockerConfig Instance { get; } = new DockerConfig();
 
     /// <inheritdoc cref="FileSystemInfo.Exists" />
     public bool Exists => File.Exists(_dockerConfigFilePath);
@@ -91,24 +91,40 @@ namespace DotNet.Testcontainers.Builders
       var dockerContext = GetCurrentContext();
       if (string.IsNullOrEmpty(dockerContext) || defaultDockerContext.Equals(dockerContext))
       {
-        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? NpipeEndpointAuthenticationProvider.DockerEngine : UnixEndpointAuthenticationProvider.DockerEngine;
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? NpipeEndpointAuthenticationProvider.DockerEngine
+          : UnixEndpointAuthenticationProvider.DockerEngine;
       }
 
       using (var sha256 = SHA256.Create())
       {
-        var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
-        var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
+        var dockerContextHash = BitConverter
+          .ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext)))
+          .Replace("-", string.Empty)
+          .ToLowerInvariant();
+        var metaFilePath = Path.Combine(
+          _dockerConfigDirectoryPath,
+          "contexts",
+          "meta",
+          dockerContextHash,
+          "meta.json"
+        );
 
         try
         {
           using (var metaFileStream = File.OpenRead(metaFilePath))
           {
-            var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
+            var meta = JsonSerializer.Deserialize(
+              metaFileStream,
+              SourceGenerationContext.Default.DockerContextMeta
+            );
             var host = meta.Endpoints?.Docker?.Host;
 
             if (string.IsNullOrEmpty(host))
             {
-              throw new DockerConfigurationException($"The Docker host is null or empty in '{metaFilePath}' (JSONPath: Endpoints.docker.Host).");
+              throw new DockerConfigurationException(
+                $"The Docker host is null or empty in '{metaFilePath}' (JSONPath: Endpoints.docker.Host)."
+              );
             }
 
             return new Uri(host.Replace("npipe:////./", "npipe://./"));
@@ -116,11 +132,17 @@ namespace DotNet.Testcontainers.Builders
         }
         catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
         {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist.", e);
+          throw new DockerConfigurationException(
+            $"The Docker context '{dockerContext}' does not exist.",
+            e
+          );
         }
         catch (Exception e) when (e is not DockerConfigurationException)
         {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from '{metaFilePath}'.", e);
+          throw new DockerConfigurationException(
+            $"The Docker context '{dockerContext}' failed to load from '{metaFilePath}'.",
+            e
+          );
         }
       }
     }
@@ -141,7 +163,13 @@ namespace DotNet.Testcontainers.Builders
 
       using (var dockerConfigJsonDocument = Parse())
       {
-        if (dockerConfigJsonDocument.RootElement.TryGetProperty("currentContext", out var currentContext) && currentContext.ValueKind == JsonValueKind.String)
+        if (
+          dockerConfigJsonDocument.RootElement.TryGetProperty(
+            "currentContext",
+            out var currentContext
+          )
+          && currentContext.ValueKind == JsonValueKind.String
+        )
         {
           return currentContext.GetString();
         }
@@ -155,20 +183,26 @@ namespace DotNet.Testcontainers.Builders
     [NotNull]
     private string GetDockerConfig()
     {
-      var dockerConfigDirectoryPath = _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerConfig()).FirstOrDefault(dockerConfig => !string.IsNullOrEmpty(dockerConfig));
+      var dockerConfigDirectoryPath = _customConfigurations
+        .Select(customConfiguration => customConfiguration.GetDockerConfig())
+        .FirstOrDefault(dockerConfig => !string.IsNullOrEmpty(dockerConfig));
       return dockerConfigDirectoryPath ?? UserProfileDockerConfigDirectoryPath;
     }
 
     [CanBeNull]
     private Uri GetDockerHost()
     {
-      return _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerHost()).FirstOrDefault(dockerHost => dockerHost != null);
+      return _customConfigurations
+        .Select(customConfiguration => customConfiguration.GetDockerHost())
+        .FirstOrDefault(dockerHost => dockerHost != null);
     }
 
     [CanBeNull]
     private string GetDockerContext()
     {
-      return _customConfigurations.Select(customConfiguration => customConfiguration.GetDockerContext()).FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
+      return _customConfigurations
+        .Select(customConfiguration => customConfiguration.GetDockerContext())
+        .FirstOrDefault(dockerContext => !string.IsNullOrEmpty(dockerContext));
     }
 
     internal sealed class DockerContextMeta

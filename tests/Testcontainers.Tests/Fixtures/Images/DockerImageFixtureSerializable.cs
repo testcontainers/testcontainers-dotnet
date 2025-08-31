@@ -5,9 +5,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
   public sealed class DockerImageFixtureSerializable : IXunitSerializable
   {
-    public DockerImageFixtureSerializable()
-    {
-    }
+    public DockerImageFixtureSerializable() { }
 
     public DockerImageFixtureSerializable(IImage image)
     {

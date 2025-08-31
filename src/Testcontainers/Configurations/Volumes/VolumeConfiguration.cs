@@ -6,14 +6,15 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IVolumeConfiguration" />
   [PublicAPI]
-  internal sealed class VolumeConfiguration : ResourceConfiguration<VolumesCreateParameters>, IVolumeConfiguration
+  internal sealed class VolumeConfiguration
+    : ResourceConfiguration<VolumesCreateParameters>,
+      IVolumeConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.
     /// </summary>
     /// <param name="name">The name.</param>
-    public VolumeConfiguration(
-      string name = null)
+    public VolumeConfiguration(string name = null)
     {
       Name = name;
     }
@@ -22,19 +23,17 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public VolumeConfiguration(IResourceConfiguration<VolumesCreateParameters> resourceConfiguration)
-      : base(resourceConfiguration)
-    {
-    }
+    public VolumeConfiguration(
+      IResourceConfiguration<VolumesCreateParameters> resourceConfiguration
+    )
+      : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public VolumeConfiguration(IVolumeConfiguration resourceConfiguration)
-      : this(new VolumeConfiguration(), resourceConfiguration)
-    {
-    }
+      : this(new VolumeConfiguration(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeConfiguration" /> class.

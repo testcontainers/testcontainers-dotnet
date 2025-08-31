@@ -6,18 +6,21 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
 
     public void DotNetTest(SolutionProject project)
     {
-        this.DotNetTest(project.Path.FullPath, new DotNetTestSettings
-        {
-            Configuration = Parameters.Configuration,
-            Verbosity = Parameters.Verbosity,
-            NoRestore = true,
-            NoBuild = true,
-            Collectors = ["XPlat Code Coverage;Format=opencover"],
-            Filter = Parameters.TestFilter,
-            ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
-            ArgumentCustomization = args => args
-                .AppendSwitchQuoted("--blame-hang-timeout", "5m"),
-        });
+        this.DotNetTest(
+            project.Path.FullPath,
+            new DotNetTestSettings
+            {
+                Configuration = Parameters.Configuration,
+                Verbosity = Parameters.Verbosity,
+                NoRestore = true,
+                NoBuild = true,
+                Collectors = ["XPlat Code Coverage;Format=opencover"],
+                Filter = Parameters.TestFilter,
+                ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
+                ArgumentCustomization = args =>
+                    args.AppendSwitchQuoted("--blame-hang-timeout", "5m"),
+            }
+        );
     }
 }
 
@@ -26,12 +29,15 @@ public sealed class BuildLifetime : FrostingLifetime<BuildContext>
     public override void Setup(BuildContext context, ISetupContext info)
     {
         var param = context.Parameters;
-        context.Information("Building version {0} of Testcontainers ({1}@{2})", param.Version, param.Branch, param.Sha);
+        context.Information(
+            "Building version {0} of Testcontainers ({1}@{2})",
+            param.Version,
+            param.Branch,
+            param.Sha
+        );
     }
 
-    public override void Teardown(BuildContext context, ITeardownContext info)
-    {
-    }
+    public override void Teardown(BuildContext context, ITeardownContext info) { }
 }
 
 [TaskName("Clean")]
@@ -61,10 +67,10 @@ public sealed class RestoreNuGetPackagesTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.DotNetRestore(param.Solution, new DotNetRestoreSettings
-        {
-            Verbosity = param.Verbosity,
-        });
+        context.DotNetRestore(
+            param.Solution,
+            new DotNetRestoreSettings { Verbosity = param.Verbosity }
+        );
     }
 }
 
@@ -92,16 +98,22 @@ public sealed class BuildTask : FrostingTask<BuildContext>
         // save build time.
         var solutionOrProjectFilePath = string.IsNullOrEmpty(param.TestProject)
             ? param.Solution
-            : param.Projects.OnlyTests.Single(testProject => testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj")).Path.FullPath;
+            : param
+                .Projects.OnlyTests.Single(testProject =>
+                    testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj")
+                )
+                .Path.FullPath;
 
-        context.DotNetBuild(solutionOrProjectFilePath, new DotNetBuildSettings
-        {
-            Configuration = param.Configuration,
-            Verbosity = param.Verbosity,
-            NoRestore = true,
-            ArgumentCustomization = args => args
-                .Append("/p:ContinuousIntegrationBuild=true"),
-        });
+        context.DotNetBuild(
+            solutionOrProjectFilePath,
+            new DotNetBuildSettings
+            {
+                Configuration = param.Configuration,
+                Verbosity = param.Verbosity,
+                NoRestore = true,
+                ArgumentCustomization = args => args.Append("/p:ContinuousIntegrationBuild=true"),
+            }
+        );
     }
 }
 
@@ -111,7 +123,9 @@ public sealed class TestTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        var testProject = param.Projects.OnlyTests.Single(testProject => testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj"));
+        var testProject = param.Projects.OnlyTests.Single(testProject =>
+            testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj")
+        );
         context.DotNetTest(testProject);
     }
 }
@@ -131,7 +145,8 @@ public sealed class TestsTask : FrostingTask<BuildContext>
 
 [TaskName("Format")]
 public sealed class CheckFormatTask : FrostingTask<BuildContext>
-{    public override void Run(BuildContext context)
+{
+    public override void Run(BuildContext context)
     {
         var param = context.Parameters;
         context.DotNetTool("./", "csharpier", "format .");
@@ -154,29 +169,36 @@ public sealed class SonarBeginTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.SonarBegin(new SonarBeginSettings
-        {
-            Url = param.SonarQubeCredentials.Url,
-            Key = param.SonarQubeCredentials.Key,
-            Token = param.SonarQubeCredentials.Token,
-            Organization = param.SonarQubeCredentials.Organization,
-            // A pull request analysis cannot have the branch analysis parameter 'sonar.branch.name'.
-            Branch = param.IsPullRequest ? null : param.Branch,
-            UseCoreClr = true,
-            Silent = true,
-            Version = param.Version[..5],
-            PullRequestProvider = "GitHub",
-            PullRequestGithubEndpoint = "https://api.github.com/",
-            PullRequestGithubRepository = "testcontainers/testcontainers-dotnet",
-            PullRequestKey = param.IsPullRequest && int.TryParse(param.PullRequestId, out var id) ? id : null,
-            PullRequestBranch = param.SourceBranch,
-            PullRequestBase = param.TargetBranch,
-            OpenCoverReportsPath = $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml",
-            VsTestReportsPath = $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx",
-            ArgumentCustomization = args => args
-                .Append("/d:sonar.scanner.scanAll=\"false\"")
-                .Append("/d:sonar.scanner.skipJreProvisioning=\"true\""),
-        });
+        context.SonarBegin(
+            new SonarBeginSettings
+            {
+                Url = param.SonarQubeCredentials.Url,
+                Key = param.SonarQubeCredentials.Key,
+                Token = param.SonarQubeCredentials.Token,
+                Organization = param.SonarQubeCredentials.Organization,
+                // A pull request analysis cannot have the branch analysis parameter 'sonar.branch.name'.
+                Branch = param.IsPullRequest ? null : param.Branch,
+                UseCoreClr = true,
+                Silent = true,
+                Version = param.Version[..5],
+                PullRequestProvider = "GitHub",
+                PullRequestGithubEndpoint = "https://api.github.com/",
+                PullRequestGithubRepository = "testcontainers/testcontainers-dotnet",
+                PullRequestKey =
+                    param.IsPullRequest && int.TryParse(param.PullRequestId, out var id)
+                        ? id
+                        : null,
+                PullRequestBranch = param.SourceBranch,
+                PullRequestBase = param.TargetBranch,
+                OpenCoverReportsPath =
+                    $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml",
+                VsTestReportsPath =
+                    $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx",
+                ArgumentCustomization = args =>
+                    args.Append("/d:sonar.scanner.scanAll=\"false\"")
+                        .Append("/d:sonar.scanner.skipJreProvisioning=\"true\""),
+            }
+        );
     }
 }
 
@@ -186,11 +208,9 @@ public sealed class SonarEndTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.SonarEnd(new SonarEndSettings
-        {
-            Token = param.SonarQubeCredentials.Token,
-            UseCoreClr = true,
-        });
+        context.SonarEnd(
+            new SonarEndSettings { Token = param.SonarQubeCredentials.Token, UseCoreClr = true }
+        );
     }
 }
 
@@ -202,16 +222,18 @@ public sealed class CreateNuGetPackagesTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.DotNetPack(param.Solution, new DotNetPackSettings
-        {
-            Configuration = param.Configuration,
-            Verbosity = param.Verbosity,
-            NoRestore = true,
-            NoBuild = true,
-            OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
-            ArgumentCustomization = args => args
-                .Append($"/p:Version={param.Version}"),
-        });
+        context.DotNetPack(
+            param.Solution,
+            new DotNetPackSettings
+            {
+                Configuration = param.Configuration,
+                Verbosity = param.Verbosity,
+                NoRestore = true,
+                NoBuild = true,
+                OutputDirectory = param.Paths.Directories.NuGetDirectoryPath,
+                ArgumentCustomization = args => args.Append($"/p:Version={param.Version}"),
+            }
+        );
     }
 }
 
@@ -219,21 +241,33 @@ public sealed class CreateNuGetPackagesTask : FrostingTask<BuildContext>
 public sealed class SignNuGetPackagesTask : FrostingTask<BuildContext>
 {
     // We do not have access to a valid code signing certificate anymore.
-    public override bool ShouldRun(BuildContext context) => /* context.Parameters.ShouldPublish */ false;
+    public override bool ShouldRun(BuildContext context) => /* context.Parameters.ShouldPublish */
+        false;
 
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.StartProcess("dotnet", new ProcessSettings
-        {
-            Arguments = new ProcessArgumentBuilder()
-                .Append("nuget")
-                .Append("sign")
-                .AppendSwitchQuoted("--certificate-path", param.Paths.Files.CodeSigningCertificateFilePath.FullPath)
-                .AppendSwitchQuoted("--certificate-password", param.CodeSigningCertificateCredentials.Password)
-                .AppendSwitchQuoted("--timestamper", "http://ts.quovadisglobal.com/eu")
-                .Append($"{context.MakeAbsolute(param.Paths.Directories.NuGetDirectoryPath)}/**/*.nupkg"),
-        });
+        context.StartProcess(
+            "dotnet",
+            new ProcessSettings
+            {
+                Arguments = new ProcessArgumentBuilder()
+                    .Append("nuget")
+                    .Append("sign")
+                    .AppendSwitchQuoted(
+                        "--certificate-path",
+                        param.Paths.Files.CodeSigningCertificateFilePath.FullPath
+                    )
+                    .AppendSwitchQuoted(
+                        "--certificate-password",
+                        param.CodeSigningCertificateCredentials.Password
+                    )
+                    .AppendSwitchQuoted("--timestamper", "http://ts.quovadisglobal.com/eu")
+                    .Append(
+                        $"{context.MakeAbsolute(param.Paths.Directories.NuGetDirectoryPath)}/**/*.nupkg"
+                    ),
+            }
+        );
     }
 }
 
@@ -245,14 +279,19 @@ public sealed class PublishNuGetPackagesTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        foreach (var package in context.GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.nupkg"))
+        foreach (
+            var package in context.GetFiles($"{param.Paths.Directories.NuGetDirectoryPath}/*.nupkg")
+        )
         {
-            context.DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings
-            {
-                Source = param.NuGetCredentials.Source,
-                ApiKey = param.NuGetCredentials.ApiKey,
-                SkipDuplicate = true,
-            });
+            context.DotNetNuGetPush(
+                package.FullPath,
+                new DotNetNuGetPushSettings
+                {
+                    Source = param.NuGetCredentials.Source,
+                    ApiKey = param.NuGetCredentials.ApiKey,
+                    SkipDuplicate = true,
+                }
+            );
         }
     }
 }

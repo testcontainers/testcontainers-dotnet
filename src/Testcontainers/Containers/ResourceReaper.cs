@@ -19,7 +19,8 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public sealed class ResourceReaper : IAsyncDisposable
   {
-    public const string ResourceReaperSessionLabel = TestcontainersClient.TestcontainersLabel + ".resource-reaper-session";
+    public const string ResourceReaperSessionLabel =
+      TestcontainersClient.TestcontainersLabel + ".resource-reaper-session";
 
     private const ushort RyukPort = 8080;
 
@@ -49,11 +50,16 @@ namespace DotNet.Testcontainers.Containers
 
     private bool _disposed;
 
-    static ResourceReaper()
-    {
-    }
+    static ResourceReaper() { }
 
-    private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode)
+    private ResourceReaper(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      IImage resourceReaperImage,
+      IMount dockerSocket,
+      ILogger logger,
+      bool requiresPrivilegedMode
+    )
     {
       _resourceReaperContainer = new ContainerBuilder()
         .WithName($"testcontainers-ryuk-{sessionId:D}")
@@ -62,7 +68,10 @@ namespace DotNet.Testcontainers.Containers
         .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
-        .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
+        .WithPortBinding(
+          TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig),
+          RyukPort
+        )
         .WithMount(dockerSocket)
         .WithLogger(logger)
         .Build();
@@ -87,8 +96,7 @@ namespace DotNet.Testcontainers.Containers
     /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
-    public static Guid DefaultSessionId { get; }
-      = Guid.NewGuid();
+    public static Guid DefaultSessionId { get; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
@@ -105,7 +113,12 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    public static async Task<ResourceReaper> GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger, bool isWindowsEngineEnabled = false, CancellationToken ct = default)
+    public static async Task<ResourceReaper> GetAndStartDefaultAsync(
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      ILogger logger,
+      bool isWindowsEngineEnabled = false,
+      CancellationToken ct = default
+    )
     {
       if (isWindowsEngineEnabled)
       {
@@ -117,8 +130,7 @@ namespace DotNet.Testcontainers.Containers
         return _defaultInstance;
       }
 
-      await DefaultLock.WaitAsync(ct)
-        .ConfigureAwait(false);
+      await DefaultLock.WaitAsync(ct).ConfigureAwait(false);
 
       if (_defaultInstance != null && !_defaultInstance._disposed)
       {
@@ -132,7 +144,15 @@ namespace DotNet.Testcontainers.Containers
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
 
-        _defaultInstance = await GetAndStartNewAsync(DefaultSessionId, dockerEndpointAuthConfig, resourceReaperImage, new UnixSocketMount(dockerEndpointAuthConfig.Endpoint), logger, requiresPrivilegedMode, ct: ct)
+        _defaultInstance = await GetAndStartNewAsync(
+            DefaultSessionId,
+            dockerEndpointAuthConfig,
+            resourceReaperImage,
+            new UnixSocketMount(dockerEndpointAuthConfig.Endpoint),
+            logger,
+            requiresPrivilegedMode,
+            ct: ct
+          )
           .ConfigureAwait(false);
 
         return _defaultInstance;
@@ -157,15 +177,13 @@ namespace DotNet.Testcontainers.Containers
       try
       {
 #if NET6_0_OR_GREATER
-        await _maintainConnectionCts.CancelAsync()
-          .ConfigureAwait(false);
+        await _maintainConnectionCts.CancelAsync().ConfigureAwait(false);
 #else
         _maintainConnectionCts.Cancel();
 #endif
 
         // Close connection before disposing Resource Reaper.
-        await _maintainConnectionTask
-          .ConfigureAwait(false);
+        await _maintainConnectionTask.ConfigureAwait(false);
       }
       finally
       {
@@ -174,8 +192,7 @@ namespace DotNet.Testcontainers.Containers
 
       if (_resourceReaperContainer != null)
       {
-        await _resourceReaperContainer.DisposeAsync()
-          .ConfigureAwait(false);
+        await _resourceReaperContainer.DisposeAsync().ConfigureAwait(false);
       }
     }
 
@@ -191,9 +208,26 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    private static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static Task<ResourceReaper> GetAndStartNewAsync(
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      IImage resourceReaperImage,
+      IMount dockerSocket,
+      ILogger logger,
+      bool requiresPrivilegedMode = false,
+      TimeSpan initTimeout = default,
+      CancellationToken ct = default
+    )
     {
-      return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode, initTimeout, ct);
+      return GetAndStartNewAsync(
+        Guid.NewGuid(),
+        dockerEndpointAuthConfig,
+        resourceReaperImage,
+        dockerSocket,
+        logger,
+        requiresPrivilegedMode,
+        initTimeout,
+        ct
+      );
     }
 
     /// <summary>
@@ -209,41 +243,79 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
     [PublicAPI]
-    private static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
+    private static async Task<ResourceReaper> GetAndStartNewAsync(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      IImage resourceReaperImage,
+      IMount dockerSocket,
+      ILogger logger,
+      bool requiresPrivilegedMode = false,
+      TimeSpan initTimeout = default,
+      CancellationToken ct = default
+    )
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
 
-      var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode);
+      var resourceReaper = new ResourceReaper(
+        sessionId,
+        dockerEndpointAuthConfig,
+        resourceReaperImage,
+        dockerSocket,
+        logger,
+        requiresPrivilegedMode
+      );
 
-      initTimeout = TimeSpan.Equals(TimeSpan.Zero, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
+      initTimeout = TimeSpan.Equals(TimeSpan.Zero, initTimeout)
+        ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds)
+        : initTimeout;
 
       try
       {
-        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.Created));
+        StateChanged?.Invoke(
+          null,
+          new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.Created)
+        );
 
-        await resourceReaper._resourceReaperContainer.StartAsync(ct)
-          .ConfigureAwait(false);
+        await resourceReaper._resourceReaperContainer.StartAsync(ct).ConfigureAwait(false);
 
-        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.InitializingConnection));
+        StateChanged?.Invoke(
+          null,
+          new ResourceReaperStateEventArgs(
+            resourceReaper,
+            ResourceReaperState.InitializingConnection
+          )
+        );
 
         using (var initTimeoutCts = new CancellationTokenSource())
         {
-          using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(initTimeoutCts.Token, ct))
+          using (
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+              initTimeoutCts.Token,
+              ct
+            )
+          )
           {
-            resourceReaper._maintainConnectionTask = resourceReaper.MaintainRyukConnection(ryukInitializedTaskSource, linkedCts.Token);
+            resourceReaper._maintainConnectionTask = resourceReaper.MaintainRyukConnection(
+              ryukInitializedTaskSource,
+              linkedCts.Token
+            );
             initTimeoutCts.CancelAfter(initTimeout);
 
-            await ryukInitializedTaskSource.Task
-              .ConfigureAwait(false);
+            await ryukInitializedTaskSource.Task.ConfigureAwait(false);
           }
         }
 
-        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(resourceReaper, ResourceReaperState.MaintainingConnection));
+        StateChanged?.Invoke(
+          null,
+          new ResourceReaperStateEventArgs(
+            resourceReaper,
+            ResourceReaperState.MaintainingConnection
+          )
+        );
       }
       catch (Exception)
       {
-        await resourceReaper.DisposeAsync()
-          .ConfigureAwait(false);
+        await resourceReaper.DisposeAsync().ConfigureAwait(false);
 
         throw;
       }
@@ -283,9 +355,17 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="ryukInitializedTaskSource">The task that completes after the initialization.</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization. This will not cancel the maintained connection.</param>
-    private async Task MaintainRyukConnection(TaskCompletionSource<bool> ryukInitializedTaskSource, CancellationToken ct)
+    private async Task MaintainRyukConnection(
+      TaskCompletionSource<bool> ryukInitializedTaskSource,
+      CancellationToken ct
+    )
     {
-      connect_to_ryuk: while (!_maintainConnectionCts.IsCancellationRequested && !ct.IsCancellationRequested && !ryukInitializedTaskSource.Task.IsCompleted)
+      connect_to_ryuk:
+      while (
+        !_maintainConnectionCts.IsCancellationRequested
+        && !ct.IsCancellationRequested
+        && !ryukInitializedTaskSource.Task.IsCompleted
+      )
       {
         if (!TryGetEndpoint(out var host, out var port))
         {
@@ -302,11 +382,9 @@ namespace DotNet.Testcontainers.Containers
           try
           {
 #if NET6_0_OR_GREATER
-            await tcpClient.ConnectAsync(host, port, ct)
-              .ConfigureAwait(false);
+            await tcpClient.ConnectAsync(host, port, ct).ConfigureAwait(false);
 #else
-            await tcpClient.ConnectAsync(host, port)
-              .ConfigureAwait(false);
+            await tcpClient.ConnectAsync(host, port).ConfigureAwait(false);
 #endif
 
             var stream = tcpClient.GetStream();
@@ -322,26 +400,23 @@ namespace DotNet.Testcontainers.Containers
               using (var messageBuffer = new MemoryStream())
               {
 #if NETSTANDARD2_0
-                await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
-                  .ConfigureAwait(false);
+                await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct).ConfigureAwait(false);
 #else
-                await stream.WriteAsync(sendBytes, ct)
-                  .ConfigureAwait(false);
+                await stream.WriteAsync(sendBytes, ct).ConfigureAwait(false);
 #endif
 
-                await stream.FlushAsync(ct)
-                  .ConfigureAwait(false);
+                await stream.FlushAsync(ct).ConfigureAwait(false);
 
                 bool hasAcknowledge;
 
                 do
                 {
 #if NETSTANDARD2_0
-                  var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+                  var numberOfBytes = await stream
+                    .ReadAsync(readBytes, 0, readBytes.Length, ct)
                     .ConfigureAwait(false);
 #else
-                  var numberOfBytes = await stream.ReadAsync(readBytes, ct)
-                    .ConfigureAwait(false);
+                  var numberOfBytes = await stream.ReadAsync(readBytes, ct).ConfigureAwait(false);
 #endif
 
                   if (numberOfBytes == 0)
@@ -364,10 +439,12 @@ namespace DotNet.Testcontainers.Containers
                   {
                     // We have not received the entire message yet. Read from stream again.
 #if NETSTANDARD2_0
-                    await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
+                    await messageBuffer
+                      .WriteAsync(readBytes, 0, numberOfBytes, ct)
                       .ConfigureAwait(false);
 #else
-                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+                    await messageBuffer
+                      .WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
                       .ConfigureAwait(false);
 #endif
 
@@ -376,18 +453,22 @@ namespace DotNet.Testcontainers.Containers
                   else
                   {
 #if NETSTANDARD2_0
-                    await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
+                    await messageBuffer
+                      .WriteAsync(readBytes, 0, indexOfNewLine, ct)
                       .ConfigureAwait(false);
 #else
-                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+                    await messageBuffer
+                      .WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
                       .ConfigureAwait(false);
 #endif
 
-                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
+                    hasAcknowledge = "ack".Equals(
+                      Encoding.ASCII.GetString(messageBuffer.ToArray()),
+                      StringComparison.OrdinalIgnoreCase
+                    );
                     messageBuffer.SetLength(0);
                   }
-                }
-                while (!hasAcknowledge);
+                } while (!hasAcknowledge);
 
                 ryukInitializedTaskSource.SetResult(true);
               }
@@ -397,10 +478,12 @@ namespace DotNet.Testcontainers.Containers
             {
               // Keep the connection to Ryuk up.
 #if NETSTANDARD2_0
-              _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
+              _ = await stream
+                .ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #else
-              _ = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
+              _ = await stream
+                .ReadAsync(readBytes, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #endif
             }
@@ -418,7 +501,12 @@ namespace DotNet.Testcontainers.Containers
           }
           catch (Exception e)
           {
-            _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, e);
+            _resourceReaperContainer.Logger.LostConnectionToResourceReaper(
+              SessionId,
+              host,
+              port,
+              e
+            );
 
             await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), CancellationToken.None)
               .ConfigureAwait(false);
@@ -428,17 +516,24 @@ namespace DotNet.Testcontainers.Containers
 
       if (ryukInitializedTaskSource.Task.IsCompleted)
       {
-        StateChanged?.Invoke(null, new ResourceReaperStateEventArgs(this, ResourceReaperState.ConnectionTerminated));
+        StateChanged?.Invoke(
+          null,
+          new ResourceReaperStateEventArgs(this, ResourceReaperState.ConnectionTerminated)
+        );
         return;
       }
 
       if (ct.IsCancellationRequested)
       {
-        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization has been cancelled."));
+        ryukInitializedTaskSource.SetException(
+          new ResourceReaperException("Initialization has been cancelled.")
+        );
       }
       else
       {
-        ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization failed."));
+        ryukInitializedTaskSource.SetException(
+          new ResourceReaperException("Initialization failed.")
+        );
       }
     }
 
@@ -449,18 +544,20 @@ namespace DotNet.Testcontainers.Containers
       public UnixSocketMount([NotNull] Uri dockerEndpoint)
       {
         // If the Docker endpoint is a Unix socket, extract the socket path from the URI; otherwise, fallback to the default Unix socket path.
-        Source = "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase) ? dockerEndpoint.AbsolutePath : DockerSocketFilePath;
+        Source = "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase)
+          ? dockerEndpoint.AbsolutePath
+          : DockerSocketFilePath;
 
         // If the user has overridden the Docker socket path, use the user-specified path; otherwise, keep the previously determined source.
-        Source = !string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride) ? TestcontainersSettings.DockerSocketOverride : Source;
+        Source = !string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride)
+          ? TestcontainersSettings.DockerSocketOverride
+          : Source;
         Target = DockerSocketFilePath;
       }
 
-      public MountType Type
-        => MountType.Bind;
+      public MountType Type => MountType.Bind;
 
-      public AccessMode AccessMode
-        => AccessMode.ReadOnly;
+      public AccessMode AccessMode => AccessMode.ReadOnly;
 
       public string Source { get; }
 

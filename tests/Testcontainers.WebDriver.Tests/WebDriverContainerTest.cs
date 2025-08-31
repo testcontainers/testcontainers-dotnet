@@ -2,7 +2,11 @@ namespace Testcontainers.WebDriver;
 
 public abstract class WebDriverContainerTest : IAsyncLifetime
 {
-    private readonly Uri _helloWorldBaseAddress = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
+    private readonly Uri _helloWorldBaseAddress = new UriBuilder(
+        Uri.UriSchemeHttp,
+        "hello-world-container",
+        8080
+    ).Uri;
 
     private readonly IContainer _helloWorldContainer;
 
@@ -15,8 +19,12 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
             .WithNetwork(webDriverContainer.GetNetwork())
             .WithNetworkAliases(_helloWorldBaseAddress.Host)
             .WithPortBinding(_helloWorldBaseAddress.Port, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldBaseAddress.Port))))
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldBaseAddress.Port))
+                    )
+            )
             .Build();
 
         _webDriverContainer = webDriverContainer;
@@ -24,17 +32,14 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _webDriverContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _webDriverContainer.StartAsync().ConfigureAwait(false);
 
-        await _helloWorldContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _helloWorldContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -44,7 +49,10 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public void HeadingElementReturnsHelloWorld()
     {
         // Given
-        using var driver = new RemoteWebDriver(new Uri(_webDriverContainer.GetConnectionString()), new ChromeOptions());
+        using var driver = new RemoteWebDriver(
+            new Uri(_webDriverContainer.GetConnectionString()),
+            new ChromeOptions()
+        );
 
         // When
         driver.Navigate().GoToUrl(_helloWorldBaseAddress.ToString());
@@ -56,35 +64,36 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     protected virtual async ValueTask DisposeAsyncCore()
     {
-        await _helloWorldContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        await _helloWorldContainer.DisposeAsync().ConfigureAwait(false);
 
-        await _webDriverContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        await _webDriverContainer.DisposeAsync().ConfigureAwait(false);
     }
 
     [UsedImplicitly]
     public sealed class RecordingEnabled : WebDriverContainerTest
     {
         public RecordingEnabled()
-            : base(new WebDriverBuilder().WithRecording().Build())
-        {
-        }
+            : base(new WebDriverBuilder().WithRecording().Build()) { }
 
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task ExportVideoWritesFile()
         {
             // Given
-            var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
+            var videoFilePath = Path.Combine(
+                TestSession.TempDirectoryPath,
+                Path.GetRandomFileName()
+            );
 
             // When
             HeadingElementReturnsHelloWorld();
 
-            await _webDriverContainer.StopAsync(TestContext.Current.CancellationToken)
+            await _webDriverContainer
+                .StopAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            await _webDriverContainer.ExportVideoAsync(videoFilePath, TestContext.Current.CancellationToken)
+            await _webDriverContainer
+                .ExportVideoAsync(videoFilePath, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // Then
@@ -95,8 +104,12 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(()
-                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _webDriverContainer.ExportVideoAsync(
+                    string.Empty,
+                    TestContext.Current.CancellationToken
+                )
+            );
         }
     }
 
@@ -104,16 +117,18 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingDisabled : WebDriverContainerTest
     {
         public RecordingDisabled()
-            : base(new WebDriverBuilder().Build())
-        {
-        }
+            : base(new WebDriverBuilder().Build()) { }
 
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(()
-                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _webDriverContainer.ExportVideoAsync(
+                    string.Empty,
+                    TestContext.Current.CancellationToken
+                )
+            );
         }
     }
 }

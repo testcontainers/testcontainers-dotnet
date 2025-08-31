@@ -2,7 +2,8 @@ namespace Testcontainers.Milvus;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContainer, MilvusConfiguration>
+public sealed class MilvusBuilder
+    : ContainerBuilder<MilvusBuilder, MilvusContainer, MilvusConfiguration>
 {
     public const string MilvusEtcdConfigFilePath = "/milvus/configs/embedEtcd.yaml";
 
@@ -12,7 +13,13 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
 
     public const ushort MilvusGrpcPort = 19530;
 
-    private static readonly byte[] EtcdConfig = Encoding.Default.GetBytes(string.Join("\n", "advertise-client-urls: http://0.0.0.0:2379", "listen-client-urls: http://0.0.0.0:2379"));
+    private static readonly byte[] EtcdConfig = Encoding.Default.GetBytes(
+        string.Join(
+            "\n",
+            "advertise-client-urls: http://0.0.0.0:2379",
+            "listen-client-urls: http://0.0.0.0:2379"
+        )
+    );
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
@@ -70,12 +77,18 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(MilvusManagementPort).ForPath("/healthz")));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(MilvusManagementPort).ForPath("/healthz")
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override MilvusBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MilvusBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new MilvusConfiguration(resourceConfiguration));
     }
@@ -87,7 +100,10 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     }
 
     /// <inheritdoc />
-    protected override MilvusBuilder Merge(MilvusConfiguration oldValue, MilvusConfiguration newValue)
+    protected override MilvusBuilder Merge(
+        MilvusConfiguration oldValue,
+        MilvusConfiguration newValue
+    )
     {
         return new MilvusBuilder(new MilvusConfiguration(oldValue, newValue));
     }

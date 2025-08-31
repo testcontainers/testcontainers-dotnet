@@ -11,7 +11,13 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   public class IgnoreFile
   {
-    private static readonly ISearchAndReplace<string>[] PrepareRegex = { default(EscapeRegex), default(PrepareRecursiveWildcards), default(PrepareNonRecursiveWildcards), default(PrepareZeroOrOneQuantifier) };
+    private static readonly ISearchAndReplace<string>[] PrepareRegex =
+    {
+      default(EscapeRegex),
+      default(PrepareRecursiveWildcards),
+      default(PrepareNonRecursiveWildcards),
+      default(PrepareZeroOrOneQuantifier),
+    };
 
     private readonly IEnumerable<KeyValuePair<Regex, bool>> _ignorePatterns;
 
@@ -25,86 +31,93 @@ namespace DotNet.Testcontainers.Images
     {
       _ignorePatterns = patterns
         .AsParallel()
-
         // Keep the order.
         .AsOrdered()
-
         // Trim each line.
         .Select(line => line.Trim())
-
         // Remove empty line.
         .Where(line => !string.IsNullOrEmpty(line))
-
         // Remove comment.
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
-
         // Exclude files and directories.
         .Select(line => line.TrimEnd('/'))
-
         // Exclude files and directories.
         .Select(line =>
         {
           const string filesAndDirectories = "/*";
-          return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture) ? line.Substring(0, line.Length - filesAndDirectories.Length) : line;
+          return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture)
+            ? line.Substring(0, line.Length - filesAndDirectories.Length)
+            : line;
         })
-
         // Exclude all files and directories (https://github.com/testcontainers/testcontainers-dotnet/issues/618).
         .Select(line => "*".Equals(line, StringComparison.OrdinalIgnoreCase) ? "**" : line)
-
         // Check if the pattern contains an optional prefix ("!"), which negates the pattern.
-        .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
-        {
-          switch (line[0])
+        .Aggregate(
+          new List<KeyValuePair<string, bool>>(),
+          (lines, line) =>
           {
-            case '!':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
-              break;
-            case '/':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), false));
-              break;
-            default:
-              lines.Add(new KeyValuePair<string, bool>(line, false));
-              break;
+            switch (line[0])
+            {
+              case '!':
+                lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
+                break;
+              case '/':
+                lines.Add(new KeyValuePair<string, bool>(line.Substring(1), false));
+                break;
+              default:
+                lines.Add(new KeyValuePair<string, bool>(line, false));
+                break;
+            }
+
+            return lines;
           }
-
-          return lines;
-        })
-
+        )
         // Prepare exact and partial patterns.
-        .Aggregate(new List<KeyValuePair<string, bool>>(), (lines, line) =>
-        {
-          const string globstar = "**/";
-
-          if (line.Key.Contains(globstar))
+        .Aggregate(
+          new List<KeyValuePair<string, bool>>(),
+          (lines, line) =>
           {
-            lines.Add(line);
-            lines.Add(new KeyValuePair<string, bool>(line.Key.Replace(globstar, string.Empty), line.Value));
-          }
-          else
-          {
-            lines.Add(line);
-          }
+            const string globstar = "**/";
 
-          return lines;
-        })
+            if (line.Key.Contains(globstar))
+            {
+              lines.Add(line);
+              lines.Add(
+                new KeyValuePair<string, bool>(line.Key.Replace(globstar, string.Empty), line.Value)
+              );
+            }
+            else
+            {
+              lines.Add(line);
+            }
 
+            return lines;
+          }
+        )
         // Prepare regular expressions to accept and deny files.
-        .Select((ignorePattern, index) =>
-        {
-          var key = ignorePattern.Key;
-          var value = ignorePattern.Value;
-          key = PrepareRegex.Aggregate(key, (current, prepareRegex) => prepareRegex.Replace(current));
-          key = 0.Equals(index) ? key : $"([\\\\\\/]?({key}\\b|$))";
-          key = $"^{key}";
-          return new KeyValuePair<string, bool>(key, value);
-        })
-
+        .Select(
+          (ignorePattern, index) =>
+          {
+            var key = ignorePattern.Key;
+            var value = ignorePattern.Value;
+            key = PrepareRegex.Aggregate(
+              key,
+              (current, prepareRegex) => prepareRegex.Replace(current)
+            );
+            key = 0.Equals(index) ? key : $"([\\\\\\/]?({key}\\b|$))";
+            key = $"^{key}";
+            return new KeyValuePair<string, bool>(key, value);
+          }
+        )
         // Cache regular expression to increase the performance.
         .Select(ignorePattern =>
         {
           var key = ignorePattern.Key;
           var value = ignorePattern.Value;
-          return new KeyValuePair<Regex, bool>(new Regex(key, RegexOptions.None, TimeSpan.FromSeconds(1)), value);
+          return new KeyValuePair<Regex, bool>(
+            new Regex(key, RegexOptions.None, TimeSpan.FromSeconds(1)),
+            value
+          );
         })
         .ToArray();
 
@@ -135,7 +148,10 @@ namespace DotNet.Testcontainers.Images
     /// <returns>True if the file path does not match any ignore pattern, otherwise false.</returns>
     public bool Accepts(string file)
     {
-      var matches = _ignorePatterns.AsParallel().Where(ignorePattern => ignorePattern.Key.IsMatch(file)).ToArray();
+      var matches = _ignorePatterns
+        .AsParallel()
+        .Where(ignorePattern => ignorePattern.Key.IsMatch(file))
+        .ToArray();
       return matches.Length == 0 || matches[matches.Length - 1].Value;
     }
 
@@ -154,7 +170,11 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     private readonly struct EscapeRegex : ISearchAndReplace<string>
     {
-      private static readonly Regex Pattern = new Regex("[\\-\\[\\]\\/\\{\\}\\(\\)\\+\\?\\.\\\\\\^\\$\\|]", RegexOptions.None, TimeSpan.FromSeconds(1));
+      private static readonly Regex Pattern = new Regex(
+        "[\\-\\[\\]\\/\\{\\}\\(\\)\\+\\?\\.\\\\\\^\\$\\|]",
+        RegexOptions.None,
+        TimeSpan.FromSeconds(1)
+      );
 
       /// <inheritdoc />
       public string Replace(string input)

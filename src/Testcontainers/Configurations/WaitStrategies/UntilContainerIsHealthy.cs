@@ -22,7 +22,9 @@ namespace DotNet.Testcontainers.Configurations
 
       if (_failingStreak < container.HealthCheckFailingStreak)
       {
-        throw new TimeoutException($"Number of failed operations exceeded max count ({_failingStreak}).");
+        throw new TimeoutException(
+          $"Number of failed operations exceeded max count ({_failingStreak})."
+        );
       }
 
       return Task.FromResult(TestcontainersHealthStatus.Healthy.Equals(container.Health));

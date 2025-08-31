@@ -8,7 +8,10 @@ namespace DotNet.Testcontainers.Clients
   {
     Task<IEnumerable<TListEntity>> GetAllAsync(CancellationToken ct = default);
 
-    Task<IEnumerable<TListEntity>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default);
+    Task<IEnumerable<TListEntity>> GetAllAsync(
+      FilterByProperty filters,
+      CancellationToken ct = default
+    );
 
     Task<TInspectEntity> ByIdAsync(string id, CancellationToken ct = default);
 

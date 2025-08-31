@@ -13,7 +13,8 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
     public PostgreSqlConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         Database = database;
         Username = username;
@@ -24,7 +25,9 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="PostgreSqlConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public PostgreSqlConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public PostgreSqlConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -55,7 +58,10 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public PostgreSqlConfiguration(PostgreSqlConfiguration oldValue, PostgreSqlConfiguration newValue)
+    public PostgreSqlConfiguration(
+        PostgreSqlConfiguration oldValue,
+        PostgreSqlConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);

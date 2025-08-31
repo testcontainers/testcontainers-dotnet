@@ -13,8 +13,8 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Collection(nameof(DockerImageNameSubstitutionTest))]
     public sealed class HubImageNamePrefixIsSet : IDisposable
     {
-      public static TheoryData<string, string, string> Substitutions { get; }
-        = new TheoryData<string, string, string>
+      public static TheoryData<string, string, string> Substitutions { get; } =
+        new TheoryData<string, string, string>
         {
           { "my.proxy.com", "bar", "my.proxy.com/bar:latest" },
           { "my.proxy.com", "bar:latest", "my.proxy.com/bar:latest" },
@@ -25,21 +25,31 @@ namespace DotNet.Testcontainers.Tests.Unit
           { "my.proxy.com/my-path", "foo/bar:1.0.0", "my.proxy.com/my-path/foo/bar:1.0.0" },
           { "my.proxy.com:443", "foo/bar:1.0.0", "my.proxy.com:443/foo/bar:1.0.0" },
           { "my.proxy.com:443/my-path", "foo/bar:1.0.0", "my.proxy.com:443/my-path/foo/bar:1.0.0" },
-          { "my.proxy.com", "myregistry.azurecr.io/foo/bar:1.0.0", "myregistry.azurecr.io/foo/bar:1.0.0" },
-          { "my.proxy.com", "myregistry.azurecr.io:443/foo/bar:1.0.0", "myregistry.azurecr.io:443/foo/bar:1.0.0" },
+          {
+            "my.proxy.com",
+            "myregistry.azurecr.io/foo/bar:1.0.0",
+            "myregistry.azurecr.io/foo/bar:1.0.0"
+          },
+          {
+            "my.proxy.com",
+            "myregistry.azurecr.io:443/foo/bar:1.0.0",
+            "myregistry.azurecr.io:443/foo/bar:1.0.0"
+          },
         };
 
       [Theory]
       [MemberData(nameof(Substitutions))]
-      public void PrependForStringConfiguration(string hubImageNamePrefix, string imageName, string expectedFullName)
+      public void PrependForStringConfiguration(
+        string hubImageNamePrefix,
+        string imageName,
+        string expectedFullName
+      )
       {
         // Given
         TestcontainersSettings.HubImageNamePrefix = hubImageNamePrefix;
 
         // When
-        IContainer container = new ContainerBuilder()
-          .WithImage(imageName)
-          .Build();
+        IContainer container = new ContainerBuilder().WithImage(imageName).Build();
 
         // Then
         Assert.Equal(expectedFullName, container.Image.FullName);
@@ -47,7 +57,11 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       [Theory]
       [MemberData(nameof(Substitutions))]
-      public void PrependForObjectConfiguration(string hubImageNamePrefix, string imageName, string expectedFullName)
+      public void PrependForObjectConfiguration(
+        string hubImageNamePrefix,
+        string imageName,
+        string expectedFullName
+      )
       {
         // Given
         TestcontainersSettings.HubImageNamePrefix = hubImageNamePrefix;
@@ -55,9 +69,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         IImage image = new DockerImage(imageName);
 
         // When
-        IContainer container = new ContainerBuilder()
-          .WithImage(image)
-          .Build();
+        IContainer container = new ContainerBuilder().WithImage(image).Build();
 
         // Then
         Assert.Equal(expectedFullName, container.Image.FullName);
@@ -84,9 +96,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         const string imageName = "bar:latest";
 
         // When
-        IContainer container = new ContainerBuilder()
-          .WithImage(imageName)
-          .Build();
+        IContainer container = new ContainerBuilder().WithImage(imageName).Build();
 
         // Then
         Assert.Equal(imageName, container.Image.FullName);
@@ -101,9 +111,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         IImage image = new DockerImage(imageName);
 
         // When
-        IContainer container = new ContainerBuilder()
-          .WithImage(image)
-          .Build();
+        IContainer container = new ContainerBuilder().WithImage(image).Build();
 
         // Then
         Assert.Equal(imageName, container.Image.FullName);

@@ -26,7 +26,11 @@ namespace DotNet.Testcontainers.Volumes
     /// <param name="configuration">The volume configuration.</param>
     public DockerVolume(IVolumeConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
+      _client = new TestcontainersClient(
+        configuration.SessionId,
+        configuration.DockerEndpointAuthConfig,
+        configuration.Logger
+      );
       _configuration = configuration;
     }
 
@@ -43,21 +47,17 @@ namespace DotNet.Testcontainers.Volumes
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using var disposable = await AcquireLockAsync(ct)
-        .ConfigureAwait(false);
+      using var disposable = await AcquireLockAsync(ct).ConfigureAwait(false);
 
-      await UnsafeCreateAsync(ct)
-        .ConfigureAwait(false);
+      await UnsafeCreateAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using var disposable = await AcquireLockAsync(ct)
-        .ConfigureAwait(false);
+      using var disposable = await AcquireLockAsync(ct).ConfigureAwait(false);
 
-      await UnsafeDeleteAsync(ct)
-        .ConfigureAwait(false);
+      await UnsafeDeleteAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -70,12 +70,10 @@ namespace DotNet.Testcontainers.Volumes
 
       if (!Guid.Empty.Equals(_configuration.SessionId))
       {
-        await DeleteAsync()
-          .ConfigureAwait(false);
+        await DeleteAsync().ConfigureAwait(false);
       }
 
-      await base.DisposeAsyncCore()
-        .ConfigureAwait(false);
+      await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -94,8 +92,7 @@ namespace DotNet.Testcontainers.Volumes
         return;
       }
 
-      await _client.System.LogContainerRuntimeInfoAsync(ct)
-        .ConfigureAwait(false);
+      await _client.System.LogContainerRuntimeInfoAsync(ct).ConfigureAwait(false);
 
       string id;
 
@@ -105,8 +102,7 @@ namespace DotNet.Testcontainers.Volumes
 
         var filters = new FilterByReuseHash(_configuration);
 
-        var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct)
-          .ConfigureAwait(false);
+        var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct).ConfigureAwait(false);
 
         var reusableVolume = reusableVolumes.SingleOrDefault();
 
@@ -120,18 +116,15 @@ namespace DotNet.Testcontainers.Volumes
         {
           _configuration.Logger.ReusableResourceNotFound();
 
-          id = await _client.Volume.CreateAsync(_configuration, ct)
-            .ConfigureAwait(false);
+          id = await _client.Volume.CreateAsync(_configuration, ct).ConfigureAwait(false);
         }
       }
       else
       {
-        id = await _client.Volume.CreateAsync(_configuration, ct)
-          .ConfigureAwait(false);
+        id = await _client.Volume.CreateAsync(_configuration, ct).ConfigureAwait(false);
       }
 
-      _volume = await _client.Volume.ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      _volume = await _client.Volume.ByIdAsync(id, ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -146,8 +139,7 @@ namespace DotNet.Testcontainers.Volumes
 
       try
       {
-        await _client.Volume.DeleteAsync(Name, ct)
-          .ConfigureAwait(false);
+        await _client.Volume.DeleteAsync(Name, ct).ConfigureAwait(false);
       }
       catch (DockerApiException)
       {

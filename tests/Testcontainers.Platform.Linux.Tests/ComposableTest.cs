@@ -42,29 +42,33 @@ public sealed class ComposableTest
         Assert.Equal(new[] { "pattern", "*.log", "-l" }, command);
     }
 
-    private sealed class ComposableContainerBuilder : ContainerBuilder<ComposableContainerBuilder, DockerContainer, ContainerConfiguration>
+    private sealed class ComposableContainerBuilder
+        : ContainerBuilder<ComposableContainerBuilder, DockerContainer, ContainerConfiguration>
     {
-        public ComposableContainerBuilder() : this(new ContainerConfiguration())
-            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        public ComposableContainerBuilder()
+            : this(new ContainerConfiguration()) =>
+            DockerResourceConfiguration = Init().DockerResourceConfiguration;
 
-        private ComposableContainerBuilder(ContainerConfiguration configuration) : base(configuration)
-            => DockerResourceConfiguration = configuration;
+        private ComposableContainerBuilder(ContainerConfiguration configuration)
+            : base(configuration) => DockerResourceConfiguration = configuration;
 
         protected override ContainerConfiguration DockerResourceConfiguration { get; }
 
-        public IEnumerable<string> GetCommand()
-            => DockerResourceConfiguration.Command;
+        public IEnumerable<string> GetCommand() => DockerResourceConfiguration.Command;
 
-        public override DockerContainer Build()
-            => new(DockerResourceConfiguration);
+        public override DockerContainer Build() => new(DockerResourceConfiguration);
 
-        protected override ComposableContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+        protected override ComposableContainerBuilder Clone(
+            IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+        ) => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
 
-        protected override ComposableContainerBuilder Clone(IContainerConfiguration resourceConfiguration)
-            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+        protected override ComposableContainerBuilder Clone(
+            IContainerConfiguration resourceConfiguration
+        ) => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
 
-        protected override ComposableContainerBuilder Merge(ContainerConfiguration oldValue, ContainerConfiguration newValue)
-            => new(new ContainerConfiguration(oldValue, newValue));
+        protected override ComposableContainerBuilder Merge(
+            ContainerConfiguration oldValue,
+            ContainerConfiguration newValue
+        ) => new(new ContainerConfiguration(oldValue, newValue));
     }
 }

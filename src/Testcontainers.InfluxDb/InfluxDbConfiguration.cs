@@ -19,7 +19,8 @@ public sealed class InfluxDbConfiguration : ContainerConfiguration
         string organization = null,
         string bucket = null,
         string adminToken = null,
-        string retention = null)
+        string retention = null
+    )
     {
         Username = username;
         Password = password;
@@ -33,7 +34,9 @@ public sealed class InfluxDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="InfluxDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public InfluxDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public InfluxDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

@@ -5,8 +5,6 @@ namespace DotNet.Testcontainers.Containers
   public sealed class ResourceReaperException : Exception
   {
     public ResourceReaperException(string message)
-      : base(message)
-    {
-    }
+      : base(message) { }
   }
 }

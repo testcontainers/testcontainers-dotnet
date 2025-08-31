@@ -17,7 +17,11 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex FromLinePattern = new Regex(
+      "FROM (?<arg>--\\S+\\s)*(?<image>\\S+).*",
+      RegexOptions.None,
+      TimeSpan.FromSeconds(1)
+    );
 
     private readonly DirectoryInfo _dockerfileDirectory;
 
@@ -35,10 +39,13 @@ namespace DotNet.Testcontainers.Images
     /// <param name="image">Docker image information to create the tar archive for.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(string dockerfileDirectory, string dockerfile, IImage image, ILogger logger)
-      : this(new DirectoryInfo(dockerfileDirectory), new FileInfo(dockerfile), image, logger)
-    {
-    }
+    public DockerfileArchive(
+      string dockerfileDirectory,
+      string dockerfile,
+      IImage image,
+      ILogger logger
+    )
+      : this(new DirectoryInfo(dockerfileDirectory), new FileInfo(dockerfile), image, logger) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerfileArchive" /> class.
@@ -48,16 +55,26 @@ namespace DotNet.Testcontainers.Images
     /// <param name="image">Docker image information to create the tar archive for.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(DirectoryInfo dockerfileDirectory, FileInfo dockerfile, IImage image, ILogger logger)
+    public DockerfileArchive(
+      DirectoryInfo dockerfileDirectory,
+      FileInfo dockerfile,
+      IImage image,
+      ILogger logger
+    )
     {
       if (!dockerfileDirectory.Exists)
       {
         throw new ArgumentException($"Directory '{dockerfileDirectory.FullName}' does not exist.");
       }
 
-      if (dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Length == 0)
+      if (
+        dockerfileDirectory.GetFiles(dockerfile.ToString(), SearchOption.TopDirectoryOnly).Length
+        == 0
+      )
       {
-        throw new ArgumentException($"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'.");
+        throw new ArgumentException(
+          $"{dockerfile} does not exist in '{dockerfileDirectory.FullName}'."
+        );
       }
 
       _dockerfileDirectory = dockerfileDirectory;
@@ -83,7 +100,9 @@ namespace DotNet.Testcontainers.Images
     {
       const string imageGroup = "image";
 
-      var lines = File.ReadAllLines(Path.Combine(_dockerfileDirectory.FullName, _dockerfile.ToString()))
+      var lines = File.ReadAllLines(
+          Path.Combine(_dockerfileDirectory.FullName, _dockerfile.ToString())
+        )
         .Select(line => line.Trim())
         .Where(line => !string.IsNullOrEmpty(line))
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
@@ -93,7 +112,12 @@ namespace DotNet.Testcontainers.Images
 
       var stages = lines
         .Select(line => line.Value)
-        .Select(line => line.Split(new[] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
+        .Select(line =>
+          line.Split(
+            new[] { " AS ", " As ", " aS ", " as " },
+            StringSplitOptions.RemoveEmptyEntries
+          )
+        )
         .Where(substrings => substrings.Length > 1)
         .Select(substrings => substrings[substrings.Length - 1])
         .Distinct()
@@ -121,13 +145,29 @@ namespace DotNet.Testcontainers.Images
 
       var dockerfileFilePath = Unix.Instance.NormalizePath(_dockerfile.ToString());
 
-      var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
+      var dockerfileArchiveFileName = Regex
+        .Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1))
+        .ToLowerInvariant();
 
-      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
+      var dockerfileArchiveFilePath = Path.Combine(
+        Path.GetTempPath(),
+        $"{dockerfileArchiveFileName}.tar"
+      );
 
-      var dockerIgnoreFile = new DockerIgnoreFile(dockerfileDirectoryPath, ".dockerignore", dockerfileFilePath, _logger);
+      var dockerIgnoreFile = new DockerIgnoreFile(
+        dockerfileDirectoryPath,
+        ".dockerignore",
+        dockerfileFilePath,
+        _logger
+      );
 
-      using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
+      using (
+        var tarOutputFileStream = new FileStream(
+          dockerfileArchiveFilePath,
+          FileMode.Create,
+          FileAccess.Write
+        )
+      )
       {
         using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
         {
@@ -136,7 +176,9 @@ namespace DotNet.Testcontainers.Images
           foreach (var absoluteFilePath in GetFiles(dockerfileDirectoryPath))
           {
             // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
-            var relativeFilePath = absoluteFilePath.Substring(dockerfileDirectoryPath.TrimEnd(Path.AltDirectorySeparatorChar).Length + 1);
+            var relativeFilePath = absoluteFilePath.Substring(
+              dockerfileDirectoryPath.TrimEnd(Path.AltDirectorySeparatorChar).Length + 1
+            );
 
             if (dockerIgnoreFile.Denies(relativeFilePath))
             {
@@ -145,20 +187,19 @@ namespace DotNet.Testcontainers.Images
 
             try
             {
-              using (var inputStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read))
+              using (
+                var inputStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read)
+              )
               {
                 var entry = TarEntry.CreateTarEntry(relativeFilePath);
                 entry.TarHeader.Size = inputStream.Length;
                 entry.TarHeader.Mode = GetUnixFileMode(absoluteFilePath);
 
-                await tarOutputStream.PutNextEntryAsync(entry, ct)
-                  .ConfigureAwait(false);
+                await tarOutputStream.PutNextEntryAsync(entry, ct).ConfigureAwait(false);
 
-                await inputStream.CopyToAsync(tarOutputStream, 81920, ct)
-                  .ConfigureAwait(false);
+                await inputStream.CopyToAsync(tarOutputStream, 81920, ct).ConfigureAwait(false);
 
-                await tarOutputStream.CloseEntryAsync(ct)
-                  .ConfigureAwait(false);
+                await tarOutputStream.CloseEntryAsync(ct).ConfigureAwait(false);
               }
             }
             catch (IOException e)
@@ -179,7 +220,8 @@ namespace DotNet.Testcontainers.Images
     /// <returns>Returns a list with all accepted Docker archive files.</returns>
     private static IEnumerable<string> GetFiles(string directory)
     {
-      return Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
+      return Directory
+        .EnumerateFiles(directory, "*", SearchOption.AllDirectories)
         .AsParallel()
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)

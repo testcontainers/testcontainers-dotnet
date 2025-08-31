@@ -9,9 +9,7 @@ public sealed class Neo4jContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public Neo4jContainer(Neo4jConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Neo4j connection string.
@@ -19,6 +17,10 @@ public sealed class Neo4jContainer : DockerContainer
     /// <returns>The Neo4j connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("neo4j", Hostname, GetMappedPublicPort(Neo4jBuilder.Neo4jBoltPort)).ToString();
+        return new UriBuilder(
+            "neo4j",
+            Hostname,
+            GetMappedPublicPort(Neo4jBuilder.Neo4jBoltPort)
+        ).ToString();
     }
 }

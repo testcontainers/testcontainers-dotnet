@@ -2,7 +2,8 @@ namespace Testcontainers.Azurite;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
+public sealed class AzuriteBuilder
+    : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
     public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.28.0";
 
@@ -14,7 +15,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const string AccountName = "devstoreaccount1";
 
-    public const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+    public const string AccountKey =
+        "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
     private static readonly ISet<AzuriteService> EnabledServices = new HashSet<AzuriteService>();
 
@@ -59,7 +61,11 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     {
         if (megabytes.HasValue)
         {
-            return WithCommand("--inMemoryPersistence", "--extentMemoryLimit", megabytes.ToString());
+            return WithCommand(
+                "--inMemoryPersistence",
+                "--extentMemoryLimit",
+                megabytes.ToString()
+            );
         }
         else
         {
@@ -76,20 +82,29 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
         if (EnabledServices.Contains(AzuriteService.Blob))
         {
-            waitStrategy = waitStrategy.UntilMessageIsLogged("Blob service is successfully listening");
+            waitStrategy = waitStrategy.UntilMessageIsLogged(
+                "Blob service is successfully listening"
+            );
         }
 
         if (EnabledServices.Contains(AzuriteService.Queue))
         {
-            waitStrategy = waitStrategy.UntilMessageIsLogged("Queue service is successfully listening");
+            waitStrategy = waitStrategy.UntilMessageIsLogged(
+                "Queue service is successfully listening"
+            );
         }
 
         if (EnabledServices.Contains(AzuriteService.Table))
         {
-            waitStrategy = waitStrategy.UntilMessageIsLogged("Table service is successfully listening");
+            waitStrategy = waitStrategy.UntilMessageIsLogged(
+                "Table service is successfully listening"
+            );
         }
 
-        var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        var azuriteBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(waitStrategy);
         return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration);
     }
 
@@ -102,11 +117,20 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             .WithPortBinding(QueuePort, true)
             .WithPortBinding(TablePort, true)
             .WithEntrypoint("azurite")
-            .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0");
+            .WithCommand(
+                "--blobHost",
+                "0.0.0.0",
+                "--queueHost",
+                "0.0.0.0",
+                "--tableHost",
+                "0.0.0.0"
+            );
     }
 
     /// <inheritdoc />
-    protected override AzuriteBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override AzuriteBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new AzuriteConfiguration(resourceConfiguration));
     }
@@ -118,7 +142,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     }
 
     /// <inheritdoc />
-    protected override AzuriteBuilder Merge(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
+    protected override AzuriteBuilder Merge(
+        AzuriteConfiguration oldValue,
+        AzuriteConfiguration newValue
+    )
     {
         return new AzuriteBuilder(new AzuriteConfiguration(oldValue, newValue));
     }

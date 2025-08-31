@@ -14,14 +14,12 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     // # --8<-- [start:UseServiceBusContainer]
     public async ValueTask InitializeAsync()
     {
-        await _serviceBusContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _serviceBusContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -49,15 +47,18 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         var receiver = client.CreateReceiver(QueueName);
 
         // When
-        await sender.SendMessageAsync(message, TestContext.Current.CancellationToken)
+        await sender
+            .SendMessageAsync(message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var receivedMessage = await receiver.ReceiveMessageAsync(cancellationToken: TestContext.Current.CancellationToken)
+        var receivedMessage = await receiver
+            .ReceiveMessageAsync(cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
+
     // # --8<-- [end:UseServiceBusContainer]
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -70,40 +71,45 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
     {
         public ServiceBusDefaultMsSqlConfiguration()
-            : base(new ServiceBusBuilder()
-                .WithAcceptLicenseAgreement(true)
-                .Build())
-        {
-        }
+            : base(new ServiceBusBuilder().WithAcceptLicenseAgreement(true).Build()) { }
     }
+
     // # --8<-- [end:CreateServiceBusContainer]
 
     [UsedImplicitly]
-    public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    public sealed class ServiceBusCustomMsSqlConfiguration
+        : ServiceBusContainerTest,
+            IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
-            : base(new ServiceBusBuilder()
-                .WithAcceptLicenseAgreement(true)
-                // # --8<-- [start:ReuseExistingMsSqlContainer]
-                .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
-                // # --8<-- [end:ReuseExistingMsSqlContainer]
-                .Build())
-        {
-        }
+            : base(
+                new ServiceBusBuilder()
+                    .WithAcceptLicenseAgreement(true)
+                    // # --8<-- [start:ReuseExistingMsSqlContainer]
+                    .WithMsSqlContainer(
+                        fixture.Network,
+                        fixture.Container,
+                        DatabaseFixture.DatabaseNetworkAlias
+                    )
+                    // # --8<-- [end:ReuseExistingMsSqlContainer]
+                    .Build()
+            ) { }
     }
 
     [UsedImplicitly]
-    public sealed class ServiceBusCustomQueueConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
+    public sealed class ServiceBusCustomQueueConfiguration
+        : ServiceBusContainerTest,
+            IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomQueueConfiguration()
-            : base(new ServiceBusBuilder()
-                .WithAcceptLicenseAgreement(true)
-                // # --8<-- [start:UseCustomConfiguration]
-                .WithConfig("custom-queue-config.json")
-                // # --8<-- [end:UseCustomConfiguration]
-                .Build())
-        {
-        }
+            : base(
+                new ServiceBusBuilder()
+                    .WithAcceptLicenseAgreement(true)
+                    // # --8<-- [start:UseCustomConfiguration]
+                    .WithConfig("custom-queue-config.json")
+                    // # --8<-- [end:UseCustomConfiguration]
+                    .Build()
+            ) { }
 
         protected override string QueueName => "custom-queue.1";
     }
@@ -113,8 +119,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     {
         public DatabaseFixture()
         {
-            Network = new NetworkBuilder()
-                .Build();
+            Network = new NetworkBuilder().Build();
 
             Container = new MsSqlBuilder()
                 .WithNetwork(Network)

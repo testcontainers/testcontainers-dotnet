@@ -16,21 +16,26 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     // # --8<-- [start:UseEventHubsContainer]
     public async ValueTask InitializeAsync()
     {
-        await _eventHubsContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _eventHubsContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
     {
-        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, EventHubConsumerClient.DefaultConsumerGroupName, EventHubsConsumerGroupName);
+        return EventHubsServiceConfiguration
+            .Create()
+            .WithEntity(
+                EventHubsName,
+                2,
+                EventHubConsumerClient.DefaultConsumerGroupName,
+                EventHubsConsumerGroupName
+            );
     }
 
     [Fact]
@@ -43,20 +48,30 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         var readOptions = new ReadEventOptions();
         readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);
 
-        await using var producer = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+        await using var producer = new EventHubProducerClient(
+            _eventHubsContainer.GetConnectionString(),
+            EventHubsName
+        );
 
-        await using var consumer = new EventHubConsumerClient(EventHubsConsumerGroupName, _eventHubsContainer.GetConnectionString(), EventHubsName);
+        await using var consumer = new EventHubConsumerClient(
+            EventHubsConsumerGroupName,
+            _eventHubsContainer.GetConnectionString(),
+            EventHubsName
+        );
 
         // When
-        using var eventDataBatch = await producer.CreateBatchAsync(TestContext.Current.CancellationToken)
+        using var eventDataBatch = await producer
+            .CreateBatchAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = eventDataBatch.TryAdd(new EventData(message));
 
-        await producer.SendAsync(eventDataBatch, TestContext.Current.CancellationToken)
+        await producer
+            .SendAsync(eventDataBatch, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        await using var asyncEnumerator = consumer.ReadEventsAsync(readOptions, TestContext.Current.CancellationToken)
+        await using var asyncEnumerator = consumer
+            .ReadEventsAsync(readOptions, TestContext.Current.CancellationToken)
             .WithCancellation(TestContext.Current.CancellationToken)
             .GetAsyncEnumerator();
         _ = await asyncEnumerator.MoveNextAsync();
@@ -64,6 +79,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
     }
+
     // # --8<-- [end:UseEventHubsContainer]
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -76,28 +92,35 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
     {
         public EventHubsDefaultAzuriteConfiguration()
-            : base(new EventHubsBuilder()
-                .WithAcceptLicenseAgreement(true)
-                .WithConfigurationBuilder(GetServiceConfiguration())
-                .Build())
-        {
-        }
+            : base(
+                new EventHubsBuilder()
+                    .WithAcceptLicenseAgreement(true)
+                    .WithConfigurationBuilder(GetServiceConfiguration())
+                    .Build()
+            ) { }
     }
+
     // # --8<-- [end:CreateEventHubsContainer]
 
     [UsedImplicitly]
-    public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
+    public sealed class EventHubsCustomAzuriteConfiguration
+        : EventHubsContainerTest,
+            IClassFixture<DatabaseFixture>
     {
         public EventHubsCustomAzuriteConfiguration(DatabaseFixture fixture)
-            : base(new EventHubsBuilder()
-                .WithAcceptLicenseAgreement(true)
-                .WithConfigurationBuilder(GetServiceConfiguration())
-                // # --8<-- [start:ReuseExistingAzuriteContainer]
-                .WithAzuriteContainer(fixture.Network, fixture.Container, DatabaseFixture.AzuriteNetworkAlias)
-                // # --8<-- [end:ReuseExistingAzuriteContainer]
-                .Build())
-        {
-        }
+            : base(
+                new EventHubsBuilder()
+                    .WithAcceptLicenseAgreement(true)
+                    .WithConfigurationBuilder(GetServiceConfiguration())
+                    // # --8<-- [start:ReuseExistingAzuriteContainer]
+                    .WithAzuriteContainer(
+                        fixture.Network,
+                        fixture.Container,
+                        DatabaseFixture.AzuriteNetworkAlias
+                    )
+                    // # --8<-- [end:ReuseExistingAzuriteContainer]
+                    .Build()
+            ) { }
     }
 
     [UsedImplicitly]
@@ -105,8 +128,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     {
         public DatabaseFixture()
         {
-            Network = new NetworkBuilder()
-                .Build();
+            Network = new NetworkBuilder().Build();
 
             Container = new AzuriteBuilder()
                 .WithNetwork(Network)

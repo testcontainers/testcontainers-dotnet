@@ -22,7 +22,11 @@ public sealed class QdrantContainer : DockerContainer
     public string GetHttpConnectionString()
     {
         var scheme = _configuration.TlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
-        var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(QdrantBuilder.QdrantHttpPort));
+        var endpoint = new UriBuilder(
+            scheme,
+            Hostname,
+            GetMappedPublicPort(QdrantBuilder.QdrantHttpPort)
+        );
         return endpoint.ToString();
     }
 
@@ -32,7 +36,11 @@ public sealed class QdrantContainer : DockerContainer
     public string GetGrpcConnectionString()
     {
         var scheme = _configuration.TlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
-        var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(QdrantBuilder.QdrantGrpcPort));
+        var endpoint = new UriBuilder(
+            scheme,
+            Hostname,
+            GetMappedPublicPort(QdrantBuilder.QdrantGrpcPort)
+        );
         return endpoint.ToString();
     }
 }

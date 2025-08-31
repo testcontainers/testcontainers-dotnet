@@ -20,9 +20,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public CredsHelperProvider(JsonDocument jsonDocument, ILogger logger)
-      : this(jsonDocument.RootElement, logger)
-    {
-    }
+      : this(jsonDocument.RootElement, logger) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CredsHelperProvider" /> class.
@@ -32,14 +30,20 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     public CredsHelperProvider(JsonElement jsonElement, ILogger logger)
     {
-      _rootElement = jsonElement.TryGetProperty("credHelpers", out var credHelpers) ? credHelpers : default;
+      _rootElement = jsonElement.TryGetProperty("credHelpers", out var credHelpers)
+        ? credHelpers
+        : default;
       _logger = logger;
     }
 
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => Base64Provider.HasDockerRegistryName(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind)
+        && !JsonValueKind.Null.Equals(_rootElement.ValueKind)
+        && _rootElement
+          .EnumerateObject()
+          .Any(property => Base64Provider.HasDockerRegistryName(property, hostname));
     }
 
     /// <inheritdoc />
@@ -52,7 +56,9 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var registryEndpointProperty = _rootElement.EnumerateObject().LastOrDefault(property => Base64Provider.HasDockerRegistryName(property, hostname));
+      var registryEndpointProperty = _rootElement
+        .EnumerateObject()
+        .LastOrDefault(property => Base64Provider.HasDockerRegistryName(property, hostname));
 
       if (!JsonValueKind.String.Equals(registryEndpointProperty.Value.ValueKind))
       {
@@ -64,7 +70,10 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var credentialProviderOutput = DockerCredentialProcess.Get(registryEndpointProperty.Value.GetString(), hostname);
+      var credentialProviderOutput = DockerCredentialProcess.Get(
+        registryEndpointProperty.Value.GetString(),
+        hostname
+      );
       if (string.IsNullOrEmpty(credentialProviderOutput))
       {
         return null;

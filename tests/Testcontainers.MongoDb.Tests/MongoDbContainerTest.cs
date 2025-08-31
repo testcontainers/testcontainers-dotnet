@@ -15,14 +15,12 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     // # --8<-- [start:UseMongoDbContainer]
     public async ValueTask InitializeAsync()
     {
-        await _mongoDbContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _mongoDbContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -38,7 +36,10 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         using var databases = client.ListDatabases(TestContext.Current.CancellationToken);
 
         // Then
-        Assert.Contains(databases.ToEnumerable(TestContext.Current.CancellationToken), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
+        Assert.Contains(
+            databases.ToEnumerable(TestContext.Current.CancellationToken),
+            database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString)
+        );
     }
 
     [Fact]
@@ -46,16 +47,19 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public async Task ExecScriptReturnsSuccessful()
     {
         // Given
-        const string scriptContent = "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
+        const string scriptContent =
+            "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
 
         // When
-        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await _mongoDbContainer
+            .ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
         Assert.Empty(execResult.Stderr);
     }
+
     // # --8<-- [end:UseMongoDbContainer]
 
     [Fact]
@@ -66,7 +70,8 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
         const string scriptContent = "rs.status().ok;";
 
         // When
-        var execResult = await _mongoDbContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await _mongoDbContainer
+            .ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -92,46 +97,42 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbDefaultConfiguration : MongoDbContainerTest
     {
         public MongoDbDefaultConfiguration()
-            : base(new MongoDbBuilder().Build())
-        {
-        }
+            : base(new MongoDbBuilder().Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class MongoDbNoAuthConfiguration : MongoDbContainerTest
     {
         public MongoDbNoAuthConfiguration()
-            : base(new MongoDbBuilder().WithUsername(string.Empty).WithPassword(string.Empty).Build())
-        {
-        }
+            : base(
+                new MongoDbBuilder().WithUsername(string.Empty).WithPassword(string.Empty).Build()
+            ) { }
     }
+
     // # --8<-- [end:CreateMongoDbContainer]
 
     [UsedImplicitly]
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
     {
         public MongoDbV5Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:5.0").Build())
-        {
-        }
+            : base(new MongoDbBuilder().WithImage("mongo:5.0").Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder().WithImage("mongo:4.4").Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
-        {
-        }
+            : base(
+                new MongoDbBuilder().WithImage("mongo:4.4").Build(),
+                true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */
+            ) { }
     }
 
     [UsedImplicitly]
     public sealed class MongoDbReplicaSetDefaultConfiguration : MongoDbContainerTest
     {
         public MongoDbReplicaSetDefaultConfiguration()
-            : base(new MongoDbBuilder().WithReplicaSet().Build(), true)
-        {
-        }
+            : base(new MongoDbBuilder().WithReplicaSet().Build(), true) { }
     }
 
     // # --8<-- [start:ReplicaSetContainerConfiguration]
@@ -139,9 +140,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbNamedReplicaSetConfiguration : MongoDbContainerTest
     {
         public MongoDbNamedReplicaSetConfiguration()
-            : base(new MongoDbBuilder().WithReplicaSet("rs1").Build(), true)
-        {
-        }
+            : base(new MongoDbBuilder().WithReplicaSet("rs1").Build(), true) { }
     }
     // # --8<-- [end:ReplicaSetContainerConfiguration]
 }

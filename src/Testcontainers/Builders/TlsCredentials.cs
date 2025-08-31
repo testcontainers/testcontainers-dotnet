@@ -7,9 +7,7 @@ namespace DotNet.Testcontainers.Builders
   internal sealed class TlsCredentials : CertificateCredentials
   {
     public TlsCredentials()
-      : base(null)
-    {
-    }
+      : base(null) { }
 
     public override bool IsTlsCredentials()
     {

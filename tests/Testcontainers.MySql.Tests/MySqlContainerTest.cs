@@ -24,7 +24,8 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await fixture
+            .Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -35,24 +36,24 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
     public class MySqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MySqlBuilder, MySqlContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory
-            => MySqlConnectorFactory.Instance;
+        public override DbProviderFactory DbProviderFactory => MySqlConnectorFactory.Instance;
     }
 
     [UsedImplicitly]
     public class MySqlWaitForDatabaseFixture(IMessageSink messageSink)
         : MySqlDefaultFixture(messageSink)
     {
-        protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override MySqlBuilder Configure(MySqlBuilder builder) =>
+            builder.WithWaitStrategy(
+                Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory)
+            );
     }
 
     [UsedImplicitly]
-    public class MySqlRootFixture(IMessageSink messageSink)
-        : MySqlDefaultFixture(messageSink)
+    public class MySqlRootFixture(IMessageSink messageSink) : MySqlDefaultFixture(messageSink)
     {
-        protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithUsername("root");
+        protected override MySqlBuilder Configure(MySqlBuilder builder) =>
+            builder.WithUsername("root");
     }
 
     [UsedImplicitly]
@@ -60,23 +61,27 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         : MySqlDefaultFixture(messageSink)
     {
         // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
-        protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithImage("mysql:8.0.28");
+        protected override MySqlBuilder Configure(MySqlBuilder builder) =>
+            builder.WithImage("mysql:8.0.28");
     }
 
     [UsedImplicitly]
     public sealed class MySqlDefaultConfiguration(MySqlDefaultFixture fixture)
-        : MySqlContainerTest(fixture), IClassFixture<MySqlDefaultFixture>;
+        : MySqlContainerTest(fixture),
+            IClassFixture<MySqlDefaultFixture>;
 
     [UsedImplicitly]
     public sealed class MySqlWaitForDatabaseConfiguration(MySqlWaitForDatabaseFixture fixture)
-        : MySqlContainerTest(fixture), IClassFixture<MySqlWaitForDatabaseFixture>;
+        : MySqlContainerTest(fixture),
+            IClassFixture<MySqlWaitForDatabaseFixture>;
 
     [UsedImplicitly]
     public sealed class MySqlRootConfiguration(MySqlRootFixture fixture)
-        : MySqlContainerTest(fixture), IClassFixture<MySqlRootFixture>;
+        : MySqlContainerTest(fixture),
+            IClassFixture<MySqlRootFixture>;
 
     [UsedImplicitly]
     public sealed class MySqlGitHubIssue1142Configuration(MySqlGitHubIssue1142Fixture fixture)
-        : MySqlContainerTest(fixture), IClassFixture<MySqlGitHubIssue1142Fixture>;
+        : MySqlContainerTest(fixture),
+            IClassFixture<MySqlGitHubIssue1142Fixture>;
 }

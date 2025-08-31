@@ -4,9 +4,18 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
 {
     private const string TargetDirectoryPath = "/tmp";
 
-    private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath, NullLogger.Instance);
+    private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(
+        TargetDirectoryPath,
+        NullLogger.Instance
+    );
 
-    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"), Path.GetRandomFileName()));
+    private readonly FileInfo _testFile = new FileInfo(
+        Path.Combine(
+            TestSession.TempDirectoryPath,
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        )
+    );
 
     private bool _disposed;
 
@@ -14,7 +23,11 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         _ = Directory.CreateDirectory(_testFile.Directory!.FullName);
 
-        using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+        using var fileStream = _testFile.Open(
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.ReadWrite
+        );
         fileStream.WriteByte(13);
     }
 
@@ -51,7 +64,10 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         _tarOutputMemoryStream.Seek(0, SeekOrigin.Begin);
 
         // When
-        using var tarIn = TarArchive.CreateInputTarArchive(_tarOutputMemoryStream, Encoding.Default);
+        using var tarIn = TarArchive.CreateInputTarArchive(
+            _tarOutputMemoryStream,
+            Encoding.Default
+        );
         tarIn.ProgressMessageEvent += (_, entry, _) => actual.Add(entry.Name);
         tarIn.ListContents();
 
@@ -60,7 +76,11 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     }
 
     [UsedImplicitly]
-    public sealed class FromResourceMapping : TarOutputMemoryStreamTest, IResourceMapping, IClassFixture<FromResourceMapping.HttpFixture>, IAsyncLifetime
+    public sealed class FromResourceMapping
+        : TarOutputMemoryStreamTest,
+            IResourceMapping,
+            IClassFixture<FromResourceMapping.HttpFixture>,
+            IAsyncLifetime
     {
         private readonly string _testHttpUri;
 
@@ -72,25 +92,19 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             _testFileUri = new Uri(_testFile.FullName).ToString();
         }
 
-        public MountType Type
-            => MountType.Bind;
+        public MountType Type => MountType.Bind;
 
-        public AccessMode AccessMode
-            => AccessMode.ReadOnly;
+        public AccessMode AccessMode => AccessMode.ReadOnly;
 
-        public string Source
-            => string.Empty;
+        public string Source => string.Empty;
 
-        public string Target
-            => string.Join("/", TargetDirectoryPath, _testFile.Name);
+        public string Target => string.Join("/", TargetDirectoryPath, _testFile.Name);
 
-        public UnixFileModes FileMode
-            => Unix.FileMode644;
+        public UnixFileModes FileMode => Unix.FileMode644;
 
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(this)
-                .ConfigureAwait(false);
+            await _tarOutputMemoryStream.AddAsync(this).ConfigureAwait(false);
         }
 
         public ValueTask DisposeAsync()
@@ -118,9 +132,27 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         public async Task TestFileExistsInContainer()
         {
             // Given
-            var targetFilePath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
-            var targetFilePath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
-            var targetFilePath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath1 = string.Join(
+                "/",
+                string.Empty,
+                "tmp",
+                Guid.NewGuid(),
+                _testFile.Name
+            );
+            var targetFilePath2 = string.Join(
+                "/",
+                string.Empty,
+                "tmp",
+                Guid.NewGuid(),
+                _testFile.Name
+            );
+            var targetFilePath3 = string.Join(
+                "/",
+                string.Empty,
+                "tmp",
+                Guid.NewGuid(),
+                _testFile.Name
+            );
             var targetDirectoryPath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
@@ -151,20 +183,37 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             var fileContent = await GetAllBytesAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            await container.StartAsync(TestContext.Current.CancellationToken)
+            await container.StartAsync(TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+            await container
+                .CopyAsync(fileContent, targetFilePath3, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(fileContent, targetFilePath3, ct: TestContext.Current.CancellationToken)
+            await container
+                .CopyAsync(
+                    _testFile.FullName,
+                    targetDirectoryPath4,
+                    ct: TestContext.Current.CancellationToken
+                )
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(_testFile.FullName, targetDirectoryPath4, ct: TestContext.Current.CancellationToken)
-                .ConfigureAwait(true);
-
-            await container.CopyAsync(_testFile.Directory!.FullName, targetDirectoryPath5, ct: TestContext.Current.CancellationToken)
+            await container
+                .CopyAsync(
+                    _testFile.Directory!.FullName,
+                    targetDirectoryPath5,
+                    ct: TestContext.Current.CancellationToken
+                )
                 .ConfigureAwait(true);
 
             // Then
-            var execResults = await Task.WhenAll(targetFilePaths.Select(containerFilePath => container.ExecAsync(new[] { "test", "-f", containerFilePath }, TestContext.Current.CancellationToken)))
+            var execResults = await Task.WhenAll(
+                    targetFilePaths.Select(containerFilePath =>
+                        container.ExecAsync(
+                            new[] { "test", "-f", containerFilePath },
+                            TestContext.Current.CancellationToken
+                        )
+                    )
+                )
                 .ConfigureAwait(true);
 
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
@@ -181,11 +230,17 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
                 .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
                 .WithPortBinding(HttpPort, true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
+                .WithWaitStrategy(
+                    Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request)
+                )
                 .Build();
 
-            public string BaseAddress
-                => new UriBuilder(Uri.UriSchemeHttp, _container.Hostname, _container.GetMappedPublicPort(HttpPort)).ToString();
+            public string BaseAddress =>
+                new UriBuilder(
+                    Uri.UriSchemeHttp,
+                    _container.Hostname,
+                    _container.GetMappedPublicPort(HttpPort)
+                ).ToString();
 
             public ValueTask InitializeAsync()
             {
@@ -204,7 +259,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644)
+            await _tarOutputMemoryStream
+                .AddAsync(_testFile, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 
@@ -219,7 +275,8 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644)
+            await _tarOutputMemoryStream
+                .AddAsync(_testFile.Directory, true, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 
@@ -237,7 +294,10 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         [InlineData(Unix.FileMode700, "700")]
         [InlineData(Unix.FileMode755, "755")]
         [InlineData(Unix.FileMode777, "777")]
-        public void UnixFileModeResolvesToPosixFilePermission(UnixFileModes fileMode, string posixFilePermission)
+        public void UnixFileModeResolvesToPosixFilePermission(
+            UnixFileModes fileMode,
+            string posixFilePermission
+        )
         {
             Assert.Equal(Convert.ToInt32(posixFilePermission, 8), Convert.ToInt32(fileMode));
         }

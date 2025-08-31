@@ -34,5 +34,8 @@ internal interface IKafkaVendorConfiguration
     /// <param name="resourceConfiguration">The resource configuration.</param>
     /// <param name="container">The Kafka container.</param>
     /// <returns>The startup script as a string.</returns>
-    public string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container);
+    public string CreateStartupScript(
+        KafkaConfiguration resourceConfiguration,
+        KafkaContainer container
+    );
 }

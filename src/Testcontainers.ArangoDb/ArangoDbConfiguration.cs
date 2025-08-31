@@ -8,8 +8,7 @@ public sealed class ArangoDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ArangoDbConfiguration" /> class.
     /// </summary>
     /// <param name="password">The ArangoDb password.</param>
-    public ArangoDbConfiguration(
-        string password = null)
+    public ArangoDbConfiguration(string password = null)
     {
         Password = password;
     }
@@ -18,7 +17,9 @@ public sealed class ArangoDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ArangoDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ArangoDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ArangoDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

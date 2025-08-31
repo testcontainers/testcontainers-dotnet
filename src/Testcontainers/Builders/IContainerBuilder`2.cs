@@ -19,7 +19,8 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   [PublicAPI]
-  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
+  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity>
+    : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
     /// <summary>
     /// Accepts the license agreement.
@@ -239,7 +240,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      byte[] resourceContent,
+      string filePath,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Copies the contents of a URL, a test host directory or file to the container before it starts.
@@ -257,7 +262,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      string source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
@@ -267,7 +276,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      DirectoryInfo source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
@@ -277,7 +290,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      FileInfo source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Copies a test host file to the container before it starts.
@@ -287,7 +304,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      FileInfo source,
+      FileInfo target,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Copies a file from a URL to the container before it starts.
@@ -306,7 +327,11 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="target">The target directory or file path to copy the file to.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(
+      Uri source,
+      string target,
+      UnixFileModes fileMode = Unix.FileMode644
+    );
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.
@@ -475,6 +500,8 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback);
+    TBuilderEntity WithStartupCallback(
+      Func<TContainerEntity, CancellationToken, Task> startupCallback
+    );
   }
 }

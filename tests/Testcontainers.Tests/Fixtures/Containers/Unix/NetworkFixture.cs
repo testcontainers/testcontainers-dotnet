@@ -11,22 +11,20 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class NetworkFixture : IAsyncLifetime
   {
-    public INetwork Network { get; }
-      = new NetworkBuilder()
+    public INetwork Network { get; } =
+      new NetworkBuilder()
         .WithDriver(NetworkDriver.Bridge)
         .WithName(Guid.NewGuid().ToString("D"))
         .Build();
 
     public async ValueTask InitializeAsync()
     {
-      await Network.CreateAsync()
-        .ConfigureAwait(false);
+      await Network.CreateAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await Network.DeleteAsync()
-        .ConfigureAwait(false);
+      await Network.DeleteAsync().ConfigureAwait(false);
     }
   }
 }

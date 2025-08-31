@@ -14,7 +14,11 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TResourceEntity">The resource entity.</typeparam>
   /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   [PublicAPI]
-  public interface IAbstractBuilder<out TBuilderEntity, out TResourceEntity, out TCreateResourceEntity>
+  public interface IAbstractBuilder<
+    out TBuilderEntity,
+    out TResourceEntity,
+    out TCreateResourceEntity
+  >
   {
     /// <summary>
     /// Sets the Docker API endpoint.
@@ -50,7 +54,9 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig);
+    TBuilderEntity WithDockerEndpoint(
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig
+    );
 
     /// <summary>
     /// Cleans up the Docker resource after the tests are finished.

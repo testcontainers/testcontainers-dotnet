@@ -6,8 +6,7 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _bigQueryContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _bigQueryContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -24,7 +23,15 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
 
         // Storing DateTime.UtcNow in BigQuery loses precision. The query result differs
         // in the last digit. Truncating milliseconds prevents running into this issue.
-        var utcNowWithoutMilliseconds = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second, DateTimeKind.Utc);
+        var utcNowWithoutMilliseconds = new DateTime(
+            utcNow.Year,
+            utcNow.Month,
+            utcNow.Day,
+            utcNow.Hour,
+            utcNow.Minute,
+            utcNow.Second,
+            DateTimeKind.Utc
+        );
 
         var bigQueryClientBuilder = new BigQueryClientBuilder();
         bigQueryClientBuilder.BaseUri = _bigQueryContainer.GetEmulatorEndpoint();
@@ -42,20 +49,36 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         expectedRow.Add("gameStarted", utcNowWithoutMilliseconds);
         expectedRow.Add("score", 85L);
 
-        using var bigQueryClient = await bigQueryClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
+        using var bigQueryClient = await bigQueryClientBuilder
+            .BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var dataset = await bigQueryClient.GetOrCreateDatasetAsync("mydata", cancellationToken: TestContext.Current.CancellationToken)
+        var dataset = await bigQueryClient
+            .GetOrCreateDatasetAsync(
+                "mydata",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // When
-        var table = await dataset.CreateTableAsync("scores", tableSchema, cancellationToken: TestContext.Current.CancellationToken)
+        var table = await dataset
+            .CreateTableAsync(
+                "scores",
+                tableSchema,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        _ = await table.InsertRowAsync(expectedRow, cancellationToken: TestContext.Current.CancellationToken)
+        _ = await table
+            .InsertRowAsync(expectedRow, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var results = await bigQueryClient.ExecuteQueryAsync($"SELECT * FROM {table}", null, cancellationToken: TestContext.Current.CancellationToken)
+        var results = await bigQueryClient
+            .ExecuteQueryAsync(
+                $"SELECT * FROM {table}",
+                null,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // Then
@@ -67,11 +90,12 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
 
     private sealed class Credential : ICredential
     {
-        public void Initialize(ConfigurableHttpClient httpClient)
-        {
-        }
+        public void Initialize(ConfigurableHttpClient httpClient) { }
 
-        public Task<string> GetAccessTokenForRequestAsync(string authUri, CancellationToken cancellationToken)
+        public Task<string> GetAccessTokenForRequestAsync(
+            string authUri,
+            CancellationToken cancellationToken
+        )
         {
             return Task.FromResult(string.Empty);
         }

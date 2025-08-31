@@ -7,7 +7,5 @@ namespace DotNet.Testcontainers.Images
   /// A future image instance.
   /// </summary>
   [PublicAPI]
-  public interface IFutureDockerImage : IImage, IFutureResource, IAsyncDisposable
-  {
-  }
+  public interface IFutureDockerImage : IImage, IFutureResource, IAsyncDisposable { }
 }

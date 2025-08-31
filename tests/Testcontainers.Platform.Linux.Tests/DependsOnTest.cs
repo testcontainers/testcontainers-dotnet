@@ -27,13 +27,9 @@ public sealed class DependsOnTest : IAsyncLifetime
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
-        var network = new NetworkBuilder()
-            .WithLabel(_labelKey, _labelValue)
-            .Build();
+        var network = new NetworkBuilder().WithLabel(_labelKey, _labelValue).Build();
 
-        var volume = new VolumeBuilder()
-            .WithLabel(_labelKey, _labelValue)
-            .Build();
+        var volume = new VolumeBuilder().WithLabel(_labelKey, _labelValue).Build();
 
         var parentContainer = new ContainerBuilder()
             .DependsOn(childContainer1)
@@ -44,8 +40,7 @@ public sealed class DependsOnTest : IAsyncLifetime
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
-        await parentContainer.StartAsync()
-            .ConfigureAwait(false);
+        await parentContainer.StartAsync().ConfigureAwait(false);
 
         _disposables.Add(parentContainer);
         _disposables.Add(childContainer1);
@@ -65,24 +60,40 @@ public sealed class DependsOnTest : IAsyncLifetime
     public async Task DependsOnCreatesDependentResources()
     {
         // Given
-        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
+        using var clientConfiguration =
+            TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(
+                Guid.NewGuid()
+            );
 
         using var client = clientConfiguration.CreateClient();
 
-        var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
+        var containersListParameters = new ContainersListParameters
+        {
+            All = true,
+            Filters = _filters,
+        };
 
         var networksListParameters = new NetworksListParameters { Filters = _filters };
 
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
         // When
-        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
+        var containers = await client
+            .Containers.ListContainersAsync(
+                containersListParameters,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
+        var networks = await client
+            .Networks.ListNetworksAsync(
+                networksListParameters,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
+        var response = await client
+            .Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

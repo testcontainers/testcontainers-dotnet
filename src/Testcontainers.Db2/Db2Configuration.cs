@@ -10,10 +10,7 @@ public sealed class Db2Configuration : ContainerConfiguration
     /// <param name="database">The Db2 database.</param>
     /// <param name="username">The Db2 username.</param>
     /// <param name="password">The Db2 password.</param>
-    public Db2Configuration(
-        string database = null,
-        string username = null,
-        string password = null)
+    public Db2Configuration(string database = null, string username = null, string password = null)
     {
         Database = database;
         Username = username;

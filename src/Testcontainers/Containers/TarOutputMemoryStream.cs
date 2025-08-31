@@ -58,8 +58,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     public async Task AddAsync(IResourceMapping resourceMapping, CancellationToken ct = default)
     {
-      var fileContent = await resourceMapping.GetAllBytesAsync(ct)
-        .ConfigureAwait(false);
+      var fileContent = await resourceMapping.GetAllBytesAsync(ct).ConfigureAwait(false);
 
       var targetFilePath = Unix.Instance.NormalizePath(resourceMapping.Target);
 
@@ -69,21 +68,21 @@ namespace DotNet.Testcontainers.Containers
       tarEntry.TarHeader.ModTime = DateTime.UtcNow;
       tarEntry.Size = fileContent.Length;
 
-      _logger.LogInformation("Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\"", tarEntry.Size, targetFilePath);
+      _logger.LogInformation(
+        "Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\"",
+        tarEntry.Size,
+        targetFilePath
+      );
 
-      await PutNextEntryAsync(tarEntry, ct)
-        .ConfigureAwait(false);
+      await PutNextEntryAsync(tarEntry, ct).ConfigureAwait(false);
 
 #if NETSTANDARD2_0
-      await WriteAsync(fileContent, 0, fileContent.Length, ct)
-        .ConfigureAwait(false);
+      await WriteAsync(fileContent, 0, fileContent.Length, ct).ConfigureAwait(false);
 #else
-      await WriteAsync(fileContent, ct)
-        .ConfigureAwait(false);
+      await WriteAsync(fileContent, ct).ConfigureAwait(false);
 #endif
 
-      await CloseEntryAsync(ct)
-        .ConfigureAwait(false);
+      await CloseEntryAsync(ct).ConfigureAwait(false);
 
       _ = Interlocked.Add(ref _contentLength, tarEntry.Size);
     }
@@ -107,14 +106,18 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(
+      DirectoryInfo directory,
+      bool recurse,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    )
     {
       var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
       foreach (var file in directory.GetFiles("*", searchOption))
       {
-        await AddAsync(directory, file, fileMode, ct)
-          .ConfigureAwait(false);
+        await AddAsync(directory, file, fileMode, ct).ConfigureAwait(false);
       }
     }
 
@@ -125,11 +128,23 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="file">The file to add to the archive.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(
+      DirectoryInfo directory,
+      FileInfo file,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    )
     {
       using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
       {
-        var targetFilePath = Unix.Instance.NormalizePath(Path.Combine(_targetDirectoryPath, file.FullName.Substring(directory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1)));
+        var targetFilePath = Unix.Instance.NormalizePath(
+          Path.Combine(
+            _targetDirectoryPath,
+            file.FullName.Substring(
+              directory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1
+            )
+          )
+        );
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = targetFilePath;
@@ -137,16 +152,17 @@ namespace DotNet.Testcontainers.Containers
         tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
         tarEntry.Size = stream.Length;
 
-        _logger.LogInformation("Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\"", tarEntry.TarHeader.Name, targetFilePath);
+        _logger.LogInformation(
+          "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\"",
+          tarEntry.TarHeader.Name,
+          targetFilePath
+        );
 
-        await PutNextEntryAsync(tarEntry, ct)
-          .ConfigureAwait(false);
+        await PutNextEntryAsync(tarEntry, ct).ConfigureAwait(false);
 
-        await stream.CopyToAsync(this, 81920, ct)
-          .ConfigureAwait(false);
+        await stream.CopyToAsync(this, 81920, ct).ConfigureAwait(false);
 
-        await CloseEntryAsync(ct)
-          .ConfigureAwait(false);
+        await CloseEntryAsync(ct).ConfigureAwait(false);
 
         _ = Interlocked.Add(ref _contentLength, tarEntry.Size);
       }

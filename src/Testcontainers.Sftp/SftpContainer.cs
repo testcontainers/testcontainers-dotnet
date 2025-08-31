@@ -9,7 +9,5 @@ public sealed class SftpContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public SftpContainer(SftpConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 }

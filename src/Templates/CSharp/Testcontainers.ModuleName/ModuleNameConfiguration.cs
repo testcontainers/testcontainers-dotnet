@@ -18,7 +18,9 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ModuleNameConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ModuleNameConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ModuleNameConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -49,7 +51,10 @@ public sealed class ModuleNameConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ModuleNameConfiguration(ModuleNameConfiguration oldValue, ModuleNameConfiguration newValue)
+    public ModuleNameConfiguration(
+        ModuleNameConfiguration oldValue,
+        ModuleNameConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         // // Create an updated immutable copy of the module configuration.

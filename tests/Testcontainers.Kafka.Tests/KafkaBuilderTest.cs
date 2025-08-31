@@ -5,15 +5,23 @@ public sealed class KafkaBuilderTests
     [Fact]
     public void KRaftWithConfluentPre7ThrowsArgumentException()
     {
-        const string message = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0.";
-        ExpectArgEx(message, () => new KafkaBuilder().WithImage("confluentinc/cp-kafka:6.1.9").WithKRaft().Build());
+        const string message =
+            "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0.";
+        ExpectArgEx(
+            message,
+            () => new KafkaBuilder().WithImage("confluentinc/cp-kafka:6.1.9").WithKRaft().Build()
+        );
     }
 
     [Fact]
     public void ZooKeeperWithApacheKafkaImageThrowsArgumentException()
     {
-        const string message = "Local ZooKeeper is not supported for Apache Kafka images. Configure an external ZooKeeper.";
-        ExpectArgEx(message, () => new KafkaBuilder().WithImage("apache/kafka:3.9.1").WithZooKeeper().Build());
+        const string message =
+            "Local ZooKeeper is not supported for Apache Kafka images. Configure an external ZooKeeper.";
+        ExpectArgEx(
+            message,
+            () => new KafkaBuilder().WithImage("apache/kafka:3.9.1").WithZooKeeper().Build()
+        );
     }
 
     private static void ExpectArgEx(string message, Action testCode)

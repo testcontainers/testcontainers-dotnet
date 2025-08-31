@@ -9,9 +9,7 @@ public sealed class PubSubContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public PubSubContainer(PubSubConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the PubSub emulator endpoint.
@@ -19,6 +17,10 @@ public sealed class PubSubContainer : DockerContainer
     /// <returns>The PubSub emulator endpoint.</returns>
     public string GetEmulatorEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(PubSubBuilder.PubSubPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(PubSubBuilder.PubSubPort)
+        ).ToString();
     }
 }

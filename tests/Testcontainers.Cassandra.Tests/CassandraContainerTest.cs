@@ -24,7 +24,10 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         // Given
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local WHERE key = ?;";
 
-        using var cluster = Cluster.Builder().WithConnectionString(fixture.Container.GetConnectionString()).Build();
+        using var cluster = Cluster
+            .Builder()
+            .WithConnectionString(fixture.Container.GetConnectionString())
+            .Build();
 
         // When
         using var session = cluster.Connect();
@@ -39,6 +42,7 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         Assert.Single(rows);
         Assert.Equal("COMPLETED", rows[0]["bootstrapped"]);
     }
+
     // # --8<-- [end:UseCassandraContainer]
 
     [Fact]
@@ -49,7 +53,11 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         const string selectFromSystemLocalStatement = "SELECT * FROM system.local;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(selectFromSystemLocalStatement, TestContext.Current.CancellationToken)
+        var execResult = await fixture
+            .Container.ExecScriptAsync(
+                selectFromSystemLocalStatement,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // Then
@@ -60,23 +68,26 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
     public class CassandraDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory
-            => CqlProviderFactory.Instance;
+        public override DbProviderFactory DbProviderFactory => CqlProviderFactory.Instance;
     }
 
     [UsedImplicitly]
     public class CassandraWaitForDatabaseFixture(IMessageSink messageSink)
         : CassandraDefaultFixture(messageSink)
     {
-        protected override CassandraBuilder Configure(CassandraBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override CassandraBuilder Configure(CassandraBuilder builder) =>
+            builder.WithWaitStrategy(
+                Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory)
+            );
     }
 
     [UsedImplicitly]
     public sealed class CassandraDefaultConfiguration(CassandraDefaultFixture fixture)
-        : CassandraContainerTest(fixture), IClassFixture<CassandraDefaultFixture>;
+        : CassandraContainerTest(fixture),
+            IClassFixture<CassandraDefaultFixture>;
 
     [UsedImplicitly]
-    public sealed class CassandraWaitForDatabaseConfiguration(CassandraWaitForDatabaseFixture fixture)
-        : CassandraContainerTest(fixture), IClassFixture<CassandraWaitForDatabaseFixture>;
+    public sealed class CassandraWaitForDatabaseConfiguration(
+        CassandraWaitForDatabaseFixture fixture
+    ) : CassandraContainerTest(fixture), IClassFixture<CassandraWaitForDatabaseFixture>;
 }

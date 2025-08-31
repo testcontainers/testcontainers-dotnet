@@ -9,9 +9,7 @@ public sealed class PapercutContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public PapercutContainer(PapercutConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the SMTP port.
@@ -24,6 +22,10 @@ public sealed class PapercutContainer : DockerContainer
     /// <returns>The Papercut base address.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(PapercutBuilder.HttpPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(PapercutBuilder.HttpPort)
+        ).ToString();
     }
 }

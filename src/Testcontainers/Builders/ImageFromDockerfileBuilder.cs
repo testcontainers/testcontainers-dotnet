@@ -27,7 +27,14 @@ namespace DotNet.Testcontainers.Builders
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class ImageFromDockerfileBuilder : AbstractBuilder<ImageFromDockerfileBuilder, IFutureDockerImage, ImageBuildParameters, IImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
+  public class ImageFromDockerfileBuilder
+    : AbstractBuilder<
+      ImageFromDockerfileBuilder,
+      IFutureDockerImage,
+      ImageBuildParameters,
+      IImageFromDockerfileConfiguration
+    >,
+      IImageFromDockerfileBuilder<ImageFromDockerfileBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
@@ -42,7 +49,9 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="ImageFromDockerfileBuilder" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private ImageFromDockerfileBuilder(IImageFromDockerfileConfiguration dockerResourceConfiguration)
+    private ImageFromDockerfileBuilder(
+      IImageFromDockerfileConfiguration dockerResourceConfiguration
+    )
       : base(dockerResourceConfiguration)
     {
       DockerResourceConfiguration = dockerResourceConfiguration;
@@ -60,46 +69,81 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(IImage image)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyHubImageNamePrefix()));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(image: image.ApplyHubImageNamePrefix())
+      );
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath));
+      var dockerfileFilePath = Regex.Replace(
+        dockerfile,
+        "^\\.(\\/|\\\\)",
+        string.Empty,
+        RegexOptions.None,
+        TimeSpan.FromSeconds(1)
+      );
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath)
+      );
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfileDirectory(string dockerfileDirectory)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectory)
+      );
     }
 
     /// <inheritdoc />
-    public ImageFromDockerfileBuilder WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory)
+    public ImageFromDockerfileBuilder WithDockerfileDirectory(
+      CommonDirectoryPath commonDirectoryPath,
+      string dockerfileDirectory
+    )
     {
-      var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+      var dockerfileDirectoryPath = Path.Combine(
+        commonDirectoryPath.DirectoryPath,
+        dockerfileDirectory
+      );
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath)
+      );
     }
 
     /// <inheritdoc />
-    public ImageFromDockerfileBuilder WithImageBuildPolicy(Func<ImageInspectResponse, bool> imageBuildPolicy)
+    public ImageFromDockerfileBuilder WithImageBuildPolicy(
+      Func<ImageInspectResponse, bool> imageBuildPolicy
+    )
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(imageBuildPolicy: imageBuildPolicy));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(imageBuildPolicy: imageBuildPolicy)
+      );
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(deleteIfExists: deleteIfExists)
+      );
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithBuildArgument(string name, string value)
     {
       var buildArguments = new Dictionary<string, string> { { name, value } };
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(buildArguments: buildArguments));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(buildArguments: buildArguments)
+      );
     }
 
     /// <inheritdoc />
@@ -112,7 +156,15 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected sealed override ImageFromDockerfileBuilder Init()
     {
-      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
+      return base.Init()
+        .WithImageBuildPolicy(PullPolicy.Always)
+        .WithDockerfile("Dockerfile")
+        .WithDockerfileDirectory(Directory.GetCurrentDirectory())
+        .WithName(
+          new DockerImage(
+            string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))
+          )
+        );
     }
 
     /// <inheritdoc />
@@ -120,21 +172,36 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      const string reuseNotSupported = "Building an image does not support the reuse feature. To keep the built image, disable the cleanup.";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IImageFromDockerfileConfiguration.Reuse))
-        .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
+      const string reuseNotSupported =
+        "Building an image does not support the reuse feature. To keep the built image, disable the cleanup.";
+      _ = Guard
+        .Argument(DockerResourceConfiguration, nameof(IImageFromDockerfileConfiguration.Reuse))
+        .ThrowIf(
+          argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value,
+          argument => new ArgumentException(reuseNotSupported, argument.Name)
+        );
     }
 
     /// <inheritdoc />
-    protected override ImageFromDockerfileBuilder Clone(IResourceConfiguration<ImageBuildParameters> resourceConfiguration)
+    protected override ImageFromDockerfileBuilder Clone(
+      IResourceConfiguration<ImageBuildParameters> resourceConfiguration
+    )
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(resourceConfiguration));
+      return Merge(
+        DockerResourceConfiguration,
+        new ImageFromDockerfileConfiguration(resourceConfiguration)
+      );
     }
 
     /// <inheritdoc />
-    protected override ImageFromDockerfileBuilder Merge(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
+    protected override ImageFromDockerfileBuilder Merge(
+      IImageFromDockerfileConfiguration oldValue,
+      IImageFromDockerfileConfiguration newValue
+    )
     {
-      return new ImageFromDockerfileBuilder(new ImageFromDockerfileConfiguration(oldValue, newValue));
+      return new ImageFromDockerfileBuilder(
+        new ImageFromDockerfileConfiguration(oldValue, newValue)
+      );
     }
   }
 }

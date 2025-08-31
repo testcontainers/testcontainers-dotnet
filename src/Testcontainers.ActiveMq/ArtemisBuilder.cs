@@ -2,7 +2,8 @@ namespace Testcontainers.ActiveMq;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
+public sealed class ArtemisBuilder
+    : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
 {
     public const string ArtemisImage = "apache/activemq-artemis:2.31.2";
 
@@ -82,17 +83,27 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override ArtemisBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ArtemisBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new ActiveMqConfiguration(resourceConfiguration));
     }
@@ -104,7 +115,10 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     }
 
     /// <inheritdoc />
-    protected override ArtemisBuilder Merge(ActiveMqConfiguration oldValue, ActiveMqConfiguration newValue)
+    protected override ArtemisBuilder Merge(
+        ActiveMqConfiguration oldValue,
+        ActiveMqConfiguration newValue
+    )
     {
         return new ArtemisBuilder(new ActiveMqConfiguration(oldValue, newValue));
     }

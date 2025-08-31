@@ -13,14 +13,12 @@ public abstract class MilvusContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _milvusContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _milvusContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -33,7 +31,8 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         using var client = new MilvusClient(_milvusContainer.GetEndpoint());
 
         // When
-        var version = await client.GetVersionAsync(TestContext.Current.CancellationToken)
+        var version = await client
+            .GetVersionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -49,40 +48,41 @@ public abstract class MilvusContainerTest : IAsyncLifetime
     public sealed class MilvusDefaultConfiguration : MilvusContainerTest
     {
         public MilvusDefaultConfiguration()
-            : base(new MilvusBuilder().WithImage("milvusdb/milvus:" + MilvusVersion).Build())
-        {
-        }
+            : base(new MilvusBuilder().WithImage("milvusdb/milvus:" + MilvusVersion).Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class MilvusSidecarConfiguration : MilvusContainerTest
     {
         public MilvusSidecarConfiguration()
-            : this(new NetworkBuilder().Build())
-        {
-        }
+            : this(new NetworkBuilder().Build()) { }
 
         private MilvusSidecarConfiguration(INetwork network)
-            : base(new MilvusBuilder()
-                .WithImage("milvusdb/milvus:" + MilvusVersion)
-                .WithEtcdEndpoint("etcd:2379")
-                .DependsOn(new ContainerBuilder()
-                    .WithImage("quay.io/coreos/etcd:v3.5.5")
-                    .WithNetworkAliases("etcd")
-                    .WithCommand("etcd")
-                    .WithCommand("-advertise-client-urls=http://127.0.0.1:2379")
-                    .WithCommand("-listen-client-urls=http://0.0.0.0:2379")
-                    .WithCommand("-data-dir=/etcd")
-                    .WithEnvironment("ETCD_AUTO_COMPACTION_MODE", "periodic")
-                    .WithEnvironment("ETCD_AUTO_COMPACTION_RETENTION", "0")
-                    .WithEnvironment("ETCD_QUOTA_BACKEND_BYTES", "0")
-                    .WithEnvironment("ETCD_SNAPSHOT_COUNT", "100000")
-                    .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("ready to serve client requests"))
+            : base(
+                new MilvusBuilder()
+                    .WithImage("milvusdb/milvus:" + MilvusVersion)
+                    .WithEtcdEndpoint("etcd:2379")
+                    .DependsOn(
+                        new ContainerBuilder()
+                            .WithImage("quay.io/coreos/etcd:v3.5.5")
+                            .WithNetworkAliases("etcd")
+                            .WithCommand("etcd")
+                            .WithCommand("-advertise-client-urls=http://127.0.0.1:2379")
+                            .WithCommand("-listen-client-urls=http://0.0.0.0:2379")
+                            .WithCommand("-data-dir=/etcd")
+                            .WithEnvironment("ETCD_AUTO_COMPACTION_MODE", "periodic")
+                            .WithEnvironment("ETCD_AUTO_COMPACTION_RETENTION", "0")
+                            .WithEnvironment("ETCD_QUOTA_BACKEND_BYTES", "0")
+                            .WithEnvironment("ETCD_SNAPSHOT_COUNT", "100000")
+                            .WithWaitStrategy(
+                                Wait.ForUnixContainer()
+                                    .UntilMessageIsLogged("ready to serve client requests")
+                            )
+                            .DependsOn(network)
+                            .Build()
+                    )
                     .DependsOn(network)
-                    .Build())
-                .DependsOn(network)
-                .Build())
-        {
-        }
+                    .Build()
+            ) { }
     }
 }

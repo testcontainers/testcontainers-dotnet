@@ -22,8 +22,7 @@ public abstract class LoggerTest : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -46,18 +45,14 @@ public abstract class LoggerTest : IAsyncLifetime
     public sealed class SingleInstanceTest : LoggerTest
     {
         public SingleInstanceTest()
-            : base(new SingleInstance())
-        {
-        }
+            : base(new SingleInstance()) { }
     }
 
     [UsedImplicitly]
     public sealed class SharedInstanceTest : LoggerTest, IClassFixture<SharedInstance>
     {
         public SharedInstanceTest(SharedInstance sharedInstance)
-            : base(sharedInstance)
-        {
-        }
+            : base(sharedInstance) { }
     }
 
     [UsedImplicitly]
@@ -65,9 +60,7 @@ public abstract class LoggerTest : IAsyncLifetime
     public sealed class SharedCollectionTest1 : LoggerTest
     {
         public SharedCollectionTest1(SharedInstance sharedInstance)
-            : base(sharedInstance)
-        {
-        }
+            : base(sharedInstance) { }
     }
 
     [UsedImplicitly]
@@ -75,9 +68,7 @@ public abstract class LoggerTest : IAsyncLifetime
     public sealed class SharedCollectionTest2 : LoggerTest
     {
         public SharedCollectionTest2(SharedInstance sharedInstance)
-            : base(sharedInstance)
-        {
-        }
+            : base(sharedInstance) { }
     }
 
     public sealed class SingleInstance : FakeLogger

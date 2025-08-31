@@ -28,8 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public async ValueTask InitializeAsync()
     {
-      await _container.StartAsync()
-        .ConfigureAwait(false);
+      await _container.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -44,8 +43,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var waitStrategy = new UntilExternalTcpPortIsAvailable(ListeningPort);
 
       // When
-      var success = await waitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      var success = await waitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
       // Then
       Assert.True(success);
@@ -58,8 +56,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var waitStrategy = new UntilExternalTcpPortIsAvailable(MappedPort);
 
       // When
-      var success = await waitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      var success = await waitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
       // Then
       Assert.True(success);
@@ -69,7 +66,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public Task ThrowsWhenPortIsNotMapped()
     {
       var waitStrategy = new UntilExternalTcpPortIsAvailable(UnmappedPort);
-      return Assert.ThrowsAsync<InvalidOperationException>(() => waitStrategy.UntilAsync(_container));
+      return Assert.ThrowsAsync<InvalidOperationException>(() =>
+        waitStrategy.UntilAsync(_container)
+      );
     }
   }
 }

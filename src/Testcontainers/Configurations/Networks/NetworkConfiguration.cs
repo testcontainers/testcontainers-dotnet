@@ -8,7 +8,9 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="INetworkConfiguration" />
   [PublicAPI]
-  internal sealed class NetworkConfiguration : ResourceConfiguration<NetworksCreateParameters>, INetworkConfiguration
+  internal sealed class NetworkConfiguration
+    : ResourceConfiguration<NetworksCreateParameters>,
+      INetworkConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.
@@ -19,7 +21,8 @@ namespace DotNet.Testcontainers.Configurations
     public NetworkConfiguration(
       string name = null,
       NetworkDriver driver = default,
-      IReadOnlyDictionary<string, string> options = null)
+      IReadOnlyDictionary<string, string> options = null
+    )
     {
       Name = name;
       Driver = driver;
@@ -30,19 +33,17 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public NetworkConfiguration(IResourceConfiguration<NetworksCreateParameters> resourceConfiguration)
-      : base(resourceConfiguration)
-    {
-    }
+    public NetworkConfiguration(
+      IResourceConfiguration<NetworksCreateParameters> resourceConfiguration
+    )
+      : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public NetworkConfiguration(INetworkConfiguration resourceConfiguration)
-      : this(new NetworkConfiguration(), resourceConfiguration)
-    {
-    }
+      : this(new NetworkConfiguration(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NetworkConfiguration" /> class.

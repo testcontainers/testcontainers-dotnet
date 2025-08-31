@@ -13,7 +13,8 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     public MongoDbConfiguration(
         string username = null,
         string password = null,
-        string replicaSetName = null)
+        string replicaSetName = null
+    )
     {
         Username = username;
         Password = password;
@@ -24,7 +25,9 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="MongoDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MongoDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public MongoDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -60,7 +63,10 @@ public sealed class MongoDbConfiguration : ContainerConfiguration
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
-        ReplicaSetName = BuildConfiguration.Combine(oldValue.ReplicaSetName, newValue.ReplicaSetName);
+        ReplicaSetName = BuildConfiguration.Combine(
+            oldValue.ReplicaSetName,
+            newValue.ReplicaSetName
+        );
     }
 
     /// <summary>

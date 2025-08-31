@@ -9,9 +9,7 @@ public sealed class DynamoDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public DynamoDbContainer(DynamoDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the DynamoDb connection string.
@@ -19,6 +17,10 @@ public sealed class DynamoDbContainer : DockerContainer
     /// <returns>The DynamoDb connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(DynamoDbBuilder.DynamoDbPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(DynamoDbBuilder.DynamoDbPort)
+        ).ToString();
     }
 }

@@ -18,10 +18,14 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerignoreFile">.dockerignore file name.</param>
     /// <param name="dockerfileFile">Dockerfile file name.</param>
     /// <param name="logger">The logger.</param>
-    public DockerIgnoreFile(string dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile, ILogger logger)
+    public DockerIgnoreFile(
+      string dockerignoreFileDirectory,
+      string dockerignoreFile,
+      string dockerfileFile,
+      ILogger logger
+    )
       : this(new DirectoryInfo(dockerignoreFileDirectory), dockerignoreFile, dockerfileFile, logger)
-    {
-    }
+    { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerIgnoreFile" /> class.
@@ -30,19 +34,27 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerignoreFile">.dockerignore file name.</param>
     /// <param name="dockerfileFile">Dockerfile file name.</param>
     /// <param name="logger">The logger.</param>
-    public DockerIgnoreFile(FileSystemInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile, ILogger logger)
-      : base(GetPatterns(dockerignoreFileDirectory, dockerignoreFile, dockerfileFile), logger)
-    {
-    }
+    public DockerIgnoreFile(
+      FileSystemInfo dockerignoreFileDirectory,
+      string dockerignoreFile,
+      string dockerfileFile,
+      ILogger logger
+    )
+      : base(GetPatterns(dockerignoreFileDirectory, dockerignoreFile, dockerfileFile), logger) { }
 
-    private static IEnumerable<string> GetPatterns(FileSystemInfo dockerignoreFileDirectory, string dockerignoreFile, string dockerfileFile)
+    private static IEnumerable<string> GetPatterns(
+      FileSystemInfo dockerignoreFileDirectory,
+      string dockerignoreFile,
+      string dockerfileFile
+    )
     {
       var dockerignoreFilePath = Path.Combine(dockerignoreFileDirectory.FullName, dockerignoreFile);
 
       // These files are necessary and sent to the Docker daemon. The ADD and COPY instructions do not copy them to the image:
       // https://docs.docker.com/engine/reference/builder/#dockerignore-file.
-      var negateNecessaryFiles = new[] { dockerignoreFile, dockerfileFile }
-        .Select(file => "!" + file);
+      var negateNecessaryFiles = new[] { dockerignoreFile, dockerfileFile }.Select(file =>
+        "!" + file
+      );
 
       var dockerignorePatterns = File.Exists(dockerignoreFilePath)
         ? File.ReadLines(dockerignoreFilePath)

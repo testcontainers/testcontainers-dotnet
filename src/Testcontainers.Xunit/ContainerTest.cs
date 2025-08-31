@@ -9,10 +9,13 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
-    : ContainerLifetime<TBuilderEntity, TContainerEntity>(new TestOutputLogger(testOutputHelper))
+public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(
+    ITestOutputHelper testOutputHelper,
+    Func<TBuilderEntity, TBuilderEntity> configure = null
+) : ContainerLifetime<TBuilderEntity, TContainerEntity>(new TestOutputLogger(testOutputHelper))
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer
 {
-    protected override TBuilderEntity Configure(TBuilderEntity builder) => configure != null ? configure(builder) : builder;
+    protected override TBuilderEntity Configure(TBuilderEntity builder) =>
+        configure != null ? configure(builder) : builder;
 }

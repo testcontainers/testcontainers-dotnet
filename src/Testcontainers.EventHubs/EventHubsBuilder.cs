@@ -2,13 +2,15 @@ namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventHubsContainer, EventHubsConfiguration>
+public sealed class EventHubsBuilder
+    : ContainerBuilder<EventHubsBuilder, EventHubsContainer, EventHubsConfiguration>
 {
     public const string EventHubsNetworkAlias = "eventhubs-container";
 
     public const string AzuriteNetworkAlias = "azurite-container";
 
-    public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
+    public const string EventHubsImage =
+        "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
 
@@ -55,7 +57,9 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <returns>A configured instance of <see cref="EventHubsBuilder" />.</returns>
     public override EventHubsBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
-        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        var licenseAgreement = acceptLicenseAgreement
+            ? AcceptLicenseAgreement
+            : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
@@ -74,9 +78,13 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     public EventHubsBuilder WithAzuriteContainer(
         INetwork network,
         AzuriteContainer container,
-        string networkAlias)
+        string networkAlias
+    )
     {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(azuriteContainer: container))
+        return Merge(
+                DockerResourceConfiguration,
+                new EventHubsConfiguration(azuriteContainer: container)
+            )
             .DependsOn(container)
             .WithNetwork(network)
             .WithNetworkAliases(EventHubsNetworkAlias)
@@ -89,10 +97,15 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// </summary>
     /// <param name="serviceConfiguration">The service configuration.</param>
     /// <returns>A configured instance of <see cref="EventHubsBuilder" />.</returns>
-    public EventHubsBuilder WithConfigurationBuilder(EventHubsServiceConfiguration serviceConfiguration)
+    public EventHubsBuilder WithConfigurationBuilder(
+        EventHubsServiceConfiguration serviceConfiguration
+    )
     {
         var resourceContent = Encoding.Default.GetBytes(serviceConfiguration.Build());
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(serviceConfiguration: serviceConfiguration))
+        return Merge(
+                DockerResourceConfiguration,
+                new EventHubsConfiguration(serviceConfiguration: serviceConfiguration)
+            )
             .WithResourceMapping(resourceContent, "Eventhubs_Emulator/ConfigFiles/Config.json");
     }
 
@@ -109,8 +122,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
         // If the user has not provided an existing Azurite container instance,
         // we configure one.
-        var network = new NetworkBuilder()
-            .Build();
+        var network = new NetworkBuilder().Build();
 
         var container = new AzuriteBuilder()
             .WithNetwork(network)
@@ -126,9 +138,19 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.ServiceConfiguration, nameof(DockerResourceConfiguration.ServiceConfiguration))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.ServiceConfiguration,
+                nameof(DockerResourceConfiguration.ServiceConfiguration)
+            )
             .NotNull()
-            .ThrowIf(argument => !argument.Value.Validate(), _ => throw new ArgumentException("The service configuration of the Azure Event Hubs Emulator is invalid."));
+            .ThrowIf(
+                argument => !argument.Value.Validate(),
+                _ =>
+                    throw new ArgumentException(
+                        "The service configuration of the Azure Event Hubs Emulator is invalid."
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -138,24 +160,39 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
             .WithImage(EventHubsImage)
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(EventHubsHttpPort).ForPath("/health")));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(EventHubsHttpPort).ForPath("/health")
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override EventHubsBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override EventHubsBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new EventHubsConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override EventHubsBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new EventHubsConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new EventHubsConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
+    protected override EventHubsBuilder Merge(
+        EventHubsConfiguration oldValue,
+        EventHubsConfiguration newValue
+    )
     {
         return new EventHubsBuilder(new EventHubsConfiguration(oldValue, newValue));
     }

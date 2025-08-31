@@ -4,7 +4,12 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
 {
-    private static readonly string[] FindSqlCmdFilePath = { "/bin/sh", "-c", "find /opt/mssql-tools*/bin/sqlcmd -type f -print -quit" };
+    private static readonly string[] FindSqlCmdFilePath =
+    {
+        "/bin/sh",
+        "-c",
+        "find /opt/mssql-tools*/bin/sqlcmd -type f -print -quit",
+    };
 
     private readonly Lazy<Task<string>> _lazySqlCmdFilePath;
 
@@ -33,7 +38,10 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
         properties.Add("User Id", _configuration.Username);
         properties.Add("Password", _configuration.Password);
         properties.Add("TrustServerCertificate", bool.TrueString);
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
@@ -55,17 +63,46 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        var sqlCmdFilePath = await GetSqlCmdFilePathAsync(ct)
+        var sqlCmdFilePath = await GetSqlCmdFilePathAsync(ct).ConfigureAwait(false);
+
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
-            .ConfigureAwait(false);
-
-        return await ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-U", _configuration.Username, "-P", _configuration.Password, "-i", scriptFilePath }, ct)
+        return await ExecAsync(
+                new[]
+                {
+                    sqlCmdFilePath,
+                    "-C",
+                    "-b",
+                    "-r",
+                    "1",
+                    "-U",
+                    _configuration.Username,
+                    "-P",
+                    _configuration.Password,
+                    "-i",
+                    scriptFilePath,
+                },
+                ct
+            )
             .ConfigureAwait(false);
     }
 

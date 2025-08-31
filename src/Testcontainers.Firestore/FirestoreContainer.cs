@@ -9,9 +9,7 @@ public sealed class FirestoreContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public FirestoreContainer(FirestoreConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Firestore emulator endpoint.
@@ -19,6 +17,10 @@ public sealed class FirestoreContainer : DockerContainer
     /// <returns>The Firestore emulator endpoint.</returns>
     public string GetEmulatorEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FirestoreBuilder.FirestorePort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(FirestoreBuilder.FirestorePort)
+        ).ToString();
     }
 }

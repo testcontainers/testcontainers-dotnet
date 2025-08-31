@@ -22,7 +22,11 @@ public sealed class PulsarContainer : DockerContainer
     /// <returns>The Pulsar broker address.</returns>
     public string GetBrokerAddress()
     {
-        return new UriBuilder("pulsar", Hostname, GetMappedPublicPort(PulsarBuilder.PulsarBrokerDataPort)).ToString();
+        return new UriBuilder(
+            "pulsar",
+            Hostname,
+            GetMappedPublicPort(PulsarBuilder.PulsarBrokerDataPort)
+        ).ToString();
     }
 
     /// <summary>
@@ -31,7 +35,11 @@ public sealed class PulsarContainer : DockerContainer
     /// <returns>The Pulsar web service address.</returns>
     public string GetServiceAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(PulsarBuilder.PulsarWebServicePort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(PulsarBuilder.PulsarWebServicePort)
+        ).ToString();
     }
 
     /// <summary>
@@ -41,9 +49,15 @@ public sealed class PulsarContainer : DockerContainer
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the authentication token has been created.</returns>
     /// <exception cref="ArgumentException"></exception>
-    public async Task<string> CreateAuthenticationTokenAsync(TimeSpan expiryTime, CancellationToken ct = default)
+    public async Task<string> CreateAuthenticationTokenAsync(
+        TimeSpan expiryTime,
+        CancellationToken ct = default
+    )
     {
-        if (_configuration.AuthenticationEnabled.HasValue && !_configuration.AuthenticationEnabled.Value)
+        if (
+            _configuration.AuthenticationEnabled.HasValue
+            && !_configuration.AuthenticationEnabled.Value
+        )
         {
             throw new ArgumentException("Failed to create token. Authentication is not enabled.");
         }
@@ -65,7 +79,9 @@ public sealed class PulsarContainer : DockerContainer
 
             if (_configuration.Image.MatchVersion(IsVersionAffectedByGhIssue22811))
             {
-                Logger.LogWarning("The 'apachepulsar/pulsar:3.2.0-3' and '3.3.0' images contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
+                Logger.LogWarning(
+                    "The 'apachepulsar/pulsar:3.2.0-3' and '3.3.0' images contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811."
+                );
                 secondsToMilliseconds = 1000;
             }
             else
@@ -77,12 +93,13 @@ public sealed class PulsarContainer : DockerContainer
             command.Add($"{secondsToMilliseconds * expiryTime.TotalSeconds}s");
         }
 
-        var tokensResult = await ExecAsync(command, ct)
-            .ConfigureAwait(false);
+        var tokensResult = await ExecAsync(command, ct).ConfigureAwait(false);
 
         if (tokensResult.ExitCode != 0)
         {
-            throw new ArgumentException($"Failed to create token. Command returned a non-zero exit code: {tokensResult.Stderr}.");
+            throw new ArgumentException(
+                $"Failed to create token. Command returned a non-zero exit code: {tokensResult.Stderr}."
+            );
         }
 
         return tokensResult.Stdout;
@@ -99,28 +116,51 @@ public sealed class PulsarContainer : DockerContainer
         startupScript.NewLine = "\n";
         startupScript.WriteLine("#!/bin/bash");
 
-        if (_configuration.AuthenticationEnabled.HasValue && _configuration.AuthenticationEnabled.Value)
+        if (
+            _configuration.AuthenticationEnabled.HasValue
+            && _configuration.AuthenticationEnabled.Value
+        )
         {
-            startupScript.WriteLine("bin/pulsar tokens create-secret-key --output " + PulsarBuilder.SecretKeyFilePath);
-            startupScript.WriteLine("export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)");
-            startupScript.WriteLine("export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters");
+            startupScript.WriteLine(
+                "bin/pulsar tokens create-secret-key --output " + PulsarBuilder.SecretKeyFilePath
+            );
+            startupScript.WriteLine(
+                "export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)"
+            );
+            startupScript.WriteLine(
+                "export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters"
+            );
             startupScript.WriteLine("bin/apply-config-from-env.py conf/standalone.conf");
-            startupScript.WriteLine("bin/apply-config-from-env.py --prefix CLIENT_PREFIX_ conf/client.conf");
+            startupScript.WriteLine(
+                "bin/apply-config-from-env.py --prefix CLIENT_PREFIX_ conf/client.conf"
+            );
         }
 
         startupScript.Write("bin/pulsar standalone");
 
-        if (_configuration.FunctionsWorkerEnabled.HasValue && !_configuration.FunctionsWorkerEnabled.Value)
+        if (
+            _configuration.FunctionsWorkerEnabled.HasValue
+            && !_configuration.FunctionsWorkerEnabled.Value
+        )
         {
             startupScript.Write(" --no-functions-worker");
             startupScript.Write(" --no-stream-storage");
         }
 
-        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
+        return CopyAsync(
+            Encoding.Default.GetBytes(startupScript.ToString()),
+            PulsarBuilder.StartupScriptFilePath,
+            Unix.FileMode755,
+            ct
+        );
     }
 
     private static bool IsVersionAffectedByGhIssue22811(System.Version version)
     {
-        return version.Major == 3 && ((version.Minor == 2 && version.Build is >= 0 and <= 3) || (version.Minor == 3 && version.Build == 0));
+        return version.Major == 3
+            && (
+                (version.Minor == 2 && version.Build is >= 0 and <= 3)
+                || (version.Minor == 3 && version.Build == 0)
+            );
     }
 }

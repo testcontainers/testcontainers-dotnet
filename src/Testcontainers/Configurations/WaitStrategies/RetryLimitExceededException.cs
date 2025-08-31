@@ -5,8 +5,6 @@ namespace DotNet.Testcontainers.Configurations
   public sealed class RetryLimitExceededException : Exception
   {
     public RetryLimitExceededException(string message)
-      : base(message)
-    {
-    }
+      : base(message) { }
   }
 }

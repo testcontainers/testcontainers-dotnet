@@ -2,7 +2,8 @@ namespace Testcontainers.CouchDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
+public sealed class CouchDbBuilder
+    : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
 {
     public const string CouchDbImage = "couchdb:3.3";
 
@@ -71,8 +72,12 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
             .WithPortBinding(CouchDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(CouchDbPort)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/").ForPort(CouchDbPort)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -80,17 +85,27 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override CouchDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override CouchDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new CouchDbConfiguration(resourceConfiguration));
     }
@@ -102,7 +117,10 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     }
 
     /// <inheritdoc />
-    protected override CouchDbBuilder Merge(CouchDbConfiguration oldValue, CouchDbConfiguration newValue)
+    protected override CouchDbBuilder Merge(
+        CouchDbConfiguration oldValue,
+        CouchDbConfiguration newValue
+    )
     {
         return new CouchDbBuilder(new CouchDbConfiguration(oldValue, newValue));
     }
