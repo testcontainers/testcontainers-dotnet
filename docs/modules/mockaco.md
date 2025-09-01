@@ -2,6 +2,31 @@
 
 [Mockaco](https://natenho.github.io/Mockaco/) is a HTTP-based API mock server for .NET Core applications. It's designed to be simple, lightweight, and easy to use for testing and development purposes.
 
+## Prerequisites
+
+Before using Mockaco, you need to create mock templates (JSON files) that define the API endpoints and their responses. These templates should be placed in a folder that will be mounted to the container.
+
+Create a template file (e.g., `ping-pong.json`) in your templates folder:
+
+```json title="./templates/ping-pong.json"
+{
+  "request": {
+    "method": "GET",
+    "route": "ping"
+  },
+  "response": {
+    "status": "OK",
+    "body": {
+      "response": "pong"
+    }
+  }
+}
+```
+
+For more information about creating templates, see the [official Mockaco documentation](https://natenho.github.io/Mockaco/docs/quick-start/create-mock).
+
+## Installation
+
 Add the following dependency to your project file:
 
 ```shell title="NuGet"
@@ -10,12 +35,14 @@ dotnet add package Testcontainers.Mockaco
 
 You can start a Mockaco container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
+**Note:** The `WithTemplatesPath()` method specifies the local folder containing your JSON template files, which will be mounted to the container's `/app/Mocks` directory.
+
 === "Test class"
     ```csharp
     public sealed class MockacoContainerTest : IAsyncLifetime
     {
         private readonly MockacoContainer _mockacoContainer = new MockacoBuilder()
-            .WithTemplatesPath("./templates")
+            .WithTemplatesPath("./templates") // Local folder with JSON templates
             .Build();
 
         public async ValueTask InitializeAsync()
