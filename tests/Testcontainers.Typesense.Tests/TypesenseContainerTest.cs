@@ -6,8 +6,7 @@ public sealed class TypesenseContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _typesenseContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _typesenseContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -25,10 +24,12 @@ public sealed class TypesenseContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_typesenseContainer.GetBaseAddress());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/collections", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync("/collections", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+        var response = await httpResponse
+            .Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

@@ -6,38 +6,46 @@ public sealed class WaitStrategyTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithTimeout()
     {
-        return Assert.ThrowsAsync<TimeoutException>(() => new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
-            .WithEntrypoint(CommonCommands.SleepInfinity)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithTimeout(TimeSpan.FromSeconds(1))))
-            .Build()
-            .StartAsync(TestContext.Current.CancellationToken));
+        return Assert.ThrowsAsync<TimeoutException>(() =>
+            new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithEntrypoint(CommonCommands.SleepInfinity)
+                .WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(
+                            FailingWaitStrategy.Instance,
+                            o => o.WithTimeout(TimeSpan.FromSeconds(1))
+                        )
+                )
+                .Build()
+                .StartAsync(TestContext.Current.CancellationToken)
+        );
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithRetries()
     {
-        return Assert.ThrowsAsync<RetryLimitExceededException>(() => new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
-            .WithEntrypoint(CommonCommands.SleepInfinity)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithRetries(1)))
-            .Build()
-            .StartAsync(TestContext.Current.CancellationToken));
+        return Assert.ThrowsAsync<RetryLimitExceededException>(() =>
+            new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithEntrypoint(CommonCommands.SleepInfinity)
+                .WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithRetries(1))
+                )
+                .Build()
+                .StartAsync(TestContext.Current.CancellationToken)
+        );
     }
 
     private sealed class FailingWaitStrategy : IWaitUntil
     {
-        static FailingWaitStrategy()
-        {
-        }
+        static FailingWaitStrategy() { }
 
-        private FailingWaitStrategy()
-        {
-        }
+        private FailingWaitStrategy() { }
 
-        public static IWaitUntil Instance { get; }
-            = new FailingWaitStrategy();
+        public static IWaitUntil Instance { get; } = new FailingWaitStrategy();
 
         public Task<bool> UntilAsync(IContainer container)
         {

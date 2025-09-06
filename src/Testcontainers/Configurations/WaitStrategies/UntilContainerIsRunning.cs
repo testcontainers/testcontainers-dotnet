@@ -5,7 +5,8 @@ namespace DotNet.Testcontainers.Configurations
 
   internal class UntilContainerIsRunning : IWaitUntil
   {
-    private const TestcontainersStates ContainerHasBeenRunningStates = TestcontainersStates.Running | TestcontainersStates.Exited;
+    private const TestcontainersStates ContainerHasBeenRunningStates =
+      TestcontainersStates.Running | TestcontainersStates.Exited;
 
     public Task<bool> UntilAsync(IContainer container)
     {

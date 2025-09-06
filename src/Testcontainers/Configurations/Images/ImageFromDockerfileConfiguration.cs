@@ -10,7 +10,9 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
+  internal sealed class ImageFromDockerfileConfiguration
+    : ResourceConfiguration<ImageBuildParameters>,
+      IImageFromDockerfileConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
@@ -27,7 +29,8 @@ namespace DotNet.Testcontainers.Configurations
       IImage image = null,
       Func<ImageInspectResponse, bool> imageBuildPolicy = null,
       IReadOnlyDictionary<string, string> buildArguments = null,
-      bool? deleteIfExists = null)
+      bool? deleteIfExists = null
+    )
     {
       Dockerfile = dockerfile;
       DockerfileDirectory = dockerfileDirectory;
@@ -41,34 +44,43 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ImageFromDockerfileConfiguration(IResourceConfiguration<ImageBuildParameters> resourceConfiguration)
-      : base(resourceConfiguration)
-    {
-    }
+    public ImageFromDockerfileConfiguration(
+      IResourceConfiguration<ImageBuildParameters> resourceConfiguration
+    )
+      : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration resourceConfiguration)
-      : this(new ImageFromDockerfileConfiguration(), resourceConfiguration)
-    {
-    }
+      : this(new ImageFromDockerfileConfiguration(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
+    public ImageFromDockerfileConfiguration(
+      IImageFromDockerfileConfiguration oldValue,
+      IImageFromDockerfileConfiguration newValue
+    )
       : base(oldValue, newValue)
     {
       Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
-      DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
+      DockerfileDirectory = BuildConfiguration.Combine(
+        oldValue.DockerfileDirectory,
+        newValue.DockerfileDirectory
+      );
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
-      ImageBuildPolicy = BuildConfiguration.Combine(oldValue.ImageBuildPolicy, newValue.ImageBuildPolicy);
+      ImageBuildPolicy = BuildConfiguration.Combine(
+        oldValue.ImageBuildPolicy,
+        newValue.ImageBuildPolicy
+      );
       BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
-      DeleteIfExists = (oldValue.DeleteIfExists.HasValue && oldValue.DeleteIfExists.Value) || (newValue.DeleteIfExists.HasValue && newValue.DeleteIfExists.Value);
+      DeleteIfExists =
+        (oldValue.DeleteIfExists.HasValue && oldValue.DeleteIfExists.Value)
+        || (newValue.DeleteIfExists.HasValue && newValue.DeleteIfExists.Value);
     }
 
     /// <inheritdoc />

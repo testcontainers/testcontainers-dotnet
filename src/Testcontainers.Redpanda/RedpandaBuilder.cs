@@ -2,7 +2,8 @@ namespace Testcontainers.Redpanda;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
+public sealed class RedpandaBuilder
+    : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
     public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
@@ -49,26 +50,49 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
             .WithPortBinding(SchemaRegistryPort, true)
             .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
-            .WithStartupCallback((container, ct) =>
-            {
-                const char lf = '\n';
-                var startupScript = new StringBuilder();
-                startupScript.Append("#!/bin/bash");
-                startupScript.Append(lf);
-                startupScript.Append("/usr/bin/rpk redpanda start ");
-                startupScript.Append("--mode dev-container ");
-                startupScript.Append("--smp 1 ");
-                startupScript.Append("--memory 1G ");
-                startupScript.Append("--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ");
-                startupScript.Append("--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(RedpandaPort));
-                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
-            });
+            .WithCommand(
+                "while [ ! -f "
+                    + StartupScriptFilePath
+                    + " ]; do sleep 0.1; done; "
+                    + StartupScriptFilePath
+            )
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server")
+            )
+            .WithStartupCallback(
+                (container, ct) =>
+                {
+                    const char lf = '\n';
+                    var startupScript = new StringBuilder();
+                    startupScript.Append("#!/bin/bash");
+                    startupScript.Append(lf);
+                    startupScript.Append("/usr/bin/rpk redpanda start ");
+                    startupScript.Append("--mode dev-container ");
+                    startupScript.Append("--smp 1 ");
+                    startupScript.Append("--memory 1G ");
+                    startupScript.Append(
+                        "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 "
+                    );
+                    startupScript.Append(
+                        "--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://"
+                            + container.Hostname
+                            + ":"
+                            + container.GetMappedPublicPort(RedpandaPort)
+                    );
+                    return container.CopyAsync(
+                        Encoding.Default.GetBytes(startupScript.ToString()),
+                        StartupScriptFilePath,
+                        Unix.FileMode755,
+                        ct
+                    );
+                }
+            );
     }
 
     /// <inheritdoc />
-    protected override RedpandaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override RedpandaBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new RedpandaConfiguration(resourceConfiguration));
     }
@@ -80,7 +104,10 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     }
 
     /// <inheritdoc />
-    protected override RedpandaBuilder Merge(RedpandaConfiguration oldValue, RedpandaConfiguration newValue)
+    protected override RedpandaBuilder Merge(
+        RedpandaConfiguration oldValue,
+        RedpandaConfiguration newValue
+    )
     {
         return new RedpandaBuilder(new RedpandaConfiguration(oldValue, newValue));
     }

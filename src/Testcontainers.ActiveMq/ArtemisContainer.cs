@@ -22,7 +22,11 @@ public sealed class ArtemisContainer : DockerContainer
     /// <returns>The ActiveMq broker address.</returns>
     public string GetBrokerAddress()
     {
-        var endpoint = new UriBuilder("tcp", Hostname, GetMappedPublicPort(ArtemisBuilder.ArtemisMainPort));
+        var endpoint = new UriBuilder(
+            "tcp",
+            Hostname,
+            GetMappedPublicPort(ArtemisBuilder.ArtemisMainPort)
+        );
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         return endpoint.ToString();

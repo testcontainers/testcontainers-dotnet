@@ -6,8 +6,7 @@ public sealed class K3sContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _k3sConainter.StartAsync()
-            .ConfigureAwait(false);
+        await _k3sConainter.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -22,19 +21,27 @@ public sealed class K3sContainerTest : IAsyncLifetime
         // Given
         using var kubeconfigStream = new MemoryStream();
 
-        var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
+        var kubeconfig = await _k3sConainter.GetKubeconfigAsync().ConfigureAwait(true);
+
+        await kubeconfigStream
+            .WriteAsync(
+                Encoding.Default.GetBytes(kubeconfig),
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        await kubeconfigStream.WriteAsync(Encoding.Default.GetBytes(kubeconfig), TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        var clientConfiguration = await KubernetesClientConfiguration.BuildConfigFromConfigFileAsync(kubeconfigStream)
+        var clientConfiguration = await KubernetesClientConfiguration
+            .BuildConfigFromConfigFileAsync(kubeconfigStream)
             .ConfigureAwait(true);
 
         using var client = new Kubernetes(clientConfiguration);
 
         // When
-        using var response = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(new V1Namespace(metadata: new V1ObjectMeta(name: Guid.NewGuid().ToString("D"))), cancellationToken: TestContext.Current.CancellationToken)
+        using var response = await client
+            .CoreV1.CreateNamespaceWithHttpMessagesAsync(
+                new V1Namespace(metadata: new V1ObjectMeta(name: Guid.NewGuid().ToString("D"))),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // Then

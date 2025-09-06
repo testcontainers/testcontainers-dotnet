@@ -2,7 +2,8 @@ namespace Testcontainers.CockroachDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
+public sealed class CockroachDbBuilder
+    : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
     public const string CockroachDbImage = "cockroachdb/cockroach:latest-v23.1";
 
@@ -90,8 +91,12 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
             .WithPassword(DefaultPassword)
             .WithCommand("start-single-node")
             .WithCommand("--insecure")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(CockroachDbRestPort).ForPath("/health")));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(CockroachDbRestPort).ForPath("/health")
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -99,24 +104,39 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull();
     }
 
     /// <inheritdoc />
-    protected override CockroachDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override CockroachDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new CockroachDbConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CockroachDbConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override CockroachDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new CockroachDbConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CockroachDbConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override CockroachDbBuilder Merge(CockroachDbConfiguration oldValue, CockroachDbConfiguration newValue)
+    protected override CockroachDbBuilder Merge(
+        CockroachDbConfiguration oldValue,
+        CockroachDbConfiguration newValue
+    )
     {
         return new CockroachDbBuilder(new CockroachDbConfiguration(oldValue, newValue));
     }

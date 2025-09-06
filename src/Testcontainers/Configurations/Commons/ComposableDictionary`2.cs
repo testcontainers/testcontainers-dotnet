@@ -24,7 +24,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dictionary">The dictionary of items. If <c>null</c>, an empty dictionary is used.</param>
     protected ComposableDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
     {
-      _dictionary = dictionary ?? new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+      _dictionary =
+        dictionary ?? new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
     }
 
     /// <summary>
@@ -37,7 +38,9 @@ namespace DotNet.Testcontainers.Configurations
     /// </remarks>
     /// <param name="other">The incoming dictionary to compose with this dictionary.</param>
     /// <returns>A new <see cref="IReadOnlyDictionary{TKey, TValue}" /> that contains the result of the composition.</returns>
-    public abstract ComposableDictionary<TKey, TValue> Compose([NotNull] IReadOnlyDictionary<TKey, TValue> other);
+    public abstract ComposableDictionary<TKey, TValue> Compose(
+      [NotNull] IReadOnlyDictionary<TKey, TValue> other
+    );
 
     /// <inheritdoc />
     public IEnumerable<TKey> Keys => _dictionary.Keys;

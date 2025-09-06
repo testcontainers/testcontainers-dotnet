@@ -2,13 +2,17 @@ namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder, ElasticsearchContainer, ElasticsearchConfiguration>
+public sealed class ElasticsearchBuilder
+    : ContainerBuilder<ElasticsearchBuilder, ElasticsearchContainer, ElasticsearchConfiguration>
 {
-    public const string ElasticsearchVmOptionsDirectoryPath = "/usr/share/elasticsearch/config/jvm.options.d/";
+    public const string ElasticsearchVmOptionsDirectoryPath =
+        "/usr/share/elasticsearch/config/jvm.options.d/";
 
-    public const string ElasticsearchDefaultMemoryVmOptionFileName = "elasticsearch-default-memory-vm.options";
+    public const string ElasticsearchDefaultMemoryVmOptionFileName =
+        "elasticsearch-default-memory-vm.options";
 
-    public const string ElasticsearchDefaultMemoryVmOptionFilePath = ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
+    public const string ElasticsearchDefaultMemoryVmOptionFilePath =
+        ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
 
     public const string ElasticsearchImage = "elasticsearch:8.6.1";
 
@@ -20,7 +24,9 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const string DefaultPassword = "elastic";
 
-    private static readonly byte[] DefaultMemoryVmOption = Encoding.Default.GetBytes(string.Join("\n", "-Xms2147483648", "-Xmx2147483648"));
+    private static readonly byte[] DefaultMemoryVmOption = Encoding.Default.GetBytes(
+        string.Join("\n", "-Xms2147483648", "-Xmx2147483648")
+    );
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
@@ -51,7 +57,10 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
     public ElasticsearchBuilder WithPassword(string password)
     {
-        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(password: password))
+        return Merge(
+                DockerResourceConfiguration,
+                new ElasticsearchConfiguration(password: password)
+            )
             .WithEnvironment("ELASTIC_PASSWORD", password);
     }
 
@@ -82,25 +91,40 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override ElasticsearchBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ElasticsearchBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ElasticsearchConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override ElasticsearchBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ElasticsearchConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override ElasticsearchBuilder Merge(ElasticsearchConfiguration oldValue, ElasticsearchConfiguration newValue)
+    protected override ElasticsearchBuilder Merge(
+        ElasticsearchConfiguration oldValue,
+        ElasticsearchConfiguration newValue
+    )
     {
         return new ElasticsearchBuilder(new ElasticsearchConfiguration(oldValue, newValue));
     }
@@ -115,18 +139,26 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
     private ElasticsearchBuilder WithUsername(string username)
     {
-        return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(username: username));
+        return Merge(
+            DockerResourceConfiguration,
+            new ElasticsearchConfiguration(username: username)
+        );
     }
 
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
+        private static readonly IEnumerable<string> Pattern = new[]
+        {
+            "\"message\":\"started",
+            "\"message\": \"started\"",
+        };
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
+            var (stdout, _) = await container
+                .GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
                 .ConfigureAwait(false);
 
             return Pattern.Any(stdout.Contains);

@@ -28,7 +28,10 @@ public sealed class CockroachDbContainer : DockerContainer, IDatabaseContainer
         properties.Add("Database", _configuration.Database);
         properties.Add("Username", _configuration.Username);
         properties.Add("Password", _configuration.Password);
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
@@ -37,14 +40,31 @@ public sealed class CockroachDbContainer : DockerContainer, IDatabaseContainer
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "cockroach", "sql", "--insecure", "--file", scriptFilePath }, ct)
+        return await ExecAsync(
+                new[] { "cockroach", "sql", "--insecure", "--file", scriptFilePath },
+                ct
+            )
             .ConfigureAwait(false);
     }
 }

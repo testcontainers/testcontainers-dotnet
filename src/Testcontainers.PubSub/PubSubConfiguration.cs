@@ -7,15 +7,15 @@ public sealed class PubSubConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubConfiguration" /> class.
     /// </summary>
-    public PubSubConfiguration()
-    {
-    }
+    public PubSubConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public PubSubConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public PubSubConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class PubSubConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public PubSubConfiguration(PubSubConfiguration oldValue, PubSubConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

@@ -13,7 +13,8 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     public QdrantConfiguration(
         string apiKey = null,
         string certificate = null,
-        string certificateKey = null)
+        string certificateKey = null
+    )
     {
         ApiKey = apiKey;
         Certificate = certificate;
@@ -24,7 +25,9 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="QdrantConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public QdrantConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public QdrantConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -60,7 +63,10 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     {
         ApiKey = BuildConfiguration.Combine(oldValue.ApiKey, newValue.ApiKey);
         Certificate = BuildConfiguration.Combine(oldValue.Certificate, newValue.Certificate);
-        CertificateKey = BuildConfiguration.Combine(oldValue.CertificateKey, newValue.CertificateKey);
+        CertificateKey = BuildConfiguration.Combine(
+            oldValue.CertificateKey,
+            newValue.CertificateKey
+        );
     }
 
     /// <summary>

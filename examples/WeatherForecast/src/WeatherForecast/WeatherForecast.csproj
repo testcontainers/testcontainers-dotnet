@@ -3,18 +3,18 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Fast.Components.FluentUI"/>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
-    <PackageReference Include="Testcontainers.PostgreSql"/>
+    <PackageReference Include="Microsoft.Fast.Components.FluentUI" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../WeatherForecast.Contexts/WeatherForecast.Contexts.csproj"/>
-    <ProjectReference Include="../WeatherForecast.Interactors/WeatherForecast.Interactors.csproj"/>
-    <ProjectReference Include="../WeatherForecast.Repositories/WeatherForecast.Repositories.csproj"/>
+    <ProjectReference Include="../WeatherForecast.Contexts/WeatherForecast.Contexts.csproj" />
+    <ProjectReference Include="../WeatherForecast.Interactors/WeatherForecast.Interactors.csproj" />
+    <ProjectReference Include="../WeatherForecast.Repositories/WeatherForecast.Repositories.csproj" />
   </ItemGroup>
   <ItemGroup>
     <!-- https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory-1 -->
-    <InternalsVisibleTo Include="WeatherForecast.InProcess.Test"/>
+    <InternalsVisibleTo Include="WeatherForecast.InProcess.Test" />
   </ItemGroup>
   <ItemGroup>
     <None Update="certificate.crt" Visible="false">

@@ -18,7 +18,12 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public abstract class AbstractBuilder<TBuilderEntity, TResourceEntity, TCreateResourceEntity, TConfigurationEntity> : IAbstractBuilder<TBuilderEntity, TResourceEntity, TCreateResourceEntity>
+  public abstract class AbstractBuilder<
+    TBuilderEntity,
+    TResourceEntity,
+    TCreateResourceEntity,
+    TConfigurationEntity
+  > : IAbstractBuilder<TBuilderEntity, TResourceEntity, TCreateResourceEntity>
     where TBuilderEntity : IAbstractBuilder<TBuilderEntity, TResourceEntity, TCreateResourceEntity>
     where TConfigurationEntity : IResourceConfiguration<TCreateResourceEntity>
   {
@@ -26,9 +31,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="AbstractBuilder{TBuilderEntity, TResourceEntity, TCreateResourceEntity, TConfigurationEntity}" /> class.
     /// </summary>
     /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration)
-    {
-    }
+    protected AbstractBuilder(TConfigurationEntity dockerResourceConfiguration) { }
 
     /// <summary>
     /// Gets the Docker resource configuration.
@@ -48,21 +51,32 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithDockerEndpoint(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
+    public TBuilderEntity WithDockerEndpoint(
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig
+    )
     {
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig));
+      return Clone(
+        new ResourceConfiguration<TCreateResourceEntity>(
+          dockerEndpointAuthenticationConfiguration: dockerEndpointAuthConfig
+        )
+      );
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithCleanUp(bool cleanUp)
     {
-      return WithResourceReaperSessionId(TestcontainersSettings.ResourceReaperEnabled && cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
+      return WithResourceReaperSessionId(
+        TestcontainersSettings.ResourceReaperEnabled && cleanUp
+          ? ResourceReaper.DefaultSessionId
+          : Guid.Empty
+      );
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithReuse(bool reuse)
     {
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse)).WithCleanUp(!reuse);
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse))
+        .WithCleanUp(!reuse);
     }
 
     /// <inheritdoc />
@@ -78,10 +92,14 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithCreateParameterModifier(Action<TCreateResourceEntity> parameterModifier)
+    public TBuilderEntity WithCreateParameterModifier(
+      Action<TCreateResourceEntity> parameterModifier
+    )
     {
       var parameterModifiers = new[] { parameterModifier };
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(parameterModifiers: parameterModifiers));
+      return Clone(
+        new ResourceConfiguration<TCreateResourceEntity>(parameterModifiers: parameterModifiers)
+      );
     }
 
     /// <inheritdoc />
@@ -100,7 +118,10 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected TBuilderEntity WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
-      return WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
+      return WithLabel(
+        ResourceReaper.ResourceReaperSessionLabel,
+        resourceReaperSessionId.ToString("D")
+      );
     }
 
     /// <summary>
@@ -131,7 +152,9 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected virtual TBuilderEntity Init()
     {
-      return WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig).WithLabel(DefaultLabels.Instance).WithLogger(ConsoleLogger.Instance);
+      return WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
+        .WithLabel(DefaultLabels.Instance)
+        .WithLogger(ConsoleLogger.Instance);
     }
 
     /// <summary>
@@ -140,15 +163,34 @@ namespace DotNet.Testcontainers.Builders
     /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     protected virtual void Validate()
     {
-      _ = Guard.Argument(DockerResourceConfiguration.Logger, nameof(IResourceConfiguration<TCreateResourceEntity>.Logger))
+      _ = Guard
+        .Argument(
+          DockerResourceConfiguration.Logger,
+          nameof(IResourceConfiguration<TCreateResourceEntity>.Logger)
+        )
         .NotNull();
 
-      _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
+      _ = Guard
+        .Argument(
+          DockerResourceConfiguration.DockerEndpointAuthConfig,
+          nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig)
+        )
         .ThrowIf(argument => argument.Value == null, CreateDockerUnavailableException);
 
-      const string reuseNotSupported = "Reuse cannot be used in conjunction with WithCleanUp(true).";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
-        .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && !Guid.Empty.Equals(argument.Value.SessionId), argument => new ArgumentException(reuseNotSupported, argument.Name));
+      const string reuseNotSupported =
+        "Reuse cannot be used in conjunction with WithCleanUp(true).";
+      _ = Guard
+        .Argument(
+          DockerResourceConfiguration,
+          nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse)
+        )
+        .ThrowIf(
+          argument =>
+            argument.Value.Reuse.HasValue
+            && argument.Value.Reuse.Value
+            && !Guid.Empty.Equals(argument.Value.SessionId),
+          argument => new ArgumentException(reuseNotSupported, argument.Name)
+        );
     }
 
     /// <summary>
@@ -156,7 +198,9 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected abstract TBuilderEntity Clone(IResourceConfiguration<TCreateResourceEntity> resourceConfiguration);
+    protected abstract TBuilderEntity Clone(
+      IResourceConfiguration<TCreateResourceEntity> resourceConfiguration
+    );
 
     /// <summary>
     /// Merges the Docker resource builder configuration.
@@ -164,22 +208,35 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected abstract TBuilderEntity Merge(TConfigurationEntity oldValue, TConfigurationEntity newValue);
+    protected abstract TBuilderEntity Merge(
+      TConfigurationEntity oldValue,
+      TConfigurationEntity newValue
+    );
 
-    private static Exception CreateDockerUnavailableException(Guard.ArgumentInfo<IDockerEndpointAuthenticationConfiguration> argument)
+    private static Exception CreateDockerUnavailableException(
+      Guard.ArgumentInfo<IDockerEndpointAuthenticationConfiguration> argument
+    )
     {
-      var unavailableExceptions = TestcontainersSettings.DockerEndpointAuthProviders
-        .Select(authProvider => authProvider.LastException)
+      var unavailableExceptions = TestcontainersSettings
+        .DockerEndpointAuthProviders.Select(authProvider => authProvider.LastException)
         .Where(exception => exception != null);
 
       var exception = new AggregateException(unavailableExceptions);
 
       var exceptionInfo = new StringBuilder(512);
-      exceptionInfo.AppendLine("Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured.");
-      exceptionInfo.AppendLine("You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file.");
-      exceptionInfo.AppendLine("For more information, visit: https://dotnet.testcontainers.org/custom_configuration/.");
+      exceptionInfo.AppendLine(
+        "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured."
+      );
+      exceptionInfo.AppendLine(
+        "You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file."
+      );
+      exceptionInfo.AppendLine(
+        "For more information, visit: https://dotnet.testcontainers.org/custom_configuration/."
+      );
       exceptionInfo.AppendLine("  Details: ");
-      exceptionInfo.Append(string.Join(Environment.NewLine, exception.InnerExceptions.Select(e => "    " + e.Message)));
+      exceptionInfo.Append(
+        string.Join(Environment.NewLine, exception.InnerExceptions.Select(e => "    " + e.Message))
+      );
 
       return new DockerUnavailableException(exceptionInfo.ToString(), exception);
     }

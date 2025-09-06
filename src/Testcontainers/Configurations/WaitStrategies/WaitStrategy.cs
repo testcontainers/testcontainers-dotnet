@@ -10,7 +10,8 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class WaitStrategy : IWaitStrategy
   {
-    private const string MaximumRetryExceededException = "The maximum number of retries has been exceeded.";
+    private const string MaximumRetryExceededException =
+      "The maximum number of retries has been exceeded.";
 
     private IWaitWhile _waitWhile;
 
@@ -19,9 +20,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
     /// </summary>
-    public WaitStrategy()
-    {
-    }
+    public WaitStrategy() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WaitStrategy" /> class.
@@ -44,20 +43,19 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the number of retries.
     /// </summary>
-    public ushort Retries { get; private set; }
-      = TestcontainersSettings.WaitStrategyRetries ?? 0;
+    public ushort Retries { get; private set; } = TestcontainersSettings.WaitStrategyRetries ?? 0;
 
     /// <summary>
     /// Gets the interval between retries.
     /// </summary>
-    public TimeSpan Interval { get; private set; }
-      = TestcontainersSettings.WaitStrategyInterval ?? TimeSpan.FromSeconds(1);
+    public TimeSpan Interval { get; private set; } =
+      TestcontainersSettings.WaitStrategyInterval ?? TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// Gets the timeout.
     /// </summary>
-    public TimeSpan Timeout { get; private set; }
-      = TestcontainersSettings.WaitStrategyTimeout ?? TimeSpan.FromHours(1);
+    public TimeSpan Timeout { get; private set; } =
+      TestcontainersSettings.WaitStrategyTimeout ?? TimeSpan.FromHours(1);
 
     /// <inheritdoc />
     public IWaitStrategy WithRetries(ushort retries)
@@ -117,7 +115,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
+    public static async Task WaitWhileAsync(
+      Func<Task<bool>> wait,
+      TimeSpan interval,
+      TimeSpan timeout,
+      int retries = 0,
+      CancellationToken ct = default
+    )
     {
       ushort actualRetries = 0;
 
@@ -125,19 +129,21 @@ namespace DotNet.Testcontainers.Configurations
       {
         while (!ct.IsCancellationRequested)
         {
-          var isSuccessful = await wait.Invoke()
-            .ConfigureAwait(false);
+          var isSuccessful = await wait.Invoke().ConfigureAwait(false);
 
           if (!isSuccessful)
           {
             break;
           }
 
-          _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
+          _ = Guard
+            .Argument(retries, nameof(retries))
+            .ThrowIf(
+              _ => retries > 0 && ++actualRetries > retries,
+              _ => throw new RetryLimitExceededException(MaximumRetryExceededException)
+            );
 
-          await Task.Delay(interval, ct)
-            .ConfigureAwait(false);
+          await Task.Delay(interval, ct).ConfigureAwait(false);
         }
       }
 
@@ -145,8 +151,8 @@ namespace DotNet.Testcontainers.Configurations
 
       var timeoutTask = Task.Delay(timeout, ct);
 
-      var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
-        .ConfigureAwait(false);
+      var isTimeoutTask =
+        timeoutTask == await Task.WhenAny(waitTask, timeoutTask).ConfigureAwait(false);
 
       if (isTimeoutTask)
       {
@@ -154,8 +160,7 @@ namespace DotNet.Testcontainers.Configurations
       }
 
       // Rethrows exceptions.
-      await waitTask
-        .ConfigureAwait(false);
+      await waitTask.ConfigureAwait(false);
     }
 
     /// <summary>
@@ -173,7 +178,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
+    public static async Task WaitUntilAsync(
+      Func<Task<bool>> wait,
+      TimeSpan interval,
+      TimeSpan timeout,
+      int retries = 0,
+      CancellationToken ct = default
+    )
     {
       ushort actualRetries = 0;
 
@@ -181,19 +192,21 @@ namespace DotNet.Testcontainers.Configurations
       {
         while (!ct.IsCancellationRequested)
         {
-          var isSuccessful = await wait.Invoke()
-            .ConfigureAwait(false);
+          var isSuccessful = await wait.Invoke().ConfigureAwait(false);
 
           if (isSuccessful)
           {
             break;
           }
 
-          _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
+          _ = Guard
+            .Argument(retries, nameof(retries))
+            .ThrowIf(
+              _ => retries > 0 && ++actualRetries > retries,
+              _ => throw new RetryLimitExceededException(MaximumRetryExceededException)
+            );
 
-          await Task.Delay(interval, ct)
-            .ConfigureAwait(false);
+          await Task.Delay(interval, ct).ConfigureAwait(false);
         }
       }
 
@@ -201,8 +214,8 @@ namespace DotNet.Testcontainers.Configurations
 
       var timeoutTask = Task.Delay(timeout, ct);
 
-      var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
-        .ConfigureAwait(false);
+      var isTimeoutTask =
+        timeoutTask == await Task.WhenAny(waitTask, timeoutTask).ConfigureAwait(false);
 
       if (isTimeoutTask)
       {
@@ -210,8 +223,7 @@ namespace DotNet.Testcontainers.Configurations
       }
 
       // Rethrows exceptions.
-      await waitTask
-        .ConfigureAwait(false);
+      await waitTask.ConfigureAwait(false);
     }
 
     /// <summary>

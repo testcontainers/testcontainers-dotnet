@@ -9,9 +9,7 @@ public sealed class MilvusContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public MilvusContainer(MilvusConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Milvus endpoint.
@@ -19,6 +17,10 @@ public sealed class MilvusContainer : DockerContainer
     /// <returns>The Milvus endpoint.</returns>
     public Uri GetEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MilvusBuilder.MilvusGrpcPort)).Uri;
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(MilvusBuilder.MilvusGrpcPort)
+        ).Uri;
     }
 }

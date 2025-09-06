@@ -2,7 +2,8 @@ namespace Testcontainers.RabbitMq;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMqContainer, RabbitMqConfiguration>
+public sealed class RabbitMqBuilder
+    : ContainerBuilder<RabbitMqBuilder, RabbitMqContainer, RabbitMqConfiguration>
 {
     public const string RabbitMqImage = "rabbitmq:3.11";
 
@@ -71,7 +72,9 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
             .WithPortBinding(RabbitMqPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server startup complete"));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("Server startup complete")
+            );
     }
 
     /// <inheritdoc />
@@ -79,17 +82,27 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override RabbitMqBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override RabbitMqBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new RabbitMqConfiguration(resourceConfiguration));
     }
@@ -101,7 +114,10 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     }
 
     /// <inheritdoc />
-    protected override RabbitMqBuilder Merge(RabbitMqConfiguration oldValue, RabbitMqConfiguration newValue)
+    protected override RabbitMqBuilder Merge(
+        RabbitMqConfiguration oldValue,
+        RabbitMqConfiguration newValue
+    )
     {
         return new RabbitMqBuilder(new RabbitMqConfiguration(oldValue, newValue));
     }

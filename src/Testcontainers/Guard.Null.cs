@@ -16,7 +16,10 @@ namespace DotNet.Testcontainers
     /// <typeparam name="TType">The type.</typeparam>
     /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
     /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
-    public static ref readonly ArgumentInfo<TType> Null<TType>(in this ArgumentInfo<TType> argument, string exceptionMessage = null)
+    public static ref readonly ArgumentInfo<TType> Null<TType>(
+      in this ArgumentInfo<TType> argument,
+      string exceptionMessage = null
+    )
       where TType : class
     {
       if (!argument.HasValue())
@@ -25,7 +28,10 @@ namespace DotNet.Testcontainers
       }
 
       const string message = "'{0}' must be null.";
-      throw new ArgumentException(exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name), argument.Name);
+      throw new ArgumentException(
+        exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name),
+        argument.Name
+      );
     }
 
     /// <summary>
@@ -36,7 +42,10 @@ namespace DotNet.Testcontainers
     /// <typeparam name="TType">The type.</typeparam>
     /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
     /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
-    public static ref readonly ArgumentInfo<TType> NotNull<TType>(in this ArgumentInfo<TType> argument, string exceptionMessage = null)
+    public static ref readonly ArgumentInfo<TType> NotNull<TType>(
+      in this ArgumentInfo<TType> argument,
+      string exceptionMessage = null
+    )
       where TType : class
     {
       if (argument.HasValue())
@@ -45,7 +54,10 @@ namespace DotNet.Testcontainers
       }
 
       const string message = "'{0}' cannot be null.";
-      throw new ArgumentException(exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name), argument.Name);
+      throw new ArgumentException(
+        exceptionMessage ?? string.Format(CultureInfo.InvariantCulture, message, argument.Name),
+        argument.Name
+      );
     }
 
     /// <summary>
@@ -57,7 +69,11 @@ namespace DotNet.Testcontainers
     /// <typeparam name="TType">The type.</typeparam>
     /// <returns>An instance of the <see cref="ArgumentInfo{TType}" /> struct.</returns>
     /// <exception cref="ArgumentException">Thrown when the condition is not met.</exception>
-    public static ArgumentInfo<TType> ThrowIf<TType>(in this ArgumentInfo<TType> argument, Func<ArgumentInfo<TType>, bool> condition, Func<ArgumentInfo<TType>, Exception> ifClause)
+    public static ArgumentInfo<TType> ThrowIf<TType>(
+      in this ArgumentInfo<TType> argument,
+      Func<ArgumentInfo<TType>, bool> condition,
+      Func<ArgumentInfo<TType>, Exception> ifClause
+    )
     {
       return condition(argument) ? throw ifClause(argument) : argument;
     }

@@ -10,7 +10,12 @@ namespace DotNet.Testcontainers.Builders
   /// <inheritdoc cref="IDockerEndpointAuthenticationProvider" />
   internal class DockerEndpointAuthenticationProvider : IDockerEndpointAuthenticationProvider
   {
-    private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+    private static readonly TaskFactory TaskFactory = new TaskFactory(
+      CancellationToken.None,
+      TaskCreationOptions.None,
+      TaskContinuationOptions.None,
+      TaskScheduler.Default
+    );
 
     [CanBeNull]
     private Exception _cachedException;
@@ -37,16 +42,20 @@ namespace DotNet.Testcontainers.Builders
         return false;
       }
 
-      return TaskFactory.StartNew(async () =>
+      return TaskFactory
+        .StartNew(async () =>
         {
-          using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
+          using (
+            var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(
+              ResourceReaper.DefaultSessionId
+            )
+          )
           {
             using (var dockerClient = dockerClientConfiguration.CreateClient())
             {
               try
               {
-                await dockerClient.System.PingAsync()
-                  .ConfigureAwait(false);
+                await dockerClient.System.PingAsync().ConfigureAwait(false);
 
                 _cachedException = null;
 
@@ -54,7 +63,8 @@ namespace DotNet.Testcontainers.Builders
               }
               catch (Exception e)
               {
-                var message = $"Failed to connect to Docker endpoint at '{dockerClientConfiguration.EndpointBaseUri}'.";
+                var message =
+                  $"Failed to connect to Docker endpoint at '{dockerClientConfiguration.EndpointBaseUri}'.";
                 _cachedException = new DockerUnavailableException(message, e);
 
                 return false;

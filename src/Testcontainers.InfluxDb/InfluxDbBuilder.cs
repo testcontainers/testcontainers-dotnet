@@ -2,7 +2,8 @@ namespace Testcontainers.InfluxDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
+public sealed class InfluxDbBuilder
+    : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
 {
     public const string InfluxDbImage = "influxdb:2.7";
 
@@ -67,7 +68,10 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithOrganization(string organization)
     {
-        return Merge(DockerResourceConfiguration, new InfluxDbConfiguration(organization: organization))
+        return Merge(
+                DockerResourceConfiguration,
+                new InfluxDbConfiguration(organization: organization)
+            )
             .WithEnvironment("DOCKER_INFLUXDB_INIT_ORG", organization);
     }
 
@@ -122,8 +126,15 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
             .WithPassword(DefaultPassword)
             .WithOrganization(DefaultOrganization)
             .WithBucket(DefaultBucket)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(InfluxDbPort).ForPath("/ping").ForStatusCode(HttpStatusCode.NoContent)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPort(InfluxDbPort)
+                            .ForPath("/ping")
+                            .ForStatusCode(HttpStatusCode.NoContent)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -131,25 +142,43 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Organization, nameof(DockerResourceConfiguration.Organization))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Organization,
+                nameof(DockerResourceConfiguration.Organization)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Bucket, nameof(DockerResourceConfiguration.Bucket))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Bucket,
+                nameof(DockerResourceConfiguration.Bucket)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override InfluxDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override InfluxDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new InfluxDbConfiguration(resourceConfiguration));
     }
@@ -161,7 +190,10 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     }
 
     /// <inheritdoc />
-    protected override InfluxDbBuilder Merge(InfluxDbConfiguration oldValue, InfluxDbConfiguration newValue)
+    protected override InfluxDbBuilder Merge(
+        InfluxDbConfiguration oldValue,
+        InfluxDbConfiguration newValue
+    )
     {
         return new InfluxDbBuilder(new InfluxDbConfiguration(oldValue, newValue));
     }

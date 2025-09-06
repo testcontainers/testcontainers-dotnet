@@ -6,8 +6,7 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _couchbaseContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _couchbaseContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -25,14 +24,13 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         clusterOptions.UserName = CouchbaseBuilder.DefaultUsername;
         clusterOptions.Password = CouchbaseBuilder.DefaultPassword;
 
-        var cluster = await Cluster.ConnectAsync(clusterOptions)
-            .ConfigureAwait(true);
+        var cluster = await Cluster.ConnectAsync(clusterOptions).ConfigureAwait(true);
 
         // When
-        var ping = await cluster.PingAsync()
-            .ConfigureAwait(true);
+        var ping = await cluster.PingAsync().ConfigureAwait(true);
 
-        var bucket = await cluster.BucketAsync(_couchbaseContainer.Buckets.Single().Name)
+        var bucket = await cluster
+            .BucketAsync(_couchbaseContainer.Buckets.Single().Name)
             .ConfigureAwait(true);
 
         // Then

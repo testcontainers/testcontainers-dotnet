@@ -8,10 +8,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   public sealed class DockerTlsFixture : ProtectDockerDaemonSocket
   {
     public DockerTlsFixture()
-      : base(new ContainerBuilder()
-        .WithCommand("--tlsverify=false"), "20.10.18")
-    {
-    }
+      : base(new ContainerBuilder().WithCommand("--tlsverify=false"), "20.10.18") { }
 
     public override IList<string> CustomProperties
     {

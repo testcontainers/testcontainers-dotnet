@@ -12,8 +12,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _dynamoDbContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _dynamoDbContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -32,7 +31,8 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         using var client = new AmazonDynamoDBClient(config);
 
         // When
-        var tables = await client.ListTablesAsync(TestContext.Current.CancellationToken)
+        var tables = await client
+            .ListTablesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -55,26 +55,47 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
         var tableRequest = new CreateTableRequest();
         tableRequest.TableName = tableName;
-        tableRequest.AttributeDefinitions = new List<AttributeDefinition> { new AttributeDefinition("Id", ScalarAttributeType.S) };
-        tableRequest.KeySchema = new List<KeySchemaElement> { new KeySchemaElement("Id", KeyType.HASH) };
+        tableRequest.AttributeDefinitions = new List<AttributeDefinition>
+        {
+            new AttributeDefinition("Id", ScalarAttributeType.S),
+        };
+        tableRequest.KeySchema = new List<KeySchemaElement>
+        {
+            new KeySchemaElement("Id", KeyType.HASH),
+        };
         tableRequest.ProvisionedThroughput = new ProvisionedThroughput(10, 5);
 
         var putItemRequest = new PutItemRequest();
         putItemRequest.TableName = tableName;
-        putItemRequest.Item = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+        putItemRequest.Item = new Dictionary<string, AttributeValue>
+        {
+            {
+                "Id",
+                new AttributeValue { S = id }
+            },
+        };
 
         var getItemRequest = new GetItemRequest();
         getItemRequest.TableName = tableName;
-        getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+        getItemRequest.Key = new Dictionary<string, AttributeValue>
+        {
+            {
+                "Id",
+                new AttributeValue { S = id }
+            },
+        };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
+        _ = await client
+            .CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
+        _ = await client
+            .PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
+        var itemResponse = await client
+            .GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

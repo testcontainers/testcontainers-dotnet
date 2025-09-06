@@ -14,9 +14,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="RedirectStdoutAndStderrToStream" /> class.
     /// </summary>
     public RedirectStdoutAndStderrToStream()
-      : this(Console.OpenStandardOutput(), Console.OpenStandardError())
-    {
-    }
+      : this(Console.OpenStandardOutput(), Console.OpenStandardError()) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedirectStdoutAndStderrToStream" /> class.
@@ -36,12 +34,10 @@ namespace DotNet.Testcontainers.Configurations
     public bool Enabled { get; }
 
     /// <inheritdoc />
-    public Stream Stdout
-      => _stdout.BaseStream;
+    public Stream Stdout => _stdout.BaseStream;
 
     /// <inheritdoc />
-    public Stream Stderr
-      => _stderr.BaseStream;
+    public Stream Stderr => _stderr.BaseStream;
 
     /// <inheritdoc />
     public void Dispose()

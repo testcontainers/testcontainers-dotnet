@@ -2,32 +2,44 @@ namespace Testcontainers.Tests;
 
 public sealed class ExecFailedExceptionTest
 {
-    public static TheoryData<ExecResultSerializable, string> ExecResultTestData { get; }
-        = new TheoryData<ExecResultSerializable, string>
+    public static TheoryData<ExecResultSerializable, string> ExecResultTestData { get; } =
+        new TheoryData<ExecResultSerializable, string>
         {
             {
                 new ExecResultSerializable("Stdout\nStdout", "Stderr\nStderr", 1),
-                "Process exited with code 1." + Environment.NewLine +
-                "  Stdout: " + Environment.NewLine +
-                "    Stdout" + Environment.NewLine +
-                "    Stdout" + Environment.NewLine +
-                "  Stderr: " + Environment.NewLine +
-                "    Stderr" + Environment.NewLine +
-                "    Stderr"
+                "Process exited with code 1."
+                    + Environment.NewLine
+                    + "  Stdout: "
+                    + Environment.NewLine
+                    + "    Stdout"
+                    + Environment.NewLine
+                    + "    Stdout"
+                    + Environment.NewLine
+                    + "  Stderr: "
+                    + Environment.NewLine
+                    + "    Stderr"
+                    + Environment.NewLine
+                    + "    Stderr"
             },
             {
                 new ExecResultSerializable("Stdout\nStdout", string.Empty, 1),
-                "Process exited with code 1." + Environment.NewLine +
-                "  Stdout: " + Environment.NewLine +
-                "    Stdout" + Environment.NewLine +
-                "    Stdout"
+                "Process exited with code 1."
+                    + Environment.NewLine
+                    + "  Stdout: "
+                    + Environment.NewLine
+                    + "    Stdout"
+                    + Environment.NewLine
+                    + "    Stdout"
             },
             {
                 new ExecResultSerializable(string.Empty, "Stderr\nStderr", 1),
-                "Process exited with code 1." + Environment.NewLine +
-                "  Stderr: " + Environment.NewLine +
-                "    Stderr" + Environment.NewLine +
-                "    Stderr"
+                "Process exited with code 1."
+                    + Environment.NewLine
+                    + "  Stderr: "
+                    + Environment.NewLine
+                    + "    Stderr"
+                    + Environment.NewLine
+                    + "    Stderr"
             },
             {
                 new ExecResultSerializable(string.Empty, string.Empty, 1),
@@ -37,7 +49,10 @@ public sealed class ExecFailedExceptionTest
 
     [Theory]
     [MemberData(nameof(ExecResultTestData))]
-    public void ExecFailedExceptionCreatesExpectedMessage(ExecResultSerializable serializable, string message)
+    public void ExecFailedExceptionCreatesExpectedMessage(
+        ExecResultSerializable serializable,
+        string message
+    )
     {
         // Given
         var execResult = serializable.ToExecResult();
@@ -59,9 +74,7 @@ public sealed class ExecFailedExceptionTest
 
         private int _exitCode;
 
-        public ExecResultSerializable()
-        {
-        }
+        public ExecResultSerializable() { }
 
         public ExecResultSerializable(string stdout, string stderr, int exitCode)
         {

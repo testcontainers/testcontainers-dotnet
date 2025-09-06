@@ -13,7 +13,8 @@ public sealed class MsSqlConfiguration : ContainerConfiguration
     public MsSqlConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         Database = database;
         Username = username;
@@ -24,7 +25,9 @@ public sealed class MsSqlConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="MsSqlConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MsSqlConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public MsSqlConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

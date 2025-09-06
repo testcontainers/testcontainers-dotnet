@@ -6,8 +6,7 @@ public sealed class KustoContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _kustoContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _kustoContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -20,10 +19,16 @@ public sealed class KustoContainerTest : IAsyncLifetime
     public async Task ShowDatabaseReturnsDefaultDbInformation()
     {
         // Given
-        using var client = KustoClientFactory.CreateCslAdminProvider(_kustoContainer.GetConnectionString());
+        using var client = KustoClientFactory.CreateCslAdminProvider(
+            _kustoContainer.GetConnectionString()
+        );
 
         // When
-        using var dataReader = await client.ExecuteControlCommandAsync("NetDefaultDB", CslCommandGenerator.GenerateDatabaseShowCommand())
+        using var dataReader = await client
+            .ExecuteControlCommandAsync(
+                "NetDefaultDB",
+                CslCommandGenerator.GenerateDatabaseShowCommand()
+            )
             .ConfigureAwait(true);
 
         _ = dataReader.Read();

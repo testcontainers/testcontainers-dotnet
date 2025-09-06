@@ -9,7 +9,11 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
     private readonly string _password;
 
-    private ArtemisContainerTest(ArtemisContainer artemisContainer, string username, string password)
+    private ArtemisContainerTest(
+        ArtemisContainer artemisContainer,
+        string username,
+        string password
+    )
     {
         _artemisContainer = artemisContainer;
         _username = username;
@@ -18,17 +22,16 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _artemisContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _artemisContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
+
     // # --8<-- [end:UseArtemisContainer]
 
     // # --8<-- [start:EstablishConnection]
@@ -42,38 +45,32 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         connectionFactory.Password = _password;
 
         // When
-        using var connection = await connectionFactory.CreateConnectionAsync()
-            .ConfigureAwait(true);
+        using var connection = await connectionFactory.CreateConnectionAsync().ConfigureAwait(true);
 
-        await connection.StartAsync()
-            .ConfigureAwait(true);
+        await connection.StartAsync().ConfigureAwait(true);
 
         Assert.True(connection.IsStarted);
 
         // Then
-        using var session = await connection.CreateSessionAsync()
+        using var session = await connection.CreateSessionAsync().ConfigureAwait(true);
+
+        using var queue = await session.CreateTemporaryQueueAsync().ConfigureAwait(true);
+
+        using var producer = await session.CreateProducerAsync(queue).ConfigureAwait(true);
+
+        using var consumer = await session.CreateConsumerAsync(queue).ConfigureAwait(true);
+
+        var producedMessage = await producer
+            .CreateTextMessageAsync(Guid.NewGuid().ToString("D"))
             .ConfigureAwait(true);
 
-        using var queue = await session.CreateTemporaryQueueAsync()
-            .ConfigureAwait(true);
+        await producer.SendAsync(producedMessage).ConfigureAwait(true);
 
-        using var producer = await session.CreateProducerAsync(queue)
-            .ConfigureAwait(true);
-
-        using var consumer = await session.CreateConsumerAsync(queue)
-            .ConfigureAwait(true);
-
-        var producedMessage = await producer.CreateTextMessageAsync(Guid.NewGuid().ToString("D"))
-            .ConfigureAwait(true);
-
-        await producer.SendAsync(producedMessage)
-            .ConfigureAwait(true);
-
-        var receivedMessage = await consumer.ReceiveAsync()
-            .ConfigureAwait(true);
+        var receivedMessage = await consumer.ReceiveAsync().ConfigureAwait(true);
 
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
     }
+
     // # --8<-- [end:EstablishConnection]
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -86,10 +83,13 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     public sealed class DefaultCredentialsConfiguration : ArtemisContainerTest
     {
         public DefaultCredentialsConfiguration()
-            : base(new ArtemisBuilder().Build(), ArtemisBuilder.DefaultUsername, ArtemisBuilder.DefaultPassword)
-        {
-        }
+            : base(
+                new ArtemisBuilder().Build(),
+                ArtemisBuilder.DefaultUsername,
+                ArtemisBuilder.DefaultPassword
+            ) { }
     }
+
     // # --8<-- [end:UseArtemisContainerDefaultAuth]
 
     // # --8<-- [start:UseArtemisContainerCustomAuth]
@@ -101,10 +101,13 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         private static readonly string Password = Guid.NewGuid().ToString("D");
 
         public CustomCredentialsConfiguration()
-            : base(new ArtemisBuilder().WithUsername(Username).WithPassword(Password).Build(), Username, Password)
-        {
-        }
+            : base(
+                new ArtemisBuilder().WithUsername(Username).WithPassword(Password).Build(),
+                Username,
+                Password
+            ) { }
     }
+
     // # --8<-- [end:UseArtemisContainerCustomAuth]
 
     // # --8<-- [start:UseArtemisContainerNoAuth]
@@ -112,9 +115,11 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     public sealed class NoAuthCredentialsConfiguration : ArtemisContainerTest
     {
         public NoAuthCredentialsConfiguration()
-            : base(new ArtemisBuilder().WithEnvironment("ANONYMOUS_LOGIN", bool.TrueString).Build(), string.Empty, string.Empty)
-        {
-        }
+            : base(
+                new ArtemisBuilder().WithEnvironment("ANONYMOUS_LOGIN", bool.TrueString).Build(),
+                string.Empty,
+                string.Empty
+            ) { }
     }
     // # --8<-- [end:UseArtemisContainerNoAuth]
 }

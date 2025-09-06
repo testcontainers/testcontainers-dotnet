@@ -9,9 +9,7 @@ public sealed class BigQueryContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public BigQueryContainer(BigQueryConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the BigQuery emulator endpoint.
@@ -19,6 +17,10 @@ public sealed class BigQueryContainer : DockerContainer
     /// <returns>The BigQuery emulator endpoint.</returns>
     public string GetEmulatorEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(BigQueryBuilder.BigQueryPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(BigQueryBuilder.BigQueryPort)
+        ).ToString();
     }
 }

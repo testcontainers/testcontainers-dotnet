@@ -4,7 +4,5 @@ namespace WeatherForecast.Interactors;
 public sealed class Success<TValue> : ResultInfo<TValue>
 {
   public Success(TValue value)
-    : base(StatusCode.Success, new Error(), value)
-  {
-  }
+    : base(StatusCode.Success, new Error(), value) { }
 }

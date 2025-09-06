@@ -16,9 +16,19 @@ public sealed class WeatherDataReadOnlyContext : IWeatherDataReadOnlyRepository
     throw new NotImplementedException();
   }
 
-  public Task<IEnumerable<WeatherData>> GetAllAsync(string latitude, string longitude, DateTime from, DateTime to)
+  public Task<IEnumerable<WeatherData>> GetAllAsync(
+    string latitude,
+    string longitude,
+    DateTime from,
+    DateTime to
+  )
   {
-    return Task.FromResult<IEnumerable<WeatherData>>(_context.WeatherData.Include(property => property.Temperatures).OrderBy(weatherData => weatherData.Period).Take(to.Subtract(from).Days));
+    return Task.FromResult<IEnumerable<WeatherData>>(
+      _context
+        .WeatherData.Include(property => property.Temperatures)
+        .OrderBy(weatherData => weatherData.Period)
+        .Take(to.Subtract(from).Days)
+    );
   }
 
   public Task<WeatherData> GetAsync(Guid id)

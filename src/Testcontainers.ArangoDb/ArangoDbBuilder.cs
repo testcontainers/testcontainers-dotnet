@@ -2,7 +2,8 @@ namespace Testcontainers.ArangoDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
+public sealed class ArangoDbBuilder
+    : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
 {
     public const string ArangoDbImage = "arangodb:3.11.5";
 
@@ -67,13 +68,19 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override ArangoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ArangoDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new ArangoDbConfiguration(resourceConfiguration));
     }
@@ -85,7 +92,10 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     }
 
     /// <inheritdoc />
-    protected override ArangoDbBuilder Merge(ArangoDbConfiguration oldValue, ArangoDbConfiguration newValue)
+    protected override ArangoDbBuilder Merge(
+        ArangoDbConfiguration oldValue,
+        ArangoDbConfiguration newValue
+    )
     {
         return new ArangoDbBuilder(new ArangoDbConfiguration(oldValue, newValue));
     }

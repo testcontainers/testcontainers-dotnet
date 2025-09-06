@@ -2,7 +2,8 @@ namespace Testcontainers.OpenSearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
+public sealed class OpenSearchBuilder
+    : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
 {
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
@@ -70,8 +71,14 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <returns>A configured instance of <see cref="OpenSearchBuilder" />.</returns>
     public OpenSearchBuilder WithSecurityEnabled(bool securityEnabled = true)
     {
-        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(tlsEnabled: securityEnabled))
-            .WithEnvironment("plugins.security.disabled", (!securityEnabled).ToString().ToLowerInvariant());
+        return Merge(
+                DockerResourceConfiguration,
+                new OpenSearchConfiguration(tlsEnabled: securityEnabled)
+            )
+            .WithEnvironment(
+                "plugins.security.disabled",
+                (!securityEnabled).ToString().ToLowerInvariant()
+            );
     }
 
     /// <inheritdoc />
@@ -98,7 +105,13 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
 
         // By default, the base builder waits until the container is running. However, for OpenSearch, a more advanced waiting strategy is necessary that requires access to the password.
         // If the user does not provide a custom waiting strategy, append the default OpenSearch waiting strategy.
-        openSearchBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? openSearchBuilder : openSearchBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        openSearchBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? openSearchBuilder
+                : openSearchBuilder.WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
+                );
         return new OpenSearchContainer(openSearchBuilder.DockerResourceConfiguration);
     }
 
@@ -121,25 +134,40 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override OpenSearchBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override OpenSearchBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new OpenSearchConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override OpenSearchBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new OpenSearchConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override OpenSearchBuilder Merge(OpenSearchConfiguration oldValue, OpenSearchConfiguration newValue)
+    protected override OpenSearchBuilder Merge(
+        OpenSearchConfiguration oldValue,
+        OpenSearchConfiguration newValue
+    )
     {
         return new OpenSearchBuilder(new OpenSearchConfiguration(oldValue, newValue));
     }
@@ -189,8 +217,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
                 .WithBasicAuthentication(_username, _password)
                 .ForPort(OpenSearchRestApiPort);
 
-            return await httpWaitStrategy.UntilAsync(container)
-                .ConfigureAwait(false);
+            return await httpWaitStrategy.UntilAsync(container).ConfigureAwait(false);
         }
     }
 }

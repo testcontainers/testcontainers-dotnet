@@ -11,7 +11,8 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     /// <param name="functionsWorkerEnabled">A value indicating whether function workers is enabled or not.</param>
     public PulsarConfiguration(
         bool? authenticationEnabled = null,
-        bool? functionsWorkerEnabled = null)
+        bool? functionsWorkerEnabled = null
+    )
     {
         AuthenticationEnabled = authenticationEnabled;
         FunctionsWorkerEnabled = functionsWorkerEnabled;
@@ -21,7 +22,9 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="PulsarConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public PulsarConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public PulsarConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -55,8 +58,12 @@ public sealed class PulsarConfiguration : ContainerConfiguration
     public PulsarConfiguration(PulsarConfiguration oldValue, PulsarConfiguration newValue)
         : base(oldValue, newValue)
     {
-        AuthenticationEnabled = (oldValue.AuthenticationEnabled.HasValue && oldValue.AuthenticationEnabled.Value) || (newValue.AuthenticationEnabled.HasValue && newValue.AuthenticationEnabled.Value);
-        FunctionsWorkerEnabled = (oldValue.FunctionsWorkerEnabled.HasValue && oldValue.FunctionsWorkerEnabled.Value) || (newValue.FunctionsWorkerEnabled.HasValue && newValue.FunctionsWorkerEnabled.Value);
+        AuthenticationEnabled =
+            (oldValue.AuthenticationEnabled.HasValue && oldValue.AuthenticationEnabled.Value)
+            || (newValue.AuthenticationEnabled.HasValue && newValue.AuthenticationEnabled.Value);
+        FunctionsWorkerEnabled =
+            (oldValue.FunctionsWorkerEnabled.HasValue && oldValue.FunctionsWorkerEnabled.Value)
+            || (newValue.FunctionsWorkerEnabled.HasValue && newValue.FunctionsWorkerEnabled.Value);
     }
 
     /// <summary>

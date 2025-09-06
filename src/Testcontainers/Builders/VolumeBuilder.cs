@@ -20,7 +20,9 @@ namespace DotNet.Testcontainers.Builders
   ///   </code>
   /// </example>
   [PublicAPI]
-  public class VolumeBuilder : AbstractBuilder<VolumeBuilder, IVolume, VolumesCreateParameters, IVolumeConfiguration>, IVolumeBuilder<VolumeBuilder>
+  public class VolumeBuilder
+    : AbstractBuilder<VolumeBuilder, IVolume, VolumesCreateParameters, IVolumeConfiguration>,
+      IVolumeBuilder<VolumeBuilder>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="VolumeBuilder" /> class.
@@ -68,19 +70,25 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(IVolumeConfiguration.Name))
+      _ = Guard
+        .Argument(DockerResourceConfiguration.Name, nameof(IVolumeConfiguration.Name))
         .NotNull()
         .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override VolumeBuilder Clone(IResourceConfiguration<VolumesCreateParameters> resourceConfiguration)
+    protected override VolumeBuilder Clone(
+      IResourceConfiguration<VolumesCreateParameters> resourceConfiguration
+    )
     {
       return Merge(DockerResourceConfiguration, new VolumeConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override VolumeBuilder Merge(IVolumeConfiguration oldValue, IVolumeConfiguration newValue)
+    protected override VolumeBuilder Merge(
+      IVolumeConfiguration oldValue,
+      IVolumeConfiguration newValue
+    )
     {
       return new VolumeBuilder(new VolumeConfiguration(oldValue, newValue));
     }

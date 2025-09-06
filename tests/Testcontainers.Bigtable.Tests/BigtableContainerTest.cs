@@ -6,8 +6,7 @@ public sealed class BigtableContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _bigtableContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _bigtableContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -43,14 +42,15 @@ public sealed class BigtableContainerTest : IAsyncLifetime
         bigtableClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         // When
-        var bigtableClient = await bigtableClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
+        var bigtableClient = await bigtableClientBuilder
+            .BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await bigtableClient.CreateTableAsync(instanceName, tableName.TableId, table)
+        _ = await bigtableClient
+            .CreateTableAsync(instanceName, tableName.TableId, table)
             .ConfigureAwait(true);
 
-        var actualTable = await bigtableClient.GetTableAsync(tableName)
-            .ConfigureAwait(true);
+        var actualTable = await bigtableClient.GetTableAsync(tableName).ConfigureAwait(true);
 
         // Then
         Assert.NotNull(actualTable);

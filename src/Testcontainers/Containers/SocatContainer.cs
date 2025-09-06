@@ -11,8 +11,6 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public SocatContainer(SocatConfiguration configuration)
-      : base(configuration)
-    {
-    }
+      : base(configuration) { }
   }
 }

@@ -9,9 +9,7 @@ public sealed class CouchDbConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The CouchDb username.</param>
     /// <param name="password">The CouchDb password.</param>
-    public CouchDbConfiguration(
-        string username = null,
-        string password = null)
+    public CouchDbConfiguration(string username = null, string password = null)
     {
         Username = username;
         Password = password;
@@ -21,7 +19,9 @@ public sealed class CouchDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="CouchDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public CouchDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public CouchDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

@@ -9,9 +9,7 @@ public sealed class LocalStackContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public LocalStackContainer(LocalStackConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the LocalStack connection string.
@@ -19,6 +17,10 @@ public sealed class LocalStackContainer : DockerContainer
     /// <returns>The LocalStack connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(LocalStackBuilder.LocalStackPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(LocalStackBuilder.LocalStackPort)
+        ).ToString();
     }
 }

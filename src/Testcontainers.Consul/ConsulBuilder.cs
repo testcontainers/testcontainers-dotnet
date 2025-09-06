@@ -2,7 +2,8 @@ namespace Testcontainers.Consul;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
+public sealed class ConsulBuilder
+    : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
 {
     public const string ConsulImage = "consul:1.15";
 
@@ -48,12 +49,18 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
             .WithPortBinding(ConsulGrpcPort, true)
             .WithCommand("agent", "-dev", "-client", "0.0.0.0")
             .WithCreateParameterModifier(cmd => cmd.HostConfig.CapAdd = new[] { "IPC_LOCK" })
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override ConsulBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ConsulBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new ConsulConfiguration(resourceConfiguration));
     }
@@ -65,7 +72,10 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     }
 
     /// <inheritdoc />
-    protected override ConsulBuilder Merge(ConsulConfiguration oldValue, ConsulConfiguration newValue)
+    protected override ConsulBuilder Merge(
+        ConsulConfiguration oldValue,
+        ConsulConfiguration newValue
+    )
     {
         return new ConsulBuilder(new ConsulConfiguration(oldValue, newValue));
     }

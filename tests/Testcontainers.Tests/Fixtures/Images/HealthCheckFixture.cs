@@ -12,7 +12,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   public sealed class HealthCheckFixture : IImage, IAsyncLifetime
   {
     private readonly IFutureDockerImage _image = new ImageFromDockerfileBuilder()
-      .WithDockerfileDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy"))
+      .WithDockerfileDirectory(
+        Path.Combine(Directory.GetCurrentDirectory(), "Assets", "healthWaitStrategy")
+      )
       .Build();
 
     public string Repository => _image.Repository;
@@ -47,14 +49,12 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public async ValueTask InitializeAsync()
     {
-      await _image.CreateAsync()
-        .ConfigureAwait(false);
+      await _image.CreateAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-      await _image.DeleteAsync()
-        .ConfigureAwait(false);
+      await _image.DeleteAsync().ConfigureAwait(false);
     }
   }
 }

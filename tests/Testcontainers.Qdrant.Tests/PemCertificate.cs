@@ -2,9 +2,7 @@ namespace Testcontainers.Qdrant;
 
 public sealed class PemCertificate
 {
-    static PemCertificate()
-    {
-    }
+    static PemCertificate() { }
 
     private PemCertificate(string commonName)
     {
@@ -12,9 +10,17 @@ public sealed class PemCertificate
 
         var subjectName = new X500DistinguishedName($"CN={commonName}");
 
-        var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var request = new CertificateRequest(
+            subjectName,
+            rsa,
+            HashAlgorithmName.SHA256,
+            RSASignaturePadding.Pkcs1
+        );
 
-        using var certificate = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+        using var certificate = request.CreateSelfSigned(
+            DateTimeOffset.Now,
+            DateTimeOffset.Now.AddYears(1)
+        );
 
         CommonName = commonName;
         Thumbprint = certificate.GetCertHashString(HashAlgorithmName.SHA256);
@@ -22,8 +28,7 @@ public sealed class PemCertificate
         CertificateKey = rsa.ExportPkcs8PrivateKeyPem();
     }
 
-    public static PemCertificate Instance { get; }
-        = new PemCertificate("localhost");
+    public static PemCertificate Instance { get; } = new PemCertificate("localhost");
 
     public string CommonName { get; }
 

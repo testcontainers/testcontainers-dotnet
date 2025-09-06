@@ -2,7 +2,8 @@ namespace Testcontainers.Pulsar;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
+public sealed class PulsarBuilder
+    : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
     public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
@@ -16,7 +17,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
 
     public const string Username = "test-user";
 
-    private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars = InitAuthenticationEnvVars();
+    private static readonly IReadOnlyDictionary<string, string> AuthenticationEnvVars =
+        InitAuthenticationEnvVars();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
@@ -49,7 +51,10 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <returns>A configured instance of <see cref="Pulsar" />.</returns>
     public PulsarBuilder WithAuthentication()
     {
-        return Merge(DockerResourceConfiguration, new PulsarConfiguration(authenticationEnabled: true))
+        return Merge(
+                DockerResourceConfiguration,
+                new PulsarConfiguration(authenticationEnabled: true)
+            )
             .WithEnvironment(AuthenticationEnvVars);
     }
 
@@ -60,7 +65,10 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <returns>A configured instance of <see cref="Pulsar" />.</returns>
     public PulsarBuilder WithFunctionsWorker(bool functionsWorkerEnabled = true)
     {
-        return Merge(DockerResourceConfiguration, new PulsarConfiguration(functionsWorkerEnabled: functionsWorkerEnabled));
+        return Merge(
+            DockerResourceConfiguration,
+            new PulsarConfiguration(functionsWorkerEnabled: functionsWorkerEnabled)
+        );
     }
 
     /// <inheritdoc />
@@ -80,9 +88,14 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             waitStrategy = waitStrategy.UntilMessageIsLogged("Function worker service started");
         }
 
-        waitStrategy = waitStrategy.AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault()));
+        waitStrategy = waitStrategy.AddCustomWaitStrategy(
+            new WaitUntil(DockerResourceConfiguration.AuthenticationEnabled.GetValueOrDefault())
+        );
 
-        var pulsarBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        var pulsarBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(waitStrategy);
         return new PulsarContainer(pulsarBuilder.DockerResourceConfiguration);
     }
 
@@ -95,12 +108,19 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
+            .WithCommand(
+                "while [ ! -f "
+                    + StartupScriptFilePath
+                    + " ]; do sleep 0.1; done; "
+                    + StartupScriptFilePath
+            )
             .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
     }
 
     /// <inheritdoc />
-    protected override PulsarBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override PulsarBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new PulsarConfiguration(resourceConfiguration));
     }
@@ -112,19 +132,26 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     }
 
     /// <inheritdoc />
-    protected override PulsarBuilder Merge(PulsarConfiguration oldValue, PulsarConfiguration newValue)
+    protected override PulsarBuilder Merge(
+        PulsarConfiguration oldValue,
+        PulsarConfiguration newValue
+    )
     {
         return new PulsarBuilder(new PulsarConfiguration(oldValue, newValue));
     }
 
     private static IReadOnlyDictionary<string, string> InitAuthenticationEnvVars()
     {
-        const string authenticationPlugin = "org.apache.pulsar.client.impl.auth.AuthenticationToken";
+        const string authenticationPlugin =
+            "org.apache.pulsar.client.impl.auth.AuthenticationToken";
         var authenticationEnvVars = new Dictionary<string, string>();
         authenticationEnvVars.Add("authenticateOriginalAuthData", "false");
         authenticationEnvVars.Add("authenticationEnabled", "true");
         authenticationEnvVars.Add("authorizationEnabled", "true");
-        authenticationEnvVars.Add("authenticationProviders", "org.apache.pulsar.broker.authentication.AuthenticationProviderToken");
+        authenticationEnvVars.Add(
+            "authenticationProviders",
+            "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
+        );
         authenticationEnvVars.Add("brokerClientAuthenticationPlugin", authenticationPlugin);
         authenticationEnvVars.Add("CLIENT_PREFIX_authPlugin", authenticationPlugin);
         authenticationEnvVars.Add("PULSAR_PREFIX_authenticationRefreshCheckSeconds", "5");
@@ -167,10 +194,14 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             {
                 try
                 {
-                    _authToken = await container.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
+                    _authToken = await container
+                        .CreateAuthenticationTokenAsync(TimeSpan.FromHours(1))
                         .ConfigureAwait(false);
 
-                    _ = _httpWaitStrategy.WithHeader("Authorization", "Bearer " + _authToken.Trim());
+                    _ = _httpWaitStrategy.WithHeader(
+                        "Authorization",
+                        "Bearer " + _authToken.Trim()
+                    );
                 }
                 catch
                 {
@@ -178,8 +209,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
                 }
             }
 
-            return await _httpWaitStrategy.UntilAsync(container)
-                .ConfigureAwait(false);
+            return await _httpWaitStrategy.UntilAsync(container).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -189,14 +219,13 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         /// <returns>A value indicating whether the cluster is healthy or not.</returns>
         private static async Task<bool> IsClusterHealthyAsync(HttpResponseMessage response)
         {
-            var jsonString = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
+            var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             try
             {
-                var status = JsonDocument.Parse(jsonString)
-                    .RootElement
-                    .EnumerateArray()
+                var status = JsonDocument
+                    .Parse(jsonString)
+                    .RootElement.EnumerateArray()
                     .ElementAt(0)
                     .GetString();
 

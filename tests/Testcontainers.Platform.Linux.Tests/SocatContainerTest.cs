@@ -12,8 +12,7 @@ public sealed class SocatContainerTest : IAsyncLifetime
 
     public SocatContainerTest()
     {
-        _network = new NetworkBuilder()
-            .Build();
+        _network = new NetworkBuilder().Build();
 
         _helloWorldContainer = new ContainerBuilder()
             .WithImage(CommonImages.HelloWorld)
@@ -30,23 +29,18 @@ public sealed class SocatContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _helloWorldContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _helloWorldContainer.StartAsync().ConfigureAwait(false);
 
-        await _socatContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _socatContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _socatContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        await _socatContainer.DisposeAsync().ConfigureAwait(false);
 
-        await _helloWorldContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        await _helloWorldContainer.DisposeAsync().ConfigureAwait(false);
 
-        await _network.DisposeAsync()
-            .ConfigureAwait(false);
+        await _network.DisposeAsync().ConfigureAwait(false);
     }
 
     [Theory]
@@ -56,13 +50,19 @@ public sealed class SocatContainerTest : IAsyncLifetime
     {
         // Given
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, _socatContainer.Hostname, _socatContainer.GetMappedPublicPort(containerPort)).Uri;
+        httpClient.BaseAddress = new UriBuilder(
+            Uri.UriSchemeHttp,
+            _socatContainer.Hostname,
+            _socatContainer.GetMappedPublicPort(containerPort)
+        ).Uri;
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/ping", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync("/ping", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+        var response = await httpResponse
+            .Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

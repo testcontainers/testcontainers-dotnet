@@ -7,8 +7,12 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
-public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
-    : ContainerTest<TBuilderEntity, TContainerEntity>(testOutputHelper, configure), IDbContainerTestMethods
+public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(
+    ITestOutputHelper testOutputHelper,
+    Func<TBuilderEntity, TBuilderEntity> configure = null
+)
+    : ContainerTest<TBuilderEntity, TContainerEntity>(testOutputHelper, configure),
+        IDbContainerTestMethods
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
@@ -17,10 +21,12 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     /// <inheritdoc />
     protected override async LifetimeTask InitializeAsync()
     {
-        await base.InitializeAsync()
-            .ConfigureAwait(false);
+        await base.InitializeAsync().ConfigureAwait(false);
 
-        _testMethods = new DbContainerTestMethods(DbProviderFactory, new Lazy<string>(() => ConnectionString));
+        _testMethods = new DbContainerTestMethods(
+            DbProviderFactory,
+            new Lazy<string>(() => ConnectionString)
+        );
     }
 
     /// <inheritdoc />
@@ -28,12 +34,10 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     {
         if (_testMethods != null)
         {
-            await _testMethods.DisposeAsync()
-                .ConfigureAwait(true);
+            await _testMethods.DisposeAsync().ConfigureAwait(true);
         }
 
-        await base.DisposeAsyncCore()
-            .ConfigureAwait(true);
+        await base.DisposeAsyncCore().ConfigureAwait(true);
     }
 
     /// <summary>
@@ -54,10 +58,13 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
     public DbConnection OpenConnection() => _testMethods.OpenConnection();
 
     /// <inheritdoc />
-    public ValueTask<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken = default) => _testMethods.OpenConnectionAsync(cancellationToken);
+    public ValueTask<DbConnection> OpenConnectionAsync(
+        CancellationToken cancellationToken = default
+    ) => _testMethods.OpenConnectionAsync(cancellationToken);
 
     /// <inheritdoc />
-    public DbCommand CreateCommand(string commandText = null) => _testMethods.CreateCommand(commandText);
+    public DbCommand CreateCommand(string commandText = null) =>
+        _testMethods.CreateCommand(commandText);
 
     /// <inheritdoc />
     public DbBatch CreateBatch() => _testMethods.CreateBatch();

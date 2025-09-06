@@ -4,7 +4,11 @@ internal sealed class MessageSinkLogger(IMessageSink messageSink) : Logger
 {
     private readonly IMessageSink _messageSink = messageSink;
 
-    protected override void Log<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter)
+    protected override void Log<TState>(
+        TState state,
+        Exception exception,
+        Func<TState, Exception, string> formatter
+    )
     {
         if (_messageSink == null)
         {

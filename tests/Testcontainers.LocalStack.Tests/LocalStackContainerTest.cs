@@ -19,14 +19,12 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _localStackContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _localStackContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -45,7 +43,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When
-        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
+        var logGroupResponse = await client
+            .CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -69,26 +68,47 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         var tableRequest = new CreateTableRequest();
         tableRequest.TableName = tableName;
-        tableRequest.AttributeDefinitions = new List<AttributeDefinition> { new AttributeDefinition("Id", ScalarAttributeType.S) };
-        tableRequest.KeySchema = new List<KeySchemaElement> { new KeySchemaElement("Id", KeyType.HASH) };
+        tableRequest.AttributeDefinitions = new List<AttributeDefinition>
+        {
+            new AttributeDefinition("Id", ScalarAttributeType.S),
+        };
+        tableRequest.KeySchema = new List<KeySchemaElement>
+        {
+            new KeySchemaElement("Id", KeyType.HASH),
+        };
         tableRequest.ProvisionedThroughput = new ProvisionedThroughput(10, 5);
 
         var putItemRequest = new PutItemRequest();
         putItemRequest.TableName = tableName;
-        putItemRequest.Item = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+        putItemRequest.Item = new Dictionary<string, AttributeValue>
+        {
+            {
+                "Id",
+                new AttributeValue { S = id }
+            },
+        };
 
         var getItemRequest = new GetItemRequest();
         getItemRequest.TableName = tableName;
-        getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+        getItemRequest.Key = new Dictionary<string, AttributeValue>
+        {
+            {
+                "Id",
+                new AttributeValue { S = id }
+            },
+        };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
+        _ = await client
+            .CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
+        _ = await client
+            .PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
+        var itemResponse = await client
+            .GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -107,7 +127,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonS3Client(config);
 
         // When
-        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
+        var buckets = await client
+            .ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -126,7 +147,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
         // When
-        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+        var topicResponse = await client
+            .CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -145,7 +167,8 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSQSClient(config);
 
         // When
-        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+        var queueResponse = await client
+            .CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -161,17 +184,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
         public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
-        {
-        }
+            : base(new LocalStackBuilder().Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
-        {
-        }
+            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build()) { }
     }
 }

@@ -2,7 +2,8 @@ namespace Testcontainers.Neo4j;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
+public sealed class Neo4jBuilder
+    : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
 {
     public const string Neo4jImage = "neo4j:5.4";
 
@@ -33,7 +34,8 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jConfiguration DockerResourceConfiguration { get; }
 
     /// <inheritdoc />
-    protected override string AcceptLicenseAgreementEnvVar { get; } = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
+    protected override string AcceptLicenseAgreementEnvVar { get; } =
+        "NEO4J_ACCEPT_LICENSE_AGREEMENT";
 
     /// <inheritdoc />
     protected override string AcceptLicenseAgreement { get; } = "yes";
@@ -84,18 +86,32 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
         else if (image.MatchVersion(v => Array.Exists(operatingSystems, v.Contains)))
         {
             MatchEvaluator evaluator = match => $"{enterpriseSuffix}-{match.Value}";
-            tag = Regex.Replace(image.Tag, string.Join("|", operatingSystems), evaluator, RegexOptions.None, TimeSpan.FromSeconds(1));
+            tag = Regex.Replace(
+                image.Tag,
+                string.Join("|", operatingSystems),
+                evaluator,
+                RegexOptions.None,
+                TimeSpan.FromSeconds(1)
+            );
         }
         else
         {
             tag = $"{image.Tag}-{enterpriseSuffix}";
         }
 
-        var enterpriseImage = new DockerImage(image.Repository, image.Registry, tag, tag == null ? image.Digest : null);
+        var enterpriseImage = new DockerImage(
+            image.Repository,
+            image.Registry,
+            tag,
+            tag == null ? image.Digest : null
+        );
 
-        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        var licenseAgreement = acceptLicenseAgreement
+            ? AcceptLicenseAgreement
+            : DeclineLicenseAgreement;
 
-        return WithImage(enterpriseImage).WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+        return WithImage(enterpriseImage)
+            .WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
     /// <inheritdoc />
@@ -112,11 +128,26 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
         base.Validate();
 
-        Predicate<Neo4jConfiguration> licenseAgreementNotAccepted = value => value.Image.Tag != null && value.Image.Tag.Contains("enterprise")
-            && (!value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal));
+        Predicate<Neo4jConfiguration> licenseAgreementNotAccepted = value =>
+            value.Image.Tag != null
+            && value.Image.Tag.Contains("enterprise")
+            && (
+                !value.Environments.TryGetValue(
+                    AcceptLicenseAgreementEnvVar,
+                    out var licenseAgreementValue
+                ) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal)
+            );
 
-        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+        _ = Guard
+            .Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+            .ThrowIf(
+                argument => licenseAgreementNotAccepted(argument.Value),
+                argument =>
+                    throw new ArgumentException(
+                        string.Format(message, DockerResourceConfiguration.Image.FullName),
+                        argument.Name
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -127,12 +158,18 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
             .WithPortBinding(Neo4jHttpPort, true)
             .WithPortBinding(Neo4jBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(Neo4jHttpPort)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/").ForPort(Neo4jHttpPort)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override Neo4jBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override Neo4jBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new Neo4jConfiguration(resourceConfiguration));
     }

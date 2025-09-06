@@ -13,7 +13,8 @@ public sealed class MariaDbConfiguration : ContainerConfiguration
     public MariaDbConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         Database = database;
         Username = username;
@@ -24,7 +25,9 @@ public sealed class MariaDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="MariaDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MariaDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public MariaDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

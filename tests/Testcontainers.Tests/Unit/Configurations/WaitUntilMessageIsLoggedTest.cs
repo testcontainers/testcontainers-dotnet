@@ -10,7 +10,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class WaitUntilMessageIsLoggedTest : IAsyncLifetime, IDisposable
   {
-    private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+    private readonly CancellationTokenSource _cts = new CancellationTokenSource(
+      TimeSpan.FromMinutes(1)
+    );
 
     private readonly IContainer _container;
 
@@ -26,8 +28,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public async ValueTask InitializeAsync()
     {
-      await _container.StartAsync(_cts.Token)
-        .ConfigureAwait(false);
+      await _container.StartAsync(_cts.Token).ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()

@@ -6,8 +6,7 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _couchDbContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _couchDbContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -23,7 +22,8 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
         using var client = new MyCouchClient(_couchDbContainer.GetConnectionString(), "db");
 
         // When
-        var database = await client.Database.PutAsync(TestContext.Current.CancellationToken)
+        var database = await client
+            .Database.PutAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

@@ -10,18 +10,14 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public sealed class Windows : IOperatingSystem
   {
-    static Windows()
-    {
-    }
+    static Windows() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
     /// </summary>
     [PublicAPI]
     public Windows()
-      : this(NpipeEndpointAuthenticationProvider.DockerEngine)
-    {
-    }
+      : this(NpipeEndpointAuthenticationProvider.DockerEngine) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
@@ -29,9 +25,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
     public Windows(string endpoint)
-      : this(new Uri(endpoint))
-    {
-    }
+      : this(new Uri(endpoint)) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
@@ -39,9 +33,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="endpoint">The Docker API endpoint.</param>
     [PublicAPI]
     public Windows(Uri endpoint)
-      : this(new DockerEndpointAuthenticationConfiguration(endpoint))
-    {
-    }
+      : this(new DockerEndpointAuthenticationConfiguration(endpoint)) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Windows" /> class.
@@ -56,8 +48,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the <see cref="IOperatingSystem" /> instance.
     /// </summary>
-    public static IOperatingSystem Instance { get; }
-      = new Windows(dockerEndpointAuthConfig: null);
+    public static IOperatingSystem Instance { get; } = new Windows(dockerEndpointAuthConfig: null);
 
     /// <inheritdoc />
     public IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig { get; }

@@ -40,6 +40,10 @@ public sealed class MinioContainer : DockerContainer
     /// <returns>The Minio connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MinioBuilder.MinioPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(MinioBuilder.MinioPort)
+        ).ToString();
     }
 }

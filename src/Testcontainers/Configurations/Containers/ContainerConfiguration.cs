@@ -14,7 +14,9 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IContainerConfiguration" />
   [PublicAPI]
-  public class ContainerConfiguration : ResourceConfiguration<CreateContainerParameters>, IContainerConfiguration
+  public class ContainerConfiguration
+    : ResourceConfiguration<CreateContainerParameters>,
+      IContainerConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
@@ -63,7 +65,8 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<WaitStrategy> waitStrategies = null,
       Func<IContainer, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
-      bool? privileged = null)
+      bool? privileged = null
+    )
     {
       AutoRemove = autoRemove;
       Privileged = privileged;
@@ -93,50 +96,73 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ContainerConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-      : base(resourceConfiguration)
-    {
-    }
+    public ContainerConfiguration(
+      IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
+      : base(resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     public ContainerConfiguration(IContainerConfiguration resourceConfiguration)
-      : this(new ContainerConfiguration(), resourceConfiguration)
-    {
-    }
+      : this(new ContainerConfiguration(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ContainerConfiguration(IContainerConfiguration oldValue, IContainerConfiguration newValue)
+    public ContainerConfiguration(
+      IContainerConfiguration oldValue,
+      IContainerConfiguration newValue
+    )
       : base(oldValue, newValue)
     {
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
-      ImagePullPolicy = BuildConfiguration.Combine(oldValue.ImagePullPolicy, newValue.ImagePullPolicy);
+      ImagePullPolicy = BuildConfiguration.Combine(
+        oldValue.ImagePullPolicy,
+        newValue.ImagePullPolicy
+      );
       Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
       Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
       MacAddress = BuildConfiguration.Combine(oldValue.MacAddress, newValue.MacAddress);
-      WorkingDirectory = BuildConfiguration.Combine(oldValue.WorkingDirectory, newValue.WorkingDirectory);
-      Entrypoint = BuildConfiguration.Combine<IEnumerable<string>>(oldValue.Entrypoint, newValue.Entrypoint);
+      WorkingDirectory = BuildConfiguration.Combine(
+        oldValue.WorkingDirectory,
+        newValue.WorkingDirectory
+      );
+      Entrypoint = BuildConfiguration.Combine<IEnumerable<string>>(
+        oldValue.Entrypoint,
+        newValue.Entrypoint
+      );
       Command = BuildConfiguration.Combine(oldValue.Command, newValue.Command);
       Environments = BuildConfiguration.Combine(oldValue.Environments, newValue.Environments);
       ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
       PortBindings = BuildConfiguration.Combine(oldValue.PortBindings, newValue.PortBindings);
-      ResourceMappings = BuildConfiguration.Combine(oldValue.ResourceMappings, newValue.ResourceMappings);
+      ResourceMappings = BuildConfiguration.Combine(
+        oldValue.ResourceMappings,
+        newValue.ResourceMappings
+      );
       Containers = BuildConfiguration.Combine(oldValue.Containers, newValue.Containers);
       Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
       Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
       NetworkAliases = BuildConfiguration.Combine(oldValue.NetworkAliases, newValue.NetworkAliases);
       ExtraHosts = BuildConfiguration.Combine(oldValue.ExtraHosts, newValue.ExtraHosts);
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
-      WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(oldValue.WaitStrategies, newValue.WaitStrategies);
-      StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
-      AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
-      Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
+      WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(
+        oldValue.WaitStrategies,
+        newValue.WaitStrategies
+      );
+      StartupCallback = BuildConfiguration.Combine(
+        oldValue.StartupCallback,
+        newValue.StartupCallback
+      );
+      AutoRemove =
+        (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value)
+        || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
+      Privileged =
+        (oldValue.Privileged.HasValue && oldValue.Privileged.Value)
+        || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
 
     /// <inheritdoc />

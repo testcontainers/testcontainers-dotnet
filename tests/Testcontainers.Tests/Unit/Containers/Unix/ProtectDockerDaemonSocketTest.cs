@@ -14,10 +14,20 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public static class ProtectDockerDaemonSocketTest
   {
-    private static IDockerEndpointAuthenticationConfiguration GetAuthConfig(ProtectDockerDaemonSocket protectDockerDaemonSocket)
+    private static IDockerEndpointAuthenticationConfiguration GetAuthConfig(
+      ProtectDockerDaemonSocket protectDockerDaemonSocket
+    )
     {
-      var customConfiguration = new PropertiesFileConfiguration(protectDockerDaemonSocket.CustomProperties.ToArray());
-      return new IDockerEndpointAuthenticationProvider[] { new MTlsEndpointAuthenticationProvider(customConfiguration), new TlsEndpointAuthenticationProvider(customConfiguration) }.First(authProvider => authProvider.IsApplicable()).GetAuthConfig();
+      var customConfiguration = new PropertiesFileConfiguration(
+        protectDockerDaemonSocket.CustomProperties.ToArray()
+      );
+      return new IDockerEndpointAuthenticationProvider[]
+      {
+        new MTlsEndpointAuthenticationProvider(customConfiguration),
+        new TlsEndpointAuthenticationProvider(customConfiguration),
+      }
+        .First(authProvider => authProvider.IsApplicable())
+        .GetAuthConfig();
     }
 
     public sealed class MTlsOpenSsl1_1_1 : IClassFixture<OpenSsl1_1_1Fixture>
@@ -39,7 +49,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
+        var version = await client
+          .System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -67,7 +78,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
+        var version = await client
+          .System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -95,7 +107,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         var client = new TestcontainersClient(Guid.Empty, _authConfig, NullLogger.Instance);
 
         // When
-        var version = await client.System.GetVersionAsync(TestContext.Current.CancellationToken)
+        var version = await client
+          .System.GetVersionAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then

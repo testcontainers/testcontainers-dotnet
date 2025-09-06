@@ -13,7 +13,8 @@ public sealed class CockroachDbConfiguration : ContainerConfiguration
     public CockroachDbConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         Database = database;
         Username = username;
@@ -24,7 +25,9 @@ public sealed class CockroachDbConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="CockroachDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public CockroachDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public CockroachDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -55,7 +58,10 @@ public sealed class CockroachDbConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public CockroachDbConfiguration(CockroachDbConfiguration oldValue, CockroachDbConfiguration newValue)
+    public CockroachDbConfiguration(
+        CockroachDbConfiguration oldValue,
+        CockroachDbConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);

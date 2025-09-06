@@ -2,7 +2,8 @@ namespace Testcontainers.ModuleName;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, ModuleNameContainer, ModuleNameConfiguration>
+public sealed class ModuleNameBuilder
+    : ContainerBuilder<ModuleNameBuilder, ModuleNameContainer, ModuleNameConfiguration>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleNameBuilder" /> class.
@@ -67,19 +68,30 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
     // }
 
     /// <inheritdoc />
-    protected override ModuleNameBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ModuleNameBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new ModuleNameConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ModuleNameConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override ModuleNameBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new ModuleNameConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ModuleNameConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override ModuleNameBuilder Merge(ModuleNameConfiguration oldValue, ModuleNameConfiguration newValue)
+    protected override ModuleNameBuilder Merge(
+        ModuleNameConfiguration oldValue,
+        ModuleNameConfiguration newValue
+    )
     {
         return new ModuleNameBuilder(new ModuleNameConfiguration(oldValue, newValue));
     }

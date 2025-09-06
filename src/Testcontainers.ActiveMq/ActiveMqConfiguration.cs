@@ -9,9 +9,7 @@ public sealed class ActiveMqConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The ActiveMq username.</param>
     /// <param name="password">The ActiveMq password.</param>
-    public ActiveMqConfiguration(
-        string username = null,
-        string password = null)
+    public ActiveMqConfiguration(string username = null, string password = null)
     {
         Username = username;
         Password = password;
@@ -21,7 +19,9 @@ public sealed class ActiveMqConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ActiveMqConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ActiveMqConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ActiveMqConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

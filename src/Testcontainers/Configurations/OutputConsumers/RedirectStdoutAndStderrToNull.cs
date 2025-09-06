@@ -18,8 +18,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the <see cref="IOutputConsumer" /> instance.
     /// </summary>
-    public static IOutputConsumer Instance { get; }
-      = new RedirectStdoutAndStderrToNull();
+    public static IOutputConsumer Instance { get; } = new RedirectStdoutAndStderrToNull();
 
     /// <inheritdoc />
     public bool Enabled { get; }

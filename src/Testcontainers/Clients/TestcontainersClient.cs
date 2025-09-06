@@ -30,9 +30,13 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersReuseHashLabel = TestcontainersLabel + ".reuse-hash";
 
-    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+    public static readonly string Version = typeof(TestcontainersClient)
+      .Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+      .InformationalVersion;
 
-    private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
+    private static readonly string OSRootDirectory = Path.GetPathRoot(
+      Directory.GetCurrentDirectory()
+    );
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
@@ -44,7 +48,11 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="sessionId">The session id.</param>
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
-    public TestcontainersClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
+    public TestcontainersClient(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      ILogger logger
+    )
       : this(
         new DockerContainerOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerImageOperations(sessionId, dockerEndpointAuthConfig, logger),
@@ -52,9 +60,8 @@ namespace DotNet.Testcontainers.Clients
         new DockerVolumeOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerSystemOperations(sessionId, dockerEndpointAuthConfig, logger),
         new DockerRegistryAuthenticationProvider(logger),
-        logger)
-    {
-    }
+        logger
+      ) { }
 
     private TestcontainersClient(
       IDockerContainerOperations containerOperations,
@@ -63,7 +70,8 @@ namespace DotNet.Testcontainers.Clients
       IDockerVolumeOperations volumeOperations,
       IDockerSystemOperations systemOperations,
       DockerRegistryAuthenticationProvider registryAuthenticationProvider,
-      ILogger logger)
+      ILogger logger
+    )
     {
       _registryAuthenticationProvider = registryAuthenticationProvider;
       _logger = logger;
@@ -99,7 +107,13 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(string id, DateTime since = default, DateTime until = default, bool timestampsEnabled = true, CancellationToken ct = default)
+    public Task<(string Stdout, string Stderr)> GetContainerLogsAsync(
+      string id,
+      DateTime since = default,
+      DateTime until = default,
+      bool timestampsEnabled = true,
+      CancellationToken ct = default
+    )
     {
 #if NETSTANDARD2_0
       var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -117,63 +131,59 @@ namespace DotNet.Testcontainers.Clients
         until = unixEpoch;
       }
 
-      return Container.GetLogsAsync(id, since.ToUniversalTime().Subtract(unixEpoch), until.ToUniversalTime().Subtract(unixEpoch), timestampsEnabled, ct);
+      return Container.GetLogsAsync(
+        id,
+        since.ToUniversalTime().Subtract(unixEpoch),
+        until.ToUniversalTime().Subtract(unixEpoch),
+        timestampsEnabled,
+        ct
+      );
     }
 
     /// <inheritdoc />
     public async Task StartAsync(string id, CancellationToken ct = default)
     {
-      if (await Container.ExistsWithIdAsync(id, ct)
-            .ConfigureAwait(false))
+      if (await Container.ExistsWithIdAsync(id, ct).ConfigureAwait(false))
       {
-        await Container.StartAsync(id, ct)
-          .ConfigureAwait(false);
+        await Container.StartAsync(id, ct).ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
     public async Task StopAsync(string id, CancellationToken ct = default)
     {
-      if (await Container.ExistsWithIdAsync(id, ct)
-            .ConfigureAwait(false))
+      if (await Container.ExistsWithIdAsync(id, ct).ConfigureAwait(false))
       {
-        await Container.StopAsync(id, ct)
-          .ConfigureAwait(false);
+        await Container.StopAsync(id, ct).ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
     public async Task PauseAsync(string id, CancellationToken ct = default)
     {
-      if (await Container.ExistsWithIdAsync(id, ct)
-            .ConfigureAwait(false))
+      if (await Container.ExistsWithIdAsync(id, ct).ConfigureAwait(false))
       {
-        await Container.PauseAsync(id, ct)
-          .ConfigureAwait(false);
+        await Container.PauseAsync(id, ct).ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
     public async Task UnpauseAsync(string id, CancellationToken ct = default)
     {
-      if (await Container.ExistsWithIdAsync(id, ct)
-            .ConfigureAwait(false))
+      if (await Container.ExistsWithIdAsync(id, ct).ConfigureAwait(false))
       {
-        await Container.UnpauseAsync(id, ct)
-          .ConfigureAwait(false);
+        await Container.UnpauseAsync(id, ct).ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
-      if (await Container.ExistsWithIdAsync(id, ct)
-            .ConfigureAwait(false))
+      if (await Container.ExistsWithIdAsync(id, ct).ConfigureAwait(false))
       {
         try
         {
-          await Container.RemoveAsync(id, ct)
-            .ConfigureAwait(false);
+          await Container.RemoveAsync(id, ct).ConfigureAwait(false);
         }
         catch (DockerApiException e)
         {
@@ -188,23 +198,41 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
+    public Task AttachAsync(
+      string id,
+      IOutputConsumer outputConsumer,
+      CancellationToken ct = default
+    )
     {
       return Container.AttachAsync(id, outputConsumer, ct);
     }
 
     /// <inheritdoc />
-    public Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)
+    public Task<ExecResult> ExecAsync(
+      string id,
+      IList<string> command,
+      CancellationToken ct = default
+    )
     {
       return Container.ExecAsync(id, command, ct);
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, IResourceMapping resourceMapping, CancellationToken ct = default)
+    public async Task CopyAsync(
+      string id,
+      IResourceMapping resourceMapping,
+      CancellationToken ct = default
+    )
     {
       if (Directory.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(
+            id,
+            new DirectoryInfo(resourceMapping.Source),
+            resourceMapping.Target,
+            resourceMapping.FileMode,
+            ct
+          )
           .ConfigureAwait(false);
 
         return;
@@ -212,7 +240,13 @@ namespace DotNet.Testcontainers.Clients
 
       if (File.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(
+            id,
+            new FileInfo(resourceMapping.Source),
+            resourceMapping.Target,
+            resourceMapping.FileMode,
+            ct
+          )
           .ConfigureAwait(false);
 
         return;
@@ -220,51 +254,67 @@ namespace DotNet.Testcontainers.Clients
 
       using (var tarOutputMemStream = new TarOutputMemoryStream(_logger))
       {
-        await tarOutputMemStream.AddAsync(resourceMapping, ct)
-          .ConfigureAwait(false);
+        await tarOutputMemStream.AddAsync(resourceMapping, ct).ConfigureAwait(false);
 
         tarOutputMemStream.Close();
         tarOutputMemStream.Seek(0, SeekOrigin.Begin);
 
-        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+        await Container
+          .ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
           .ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(
+      string id,
+      DirectoryInfo source,
+      string target,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    )
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
-          .ConfigureAwait(false);
+        await tarOutputMemStream.AddAsync(source, true, fileMode, ct).ConfigureAwait(false);
 
         tarOutputMemStream.Close();
         tarOutputMemStream.Seek(0, SeekOrigin.Begin);
 
-        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+        await Container
+          .ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
           .ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(
+      string id,
+      FileInfo source,
+      string target,
+      UnixFileModes fileMode,
+      CancellationToken ct = default
+    )
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, fileMode, ct)
-          .ConfigureAwait(false);
+        await tarOutputMemStream.AddAsync(source, fileMode, ct).ConfigureAwait(false);
 
         tarOutputMemStream.Close();
         tarOutputMemStream.Seek(0, SeekOrigin.Begin);
 
-        await Container.ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
+        await Container
+          .ExtractArchiveToContainerAsync(id, "/", tarOutputMemStream, ct)
           .ConfigureAwait(false);
       }
     }
 
     /// <inheritdoc />
-    public async Task<byte[]> ReadFileAsync(string id, string filePath, CancellationToken ct = default)
+    public async Task<byte[]> ReadFileAsync(
+      string id,
+      string filePath,
+      CancellationToken ct = default
+    )
     {
       Stream tarStream;
 
@@ -272,7 +322,8 @@ namespace DotNet.Testcontainers.Clients
 
       try
       {
-        tarStream = await Container.GetArchiveFromContainerAsync(id, containerPath, ct)
+        tarStream = await Container
+          .GetArchiveFromContainerAsync(id, containerPath, ct)
           .ConfigureAwait(false);
       }
       catch (DockerContainerNotFoundException e)
@@ -284,8 +335,7 @@ namespace DotNet.Testcontainers.Clients
       {
         tarInputStream.IsStreamOwner = true;
 
-        var entry = await tarInputStream.GetNextEntryAsync(ct)
-          .ConfigureAwait(false);
+        var entry = await tarInputStream.GetNextEntryAsync(ct).ConfigureAwait(false);
 
         if (entry.IsDirectory)
         {
@@ -295,11 +345,11 @@ namespace DotNet.Testcontainers.Clients
         var readBytes = new byte[entry.Size];
 
 #if NETSTANDARD2_0
-        _ = await tarInputStream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+        _ = await tarInputStream
+          .ReadAsync(readBytes, 0, readBytes.Length, ct)
           .ConfigureAwait(false);
 #else
-        _ = await tarInputStream.ReadAsync(readBytes, ct)
-          .ConfigureAwait(false);
+        _ = await tarInputStream.ReadAsync(readBytes, ct).ConfigureAwait(false);
 #endif
 
         return readBytes;
@@ -307,23 +357,35 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<string> RunAsync(IContainerConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> RunAsync(
+      IContainerConfiguration configuration,
+      CancellationToken ct = default
+    )
     {
       ImageInspectResponse cachedImage;
 
-      if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
+      if (
+        TestcontainersSettings.ResourceReaperEnabled
+        && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId)
+      )
       {
-        var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
+        var isWindowsEngineEnabled = await System
+          .GetIsWindowsEngineEnabled(ct)
           .ConfigureAwait(false);
 
-        _ = await ResourceReaper.GetAndStartDefaultAsync(configuration.DockerEndpointAuthConfig, configuration.Logger, isWindowsEngineEnabled, ct)
+        _ = await ResourceReaper
+          .GetAndStartDefaultAsync(
+            configuration.DockerEndpointAuthConfig,
+            configuration.Logger,
+            isWindowsEngineEnabled,
+            ct
+          )
           .ConfigureAwait(false);
       }
 
       try
       {
-        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
-          .ConfigureAwait(false);
+        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct).ConfigureAwait(false);
       }
       catch (DockerImageNotFoundException)
       {
@@ -332,22 +394,27 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImagePullPolicy(cachedImage))
       {
-        await PullImageAsync(configuration.Image, ct)
-          .ConfigureAwait(false);
+        await PullImageAsync(configuration.Image, ct).ConfigureAwait(false);
       }
 
-      var id = await Container.RunAsync(configuration, ct)
-        .ConfigureAwait(false);
+      var id = await Container.RunAsync(configuration, ct).ConfigureAwait(false);
 
-      if (configuration.Networks.Any() && PortForwardingContainer.Instance != null && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State))
+      if (
+        configuration.Networks.Any()
+        && PortForwardingContainer.Instance != null
+        && TestcontainersStates.Running.Equals(PortForwardingContainer.Instance.State)
+      )
       {
-        await Network.ConnectAsync("bridge", id, ct)
-          .ConfigureAwait(false);
+        await Network.ConnectAsync("bridge", id, ct).ConfigureAwait(false);
       }
 
       if (configuration.ResourceMappings.Any())
       {
-        await Task.WhenAll(configuration.ResourceMappings.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
+        await Task.WhenAll(
+            configuration.ResourceMappings.Select(resourceMapping =>
+              CopyAsync(id, resourceMapping, ct)
+            )
+          )
           .ConfigureAwait(false);
       }
 
@@ -355,14 +422,16 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(
+      IImageFromDockerfileConfiguration configuration,
+      CancellationToken ct = default
+    )
     {
       ImageInspectResponse cachedImage;
 
       try
       {
-        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
-          .ConfigureAwait(false);
+        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct).ConfigureAwait(false);
       }
       catch (DockerImageNotFoundException)
       {
@@ -371,24 +440,34 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImageBuildPolicy(cachedImage))
       {
-        var dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, configuration.Image, _logger);
+        var dockerfileArchive = new DockerfileArchive(
+          configuration.DockerfileDirectory,
+          configuration.Dockerfile,
+          configuration.Image,
+          _logger
+        );
 
         var baseImages = dockerfileArchive.GetBaseImages().ToArray();
 
-        var filters = baseImages.Aggregate(new FilterByProperty(), (dictionary, baseImage) => dictionary.Add("reference", baseImage.FullName));
+        var filters = baseImages.Aggregate(
+          new FilterByProperty(),
+          (dictionary, baseImage) => dictionary.Add("reference", baseImage.FullName)
+        );
 
-        var cachedImages = await Image.GetAllAsync(filters, ct)
-          .ConfigureAwait(false);
+        var cachedImages = await Image.GetAllAsync(filters, ct).ConfigureAwait(false);
 
-        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>()));
+        var repositoryTags = new HashSet<string>(
+          cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>())
+        );
 
-        var uncachedImages = baseImages.Where(baseImage => !repositoryTags.Contains(baseImage.FullName));
+        var uncachedImages = baseImages.Where(baseImage =>
+          !repositoryTags.Contains(baseImage.FullName)
+        );
 
         await Task.WhenAll(uncachedImages.Select(image => PullImageAsync(image, ct)))
           .ConfigureAwait(false);
 
-        _ = await Image.BuildAsync(configuration, dockerfileArchive, ct)
-          .ConfigureAwait(false);
+        _ = await Image.BuildAsync(configuration, dockerfileArchive, ct).ConfigureAwait(false);
       }
 
       return configuration.Image.FullName;
@@ -411,16 +490,14 @@ namespace DotNet.Testcontainers.Clients
           return;
         }
 
-        var info = await System.GetInfoAsync(ct)
-          .ConfigureAwait(false);
+        var info = await System.GetInfoAsync(ct).ConfigureAwait(false);
 
         dockerRegistryServerAddress = info.IndexServerAddress;
       }
 
       var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
 
-      await Image.CreateAsync(image, authConfig, ct)
-        .ConfigureAwait(false);
+      await Image.CreateAsync(image, authConfig, ct).ConfigureAwait(false);
     }
   }
 }

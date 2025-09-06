@@ -2,7 +2,8 @@ namespace Testcontainers.MariaDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
+public sealed class MariaDbBuilder
+    : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
 {
     public const string MariaDbImage = "mariadb:10.10";
 
@@ -55,7 +56,12 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     public MariaDbBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new MariaDbConfiguration(username: username))
-            .WithEnvironment("MARIADB_USER", "root".Equals(username, StringComparison.OrdinalIgnoreCase) ? string.Empty : username);
+            .WithEnvironment(
+                "MARIADB_USER",
+                "root".Equals(username, StringComparison.OrdinalIgnoreCase)
+                    ? string.Empty
+                    : username
+            );
     }
 
     /// <summary>
@@ -77,7 +83,13 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
 
         // By default, the base builder waits until the container is running. However, for MariaDb, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MariaDb waiting strategy.
-        var mariaDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var mariaDbBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
+                );
         return new MariaDbContainer(mariaDbBuilder.DockerResourceConfiguration);
     }
 
@@ -98,17 +110,27 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override MariaDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MariaDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new MariaDbConfiguration(resourceConfiguration));
     }
@@ -120,7 +142,10 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     }
 
     /// <inheritdoc />
-    protected override MariaDbBuilder Merge(MariaDbConfiguration oldValue, MariaDbConfiguration newValue)
+    protected override MariaDbBuilder Merge(
+        MariaDbConfiguration oldValue,
+        MariaDbConfiguration newValue
+    )
     {
         return new MariaDbBuilder(new MariaDbConfiguration(oldValue, newValue));
     }
@@ -136,14 +161,20 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MariaDbConfiguration configuration)
         {
-            _command = new List<string> { "mariadb", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string>
+            {
+                "mariadb",
+                configuration.Database,
+                "--wait",
+                "--silent",
+                "--execute=SELECT 1;",
+            };
         }
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
+            var execResult = await container.ExecAsync(_command).ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
         }

@@ -12,7 +12,8 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IResourceConfiguration{TCreateResourceEntity}" />
   [PublicAPI]
-  public class ResourceConfiguration<TCreateResourceEntity> : IResourceConfiguration<TCreateResourceEntity>
+  public class ResourceConfiguration<TCreateResourceEntity>
+    : IResourceConfiguration<TCreateResourceEntity>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ResourceConfiguration{TCreateResourceEntity}" /> class.
@@ -27,9 +28,18 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null,
       bool? reuse = null,
-      ILogger logger = null)
+      ILogger logger = null
+    )
     {
-      SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
+      SessionId =
+        labels != null
+        && labels.TryGetValue(
+          ResourceReaper.ResourceReaperSessionLabel,
+          out var resourceReaperSessionId
+        )
+        && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId)
+          ? sessionId
+          : Guid.Empty;
       DockerEndpointAuthConfig = dockerEndpointAuthenticationConfiguration;
       Labels = labels;
       ParameterModifiers = parameterModifiers;
@@ -41,25 +51,34 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="ResourceConfiguration{TCreateResourceEntity}" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    protected ResourceConfiguration(IResourceConfiguration<TCreateResourceEntity> resourceConfiguration)
-      : this(new ResourceConfiguration<TCreateResourceEntity>(), resourceConfiguration)
-    {
-    }
+    protected ResourceConfiguration(
+      IResourceConfiguration<TCreateResourceEntity> resourceConfiguration
+    )
+      : this(new ResourceConfiguration<TCreateResourceEntity>(), resourceConfiguration) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResourceConfiguration{TCreateResourceEntity}" /> class.
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    protected ResourceConfiguration(IResourceConfiguration<TCreateResourceEntity> oldValue, IResourceConfiguration<TCreateResourceEntity> newValue)
+    protected ResourceConfiguration(
+      IResourceConfiguration<TCreateResourceEntity> oldValue,
+      IResourceConfiguration<TCreateResourceEntity> newValue
+    )
       : this(
-        dockerEndpointAuthenticationConfiguration: BuildConfiguration.Combine(oldValue.DockerEndpointAuthConfig, newValue.DockerEndpointAuthConfig),
+        dockerEndpointAuthenticationConfiguration: BuildConfiguration.Combine(
+          oldValue.DockerEndpointAuthConfig,
+          newValue.DockerEndpointAuthConfig
+        ),
         labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels),
-        parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
-        reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value),
-        logger: BuildConfiguration.Combine(oldValue.Logger, newValue.Logger))
-    {
-    }
+        parameterModifiers: BuildConfiguration.Combine(
+          oldValue.ParameterModifiers,
+          newValue.ParameterModifiers
+        ),
+        reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value)
+          || (newValue.Reuse.HasValue && newValue.Reuse.Value),
+        logger: BuildConfiguration.Combine(oldValue.Logger, newValue.Logger)
+      ) { }
 
     /// <inheritdoc />
     [JsonIgnore]

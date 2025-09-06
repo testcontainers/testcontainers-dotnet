@@ -2,7 +2,8 @@ namespace Testcontainers.Typesense;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, TypesenseContainer, TypesenseConfiguration>
+public sealed class TypesenseBuilder
+    : ContainerBuilder<TypesenseBuilder, TypesenseContainer, TypesenseConfiguration>
 {
     public const string TypesenseImage = "typesense/typesense:28.0";
 
@@ -69,8 +70,15 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
             .WithPortBinding(TypesensePort, true)
             .WithDataDirectory(DefaultDataDirectory)
             .WithApiKey(DefaultApiKey)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(TypesensePort).ForPath("/health").ForResponseMessageMatching(IsNodeReadyAsync)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPort(TypesensePort)
+                            .ForPath("/health")
+                            .ForResponseMessageMatching(IsNodeReadyAsync)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -78,37 +86,52 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Environments["TYPESENSE_DATA_DIR"], "DataDirectory")
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Environments["TYPESENSE_DATA_DIR"],
+                "DataDirectory"
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Environments["TYPESENSE_API_KEY"], "ApiKey")
+        _ = Guard
+            .Argument(DockerResourceConfiguration.Environments["TYPESENSE_API_KEY"], "ApiKey")
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override TypesenseBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override TypesenseBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new TypesenseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override TypesenseBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new TypesenseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new TypesenseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override TypesenseBuilder Merge(TypesenseConfiguration oldValue, TypesenseConfiguration newValue)
+    protected override TypesenseBuilder Merge(
+        TypesenseConfiguration oldValue,
+        TypesenseConfiguration newValue
+    )
     {
         return new TypesenseBuilder(new TypesenseConfiguration(oldValue, newValue));
     }
 
     private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
     {
-        var content = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         return "{\"ok\":true}".Equals(content, StringComparison.OrdinalIgnoreCase);
     }

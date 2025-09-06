@@ -9,9 +9,7 @@ public sealed class RedpandaContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public RedpandaContainer(RedpandaConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Schema Registry address.
@@ -19,7 +17,11 @@ public sealed class RedpandaContainer : DockerContainer
     /// <returns>The Schema Registry address.</returns>
     public string GetSchemaRegistryAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(RedpandaBuilder.SchemaRegistryPort)
+        ).ToString();
     }
 
     /// <summary>
@@ -28,6 +30,10 @@ public sealed class RedpandaContainer : DockerContainer
     /// <returns>The bootstrap address.</returns>
     public string GetBootstrapAddress()
     {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(RedpandaBuilder.RedpandaPort)).ToString();
+        return new UriBuilder(
+            "PLAINTEXT",
+            Hostname,
+            GetMappedPublicPort(RedpandaBuilder.RedpandaPort)
+        ).ToString();
     }
 }

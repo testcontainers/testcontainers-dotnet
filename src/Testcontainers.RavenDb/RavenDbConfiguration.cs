@@ -7,15 +7,15 @@ public sealed class RavenDbConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="RavenDbConfiguration" /> class.
     /// </summary>
-    public RavenDbConfiguration()
-    {
-    }
+    public RavenDbConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RavenDbConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public RavenDbConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public RavenDbConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class RavenDbConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public RavenDbConfiguration(RavenDbConfiguration oldValue, RavenDbConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

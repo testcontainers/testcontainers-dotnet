@@ -2,7 +2,8 @@ namespace Testcontainers.Cassandra;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, CassandraContainer, CassandraConfiguration>
+public sealed class CassandraBuilder
+    : ContainerBuilder<CassandraBuilder, CassandraContainer, CassandraConfiguration>
 {
     public const string CassandraImage = "cassandra:5.0";
 
@@ -45,7 +46,10 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
         return base.Init()
             .WithImage(CassandraImage)
             .WithPortBinding(CqlPort, true)
-            .WithEnvironment("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0")
+            .WithEnvironment(
+                "JVM_OPTS",
+                "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0"
+            )
             .WithEnvironment("HEAP_NEWSIZE", "128M")
             .WithEnvironment("MAX_HEAP_SIZE", "1024M")
             .WithEnvironment("CASSANDRA_SNITCH", "GossipingPropertyFileSnitch")
@@ -55,19 +59,30 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     }
 
     /// <inheritdoc />
-    protected override CassandraBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override CassandraBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new CassandraConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CassandraConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override CassandraBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new CassandraConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new CassandraConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override CassandraBuilder Merge(CassandraConfiguration oldValue, CassandraConfiguration newValue)
+    protected override CassandraBuilder Merge(
+        CassandraConfiguration oldValue,
+        CassandraConfiguration newValue
+    )
     {
         return new CassandraBuilder(new CassandraConfiguration(oldValue, newValue));
     }

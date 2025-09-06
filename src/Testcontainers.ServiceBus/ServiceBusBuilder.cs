@@ -2,13 +2,15 @@ namespace Testcontainers.ServiceBus;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, ServiceBusContainer, ServiceBusConfiguration>
+public sealed class ServiceBusBuilder
+    : ContainerBuilder<ServiceBusBuilder, ServiceBusContainer, ServiceBusConfiguration>
 {
     public const string ServiceBusNetworkAlias = "servicebus-container";
 
     public const string DatabaseNetworkAlias = "database-container";
 
-    public const string ServiceBusImage = "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
+    public const string ServiceBusImage =
+        "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
 
     public const ushort ServiceBusPort = 5672;
 
@@ -55,7 +57,9 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
     public override ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
-        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        var licenseAgreement = acceptLicenseAgreement
+            ? AcceptLicenseAgreement
+            : DeclineLicenseAgreement;
         return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
     }
 
@@ -76,9 +80,13 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         INetwork network,
         MsSqlContainer container,
         string networkAlias,
-        string password = MsSqlBuilder.DefaultPassword)
+        string password = MsSqlBuilder.DefaultPassword
+    )
     {
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: container))
+        return Merge(
+                DockerResourceConfiguration,
+                new ServiceBusConfiguration(databaseContainer: container)
+            )
             .DependsOn(container)
             .WithNetwork(network)
             .WithNetworkAliases(ServiceBusNetworkAlias)
@@ -96,7 +104,10 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
     public ServiceBusBuilder WithConfig(string configFilePath)
     {
-        return WithResourceMapping(new FileInfo(configFilePath), new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json"));
+        return WithResourceMapping(
+            new FileInfo(configFilePath),
+            new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json")
+        );
     }
 
     /// <inheritdoc />
@@ -112,8 +123,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
         // If the user has not provided an existing MSSQL container instance,
         // we configure one.
-        var network = new NetworkBuilder()
-            .Build();
+        var network = new NetworkBuilder().Build();
 
         var container = new MsSqlBuilder()
             .WithNetwork(network)
@@ -132,24 +142,39 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(ServiceBusHttpPort).ForPath("/health")));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(ServiceBusHttpPort).ForPath("/health")
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override ServiceBusBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ServiceBusBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ServiceBusConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override ServiceBusBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ServiceBusConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override ServiceBusBuilder Merge(ServiceBusConfiguration oldValue, ServiceBusConfiguration newValue)
+    protected override ServiceBusBuilder Merge(
+        ServiceBusConfiguration oldValue,
+        ServiceBusConfiguration newValue
+    )
     {
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
     }

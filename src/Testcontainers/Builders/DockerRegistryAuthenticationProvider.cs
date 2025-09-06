@@ -13,7 +13,11 @@ namespace DotNet.Testcontainers.Builders
   {
     private const string DockerHub = "https://index.docker.io/v1/";
 
-    private static readonly ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>> Credentials = new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
+    private static readonly ConcurrentDictionary<
+      string,
+      Lazy<IDockerRegistryAuthenticationConfiguration>
+    > Credentials =
+      new ConcurrentDictionary<string, Lazy<IDockerRegistryAuthenticationConfiguration>>();
 
     private readonly DockerConfig _dockerConfig;
 
@@ -25,9 +29,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="logger">The logger.</param>
     [PublicAPI]
     public DockerRegistryAuthenticationProvider(ILogger logger)
-      : this(DockerConfig.Instance, logger)
-    {
-    }
+      : this(DockerConfig.Instance, logger) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationProvider" /> class.
@@ -50,13 +52,20 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public IDockerRegistryAuthenticationConfiguration GetAuthConfig(string hostname)
     {
-      var lazyAuthConfig = Credentials.GetOrAdd(hostname ?? DockerHub, key => new Lazy<IDockerRegistryAuthenticationConfiguration>(() => GetUncachedAuthConfig(key)));
+      var lazyAuthConfig = Credentials.GetOrAdd(
+        hostname ?? DockerHub,
+        key => new Lazy<IDockerRegistryAuthenticationConfiguration>(() =>
+          GetUncachedAuthConfig(key)
+        )
+      );
       return lazyAuthConfig.Value;
     }
 
     private static JsonDocument GetDefaultDockerAuthConfig()
     {
-      return EnvironmentConfiguration.Instance.GetDockerAuthConfig() ?? PropertiesFileConfiguration.Instance.GetDockerAuthConfig() ?? JsonDocument.Parse("{}");
+      return EnvironmentConfiguration.Instance.GetDockerAuthConfig()
+        ?? PropertiesFileConfiguration.Instance.GetDockerAuthConfig()
+        ?? JsonDocument.Parse("{}");
     }
 
     private IDockerRegistryAuthenticationConfiguration GetUncachedAuthConfig(string hostname)
@@ -70,12 +79,12 @@ namespace DotNet.Testcontainers.Builders
           using (var dockerConfigJsonDocument = _dockerConfig.Parse())
           {
             authConfig = new IDockerRegistryAuthenticationProvider[]
-              {
-                new CredsHelperProvider(dockerConfigJsonDocument, _logger),
-                new CredsStoreProvider(dockerConfigJsonDocument, _logger),
-                new Base64Provider(dockerConfigJsonDocument, _logger),
-                new Base64Provider(dockerAuthConfigJsonDocument, _logger),
-              }
+            {
+              new CredsHelperProvider(dockerConfigJsonDocument, _logger),
+              new CredsStoreProvider(dockerConfigJsonDocument, _logger),
+              new Base64Provider(dockerConfigJsonDocument, _logger),
+              new Base64Provider(dockerAuthConfigJsonDocument, _logger),
+            }
               .AsParallel()
               .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
               .FirstOrDefault(authenticationProvider => authenticationProvider != null);
@@ -84,7 +93,10 @@ namespace DotNet.Testcontainers.Builders
         else
         {
           _logger.DockerConfigFileNotFound(_dockerConfig.FullName);
-          IDockerRegistryAuthenticationProvider authConfigProvider = new Base64Provider(dockerAuthConfigJsonDocument, _logger);
+          IDockerRegistryAuthenticationProvider authConfigProvider = new Base64Provider(
+            dockerAuthConfigJsonDocument,
+            _logger
+          );
           authConfig = authConfigProvider.GetAuthConfig(hostname);
         }
 

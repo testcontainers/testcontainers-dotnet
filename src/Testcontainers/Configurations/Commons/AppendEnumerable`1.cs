@@ -1,8 +1,8 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
-  using JetBrains.Annotations;
   using DotNet.Testcontainers.Builders;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// Represents a composable collection that combines its elements by appending
@@ -17,9 +17,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="collection">The collection of items. If <c>null</c>, an empty collection is used.</param>
     public AppendEnumerable(IEnumerable<T> collection)
-      : base(collection)
-    {
-    }
+      : base(collection) { }
 
     /// <inheritdoc />
     public override ComposableEnumerable<T> Compose(IEnumerable<T> other)

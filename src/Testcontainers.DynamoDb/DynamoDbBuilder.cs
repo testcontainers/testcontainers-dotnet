@@ -2,7 +2,8 @@ namespace Testcontainers.DynamoDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDbContainer, DynamoDbConfiguration>
+public sealed class DynamoDbBuilder
+    : ContainerBuilder<DynamoDbBuilder, DynamoDbContainer, DynamoDbConfiguration>
 {
     public const string DynamoDbImage = "amazon/dynamodb-local:1.21.0";
 
@@ -43,12 +44,21 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
         return base.Init()
             .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/").ForPort(DynamoDbPort).ForStatusCode(HttpStatusCode.BadRequest)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request
+                            .ForPath("/")
+                            .ForPort(DynamoDbPort)
+                            .ForStatusCode(HttpStatusCode.BadRequest)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override DynamoDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }
@@ -60,7 +70,10 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Merge(DynamoDbConfiguration oldValue, DynamoDbConfiguration newValue)
+    protected override DynamoDbBuilder Merge(
+        DynamoDbConfiguration oldValue,
+        DynamoDbConfiguration newValue
+    )
     {
         return new DynamoDbBuilder(new DynamoDbConfiguration(oldValue, newValue));
     }

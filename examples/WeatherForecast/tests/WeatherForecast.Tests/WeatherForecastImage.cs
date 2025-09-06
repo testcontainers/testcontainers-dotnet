@@ -11,7 +11,10 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 
   private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
-  private readonly IImage _image = new DockerImage("localhost/testcontainers/weather-forecast", tag: DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+  private readonly IImage _image = new DockerImage(
+    "localhost/testcontainers/weather-forecast",
+    tag: DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
+  );
 
   public string Repository => _image.Repository;
 
@@ -25,8 +28,7 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 
   public async Task InitializeAsync()
   {
-    await _semaphoreSlim.WaitAsync()
-      .ConfigureAwait(false);
+    await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
     try
     {
@@ -34,7 +36,10 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
         .WithName(this)
         .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
         .WithDockerfile("Dockerfile")
-        .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D")) // https://github.com/testcontainers/testcontainers-dotnet/issues/602.
+        .WithBuildArgument(
+          "RESOURCE_REAPER_SESSION_ID",
+          ResourceReaper.DefaultSessionId.ToString("D")
+        ) // https://github.com/testcontainers/testcontainers-dotnet/issues/602.
         .WithDeleteIfExists(false)
         .Build()
         .CreateAsync()

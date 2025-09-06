@@ -15,7 +15,8 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     public FirebirdSqlConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         _database = database;
         Username = username;
@@ -26,7 +27,9 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="FirebirdSqlConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public FirebirdSqlConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public FirebirdSqlConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -57,7 +60,10 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public FirebirdSqlConfiguration(FirebirdSqlConfiguration oldValue, FirebirdSqlConfiguration newValue)
+    public FirebirdSqlConfiguration(
+        FirebirdSqlConfiguration oldValue,
+        FirebirdSqlConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         _database = BuildConfiguration.Combine(oldValue._database, newValue._database);
@@ -68,7 +74,10 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the FirebirdSql database.
     /// </summary>
-    public string Database => Image.Tag != null && (Image.Tag.StartsWith("2.5") || Image.Tag.StartsWith("v2.5")) ? string.Join("/", "/firebird/data", _database) : _database;
+    public string Database =>
+        Image.Tag != null && (Image.Tag.StartsWith("2.5") || Image.Tag.StartsWith("v2.5"))
+            ? string.Join("/", "/firebird/data", _database)
+            : _database;
 
     /// <summary>
     /// Gets the FirebirdSql username.

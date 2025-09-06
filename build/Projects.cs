@@ -2,9 +2,7 @@ namespace Testcontainers.Build;
 
 internal sealed class BuildProjects
 {
-    private BuildProjects()
-    {
-    }
+    private BuildProjects() { }
 
     public ICollection<SolutionProject> All { get; private set; }
     public ICollection<SolutionProject> NoneTests { get; private set; }

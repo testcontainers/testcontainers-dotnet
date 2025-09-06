@@ -2,7 +2,8 @@ namespace Testcontainers.Qdrant;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
+public sealed class QdrantBuilder
+    : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
     public const string QdrantImage = "qdrant/qdrant:v1.13.4";
 
@@ -55,7 +56,10 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// <returns>A configured instance of <see cref="QdrantBuilder" />.</returns>
     public QdrantBuilder WithCertificate(string certificate, string certificateKey)
     {
-        return Merge(DockerResourceConfiguration, new QdrantConfiguration(certificate: certificate, certificateKey: certificateKey))
+        return Merge(
+                DockerResourceConfiguration,
+                new QdrantConfiguration(certificate: certificate, certificateKey: certificateKey)
+            )
             .WithEnvironment("QDRANT__SERVICE__ENABLE_TLS", "1")
             .WithEnvironment("QDRANT__TLS__CERT", CertificateFilePath)
             .WithEnvironment("QDRANT__TLS__KEY", CertificateKeyFilePath)
@@ -70,7 +74,13 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
 
         // By default, the base builder waits until the container is running. However, for Qdrant, a more advanced waiting strategy is necessary that requires access to the configured certificate.
         // If the user does not provide a custom waiting strategy, append the default Qdrant waiting strategy.
-        var qdrantBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var qdrantBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
+                );
         return new QdrantContainer(qdrantBuilder.DockerResourceConfiguration);
     }
 
@@ -84,7 +94,9 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     }
 
     /// <inheritdoc />
-    protected override QdrantBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override QdrantBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new QdrantConfiguration(resourceConfiguration));
     }
@@ -96,7 +108,10 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     }
 
     /// <inheritdoc />
-    protected override QdrantBuilder Merge(QdrantConfiguration oldValue, QdrantConfiguration newValue)
+    protected override QdrantBuilder Merge(
+        QdrantConfiguration oldValue,
+        QdrantConfiguration newValue
+    )
     {
         return new QdrantBuilder(new QdrantConfiguration(oldValue, newValue));
     }
@@ -127,8 +142,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
                 .ForPort(QdrantHttpPort)
                 .ForPath("/readyz");
 
-            return await httpWaitStrategy.UntilAsync(container)
-                .ConfigureAwait(false);
+            return await httpWaitStrategy.UntilAsync(container).ConfigureAwait(false);
         }
     }
 }

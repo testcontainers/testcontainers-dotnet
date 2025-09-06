@@ -15,7 +15,10 @@ public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelpe
 #if XUNIT_V3
 [TestCaseOrderer(ordererType: typeof(Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer))]
 #else
-[TestCaseOrderer(ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer", ordererAssemblyName: "Testcontainers.Xunit.Tests")]
+[TestCaseOrderer(
+    ordererTypeName: "Testcontainers.Xunit.Tests.AlphabeticalTestCaseOrderer",
+    ordererAssemblyName: "Testcontainers.Xunit.Tests"
+)]
 #endif
 public sealed partial class RedisContainerTest
 {

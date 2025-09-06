@@ -6,38 +6,62 @@ public sealed class DatabaseContainersTest
     [MemberData(nameof(GetContainerImplementations), arguments: true)]
     public void ShouldImplementIDatabaseContainer(Type type)
     {
-        Assert.True(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does not implement the database interface.");
+        Assert.True(
+            type.IsAssignableTo(typeof(IDatabaseContainer)),
+            $"The type '{type.Name}' does not implement the database interface."
+        );
     }
 
     [Theory]
     [MemberData(nameof(GetContainerImplementations), arguments: false)]
     public void ShouldNotImplementIDatabaseContainer(Type type)
     {
-        Assert.False(type.IsAssignableTo(typeof(IDatabaseContainer)), $"The type '{type.Name}' does implement the database interface.");
+        Assert.False(
+            type.IsAssignableTo(typeof(IDatabaseContainer)),
+            $"The type '{type.Name}' does implement the database interface."
+        );
     }
 
     public static TheoryData<Type> GetContainerImplementations(bool expectDataProvider)
     {
         var theoryData = new TheoryData<Type>();
 
-        var testAssemblies = Directory.GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
+        var testAssemblies = Directory
+            .GetFiles(".", "Testcontainers.*.Tests.dll", SearchOption.TopDirectoryOnly)
             .Select(Path.GetFullPath)
             .Select(Assembly.LoadFrom)
-            .ToDictionary(assembly => assembly, assembly => assembly.GetReferencedAssemblies()
-                .Where(referencedAssembly => referencedAssembly.Name != null)
-                .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("System"))
-                .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("xunit"))
-                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Microsoft.VisualStudio.TestPlatform.ObjectModel"))
-                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Docker.DotNet"))
-                .Where(referencedAssembly => !referencedAssembly.Name.Equals("Testcontainers"))
-                .Select(Assembly.Load)
-                .SelectMany(referencedAssembly => referencedAssembly.ExportedTypes)
-                .ToImmutableList());
+            .ToDictionary(
+                assembly => assembly,
+                assembly =>
+                    assembly
+                        .GetReferencedAssemblies()
+                        .Where(referencedAssembly => referencedAssembly.Name != null)
+                        .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("System"))
+                        .Where(referencedAssembly => !referencedAssembly.Name.StartsWith("xunit"))
+                        .Where(referencedAssembly =>
+                            !referencedAssembly.Name.Equals(
+                                "Microsoft.VisualStudio.TestPlatform.ObjectModel"
+                            )
+                        )
+                        .Where(referencedAssembly =>
+                            !referencedAssembly.Name.Equals("Docker.DotNet")
+                        )
+                        .Where(referencedAssembly =>
+                            !referencedAssembly.Name.Equals("Testcontainers")
+                        )
+                        .Select(Assembly.Load)
+                        .SelectMany(referencedAssembly => referencedAssembly.ExportedTypes)
+                        .ToImmutableList()
+            );
 
         foreach (var testAssembly in testAssemblies)
         {
             // TODO: If a module contains multiple container implementations, it would require all container implementations to implement the interface.
-            foreach (var containerType in testAssembly.Value.Where(type => type.IsAssignableTo(typeof(IContainer))))
+            foreach (
+                var containerType in testAssembly.Value.Where(type =>
+                    type.IsAssignableTo(typeof(IContainer))
+                )
+            )
             {
                 var testAssemblyName = testAssembly.Key.GetName().Name!;
 
@@ -47,12 +71,19 @@ public sealed class DatabaseContainersTest
                 // if it does not belong to the actual module. For example, the ServiceBus module
                 // utilizes the MsSql module. We do not want to include the MsSqlContainer type
                 // twice or place it in the wrong test.
-                if (!testAssemblyName.Contains(containerTypeAssemblyName, StringComparison.OrdinalIgnoreCase))
+                if (
+                    !testAssemblyName.Contains(
+                        containerTypeAssemblyName,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     continue;
                 }
 
-                var hasDataProvider = testAssembly.Value.Exists(type => type.IsSubclassOf(typeof(DbProviderFactory)));
+                var hasDataProvider = testAssembly.Value.Exists(type =>
+                    type.IsSubclassOf(typeof(DbProviderFactory))
+                );
 
                 if (expectDataProvider && hasDataProvider)
                 {

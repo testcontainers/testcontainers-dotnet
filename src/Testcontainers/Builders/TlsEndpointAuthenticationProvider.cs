@@ -23,28 +23,31 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="TlsEndpointAuthenticationProvider" /> class.
     /// </summary>
     public TlsEndpointAuthenticationProvider()
-      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance)
-    {
-    }
+      : this(EnvironmentConfiguration.Instance, PropertiesFileConfiguration.Instance) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TlsEndpointAuthenticationProvider" /> class.
     /// </summary>
     /// <param name="customConfigurations">A list of custom configurations.</param>
     public TlsEndpointAuthenticationProvider(params ICustomConfiguration[] customConfigurations)
-      : this(customConfigurations
-        .OrderByDescending(item => item.GetDockerTlsVerify())
-        .ThenByDescending(item => item.GetDockerTls())
-        .DefaultIfEmpty(new PropertiesFileConfiguration(Array.Empty<string>()))
-        .First())
-    {
-    }
+      : this(
+        customConfigurations
+          .OrderByDescending(item => item.GetDockerTlsVerify())
+          .ThenByDescending(item => item.GetDockerTls())
+          .DefaultIfEmpty(new PropertiesFileConfiguration(Array.Empty<string>()))
+          .First()
+      ) { }
 
     private TlsEndpointAuthenticationProvider(ICustomConfiguration customConfiguration)
     {
       TlsEnabled = customConfiguration.GetDockerTls() || customConfiguration.GetDockerTlsVerify();
       TlsVerifyEnabled = customConfiguration.GetDockerTlsVerify();
-      CertificatesDirectoryPath = customConfiguration.GetDockerCertPath() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".docker");
+      CertificatesDirectoryPath =
+        customConfiguration.GetDockerCertPath()
+        ?? Path.Combine(
+          Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+          ".docker"
+        );
       DockerEngine = customConfiguration.GetDockerHost() ?? new Uri("tcp://localhost:2376");
     }
 
@@ -77,7 +80,9 @@ namespace DotNet.Testcontainers.Builders
     protected virtual X509Certificate2 GetCaCertificate()
     {
 #if NET9_0_OR_GREATER
-      return X509CertificateLoader.LoadCertificateFromFile(Path.Combine(CertificatesDirectoryPath, CaCertificateFileName));
+      return X509CertificateLoader.LoadCertificateFromFile(
+        Path.Combine(CertificatesDirectoryPath, CaCertificateFileName)
+      );
 #else
       return new X509Certificate2(Path.Combine(CertificatesDirectoryPath, CaCertificateFileName));
 #endif
@@ -93,7 +98,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc cref="ServicePointManager.ServerCertificateValidationCallback" />
-    protected virtual bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+    protected virtual bool ServerCertificateValidationCallback(
+      object sender,
+      X509Certificate certificate,
+      X509Chain chain,
+      SslPolicyErrors sslPolicyErrors
+    )
     {
       switch (sslPolicyErrors)
       {
@@ -108,11 +118,19 @@ namespace DotNet.Testcontainers.Builders
           {
             var validationChain = new X509Chain();
             validationChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-            validationChain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
+            validationChain.ChainPolicy.VerificationFlags =
+              X509VerificationFlags.AllowUnknownCertificateAuthority;
             validationChain.ChainPolicy.ExtraStore.Add(caCertificate);
-            validationChain.ChainPolicy.ExtraStore.AddRange(chain.ChainElements.OfType<X509ChainElement>().Select(element => element.Certificate).ToArray());
+            validationChain.ChainPolicy.ExtraStore.AddRange(
+              chain
+                .ChainElements.OfType<X509ChainElement>()
+                .Select(element => element.Certificate)
+                .ToArray()
+            );
             var isVerified = validationChain.Build(new X509Certificate2(certificate));
-            var isSignedByExpectedRoot = validationChain.ChainElements[validationChain.ChainElements.Count - 1].Certificate.RawData.SequenceEqual(caCertificate.RawData);
+            var isSignedByExpectedRoot = validationChain
+              .ChainElements[validationChain.ChainElements.Count - 1]
+              .Certificate.RawData.SequenceEqual(caCertificate.RawData);
             return isVerified && isSignedByExpectedRoot;
           }
       }

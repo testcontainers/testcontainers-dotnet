@@ -9,9 +9,7 @@ public sealed class CosmosDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public CosmosDbContainer(CosmosDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the CosmosDb connection string.
@@ -20,15 +18,26 @@ public sealed class CosmosDbContainer : DockerContainer
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("AccountEndpoint", new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)).ToString());
+        properties.Add(
+            "AccountEndpoint",
+            new UriBuilder(
+                Uri.UriSchemeHttps,
+                Hostname,
+                GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)
+            ).ToString()
+        );
         properties.Add("AccountKey", CosmosDbBuilder.DefaultAccountKey);
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
     /// Gets a configured HTTP message handler that automatically trusts the CosmosDb Emulator's certificate.
     /// </summary>
-    public HttpMessageHandler HttpMessageHandler => new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort));
+    public HttpMessageHandler HttpMessageHandler =>
+        new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort));
 
     /// <summary>
     /// Gets a configured HTTP client that automatically trusts the CosmosDb Emulator's certificate.
@@ -50,16 +59,29 @@ public sealed class CosmosDbContainer : DockerContainer
         /// <param name="hostname">The target hostname.</param>
         /// <param name="port">The target port.</param>
         public UriRewriter(string hostname, ushort port)
-            : base(new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, _, _, _) => true })
+            : base(
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true,
+                }
+            )
         {
             _hostname = hostname;
             _port = port;
         }
 
         /// <inheritdoc />
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken
+        )
         {
-            request.RequestUri = new UriBuilder(Uri.UriSchemeHttps, _hostname, _port, request.RequestUri.PathAndQuery).Uri;
+            request.RequestUri = new UriBuilder(
+                Uri.UriSchemeHttps,
+                _hostname,
+                _port,
+                request.RequestUri.PathAndQuery
+            ).Uri;
             return base.SendAsync(request, cancellationToken);
         }
     }

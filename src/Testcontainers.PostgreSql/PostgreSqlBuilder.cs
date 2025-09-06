@@ -2,7 +2,8 @@ namespace Testcontainers.PostgreSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
+public sealed class PostgreSqlBuilder
+    : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
     public const string PostgreSqlImage = "postgres:15.1";
 
@@ -76,7 +77,13 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
         // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
         // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
-        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var postgreSqlBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
+                );
         return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration);
     }
 
@@ -100,25 +107,40 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override PostgreSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override PostgreSqlBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new PostgreSqlConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override PostgreSqlBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new PostgreSqlConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override PostgreSqlBuilder Merge(PostgreSqlConfiguration oldValue, PostgreSqlConfiguration newValue)
+    protected override PostgreSqlBuilder Merge(
+        PostgreSqlConfiguration oldValue,
+        PostgreSqlConfiguration newValue
+    )
     {
         return new PostgreSqlBuilder(new PostgreSqlConfiguration(oldValue, newValue));
     }
@@ -135,7 +157,16 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         public WaitUntil(PostgreSqlConfiguration configuration)
         {
             // Explicitly specify the host to ensure readiness only after the initdb scripts have executed, and the server is listening on TCP/IP.
-            _command = new List<string> { "pg_isready", "--host", "localhost", "--dbname", configuration.Database, "--username", configuration.Username };
+            _command = new List<string>
+            {
+                "pg_isready",
+                "--host",
+                "localhost",
+                "--dbname",
+                configuration.Database,
+                "--username",
+                configuration.Username,
+            };
         }
 
         /// <summary>
@@ -149,12 +180,13 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         /// <exception cref="NotSupportedException">Thrown when the PostgreSql image does not contain <c>pg_isready</c>.</exception>
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
+            var execResult = await container.ExecAsync(_command).ConfigureAwait(false);
 
             if (execResult.Stderr.Contains("pg_isready was not found"))
             {
-                throw new NotSupportedException($"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards.");
+                throw new NotSupportedException(
+                    $"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards."
+                );
             }
 
             return 0L.Equals(execResult.ExitCode);

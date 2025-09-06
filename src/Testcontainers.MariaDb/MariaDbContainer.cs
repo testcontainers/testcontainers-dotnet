@@ -28,7 +28,10 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
         properties.Add("Database", _configuration.Database);
         properties.Add("Uid", _configuration.Username);
         properties.Add("Pwd", _configuration.Password);
-        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+        return string.Join(
+            ";",
+            properties.Select(property => string.Join("=", property.Key, property.Value))
+        );
     }
 
     /// <summary>
@@ -37,14 +40,31 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "mariadb", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
+        return await ExecAsync(
+                new[] { "mariadb", _configuration.Database, $"--execute=source {scriptFilePath};" },
+                ct
+            )
             .ConfigureAwait(false);
     }
 
@@ -63,6 +83,11 @@ public sealed class MariaDbContainer : DockerContainer, IDatabaseContainer
         config.WriteLine("protocol=TCP");
         config.WriteLine($"user={_configuration.Username}");
         config.WriteLine($"password={_configuration.Password}");
-        return CopyAsync(Encoding.Default.GetBytes(config.ToString()), "/etc/mysql/my.cnf", UnixFileModes.UserRead | UnixFileModes.UserWrite, ct);
+        return CopyAsync(
+            Encoding.Default.GetBytes(config.ToString()),
+            "/etc/mysql/my.cnf",
+            UnixFileModes.UserRead | UnixFileModes.UserWrite,
+            ct
+        );
     }
 }

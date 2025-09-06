@@ -11,14 +11,12 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _natsContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _natsContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -32,10 +30,12 @@ public abstract class NatsContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/healthz", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync("/healthz", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var jsonStatusString = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+        var jsonStatusString = await httpResponse
+            .Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -52,7 +52,9 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
         var message = Guid.NewGuid().ToString("D");
 
-        using var client = new ConnectionFactory().CreateConnection(_natsContainer.GetConnectionString());
+        using var client = new ConnectionFactory().CreateConnection(
+            _natsContainer.GetConnectionString()
+        );
 
         using var subscription = client.SubscribeSync(subject);
 
@@ -74,9 +76,7 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
         public NatsDefaultConfiguration()
-            : base(new NatsBuilder().Build())
-        {
-        }
+            : base(new NatsBuilder().Build()) { }
     }
 
     [UsedImplicitly]
@@ -84,21 +84,24 @@ public abstract class NatsContainerTest : IAsyncLifetime
     {
         public NatsAuthConfiguration()
             : base(new NatsBuilder().WithUsername("%username!").WithPassword("?password&").Build())
-        {
-        }
+        { }
 
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfUsernameIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
+            Assert.Throws<ArgumentException>(() =>
+                new NatsBuilder().WithPassword("password").Build()
+            );
         }
 
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfPasswordIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());
+            Assert.Throws<ArgumentException>(() =>
+                new NatsBuilder().WithUsername("username").Build()
+            );
         }
     }
 }

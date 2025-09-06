@@ -24,10 +24,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-        var expectedExceptions = new[] { typeof(TaskCanceledException), typeof(OperationCanceledException), typeof(TimeoutException), typeof(IOException) };
+        var expectedExceptions = new[]
+        {
+          typeof(TaskCanceledException),
+          typeof(OperationCanceledException),
+          typeof(TimeoutException),
+          typeof(IOException),
+        };
 
         // When
-        var exception = await Assert.ThrowsAnyAsync<SystemException>(() => _alpineFixture.Container.StartAsync(cts.Token))
+        var exception = await Assert
+          .ThrowsAnyAsync<SystemException>(() => _alpineFixture.Container.StartAsync(cts.Token))
           .ConfigureAwait(true);
 
         // Then

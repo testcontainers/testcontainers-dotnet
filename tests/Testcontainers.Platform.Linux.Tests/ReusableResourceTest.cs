@@ -58,39 +58,58 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await Task.WhenAll(_disposables
-            .Take(3)
-            .Select(disposable =>
-            {
-                // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
-                // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
-                // reflection afterward to delete the container, network, and volume.
-                disposable.AsDynamic()._configuration.SessionId = ResourceReaper.DefaultSessionId;
-                return disposable.DisposeAsync().AsTask();
-            }));
+        await Task.WhenAll(
+            _disposables
+                .Take(3)
+                .Select(disposable =>
+                {
+                    // We do not want to leak resources, but `WithCleanUp(true)` cannot be used
+                    // alongside `WithReuse(true)`. As a workaround, we set the `SessionId` using
+                    // reflection afterward to delete the container, network, and volume.
+                    disposable.AsDynamic()._configuration.SessionId =
+                        ResourceReaper.DefaultSessionId;
+                    return disposable.DisposeAsync().AsTask();
+                })
+        );
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldReuseExistingResource()
     {
-        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
+        using var clientConfiguration =
+            TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(
+                Guid.NewGuid()
+            );
 
         using var client = clientConfiguration.CreateClient();
 
-        var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
+        var containersListParameters = new ContainersListParameters
+        {
+            All = true,
+            Filters = _filters,
+        };
 
         var networksListParameters = new NetworksListParameters { Filters = _filters };
 
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
-        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
+        var containers = await client
+            .Containers.ListContainersAsync(
+                containersListParameters,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
+        var networks = await client
+            .Networks.ListNetworksAsync(
+                networksListParameters,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
+        var response = await client
+            .Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Single(containers);
@@ -115,9 +134,11 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
     public static class UnsupportedBuilderConfigurationTest
     {
-        private const string EnabledCleanUpExceptionMessage = "Reuse cannot be used in conjunction with WithCleanUp(true). (Parameter 'Reuse')";
+        private const string EnabledCleanUpExceptionMessage =
+            "Reuse cannot be used in conjunction with WithCleanUp(true). (Parameter 'Reuse')";
 
-        private const string EnabledAutoRemoveExceptionMessage = "Reuse cannot be used in conjunction with WithAutoRemove(true). (Parameter 'Reuse')";
+        private const string EnabledAutoRemoveExceptionMessage =
+            "Reuse cannot be used in conjunction with WithAutoRemove(true). (Parameter 'Reuse')";
 
         public sealed class ContainerBuilderTest
         {
@@ -185,29 +206,33 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         }
     }
 
-    private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
+    private sealed class ReuseHashContainerBuilder
+        : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
     {
-        public ReuseHashContainerBuilder() : this(new ContainerConfiguration())
-            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        public ReuseHashContainerBuilder()
+            : this(new ContainerConfiguration()) =>
+            DockerResourceConfiguration = Init().DockerResourceConfiguration;
 
-        private ReuseHashContainerBuilder(ContainerConfiguration configuration) : base(configuration)
-            => DockerResourceConfiguration = configuration;
+        private ReuseHashContainerBuilder(ContainerConfiguration configuration)
+            : base(configuration) => DockerResourceConfiguration = configuration;
 
         protected override ContainerConfiguration DockerResourceConfiguration { get; }
 
-        public string GetReuseHash()
-            => DockerResourceConfiguration.GetReuseHash();
+        public string GetReuseHash() => DockerResourceConfiguration.GetReuseHash();
 
-        public override DockerContainer Build()
-            => new(DockerResourceConfiguration);
+        public override DockerContainer Build() => new(DockerResourceConfiguration);
 
-        protected override ReuseHashContainerBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+        protected override ReuseHashContainerBuilder Clone(
+            IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+        ) => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
 
-        protected override ReuseHashContainerBuilder Clone(IContainerConfiguration resourceConfiguration)
-            => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
+        protected override ReuseHashContainerBuilder Clone(
+            IContainerConfiguration resourceConfiguration
+        ) => Merge(DockerResourceConfiguration, new ContainerConfiguration(resourceConfiguration));
 
-        protected override ReuseHashContainerBuilder Merge(ContainerConfiguration oldValue, ContainerConfiguration newValue)
-            => new(new ContainerConfiguration(oldValue, newValue));
+        protected override ReuseHashContainerBuilder Merge(
+            ContainerConfiguration oldValue,
+            ContainerConfiguration newValue
+        ) => new(new ContainerConfiguration(oldValue, newValue));
     }
 }

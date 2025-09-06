@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
-        <ProjectReference Include="../Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
-        <ProjectReference Include="../Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>
-        <ProjectReference Include="../Testcontainers.PubSub/Testcontainers.PubSub.csproj"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Testcontainers.BigQuery/Testcontainers.BigQuery.csproj" />
+    <ProjectReference Include="../Testcontainers.Bigtable/Testcontainers.Bigtable.csproj" />
+    <ProjectReference Include="../Testcontainers.Firestore/Testcontainers.Firestore.csproj" />
+    <ProjectReference Include="../Testcontainers.PubSub/Testcontainers.PubSub.csproj" />
+  </ItemGroup>
 </Project>

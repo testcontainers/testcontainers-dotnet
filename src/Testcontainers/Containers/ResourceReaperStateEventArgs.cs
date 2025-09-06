@@ -14,7 +14,10 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="resourceReaper">The Resource Reaper instance.</param>
     /// <param name="resourceReaperState">The Resource Reaper state.</param>
-    public ResourceReaperStateEventArgs(ResourceReaper resourceReaper, ResourceReaperState resourceReaperState)
+    public ResourceReaperStateEventArgs(
+      ResourceReaper resourceReaper,
+      ResourceReaperState resourceReaperState
+    )
     {
       Instance = resourceReaper;
       State = resourceReaperState;

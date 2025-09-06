@@ -13,7 +13,8 @@ public sealed class OracleConfiguration : ContainerConfiguration
     public OracleConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null
+    )
     {
         Database = database;
         Username = username;
@@ -24,7 +25,9 @@ public sealed class OracleConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="OracleConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public OracleConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public OracleConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

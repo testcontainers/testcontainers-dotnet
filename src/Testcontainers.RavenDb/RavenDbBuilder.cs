@@ -2,7 +2,8 @@ namespace Testcontainers.RavenDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbContainer, RavenDbConfiguration>
+public sealed class RavenDbBuilder
+    : ContainerBuilder<RavenDbBuilder, RavenDbContainer, RavenDbConfiguration>
 {
     public const string RavenDbImage = "ravendb/ravendb:5.4-ubuntu-latest";
 
@@ -47,7 +48,9 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     }
 
     /// <inheritdoc />
-    protected override RavenDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override RavenDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new RavenDbConfiguration(resourceConfiguration));
     }
@@ -59,7 +62,10 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     }
 
     /// <inheritdoc />
-    protected override RavenDbBuilder Merge(RavenDbConfiguration oldValue, RavenDbConfiguration newValue)
+    protected override RavenDbBuilder Merge(
+        RavenDbConfiguration oldValue,
+        RavenDbConfiguration newValue
+    )
     {
         return new RavenDbBuilder(new RavenDbConfiguration(oldValue, newValue));
     }

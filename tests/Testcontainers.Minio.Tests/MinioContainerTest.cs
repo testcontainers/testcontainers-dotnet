@@ -6,8 +6,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _minioContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _minioContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -23,10 +22,15 @@ public sealed class MinioContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetConnectionString();
 
-        using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
+        using var client = new AmazonS3Client(
+            _minioContainer.GetAccessKey(),
+            _minioContainer.GetSecretKey(),
+            config
+        );
 
         // When
-        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
+        var buckets = await client
+            .ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -43,7 +47,11 @@ public sealed class MinioContainerTest : IAsyncLifetime
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetConnectionString();
 
-        using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
+        using var client = new AmazonS3Client(
+            _minioContainer.GetAccessKey(),
+            _minioContainer.GetSecretKey(),
+            config
+        );
 
         var objectRequest = new PutObjectRequest();
         objectRequest.BucketName = Guid.NewGuid().ToString("D");
@@ -51,13 +59,20 @@ public sealed class MinioContainerTest : IAsyncLifetime
         objectRequest.InputStream = inputStream;
 
         // When
-        _ = await client.PutBucketAsync(objectRequest.BucketName, TestContext.Current.CancellationToken)
+        _ = await client
+            .PutBucketAsync(objectRequest.BucketName, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutObjectAsync(objectRequest, TestContext.Current.CancellationToken)
+        _ = await client
+            .PutObjectAsync(objectRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key, TestContext.Current.CancellationToken)
+        var objectResponse = await client
+            .GetObjectAsync(
+                objectRequest.BucketName,
+                objectRequest.Key,
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // Then

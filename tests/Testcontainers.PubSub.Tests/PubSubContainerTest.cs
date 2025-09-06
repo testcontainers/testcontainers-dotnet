@@ -6,8 +6,7 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _pubSubContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _pubSubContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -44,25 +43,29 @@ public sealed class PubSubContainerTest : IAsyncLifetime
         subscriberClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         // When
-        var publisher = await publisherClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
+        var publisher = await publisherClientBuilder
+            .BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await publisher.CreateTopicAsync(topicName)
+        _ = await publisher.CreateTopicAsync(topicName).ConfigureAwait(true);
+
+        var subscriber = await subscriberClientBuilder
+            .BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var subscriber = await subscriberClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
+        _ = await subscriber
+            .CreateSubscriptionAsync(subscriptionName, topicName, null, 60)
             .ConfigureAwait(true);
 
-        _ = await subscriber.CreateSubscriptionAsync(subscriptionName, topicName, null, 60)
-            .ConfigureAwait(true);
+        _ = await publisher.PublishAsync(topicName, new[] { message }).ConfigureAwait(true);
 
-        _ = await publisher.PublishAsync(topicName, new[] { message })
-            .ConfigureAwait(true);
+        var response = await subscriber.PullAsync(subscriptionName, 1).ConfigureAwait(true);
 
-        var response = await subscriber.PullAsync(subscriptionName, 1)
-            .ConfigureAwait(true);
-
-        await subscriber.AcknowledgeAsync(subscriptionName, response.ReceivedMessages.Select(receivedMessage => receivedMessage.AckId))
+        await subscriber
+            .AcknowledgeAsync(
+                subscriptionName,
+                response.ReceivedMessages.Select(receivedMessage => receivedMessage.AckId)
+            )
             .ConfigureAwait(true);
 
         // Then

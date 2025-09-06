@@ -2,7 +2,8 @@ namespace Testcontainers.Ollama;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
+public sealed class OllamaBuilder
+    : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
 {
     public const string OllamaImage = "ollama/ollama:0.6.6";
 
@@ -43,12 +44,18 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
         return base.Init()
             .WithImage(OllamaImage)
             .WithPortBinding(OllamaPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/api/version").ForPort(OllamaPort)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/api/version").ForPort(OllamaPort)
+                    )
+            );
     }
 
     /// <inheritdoc />
-    protected override OllamaBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override OllamaBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new OllamaConfiguration(resourceConfiguration));
     }
@@ -60,7 +67,10 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     }
 
     /// <inheritdoc />
-    protected override OllamaBuilder Merge(OllamaConfiguration oldValue, OllamaConfiguration newValue)
+    protected override OllamaBuilder Merge(
+        OllamaConfiguration oldValue,
+        OllamaConfiguration newValue
+    )
     {
         return new OllamaBuilder(new OllamaConfiguration(oldValue, newValue));
     }

@@ -2,7 +2,8 @@ namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
+public sealed class EventStoreDbBuilder
+    : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
 {
     public const string EventStoreDbImage = "eventstore/eventstore:22.10.1-buster-slim";
 
@@ -50,19 +51,30 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     }
 
     /// <inheritdoc />
-    protected override EventStoreDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override EventStoreDbBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new EventStoreDbConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new EventStoreDbConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override EventStoreDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new EventStoreDbConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new EventStoreDbConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override EventStoreDbBuilder Merge(EventStoreDbConfiguration oldValue, EventStoreDbConfiguration newValue)
+    protected override EventStoreDbBuilder Merge(
+        EventStoreDbConfiguration oldValue,
+        EventStoreDbConfiguration newValue
+    )
     {
         return new EventStoreDbBuilder(new EventStoreDbConfiguration(oldValue, newValue));
     }

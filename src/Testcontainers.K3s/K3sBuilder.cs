@@ -51,12 +51,18 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
             .WithTmpfsMount("/run")
             .WithTmpfsMount("/var/run")
             .WithCommand("server", "--disable=traefik")
-            .WithCreateParameterModifier(parameterModifier => parameterModifier.HostConfig.CgroupnsMode = "host")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Node controller sync successful"));
+            .WithCreateParameterModifier(parameterModifier =>
+                parameterModifier.HostConfig.CgroupnsMode = "host"
+            )
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilMessageIsLogged("Node controller sync successful")
+            );
     }
 
     /// <inheritdoc />
-    protected override K3sBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override K3sBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new K3sConfiguration(resourceConfiguration));
     }

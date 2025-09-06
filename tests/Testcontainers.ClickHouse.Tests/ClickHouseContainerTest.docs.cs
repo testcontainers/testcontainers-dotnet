@@ -9,15 +9,16 @@ public abstract partial class ClickHouseContainerTest
 
         public async ValueTask InitializeAsync()
         {
-            await _clickHouseContainer.StartAsync(TestContext.Current.CancellationToken)
+            await _clickHouseContainer
+                .StartAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(false);
         }
 
         public async ValueTask DisposeAsync()
         {
-            await _clickHouseContainer.DisposeAsync()
-                .ConfigureAwait(false);
+            await _clickHouseContainer.DisposeAsync().ConfigureAwait(false);
         }
+
         // <!-- -8<- [end:UseClickHouseContainer] -->
 
         // <!-- -8<- [start:EstablishConnection] -->
@@ -26,7 +27,9 @@ public abstract partial class ClickHouseContainerTest
         public void ConnectionStateReturnsOpen()
         {
             // Given
-            using DbConnection connection = new ClickHouseConnection(_clickHouseContainer.GetConnectionString());
+            using DbConnection connection = new ClickHouseConnection(
+                _clickHouseContainer.GetConnectionString()
+            );
 
             // When
             connection.Open();
@@ -34,6 +37,7 @@ public abstract partial class ClickHouseContainerTest
             // Then
             Assert.Equal(ConnectionState.Open, connection.State);
         }
+
         // <!-- -8<- [end:EstablishConnection] -->
 
         // <!-- -8<- [start:RunSQLScript] -->
@@ -45,7 +49,8 @@ public abstract partial class ClickHouseContainerTest
             const string scriptContent = "SELECT 1;";
 
             // When
-            var execResult = await _clickHouseContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+            var execResult = await _clickHouseContainer
+                .ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // Then

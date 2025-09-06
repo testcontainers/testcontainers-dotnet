@@ -2,7 +2,8 @@ namespace Testcontainers.ClickHouse;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
+public sealed class ClickHouseBuilder
+    : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
 {
     public const string ClickHouseImage = "clickhouse/clickhouse-server:23.6-alpine";
 
@@ -88,8 +89,12 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(HttpPort).ForResponseMessageMatching(IsNodeReadyAsync)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPort(HttpPort).ForResponseMessageMatching(IsNodeReadyAsync)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -97,33 +102,47 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override ClickHouseBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override ClickHouseBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new ClickHouseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ClickHouseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override ClickHouseBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new ClickHouseConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new ClickHouseConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override ClickHouseBuilder Merge(ClickHouseConfiguration oldValue, ClickHouseConfiguration newValue)
+    protected override ClickHouseBuilder Merge(
+        ClickHouseConfiguration oldValue,
+        ClickHouseConfiguration newValue
+    )
     {
         return new ClickHouseBuilder(new ClickHouseConfiguration(oldValue, newValue));
     }
 
     private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
     {
-        var content = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
+        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         return "Ok.\n".Equals(content, StringComparison.OrdinalIgnoreCase);
     }

@@ -26,7 +26,11 @@ namespace DotNet.Testcontainers.Networks
     /// <param name="configuration">The network configuration.</param>
     public DockerNetwork(INetworkConfiguration configuration)
     {
-      _client = new TestcontainersClient(configuration.SessionId, configuration.DockerEndpointAuthConfig, configuration.Logger);
+      _client = new TestcontainersClient(
+        configuration.SessionId,
+        configuration.DockerEndpointAuthConfig,
+        configuration.Logger
+      );
       _configuration = configuration;
     }
 
@@ -43,21 +47,17 @@ namespace DotNet.Testcontainers.Networks
     /// <inheritdoc />
     public async Task CreateAsync(CancellationToken ct = default)
     {
-      using var disposable = await AcquireLockAsync(ct)
-        .ConfigureAwait(false);
+      using var disposable = await AcquireLockAsync(ct).ConfigureAwait(false);
 
-      await UnsafeCreateAsync(ct)
-        .ConfigureAwait(false);
+      await UnsafeCreateAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(CancellationToken ct = default)
     {
-      using var disposable = await AcquireLockAsync(ct)
-        .ConfigureAwait(false);
+      using var disposable = await AcquireLockAsync(ct).ConfigureAwait(false);
 
-      await UnsafeDeleteAsync(ct)
-        .ConfigureAwait(false);
+      await UnsafeDeleteAsync(ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -70,12 +70,10 @@ namespace DotNet.Testcontainers.Networks
 
       if (!Guid.Empty.Equals(_configuration.SessionId))
       {
-        await DeleteAsync()
-          .ConfigureAwait(false);
+        await DeleteAsync().ConfigureAwait(false);
       }
 
-      await base.DisposeAsyncCore()
-        .ConfigureAwait(false);
+      await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -94,8 +92,7 @@ namespace DotNet.Testcontainers.Networks
         return;
       }
 
-      await _client.System.LogContainerRuntimeInfoAsync(ct)
-        .ConfigureAwait(false);
+      await _client.System.LogContainerRuntimeInfoAsync(ct).ConfigureAwait(false);
 
       string id;
 
@@ -105,8 +102,7 @@ namespace DotNet.Testcontainers.Networks
 
         var filters = new FilterByReuseHash(_configuration);
 
-        var reusableNetworks = await _client.Network.GetAllAsync(filters, ct)
-          .ConfigureAwait(false);
+        var reusableNetworks = await _client.Network.GetAllAsync(filters, ct).ConfigureAwait(false);
 
         var reusableNetwork = reusableNetworks.SingleOrDefault();
 
@@ -120,18 +116,15 @@ namespace DotNet.Testcontainers.Networks
         {
           _configuration.Logger.ReusableResourceNotFound();
 
-          id = await _client.Network.CreateAsync(_configuration, ct)
-            .ConfigureAwait(false);
+          id = await _client.Network.CreateAsync(_configuration, ct).ConfigureAwait(false);
         }
       }
       else
       {
-        id = await _client.Network.CreateAsync(_configuration, ct)
-          .ConfigureAwait(false);
+        id = await _client.Network.CreateAsync(_configuration, ct).ConfigureAwait(false);
       }
 
-      _network = await _client.Network.ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      _network = await _client.Network.ByIdAsync(id, ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -146,8 +139,7 @@ namespace DotNet.Testcontainers.Networks
 
       try
       {
-        await _client.Network.DeleteAsync(_network.ID, ct)
-          .ConfigureAwait(false);
+        await _client.Network.DeleteAsync(_network.ID, ct).ConfigureAwait(false);
       }
       catch (DockerApiException)
       {

@@ -9,9 +9,7 @@ public sealed class BigtableContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public BigtableContainer(IContainerConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Bigtable emulator endpoint.
@@ -19,6 +17,10 @@ public sealed class BigtableContainer : DockerContainer
     /// <returns>The Bigtable emulator endpoint.</returns>
     public string GetEmulatorEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(BigtableBuilder.BigtablePort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(BigtableBuilder.BigtablePort)
+        ).ToString();
     }
 }

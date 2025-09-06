@@ -40,11 +40,14 @@ public sealed class DbFixture : IAsyncLifetime
             .WithCommand("migrate")
             .WithNetwork(_network)
             .DependsOn(_postgreSqlContainer)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new MigrationCompleted()))
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().AddCustomWaitStrategy(new MigrationCompleted())
+            )
             .Build();
     }
 
-    public DbConnection DbConnection => new NpgsqlConnection(((PostgreSqlContainer)_postgreSqlContainer).GetConnectionString());
+    public DbConnection DbConnection =>
+        new NpgsqlConnection(((PostgreSqlContainer)_postgreSqlContainer).GetConnectionString());
 
     public Task InitializeAsync()
     {

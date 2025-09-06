@@ -14,8 +14,7 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="SocatConfiguration" /> class.
     /// </summary>
     /// <param name="targets">A list of target addresses.</param>
-    public SocatConfiguration(
-      IReadOnlyDictionary<int, string> targets = null)
+    public SocatConfiguration(IReadOnlyDictionary<int, string> targets = null)
     {
       Targets = targets;
     }
@@ -24,7 +23,9 @@ namespace DotNet.Testcontainers.Containers
     /// Initializes a new instance of the <see cref="SocatConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public SocatConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public SocatConfiguration(
+      IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
       : base(resourceConfiguration)
     {
       // Passes the configuration upwards to the base implementations to create an updated immutable copy.

@@ -13,7 +13,8 @@ namespace DotNet.Testcontainers.Tests.Unit
   using JetBrains.Annotations;
   using Xunit;
 
-  public sealed class WaitUntilHttpRequestIsSucceededTest : IClassFixture<WaitUntilHttpRequestIsSucceededTest.HttpFixture>
+  public sealed class WaitUntilHttpRequestIsSucceededTest
+    : IClassFixture<WaitUntilHttpRequestIsSucceededTest.HttpFixture>
   {
     private const ushort HttpPort = 80;
 
@@ -24,23 +25,28 @@ namespace DotNet.Testcontainers.Tests.Unit
       _container = httpFixture.Container;
     }
 
-    public static TheoryData<HttpWaitStrategy> HttpWaitStrategies { get; }
-      = new TheoryData<HttpWaitStrategy>
+    public static TheoryData<HttpWaitStrategy> HttpWaitStrategies { get; } =
+      new TheoryData<HttpWaitStrategy>
       {
         new HttpWaitStrategy(),
         new HttpWaitStrategy().ForPort(HttpPort),
         new HttpWaitStrategy().ForStatusCode(HttpStatusCode.OK),
-        new HttpWaitStrategy().ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)),
-        new HttpWaitStrategy().ForResponseMessageMatching(response => Task.FromResult(response.IsSuccessStatusCode)),
-        new HttpWaitStrategy().ForStatusCode(HttpStatusCode.MovedPermanently).ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)),
+        new HttpWaitStrategy().ForStatusCodeMatching(statusCode =>
+          HttpStatusCode.OK.Equals(statusCode)
+        ),
+        new HttpWaitStrategy().ForResponseMessageMatching(response =>
+          Task.FromResult(response.IsSuccessStatusCode)
+        ),
+        new HttpWaitStrategy()
+          .ForStatusCode(HttpStatusCode.MovedPermanently)
+          .ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode)),
       };
 
     [Theory]
     [MemberData(nameof(HttpWaitStrategies))]
     public async Task HttpWaitStrategyReceivesStatusCode(HttpWaitStrategy httpWaitStrategy)
     {
-      var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      var succeeded = await httpWaitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
       Assert.True(succeeded);
     }
@@ -55,16 +61,18 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var httpHeaders = new Dictionary<string, string> { { "Connection", "keep-alive" } };
 
-      var httpWaitStrategy = new HttpWaitStrategy().WithBasicAuthentication(username, password).WithHeaders(httpHeaders);
+      var httpWaitStrategy = new HttpWaitStrategy()
+        .WithBasicAuthentication(username, password)
+        .WithHeaders(httpHeaders);
 
       // When
-      var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      var succeeded = await httpWaitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
       await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      var (_, stderr) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
+      var (_, stderr) = await _container
+        .GetLogsAsync(ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -88,13 +96,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
 
       // When
-      var succeeded = await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      var succeeded = await httpWaitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
       await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      var (_, stderr) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
+      var (_, stderr) = await _container
+        .GetLogsAsync(ct: TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -112,10 +120,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var httpWaitStrategy = new HttpWaitStrategy().UsingHttpMessageHandler(httpMessageHandler);
 
       // When
-      await httpWaitStrategy.UntilAsync(_container)
-        .ConfigureAwait(true);
+      await httpWaitStrategy.UntilAsync(_container).ConfigureAwait(true);
 
-      var exceptionOnSubsequentCall = await Record.ExceptionAsync(() => httpWaitStrategy.UntilAsync(_container))
+      var exceptionOnSubsequentCall = await Record
+        .ExceptionAsync(() => httpWaitStrategy.UntilAsync(_container))
         .ConfigureAwait(true);
 
       // Then
@@ -125,14 +133,15 @@ namespace DotNet.Testcontainers.Tests.Unit
     [UsedImplicitly]
     public sealed class HttpFixture : IAsyncLifetime
     {
-      public IContainer Container { get; } = new ContainerBuilder()
-        .WithImage(CommonImages.Socat)
-        .WithCommand("-v")
-        .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
-        .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
-        .WithPortBinding(HttpPort, true)
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
-        .Build();
+      public IContainer Container { get; } =
+        new ContainerBuilder()
+          .WithImage(CommonImages.Socat)
+          .WithCommand("-v")
+          .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
+          .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
+          .WithPortBinding(HttpPort, true)
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
+          .Build();
 
       public ValueTask InitializeAsync()
       {

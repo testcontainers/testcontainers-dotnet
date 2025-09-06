@@ -12,8 +12,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Gets the named pipe Docker Engine endpoint.
     /// </summary>
-    public static Uri DockerEngine { get; }
-      = new Uri("npipe://./pipe/docker_engine");
+    public static Uri DockerEngine { get; } = new Uri("npipe://./pipe/docker_engine");
 
     /// <inheritdoc />
     public override bool IsApplicable()

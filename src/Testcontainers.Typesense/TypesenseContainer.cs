@@ -9,9 +9,7 @@ public sealed class TypesenseContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public TypesenseContainer(TypesenseConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Typesense base address.
@@ -19,6 +17,10 @@ public sealed class TypesenseContainer : DockerContainer
     /// <returns>The Typesense base address.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(TypesenseBuilder.TypesensePort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(TypesenseBuilder.TypesensePort)
+        ).ToString();
     }
 }

@@ -2,7 +2,8 @@ namespace Testcontainers.BigQuery;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
+public sealed class BigQueryBuilder
+    : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
     public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
 
@@ -33,7 +34,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     protected override BigQueryConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="projectId"></param>
     /// <returns></returns>
@@ -60,7 +61,9 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     }
 
     /// <inheritdoc />
-    protected override BigQueryBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override BigQueryBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new BigQueryConfiguration(resourceConfiguration));
     }
@@ -72,7 +75,10 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     }
 
     /// <inheritdoc />
-    protected override BigQueryBuilder Merge(BigQueryConfiguration oldValue, BigQueryConfiguration newValue)
+    protected override BigQueryBuilder Merge(
+        BigQueryConfiguration oldValue,
+        BigQueryConfiguration newValue
+    )
     {
         return new BigQueryBuilder(new BigQueryConfiguration(oldValue, newValue));
     }

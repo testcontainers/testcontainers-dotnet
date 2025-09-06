@@ -14,7 +14,10 @@ namespace DotNet.Testcontainers.Polyfills
   {
     private static readonly X509CertificateParser CertificateParser = new X509CertificateParser();
 
-    public static System.Security.Cryptography.X509Certificates.X509Certificate2 CreateFromPemFile(string certPemFilePath, string keyPemFilePath)
+    public static System.Security.Cryptography.X509Certificates.X509Certificate2 CreateFromPemFile(
+      string certPemFilePath,
+      string keyPemFilePath
+    )
     {
       if (!File.Exists(certPemFilePath))
       {
@@ -46,7 +49,10 @@ namespace DotNet.Testcontainers.Polyfills
         using (var certificateStream = new MemoryStream())
         {
           store.Save(certificateStream, password.ToCharArray(), new SecureRandom());
-          return new System.Security.Cryptography.X509Certificates.X509Certificate2(Pkcs12Utilities.ConvertToDefiniteLength(certificateStream.ToArray()), password);
+          return new System.Security.Cryptography.X509Certificates.X509Certificate2(
+            Pkcs12Utilities.ConvertToDefiniteLength(certificateStream.ToArray()),
+            password
+          );
         }
       }
     }
@@ -60,7 +66,10 @@ namespace DotNet.Testcontainers.Polyfills
         case RsaPrivateCrtKeyParameters rpckp:
           return rpckp;
         default:
-          throw new ArgumentOutOfRangeException(nameof(keyObject), $"Unsupported asymmetric key entry encountered while trying to resolve key from input object '{keyObject.GetType()}'.");
+          throw new ArgumentOutOfRangeException(
+            nameof(keyObject),
+            $"Unsupported asymmetric key entry encountered while trying to resolve key from input object '{keyObject.GetType()}'."
+          );
       }
     }
   }

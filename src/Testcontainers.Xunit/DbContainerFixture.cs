@@ -9,7 +9,8 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 [PublicAPI]
 public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
-    : ContainerFixture<TBuilderEntity, TContainerEntity>(messageSink), IDbContainerTestMethods
+    : ContainerFixture<TBuilderEntity, TContainerEntity>(messageSink),
+        IDbContainerTestMethods
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
@@ -18,10 +19,12 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     /// <inheritdoc />
     protected override async LifetimeTask InitializeAsync()
     {
-        await base.InitializeAsync()
-            .ConfigureAwait(false);
+        await base.InitializeAsync().ConfigureAwait(false);
 
-        _testMethods = new DbContainerTestMethods(DbProviderFactory, new Lazy<string>(() => ConnectionString));
+        _testMethods = new DbContainerTestMethods(
+            DbProviderFactory,
+            new Lazy<string>(() => ConnectionString)
+        );
     }
 
     /// <inheritdoc />
@@ -29,12 +32,10 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     {
         if (_testMethods != null)
         {
-            await _testMethods.DisposeAsync()
-                .ConfigureAwait(true);
+            await _testMethods.DisposeAsync().ConfigureAwait(true);
         }
 
-        await base.DisposeAsyncCore()
-            .ConfigureAwait(true);
+        await base.DisposeAsyncCore().ConfigureAwait(true);
     }
 
     /// <summary>
@@ -55,10 +56,13 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     public DbConnection OpenConnection() => _testMethods.OpenConnection();
 
     /// <inheritdoc />
-    public ValueTask<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken = default) => _testMethods.OpenConnectionAsync(cancellationToken);
+    public ValueTask<DbConnection> OpenConnectionAsync(
+        CancellationToken cancellationToken = default
+    ) => _testMethods.OpenConnectionAsync(cancellationToken);
 
     /// <inheritdoc />
-    public DbCommand CreateCommand(string commandText = null) => _testMethods.CreateCommand(commandText);
+    public DbCommand CreateCommand(string commandText = null) =>
+        _testMethods.CreateCommand(commandText);
 
     /// <inheritdoc />
     public DbBatch CreateBatch() => _testMethods.CreateBatch();

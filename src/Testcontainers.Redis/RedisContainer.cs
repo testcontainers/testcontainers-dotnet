@@ -9,9 +9,7 @@ public sealed class RedisContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public RedisContainer(RedisConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Redis connection string.
@@ -19,7 +17,9 @@ public sealed class RedisContainer : DockerContainer
     /// <returns>The Redis connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("redis", Hostname, GetMappedPublicPort(RedisBuilder.RedisPort)).Uri.Authority;
+        return new UriBuilder("redis", Hostname, GetMappedPublicPort(RedisBuilder.RedisPort))
+            .Uri
+            .Authority;
     }
 
     /// <summary>
@@ -28,11 +28,25 @@ public sealed class RedisContainer : DockerContainer
     /// <param name="scriptContent">The content of the Lua script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Lua script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public async Task<ExecResult> ExecScriptAsync(
+        string scriptContent,
+        CancellationToken ct = default
+    )
     {
-        var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
+        var scriptFilePath = string.Join(
+            "/",
+            string.Empty,
+            "tmp",
+            Guid.NewGuid().ToString("D"),
+            Path.GetRandomFileName()
+        );
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(
+                Encoding.Default.GetBytes(scriptContent),
+                scriptFilePath,
+                Unix.FileMode644,
+                ct
+            )
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "redis-cli", "--eval", scriptFilePath, "0" }, ct)

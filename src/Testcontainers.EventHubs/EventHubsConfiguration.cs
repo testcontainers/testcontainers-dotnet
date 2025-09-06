@@ -9,8 +9,10 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="azuriteContainer">The Azurite container.</param>
     /// <param name="serviceConfiguration">The service configuration.</param>
-    public EventHubsConfiguration(AzuriteContainer azuriteContainer = null,
-        EventHubsServiceConfiguration serviceConfiguration = null)
+    public EventHubsConfiguration(
+        AzuriteContainer azuriteContainer = null,
+        EventHubsServiceConfiguration serviceConfiguration = null
+    )
     {
         AzuriteContainer = azuriteContainer;
         ServiceConfiguration = serviceConfiguration;
@@ -20,7 +22,9 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="EventHubsConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public EventHubsConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public EventHubsConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -54,8 +58,14 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     public EventHubsConfiguration(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
         : base(oldValue, newValue)
     {
-        AzuriteContainer = BuildConfiguration.Combine(oldValue.AzuriteContainer, newValue.AzuriteContainer);
-        ServiceConfiguration = BuildConfiguration.Combine(oldValue.ServiceConfiguration, newValue.ServiceConfiguration);
+        AzuriteContainer = BuildConfiguration.Combine(
+            oldValue.AzuriteContainer,
+            newValue.AzuriteContainer
+        );
+        ServiceConfiguration = BuildConfiguration.Combine(
+            oldValue.ServiceConfiguration,
+            newValue.ServiceConfiguration
+        );
     }
 
     /// <summary>

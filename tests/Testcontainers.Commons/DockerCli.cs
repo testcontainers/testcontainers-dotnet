@@ -44,18 +44,31 @@ public static class DockerCli
     public static bool PlatformIsEnabled(DockerPlatform platform)
     {
         var commandResult = new Command("version", "--format {{.Server.Os}}").Execute();
-        return 0.Equals(commandResult.ExitCode) && commandResult.Stdout.Contains(platform.ToString(), StringComparison.OrdinalIgnoreCase);
+        return 0.Equals(commandResult.ExitCode)
+            && commandResult.Stdout.Contains(
+                platform.ToString(),
+                StringComparison.OrdinalIgnoreCase
+            );
     }
 
     public static bool ResourceExists(DockerResource resource, string id)
     {
-        var commandResult = new Command("inspect", "--type=" + resource.ToString().ToLowerInvariant(), id).Execute();
+        var commandResult = new Command(
+            "inspect",
+            "--type=" + resource.ToString().ToLowerInvariant(),
+            id
+        ).Execute();
         return 0.Equals(commandResult.ExitCode);
     }
 
     public static Uri GetCurrentEndpoint(string context = "")
     {
-        var commandResult = new Command("context", "inspect", "--format {{.Endpoints.docker.Host}}", context).Execute();
+        var commandResult = new Command(
+            "context",
+            "inspect",
+            "--format {{.Endpoints.docker.Host}}",
+            context
+        ).Execute();
         commandResult.ThrowIfExecutionFailed();
         return new Uri(commandResult.Stdout.Replace("npipe:////./", "npipe://./"));
     }
@@ -105,7 +118,14 @@ public static class DockerCli
                 process.ErrorDataReceived -= AppendStderr;
             }
 
-            return new CommandResult(this, process.ExitCode, startTime, exitTime, _stdout.ToString(), _stderr.ToString());
+            return new CommandResult(
+                this,
+                process.ExitCode,
+                startTime,
+                exitTime,
+                _stdout.ToString(),
+                _stderr.ToString()
+            );
         }
 
         private void AppendStdout(object sender, DataReceivedEventArgs e)
@@ -127,7 +147,14 @@ public static class DockerCli
     [PublicAPI]
     private sealed class CommandResult
     {
-        public CommandResult(Command command, int exitCode, DateTime startTime, DateTime exitTime, string stdout, string stderr)
+        public CommandResult(
+            Command command,
+            int exitCode,
+            DateTime startTime,
+            DateTime exitTime,
+            string stdout,
+            string stderr
+        )
         {
             Command = command;
             ExitCode = exitCode;

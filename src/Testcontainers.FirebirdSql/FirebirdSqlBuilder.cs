@@ -2,7 +2,8 @@ namespace Testcontainers.FirebirdSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
+public sealed class FirebirdSqlBuilder
+    : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
 {
     public const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
 
@@ -59,7 +60,12 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     public FirebirdSqlBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new FirebirdSqlConfiguration(username: username))
-            .WithEnvironment("FIREBIRD_USER", "sysdba".Equals(username, StringComparison.OrdinalIgnoreCase) ? string.Empty : username);
+            .WithEnvironment(
+                "FIREBIRD_USER",
+                "sysdba".Equals(username, StringComparison.OrdinalIgnoreCase)
+                    ? string.Empty
+                    : username
+            );
     }
 
     /// <summary>
@@ -90,7 +96,10 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithResourceMapping(Encoding.Default.GetBytes(TestQueryString), "/home/firebird_check.sql")
+            .WithResourceMapping(
+                Encoding.Default.GetBytes(TestQueryString),
+                "/home/firebird_check.sql"
+            )
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 
@@ -99,25 +108,40 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override FirebirdSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override FirebirdSqlBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
-        return Merge(DockerResourceConfiguration, new FirebirdSqlConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new FirebirdSqlConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
     protected override FirebirdSqlBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(DockerResourceConfiguration, new FirebirdSqlConfiguration(resourceConfiguration));
+        return Merge(
+            DockerResourceConfiguration,
+            new FirebirdSqlConfiguration(resourceConfiguration)
+        );
     }
 
     /// <inheritdoc />
-    protected override FirebirdSqlBuilder Merge(FirebirdSqlConfiguration oldValue, FirebirdSqlConfiguration newValue)
+    protected override FirebirdSqlBuilder Merge(
+        FirebirdSqlConfiguration oldValue,
+        FirebirdSqlConfiguration newValue
+    )
     {
         return new FirebirdSqlBuilder(new FirebirdSqlConfiguration(oldValue, newValue));
     }

@@ -18,7 +18,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ShouldThrowArgumentExceptionWhenInstantiateDockerImage()
     {
       Assert.Throws<ArgumentException>(() => new DockerImage(string.Empty));
-      Assert.Throws<ArgumentException>(() => new DockerImage(string.Empty, string.Empty, string.Empty));
+      Assert.Throws<ArgumentException>(() =>
+        new DockerImage(string.Empty, string.Empty, string.Empty)
+      );
     }
 
     [Theory]
@@ -52,7 +54,11 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     [Theory]
     [ClassData(typeof(DockerImageFixture))]
-    public void WhenImageNameGetsAssigned(DockerImageFixtureSerializable serializable, string image, string fullName)
+    public void WhenImageNameGetsAssigned(
+      DockerImageFixtureSerializable serializable,
+      string image,
+      string fullName
+    )
     {
       // Given
       var expected = serializable.Image;
@@ -115,10 +121,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     [InlineData("foo:2.3-variant", 2, 3, -1, -1)]
     [InlineData("foo:2.3.4", 2, 3, 4, -1)]
     [InlineData("foo:2.3.4-variant", 2, 3, 4, -1)]
-    public void MatchVersion_ReturnsTrue_WhenVersionMatchesPredicate(string image, int major, int minor, int build, int revision)
+    public void MatchVersion_ReturnsTrue_WhenVersionMatchesPredicate(
+      string image,
+      int major,
+      int minor,
+      int build,
+      int revision
+    )
     {
       // Given
-      Predicate<Version> predicate = v => v.Major == major && v.Minor == minor && v.Build == build && v.Revision == revision;
+      Predicate<Version> predicate = v =>
+        v.Major == major && v.Minor == minor && v.Build == build && v.Revision == revision;
       IImage dockerImage = new DockerImage(image);
 
       // When

@@ -11,7 +11,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public Task<bool> UntilAsync(IContainer container)
     {
-      return Task.FromResult(new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > _timestamp + 5);
+      return Task.FromResult(
+        new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() > _timestamp + 5
+      );
     }
   }
 }

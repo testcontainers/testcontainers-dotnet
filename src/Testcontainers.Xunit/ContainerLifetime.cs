@@ -16,7 +16,9 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
 
     protected ContainerLifetime(ILogger logger)
     {
-        _container = new Lazy<TContainerEntity>(() => Configure(new TBuilderEntity().WithLogger(logger)).Build());
+        _container = new Lazy<TContainerEntity>(() =>
+            Configure(new TBuilderEntity().WithLogger(logger)).Build()
+        );
     }
 
     /// <summary>
@@ -41,8 +43,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
     /// <inheritdoc />
     async LifetimeTask IAsyncDisposable.DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -81,7 +82,7 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
 #else
             await Container.StartAsync()
 #endif
-                .ConfigureAwait(false);
+            .ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -91,15 +92,14 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
 
 #if XUNIT_V3
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
-#else 
-    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync" /> 
+#else
+    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync" />
 #endif
     protected virtual async LifetimeTask DisposeAsyncCore()
     {
         if (_exception == null)
         {
-            await Container.DisposeAsync()
-                .ConfigureAwait(false);
+            await Container.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

@@ -36,10 +36,25 @@
     <GlobalPackageReference Include="SauceControl.InheritDoc" VersionOverride="2.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
-    <None Include="$(MSBuildThisFileDirectory)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />
+    <None
+      Include="$(MSBuildThisFileDirectory)docs/banner.png"
+      Visible="false"
+      Pack="true"
+      PackagePath="docs/"
+    />
+    <None
+      Include="$(MSBuildThisFileDirectory)docs/logo.png"
+      Visible="false"
+      Pack="true"
+      PackagePath="docs/"
+    />
     <None Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false" Pack="true" PackagePath="" />
-    <None Include="$(MSBuildThisFileDirectory)README.md" Visible="false" Pack="true" PackagePath="" />
+    <None
+      Include="$(MSBuildThisFileDirectory)README.md"
+      Visible="false"
+      Pack="true"
+      PackagePath=""
+    />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

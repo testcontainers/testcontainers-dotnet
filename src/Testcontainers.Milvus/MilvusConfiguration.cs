@@ -7,15 +7,15 @@ public sealed class MilvusConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusConfiguration" /> class.
     /// </summary>
-    public MilvusConfiguration()
-    {
-    }
+    public MilvusConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public MilvusConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public MilvusConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class MilvusConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public MilvusConfiguration(MilvusConfiguration oldValue, MilvusConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

@@ -12,8 +12,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Gets the Unix socket Docker Engine endpoint.
     /// </summary>
-    public static Uri DockerEngine { get; }
-      = new Uri("unix:///var/run/docker.sock");
+    public static Uri DockerEngine { get; } = new Uri("unix:///var/run/docker.sock");
 
     /// <inheritdoc />
     public override bool IsApplicable()

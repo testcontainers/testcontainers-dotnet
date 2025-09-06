@@ -3,9 +3,8 @@ namespace WeatherForecast.Contexts;
 [PublicAPI]
 public sealed class WeatherDataContext : DbContext
 {
-  public WeatherDataContext(DbContextOptions<WeatherDataContext> options) : base(options)
-  {
-  }
+  public WeatherDataContext(DbContextOptions<WeatherDataContext> options)
+    : base(options) { }
 
   public DbSet<WeatherData> WeatherData { get; set; } = null!;
 
@@ -19,10 +18,26 @@ public sealed class WeatherDataContext : DbContext
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.UnitSymbol);
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.Value);
     modelBuilder.Entity<Temperature>().Property(temperature => temperature.Measured);
-    modelBuilder.Entity<WeatherData>().HasMany(weatherData => weatherData.Temperatures).WithOne().HasForeignKey(temperature => temperature.BelongsTo);
+    modelBuilder
+      .Entity<WeatherData>()
+      .HasMany(weatherData => weatherData.Temperatures)
+      .WithOne()
+      .HasForeignKey(temperature => temperature.BelongsTo);
 
-    var weatherDataSeed = Enumerable.Range(0, 30).Select(_ => Guid.NewGuid()).Select((id, day) => new WeatherData(id, DateTimeOffset.Now.AddDays(day))).ToList();
-    var temperatureSeed = weatherDataSeed.SelectMany(data => Enumerable.Range(0, 23).Select(hour => Temperature.Celsius(data.Id, Random.Shared.Next(-10, 30), data.Period.AddHours(hour)))).ToList();
+    var weatherDataSeed = Enumerable
+      .Range(0, 30)
+      .Select(_ => Guid.NewGuid())
+      .Select((id, day) => new WeatherData(id, DateTimeOffset.Now.AddDays(day)))
+      .ToList();
+    var temperatureSeed = weatherDataSeed
+      .SelectMany(data =>
+        Enumerable
+          .Range(0, 23)
+          .Select(hour =>
+            Temperature.Celsius(data.Id, Random.Shared.Next(-10, 30), data.Period.AddHours(hour))
+          )
+      )
+      .ToList();
 
     modelBuilder.Entity<Temperature>().HasData(temperatureSeed);
     modelBuilder.Entity<WeatherData>().HasData(weatherDataSeed);

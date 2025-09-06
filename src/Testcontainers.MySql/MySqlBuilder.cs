@@ -2,7 +2,8 @@ namespace Testcontainers.MySql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer, MySqlConfiguration>
+public sealed class MySqlBuilder
+    : ContainerBuilder<MySqlBuilder, MySqlContainer, MySqlConfiguration>
 {
     public const string MySqlImage = "mysql:8.0";
 
@@ -55,7 +56,12 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     public MySqlBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new MySqlConfiguration(username: username))
-            .WithEnvironment("MYSQL_USER", "root".Equals(username, StringComparison.OrdinalIgnoreCase) ? string.Empty : username);
+            .WithEnvironment(
+                "MYSQL_USER",
+                "root".Equals(username, StringComparison.OrdinalIgnoreCase)
+                    ? string.Empty
+                    : username
+            );
     }
 
     /// <summary>
@@ -77,7 +83,13 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
 
         // By default, the base builder waits until the container is running. However, for MySql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
         // If the user does not provide a custom waiting strategy, append the default MySql waiting strategy.
-        var mySqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var mySqlBuilder =
+            DockerResourceConfiguration.WaitStrategies.Count() > 1
+                ? this
+                : WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration))
+                );
         return new MySqlContainer(mySqlBuilder.DockerResourceConfiguration);
     }
 
@@ -90,7 +102,13 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithStartupCallback((container, ct) => Task.WhenAll(container.CreateMySqlFilesDirectoryAsync(ct), container.WriteConfigurationFileAsync(ct)));
+            .WithStartupCallback(
+                (container, ct) =>
+                    Task.WhenAll(
+                        container.CreateMySqlFilesDirectoryAsync(ct),
+                        container.WriteConfigurationFileAsync(ct)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -98,17 +116,27 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override MySqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MySqlBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new MySqlConfiguration(resourceConfiguration));
     }
@@ -136,14 +164,20 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         /// <param name="configuration">The container configuration.</param>
         public WaitUntil(MySqlConfiguration configuration)
         {
-            _command = new List<string> { "mysql", configuration.Database, "--wait", "--silent", "--execute=SELECT 1;" };
+            _command = new List<string>
+            {
+                "mysql",
+                configuration.Database,
+                "--wait",
+                "--silent",
+                "--execute=SELECT 1;",
+            };
         }
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
-                .ConfigureAwait(false);
+            var execResult = await container.ExecAsync(_command).ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
         }

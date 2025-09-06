@@ -13,13 +13,23 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
-  public sealed class TestcontainersVolumeBuilderTest : IClassFixture<TestcontainersVolumeBuilderTest.DockerVolume>
+  public sealed class TestcontainersVolumeBuilderTest
+    : IClassFixture<TestcontainersVolumeBuilderTest.DockerVolume>
   {
     private static readonly string VolumeName = Guid.NewGuid().ToString("D");
 
-    private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".volume.test", Guid.NewGuid().ToString("D"));
+    private static readonly KeyValuePair<string, string> Label = new KeyValuePair<string, string>(
+      TestcontainersClient.TestcontainersLabel + ".volume.test",
+      Guid.NewGuid().ToString("D")
+    );
 
-    private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<string, string>(TestcontainersClient.TestcontainersLabel + ".parameter.modifier", Guid.NewGuid().ToString("D"));
+    private static readonly KeyValuePair<string, string> ParameterModifier = new KeyValuePair<
+      string,
+      string
+    >(
+      TestcontainersClient.TestcontainersLabel + ".parameter.modifier",
+      Guid.NewGuid().ToString("D")
+    );
 
     private readonly IVolume _volume;
 
@@ -31,10 +41,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void GetNameThrowsInvalidOperationException()
     {
-      _ = Assert.Throws<InvalidOperationException>(() => new VolumeBuilder()
-        .WithName(VolumeName)
-        .Build()
-        .Name);
+      _ = Assert.Throws<InvalidOperationException>(() =>
+        new VolumeBuilder().WithName(VolumeName).Build().Name
+      );
     }
 
     [Fact]
@@ -47,15 +56,23 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task CreateVolumeAssignsLabels()
     {
       // Given
-      var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
+      var client = new TestcontainersClient(
+        ResourceReaper.DefaultSessionId,
+        TestcontainersSettings.OS.DockerEndpointAuthConfig,
+        NullLogger.Instance
+      );
 
       // When
-      var volumeResponse = await client.Volume.ByIdAsync(_volume.Name, TestContext.Current.CancellationToken)
+      var volumeResponse = await client
+        .Volume.ByIdAsync(_volume.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
       Assert.Equal(Label.Value, Assert.Contains(Label.Key, volumeResponse.Labels));
-      Assert.Equal(ParameterModifier.Value, Assert.Contains(ParameterModifier.Key, volumeResponse.Labels));
+      Assert.Equal(
+        ParameterModifier.Value,
+        Assert.Contains(ParameterModifier.Key, volumeResponse.Labels)
+      );
     }
 
     [UsedImplicitly]
@@ -64,15 +81,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       private readonly IVolume _volume = new VolumeBuilder()
         .WithName(VolumeName)
         .WithLabel(Label.Key, Label.Value)
-        .WithCreateParameterModifier(parameterModifier => parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value))
+        .WithCreateParameterModifier(parameterModifier =>
+          parameterModifier.Labels.Add(ParameterModifier.Key, ParameterModifier.Value)
+        )
         .Build();
 
       public string Name => _volume.Name;
 
       public async ValueTask InitializeAsync()
       {
-        await CreateAsync()
-          .ConfigureAwait(false);
+        await CreateAsync().ConfigureAwait(false);
       }
 
       public ValueTask DisposeAsync()

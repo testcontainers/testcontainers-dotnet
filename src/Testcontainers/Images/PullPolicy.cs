@@ -15,10 +15,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     public static Func<ImageInspectResponse, bool> Never
     {
-      get
-      {
-        return _ => false;
-      }
+      get { return _ => false; }
     }
 
     /// <summary>
@@ -26,10 +23,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     public static Func<ImageInspectResponse, bool> Missing
     {
-      get
-      {
-        return cachedImage => cachedImage == null;
-      }
+      get { return cachedImage => cachedImage == null; }
     }
 
     /// <summary>
@@ -37,10 +31,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     public static Func<ImageInspectResponse, bool> Always
     {
-      get
-      {
-        return _ => true;
-      }
+      get { return _ => true; }
     }
   }
 }

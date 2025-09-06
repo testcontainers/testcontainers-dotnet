@@ -2,7 +2,8 @@ namespace Testcontainers.Minio;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
+public sealed class MinioBuilder
+    : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
 
@@ -72,8 +73,12 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
             .WithCommand("server", "/data")
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/minio/health/ready").ForPort(MinioPort)));
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(request =>
+                        request.ForPath("/minio/health/ready").ForPort(MinioPort)
+                    )
+            );
     }
 
     /// <inheritdoc />
@@ -81,17 +86,27 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull()
             .NotEmpty();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull()
             .NotEmpty();
     }
 
     /// <inheritdoc />
-    protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MinioBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }

@@ -26,16 +26,17 @@ public sealed class WeatherForecastController : ControllerBase, IDisposable
   [HttpGet]
   public async Task<ActionResult<IEnumerable<WeatherData>>> GetWeatherForecast()
   {
-    await _searchCityOrZipCode.ExecuteAsync(string.Empty)
-      .ConfigureAwait(false);
+    await _searchCityOrZipCode.ExecuteAsync(string.Empty).ConfigureAwait(false);
 
-    await _wait.WaitAsync()
-      .ConfigureAwait(false);
+    await _wait.WaitAsync().ConfigureAwait(false);
 
     return Ok(_weatherData);
   }
 
-  private void SearchCityOrZipCodeResultPublished(object? sender, ResultInfo<IEnumerable<WeatherData>> result)
+  private void SearchCityOrZipCodeResultPublished(
+    object? sender,
+    ResultInfo<IEnumerable<WeatherData>> result
+  )
   {
     if (result.IsSuccessful)
     {

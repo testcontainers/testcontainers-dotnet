@@ -4,7 +4,8 @@ namespace DotNet.Testcontainers.Configurations
   using System.Text.Json;
 
   /// <inheritdoc cref="IDockerRegistryAuthenticationConfiguration" />
-  internal readonly struct DockerRegistryAuthenticationConfiguration : IDockerRegistryAuthenticationConfiguration
+  internal readonly struct DockerRegistryAuthenticationConfiguration
+    : IDockerRegistryAuthenticationConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerRegistryAuthenticationConfiguration" /> struct.
@@ -17,7 +18,8 @@ namespace DotNet.Testcontainers.Configurations
       string registryEndpoint = null,
       string username = null,
       string password = null,
-      string identityToken = null)
+      string identityToken = null
+    )
     {
       RegistryEndpoint = registryEndpoint;
       Username = username;
@@ -32,11 +34,16 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="credential">The CredHelpers or CredsStore JSON response.</param>
     public DockerRegistryAuthenticationConfiguration(
       string registryEndpoint,
-      JsonElement credential)
+      JsonElement credential
+    )
     {
-      var username = credential.TryGetProperty(nameof(Username), out var usernameProperty) ? usernameProperty.GetString() : null;
+      var username = credential.TryGetProperty(nameof(Username), out var usernameProperty)
+        ? usernameProperty.GetString()
+        : null;
 
-      var password = credential.TryGetProperty("Secret", out var passwordProperty) ? passwordProperty.GetString() : null;
+      var password = credential.TryGetProperty("Secret", out var passwordProperty)
+        ? passwordProperty.GetString()
+        : null;
 
       if ("<token>".Equals(username, StringComparison.OrdinalIgnoreCase))
       {

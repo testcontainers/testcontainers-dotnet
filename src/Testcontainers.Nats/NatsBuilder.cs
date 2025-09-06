@@ -87,18 +87,37 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
 
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Username,
+                nameof(DockerResourceConfiguration.Username)
+            )
             .NotNull();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+        _ = Guard
+            .Argument(
+                DockerResourceConfiguration.Password,
+                nameof(DockerResourceConfiguration.Password)
+            )
             .NotNull();
 
-        _ = Guard.Argument(DockerResourceConfiguration, "Credentials")
-            .ThrowIf(argument => 1.Equals(new[] { argument.Value.Username, argument.Value.Password }.Count(string.IsNullOrWhiteSpace)), argument => new ArgumentException(message, argument.Name));
+        _ = Guard
+            .Argument(DockerResourceConfiguration, "Credentials")
+            .ThrowIf(
+                argument =>
+                    1.Equals(
+                        new[] { argument.Value.Username, argument.Value.Password }.Count(
+                            string.IsNullOrWhiteSpace
+                        )
+                    ),
+                argument => new ArgumentException(message, argument.Name)
+            );
     }
 
     /// <inheritdoc />
-    protected override NatsBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override NatsBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new NatsConfiguration(resourceConfiguration));
     }

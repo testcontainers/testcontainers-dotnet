@@ -9,9 +9,7 @@ public sealed class NatsConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The Nats username.</param>
     /// <param name="password">The Nats password.</param>
-    public NatsConfiguration(
-        string username = null,
-        string password = null)
+    public NatsConfiguration(string username = null, string password = null)
     {
         Username = username;
         Password = password;
@@ -21,7 +19,9 @@ public sealed class NatsConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="NatsConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public NatsConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public NatsConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.

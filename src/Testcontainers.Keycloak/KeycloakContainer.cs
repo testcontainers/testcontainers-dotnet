@@ -9,9 +9,7 @@ public sealed class KeycloakContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public KeycloakContainer(KeycloakConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the Keycloak base address.
@@ -19,6 +17,10 @@ public sealed class KeycloakContainer : DockerContainer
     /// <returns>The Keycloak base address.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(KeycloakBuilder.KeycloakPort)).ToString();
+        return new UriBuilder(
+            Uri.UriSchemeHttp,
+            Hostname,
+            GetMappedPublicPort(KeycloakBuilder.KeycloakPort)
+        ).ToString();
     }
 }

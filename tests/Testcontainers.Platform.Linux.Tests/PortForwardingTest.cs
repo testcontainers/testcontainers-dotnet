@@ -11,14 +11,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _container.StartAsync()
-            .ConfigureAwait(false);
+        await _container.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -27,10 +25,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesHostConnection()
     {
-        var exitCode = await _container.GetExitCodeAsync(TestContext.Current.CancellationToken)
+        var exitCode = await _container
+            .GetExitCodeAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false, ct: TestContext.Current.CancellationToken)
+        var (stdout, _) = await _container
+            .GetLogsAsync(timestampsEnabled: false, ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Equal(0, exitCode);
@@ -43,42 +43,59 @@ public abstract class PortForwardingTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class PortForwardingDefaultConfiguration : PortForwardingTest, IClassFixture<HostedService>
+    public sealed class PortForwardingDefaultConfiguration
+        : PortForwardingTest,
+            IClassFixture<HostedService>
     {
         public PortForwardingDefaultConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
-                .WithAutoRemove(false)
-                .WithEntrypoint("nc")
-                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
-                .Build())
-        {
-        }
+            : base(
+                new ContainerBuilder()
+                    .WithImage(CommonImages.Alpine)
+                    .WithAutoRemove(false)
+                    .WithEntrypoint("nc")
+                    .WithCommand(
+                        HostedService.Host,
+                        fixture.Port.ToString(CultureInfo.InvariantCulture)
+                    )
+                    .WithWaitStrategy(
+                        Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil())
+                    )
+                    .Build()
+            ) { }
     }
 
     [UsedImplicitly]
-    public sealed class PortForwardingNetworkConfiguration : PortForwardingTest, IClassFixture<HostedService>
+    public sealed class PortForwardingNetworkConfiguration
+        : PortForwardingTest,
+            IClassFixture<HostedService>
     {
         public PortForwardingNetworkConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
-                .WithAutoRemove(false)
-                .WithEntrypoint("nc")
-                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
-                .Build())
-        {
-        }
+            : base(
+                new ContainerBuilder()
+                    .WithImage(CommonImages.Alpine)
+                    .WithAutoRemove(false)
+                    .WithEntrypoint("nc")
+                    .WithCommand(
+                        HostedService.Host,
+                        fixture.Port.ToString(CultureInfo.InvariantCulture)
+                    )
+                    .WithNetwork(new NetworkBuilder().Build())
+                    .WithWaitStrategy(
+                        Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil())
+                    )
+                    .Build()
+            ) { }
     }
 
     [UsedImplicitly]
     public sealed class HostedService : IAsyncLifetime
     {
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancellationTokenSource =
+            new CancellationTokenSource();
 
-        private readonly TcpListener _tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, 0));
+        private readonly TcpListener _tcpListener = new TcpListener(
+            new IPEndPoint(IPAddress.Any, 0)
+        );
 
         public HostedService()
         {
@@ -91,7 +108,10 @@ public abstract class PortForwardingTest : IAsyncLifetime
 
         public async ValueTask InitializeAsync()
         {
-            await Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync())
+            await Task.WhenAny(
+                    TestcontainersSettings.ExposeHostPortsAsync(Port),
+                    AcceptSocketAsync()
+                )
                 .ConfigureAwait(false);
         }
 
@@ -108,10 +128,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
         {
             var sendBytes = Encoding.Default.GetBytes(bool.TrueString);
 
-            using var socket = await _tcpListener.AcceptSocketAsync(_cancellationTokenSource.Token)
+            using var socket = await _tcpListener
+                .AcceptSocketAsync(_cancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            _ = await socket.SendAsync(sendBytes, SocketFlags.None, _cancellationTokenSource.Token)
+            _ = await socket
+                .SendAsync(sendBytes, SocketFlags.None, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
         }
     }

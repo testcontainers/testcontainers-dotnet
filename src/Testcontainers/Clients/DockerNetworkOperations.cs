@@ -12,35 +12,40 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerNetworkOperations : DockerApiClient, IDockerNetworkOperations
   {
-    public DockerNetworkOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : base(sessionId, dockerEndpointAuthConfig, logger)
-    {
-    }
+    public DockerNetworkOperations(
+      Guid sessionId,
+      IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig,
+      ILogger logger
+    )
+      : base(sessionId, dockerEndpointAuthConfig, logger) { }
 
     public async Task<IEnumerable<NetworkResponse>> GetAllAsync(CancellationToken ct = default)
     {
-      return await DockerClient.Networks.ListNetworksAsync(new NetworksListParameters(), ct)
+      return await DockerClient
+        .Networks.ListNetworksAsync(new NetworksListParameters(), ct)
         .ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<NetworkResponse>> GetAllAsync(FilterByProperty filters, CancellationToken ct = default)
+    public async Task<IEnumerable<NetworkResponse>> GetAllAsync(
+      FilterByProperty filters,
+      CancellationToken ct = default
+    )
     {
-      return await DockerClient.Networks.ListNetworksAsync(new NetworksListParameters { Filters = filters }, ct)
+      return await DockerClient
+        .Networks.ListNetworksAsync(new NetworksListParameters { Filters = filters }, ct)
         .ConfigureAwait(false);
     }
 
     public async Task<NetworkResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      return await DockerClient.Networks.InspectNetworkAsync(id, ct)
-        .ConfigureAwait(false);
+      return await DockerClient.Networks.InspectNetworkAsync(id, ct).ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
       try
       {
-        _ = await ByIdAsync(id, ct)
-          .ConfigureAwait(false);
+        _ = await ByIdAsync(id, ct).ConfigureAwait(false);
 
         return true;
       }
@@ -50,7 +55,10 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task<string> CreateAsync(INetworkConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> CreateAsync(
+      INetworkConfiguration configuration,
+      CancellationToken ct = default
+    )
     {
       var createParameters = new NetworksCreateParameters
       {
@@ -62,7 +70,10 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.Reuse.HasValue && configuration.Reuse.Value)
       {
-        createParameters.Labels.Add(TestcontainersClient.TestcontainersReuseHashLabel, configuration.GetReuseHash());
+        createParameters.Labels.Add(
+          TestcontainersClient.TestcontainersReuseHashLabel,
+          configuration.GetReuseHash()
+        );
       }
 
       if (configuration.ParameterModifiers != null)
@@ -73,7 +84,8 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
-      var createNetworkResponse = await DockerClient.Networks.CreateNetworkAsync(createParameters, ct)
+      var createNetworkResponse = await DockerClient
+        .Networks.CreateNetworkAsync(createParameters, ct)
         .ConfigureAwait(false);
 
       Logger.DockerNetworkCreated(createNetworkResponse.ID);
@@ -89,7 +101,11 @@ namespace DotNet.Testcontainers.Clients
     public Task ConnectAsync(string networkId, string containerId, CancellationToken ct = default)
     {
       Logger.ConnectToDockerNetwork(networkId, containerId);
-      return DockerClient.Networks.ConnectNetworkAsync(networkId, new NetworkConnectParameters { Container = containerId }, ct);
+      return DockerClient.Networks.ConnectNetworkAsync(
+        networkId,
+        new NetworkConnectParameters { Container = containerId },
+        ct
+      );
     }
   }
 }

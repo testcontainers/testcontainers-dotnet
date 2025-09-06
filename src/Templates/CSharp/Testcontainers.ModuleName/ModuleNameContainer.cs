@@ -9,7 +9,5 @@ public sealed class ModuleNameContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public ModuleNameContainer(ModuleNameConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 }

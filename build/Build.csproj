@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <OutputType>Exe</OutputType>
-        <SignAssembly>false</SignAssembly>
-        <RunWorkingDirectory>$(MSBuildProjectDirectory)/..</RunWorkingDirectory>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Cake.Frosting.Git"/>
-        <PackageReference Include="Cake.Frosting"/>
-        <PackageReference Include="Cake.Sonar"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <SignAssembly>false</SignAssembly>
+    <RunWorkingDirectory>$(MSBuildProjectDirectory)/..</RunWorkingDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Cake.Frosting.Git" />
+    <PackageReference Include="Cake.Frosting" />
+    <PackageReference Include="Cake.Sonar" />
+  </ItemGroup>
 </Project>

@@ -24,7 +24,8 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
         const string scriptContent = "SELECT 1;";
 
         // When
-        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+        var execResult = await fixture
+            .Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -35,23 +36,26 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
     public class MariaDbDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MariaDbBuilder, MariaDbContainer>(messageSink)
     {
-        public override DbProviderFactory DbProviderFactory
-            => MySqlConnectorFactory.Instance;
+        public override DbProviderFactory DbProviderFactory => MySqlConnectorFactory.Instance;
     }
 
     [UsedImplicitly]
     public class MariaDbWaitForDatabaseFixture(IMessageSink messageSink)
         : MariaDbDefaultFixture(messageSink)
     {
-        protected override MariaDbBuilder Configure(MariaDbBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override MariaDbBuilder Configure(MariaDbBuilder builder) =>
+            builder.WithWaitStrategy(
+                Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory)
+            );
     }
 
     [UsedImplicitly]
     public sealed class MariaDbDefaultConfiguration(MariaDbDefaultFixture fixture)
-        : MariaDbContainerTest(fixture), IClassFixture<MariaDbDefaultFixture>;
+        : MariaDbContainerTest(fixture),
+            IClassFixture<MariaDbDefaultFixture>;
 
     [UsedImplicitly]
     public sealed class MariaDbWaitForDatabaseConfiguration(MariaDbWaitForDatabaseFixture fixture)
-        : MariaDbContainerTest(fixture), IClassFixture<MariaDbWaitForDatabaseFixture>;
+        : MariaDbContainerTest(fixture),
+            IClassFixture<MariaDbWaitForDatabaseFixture>;
 }

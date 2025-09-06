@@ -7,15 +7,15 @@ public sealed class Neo4jConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jConfiguration" /> class.
     /// </summary>
-    public Neo4jConfiguration()
-    {
-    }
+    public Neo4jConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public Neo4jConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public Neo4jConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class Neo4jConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public Neo4jConfiguration(Neo4jConfiguration oldValue, Neo4jConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

@@ -24,8 +24,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _qdrantContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _qdrantContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -40,7 +39,8 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         // Given
         // # --8<-- [start:ConfigureQdrantClientCertificate-1]
         using var httpMessageHandler = new HttpClientHandler();
-        httpMessageHandler.ServerCertificateCustomValidationCallback = CertificateValidation.Thumbprint(Thumbprint);
+        httpMessageHandler.ServerCertificateCustomValidationCallback =
+            CertificateValidation.Thumbprint(Thumbprint);
 
         using var httpClient = new HttpClient(httpMessageHandler);
         httpClient.DefaultRequestHeaders.Host = CommonName;
@@ -54,7 +54,10 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         var grpcChannelOptions = new GrpcChannelOptions();
         grpcChannelOptions.HttpClient = httpClient;
 
-        using var grpcChannel = GrpcChannel.ForAddress(_qdrantContainer.GetGrpcConnectionString(), grpcChannelOptions);
+        using var grpcChannel = GrpcChannel.ForAddress(
+            _qdrantContainer.GetGrpcConnectionString(),
+            grpcChannelOptions
+        );
 
         using var grpcClient = new QdrantGrpcClient(grpcChannel);
 
@@ -62,7 +65,8 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         // # --8<-- [end:ConfigureQdrantClientCertificate-2]
 
         // When
-        var response = await client.HealthAsync(TestContext.Current.CancellationToken)
+        var response = await client
+            .HealthAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -75,7 +79,8 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
     {
         // Given
         using var httpMessageHandler = new HttpClientHandler();
-        httpMessageHandler.ServerCertificateCustomValidationCallback = CertificateValidation.Thumbprint(Thumbprint);
+        httpMessageHandler.ServerCertificateCustomValidationCallback =
+            CertificateValidation.Thumbprint(Thumbprint);
 
         using var httpClient = new HttpClient(httpMessageHandler);
         httpClient.DefaultRequestHeaders.Host = CommonName;
@@ -83,14 +88,20 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         var grpcChannelOptions = new GrpcChannelOptions();
         grpcChannelOptions.HttpClient = httpClient;
 
-        using var grpcChannel = GrpcChannel.ForAddress(_qdrantContainer.GetGrpcConnectionString(), grpcChannelOptions);
+        using var grpcChannel = GrpcChannel.ForAddress(
+            _qdrantContainer.GetGrpcConnectionString(),
+            grpcChannelOptions
+        );
 
         using var grpcClient = new QdrantGrpcClient(grpcChannel);
 
         using var client = new QdrantClient(grpcClient);
 
         // When
-        var exception = await Assert.ThrowsAsync<RpcException>(() => client.HealthAsync(TestContext.Current.CancellationToken))
+        var exception = await Assert
+            .ThrowsAsync<RpcException>(() =>
+                client.HealthAsync(TestContext.Current.CancellationToken)
+            )
             .ConfigureAwait(true);
 
         // Then
@@ -108,7 +119,10 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
         httpClient.DefaultRequestHeaders.Add("api-key", ApiKey);
 
         // When
-        var exception = await Assert.ThrowsAsync<HttpRequestException>(() => httpClient.GetAsync("/", TestContext.Current.CancellationToken))
+        var exception = await Assert
+            .ThrowsAsync<HttpRequestException>(() =>
+                httpClient.GetAsync("/", TestContext.Current.CancellationToken)
+            )
             .ConfigureAwait(true);
 
         // Then

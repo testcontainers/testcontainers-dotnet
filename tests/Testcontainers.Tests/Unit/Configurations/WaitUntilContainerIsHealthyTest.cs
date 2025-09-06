@@ -27,8 +27,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await container.StartAsync(TestContext.Current.CancellationToken)
-        .ConfigureAwait(true);
+      await container.StartAsync(TestContext.Current.CancellationToken).ConfigureAwait(true);
 
       // Then
       Assert.Equal(TestcontainersHealthStatus.Healthy, container.Health);
@@ -45,7 +44,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      _ = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
+      _ = await Record
+        .ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then

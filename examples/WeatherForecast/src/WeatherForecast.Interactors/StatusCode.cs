@@ -5,5 +5,5 @@ public enum StatusCode
 {
   Success,
 
-  Failure
+  Failure,
 }

@@ -17,7 +17,9 @@ public sealed class ServiceBusConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ServiceBusConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ServiceBusConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ServiceBusConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -48,10 +50,16 @@ public sealed class ServiceBusConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ServiceBusConfiguration(ServiceBusConfiguration oldValue, ServiceBusConfiguration newValue)
+    public ServiceBusConfiguration(
+        ServiceBusConfiguration oldValue,
+        ServiceBusConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
-        DatabaseContainer = BuildConfiguration.Combine(oldValue.DatabaseContainer, newValue.DatabaseContainer);
+        DatabaseContainer = BuildConfiguration.Combine(
+            oldValue.DatabaseContainer,
+            newValue.DatabaseContainer
+        );
     }
 
     /// <summary>

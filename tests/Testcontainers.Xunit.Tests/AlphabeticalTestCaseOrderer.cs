@@ -3,7 +3,9 @@ namespace Testcontainers.Xunit.Tests;
 public class AlphabeticalTestCaseOrderer : ITestCaseOrderer
 {
 #if XUNIT_V3
-    public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases)
+    public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(
+        IReadOnlyCollection<TTestCase> testCases
+    )
         where TTestCase : notnull, ITestCase
     {
         return testCases.OrderBy(testCase => testCase.TestMethod?.MethodName).ToImmutableList();

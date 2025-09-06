@@ -6,8 +6,7 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _arangoDbContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _arangoDbContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -22,12 +21,17 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
         // Given
         var address = new Uri(_arangoDbContainer.GetTransportAddress());
 
-        using var transport = HttpApiTransport.UsingBasicAuth(address, ArangoDbBuilder.DefaultUsername, ArangoDbBuilder.DefaultPassword);
+        using var transport = HttpApiTransport.UsingBasicAuth(
+            address,
+            ArangoDbBuilder.DefaultUsername,
+            ArangoDbBuilder.DefaultPassword
+        );
 
         using var client = new ArangoDBClient(transport);
 
         // When
-        var response = await client.Database.GetDatabasesAsync(TestContext.Current.CancellationToken)
+        var response = await client
+            .Database.GetDatabasesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

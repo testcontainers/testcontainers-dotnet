@@ -22,7 +22,11 @@ public sealed class KafkaContainer : DockerContainer
     /// <returns>The broker address.</returns>
     public string GetBootstrapAddress()
     {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
+        return new UriBuilder(
+            "PLAINTEXT",
+            Hostname,
+            GetMappedPublicPort(KafkaBuilder.KafkaPort)
+        ).ToString();
     }
 
     /// <summary>
@@ -30,9 +34,6 @@ public sealed class KafkaContainer : DockerContainer
     /// </summary>
     public IEnumerable<string> AdvertisedListeners
     {
-        get
-        {
-            return _configuration.AdvertisedListeners;
-        }
+        get { return _configuration.AdvertisedListeners; }
     }
 }

@@ -6,8 +6,7 @@ public sealed class SftpContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _sftpContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _sftpContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -24,11 +23,15 @@ public sealed class SftpContainerTest : IAsyncLifetime
 
         var port = _sftpContainer.GetMappedPublicPort(SftpBuilder.SftpPort);
 
-        using var sftpClient = new SftpClient(host, port, SftpBuilder.DefaultUsername, SftpBuilder.DefaultPassword);
+        using var sftpClient = new SftpClient(
+            host,
+            port,
+            SftpBuilder.DefaultUsername,
+            SftpBuilder.DefaultPassword
+        );
 
         // When
-        await sftpClient.ConnectAsync(CancellationToken.None)
-            .ConfigureAwait(true);
+        await sftpClient.ConnectAsync(CancellationToken.None).ConfigureAwait(true);
 
         // Then
         Assert.True(sftpClient.IsConnected);

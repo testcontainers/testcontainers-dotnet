@@ -7,7 +7,10 @@ public record RootConfiguration(UserConfig UserConfig)
 }
 
 [PublicAPI]
-public record UserConfig(IReadOnlyCollection<NamespaceConfig> NamespaceConfig, LoggingConfig LoggingConfig)
+public record UserConfig(
+    IReadOnlyCollection<NamespaceConfig> NamespaceConfig,
+    LoggingConfig LoggingConfig
+)
 {
     public IReadOnlyCollection<NamespaceConfig> NamespaceConfig { get; } = NamespaceConfig;
 
@@ -25,7 +28,11 @@ public record NamespaceConfig(string Type, string Name, IReadOnlyCollection<Enti
 }
 
 [PublicAPI]
-public record Entity(string Name, int PartitionCount, IReadOnlyCollection<ConsumerGroup> ConsumerGroups)
+public record Entity(
+    string Name,
+    int PartitionCount,
+    IReadOnlyCollection<ConsumerGroup> ConsumerGroups
+)
 {
     public string Name { get; } = Name;
 
@@ -62,33 +69,64 @@ public sealed class EventHubsServiceConfiguration
         return new EventHubsServiceConfiguration(namespaceConfig);
     }
 
-    public EventHubsServiceConfiguration WithEntity(string name, int partitionCount, params string[] consumerGroupNames)
+    public EventHubsServiceConfiguration WithEntity(
+        string name,
+        int partitionCount,
+        params string[] consumerGroupNames
+    )
     {
         // Filter out the consumer group name `$default` because the `$default` group
         // is created automatically by the container image.
-        var validConsumerGroupNames = consumerGroupNames.Where(consumerGroupName => !"$Default".Equals(consumerGroupName, StringComparison.OrdinalIgnoreCase)).ToList();
-        return WithEntity(name, partitionCount, new ReadOnlyCollection<string>(validConsumerGroupNames));
+        var validConsumerGroupNames = consumerGroupNames
+            .Where(consumerGroupName =>
+                !"$Default".Equals(consumerGroupName, StringComparison.OrdinalIgnoreCase)
+            )
+            .ToList();
+        return WithEntity(
+            name,
+            partitionCount,
+            new ReadOnlyCollection<string>(validConsumerGroupNames)
+        );
     }
 
-    public EventHubsServiceConfiguration WithEntity(string name, int partitionCount, IEnumerable<string> consumerGroupNames)
+    public EventHubsServiceConfiguration WithEntity(
+        string name,
+        int partitionCount,
+        IEnumerable<string> consumerGroupNames
+    )
     {
-        var consumerGroups = new ReadOnlyCollection<ConsumerGroup>(consumerGroupNames.Select(consumerGroupName => new ConsumerGroup(consumerGroupName)).ToList());
+        var consumerGroups = new ReadOnlyCollection<ConsumerGroup>(
+            consumerGroupNames
+                .Select(consumerGroupName => new ConsumerGroup(consumerGroupName))
+                .ToList()
+        );
         var entity = new Entity(name, partitionCount, consumerGroups);
-        var entities = new ReadOnlyCollection<Entity>(_namespaceConfig.Entities.Append(entity).ToList());
-        return new EventHubsServiceConfiguration(new NamespaceConfig(_namespaceConfig.Type, _namespaceConfig.Name, entities));
+        var entities = new ReadOnlyCollection<Entity>(
+            _namespaceConfig.Entities.Append(entity).ToList()
+        );
+        return new EventHubsServiceConfiguration(
+            new NamespaceConfig(_namespaceConfig.Type, _namespaceConfig.Name, entities)
+        );
     }
 
     public bool Validate()
     {
         // The emulator provides the usage quotas as described at:
         // https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator#usage-quotas.
-        Predicate<Entity> isValidEntity = entity => entity.PartitionCount > 0 && entity.PartitionCount <= 32 && entity.ConsumerGroups.Count <= 20;
-        return _namespaceConfig.Entities.Count > 0 && _namespaceConfig.Entities.Count <= 10 && _namespaceConfig.Entities.All(entity => isValidEntity(entity));
+        Predicate<Entity> isValidEntity = entity =>
+            entity.PartitionCount > 0
+            && entity.PartitionCount <= 32
+            && entity.ConsumerGroups.Count <= 20;
+        return _namespaceConfig.Entities.Count > 0
+            && _namespaceConfig.Entities.Count <= 10
+            && _namespaceConfig.Entities.All(entity => isValidEntity(entity));
     }
 
     public string Build()
     {
-        var rootConfiguration = new RootConfiguration(new UserConfig([_namespaceConfig], new LoggingConfig("file")));
+        var rootConfiguration = new RootConfiguration(
+            new UserConfig([_namespaceConfig], new LoggingConfig("file"))
+        );
         return JsonSerializer.Serialize(rootConfiguration);
     }
 }

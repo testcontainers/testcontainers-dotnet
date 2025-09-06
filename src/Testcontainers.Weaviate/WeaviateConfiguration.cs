@@ -7,15 +7,15 @@ public sealed class WeaviateConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateConfiguration" /> class.
     /// </summary>
-    public WeaviateConfiguration()
-    {
-    }
+    public WeaviateConfiguration() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public WeaviateConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public WeaviateConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -47,7 +47,5 @@ public sealed class WeaviateConfiguration : ContainerConfiguration
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
     public WeaviateConfiguration(WeaviateConfiguration oldValue, WeaviateConfiguration newValue)
-        : base(oldValue, newValue)
-    {
-    }
+        : base(oldValue, newValue) { }
 }

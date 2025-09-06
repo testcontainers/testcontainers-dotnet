@@ -9,7 +9,5 @@ public sealed class JanusGraphContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public JanusGraphContainer(JanusGraphConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 }

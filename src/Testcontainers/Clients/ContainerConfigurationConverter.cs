@@ -16,7 +16,12 @@ namespace DotNet.Testcontainers.Clients
 
     private const string SctpProtocolSuffix = "/sctp";
 
-    private static readonly string[] Protocols = new[] { UdpProtocolSuffix, TcpProtocolSuffix, SctpProtocolSuffix };
+    private static readonly string[] Protocols = new[]
+    {
+      UdpProtocolSuffix,
+      TcpProtocolSuffix,
+      SctpProtocolSuffix,
+    };
 
     public ContainerConfigurationConverter(IContainerConfiguration configuration)
     {
@@ -24,11 +29,19 @@ namespace DotNet.Testcontainers.Clients
       Command = new ToCollection().Convert(configuration.Command)?.ToList();
       ExtraHosts = new ToCollection().Convert(configuration.ExtraHosts)?.ToList();
       Environments = new ToMappedList().Convert(configuration.Environments)?.ToList();
-      Labels = new ToDictionary().Convert(configuration.Labels)?.ToDictionary(item => item.Key, item => item.Value);
-      ExposedPorts = new ToExposedPorts().Convert(configuration.ExposedPorts)?.ToDictionary(item => item.Key, item => item.Value);
-      PortBindings = new ToPortBindings().Convert(configuration.PortBindings)?.ToDictionary(item => item.Key, item => item.Value);
+      Labels = new ToDictionary()
+        .Convert(configuration.Labels)
+        ?.ToDictionary(item => item.Key, item => item.Value);
+      ExposedPorts = new ToExposedPorts()
+        .Convert(configuration.ExposedPorts)
+        ?.ToDictionary(item => item.Key, item => item.Value);
+      PortBindings = new ToPortBindings()
+        .Convert(configuration.PortBindings)
+        ?.ToDictionary(item => item.Key, item => item.Value);
       Mounts = new ToMounts().Convert(configuration.Mounts)?.ToList();
-      Networks = new ToNetworks(configuration).Convert(configuration.Networks)?.ToDictionary(item => item.Key, item => item.Value);
+      Networks = new ToNetworks(configuration)
+        .Convert(configuration.Networks)
+        ?.ToDictionary(item => item.Key, item => item.Value);
     }
 
     public IList<string> Entrypoint { get; }
@@ -51,16 +64,18 @@ namespace DotNet.Testcontainers.Clients
 
     public static string GetQualifiedPort(string containerPort)
     {
-      return Array.Exists(Protocols, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase))
-        ? containerPort.ToLowerInvariant() : containerPort + TcpProtocolSuffix;
+      return Array.Exists(
+        Protocols,
+        portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)
+      )
+        ? containerPort.ToLowerInvariant()
+        : containerPort + TcpProtocolSuffix;
     }
 
     private sealed class ToCollection : CollectionConverter<string, string>
     {
       public ToCollection()
-        : base(nameof(ToCollection))
-      {
-      }
+        : base(nameof(ToCollection)) { }
 
       public override IEnumerable<string> Convert([CanBeNull] IEnumerable<string> source)
       {
@@ -71,21 +86,26 @@ namespace DotNet.Testcontainers.Clients
     private sealed class ToMounts : CollectionConverter<IMount, Mount>
     {
       public ToMounts()
-        : base(nameof(ToMounts))
-      {
-      }
+        : base(nameof(ToMounts)) { }
 
       public override IEnumerable<Mount> Convert([CanBeNull] IEnumerable<IMount> source)
       {
         return source?.Select(mount =>
         {
           var readOnly = AccessMode.ReadOnly.Equals(mount.AccessMode);
-          return new Mount { Type = mount.Type.Type, Source = mount.Source, Target = mount.Target, ReadOnly = readOnly };
+          return new Mount
+          {
+            Type = mount.Type.Type,
+            Source = mount.Source,
+            Target = mount.Target,
+            ReadOnly = readOnly,
+          };
         });
       }
     }
 
-    private sealed class ToNetworks : CollectionConverter<INetwork, KeyValuePair<string, EndpointSettings>>
+    private sealed class ToNetworks
+      : CollectionConverter<INetwork, KeyValuePair<string, EndpointSettings>>
     {
       private readonly IContainerConfiguration _configuration;
 
@@ -95,63 +115,75 @@ namespace DotNet.Testcontainers.Clients
         _configuration = configuration;
       }
 
-      public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert([CanBeNull] IEnumerable<INetwork> source)
+      public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert(
+        [CanBeNull] IEnumerable<INetwork> source
+      )
       {
-        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { Aliases = _configuration.NetworkAliases?.ToList() }));
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(
+          network.Name,
+          new EndpointSettings { Aliases = _configuration.NetworkAliases?.ToList() }
+        ));
       }
     }
 
     private sealed class ToMappedList : DictionaryConverter<IEnumerable<string>>
     {
       public ToMappedList()
-        : base(nameof(ToMappedList))
-      {
-      }
+        : base(nameof(ToMappedList)) { }
 
-      public override IEnumerable<string> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
+      public override IEnumerable<string> Convert(
+        [CanBeNull] IEnumerable<KeyValuePair<string, string>> source
+      )
       {
         return source?.Select(item => string.Join("=", item.Key, item.Value));
       }
     }
 
-    private sealed class ToDictionary : DictionaryConverter<IEnumerable<KeyValuePair<string, string>>>
+    private sealed class ToDictionary
+      : DictionaryConverter<IEnumerable<KeyValuePair<string, string>>>
     {
       public ToDictionary()
-        : base(nameof(ToDictionary))
-      {
-      }
+        : base(nameof(ToDictionary)) { }
 
-      public override IEnumerable<KeyValuePair<string, string>> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
+      public override IEnumerable<KeyValuePair<string, string>> Convert(
+        [CanBeNull] IEnumerable<KeyValuePair<string, string>> source
+      )
       {
         return source;
       }
     }
 
-    private sealed class ToExposedPorts : DictionaryConverter<IEnumerable<KeyValuePair<string, EmptyStruct>>>
+    private sealed class ToExposedPorts
+      : DictionaryConverter<IEnumerable<KeyValuePair<string, EmptyStruct>>>
     {
       public ToExposedPorts()
-        : base(nameof(ToExposedPorts))
-      {
-      }
+        : base(nameof(ToExposedPorts)) { }
 
-      public override IEnumerable<KeyValuePair<string, EmptyStruct>> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
+      public override IEnumerable<KeyValuePair<string, EmptyStruct>> Convert(
+        [CanBeNull] IEnumerable<KeyValuePair<string, string>> source
+      )
       {
         return source?.Select(exposedPort => new KeyValuePair<string, EmptyStruct>(
-          GetQualifiedPort(exposedPort.Key), default));
+          GetQualifiedPort(exposedPort.Key),
+          default
+        ));
       }
     }
 
-    private sealed class ToPortBindings : DictionaryConverter<IEnumerable<KeyValuePair<string, IList<PortBinding>>>>
+    private sealed class ToPortBindings
+      : DictionaryConverter<IEnumerable<KeyValuePair<string, IList<PortBinding>>>>
     {
       public ToPortBindings()
-        : base(nameof(ToPortBindings))
-      {
-      }
+        : base(nameof(ToPortBindings)) { }
 
-      public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
+      public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert(
+        [CanBeNull] IEnumerable<KeyValuePair<string, string>> source
+      )
       {
         return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
-          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostPort = portBinding.Value } }));
+          GetQualifiedPort(portBinding.Key),
+          new[] { new PortBinding { HostPort = portBinding.Value } }
+        ));
       }
     }
   }

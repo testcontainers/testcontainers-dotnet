@@ -2,7 +2,8 @@ namespace Testcontainers.Redis;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
+public sealed class RedisBuilder
+    : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
 {
     public const string RedisImage = "redis:7.0";
 
@@ -47,7 +48,9 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     }
 
     /// <inheritdoc />
-    protected override RedisBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override RedisBuilder Clone(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
     {
         return Merge(DockerResourceConfiguration, new RedisConfiguration(resourceConfiguration));
     }

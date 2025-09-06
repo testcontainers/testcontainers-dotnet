@@ -4,7 +4,15 @@ namespace WeatherForecast.Entities;
 public sealed class Temperature : HasId
 {
   [JsonConstructor]
-  public Temperature(Guid id, Guid belongsTo, string unitName, string unitSymbol, double value, DateTimeOffset measured) : base(id)
+  public Temperature(
+    Guid id,
+    Guid belongsTo,
+    string unitName,
+    string unitSymbol,
+    double value,
+    DateTimeOffset measured
+  )
+    : base(id)
   {
     BelongsTo = belongsTo;
     UnitName = unitName;

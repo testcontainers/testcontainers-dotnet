@@ -6,8 +6,7 @@ public sealed class ConsulContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _consulContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _consulContainer.StartAsync().ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -33,10 +32,12 @@ public sealed class ConsulContainerTest : IAsyncLifetime
         using var consulClient = new ConsulClient(consulClientConfiguration);
 
         // When
-        _ = await consulClient.KV.Put(expected, TestContext.Current.CancellationToken)
+        _ = await consulClient
+            .KV.Put(expected, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var actual = await consulClient.KV.Get(key, TestContext.Current.CancellationToken)
+        var actual = await consulClient
+            .KV.Get(key, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

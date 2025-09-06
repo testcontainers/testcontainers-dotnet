@@ -19,9 +19,18 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void DockerfileArchiveGetBaseImages()
     {
       // Given
-      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage image = new DockerImage(
+        "localhost/testcontainers",
+        Guid.NewGuid().ToString("D"),
+        string.Empty
+      );
 
-      var dockerfileArchive = new DockerfileArchive("Assets/pullBaseImages/", "Dockerfile", image, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive(
+        "Assets/pullBaseImages/",
+        "Dockerfile",
+        image,
+        NullLogger.Instance
+      );
 
       // When
       var baseImages = dockerfileArchive.GetBaseImages().ToArray();
@@ -29,24 +38,43 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Then
       Assert.Equal(4, baseImages.Length);
       Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/sdk:6.0".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/runtime:6.0".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.22-jammy-amd64".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.23-jammy-amd64".Equals(item.FullName));
+      Assert.Contains(
+        baseImages,
+        item => "mcr.microsoft.com/dotnet/runtime:6.0".Equals(item.FullName)
+      );
+      Assert.Contains(
+        baseImages,
+        item => "mcr.microsoft.com/dotnet/aspnet:6.0.22-jammy-amd64".Equals(item.FullName)
+      );
+      Assert.Contains(
+        baseImages,
+        item => "mcr.microsoft.com/dotnet/aspnet:6.0.23-jammy-amd64".Equals(item.FullName)
+      );
     }
 
     [Fact]
     public async Task DockerfileArchiveTar()
     {
       // Given
-      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+      IImage image = new DockerImage(
+        "localhost/testcontainers",
+        Guid.NewGuid().ToString("D"),
+        string.Empty
+      );
 
       var expected = new SortedSet<string> { ".dockerignore", "Dockerfile", "setup/setup.sh" };
 
       var actual = new SortedSet<string>();
 
-      var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive(
+        "Assets/",
+        "Dockerfile",
+        image,
+        NullLogger.Instance
+      );
 
-      var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+      var dockerfileArchiveFilePath = await dockerfileArchive
+        .Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // When
@@ -75,11 +103,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
+      var exception = await Assert
+        .ThrowsAsync<ArgumentException>(() =>
+          imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        )
         .ConfigureAwait(true);
 
       // Then
-      Assert.Equal($"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.", exception.Message);
+      Assert.Equal(
+        $"Dockerfile does not exist in '{Path.GetFullPath(dockerfileDirectory)}'.",
+        exception.Message
+      );
     }
 
     [Fact]
@@ -93,11 +127,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Assert.ThrowsAsync<ArgumentException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
+      var exception = await Assert
+        .ThrowsAsync<ArgumentException>(() =>
+          imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        )
         .ConfigureAwait(true);
 
       // Then
-      Assert.Equal($"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.", exception.Message);
+      Assert.Equal(
+        $"Directory '{Path.GetFullPath(dockerfileDirectory)}' does not exist.",
+        exception.Message
+      );
     }
 
     [Fact]
@@ -109,7 +149,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      var exception = await Record.ExceptionAsync(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
+      var exception = await Record
+        .ExceptionAsync(() =>
+          imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        )
         .ConfigureAwait(true);
 
       // Then
@@ -127,9 +170,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task BuildsDockerAlpineImage(string dockerfile)
     {
       // Given
-      IImage tag1 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
+      IImage tag1 = new DockerImage(
+        new DockerImage(
+          string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))
+        )
+      );
 
-      IImage tag2 = new DockerImage(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
+      IImage tag2 = new DockerImage(
+        new DockerImage(
+          string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))
+        )
+      );
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
         .WithName(tag1)
@@ -140,10 +191,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         .Build();
 
       // When
-      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+      await imageFromDockerfileBuilder
+        .CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+      await imageFromDockerfileBuilder
+        .CreateAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

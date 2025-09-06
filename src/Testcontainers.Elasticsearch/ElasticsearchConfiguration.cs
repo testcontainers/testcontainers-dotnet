@@ -9,9 +9,7 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The Elasticsearch username.</param>
     /// <param name="password">The Elasticsearch password.</param>
-    public ElasticsearchConfiguration(
-        string username = null,
-        string password = null)
+    public ElasticsearchConfiguration(string username = null, string password = null)
     {
         Username = username;
         Password = password;
@@ -21,7 +19,9 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     /// Initializes a new instance of the <see cref="ElasticsearchConfiguration" /> class.
     /// </summary>
     /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    public ElasticsearchConfiguration(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    public ElasticsearchConfiguration(
+        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
+    )
         : base(resourceConfiguration)
     {
         // Passes the configuration upwards to the base implementations to create an updated immutable copy.
@@ -52,7 +52,10 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="oldValue">The old Docker resource configuration.</param>
     /// <param name="newValue">The new Docker resource configuration.</param>
-    public ElasticsearchConfiguration(ElasticsearchConfiguration oldValue, ElasticsearchConfiguration newValue)
+    public ElasticsearchConfiguration(
+        ElasticsearchConfiguration oldValue,
+        ElasticsearchConfiguration newValue
+    )
         : base(oldValue, newValue)
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);

@@ -9,9 +9,7 @@ public sealed class EventStoreDbContainer : DockerContainer
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
     public EventStoreDbContainer(EventStoreDbConfiguration configuration)
-        : base(configuration)
-    {
-    }
+        : base(configuration) { }
 
     /// <summary>
     /// Gets the EventStoreDb connection string.
@@ -19,7 +17,11 @@ public sealed class EventStoreDbContainer : DockerContainer
     /// <returns>The EventStoreDb connection string.</returns>
     public string GetConnectionString()
     {
-        var endpoint = new UriBuilder("esdb", Hostname, GetMappedPublicPort(EventStoreDbBuilder.EventStoreDbPort));
+        var endpoint = new UriBuilder(
+            "esdb",
+            Hostname,
+            GetMappedPublicPort(EventStoreDbBuilder.EventStoreDbPort)
+        );
         endpoint.Query = "tls=false";
         return endpoint.ToString();
     }

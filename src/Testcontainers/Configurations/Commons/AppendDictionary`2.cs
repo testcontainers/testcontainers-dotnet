@@ -1,8 +1,8 @@
 namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
-  using JetBrains.Annotations;
   using DotNet.Testcontainers.Builders;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// Represents a composable dictionary that combines its elements by appending
@@ -18,12 +18,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="dictionary">The dictionary whose elements are copied to the new dictionary.</param>
     public AppendDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
-      : base(dictionary)
-    {
-    }
+      : base(dictionary) { }
 
     /// <inheritdoc />
-    public override ComposableDictionary<TKey, TValue> Compose(IReadOnlyDictionary<TKey, TValue> other)
+    public override ComposableDictionary<TKey, TValue> Compose(
+      IReadOnlyDictionary<TKey, TValue> other
+    )
     {
       return new AppendDictionary<TKey, TValue>(BuildConfiguration.Combine(other, this));
     }

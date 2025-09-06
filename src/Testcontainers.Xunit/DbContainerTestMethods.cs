@@ -1,9 +1,14 @@
 namespace Testcontainers.Xunit;
 
-internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory, Lazy<string> connectionString) : IDbContainerTestMethods, IAsyncDisposable
+internal sealed class DbContainerTestMethods(
+    DbProviderFactory dbProviderFactory,
+    Lazy<string> connectionString
+) : IDbContainerTestMethods, IAsyncDisposable
 {
-    private readonly DbProviderFactory _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
-    private readonly Lazy<string> _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    private readonly DbProviderFactory _dbProviderFactory =
+        dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
+    private readonly Lazy<string> _connectionString =
+        connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
 #if NET8_0_OR_GREATER
     [CanBeNull]
@@ -21,9 +26,12 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
 
     public DbConnection OpenConnection() => DbDataSource.OpenConnection();
 
-    public ValueTask<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken = default) => DbDataSource.OpenConnectionAsync(cancellationToken);
+    public ValueTask<DbConnection> OpenConnectionAsync(
+        CancellationToken cancellationToken = default
+    ) => DbDataSource.OpenConnectionAsync(cancellationToken);
 
-    public DbCommand CreateCommand(string commandText = null) => DbDataSource.CreateCommand(commandText);
+    public DbCommand CreateCommand(string commandText = null) =>
+        DbDataSource.CreateCommand(commandText);
 
     public DbBatch CreateBatch() => DbDataSource.CreateBatch();
 
@@ -31,7 +39,11 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
 #else
     public DbConnection CreateConnection()
     {
-        var connection = _dbProviderFactory.CreateConnection() ?? throw new InvalidOperationException($"DbProviderFactory.CreateConnection() returned null for {_dbProviderFactory}");
+        var connection =
+            _dbProviderFactory.CreateConnection()
+            ?? throw new InvalidOperationException(
+                $"DbProviderFactory.CreateConnection() returned null for {_dbProviderFactory}"
+            );
         connection.ConnectionString = _connectionString.Value;
         return connection;
     }

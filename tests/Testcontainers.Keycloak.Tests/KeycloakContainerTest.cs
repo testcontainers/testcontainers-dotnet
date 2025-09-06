@@ -11,14 +11,12 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _keycloakContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _keycloakContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -32,7 +30,11 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
         // When
-        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient
+            .GetAsync(
+                "/realms/master/.well-known/openid-configuration",
+                TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         // Then
@@ -44,10 +46,15 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public async Task MasterRealmIsEnabled()
     {
         // Given
-        var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+        var keycloakClient = new KeycloakClient(
+            _keycloakContainer.GetBaseAddress(),
+            KeycloakBuilder.DefaultUsername,
+            KeycloakBuilder.DefaultPassword
+        );
 
         // When
-        var masterRealm = await keycloakClient.GetRealmAsync("master", TestContext.Current.CancellationToken)
+        var masterRealm = await keycloakClient
+            .GetRealmAsync("master", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -63,26 +70,20 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakDefaultConfiguration : KeycloakContainerTest
     {
         public KeycloakDefaultConfiguration()
-            : base(new KeycloakBuilder().Build())
-        {
-        }
+            : base(new KeycloakBuilder().Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class KeycloakV25Configuration : KeycloakContainerTest
     {
         public KeycloakV25Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build())
-        {
-        }
+            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build()) { }
     }
 
     [UsedImplicitly]
     public sealed class KeycloakV26Configuration : KeycloakContainerTest
     {
         public KeycloakV26Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
-        {
-        }
+            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build()) { }
     }
 }

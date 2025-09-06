@@ -8,14 +8,12 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _lowkeyVaultContainer.StartAsync()
-            .ConfigureAwait(false);
+        await _lowkeyVaultContainer.StartAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
+        await DisposeAsyncCore().ConfigureAwait(false);
 
         GC.SuppressFinalize(this);
     }
@@ -30,7 +28,8 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         var certificates = await _lowkeyVaultContainer.GetCertificateAsync();
 
         using var httpMessageHandler = new HttpClientHandler();
-        httpMessageHandler.ServerCertificateCustomValidationCallback = (_, cert, _, _) => certificates.IndexOf(cert) > -1;
+        httpMessageHandler.ServerCertificateCustomValidationCallback = (_, cert, _, _) =>
+            certificates.IndexOf(cert) > -1;
 
         using var httpClient = new HttpClient(httpMessageHandler);
         httpClient.BaseAddress = new Uri(baseAddress);
@@ -38,7 +37,8 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         // When
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "management/vault");
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken)
+        using var httpResponseMessage = await httpClient
+            .SendAsync(httpRequestMessage, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -56,13 +56,19 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
         var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
 
-        var secretClient = new SecretClient(new Uri(baseAddress), GetTokenCredential(), GetSecretClientOptions());
+        var secretClient = new SecretClient(
+            new Uri(baseAddress),
+            GetTokenCredential(),
+            GetSecretClientOptions()
+        );
 
-        await secretClient.SetSecretAsync(secretName, secretValue, TestContext.Current.CancellationToken)
+        await secretClient
+            .SetSecretAsync(secretName, secretValue, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // When
-        var keyVaultSecret = await secretClient.GetSecretAsync(secretName, cancellationToken: TestContext.Current.CancellationToken)
+        var keyVaultSecret = await secretClient
+            .GetSecretAsync(secretName, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -82,7 +88,11 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
         var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
 
-        var certificateClient = new CertificateClient(new Uri(baseAddress), GetTokenCredential(), GetCertificateClientOptions());
+        var certificateClient = new CertificateClient(
+            new Uri(baseAddress),
+            GetTokenCredential(),
+            GetCertificateClientOptions()
+        );
 
         var certificatePolicy = new CertificatePolicy("self", subject);
         certificatePolicy.KeyType = CertificateKeyType.Rsa;
@@ -92,13 +102,23 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         certificatePolicy.ValidityInMonths = 12;
 
         // When
-        var certificateOperation = await certificateClient.StartCreateCertificateAsync(certificateName, certificatePolicy, cancellationToken: TestContext.Current.CancellationToken)
+        var certificateOperation = await certificateClient
+            .StartCreateCertificateAsync(
+                certificateName,
+                certificatePolicy,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
-        await certificateOperation.WaitForCompletionAsync(TestContext.Current.CancellationToken)
+        await certificateOperation
+            .WaitForCompletionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await certificateClient.DownloadCertificateAsync(certificateName, cancellationToken: TestContext.Current.CancellationToken)
+        var response = await certificateClient
+            .DownloadCertificateAsync(
+                certificateName,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
             .ConfigureAwait(true);
 
         using var certificate = response!.Value;
@@ -144,7 +164,11 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
             // This isn't a recommended approach. It stops you from running multiple containers
             // at the same time.
             const EnvironmentVariableTarget envVarTarget = EnvironmentVariableTarget.Process;
-            Environment.SetEnvironmentVariable("IDENTITY_ENDPOINT", _lowkeyVaultContainer.GetAuthTokenUrl(), envVarTarget);
+            Environment.SetEnvironmentVariable(
+                "IDENTITY_ENDPOINT",
+                _lowkeyVaultContainer.GetAuthTokenUrl(),
+                envVarTarget
+            );
             Environment.SetEnvironmentVariable("IDENTITY_HEADER", "header", envVarTarget);
             return new DefaultAzureCredential();
         }
@@ -160,12 +184,18 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
         private sealed class NoopCredential : TokenCredential
         {
-            public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            public override AccessToken GetToken(
+                TokenRequestContext requestContext,
+                CancellationToken cancellationToken
+            )
             {
                 return new AccessToken("noop", DateTimeOffset.UtcNow.AddHours(1));
             }
 
-            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            public override ValueTask<AccessToken> GetTokenAsync(
+                TokenRequestContext requestContext,
+                CancellationToken cancellationToken
+            )
             {
                 return new ValueTask<AccessToken>(GetToken(requestContext, cancellationToken));
             }

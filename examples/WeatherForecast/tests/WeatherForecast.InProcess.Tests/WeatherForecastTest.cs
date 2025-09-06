@@ -40,13 +40,12 @@ public sealed class WeatherForecastTest : IAsyncLifetime
       using var httpClient = CreateClient();
 
       // When
-      var response = await httpClient.GetAsync(path)
-        .ConfigureAwait(true);
+      var response = await httpClient.GetAsync(path).ConfigureAwait(true);
 
-      var weatherForecastStream = await response.Content.ReadAsStreamAsync()
-        .ConfigureAwait(true);
+      var weatherForecastStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(true);
 
-      var weatherForecast = await JsonSerializer.DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream)
+      var weatherForecast = await JsonSerializer
+        .DeserializeAsync<IEnumerable<WeatherData>>(weatherForecastStream)
         .ConfigureAwait(true);
 
       // Then
@@ -63,10 +62,12 @@ public sealed class WeatherForecastTest : IAsyncLifetime
 
       using var serviceScope = Services.CreateScope();
 
-      var weatherDataReadOnlyRepository = serviceScope.ServiceProvider.GetRequiredService<IWeatherDataReadOnlyRepository>();
+      var weatherDataReadOnlyRepository =
+        serviceScope.ServiceProvider.GetRequiredService<IWeatherDataReadOnlyRepository>();
 
       // When
-      var weatherForecast = await weatherDataReadOnlyRepository.GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(threeDays))
+      var weatherForecast = await weatherDataReadOnlyRepository
+        .GetAllAsync(string.Empty, string.Empty, DateTime.Today, DateTime.Today.AddDays(threeDays))
         .ConfigureAwait(true);
 
       // Then

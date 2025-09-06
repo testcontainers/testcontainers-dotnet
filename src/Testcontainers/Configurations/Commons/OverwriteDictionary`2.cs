@@ -17,12 +17,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="dictionary">The dictionary whose elements are copied to the new dictionary.</param>
     public OverwriteDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
-      : base(dictionary)
-    {
-    }
+      : base(dictionary) { }
 
     /// <inheritdoc />
-    public override ComposableDictionary<TKey, TValue> Compose(IReadOnlyDictionary<TKey, TValue> other)
+    public override ComposableDictionary<TKey, TValue> Compose(
+      IReadOnlyDictionary<TKey, TValue> other
+    )
     {
       // Ignores all previous configurations.
       return this;
