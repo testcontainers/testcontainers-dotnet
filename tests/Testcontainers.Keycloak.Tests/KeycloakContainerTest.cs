@@ -1,3 +1,6 @@
+using System.IO;
+using System.Linq;
+
 namespace Testcontainers.Keycloak;
 
 public abstract class KeycloakContainerTest : IAsyncLifetime
@@ -83,6 +86,30 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         public KeycloakV26Configuration()
             : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
         {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KeycloakRealmConfiguration : KeycloakContainerTest
+    {
+        public KeycloakRealmConfiguration()
+            : base(new KeycloakBuilder().WithRealm(Path.GetFullPath("realm-export.json")).Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task RealmIsImported()
+        {
+            // Given
+            var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+
+            // When
+            var realms = await keycloakClient.GetRealmsAsync("master", TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.True(realms.Count() == 2);
         }
     }
 }

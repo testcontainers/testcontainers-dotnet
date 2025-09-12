@@ -60,6 +60,17 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Sets the Keycloak to Import Realm file.
+    /// </summary>
+    /// <param name="path">The path to realm-export.json</param>
+    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    public KeycloakBuilder WithRealm(string path)
+    {
+        return Clone(new ContainerConfiguration(command: new AppendEnumerable<string>(["--import-realm"])))
+            .WithBindMount(path, "/opt/keycloak/data/import/realm-export.json");
+    }
+
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
