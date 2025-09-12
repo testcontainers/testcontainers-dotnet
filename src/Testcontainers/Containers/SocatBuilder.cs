@@ -72,7 +72,9 @@ namespace DotNet.Testcontainers.Containers
         .Select(item => string.Format(argument, item.Key, item.Value)));
 
       var waitStrategy = DockerResourceConfiguration.Targets
-        .Aggregate(Wait.ForUnixContainer(), (waitStrategy, item) => waitStrategy.UntilPortIsAvailable(item.Key));
+        .Aggregate(Wait.ForUnixContainer(), (waitStrategy, item) => waitStrategy
+          .UntilInternalTcpPortIsAvailable(item.Key)
+          .UntilExternalTcpPortIsAvailable(item.Key));
 
       var socatBuilder = WithCommand(command).WithWaitStrategy(waitStrategy);
       return new SocatContainer(socatBuilder.DockerResourceConfiguration);
