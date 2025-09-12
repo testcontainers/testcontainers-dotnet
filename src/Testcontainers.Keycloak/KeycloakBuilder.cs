@@ -60,6 +60,22 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Configures Keycloak to import a realm configuration file during startup.
+    /// </summary>
+    /// <remarks>
+    /// The file will be copied to the <c>/opt/keycloak/data/import/</c> directory
+    /// inside the container:
+    /// https://www.keycloak.org/server/importExport#_importing_a_realm_during_startup.
+    /// </remarks>
+    /// <param name="realmConfigurationFilePath">The local path to the realm configuration file (JSON).</param>
+    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    public KeycloakBuilder WithRealm(string realmConfigurationFilePath)
+    {
+        return WithCommand("--import-realm")
+            .WithResourceMapping(realmConfigurationFilePath, "/opt/keycloak/data/import/");
+    }
+
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
