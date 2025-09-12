@@ -61,14 +61,19 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     }
 
     /// <summary>
-    /// Sets the Keycloak to Import Realm file.
+    /// Configures Keycloak to import a realm configuration file during startup.
     /// </summary>
-    /// <param name="path">The path to realm-export.json</param>
+    /// <remarks>
+    /// The file will be copied to the <c>/opt/keycloak/data/import/</c> directory
+    /// inside the container:
+    /// https://www.keycloak.org/server/importExport#_importing_a_realm_during_startup.
+    /// </remarks>
+    /// <param name="realmConfigurationFilePath">The local path to the realm configuration file (JSON).</param>
     /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
-    public KeycloakBuilder WithRealm(string path)
+    public KeycloakBuilder WithRealm(string realmConfigurationFilePath)
     {
-        return Clone(new ContainerConfiguration(command: new AppendEnumerable<string>(["--import-realm"])))
-            .WithBindMount(path, "/opt/keycloak/data/import/realm-export.json");
+        return WithCommand("--import-realm")
+            .WithResourceMapping(realmConfigurationFilePath, "/opt/keycloak/data/import/");
     }
 
     /// <inheritdoc />
