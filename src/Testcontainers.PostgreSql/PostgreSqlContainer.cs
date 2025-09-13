@@ -44,7 +44,7 @@ public sealed class PostgreSqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { "psql", "--username", _configuration.Username, "--dbname", _configuration.Database, "--file", scriptFilePath }, ct)
+        return await ExecAsync(new[] { "psql", "--host", "localhost", "--username", _configuration.Username, "--dbname", _configuration.Database, "--file", scriptFilePath }, ct)
             .ConfigureAwait(false);
     }
 }
