@@ -54,7 +54,7 @@ public sealed class PostgreSqlSslConfigTest
             .WithDatabase("testdb")
             .WithUsername("testuser")
             .WithPassword("testpass123")
-            .WithSSLConfig(_caCertPath, _serverCertPath, _serverKeyPath)
+            .WithSSLSettings(_caCertPath, _serverCertPath, _serverKeyPath)
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
                 .UntilMessageIsLogged("database system is ready to accept connections"))
@@ -157,7 +157,7 @@ public sealed class PostgreSqlSslConfigTest
     {
         // Given, When, Then
         var exception = Assert.Throws<ArgumentException>(() => 
-            new PostgreSqlBuilder().WithSSLConfig("", _serverCertPath, _serverKeyPath));
+            new PostgreSqlBuilder().WithSSLSettings("", _serverCertPath, _serverKeyPath));
         
         Assert.Equal("caCertFile", exception.ParamName);
         Assert.Contains("CA certificate file path cannot be null or empty", exception.Message);
@@ -168,7 +168,7 @@ public sealed class PostgreSqlSslConfigTest
     {
         // Given, When, Then
         var exception = Assert.Throws<ArgumentException>(() => 
-            new PostgreSqlBuilder().WithSSLConfig(_caCertPath, "", _serverKeyPath));
+            new PostgreSqlBuilder().WithSSLSettings(_caCertPath, "", _serverKeyPath));
         
         Assert.Equal("serverCertFile", exception.ParamName);
         Assert.Contains("Server certificate file path cannot be null or empty", exception.Message);
@@ -179,7 +179,7 @@ public sealed class PostgreSqlSslConfigTest
     {
         // Given, When, Then
         var exception = Assert.Throws<ArgumentException>(() => 
-            new PostgreSqlBuilder().WithSSLConfig(_caCertPath, _serverCertPath, ""));
+            new PostgreSqlBuilder().WithSSLSettings(_caCertPath, _serverCertPath, ""));
         
         Assert.Equal("serverKeyFile", exception.ParamName);
         Assert.Contains("Server key file path cannot be null or empty", exception.Message);

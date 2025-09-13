@@ -127,7 +127,7 @@ public sealed class
     /// certificate paths. The certificates are mounted into the container and PostgreSQL is configured
     /// to use them for SSL connections.
     /// </remarks>
-    public PostgreSqlBuilder WithSSLConfig(string caCertFile, string serverCertFile, string serverKeyFile)
+    public PostgreSqlBuilder WithSSLSettings(string caCertFile, string serverCertFile, string serverKeyFile)
     {
         if (string.IsNullOrWhiteSpace(caCertFile))
         {

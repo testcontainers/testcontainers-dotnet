@@ -36,7 +36,7 @@ public sealed class PostgreSqlSslTest : IAsyncLifetime
             .WithDatabase("testdb")
             .WithUsername("testuser")
             .WithPassword("testpass123")
-            .WithSSLConfig(_caCertPath, _serverCertPath, _serverKeyPath)
+            .WithSSLSettings(_caCertPath, _serverCertPath, _serverKeyPath)
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
                 .UntilMessageIsLogged("database system is ready to accept connections"))
