@@ -239,7 +239,18 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithResourceMapping(byte[], FileInfo, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies the byte array content to the created container before it starts.
+    /// </summary>
+    /// <param name="resourceContent">The byte array content of the resource mapping.</param>
+    /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo filePath, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies the contents of a URL, a test host directory or file to the container before it starts.
@@ -257,6 +268,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("Use one of the more specific WithResourceMapping(…) methods instead.")]
     TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -267,17 +279,39 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithResourceMapping(DirectoryInfo, DirectoryInfo, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source directory to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(DirectoryInfo source, DirectoryInfo target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the given directory in the container before it starts.
     /// </summary>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithResourceMapping(FileInfo, DirectoryInfo, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the given directory in the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FileInfo source, DirectoryInfo target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host file to the container before it starts.
@@ -306,7 +340,46 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="target">The target directory or file path to copy the file to.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    [Obsolete("Use WithResourceMapping(Uri, FileInfo, UnixFileModes) or WithResourceMapping(Uri, DirectoryInfo, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    ///
+    /// If you prefer to copy a file to a specific target file path instead of a
+    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, UnixFileModes)" />.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, DirectoryInfo target, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.
