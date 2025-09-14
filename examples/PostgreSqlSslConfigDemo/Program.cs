@@ -6,7 +6,7 @@ internal class Program
 {
     public static async Task Main(string[] args)
     {
-        Console.WriteLine("=== Testcontainers PostgreSQL WithSSLConfig demo ===\n");
+        Console.WriteLine("=== Testcontainers PostgreSQL WithSSLSettings demo ===\n");
 
         try
         {

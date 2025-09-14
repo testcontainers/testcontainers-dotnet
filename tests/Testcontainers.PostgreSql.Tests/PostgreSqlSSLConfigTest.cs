@@ -1,17 +1,13 @@
 #nullable enable
 using System.IO;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Testcontainers.PostgreSql.Tests;
 
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using Npgsql;
-using Xunit;
-
 [UsedImplicitly]
-public sealed class PostgreSqlSslConfigTest 
+public sealed class PostgreSqlSslConfigTest
 {
     private const string CaCertFileName = "ca_cert.pem";
     private const string ServerCertFileName = "server.crt";
@@ -81,7 +77,7 @@ public sealed class PostgreSqlSslConfigTest
     }
 
     [Fact]
-    public async Task PostgreSqlContainerCanStartWithSSLConfig()
+    public async Task PostgreSqlContainerCanStartWithSSLSettings()
     {
         // Given
         await EnsureContainerStartedAsync();
@@ -105,7 +101,7 @@ public sealed class PostgreSqlSslConfigTest
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(_postgreSqlContainer!.GetConnectionString())
         {
-            SslMode = SslMode.Require,
+            SslMode = Npgsql.SslMode.Require,
             TrustServerCertificate = true // For testing only - in production use proper certificate validation
         };
 
@@ -114,10 +110,11 @@ public sealed class PostgreSqlSslConfigTest
         await connection.OpenAsync();
 
         // Then
-        Assert.Equal(System.Data.ConnectionState.Open, connection.State);
+        Assert.Equal(ConnectionState.Open, connection.State);
 
         // Verify SSL is being used
-        await using var command = new NpgsqlCommand("SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();", connection);
+        await using var command =
+            new NpgsqlCommand("SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();", connection);
         var sslIsUsed = await command.ExecuteScalarAsync();
         Assert.True(sslIsUsed is bool b && b, "SSL should be enabled for the connection");
     }
@@ -131,7 +128,7 @@ public sealed class PostgreSqlSslConfigTest
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(_postgreSqlContainer!.GetConnectionString())
         {
-            SslMode = SslMode.Require,
+            SslMode = Npgsql.SslMode.Require,
             TrustServerCertificate = true
         };
 
@@ -139,10 +136,12 @@ public sealed class PostgreSqlSslConfigTest
         await using var connection = new NpgsqlConnection(connectionStringBuilder.ConnectionString);
         await connection.OpenAsync();
 
-        await using var command = new NpgsqlCommand("CREATE TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));", connection);
+        await using var command =
+            new NpgsqlCommand("CREATE TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));", connection);
         await command.ExecuteNonQueryAsync();
 
-        await using var insertCommand = new NpgsqlCommand("INSERT INTO test_table (name) VALUES ('Test SSL Connection');", connection);
+        await using var insertCommand =
+            new NpgsqlCommand("INSERT INTO test_table (name) VALUES ('Test SSL Connection');", connection);
         await insertCommand.ExecuteNonQueryAsync();
 
         await using var selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM test_table;", connection);
@@ -153,34 +152,34 @@ public sealed class PostgreSqlSslConfigTest
     }
 
     [Fact]
-    public void WithSSLConfigThrowsArgumentExceptionForEmptyCaCert()
+    public void WithSSLCSettingsThrowsArgumentExceptionForEmptyCaCert()
     {
         // Given, When, Then
-        var exception = Assert.Throws<ArgumentException>(() => 
+        var exception = Assert.Throws<ArgumentException>(() =>
             new PostgreSqlBuilder().WithSSLSettings("", _serverCertPath, _serverKeyPath));
-        
+
         Assert.Equal("caCertFile", exception.ParamName);
         Assert.Contains("CA certificate file path cannot be null or empty", exception.Message);
     }
 
     [Fact]
-    public void WithSSLConfigThrowsArgumentExceptionForEmptyServerCert()
+    public void WithSSLSettingsThrowsArgumentExceptionForEmptyServerCert()
     {
         // Given, When, Then
-        var exception = Assert.Throws<ArgumentException>(() => 
+        var exception = Assert.Throws<ArgumentException>(() =>
             new PostgreSqlBuilder().WithSSLSettings(_caCertPath, "", _serverKeyPath));
-        
+
         Assert.Equal("serverCertFile", exception.ParamName);
         Assert.Contains("Server certificate file path cannot be null or empty", exception.Message);
     }
 
     [Fact]
-    public void WithSSLConfigThrowsArgumentExceptionForEmptyServerKey()
+    public void WithSSLSettingsThrowsArgumentExceptionForEmptyServerKey()
     {
         // Given, When, Then
-        var exception = Assert.Throws<ArgumentException>(() => 
+        var exception = Assert.Throws<ArgumentException>(() =>
             new PostgreSqlBuilder().WithSSLSettings(_caCertPath, _serverCertPath, ""));
-        
+
         Assert.Equal("serverKeyFile", exception.ParamName);
         Assert.Contains("Server key file path cannot be null or empty", exception.Message);
     }
@@ -192,9 +191,9 @@ public sealed class PostgreSqlSslConfigTest
 
         // Create CA certificate
         var caCertRequest = new CertificateRequest(
-            "CN=Test CA, O=Testcontainers", 
-            rsa, 
-            HashAlgorithmName.SHA256, 
+            "CN=Test CA, O=Testcontainers",
+            rsa,
+            HashAlgorithmName.SHA256,
             RSASignaturePadding.Pkcs1);
 
         caCertRequest.CertificateExtensions.Add(
@@ -202,7 +201,7 @@ public sealed class PostgreSqlSslConfigTest
 
         caCertRequest.CertificateExtensions.Add(
             new X509KeyUsageExtension(
-                X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, 
+                X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign,
                 true));
 
         var caNotBefore = DateTimeOffset.UtcNow.AddDays(-1);
@@ -210,22 +209,22 @@ public sealed class PostgreSqlSslConfigTest
         using var caCert = caCertRequest.CreateSelfSigned(caNotBefore, caNotAfter);
 
         // Save CA certificate
-        await File.WriteAllTextAsync(_caCertPath, 
-            "-----BEGIN CERTIFICATE-----\n" + 
-            Convert.ToBase64String(caCert.RawData, Base64FormattingOptions.InsertLineBreaks) + 
+        await File.WriteAllTextAsync(_caCertPath,
+            "-----BEGIN CERTIFICATE-----\n" +
+            Convert.ToBase64String(caCert.RawData, Base64FormattingOptions.InsertLineBreaks) +
             "\n-----END CERTIFICATE-----\n");
 
         // Create server certificate
         using var serverRsa = RSA.Create(2048);
         var serverCertRequest = new CertificateRequest(
-            "CN=localhost, O=Testcontainers", 
-            serverRsa, 
-            HashAlgorithmName.SHA256, 
+            "CN=localhost, O=Testcontainers",
+            serverRsa,
+            HashAlgorithmName.SHA256,
             RSASignaturePadding.Pkcs1);
 
         serverCertRequest.CertificateExtensions.Add(
             new X509KeyUsageExtension(
-                X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment, 
+                X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment,
                 true));
 
         serverCertRequest.CertificateExtensions.Add(
@@ -236,10 +235,12 @@ public sealed class PostgreSqlSslConfigTest
         // Add Subject Alternative Names
         var sanBuilder = new SubjectAlternativeNameBuilder();
         sanBuilder.AddDnsName("localhost");
-        sanBuilder.AddIpAddress(System.Net.IPAddress.Loopback);
+        sanBuilder.AddIpAddress(IPAddress.Loopback);
         serverCertRequest.CertificateExtensions.Add(sanBuilder.Build());
 
-        var serverNotBefore = caNotBefore.AddMinutes(1) > DateTimeOffset.UtcNow.AddDays(-1) ? caNotBefore.AddMinutes(1) : DateTimeOffset.UtcNow.AddDays(-1);
+        var serverNotBefore = caNotBefore.AddMinutes(1) > DateTimeOffset.UtcNow.AddDays(-1)
+            ? caNotBefore.AddMinutes(1)
+            : DateTimeOffset.UtcNow.AddDays(-1);
         var serverNotAfter = caNotAfter.AddMinutes(-1);
         using var serverCert = serverCertRequest.Create(
             caCert,
@@ -249,14 +250,14 @@ public sealed class PostgreSqlSslConfigTest
 
         // Save server certificate
         await File.WriteAllTextAsync(_serverCertPath,
-            "-----BEGIN CERTIFICATE-----\n" + 
-            Convert.ToBase64String(serverCert.RawData, Base64FormattingOptions.InsertLineBreaks) + 
+            "-----BEGIN CERTIFICATE-----\n" +
+            Convert.ToBase64String(serverCert.RawData, Base64FormattingOptions.InsertLineBreaks) +
             "\n-----END CERTIFICATE-----\n");
 
         // Save server private key
         await File.WriteAllTextAsync(_serverKeyPath,
-            "-----BEGIN PRIVATE KEY-----\n" + 
-            Convert.ToBase64String(serverRsa.ExportPkcs8PrivateKey(), Base64FormattingOptions.InsertLineBreaks) + 
+            "-----BEGIN PRIVATE KEY-----\n" +
+            Convert.ToBase64String(serverRsa.ExportPkcs8PrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
             "\n-----END PRIVATE KEY-----\n");
 
         // Set appropriate permissions for private key

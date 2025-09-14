@@ -41,7 +41,7 @@ public static class PostgreSqlSSLConfigExample
                 .WithDatabase("example_db")
                 .WithUsername("ssl_user")
                 .WithPassword("secure_password123")
-                .WithSSLConfig(caCertPath, serverCertPath, serverKeyPath)
+                .WithSSLSettings(caCertPath, serverCertPath, serverKeyPath)
                 .Build();
 
             Console.WriteLine("Starting PostgreSQL container with SSL configuration...");
