@@ -52,7 +52,7 @@ public sealed class PostgreSqlSslConfigTest
             .WithPassword("testpass123")
             .WithSSLSettings(_caCertPath, _serverCertPath, _serverKeyPath)
             .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
+                .UntilInternalTcpPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
                 .UntilMessageIsLogged("database system is ready to accept connections"))
             .Build();
 
@@ -107,7 +107,7 @@ public sealed class PostgreSqlSslConfigTest
 
         // When
         await using var connection = new NpgsqlConnection(connectionStringBuilder.ConnectionString);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
@@ -115,7 +115,7 @@ public sealed class PostgreSqlSslConfigTest
         // Verify SSL is being used
         await using var command =
             new NpgsqlCommand("SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();", connection);
-        var sslIsUsed = await command.ExecuteScalarAsync();
+        var sslIsUsed = await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
         Assert.True(sslIsUsed is bool b && b, "SSL should be enabled for the connection");
     }
 
@@ -134,18 +134,18 @@ public sealed class PostgreSqlSslConfigTest
 
         // When
         await using var connection = new NpgsqlConnection(connectionStringBuilder.ConnectionString);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
 
         await using var command =
             new NpgsqlCommand("CREATE TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));", connection);
-        await command.ExecuteNonQueryAsync();
+        await command.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
 
         await using var insertCommand =
             new NpgsqlCommand("INSERT INTO test_table (name) VALUES ('Test SSL Connection');", connection);
-        await insertCommand.ExecuteNonQueryAsync();
+        await insertCommand.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
 
         await using var selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM test_table;", connection);
-        var count = await selectCommand.ExecuteScalarAsync();
+        var count = await selectCommand.ExecuteScalarAsync(TestContext.Current.CancellationToken);
 
         // Then
         Assert.Equal(1L, count);

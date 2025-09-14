@@ -38,7 +38,7 @@ public sealed class PostgreSqlSslTest : IAsyncLifetime
             .WithPassword("testpass123")
             .WithSSLSettings(_caCertPath, _serverCertPath, _serverKeyPath)
             .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
+                .UntilInternalTcpPortIsAvailable(PostgreSqlBuilder.PostgreSqlPort)
                 .UntilMessageIsLogged("database system is ready to accept connections"))
             .Build();
     }
@@ -47,7 +47,7 @@ public sealed class PostgreSqlSslTest : IAsyncLifetime
     public async Task PostgreSqlContainerCanConnectWithSsl()
     {
         // Given
-        await _postgreSqlContainer.StartAsync();
+        await _postgreSqlContainer.StartAsync(TestContext.Current.CancellationToken);
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(_postgreSqlContainer.GetConnectionString())
         {
@@ -57,7 +57,7 @@ public sealed class PostgreSqlSslTest : IAsyncLifetime
 
         // When
         await using var connection = new NpgsqlConnection(connectionStringBuilder.ConnectionString);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
