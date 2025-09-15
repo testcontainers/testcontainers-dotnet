@@ -76,7 +76,8 @@ Starting a container or creating a resource (such as a network or a volume) can 
 
 ```csharp title="Canceling container start after one minute"
 using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-await _container.StartAsync(timeoutCts.Token);
+await _container.StartAsync(timeoutCts.Token)
+  .ConfigureAwait(false);
 ```
 
 ## Getting log messages
@@ -86,7 +87,8 @@ Testcontainers for .NET provides two approaches for retrieving log messages from
 The `GetLogsAsync` method is available through the `IContainer` interface. It allows you to fetch logs from a container for a specific time range or from the beginning until the present. This approach is useful for retrieving logs after a test has run, especially when troubleshooting issues or failures.
 
 ```csharp title="Getting all log messages"
-var (stdout, stderr) = await _container.GetLogsAsync();
+var (stdout, stderr) = await _container.GetLogsAsync()
+  .ConfigureAwait(false);
 ```
 
 The `WithOutputConsumer` method is part of the `ContainerBuilder` class and is used to continuously forward container log messages to a specified output consumer. This approach provides real-time access to logs as the container runs.

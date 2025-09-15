@@ -28,9 +28,6 @@ namespace DotNet.Testcontainers.Configurations
     public abstract IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
-
-    /// <inheritdoc />
     public abstract IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />

@@ -59,16 +59,6 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the port is available.
-    /// </summary>
-    /// <param name="port">The port to be checked.</param>
-    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
-    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    [PublicAPI]
-    [Obsolete("Use UntilInternalTcpPortIsAvailable or UntilExternalTcpPortIsAvailable instead. This method corresponds to the internal variant.")]
-    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
-
-    /// <summary>
     /// Waits until a TCP port is available from within the container itself.
     /// This verifies that a service inside the container is listening on the specified port.
     /// </summary>
