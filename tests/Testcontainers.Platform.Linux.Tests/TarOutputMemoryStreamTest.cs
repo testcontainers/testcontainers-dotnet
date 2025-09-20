@@ -84,6 +84,12 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         public string Target
             => string.Join("/", TargetDirectoryPath, _testFile.Name);
 
+        public uint UserId
+            => 0;
+
+        public uint GroupId
+            => 0;
+
         public UnixFileModes FileMode
             => Unix.FileMode644;
 
@@ -204,7 +210,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644)
+            await _tarOutputMemoryStream.AddAsync(_testFile, 0, 0, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 
@@ -219,7 +225,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644)
+            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, 0, 0, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 

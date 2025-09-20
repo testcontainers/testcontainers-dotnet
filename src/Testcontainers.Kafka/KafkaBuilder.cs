@@ -207,7 +207,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         var startupKafkaBuilder = kafkaBuilder.WithStartupCallback((container, ct) =>
         {
             var startupScript = vendorConfiguration.CreateStartupScript(kafkaBuilder.DockerResourceConfiguration, container);
-            return container.CopyAsync(Encoding.Default.GetBytes(startupScript), StartupScriptFilePath, Unix.FileMode755, ct);
+            return container.CopyAsync(Encoding.Default.GetBytes(startupScript), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
         });
 
         return new KafkaContainer(startupKafkaBuilder.DockerResourceConfiguration);

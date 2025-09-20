@@ -65,6 +65,8 @@ namespace DotNet.Testcontainers.Containers
 
       var tarEntry = new TarEntry(new TarHeader());
       tarEntry.TarHeader.Name = targetFilePath;
+      tarEntry.TarHeader.UserId = (int)resourceMapping.UserId;
+      tarEntry.TarHeader.GroupId = (int)resourceMapping.GroupId;
       tarEntry.TarHeader.Mode = (int)resourceMapping.FileMode;
       tarEntry.TarHeader.ModTime = DateTime.UtcNow;
       tarEntry.Size = fileContent.Length;
@@ -92,12 +94,14 @@ namespace DotNet.Testcontainers.Containers
     /// Adds a file to the archive.
     /// </summary>
     /// <param name="file">The file to add to the archive.</param>
+    /// <param name="uid"></param>
+    /// <param name="gid"></param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been added to the archive.</returns>
-    public Task AddAsync(FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
+    public Task AddAsync(FileInfo file, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
-      return AddAsync(file.Directory, file, fileMode, ct);
+      return AddAsync(file.Directory, file, uid, gid, fileMode, ct);
     }
 
     /// <summary>
@@ -105,15 +109,17 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The directory to add to the archive.</param>
     /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
+    /// <param name="uid"></param>
+    /// <param name="gid"></param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, bool recurse, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
       foreach (var file in directory.GetFiles("*", searchOption))
       {
-        await AddAsync(directory, file, fileMode, ct)
+        await AddAsync(directory, file, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
       }
     }
@@ -123,9 +129,11 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The root directory of the file to add to the archive.</param>
     /// <param name="file">The file to add to the archive.</param>
+    /// <param name="uid"></param>
+    /// <param name="gid"></param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, FileInfo file, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
       {
@@ -133,6 +141,8 @@ namespace DotNet.Testcontainers.Containers
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = targetFilePath;
+        tarEntry.TarHeader.UserId = (int)uid;
+        tarEntry.TarHeader.GroupId = (int)gid;
         tarEntry.TarHeader.Mode = (int)fileMode;
         tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
         tarEntry.Size = stream.Length;

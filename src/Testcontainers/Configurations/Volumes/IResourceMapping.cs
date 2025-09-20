@@ -11,6 +11,16 @@ namespace DotNet.Testcontainers.Configurations
   public interface IResourceMapping : IMount
   {
     /// <summary>
+    ///
+    /// </summary>
+    uint UserId { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    uint GroupId { get; }
+
+    /// <summary>
     /// Gets the Unix file mode.
     /// </summary>
     /// <remarks>

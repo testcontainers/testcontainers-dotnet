@@ -204,7 +204,7 @@ namespace DotNet.Testcontainers.Clients
     {
       if (Directory.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.UserId, resourceMapping.GroupId, resourceMapping.FileMode, ct)
           .ConfigureAwait(false);
 
         return;
@@ -212,7 +212,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (File.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.UserId, resourceMapping.GroupId, resourceMapping.FileMode, ct)
           .ConfigureAwait(false);
 
         return;
@@ -232,11 +232,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
+        await tarOutputMemStream.AddAsync(source, true, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -248,11 +248,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, FileInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, fileMode, ct)
+        await tarOutputMemStream.AddAsync(source, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
