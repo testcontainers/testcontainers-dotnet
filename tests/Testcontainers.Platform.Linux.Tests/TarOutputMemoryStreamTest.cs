@@ -84,6 +84,12 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         public string Target
             => string.Join("/", TargetDirectoryPath, _testFile.Name);
 
+        public uint UserId
+            => 0;
+
+        public uint GroupId
+            => 0;
+
         public UnixFileModes FileMode
             => Unix.FileMode644;
 
@@ -170,6 +176,48 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             Assert.All(execResults, result => Assert.Equal(0, result.ExitCode));
         }
 
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task TestFileHasExpectedOwnerGroupMode()
+        {
+            // Given
+            const uint nobody = 65534;
+            const uint uid = nobody;
+            const uint gid = nobody;
+            const UnixFileModes mode = Unix.FileMode755;
+
+            var modeOctal = Convert.ToString((int)mode, 8).PadLeft(4, '0');
+            var expected = uid + ":" + gid + " " + modeOctal;
+
+            var resourceContent = Array.Empty<byte>();
+
+            var targetFilePath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+
+            var targetFilePaths = new List<string>();
+            targetFilePaths.Add(targetFilePath1);
+            targetFilePaths.Add(targetFilePath2);
+
+            await using var container = new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithEntrypoint(CommonCommands.SleepInfinity)
+                .WithResourceMapping(resourceContent, targetFilePath1, uid, gid, mode)
+                .Build();
+
+            // When
+            await container.StartAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            await container.CopyAsync(resourceContent, targetFilePath2, uid, gid, mode, TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            var execResults = await Task.WhenAll(targetFilePaths.Select(containerFilePath => container.ExecAsync(new[] { "stat", "-c", "%u:%g %04a", containerFilePath }, TestContext.Current.CancellationToken)))
+                .ConfigureAwait(true);
+
+            Assert.All(execResults, result => Assert.Equal(expected, result.Stdout.Trim()));
+        }
+
         [UsedImplicitly]
         public sealed class HttpFixture : IAsyncLifetime
         {
@@ -204,7 +252,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile, Unix.FileMode644)
+            await _tarOutputMemoryStream.AddAsync(_testFile, 0, 0, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 
@@ -219,7 +267,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     {
         public async ValueTask InitializeAsync()
         {
-            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, Unix.FileMode644)
+            await _tarOutputMemoryStream.AddAsync(_testFile.Directory, true, 0, 0, Unix.FileMode644)
                 .ConfigureAwait(false);
         }
 
@@ -237,6 +285,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         [InlineData(Unix.FileMode700, "700")]
         [InlineData(Unix.FileMode755, "755")]
         [InlineData(Unix.FileMode777, "777")]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void UnixFileModeResolvesToPosixFilePermission(UnixFileModes fileMode, string posixFilePermission)
         {
             Assert.Equal(Convert.ToInt32(posixFilePermission, 8), Convert.ToInt32(fileMode));
