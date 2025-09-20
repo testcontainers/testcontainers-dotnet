@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 {
   using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.IO;
   using System.Linq;
   using System.Text;
@@ -19,19 +20,30 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void DockerfileArchiveGetBaseImages()
     {
       // Given
+      var expected = new[]
+      {
+        "mcr.microsoft.com/dotnet/sdk:8.0",
+        "mcr.microsoft.com/dotnet/runtime:8.0",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-jammy",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-noble",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-alpine",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0",
+        "mcr.microsoft.com/dotnet/sdk:8.0.414",
+      };
+
       IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
 
-      var dockerfileArchive = new DockerfileArchive("Assets/pullBaseImages/", "Dockerfile", image, NullLogger.Instance);
+      // The Dockerfile does not contain a default value.
+      var buildArguments = new Dictionary<string, string>();
+      buildArguments.Add("SDK_VERSION_8_0", "8.0.414");
+
+      var dockerfileArchive = new DockerfileArchive("Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
 
       // When
-      var baseImages = dockerfileArchive.GetBaseImages().ToArray();
+      var actual = dockerfileArchive.GetBaseImages();
 
       // Then
-      Assert.Equal(4, baseImages.Length);
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/sdk:6.0".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/runtime:6.0".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.22-jammy-amd64".Equals(item.FullName));
-      Assert.Contains(baseImages, item => "mcr.microsoft.com/dotnet/aspnet:6.0.23-jammy-amd64".Equals(item.FullName));
+      Assert.Equal(expected, actual.Select(baseImage => baseImage.FullName));
     }
 
     [Fact]
@@ -44,7 +56,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var actual = new SortedSet<string>();
 
-      var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, NullLogger.Instance);
+      var buildArguments = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
+      var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, buildArguments, NullLogger.Instance);
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
