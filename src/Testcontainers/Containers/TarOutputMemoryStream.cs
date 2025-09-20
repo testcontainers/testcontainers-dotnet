@@ -71,7 +71,11 @@ namespace DotNet.Testcontainers.Containers
       tarEntry.TarHeader.ModTime = DateTime.UtcNow;
       tarEntry.Size = fileContent.Length;
 
-      _logger.LogInformation("Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\"", tarEntry.Size, targetFilePath);
+      var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
+
+      _logger.LogInformation(
+        "Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
+        tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
@@ -147,7 +151,11 @@ namespace DotNet.Testcontainers.Containers
         tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
         tarEntry.Size = stream.Length;
 
-        _logger.LogInformation("Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\"", tarEntry.TarHeader.Name, targetFilePath);
+        var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
+
+        _logger.LogInformation(
+          "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
+          tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
         await PutNextEntryAsync(tarEntry, ct)
           .ConfigureAwait(false);
