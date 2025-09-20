@@ -11,12 +11,12 @@ namespace DotNet.Testcontainers.Configurations
   public interface IResourceMapping : IMount
   {
     /// <summary>
-    ///
+    /// Gets the user ID to set for the copied resource.
     /// </summary>
     uint UserId { get; }
 
     /// <summary>
-    ///
+    /// Gets the group ID to set for the copied resource.
     /// </summary>
     uint GroupId { get; }
 

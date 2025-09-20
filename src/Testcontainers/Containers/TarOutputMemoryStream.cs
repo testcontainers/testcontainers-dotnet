@@ -98,8 +98,8 @@ namespace DotNet.Testcontainers.Containers
     /// Adds a file to the archive.
     /// </summary>
     /// <param name="file">The file to add to the archive.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been added to the archive.</returns>
@@ -113,8 +113,8 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The directory to add to the archive.</param>
     /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     public async Task AddAsync(DirectoryInfo directory, bool recurse, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
@@ -133,8 +133,8 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The root directory of the file to add to the archive.</param>
     /// <param name="file">The file to add to the archive.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     public async Task AddAsync(DirectoryInfo directory, FileInfo file, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)

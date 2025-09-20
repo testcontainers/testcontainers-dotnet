@@ -135,8 +135,8 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">The container id.</param>
     /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
@@ -148,8 +148,8 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">The container id.</param>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>

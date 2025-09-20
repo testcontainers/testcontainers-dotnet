@@ -12,8 +12,8 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="hostPath">The absolute path of a file to map on the host system.</param>
     /// <param name="containerPath">The absolute path of a file to map in the container.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied resource.</param>
+    /// <param name="gid">The group ID to set for the copied resource.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     public FileResourceMapping(
       string hostPath,

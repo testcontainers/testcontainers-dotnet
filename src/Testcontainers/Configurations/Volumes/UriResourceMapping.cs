@@ -15,8 +15,8 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="uri">The URL of the file to download.</param>
     /// <param name="containerPath">The absolute path of the file to map in the container.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied resource.</param>
+    /// <param name="gid">The group ID to set for the copied resource.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     public UriResourceMapping(Uri uri,
       string containerPath,
