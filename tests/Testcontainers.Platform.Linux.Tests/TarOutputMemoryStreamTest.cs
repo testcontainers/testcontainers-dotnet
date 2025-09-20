@@ -204,10 +204,10 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithResourceMapping(resourceContent, targetFilePath1, uid, gid, mode)
                 .Build();
 
+            // When
             await container.StartAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            // When
             await container.CopyAsync(resourceContent, targetFilePath2, uid, gid, mode, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
