@@ -17,13 +17,11 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private const RegexOptions DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
+    private static readonly Regex ArgLinePattern = new Regex("^ARG\\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)=(?:\"(?<value>[^\"]*)\"|'(?<value>[^']*)'|(?<value>\\S+))", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    private static readonly Regex ArgLinePattern = new Regex("ARG (?<name>[A-Za-z_][A-Za-z0-9_]*)=(?<value>\\S+)", DefaultRegexOptions, TimeSpan.FromSeconds(1));
+    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--\\S+\\s)*(?<image>\\S+).*", DefaultRegexOptions, TimeSpan.FromSeconds(1));
-
-    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     private readonly DirectoryInfo _dockerfileDirectory;
 
@@ -130,13 +128,10 @@ namespace DotNet.Testcontainers.Images
         .ToArray();
 
       var args = argMatches
-        .ToDictionary(match => match.Groups[nameGroup].Value, match => match.Groups[valueGroup].Value);
-
-      // Overwrite the default value using the configuration provided by the builder.
-      foreach (var buildArgument in _buildArguments)
-      {
-        args[buildArgument.Key] = buildArgument.Value;
-      }
+        .Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value))
+        .Concat(_buildArguments)
+        .GroupBy(kvp => kvp.Key)
+        .ToDictionary(group => group.Key, group => group.Last().Value);
 
       var stages = fromMatches
         .Select(line => line.Value)
