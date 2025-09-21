@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
-    /// <param name="buildArguments"></param>
+    /// <param name="buildArguments">Docker build arguments.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
     public DockerfileArchive(
@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
-    /// <param name="buildArguments"></param>
+    /// <param name="buildArguments">Docker build arguments.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
     public DockerfileArchive(
@@ -248,7 +248,7 @@ namespace DotNet.Testcontainers.Images
 
     /// <summary>
     /// Replaces placeholders in the Dockerfile <c>FROM</c> image string with the values
-    /// provided in <paramref name="variables"/>. Each placeholder is replaced with the
+    /// provided in <paramref name="variables" />. Each placeholder is replaced with the
     /// corresponding build argument if present; otherwise, the default value in the
     /// Dockerfile is preserved.
     /// </summary>
