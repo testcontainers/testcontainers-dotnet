@@ -65,11 +65,17 @@ namespace DotNet.Testcontainers.Containers
 
       var tarEntry = new TarEntry(new TarHeader());
       tarEntry.TarHeader.Name = targetFilePath;
+      tarEntry.TarHeader.UserId = (int)resourceMapping.UserId;
+      tarEntry.TarHeader.GroupId = (int)resourceMapping.GroupId;
       tarEntry.TarHeader.Mode = (int)resourceMapping.FileMode;
       tarEntry.TarHeader.ModTime = DateTime.UtcNow;
       tarEntry.Size = fileContent.Length;
 
-      _logger.LogInformation("Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\"", tarEntry.Size, targetFilePath);
+      var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
+
+      _logger.LogInformation(
+        "Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
+        tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
@@ -92,12 +98,14 @@ namespace DotNet.Testcontainers.Containers
     /// Adds a file to the archive.
     /// </summary>
     /// <param name="file">The file to add to the archive.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been added to the archive.</returns>
-    public Task AddAsync(FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
+    public Task AddAsync(FileInfo file, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
-      return AddAsync(file.Directory, file, fileMode, ct);
+      return AddAsync(file.Directory, file, uid, gid, fileMode, ct);
     }
 
     /// <summary>
@@ -105,15 +113,17 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The directory to add to the archive.</param>
     /// <param name="recurse">A value indicating whether the current directory and all its subdirectories are included or not.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, bool recurse, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, bool recurse, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       var searchOption = recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
       foreach (var file in directory.GetFiles("*", searchOption))
       {
-        await AddAsync(directory, file, fileMode, ct)
+        await AddAsync(directory, file, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
       }
     }
@@ -123,9 +133,11 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="directory">The root directory of the file to add to the archive.</param>
     /// <param name="file">The file to add to the archive.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task AddAsync(DirectoryInfo directory, FileInfo file, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task AddAsync(DirectoryInfo directory, FileInfo file, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
       {
@@ -133,11 +145,17 @@ namespace DotNet.Testcontainers.Containers
 
         var tarEntry = new TarEntry(new TarHeader());
         tarEntry.TarHeader.Name = targetFilePath;
+        tarEntry.TarHeader.UserId = (int)uid;
+        tarEntry.TarHeader.GroupId = (int)gid;
         tarEntry.TarHeader.Mode = (int)fileMode;
         tarEntry.TarHeader.ModTime = file.LastWriteTimeUtc;
         tarEntry.Size = stream.Length;
 
-        _logger.LogInformation("Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\"", tarEntry.TarHeader.Name, targetFilePath);
+        var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
+
+        _logger.LogInformation(
+          "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
+          tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
         await PutNextEntryAsync(tarEntry, ct)
           .ConfigureAwait(false);

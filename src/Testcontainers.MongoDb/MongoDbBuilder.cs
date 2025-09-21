@@ -79,7 +79,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
         return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName))
             .WithCommand("--replSet", replicaSetName, "--keyFile", KeyFileFilePath, "--bind_ip_all")
-            .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, Unix.FileMode755);
+            .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, fileMode: Unix.FileMode755);
     }
 
     /// <inheritdoc />
