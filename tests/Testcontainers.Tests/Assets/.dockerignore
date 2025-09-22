@@ -4,4 +4,5 @@ credsStore
 healthWaitStrategy
 pullBaseImages
 scratch
+target
 **/*.md

@@ -28,6 +28,11 @@ namespace DotNet.Testcontainers.Configurations
     string DockerfileDirectory { get; }
 
     /// <summary>
+    /// Gets the target.
+    /// </summary>
+    string Target { get; }
+
+    /// <summary>
     /// Gets the image.
     /// </summary>
     IImage Image { get; }

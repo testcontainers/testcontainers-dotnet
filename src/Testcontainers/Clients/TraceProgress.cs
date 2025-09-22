@@ -19,22 +19,22 @@ namespace DotNet.Testcontainers.Clients
 
       if (!string.IsNullOrWhiteSpace(value.Status))
       {
-        _logger.LogDebug(value.Status);
+        _logger.LogDebug(value.Status.TrimEnd());
       }
 
       if (!string.IsNullOrWhiteSpace(value.Stream))
       {
-        _logger.LogDebug(value.Stream);
+        _logger.LogDebug(value.Stream.TrimEnd());
       }
 
       if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
       {
-        _logger.LogDebug(value.ProgressMessage);
+        _logger.LogDebug(value.ProgressMessage.TrimEnd());
       }
 
       if (!string.IsNullOrWhiteSpace(value.ErrorMessage))
       {
-        _logger.LogError(value.ErrorMessage);
+        _logger.LogError(value.ErrorMessage.TrimEnd());
       }
 
 #pragma warning restore CA1848, CA2254

@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
+  using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
@@ -167,6 +168,43 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.NotNull(imageFromDockerfileBuilder.Tag);
       Assert.NotNull(imageFromDockerfileBuilder.FullName);
       Assert.Null(imageFromDockerfileBuilder.GetHostname());
+    }
+
+    [Fact]
+    public async Task BuildTargetBuildsUpToExpectedTarget()
+    {
+      // Given
+      var logger = new TestLogger();
+
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/target")
+        .WithTarget("build")
+        .WithLogger(logger)
+        .Build();
+
+      // When
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Contains(logger.Logs, line => line.Contains("FROM scratch AS base"));
+      Assert.Contains(logger.Logs, line => line.Contains("FROM base AS build"));
+      Assert.DoesNotContain(logger.Logs, line => line.Contains("FROM build AS final"));
+    }
+
+    private sealed class TestLogger : ILogger
+    {
+      public IList<string> Logs { get; }
+        = new List<string>();
+
+      public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        => Logs.Add(formatter(state, exception));
+
+      public bool IsEnabled(LogLevel logLevel)
+        => true;
+
+      public IDisposable BeginScope<TState>(TState state) where TState : notnull
+        => null;
     }
   }
 }

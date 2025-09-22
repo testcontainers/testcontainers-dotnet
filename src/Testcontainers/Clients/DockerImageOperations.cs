@@ -98,6 +98,7 @@ namespace DotNet.Testcontainers.Clients
       var buildParameters = new ImageBuildParameters
       {
         Dockerfile = configuration.Dockerfile,
+        Target = configuration.Target,
         Tags = new List<string> { image.FullName },
         BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),

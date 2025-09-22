@@ -54,6 +54,15 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
 
     /// <summary>
+    /// Sets the target build stage for the Docker image, allowing partial builds for
+    /// multi-stage Dockerfiles.
+    /// </summary>
+    /// <param name="target">The target build stage to use for the image build.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithTarget(string target);
+
+    /// <summary>
     /// Sets the image build policy.
     /// </summary>
     /// <param name="imageBuildPolicy">The image build policy.</param>
