@@ -29,26 +29,38 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithName(IImage image);
 
     /// <summary>
-    /// Sets the Dockerfile.
+    /// Sets the directory to use as the Docker build context.
+    /// This is the folder that Docker will use to resolve files referenced in the Dockerfile.
     /// </summary>
-    /// <param name="dockerfile">An absolute path or a name value within the Docker build context.</param>
+    /// <param name="contextDirectory">An absolute path or relative name of the directory to use as the Docker build context.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithContextDirectory(string contextDirectory);
+
+    /// <summary>
+    /// Sets the path to the Dockerfile to use for the build.
+    /// This can be an absolute path or a path relative to the Docker build context.
+    /// </summary>
+    /// <param name="dockerfile">The filename or path of the Dockerfile.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerfile(string dockerfile);
 
     /// <summary>
-    /// Sets the Dockerfile directory.
+    /// Sets the directory containing the Dockerfile.
+    /// This is useful if the Dockerfile is not located in the build context root.
     /// </summary>
-    /// <param name="dockerfileDirectory">An absolute path or a name value to the Docker build context.</param>
+    /// <param name="dockerfileDirectory">An absolute path or relative path to the directory containing the Dockerfile.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerfileDirectory(string dockerfileDirectory);
 
     /// <summary>
-    /// Sets the Dockerfile directory.
+    /// Sets the directory containing the Dockerfile.
+    /// This is useful if the Dockerfile is not located in the build context root.
     /// </summary>
     /// <param name="commonDirectoryPath">A common directory path that contains the Dockerfile directory.</param>
-    /// <param name="dockerfileDirectory">A relative path or a name value to the Docker build context.</param>
+    /// <param name="dockerfileDirectory">An absolute path or relative path to the directory containing the Dockerfile.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithDockerfileDirectory(CommonDirectoryPath commonDirectoryPath, string dockerfileDirectory);
