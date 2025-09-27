@@ -40,7 +40,7 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerfileArchive" /> class.
     /// </summary>
-    /// <param name="contextDirectory"></param>
+    /// <param name="contextDirectory">Directory to Docker build context.</param>
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
@@ -71,10 +71,10 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerfileArchive" /> class.
     /// </summary>
-    /// <param name="contextDirectory"></param>
+    /// <param name="contextDirectory">Directory to Docker build context.</param>
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
-    /// <param name="dockerignore"></param>
+    /// <param name="dockerignore">Name of the .dockerignore file.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
     /// <param name="buildArguments">Docker build arguments.</param>
     /// <param name="logger">The logger.</param>
@@ -200,15 +200,10 @@ namespace DotNet.Testcontainers.Images
               continue;
             }
 
-            // If the build context already has a `Dockerfile` or `.dockerignore`, we
-            // need ignore them and instead use the ones from the specified Dockerfile
-            // directory, which might be different.
+            // If the build context already has a `Dockerfile`, we need to ignore it and
+            // instead use the one from the specified Dockerfile directory, which might be
+            // different.
             if (_dockerfile.Name.Equals(relativeFilePath, StringComparison.Ordinal))
-            {
-              continue;
-            }
-
-            if (_dockerignore.Name.Equals(relativeFilePath, StringComparison.Ordinal))
             {
               continue;
             }
@@ -218,9 +213,6 @@ namespace DotNet.Testcontainers.Images
           }
 
           await AddAsync(_dockerfile.FullName, _dockerfile.Name, tarOutputStream)
-            .ConfigureAwait(false);
-
-          await AddAsync(_dockerignore.FullName, _dockerignore.Name, tarOutputStream)
             .ConfigureAwait(false);
         }
       }
