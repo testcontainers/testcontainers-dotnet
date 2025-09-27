@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Builders
 
     /// <summary>
     /// Sets the directory to use as the Docker build context.
-    /// This is the folder that Docker will use to resolve files referenced in the Dockerfile.
+    /// This is the directory that Docker will use to resolve files referenced in the Dockerfile.
     /// </summary>
     /// <param name="contextDirectory">An absolute path or relative name of the directory to use as the Docker build context.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -39,7 +39,6 @@ namespace DotNet.Testcontainers.Builders
 
     /// <summary>
     /// Sets the path to the Dockerfile to use for the build.
-    /// This can be an absolute path or a path relative to the Docker build context.
     /// </summary>
     /// <param name="dockerfile">The filename or path of the Dockerfile.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -48,7 +47,6 @@ namespace DotNet.Testcontainers.Builders
 
     /// <summary>
     /// Sets the directory containing the Dockerfile.
-    /// This is useful if the Dockerfile is not located in the build context root.
     /// </summary>
     /// <param name="dockerfileDirectory">An absolute path or relative path to the directory containing the Dockerfile.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -57,7 +55,6 @@ namespace DotNet.Testcontainers.Builders
 
     /// <summary>
     /// Sets the directory containing the Dockerfile.
-    /// This is useful if the Dockerfile is not located in the build context root.
     /// </summary>
     /// <param name="commonDirectoryPath">A common directory path that contains the Dockerfile directory.</param>
     /// <param name="dockerfileDirectory">An absolute path or relative path to the directory containing the Dockerfile.</param>

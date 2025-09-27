@@ -69,7 +69,7 @@ RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --o
 ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
 ```
 
-### Choosing the build context
+### Choosing a build context
 
 You can use `WithContextDirectory(string)` to set a build context separate from your Dockerfile. This is useful when the Dockerfile is in one directory but the files you want to include are in another.
 
