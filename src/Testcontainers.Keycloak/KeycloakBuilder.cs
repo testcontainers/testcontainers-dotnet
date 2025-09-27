@@ -89,6 +89,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
 
         var waitStrategy = Wait.ForUnixContainer()
+            .UntilMessageIsLogged("Added user '[^']+' to realm '[^']+'|Created temporary admin user with username \\S+")
             .UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
 

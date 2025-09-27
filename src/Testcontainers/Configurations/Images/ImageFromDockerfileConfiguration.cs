@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
+    /// <param name="target">The target.</param>
     /// <param name="image">The image.</param>
     /// <param name="imageBuildPolicy">The image build policy.</param>
     /// <param name="buildArguments">A list of build arguments.</param>
@@ -24,6 +25,7 @@ namespace DotNet.Testcontainers.Configurations
     public ImageFromDockerfileConfiguration(
       string dockerfile = null,
       string dockerfileDirectory = null,
+      string target = null,
       IImage image = null,
       Func<ImageInspectResponse, bool> imageBuildPolicy = null,
       IReadOnlyDictionary<string, string> buildArguments = null,
@@ -31,6 +33,7 @@ namespace DotNet.Testcontainers.Configurations
     {
       Dockerfile = dockerfile;
       DockerfileDirectory = dockerfileDirectory;
+      Target = target;
       Image = image;
       ImageBuildPolicy = imageBuildPolicy;
       BuildArguments = buildArguments;
@@ -65,6 +68,7 @@ namespace DotNet.Testcontainers.Configurations
     {
       Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
       DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
+      Target = BuildConfiguration.Combine(oldValue.Target, newValue.Target);
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
       ImageBuildPolicy = BuildConfiguration.Combine(oldValue.ImageBuildPolicy, newValue.ImageBuildPolicy);
       BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
@@ -82,6 +86,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     [JsonIgnore]
     public string DockerfileDirectory { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public string Target { get; }
 
     /// <inheritdoc />
     [JsonIgnore]

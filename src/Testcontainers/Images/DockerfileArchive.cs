@@ -17,13 +17,19 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly Regex FromLinePattern = new Regex("FROM (?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex ArgLinePattern = new Regex("^ARG\\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)=(?:\"(?<value>[^\"]*)\"|'(?<value>[^']*)'|(?<value>\\S+))", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+
+    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+
+    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     private readonly DirectoryInfo _dockerfileDirectory;
 
     private readonly FileInfo _dockerfile;
 
     private readonly IImage _image;
+
+    private readonly IReadOnlyDictionary<string, string> _buildArguments;
 
     private readonly ILogger _logger;
 
@@ -33,10 +39,21 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
+    /// <param name="buildArguments">Docker build arguments.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(string dockerfileDirectory, string dockerfile, IImage image, ILogger logger)
-      : this(new DirectoryInfo(dockerfileDirectory), new FileInfo(dockerfile), image, logger)
+    public DockerfileArchive(
+      string dockerfileDirectory,
+      string dockerfile,
+      IImage image,
+      IReadOnlyDictionary<string, string> buildArguments,
+      ILogger logger)
+      : this(
+        new DirectoryInfo(dockerfileDirectory),
+        new FileInfo(dockerfile),
+        image,
+        buildArguments,
+        logger)
     {
     }
 
@@ -46,9 +63,15 @@ namespace DotNet.Testcontainers.Images
     /// <param name="dockerfileDirectory">Directory to Docker configuration files.</param>
     /// <param name="dockerfile">Name of the Dockerfile, which is necessary to start the Docker build.</param>
     /// <param name="image">Docker image information to create the tar archive for.</param>
+    /// <param name="buildArguments">Docker build arguments.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
-    public DockerfileArchive(DirectoryInfo dockerfileDirectory, FileInfo dockerfile, IImage image, ILogger logger)
+    public DockerfileArchive(
+      DirectoryInfo dockerfileDirectory,
+      FileInfo dockerfile,
+      IImage image,
+      IReadOnlyDictionary<string, string> buildArguments,
+      ILogger logger)
     {
       if (!dockerfileDirectory.Exists)
       {
@@ -63,6 +86,7 @@ namespace DotNet.Testcontainers.Images
       _dockerfileDirectory = dockerfileDirectory;
       _dockerfile = dockerfile;
       _image = image;
+      _buildArguments = buildArguments;
       _logger = logger;
     }
 
@@ -83,15 +107,33 @@ namespace DotNet.Testcontainers.Images
     {
       const string imageGroup = "image";
 
+      const string nameGroup = "name";
+
+      const string valueGroup = "value";
+
       var lines = File.ReadAllLines(Path.Combine(_dockerfileDirectory.FullName, _dockerfile.ToString()))
         .Select(line => line.Trim())
         .Where(line => !string.IsNullOrEmpty(line))
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+        .ToArray();
+
+      var argMatches = lines
+        .Select(line => ArgLinePattern.Match(line))
+        .Where(match => match.Success)
+        .ToArray();
+
+      var fromMatches = lines
         .Select(line => FromLinePattern.Match(line))
         .Where(match => match.Success)
         .ToArray();
 
-      var stages = lines
+      var args = argMatches
+        .Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value))
+        .Concat(_buildArguments)
+        .GroupBy(kvp => kvp.Key)
+        .ToDictionary(group => group.Key, group => group.Last().Value);
+
+      var stages = fromMatches
         .Select(line => line.Value)
         .Select(line => line.Split(new[] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries))
         .Where(substrings => substrings.Length > 1)
@@ -99,12 +141,10 @@ namespace DotNet.Testcontainers.Images
         .Distinct()
         .ToArray();
 
-      var images = lines
+      var images = fromMatches
         .Select(match => match.Groups[imageGroup])
         .Select(match => match.Value)
-        // Until now, we are unable to resolve variables within Dockerfiles. Ignore base
-        // images that utilize variables. Expect them to exist on the host.
-        .Where(line => !line.Contains('$'))
+        .Select(line => ReplaceVariables(line, args))
         .Where(line => !line.Any(char.IsUpper))
         .Where(value => !stages.Contains(value))
         .Distinct()
@@ -204,6 +244,31 @@ namespace DotNet.Testcontainers.Images
       // is not available.
       _ = filePath;
       return (int)Unix.FileMode755;
+    }
+
+    /// <summary>
+    /// Replaces placeholders in the Dockerfile <c>FROM</c> image string with the values
+    /// provided in <paramref name="variables" />. Each placeholder is replaced with the
+    /// corresponding build argument if present; otherwise, the default value in the
+    /// Dockerfile is preserved.
+    /// </summary>
+    /// <param name="image">The image string from a Dockerfile <c>FROM</c> statement.</param>
+    /// <param name="variables">A dictionary containing variable names as keys and their replacement values as values.</param>
+    /// <returns>A new image string where placeholders are replaced with their corresponding values.</returns>
+    private static string ReplaceVariables(string image, IDictionary<string, string> variables)
+    {
+      const string nameGroup = "name";
+
+      if (variables.Count == 0)
+      {
+        return image;
+      }
+
+      return VariablePattern.Replace(image, match =>
+      {
+        var name = match.Groups[nameGroup].Value;
+        return variables.TryGetValue(name, out var value) ? value : match.Value;
+      });
     }
   }
 }
