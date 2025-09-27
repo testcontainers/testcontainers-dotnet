@@ -91,6 +91,13 @@ namespace DotNet.Testcontainers.Containers
       = Guid.NewGuid();
 
     /// <summary>
+    /// Gets a value indicating whether the default <see cref="ResourceReaper" /> instance is running and available.
+    /// </summary>
+    [PublicAPI]
+    public static bool IsUnavailable
+      => _defaultInstance == null || _defaultInstance._disposed;
+
+    /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
     /// </summary>
     [PublicAPI]
