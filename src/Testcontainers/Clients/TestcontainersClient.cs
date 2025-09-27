@@ -311,7 +311,9 @@ namespace DotNet.Testcontainers.Clients
     {
       ImageInspectResponse cachedImage;
 
-      if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
+      if (TestcontainersSettings.ResourceReaperEnabled
+          && ResourceReaper.IsUnavailable
+          && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
           .ConfigureAwait(false);
