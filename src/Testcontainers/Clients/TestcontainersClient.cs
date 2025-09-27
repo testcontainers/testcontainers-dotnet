@@ -372,6 +372,7 @@ namespace DotNet.Testcontainers.Clients
       if (configuration.ImageBuildPolicy(cachedImage))
       {
         var dockerfileArchive = new DockerfileArchive(
+          configuration.ContextDirectory,
           configuration.DockerfileDirectory,
           configuration.Dockerfile,
           configuration.Image,
