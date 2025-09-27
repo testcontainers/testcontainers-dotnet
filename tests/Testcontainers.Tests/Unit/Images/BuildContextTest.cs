@@ -26,9 +26,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithContextDirectory(_contextDirectory)
         .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets/context/")
-        .WithContextDirectory(_contextDirectory)
         .Build();
 
       // When
@@ -47,9 +47,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithContextDirectory(_contextDirectory)
         .WithDockerfile("Dockerfile")
         .WithDockerfileDirectory("Assets/context/")
-        .WithContextDirectory(_contextDirectory)
         .Build();
 
       // When
