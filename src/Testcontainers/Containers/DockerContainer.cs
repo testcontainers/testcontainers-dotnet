@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Providers;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -28,6 +29,8 @@ namespace DotNet.Testcontainers.Containers
     private readonly IContainerConfiguration _configuration;
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
+
+    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
@@ -560,6 +563,14 @@ namespace DotNet.Testcontainers.Containers
       Logger.CompleteReadinessCheck(_container.ID);
 
       StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+
+      // Initialize connection string provider if configured
+      if (_configuration.ConnectionStringProvider != null)
+      {
+        _connectionStringProvider = _configuration.ConnectionStringProvider;
+        _connectionStringProvider.Build(this, _configuration);
+      }
+
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -697,6 +708,56 @@ namespace DotNet.Testcontainers.Containers
       }
 
       return true;
+    }
+
+    /// <inheritdoc />
+    public IConnectionStringProvider GetConnectionStringProvider()
+    {
+      return _connectionStringProvider;
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString()
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new InvalidOperationException("No connection string provider is configured for this container.");
+      }
+
+      return _connectionStringProvider.GetConnectionString();
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionMode connectionMode)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new InvalidOperationException("No connection string provider is configured for this container.");
+      }
+
+      return _connectionStringProvider.GetConnectionString(connectionMode);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionMode connectionMode, string name)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new InvalidOperationException("No connection string provider is configured for this container.");
+      }
+
+      return _connectionStringProvider.GetConnectionString(connectionMode, name);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionStringIdentifier identifier)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new InvalidOperationException("No connection string provider is configured for this container.");
+      }
+
+      return _connectionStringProvider.GetConnectionString(identifier);
     }
 
     private sealed class WaitUntilPortBindingsMapped : WaitStrategy

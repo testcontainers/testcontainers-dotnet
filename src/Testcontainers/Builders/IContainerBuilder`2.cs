@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
+  using DotNet.Testcontainers.Providers;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
@@ -488,5 +489,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets the connection string provider.
+    /// </summary>
+    /// <param name="connectionStringProvider">The connection string provider.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider);
   }
 }

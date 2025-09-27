@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Providers;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -315,5 +316,48 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the connection string provider associated with this container.
+    /// </summary>
+    /// <returns>The connection string provider, or null if none is configured.</returns>
+    [CanBeNull]
+    IConnectionStringProvider GetConnectionStringProvider();
+
+    /// <summary>
+    /// Gets the default connection string for the Host connection mode.
+    /// </summary>
+    /// <returns>The connection string for host to container communication.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no connection string provider is configured.</exception>
+    [NotNull]
+    string GetConnectionString();
+
+    /// <summary>
+    /// Gets the default connection string for the specified connection mode.
+    /// </summary>
+    /// <param name="connectionMode">The connection mode (Host or Container).</param>
+    /// <returns>The connection string for the specified connection mode.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no connection string provider is configured.</exception>
+    [NotNull]
+    string GetConnectionString(ConnectionMode connectionMode);
+
+    /// <summary>
+    /// Gets the connection string for the specified connection mode and name.
+    /// </summary>
+    /// <param name="connectionMode">The connection mode (Host or Container).</param>
+    /// <param name="name">The connection string name.</param>
+    /// <returns>The connection string for the specified connection mode and name.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no connection string provider is configured.</exception>
+    [NotNull]
+    string GetConnectionString(ConnectionMode connectionMode, [NotNull] string name);
+
+    /// <summary>
+    /// Gets the connection string using a connection string identifier.
+    /// </summary>
+    /// <param name="identifier">The connection string identifier.</param>
+    /// <returns>The connection string for the specified identifier.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no connection string provider is configured.</exception>
+    [NotNull]
+    string GetConnectionString(ConnectionStringIdentifier identifier);
   }
 }

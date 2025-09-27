@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Builders
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
+  using DotNet.Testcontainers.Providers;
   using DotNet.Testcontainers.Volumes;
   using JetBrains.Annotations;
 
@@ -388,6 +389,12 @@ namespace DotNet.Testcontainers.Builders
     public TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback)
     {
       return Clone(new ContainerConfiguration(startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider)
+    {
+      return Clone(new ContainerConfiguration(connectionStringProvider: connectionStringProvider));
     }
 
     /// <inheritdoc />

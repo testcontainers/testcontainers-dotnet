@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
+  using DotNet.Testcontainers.Providers;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -125,5 +126,10 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the startup callback.
     /// </summary>
     Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+
+    /// <summary>
+    /// Gets the connection string provider.
+    /// </summary>
+    IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
   }
 }
