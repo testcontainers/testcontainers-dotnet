@@ -11,6 +11,7 @@ namespace DotNet.Testcontainers.Images
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// Generates a tar archive with Docker configuration files. The tar archive can be used to build a Docker image.
@@ -48,17 +49,17 @@ namespace DotNet.Testcontainers.Images
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
     public DockerfileArchive(
-      string contextDirectory,
-      string dockerfileDirectory,
-      string dockerfile,
-      IImage image,
-      IReadOnlyDictionary<string, string> buildArguments,
-      ILogger logger)
+      [CanBeNull] string contextDirectory,
+      [NotNull] string dockerfileDirectory,
+      [NotNull] string dockerfile,
+      [NotNull] IImage image,
+      [NotNull] IReadOnlyDictionary<string, string> buildArguments,
+      [NotNull] ILogger logger)
       : this(
         // The Docker build context wasn't originally supported. To stay backwards
         // compatible, the argument is optional and can be null. If it isn't set,
         // fall back to the Dockerfile directory.
-        new DirectoryInfo(contextDirectory),
+        new DirectoryInfo(contextDirectory ?? dockerfileDirectory),
         new DirectoryInfo(dockerfileDirectory),
         new FileInfo(Path.Combine(dockerfileDirectory, dockerfile)),
         new FileInfo(Path.Combine(dockerfileDirectory, dockerfile + ".dockerignore")),
@@ -80,13 +81,13 @@ namespace DotNet.Testcontainers.Images
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentException">Thrown when the Dockerfile directory does not exist or the directory does not contain a Dockerfile.</exception>
     private DockerfileArchive(
-      DirectoryInfo contextDirectory,
-      DirectoryInfo dockerfileDirectory,
-      FileInfo dockerfile,
-      FileInfo dockerignore,
-      IImage image,
-      IReadOnlyDictionary<string, string> buildArguments,
-      ILogger logger)
+      [NotNull] DirectoryInfo contextDirectory,
+      [NotNull] DirectoryInfo dockerfileDirectory,
+      [NotNull] FileInfo dockerfile,
+      [NotNull] FileInfo dockerignore,
+      [NotNull] IImage image,
+      [NotNull] IReadOnlyDictionary<string, string> buildArguments,
+      [NotNull] ILogger logger)
     {
       if (!dockerfileDirectory.Exists)
       {
@@ -260,11 +261,11 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Gets all accepted Docker archive files.
     /// </summary>
-    /// <param name="directory">Directory to Docker configuration files.</param>
+    /// <param name="path">Directory to Docker configuration files.</param>
     /// <returns>Returns a list with all accepted Docker archive files.</returns>
-    private static IEnumerable<string> GetFiles(string directory)
+    private static IEnumerable<string> GetFiles(string path)
     {
-      return Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
+      return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
         .AsParallel()
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)
