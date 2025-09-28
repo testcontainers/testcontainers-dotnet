@@ -64,6 +64,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithContextDirectory(string contextDirectory)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(contextDirectory: contextDirectory));
+    }
+
+    /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
       var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));

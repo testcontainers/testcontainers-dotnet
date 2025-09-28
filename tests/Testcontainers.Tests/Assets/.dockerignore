@@ -1,6 +1,7 @@
 Dockerfile
 credHelpers
 credsStore
+context
 healthWaitStrategy
 pullBaseImages
 scratch

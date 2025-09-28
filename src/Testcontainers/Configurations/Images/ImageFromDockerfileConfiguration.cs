@@ -15,6 +15,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
     /// </summary>
+    /// <param name="contextDirectory">The context directory.</param>
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="target">The target.</param>
@@ -23,6 +24,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="buildArguments">A list of build arguments.</param>
     /// <param name="deleteIfExists">A value indicating whether Testcontainers removes an existing image or not.</param>
     public ImageFromDockerfileConfiguration(
+      string contextDirectory = null,
       string dockerfile = null,
       string dockerfileDirectory = null,
       string target = null,
@@ -31,6 +33,7 @@ namespace DotNet.Testcontainers.Configurations
       IReadOnlyDictionary<string, string> buildArguments = null,
       bool? deleteIfExists = null)
     {
+      ContextDirectory = contextDirectory;
       Dockerfile = dockerfile;
       DockerfileDirectory = dockerfileDirectory;
       Target = target;
@@ -66,6 +69,7 @@ namespace DotNet.Testcontainers.Configurations
     public ImageFromDockerfileConfiguration(IImageFromDockerfileConfiguration oldValue, IImageFromDockerfileConfiguration newValue)
       : base(oldValue, newValue)
     {
+      ContextDirectory = BuildConfiguration.Combine(oldValue.ContextDirectory, newValue.ContextDirectory);
       Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
       DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
       Target = BuildConfiguration.Combine(oldValue.Target, newValue.Target);
@@ -78,6 +82,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     [JsonIgnore]
     public bool? DeleteIfExists { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public string ContextDirectory { get; }
 
     /// <inheritdoc />
     [JsonIgnore]

@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var buildArguments = new Dictionary<string, string>();
       buildArguments.Add("SDK_VERSION_8_0", "8.0.414");
 
-      var dockerfileArchive = new DockerfileArchive("Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
 
       // When
       var actual = dockerfileArchive.GetBaseImages();
@@ -59,7 +59,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var buildArguments = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
 
-      var dockerfileArchive = new DockerfileArchive("Assets/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/", "Dockerfile", image, buildArguments, NullLogger.Instance);
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
@@ -120,7 +120,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     {
       // Given
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory("Assets/scratch")
+        .WithDockerfileDirectory("Assets/scratch/")
         .Build();
 
       // When
@@ -177,7 +177,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var logger = new TestLogger();
 
       var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
-        .WithDockerfileDirectory("Assets/target")
+        .WithDockerfileDirectory("Assets/target/")
         .WithTarget("build")
         .WithLogger(logger)
         .Build();
