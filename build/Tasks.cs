@@ -16,7 +16,7 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
             Filter = Parameters.TestFilter,
             ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
             ArgumentCustomization = args => args
-                .AppendSwitchQuoted("--blame-hang-timeout", "5m"),
+                .AppendSwitchQuoted("--blame-hang-timeout", "10m"),
         });
     }
 }
