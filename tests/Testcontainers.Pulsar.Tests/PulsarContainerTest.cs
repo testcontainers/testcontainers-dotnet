@@ -60,10 +60,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .Create();
 
         // When
-        _ = await consumer.OnStateChangeTo(ConsumerState.Active, Timeout.InfiniteTimeSpan, TestContext.Current.CancellationToken)
+        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await producer.OnStateChangeTo(ProducerState.Connected, Timeout.InfiniteTimeSpan, TestContext.Current.CancellationToken)
+        _ = await producer.OnStateChangeTo(ProducerState.Connected, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await producer.Send(helloPulsar, cancellationToken: TestContext.Current.CancellationToken)
