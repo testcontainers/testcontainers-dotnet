@@ -9,19 +9,23 @@ public abstract class LoggerTest : IAsyncLifetime
         _fakeLogger = fakeLogger;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return new ContainerBuilder()
+        await new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
             .WithLogger(_fakeLogger)
             .Build()
-            .StartAsync();
+            .StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return Task.CompletedTask;
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Theory]
@@ -31,6 +35,11 @@ public abstract class LoggerTest : IAsyncLifetime
     public void LogContainerRuntimeInformationOnce(int _)
     {
         Assert.Contains("Connected to Docker", _fakeLogger.Collector.GetSnapshot()[0].Message);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return ValueTask.CompletedTask;
     }
 
     [UsedImplicitly]

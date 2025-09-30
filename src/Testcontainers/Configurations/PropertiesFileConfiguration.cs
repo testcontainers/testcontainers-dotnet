@@ -167,5 +167,12 @@ namespace DotNet.Testcontainers.Configurations
       const string propertyName = "wait.strategy.timeout";
       return GetWaitStrategyTimeout(propertyName);
     }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      const string propertyName = "named.pipe.connection.timeout";
+      return GetWaitStrategyTimeout(propertyName);
+    }
   }
 }

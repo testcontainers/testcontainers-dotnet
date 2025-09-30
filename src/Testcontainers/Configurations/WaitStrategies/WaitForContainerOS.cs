@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Data.Common;
   using System.Text.RegularExpressions;
 
   /// <inheritdoc cref="IWaitForContainerOS" />
@@ -27,7 +28,7 @@ namespace DotNet.Testcontainers.Configurations
     public abstract IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public abstract IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+    public abstract IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
     public virtual IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
@@ -41,6 +42,12 @@ namespace DotNet.Testcontainers.Configurations
 
       _waitStrategies.Add(waitStrategy);
       return this;
+    }
+
+    /// <inheritdoc />
+    public IWaitForContainerOS UntilExternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilExternalTcpPortIsAvailable(containerPort), waitStrategyModifier);
     }
 
     /// <inheritdoc />
@@ -78,6 +85,12 @@ namespace DotNet.Testcontainers.Configurations
     public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyModifier);
+    }
+
+    /// <inheritdoc />
+    public virtual IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null)
+    {
+      return AddCustomWaitStrategy(new UntilDatabaseIsAvailable(dbProviderFactory), waitStrategyModifier);
     }
 
     /// <inheritdoc />

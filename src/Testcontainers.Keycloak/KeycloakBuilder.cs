@@ -60,6 +60,22 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Configures Keycloak to import a realm configuration file during startup.
+    /// </summary>
+    /// <remarks>
+    /// The file will be copied to the <c>/opt/keycloak/data/import/</c> directory
+    /// inside the container:
+    /// https://www.keycloak.org/server/importExport#_importing_a_realm_during_startup.
+    /// </remarks>
+    /// <param name="realmConfigurationFilePath">The local path to the realm configuration file (JSON).</param>
+    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    public KeycloakBuilder WithRealm(string realmConfigurationFilePath)
+    {
+        return WithCommand("--import-realm")
+            .WithResourceMapping(realmConfigurationFilePath, "/opt/keycloak/data/import/");
+    }
+
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
@@ -73,6 +89,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
 
         var waitStrategy = Wait.ForUnixContainer()
+            .UntilMessageIsLogged("Added user '[^']+' to realm '[^']+'|Created temporary admin user with username \\S+")
             .UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
 

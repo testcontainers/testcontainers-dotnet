@@ -7,4 +7,4 @@
     * discuss with the authors on an issue ticket prior to doing anything big.
     * follow the style, naming and structure conventions of the rest of the project.
     * make commits atomic and easy to merge.
-    * verify all tests are passing. Build and test the project with `dotnet cake` to do this.
+    * verify all tests are passing. Build and test the project with `./build.sh` or `build.ps1` to do this.

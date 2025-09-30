@@ -14,19 +14,23 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     }
 
     // # --8<-- [start:UseEventHubsContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _eventHubsContainer.StartAsync();
+        await _eventHubsContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _eventHubsContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
     {
-        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, EventHubsConsumerGroupName);
+        return EventHubsServiceConfiguration.Create().WithEntity(EventHubsName, 2, EventHubConsumerClient.DefaultConsumerGroupName, EventHubsConsumerGroupName);
     }
 
     [Fact]
@@ -36,24 +40,36 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         // Given
         var message = Guid.NewGuid().ToString();
 
-        await using var client = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+        var readOptions = new ReadEventOptions();
+        readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);
+
+        await using var producer = new EventHubProducerClient(_eventHubsContainer.GetConnectionString(), EventHubsName);
+
+        await using var consumer = new EventHubConsumerClient(EventHubsConsumerGroupName, _eventHubsContainer.GetConnectionString(), EventHubsName);
 
         // When
-        var properties = await client.GetEventHubPropertiesAsync()
+        using var eventDataBatch = await producer.CreateBatchAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var eventDataBatch = await client.CreateBatchAsync()
+        _ = eventDataBatch.TryAdd(new EventData(message));
+
+        await producer.SendAsync(eventDataBatch, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        eventDataBatch.TryAdd(new EventData(message));
-
-        await client.SendAsync(eventDataBatch)
-            .ConfigureAwait(true);
+        await using var asyncEnumerator = consumer.ReadEventsAsync(readOptions, TestContext.Current.CancellationToken)
+            .WithCancellation(TestContext.Current.CancellationToken)
+            .GetAsyncEnumerator();
+        _ = await asyncEnumerator.MoveNextAsync();
 
         // Then
-        Assert.NotNull(properties);
+        Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
     }
     // # --8<-- [end:UseEventHubsContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _eventHubsContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreateEventHubsContainer]
     [UsedImplicitly]

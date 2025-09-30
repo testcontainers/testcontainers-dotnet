@@ -16,9 +16,12 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     /// <returns>The Cassandra connection string.</returns>
     public string GetConnectionString()
     {
+        var publicPort = GetMappedPublicPort(CassandraBuilder.CqlPort).ToString();
+
         var properties = new Dictionary<string, string>();
         properties.Add("Contact Points", Hostname);
-        properties.Add("Port", GetMappedPublicPort(CassandraBuilder.CqlPort).ToString());
+        properties.Add("Port", publicPort);
+        properties.Add("Cluster Name", $"{Hostname}:{publicPort}");
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 
@@ -32,7 +35,7 @@ public sealed class CassandraContainer : DockerContainer, IDatabaseContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "cqlsh", "--file", scriptFilePath }, ct)

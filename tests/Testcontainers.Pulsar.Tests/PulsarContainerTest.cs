@@ -2,6 +2,8 @@ namespace Testcontainers.Pulsar;
 
 public abstract class PulsarContainerTest : IAsyncLifetime
 {
+    private static readonly IReadOnlyDictionary<string, string> MemorySettings = new Dictionary<string, string> { { "PULSAR_MEM", "-Xms256m -Xmx512m" } };
+
     private readonly PulsarContainer _pulsarContainer;
 
     private readonly bool _authenticationEnabled;
@@ -13,17 +15,22 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     }
 
     // # --8<-- [start:UsePulsarContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _pulsarContainer.StartAsync();
+        await _pulsarContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _pulsarContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReceivesSendMessage()
     {
         // Given
@@ -37,7 +44,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         if (_authenticationEnabled)
         {
-            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan);
+            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan, TestContext.Current.CancellationToken);
             _ = clientBuilder.Authentication(new TokenAuthentication(authToken));
         }
 
@@ -53,10 +60,16 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .Create();
 
         // When
-        _ = await producer.Send(helloPulsar)
+        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var message = await consumer.Receive()
+        _ = await producer.OnStateChangeTo(ProducerState.Connected, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        _ = await producer.Send(helloPulsar, cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var message = await consumer.Receive(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -64,12 +77,19 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UsePulsarContainer]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _pulsarContainer.DisposeAsync();
+    }
+
     // # --8<-- [start:CreatePulsarContainer]
     [UsedImplicitly]
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
         public PulsarDefaultConfiguration()
-            : base(new PulsarBuilder().Build(), false)
+            : base(new PulsarBuilder()
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
         }
     }
@@ -79,7 +99,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarAuthConfiguration : PulsarContainerTest
     {
         public PulsarAuthConfiguration()
-            : base(new PulsarBuilder().WithAuthentication().Build(), true)
+            : base(new PulsarBuilder()
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
         {
         }
     }
@@ -88,7 +111,10 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4Configuration : PulsarContainerTest
     {
         public PulsarV4Configuration()
-            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").Build(), false)
+            : base(new PulsarBuilder()
+                .WithImage("apachepulsar/pulsar:4.0.2")
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
         }
     }
@@ -97,7 +123,11 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
         public PulsarV4AuthConfiguration()
-            : base(new PulsarBuilder().WithImage("apachepulsar/pulsar:4.0.2").WithAuthentication().Build(), true)
+            : base(new PulsarBuilder()
+                .WithImage("apachepulsar/pulsar:4.0.2")
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
         {
         }
     }

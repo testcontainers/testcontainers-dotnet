@@ -2,6 +2,8 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -141,9 +143,8 @@ namespace DotNet.Testcontainers.Builders
       _ = Guard.Argument(DockerResourceConfiguration.Logger, nameof(IResourceConfiguration<TCreateResourceEntity>.Logger))
         .NotNull();
 
-      const string containerRuntimeNotFound = "Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured. You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file. For more information, visit:\nhttps://dotnet.testcontainers.org/custom_configuration/";
       _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
-        .ThrowIf(argument => argument.Value == null, argument => new ArgumentException(containerRuntimeNotFound, argument.Name));
+        .ThrowIf(argument => argument.Value == null, CreateDockerUnavailableException);
 
       const string reuseNotSupported = "Reuse cannot be used in conjunction with WithCleanUp(true).";
       _ = Guard.Argument(DockerResourceConfiguration, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
@@ -164,5 +165,23 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="newValue">The new Docker resource configuration.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected abstract TBuilderEntity Merge(TConfigurationEntity oldValue, TConfigurationEntity newValue);
+
+    private static Exception CreateDockerUnavailableException(Guard.ArgumentInfo<IDockerEndpointAuthenticationConfiguration> argument)
+    {
+      var unavailableExceptions = TestcontainersSettings.DockerEndpointAuthProviders
+        .Select(authProvider => authProvider.LastException)
+        .Where(exception => exception != null);
+
+      var exception = new AggregateException(unavailableExceptions);
+
+      var exceptionInfo = new StringBuilder(512);
+      exceptionInfo.AppendLine("Docker is either not running or misconfigured. Please ensure that Docker is running and that the endpoint is properly configured.");
+      exceptionInfo.AppendLine("You can customize your configuration using either the environment variables or the ~/.testcontainers.properties file.");
+      exceptionInfo.AppendLine("For more information, visit: https://dotnet.testcontainers.org/custom_configuration/.");
+      exceptionInfo.AppendLine("  Details: ");
+      exceptionInfo.Append(string.Join(Environment.NewLine, exception.InnerExceptions.Select(e => "    " + e.Message)));
+
+      return new DockerUnavailableException(exceptionInfo.ToString(), exception);
+    }
   }
 }

@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.9.0");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.14.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -89,6 +89,13 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
       = Guid.NewGuid();
+
+    /// <summary>
+    /// Gets a value indicating whether the default <see cref="ResourceReaper" /> instance is running and available.
+    /// </summary>
+    [PublicAPI]
+    public static bool IsUnavailable
+      => _defaultInstance == null || _defaultInstance._disposed;
 
     /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
@@ -215,7 +222,7 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode);
 
-      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
+      initTimeout = TimeSpan.Equals(TimeSpan.Zero, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
       try
       {
@@ -363,15 +370,25 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+                      .ConfigureAwait(false);
+#endif
 
                     hasAcknowledge = false;
                   }
                   else
                   {
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+                      .ConfigureAwait(false);
+#endif
 
                     hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
