@@ -372,36 +372,36 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, uid, gid, fileMode), ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(string source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return CopyAsync(new DirectoryInfo(source), target, fileMode, ct);
+        return CopyAsync(new DirectoryInfo(source), target, uid, gid, fileMode, ct);
       }
       else
       {
-        return CopyAsync(new FileInfo(source), target, fileMode, ct);
+        return CopyAsync(new FileInfo(source), target, uid, gid, fileMode, ct);
       }
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />

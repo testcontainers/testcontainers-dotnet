@@ -137,9 +137,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly HttpWaitStrategy _httpWaitStrategy = new HttpWaitStrategy()
-            .ForPath("/admin/v2/clusters")
-            .ForPort(PulsarWebServicePort)
-            .ForResponseMessageMatching(IsClusterHealthyAsync);
+            .ForPath("/admin/v2/namespaces/public/default")
+            .ForPort(PulsarWebServicePort);
 
         private readonly bool _authenticationEnabled;
 
@@ -180,32 +179,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
 
             return await _httpWaitStrategy.UntilAsync(container)
                 .ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Determines whether the cluster is healthy or not.
-        /// </summary>
-        /// <param name="response">The HTTP response that contains the cluster information.</param>
-        /// <returns>A value indicating whether the cluster is healthy or not.</returns>
-        private static async Task<bool> IsClusterHealthyAsync(HttpResponseMessage response)
-        {
-            var jsonString = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            try
-            {
-                var status = JsonDocument.Parse(jsonString)
-                    .RootElement
-                    .EnumerateArray()
-                    .ElementAt(0)
-                    .GetString();
-
-                return "standalone".Equals(status);
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

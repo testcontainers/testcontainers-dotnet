@@ -66,9 +66,29 @@ namespace DotNet.Testcontainers.Tests.Unit
       private readonly WarnLogger _warnLogger = new WarnLogger();
 
       [Theory]
-      [InlineData("{\"auths\":{\"ghcr.io\":{}}}")]
-      [InlineData("{\"auths\":{\"://ghcr.io\":{}}}")]
-      public void ResolvePartialDockerRegistry(string jsonDocument)
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", "ghcr", false)]
+      [InlineData("{\"auths\":{\"http://ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"https://ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost:5000", true)]
+      [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com", false)]
+      [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost", false)]
+      [InlineData("{\"auths\":{\"https://registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData("{\"auths\":{\"http://localhost:8080\":{}}}", "localhost:8080", true)]
+      [InlineData("{\"auths\":{\"docker.io\":{}}}", "docker.io", true)]
+      [InlineData("{\"auths\":{\"docker.io\":{}}}", "index.docker.io", false)]
+      [InlineData("{\"auths\":{\"index.docker.io\":{}}}", "docker.io", false)]
+      [InlineData("{\"auths\":{\"https://index.docker.io/v1/\":{}}}", "index.docker.io", true)]
+      [InlineData("{\"auths\":{\"registry.k8s.io\":{}}}", "registry.k8s.io", true)]
+      [InlineData("{\"auths\":{\"gcr.io\":{}}}", "gcr.io", true)]
+      [InlineData("{\"auths\":{\"us-docker.pkg.dev\":{}}}", "us-docker.pkg.dev", true)]
+      [InlineData("{\"auths\":{\"quay.io\":{}}}", "quay.io", true)]
+      [InlineData("{\"auths\":{\"localhost\":{}}}", "localhost", true)]
+      [InlineData("{\"auths\":{\"127.0.0.1:5000\":{}}}", "127.0.0.1:5000", true)]
+      [InlineData("{\"auths\":{\"[::1]:5000\":{}}}", "[::1]:5000", true)]
+      [InlineData("{\"auths\":{\"https://registry.example.com/v2\":{}}}", "registry.example.com", true)]
+      public void ResolvePartialDockerRegistry(string jsonDocument, string hostname, bool expectedResult)
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
@@ -77,8 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var authenticationProvider = new Base64Provider(jsonElement, NullLogger.Instance);
 
         // Then
-        Assert.False(authenticationProvider.IsApplicable("ghcr"));
-        Assert.True(authenticationProvider.IsApplicable("ghcr.io"));
+        Assert.Equal(expectedResult, authenticationProvider.IsApplicable(hostname));
       }
 
       [Theory]

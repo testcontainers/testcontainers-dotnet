@@ -85,4 +85,28 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         {
         }
     }
+
+    [UsedImplicitly]
+    public sealed class KeycloakRealmConfiguration : KeycloakContainerTest
+    {
+        public KeycloakRealmConfiguration()
+            : base(new KeycloakBuilder().WithRealm("realm-export.json").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task AllRealmsAreEnabled()
+        {
+            // Given
+            var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+
+            // When
+            var realms = await keycloakClient.GetRealmsAsync("master", TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Collection(realms, realm => Assert.True(realm.Enabled), realm => Assert.True(realm.Enabled));
+        }
+    }
 }

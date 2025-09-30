@@ -4,7 +4,7 @@ Wait strategies are useful to detect if a container is ready for testing (i.e., 
 
 ```csharp
 _ = Wait.ForUnixContainer()
-  .UntilPortIsAvailable(80)
+  .UntilInternalTcpPortIsAvailable(80)
   .UntilFileExists("/tmp/foo")
   .UntilFileExists("/tmp/bar")
   .UntilOperationIsSucceeded(() => true, 1)
@@ -50,6 +50,36 @@ _ = Wait.ForUnixContainer()
     .ForPath("/")
     .ForStatusCodeMatching(statusCode => statusCode >= HttpStatusCode.OK && statusCode < HttpStatusCode.MultipleChoices));
 ```
+
+## Wait until a TCP port is available
+
+Testcontainers provides two distinct strategies for waiting until a TCP port becomes available, each serving different purposes depending on your testing needs.
+
+### Wait until an internal TCP port is available
+
+`UntilInternalTcpPortIsAvailable(int)` checks if a service inside the container is listening on the specified port by testing connectivity from within the container itself. This strategy verifies that your application or service has actually started and is ready to accept connections.
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilInternalTcpPortIsAvailable(8080);
+```
+
+!!!note
+
+    Just because a service is listening on the internal TCP port does not necessarily mean it is fully ready to handle requests. Often, wait strategies such as checking for specific log messages or verifying a health endpoint provide more reliable confirmation that the service is operational.
+
+### Wait until an external TCP port is available
+
+`UntilExternalTcpPortIsAvailable(int)` checks if the port is accessible from the test host to the container. This verifies that the port mapping has been established and the port is reachable externally.
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilExternalTcpPortIsAvailable(8080);
+```
+
+!!!note
+
+    External TCP port availability doesn't guarantee that the actual service inside the container is ready to handle requests. It only confirms that the port mapping is established and a connection can be made to the host-side proxy.
 
 ## Wait until the container is healthy
 
