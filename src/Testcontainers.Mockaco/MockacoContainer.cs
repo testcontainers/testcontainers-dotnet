@@ -17,10 +17,10 @@ public class MockacoContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Mockaco endpoint.
+    /// Gets the Mockaco base address.
     /// </summary>
-    /// <returns>The Mockaco endpoint.</returns>
-    public string GetEndpoint()
+    /// <returns>The Mockaco base address.</returns>
+    public string GetBaseAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MockacoBuilder.MockacoPort)).ToString();
     }
@@ -34,7 +34,7 @@ public class MockacoContainer : DockerContainer
     public async Task<MockacoVerificationResponse> GetVerifyAsync(string route)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(GetEndpoint());
+        httpClient.BaseAddress = new Uri(GetBaseAddress());
 
         try
         {

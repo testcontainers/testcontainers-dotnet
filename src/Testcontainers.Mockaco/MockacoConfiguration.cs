@@ -5,7 +5,7 @@ public class MockacoConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="MockacoConfiguration" /> class.
     /// </summary>
-    /// <param name="templatesPath">The path wiches contain mock templates.</param>
+    /// <param name="templatesPath">The path which contains mock templates.</param>
     public MockacoConfiguration(string templatesPath = null)
     {
         TemplatesPath = templatesPath ?? "/Mocks/Templates";
@@ -53,7 +53,7 @@ public class MockacoConfiguration : ContainerConfiguration
     }
 
     /// <summary>
-    /// Gets the path to the mock`s template file.
+    /// Gets the path to the mock's template files.
     /// </summary>
     public string TemplatesPath { get; }
 }

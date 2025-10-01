@@ -123,7 +123,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
     using var request = new HttpRequestMessage(HttpMethod.Get, "ping");
 
     // When
@@ -143,7 +143,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
 
     var requestBody = JsonSerializer.Serialize(new { name = "John Doe", email = "john@example.com" });
     using var request = new HttpRequestMessage(HttpMethod.Post, "users");
@@ -169,7 +169,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
     using var request = new HttpRequestMessage(HttpMethod.Get, "notfound");
 
     // When
@@ -189,7 +189,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
     using var request = new HttpRequestMessage(HttpMethod.Get, "error");
 
     // When
@@ -209,7 +209,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
     using var request = new HttpRequestMessage(HttpMethod.Get, "nonexistent-endpoint");
 
     // When
@@ -228,7 +228,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
     using var request = new HttpRequestMessage(HttpMethod.Get, "_mockaco/ready");
 
     // When
@@ -242,10 +242,10 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   }
 
   [Fact]
-  public void GetEndpoint_ReturnsValidUri()
+  public void GetBaseAddress_ReturnsValidUri()
   {
     // Given & When
-    var endpoint = _mockacoContainer.GetEndpoint();
+    var endpoint = _mockacoContainer.GetBaseAddress();
 
     // Then
     Assert.True(Uri.TryCreate(endpoint, UriKind.Absolute, out var uri), "Endpoint should be a valid URI");
@@ -259,18 +259,18 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
-    
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
+
     var requestBody = JsonSerializer.Serialize(new { name = "John Doe", email = "john@example.com" });
     using var request = new HttpRequestMessage(HttpMethod.Post, "users");
     request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
 
     // When - Make a request first
     await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
-    
+
     // Then - Verify the request was recorded (try different route formats)
     var verification = await _mockacoContainer.GetVerifyAsync("/users");
-    
+
     Assert.NotNull(verification);
     Assert.Equal("/users", verification.Route);
     Assert.False(string.IsNullOrEmpty(verification.Timestamp));
@@ -283,7 +283,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given & When
     var verification = await _mockacoContainer.GetVerifyAsync("never-called-route");
-    
+
     // Then
     Assert.Null(verification);
   }
@@ -294,8 +294,8 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
-    
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
+
     var requestData = new { name = "Jane Doe", email = "jane@example.com", age = 30 };
     var requestBody = JsonSerializer.Serialize(requestData);
     using var request = new HttpRequestMessage(HttpMethod.Post, "users");
@@ -304,7 +304,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
     // When
     await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
     var verification = await _mockacoContainer.GetVerifyAsync("/users");
-    
+
     // Then
     Assert.NotNull(verification);
     var deserializedBody = verification.GetBodyAs<Dictionary<string, object>>();
@@ -318,8 +318,8 @@ public sealed class MockacoContainerTest : IAsyncLifetime
   {
     // Given
     using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri(_mockacoContainer.GetEndpoint());
-    
+    httpClient.BaseAddress = new Uri(_mockacoContainer.GetBaseAddress());
+
     var requestBody = JsonSerializer.Serialize(new { id = 123, active = true });
     using var request = new HttpRequestMessage(HttpMethod.Post, "users");
     request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
@@ -327,7 +327,7 @@ public sealed class MockacoContainerTest : IAsyncLifetime
     // When
     await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
     var verification = await _mockacoContainer.GetVerifyAsync("/users");
-    
+
     // Then
     Assert.NotNull(verification);
     using var jsonDoc = verification.GetBodyAsJson();

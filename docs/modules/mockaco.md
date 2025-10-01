@@ -68,8 +68,7 @@ Set up and call a mock endpoint:
     {
         // Given
         using var httpClient = new HttpClient();
-        var baseUrl = new UriBuilder(Uri.UriSchemeHttp, _mockacoContainer.Hostname, 
-            _mockacoContainer.GetMappedPublicPort(MockacoBuilder.MockacoPort)).Uri;
+        var baseUrl = new Uri(_mockacoContainer.GetBaseAddress());
 
         // When - Call the mock endpoint
         var response = await httpClient.GetAsync(new Uri(baseUrl, "/ping"));
@@ -90,8 +89,7 @@ Verify API calls using the verification endpoint:
     {
         // Given
         using var httpClient = new HttpClient();
-        var baseUrl = new UriBuilder(Uri.UriSchemeHttp, _mockacoContainer.Hostname, 
-            _mockacoContainer.GetMappedPublicPort(MockacoBuilder.MockacoPort)).Uri;
+        var baseUrl = new Uri(_mockacoContainer.GetBaseAddress());
 
         // When - Call an endpoint and then verify
         await httpClient.GetAsync(new Uri(baseUrl, "/ping"));
