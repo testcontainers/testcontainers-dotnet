@@ -10,8 +10,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private readonly IContainer _container = new ContainerBuilder()
       .WithImage("amazon/dynamodb-local:1.20.0")
-      .WithWaitStrategy(Wait.ForUnixContainer()
-        .UntilPortIsAvailable(8000))
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(8000))
       .Build();
 
     [Fact]

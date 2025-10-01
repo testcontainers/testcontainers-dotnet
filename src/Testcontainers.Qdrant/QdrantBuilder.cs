@@ -59,8 +59,8 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
             .WithEnvironment("QDRANT__SERVICE__ENABLE_TLS", "1")
             .WithEnvironment("QDRANT__TLS__CERT", CertificateFilePath)
             .WithEnvironment("QDRANT__TLS__KEY", CertificateKeyFilePath)
-            .WithResourceMapping(Encoding.UTF8.GetBytes(certificate), CertificateFilePath)
-            .WithResourceMapping(Encoding.UTF8.GetBytes(certificateKey), CertificateKeyFilePath);
+            .WithResourceMapping(Encoding.Default.GetBytes(certificate), CertificateFilePath)
+            .WithResourceMapping(Encoding.Default.GetBytes(certificateKey), CertificateKeyFilePath);
     }
 
     /// <inheritdoc />
