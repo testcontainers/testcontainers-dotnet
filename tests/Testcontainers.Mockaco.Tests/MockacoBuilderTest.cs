@@ -55,7 +55,7 @@ public sealed class MockacoBuilderTest
   public void DefaultImage_IsCorrect()
   {
     // Given & When & Then
-    Assert.Equal("natenho/mockaco:1.9.9", MockacoBuilder.MockacoImage);
+    Assert.Equal("natenho/mockaco:1.9.14", MockacoBuilder.MockacoImage);
   }
 
   [Fact]

@@ -9,7 +9,7 @@ public sealed class MockacoBuilder : ContainerBuilder<MockacoBuilder, MockacoCon
     /// <summary>
     /// The default Docker image used for Mockaco.
     /// </summary>
-    public const string MockacoImage = "natenho/mockaco:1.9.9";
+    public const string MockacoImage = "natenho/mockaco:1.9.14";
 
     /// <summary>
     /// The default port exposed by the Mockaco container.
