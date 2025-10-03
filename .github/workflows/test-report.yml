@@ -21,9 +21,6 @@ jobs:
         with:
           pattern: Testcontainers*
 
-      - name: List Artifacts
-        run: ls -R ${{ github.workspace }}
-
       - name: Publish Test Report
         uses: dorny/test-reporter@v2.1.1
         with:
