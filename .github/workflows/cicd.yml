@@ -27,76 +27,28 @@ env:
   TZ: CET # https://stackoverflow.com/q/53510011
 
 jobs:
+  collect-test-projects:
+    runs-on: ubuntu-22.04
+
+    outputs:
+      test-projects: ${{ steps.set-test-projects.outputs.test-projects }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - id: set-test-projects
+        name: Collect Test Projects
+        shell: pwsh
+        run: echo "test-projects=$(.github/scripts/Collect-TestProjects.ps1)" >> $env:GITHUB_OUTPUT
+
   ci:
+    needs: collect-test-projects
+
     strategy:
       max-parallel: 6
       matrix:
-        test-projects: [
-          { name: "Testcontainers", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Platform.Linux", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Platform.Windows", runs-on: "windows-2022" },
-          { name: "Testcontainers.Databases", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.ResourceReaper", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.ActiveMq", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.ArangoDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Azurite", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.BigQuery", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Bigtable", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Cassandra", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.ClickHouse", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.CockroachDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Consul", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.CosmosDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Couchbase", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.CouchDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Db2", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.DynamoDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Elasticsearch", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.EventHubs", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.EventStoreDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.FakeGcsServer", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.FirebirdSql", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Firestore", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.InfluxDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.JanusGraph", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.K3s", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Kafka", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Keycloak", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Kusto", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.LocalStack", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.LowkeyVault", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.MariaDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.MongoDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.MsSql", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Neo4j", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Ollama", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.OpenSearch", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Oracle", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Oracle11", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Oracle18", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Oracle21", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Oracle23", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Papercut", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.PostgreSql", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.PubSub", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Pulsar", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Qdrant", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.RabbitMq", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.RavenDb", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Redis", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Redpanda", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.ServiceBus", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Sftp", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Typesense", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Weaviate", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.WebDriver", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.Xunit", runs-on: "ubuntu-22.04" },
-          { name: "Testcontainers.XunitV3", runs-on: "ubuntu-22.04" }
-        ]
+        test-projects: ${{ fromJSON(needs.collect-test-projects.outputs.test-projects) }}
 
     runs-on: ${{ matrix.test-projects.runs-on }}
 
