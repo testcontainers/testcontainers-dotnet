@@ -1,12 +1,5 @@
 namespace DotNet.Testcontainers.Containers
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Globalization;
-  using System.IO;
-  using System.Linq;
-  using System.Threading;
-  using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
@@ -14,6 +7,13 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
+  using System;
+  using System.Collections.Generic;
+  using System.Globalization;
+  using System.IO;
+  using System.Linq;
+  using System.Threading;
+  using System.Threading.Tasks;
 
   /// <inheritdoc cref="IContainer" />
   [PublicAPI]
@@ -150,28 +150,28 @@ namespace DotNet.Testcontainers.Containers
           case "http":
           case "https":
           case "tcp":
-          {
-            return dockerEndpoint.Host;
-          }
+            {
+              return dockerEndpoint.Host;
+            }
 
           case "npipe":
           case "unix":
-          {
-            const string localhost = "127.0.0.1";
-
-            if (!Exists())
             {
-              return localhost;
-            }
+              const string localhost = "127.0.0.1";
 
-            if (!_client.IsRunningInsideDocker)
-            {
-              return localhost;
-            }
+              if (!Exists())
+              {
+                return localhost;
+              }
 
-            var endpointSettings = _container.NetworkSettings.Networks.First().Value;
-            return endpointSettings.Gateway;
-          }
+              if (!_client.IsRunningInsideDocker)
+              {
+                return localhost;
+              }
+
+              var endpointSettings = _container.NetworkSettings.Networks.First().Value;
+              return endpointSettings.Gateway;
+            }
 
           default:
             throw new InvalidOperationException($"Docker endpoint {dockerEndpoint} is not supported.");

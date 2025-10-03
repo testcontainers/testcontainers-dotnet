@@ -69,6 +69,7 @@ jobs:
           { name: "Testcontainers.Milvus", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Minio", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MongoDb", runs-on: "ubuntu-22.04" },
+          { name: "Testcontainers.Mosquitto", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MsSql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.MySql", runs-on: "ubuntu-22.04" },
           { name: "Testcontainers.Nats", runs-on: "ubuntu-22.04" },
