@@ -36,6 +36,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
+        with:
+          lfs: true
 
       - id: set-test-projects
         name: Collect Test Projects
