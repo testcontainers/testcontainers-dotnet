@@ -20,7 +20,7 @@ jobs:
       - name: Publish Test Report
         uses: dorny/test-reporter@v2.1.1
         with:
-          artifact: '/Testcontainers.*/'
+          artifact: /Testcontainers.*/
           name: Test Report
           path: '*.trx'
           reporter: dotnet-trx
