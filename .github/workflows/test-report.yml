@@ -13,14 +13,17 @@ jobs:
       checks: write
       contents: read
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
-      # https://github.com/dorny/test-reporter/issues/363#issuecomment-2381625959.
-      - name: Publish Test Report
-        uses: dorny/test-reporter@v1.9.1
+      - name: Download Test And Coverage Results
+        uses: actions/download-artifact@v5
         with:
-          artifact: '/Testcontainers.*/'
-          name: Test Report
+          pattern: Testcontainers*
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v2.1.1
+        with:
+          name: test-report
           path: '*.trx'
           reporter: dotnet-trx
