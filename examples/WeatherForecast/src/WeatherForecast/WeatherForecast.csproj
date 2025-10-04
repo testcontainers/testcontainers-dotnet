@@ -17,7 +17,7 @@
     <InternalsVisibleTo Include="WeatherForecast.InProcess.Test"/>
   </ItemGroup>
   <ItemGroup>
-    <None Update="certificate.crt" Visible="false">
+    <None Update="certificate.pfx" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

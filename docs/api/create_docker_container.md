@@ -27,9 +27,9 @@ To configure an ASP.NET Core application, either one or both mechanisms can be u
 ```csharp
 _ = new ContainerBuilder()
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
-  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
+  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.pfx")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
-  .WithResourceMapping("certificate.crt", "/app/");
+  .WithResourceMapping("certificate.pfx", "/app/");
 ```
 
 `WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file into the container. Note, this does not follow our best practices. Host paths differ between environments and may not be available on every system or Docker setup, e.g. CI.
