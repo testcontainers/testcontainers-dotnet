@@ -168,11 +168,10 @@ exec /usr/local/bin/docker-entrypoint.sh ""$@""
                 serverCertFile: serverCertFile,
                 serverKeyFile: serverKeyFile,
                 caCertFile: caCertFile))
-            .WithResourceMapping(File.ReadAllBytes(caCertFile), $"{sslConfigDir}/ca_cert.pem", Unix.FileMode644)
-            .WithResourceMapping(File.ReadAllBytes(serverCertFile), $"{sslConfigDir}/server.crt", Unix.FileMode644)
-            .WithResourceMapping(File.ReadAllBytes(serverKeyFile), $"{sslConfigDir}/server.key", Unix.FileMode700)
-            .WithResourceMapping(Encoding.UTF8.GetBytes(wrapperEntrypoint), "/usr/local/bin/docker-entrypoint-ssl.sh",
-                Unix.FileMode755)
+            .WithResourceMapping(File.ReadAllBytes(caCertFile), $"{sslConfigDir}/ca_cert.pem", fileMode: Unix.FileMode644)
+            .WithResourceMapping(File.ReadAllBytes(serverCertFile), $"{sslConfigDir}/server.crt", fileMode: Unix.FileMode644)
+            .WithResourceMapping(File.ReadAllBytes(serverKeyFile), $"{sslConfigDir}/server.key", fileMode: Unix.FileMode700)
+            .WithResourceMapping(Encoding.UTF8.GetBytes(wrapperEntrypoint), "/usr/local/bin/docker-entrypoint-ssl.sh", fileMode: Unix.FileMode755)
             .WithEntrypoint("/usr/local/bin/docker-entrypoint-ssl.sh")
             .WithCommand("-c", "ssl=on")
             .WithCommand("-c", $"ssl_ca_file={sslConfigDir}/ca_cert.pem")
