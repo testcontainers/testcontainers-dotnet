@@ -8,11 +8,9 @@ on:
       - completed
 
 jobs:
-  report:
+  test-report:
     permissions:
-      actions: read
       checks: write
-      contents: read
 
     runs-on: ubuntu-24.04
 
@@ -38,5 +36,6 @@ jobs:
           path: '**/*.trx'
           reporter: dotnet-trx
           only-summary: true
+          use-actions-summary: false
           list-suites: failed
           list-tests: failed
