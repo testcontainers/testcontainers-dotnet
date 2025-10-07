@@ -447,7 +447,7 @@ namespace DotNet.Testcontainers.Builders
     /// Cleans up the container after it exits.
     /// </summary>
     /// <remarks>
-    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource-reaper/.
+    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource_reaper/.
     /// </remarks>
     /// <param name="autoRemove">Determines whether Docker removes the container after it exits or not.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
