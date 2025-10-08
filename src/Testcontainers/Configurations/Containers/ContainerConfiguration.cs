@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<string> extraHosts = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<WaitStrategy> waitStrategies = null,
-      Func<IContainer, CancellationToken, Task> startupCallback = null,
+      Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -216,6 +216,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
-    public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+    public Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
   }
 }
