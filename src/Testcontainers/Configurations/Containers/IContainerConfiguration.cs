@@ -124,6 +124,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the startup callback.
     /// </summary>
-    Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+    Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
   }
 }

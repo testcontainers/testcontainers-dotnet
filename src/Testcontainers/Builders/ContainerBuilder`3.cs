@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
+  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TBuilderEntity : ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
@@ -387,13 +387,19 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback)
     {
-      return Clone(new ContainerConfiguration(startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)));
+      return Clone(new ContainerConfiguration(startupCallback: (container, _, ct) => startupCallback((TContainerEntity)container, ct)));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithStartupCallback(Func<TContainerEntity, TConfigurationEntity, CancellationToken, Task> startupCallback)
+    {
+      return Clone(new ContainerConfiguration(startupCallback: (container, configuration, ct) => startupCallback((TContainerEntity)container, (TConfigurationEntity)configuration, ct)));
     }
 
     /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _) => Task.CompletedTask);
+      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _, _) => Task.CompletedTask);
     }
 
     /// <inheritdoc />

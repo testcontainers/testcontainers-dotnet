@@ -549,7 +549,7 @@ namespace DotNet.Testcontainers.Containers
 
       Starting?.Invoke(this, EventArgs.Empty);
 
-      await _configuration.StartupCallback(this, ct)
+      await _configuration.StartupCallback(this, _configuration, ct)
         .ConfigureAwait(false);
 
       Logger.StartReadinessCheck(_container.ID);

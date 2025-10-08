@@ -10,7 +10,7 @@ namespace Testcontainers.Xunit;
 [PublicAPI]
 public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
     : ContainerFixture<TBuilderEntity, TContainerEntity>(messageSink), IDbContainerTestMethods
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
     private DbContainerTestMethods _testMethods;
