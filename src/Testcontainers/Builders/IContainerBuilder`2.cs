@@ -18,8 +18,9 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
+  /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
+  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity, out TConfigurationEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
   {
     /// <summary>
     /// Accepts the license agreement.
@@ -447,7 +448,7 @@ namespace DotNet.Testcontainers.Builders
     /// Cleans up the container after it exits.
     /// </summary>
     /// <remarks>
-    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource-reaper/.
+    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource_reaper/.
     /// </remarks>
     /// <param name="autoRemove">Determines whether Docker removes the container after it exits or not.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -488,5 +489,16 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets a startup callback to invoke after the container start.
+    /// </summary>
+    /// <remarks>
+    /// The callback method is invoked after the container start, but before the wait strategies.
+    /// </remarks>
+    /// <param name="startupCallback">The callback method to invoke.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithStartupCallback(Func<TContainerEntity, TConfigurationEntity, CancellationToken, Task> startupCallback);
   }
 }

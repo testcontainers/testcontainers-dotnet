@@ -13,4 +13,9 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers/Testcontainers.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Include="ssl/**/*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
