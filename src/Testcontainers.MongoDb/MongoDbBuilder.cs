@@ -65,7 +65,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <summary>
-    /// Initialize MongoDB as a single-node replica set.
+    /// Initializes MongoDB as a single-node replica set.
     /// </summary>
     /// <param name="replicaSetName">The replica set name.</param>
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
@@ -97,7 +97,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
         else
         {
-            waitUntil = new WaitInitiateReplicaSet(DockerResourceConfiguration);
+            waitUntil = new WaitInitiateReplicaSet();
         }
 
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
@@ -112,7 +112,8 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithStartupCallback(InitiateReplicaSetAsync);
     }
 
     /// <inheritdoc />
@@ -150,6 +151,34 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         return new MongoDbBuilder(new MongoDbConfiguration(oldValue, newValue));
     }
 
+    /// <summary>
+    /// Initiates the MongoDB replica set.
+    /// </summary>
+    /// <param name="container">The container instance.</param>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the replica set initiation has been executed.</returns>
+    private async Task InitiateReplicaSetAsync(MongoDbContainer container, MongoDbConfiguration configuration, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(configuration.ReplicaSetName))
+        {
+            return;
+        }
+
+        var scriptContent = $"var r=rs.initiate({{_id:\"{configuration.ReplicaSetName}\",members:[{{_id:0,host:\"127.0.0.1:27017\"}}]}});quit(r.ok===1?0:1);";
+
+        var initiate = async () =>
+        {
+            var execResult = await container.ExecScriptAsync(scriptContent, ct)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        }; 
+
+        await WaitStrategy.WaitUntilAsync(initiate, TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+            .ConfigureAwait(false);
+    }
+
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitIndicateReadiness : IWaitUntil
     {
@@ -182,16 +211,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitInitiateReplicaSet : IWaitUntil
     {
-        private readonly string _scriptContent;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitInitiateReplicaSet" /> class.
-        /// </summary>
-        /// <param name="configuration">The container configuration.</param>
-        public WaitInitiateReplicaSet(MongoDbConfiguration configuration)
-        {
-            _scriptContent = $"try{{rs.status()}}catch(e){{rs.initiate({{_id:'{configuration.ReplicaSetName}',members:[{{_id:0,host:'127.0.0.1:27017'}}]}});throw e;}}";
-        }
+        private const string ScriptContent = "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";
 
         /// <inheritdoc />
         public Task<bool> UntilAsync(IContainer container)
@@ -202,7 +222,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
         private async Task<bool> UntilAsync(MongoDbContainer container)
         {
-            var execResult = await container.ExecScriptAsync(_scriptContent)
+            var execResult = await container.ExecScriptAsync(ScriptContent)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
