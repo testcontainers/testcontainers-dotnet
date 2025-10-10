@@ -32,4 +32,32 @@ The test example uses the following NuGet dependencies:
 
 To execute the tests, use the command `dotnet test` from a terminal.
 
+## Enable SSL/TLS
+
+The PostgreSQL module supports configuring server-side SSL. Provide paths to your CA certificate, server certificate, and server private key when building the container:
+
+```csharp
+var postgreSqlContainer = new PostgreSqlBuilder()
+    .WithSSLSettings("/path/to/ca_cert.pem",
+                     "/path/to/server.crt",
+                     "/path/to/server.key")
+    .Build();
+await postgreSqlContainer.StartAsync();
+```
+
+When connecting with Npgsql during tests, you can require SSL and (optionally) trust the test certificate:
+
+```csharp
+var csb = new Npgsql.NpgsqlConnectionStringBuilder(postgreSqlContainer.GetConnectionString())
+{
+    SslMode = Npgsql.SslMode.Require,
+    // For testing only; prefer proper CA validation in production.
+    TrustServerCertificate = true
+};
+await using var connection = new Npgsql.NpgsqlConnection(csb.ConnectionString);
+await connection.OpenAsync();
+```
+
+For production scenarios, validate the server certificate against a trusted CA instead of using TrustServerCertificate.
+
 --8<-- "docs/modules/_call_out_test_projects.txt"
