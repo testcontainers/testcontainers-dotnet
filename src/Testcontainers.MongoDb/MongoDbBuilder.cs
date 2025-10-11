@@ -165,6 +165,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             return;
         }
 
+        // This is a simple workaround to use the default options, which can be configured
+        // with custom configurations as needed.
+        var options = new WaitStrategy();
+
         var scriptContent = $"var r=rs.initiate({{_id:\"{configuration.ReplicaSetName}\",members:[{{_id:0,host:\"127.0.0.1:27017\"}}]}});quit(r.ok===1?0:1);";
 
         var initiate = async () =>
@@ -173,9 +177,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
-        }; 
+        };
 
-        await WaitStrategy.WaitUntilAsync(initiate, TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+        await WaitStrategy.WaitUntilAsync(initiate, options.Interval, options.Timeout, options.Retries, ct)
             .ConfigureAwait(false);
     }
 
