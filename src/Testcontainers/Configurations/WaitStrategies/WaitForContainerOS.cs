@@ -15,7 +15,10 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     protected WaitForContainerOS()
     {
-      _waitStrategies.Add(new WaitStrategy(new UntilContainerIsRunning()));
+      var waitStrategy = new WaitStrategy(new UntilContainerIsRunning());
+      _ = waitStrategy.WithMode(WaitStrategyMode.OneShot);
+
+      _waitStrategies.Add(waitStrategy);
     }
 
     /// <inheritdoc />
@@ -31,7 +34,7 @@ namespace DotNet.Testcontainers.Configurations
     public abstract IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
+    public IWaitForContainerOS AddCustomWaitStrategy(IWaitUntil waitUntil, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       var waitStrategy = new WaitStrategy(waitUntil);
 
@@ -51,7 +54,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilFileExists(string filePath, FileSystem fileSystem = FileSystem.Host, Action<IWaitStrategy> waitStrategyModifier = null)
+    public IWaitForContainerOS UntilFileExists(string filePath, FileSystem fileSystem = FileSystem.Host, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       switch (fileSystem)
       {
@@ -76,19 +79,19 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyModifier = null)
+    public IWaitForContainerOS UntilHttpRequestIsSucceeded(Func<HttpWaitStrategy, HttpWaitStrategy> request, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(request.Invoke(new HttpWaitStrategy()), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
+    public IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilContainerIsHealthy(failingStreak), waitStrategyModifier);
     }
 
     /// <inheritdoc />
-    public virtual IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null)
+    public IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null)
     {
       return AddCustomWaitStrategy(new UntilDatabaseIsAvailable(dbProviderFactory), waitStrategyModifier);
     }

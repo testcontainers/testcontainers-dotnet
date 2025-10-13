@@ -158,7 +158,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <param name="configuration">The container configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the replica set initiation has been executed.</returns>
-    private async Task InitiateReplicaSetAsync(MongoDbContainer container, MongoDbConfiguration configuration, CancellationToken ct)
+    private static async Task InitiateReplicaSetAsync(MongoDbContainer container, MongoDbConfiguration configuration, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(configuration.ReplicaSetName))
         {
@@ -224,7 +224,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
 
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private async Task<bool> UntilAsync(MongoDbContainer container)
+        private static async Task<bool> UntilAsync(MongoDbContainer container)
         {
             var execResult = await container.ExecScriptAsync(ScriptContent)
                 .ConfigureAwait(false);

@@ -51,7 +51,8 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
@@ -67,7 +68,8 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
