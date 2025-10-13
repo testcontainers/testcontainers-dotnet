@@ -4,7 +4,7 @@ namespace DotNet.Testcontainers.Configurations
   using JetBrains.Annotations;
 
   /// <summary>
-  /// Defines the execution mode for wait strategies.
+  /// Represents the execution mode for a wait strategy.
   /// </summary>
   [PublicAPI]
   public enum WaitStrategyMode
@@ -15,15 +15,15 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>
     /// When this mode is used, the library verifies that the container is running. If
     /// the container is not running, it collects the container's <c>stdout</c> and
-    /// <c>stderr</c> logs and throws a <see cref="ContainerNotRunningException"/> exception.
+    /// <c>stderr</c> logs and throws a <see cref="ContainerNotRunningException" /> exception.
     /// </remarks>
     Running,
 
     /// <summary>
-    /// Executes the wait strategy a single time without requiring the container to be running.
+    /// Executes the wait strategy without requiring the container to be running.
     /// </summary>
     /// <remarks>
-    /// This mode does not check the container's running state and does not retry.
+    /// This mode does not check the container's running state.
     /// </remarks>
     OneShot,
   }

@@ -716,7 +716,7 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Throws an <see cref="ContainerNotRunningException" /> when the container exited unexpectedly.
+    /// Throws <see cref="ContainerNotRunningException" /> when the container exited unexpectedly.
     /// </summary>
     /// <param name="waitStrategyMode">The wait strategy mode.</param>
     /// <param name="innerException">The inner exception.</param>
