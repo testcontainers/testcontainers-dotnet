@@ -7,7 +7,6 @@ _ = Wait.ForUnixContainer()
   .UntilInternalTcpPortIsAvailable(80)
   .UntilFileExists("/tmp/foo")
   .UntilFileExists("/tmp/bar")
-  .UntilOperationIsSucceeded(() => true, 1)
   .AddCustomWaitStrategy(new MyCustomWaitStrategy());
 ```
 
