@@ -7,7 +7,6 @@ _ = Wait.ForUnixContainer()
   .UntilInternalTcpPortIsAvailable(80)
   .UntilFileExists("/tmp/foo")
   .UntilFileExists("/tmp/bar")
-  .UntilOperationIsSucceeded(() => true, 1)
   .AddCustomWaitStrategy(new MyCustomWaitStrategy());
 ```
 
@@ -19,6 +18,17 @@ _ = Wait.ForUnixContainer()
 ```
 
 Besides configuring the wait strategy, cancelling a container start can always be done utilizing a [CancellationToken](create_docker_container.md#canceling-a-container-start).
+
+## Wait strategy modes
+
+Wait strategy modes define how Testcontainers for .NET handles container readiness checks. By default, wait strategies assume the container remains running throughout the startup. If a container exits unexpectedly during startup, Testcontainers for .NET will throw a `ContainerNotRunningException` containing the exit code and logs.
+
+Some containers are intended to stop after completing short-lived tasks like migrations or setup scripts. In these cases, the container exit is expected, not a failure. Use `WaitStrategyMode.OneShot` to treat a normal exit as successful rather than throwing an exception.
+
+```csharp
+_ = Wait.ForUnixContainer()
+  .UntilMessageIsLogged("Migration completed", o => o.WithMode(WaitStrategyMode.OneShot));
+```
 
 ## Wait until an HTTP(S) endpoint is available
 

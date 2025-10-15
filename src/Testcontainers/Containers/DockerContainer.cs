@@ -549,7 +549,7 @@ namespace DotNet.Testcontainers.Containers
 
       Starting?.Invoke(this, EventArgs.Empty);
 
-      await _configuration.StartupCallback(this, ct)
+      await _configuration.StartupCallback(this, _configuration, ct)
         .ConfigureAwait(false);
 
       Logger.StartReadinessCheck(_container.ID);
@@ -671,11 +671,27 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A task representing the asynchronous operation, returning true if the wait strategy indicates readiness; otherwise, false.</returns>
     private async Task<bool> CheckReadinessAsync(WaitStrategy waitStrategy, CancellationToken ct = default)
     {
+      Exception exception = null;
+
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      return await waitStrategy.UntilAsync(this, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        return await waitStrategy.UntilAsync(this, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException e)
+      {
+        exception = e;
+      }
+      finally
+      {
+        await ThrowIfContainerNotRunningAsync(waitStrategy.Mode, exception)
+          .ConfigureAwait(false);
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -699,6 +715,28 @@ namespace DotNet.Testcontainers.Containers
       return true;
     }
 
+    /// <summary>
+    /// Throws <see cref="ContainerNotRunningException" /> when the container exited unexpectedly.
+    /// </summary>
+    /// <param name="waitStrategyMode">The wait strategy mode.</param>
+    /// <param name="innerException">The inner exception.</param>
+    /// <exception cref="ContainerNotRunningException">The container exited unexpectedly.</exception>
+    private async Task ThrowIfContainerNotRunningAsync(WaitStrategyMode waitStrategyMode, [CanBeNull] Exception innerException = null)
+    {
+      if (innerException == null && (TestcontainersStates.Exited != State || WaitStrategyMode.Running != waitStrategyMode))
+      {
+        return;
+      }
+
+      var (stdout, stderr) = await GetLogsAsync()
+        .ConfigureAwait(false);
+
+      var exitCode = await GetExitCodeAsync()
+        .ConfigureAwait(false);
+
+      throw new ContainerNotRunningException(Id, stdout, stderr, exitCode, innerException);
+    }
+
     private sealed class WaitUntilPortBindingsMapped : WaitStrategy
     {
       private readonly DockerContainer _parent;
@@ -706,6 +744,7 @@ namespace DotNet.Testcontainers.Containers
       public WaitUntilPortBindingsMapped(DockerContainer parent)
       {
         _parent = parent;
+        _ = WithMode(WaitStrategyMode.OneShot);
         _ = WithInterval(TimeSpan.FromSeconds(1));
         _ = WithTimeout(TimeSpan.FromSeconds(15));
       }
