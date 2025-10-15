@@ -7,8 +7,8 @@ dotnet add package Testcontainers
 ```csharp title="Run the Hello World container"
 // Create a new instance of a container.
 var container = new ContainerBuilder()
-  // Set the image for the container to "testcontainers/helloworld:1.2.0".
-  .WithImage("testcontainers/helloworld:1.2.0")
+  // Set the image for the container to "testcontainers/helloworld:1.3.0".
+  .WithImage("testcontainers/helloworld:1.3.0")
   // Bind port 8080 of the container to a random port on the host.
   .WithPortBinding(8080, true)
   // Wait until the HTTP endpoint of the container is available.

@@ -244,7 +244,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file}")
           .WithBindMount(TestSession.TempDirectoryPath, $"/{target}")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file)))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file), waitStrategyModifier: o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
         // When
@@ -273,7 +273,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"printf $DAY_OF_WEEK > /{target}/{file}")
           .WithBindMount(TestSession.TempDirectoryPath, $"/{target}")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file)))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file), waitStrategyModifier: o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
         // When
@@ -336,7 +336,7 @@ namespace DotNet.Testcontainers.Tests.Unit
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
           .WithOutputConsumer(consumer)
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds, o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
         await container.StartAsync(TestContext.Current.CancellationToken)
