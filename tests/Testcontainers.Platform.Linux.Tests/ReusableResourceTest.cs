@@ -100,6 +100,44 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
     public static class ReuseHashTest
     {
+        public sealed class EqualTest
+        {
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForSameConfigurationCreatedInDifferentOrder()
+            {
+                var env1 = new Dictionary<string, string>
+                {
+                    ["keyA"] = "valueA",
+                    ["keyB"] = "valueB",
+                };
+                var env2 = new Dictionary<string, string>
+                {
+                    ["keyB"] = "valueB",
+                    ["keyA"] = "valueA",
+                };
+                var hash1 = new ReuseHashContainerBuilder().WithEnvironment(env1).WithLabel("labelA", "A").WithLabel("labelB", "B").GetReuseHash();
+                var hash2 = new ReuseHashContainerBuilder().WithEnvironment(env2).WithLabel("labelB", "B").WithLabel("labelA", "A").GetReuseHash();
+                Assert.Equal(hash1, hash2);
+            }
+
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForGivenConfiguration()
+            {
+                var env = new Dictionary<string, string>
+                {
+                    ["keyB"] = "valueB",
+                    ["keyA"] = "valueA",
+                };
+                var hash = new ReuseHashContainerBuilder().WithEnvironment(env).WithLabel("labelB", "B").WithLabel("labelA", "A").GetReuseHash();
+
+                // 50MEP+vnxEkQFo5PrndJ7oKOfh8= is the base64 encoded SHA1 of this JSON:
+                // {"Image":null,"Name":null,"Entrypoint":null,"Command":[],"Environments":{"keyA":"valueA","keyB":"valueB"},"ExposedPorts":{},"PortBindings":{},"NetworkAliases":[],"ExtraHosts":[],"Labels":{"labelA":"A","labelB":"B","org.testcontainers":"true","org.testcontainers.lang":"dotnet"}}
+                Assert.Equal("50MEP+vnxEkQFo5PrndJ7oKOfh8=", hash);
+            }
+        }
+
         public sealed class NotEqualTest
         {
             [Fact]
