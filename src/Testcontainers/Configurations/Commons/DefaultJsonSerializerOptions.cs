@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Configurations
       Instance.Converters.Add(new JsonOrderedKeysConverter());
     }
 
-    public static JsonSerializerOptions Instance { get; } = new JsonSerializerOptions();
+    public static JsonSerializerOptions Instance { get; }
+      = new JsonSerializerOptions();
   }
 }
