@@ -104,37 +104,75 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         {
             [Fact]
             [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-            public void ForSameConfigurationCreatedInDifferentOrder()
+            public void ForKnownConfiguration()
             {
-                var env1 = new Dictionary<string, string>
-                {
-                    ["keyA"] = "valueA",
-                    ["keyB"] = "valueB",
-                };
-                var env2 = new Dictionary<string, string>
-                {
-                    ["keyB"] = "valueB",
-                    ["keyA"] = "valueA",
-                };
-                var hash1 = new ReuseHashContainerBuilder().WithEnvironment(env1).WithLabel("labelA", "A").WithLabel("labelB", "B").GetReuseHash();
-                var hash2 = new ReuseHashContainerBuilder().WithEnvironment(env2).WithLabel("labelB", "B").WithLabel("labelA", "A").GetReuseHash();
-                Assert.Equal(hash1, hash2);
+                // Given
+                var env = new Dictionary<string, string>();
+                env["keyA"] = "valueA";
+                env["keyB"] = "valueB";
+
+                // When
+                var hash = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env)
+                    .WithLabel("labelA", "A")
+                    .WithLabel("labelB", "B")
+                    .GetReuseHash();
+
+                // Then
+
+                // `50MEP+vnxEkQFo5PrndJ7oKOfh8=` is the Base64-encoded SHA-1 hash of this JSON:
+                //
+                // {
+                //     "Image": null,
+                //     "Name": null,
+                //     "Entrypoint": null,
+                //     "Command": [],
+                //     "Environments": {
+                //         "keyA": "valueA",
+                //         "keyB": "valueB"
+                //     },
+                //     "ExposedPorts": {},
+                //     "PortBindings": {},
+                //     "NetworkAliases": [],
+                //     "ExtraHosts": [],
+                //     "Labels": {
+                //         "labelA": "A",
+                //         "labelB": "B",
+                //         "org.testcontainers": "true",
+                //         "org.testcontainers.lang": "dotnet"
+                //     }
+                // }
+                Assert.Equal("50MEP+vnxEkQFo5PrndJ7oKOfh8=", hash);
             }
 
             [Fact]
             [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-            public void ForGivenConfiguration()
+            public void ForSameConfigurationInDifferentOrder()
             {
-                var env = new Dictionary<string, string>
-                {
-                    ["keyB"] = "valueB",
-                    ["keyA"] = "valueA",
-                };
-                var hash = new ReuseHashContainerBuilder().WithEnvironment(env).WithLabel("labelB", "B").WithLabel("labelA", "A").GetReuseHash();
+                // Given
+                var env1 = new Dictionary<string, string>();
+                env1["keyA"] = "valueA";
+                env1["keyB"] = "valueB";
 
-                // 50MEP+vnxEkQFo5PrndJ7oKOfh8= is the base64 encoded SHA1 of this JSON:
-                // {"Image":null,"Name":null,"Entrypoint":null,"Command":[],"Environments":{"keyA":"valueA","keyB":"valueB"},"ExposedPorts":{},"PortBindings":{},"NetworkAliases":[],"ExtraHosts":[],"Labels":{"labelA":"A","labelB":"B","org.testcontainers":"true","org.testcontainers.lang":"dotnet"}}
-                Assert.Equal("50MEP+vnxEkQFo5PrndJ7oKOfh8=", hash);
+                var env2 = new Dictionary<string, string>();
+                env2["keyB"] = "valueB";
+                env2["keyA"] = "valueA";
+
+                // When
+                var hash1 = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env1)
+                    .WithLabel("labelA", "A")
+                    .WithLabel("labelB", "B")
+                    .GetReuseHash();
+
+                var hash2 = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env2)
+                    .WithLabel("labelB", "B")
+                    .WithLabel("labelA", "A")
+                    .GetReuseHash();
+
+                // Then
+                Assert.Equal(hash1, hash2);
             }
         }
 
