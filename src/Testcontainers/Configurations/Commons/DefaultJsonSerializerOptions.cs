@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System.Text.Json;
 
-  public static class DefaultJsonSerializerOptions
+  internal static class DefaultJsonSerializerOptions
   {
     static DefaultJsonSerializerOptions()
     {
