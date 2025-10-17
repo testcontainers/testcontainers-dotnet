@@ -14,6 +14,13 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public class ResourceConfiguration<TCreateResourceEntity> : IResourceConfiguration<TCreateResourceEntity>
   {
+    private static readonly JsonSerializerOptions JsonSerializerOptions;
+
+    static ResourceConfiguration()
+    {
+      JsonSerializerOptions = new JsonSerializerOptions { Converters = { new JsonOrderedKeysConverter() } };
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ResourceConfiguration{TCreateResourceEntity}" /> class.
     /// </summary>
@@ -88,7 +95,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public virtual string GetReuseHash()
     {
-      var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
+      var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType(), JsonSerializerOptions);
 
 #if NET6_0_OR_GREATER
       return Convert.ToBase64String(SHA1.HashData(jsonUtf8Bytes));
