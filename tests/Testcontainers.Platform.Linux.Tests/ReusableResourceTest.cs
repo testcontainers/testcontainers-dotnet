@@ -116,16 +116,12 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                     .WithEnvironment(env)
                     .WithLabel("labelA", "A")
                     .WithLabel("labelB", "B")
-                    // When the port forwarding container runs, Testcontainers automatically adds an
-                    // extra host to the builder configuration. Since this extra host changes the
-                    // hash value, we pin it to keep the hash consistent for assertions.
-                    .WithExtraHost("host.testcontainers.internal", "127.0.0.1")
                     .GetReuseHash();
 
                 // Then
 
                 // The hash is calculated from the minified JSON. For readability, the JSON
-                // shown below is formatted. `d0r7YnGzcm1QQyS0KIVT9DvcayA=` is the
+                // shown below is formatted. `Dtj7Jx6NVlbDUnA3vmH1nNZw+o8=` is the
                 // Base64-encoded SHA-1 hash for this JSON (minified):
                 //
                 // {
@@ -140,9 +136,6 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 //     "ExposedPorts": {},
                 //     "PortBindings": {},
                 //     "NetworkAliases": [],
-                //     "ExtraHosts": [
-                //         "host.testcontainers.internal:127.0.0.1"
-                //     ],
                 //     "Labels": {
                 //         "labelA": "A",
                 //         "labelB": "B",
@@ -150,7 +143,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 //         "org.testcontainers.lang": "dotnet"
                 //     }
                 // }
-                Assert.Equal("d0r7YnGzcm1QQyS0KIVT9DvcayA=", hash);
+                Assert.Equal("Dtj7Jx6NVlbDUnA3vmH1nNZw+o8=", hash);
             }
 
             [Fact]
@@ -272,7 +265,12 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
     {
         public ReuseHashContainerBuilder() : this(new ContainerConfiguration())
-            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        {
+            // By default, the constructor calls `Init()`, which sets up the default builder
+            // configurations, including ones for the port forwarding container if it's running.
+            // To avoid applying those settings during tests, this class intentionally doesn't
+            // call `Init()`.
+        }
 
         private ReuseHashContainerBuilder(ContainerConfiguration configuration) : base(configuration)
             => DockerResourceConfiguration = configuration;
