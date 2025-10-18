@@ -2,17 +2,13 @@ namespace Testcontainers.Tests;
 
 public abstract class WaitStrategyModeTest : IAsyncLifetime
 {
-    private const string Message = "Hello, World!";
-
     private readonly IContainer _container;
 
     private WaitStrategyModeTest(WaitStrategyMode waitStrategyMode)
     {
         _container = new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
-            .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("echo " + Message)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(Message, o => o.WithMode(waitStrategyMode)))
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(waitStrategyMode)))
             .Build();
     }
 
@@ -66,6 +62,14 @@ public abstract class WaitStrategyModeTest : IAsyncLifetime
                 .ConfigureAwait(true);
 
             Assert.Null(exception);
+        }
+    }
+
+    private sealed class WaitUntil : IWaitUntil
+    {
+        public Task<bool> UntilAsync(IContainer container)
+        {
+            return Task.FromResult(TestcontainersStates.Exited.Equals(container.State));
         }
     }
 }
