@@ -213,11 +213,11 @@ namespace DotNet.Testcontainers.Images
               .ConfigureAwait(false);
           }
 
-          var dockerfileDirectoryPath = _dockerfileDirectory.FullName
+          var dockerfileDirectoryLength  = _dockerfileDirectory.FullName
             .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
           var dockerfileRelativeFilePath = _dockerfile.FullName
-            .Substring(dockerfileDirectoryPath);
+            .Substring(dockerfileDirectoryLength );
 
           var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
 
