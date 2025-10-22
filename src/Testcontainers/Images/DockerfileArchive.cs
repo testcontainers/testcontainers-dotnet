@@ -213,7 +213,15 @@ namespace DotNet.Testcontainers.Images
               .ConfigureAwait(false);
           }
 
-          await AddAsync(_dockerfile.FullName, _dockerfile.Name, tarOutputStream)
+          var dockerfileDirectoryLength  = _dockerfileDirectory.FullName
+            .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
+
+          var dockerfileRelativeFilePath = _dockerfile.FullName
+            .Substring(dockerfileDirectoryLength );
+
+          var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
+
+          await AddAsync(_dockerfile.FullName, dockerfileNormalizedRelativeFilePath, tarOutputStream)
             .ConfigureAwait(false);
         }
       }

@@ -79,6 +79,40 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public async Task IgnoredDockerfileIsCopiedToTarball()
+    {
+      // Given
+
+      // This test ensures Dockerfiles in subdirectories are copied to the right paths
+      // in the tarball, instead of ending up at the root directory:
+      // https://github.com/testcontainers/testcontainers-dotnet/issues/1557.
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      var actual = new SortedSet<string>();
+
+      var buildArguments = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/", "target/Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // When
+      using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
+      {
+        using (var tarIn = TarArchive.CreateInputTarArchive(tarOut, Encoding.Default))
+        {
+          tarIn.ProgressMessageEvent += (_, entry, _) => actual.Add(entry.Name);
+          tarIn.ListContents();
+        }
+      }
+
+      // Then
+      Assert.Contains("target/Dockerfile", actual);
+      Assert.DoesNotContain("Dockerfile", actual);
+    }
+
+    [Fact]
     public async Task ThrowsDockerfileDoesNotExist()
     {
       // Given
