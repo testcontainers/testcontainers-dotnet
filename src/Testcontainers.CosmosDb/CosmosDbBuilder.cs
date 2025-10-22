@@ -4,7 +4,7 @@ namespace Testcontainers.CosmosDb;
 [PublicAPI]
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
-    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview";
 
     public const ushort CosmosDbPort = 8081;
 
@@ -44,6 +44,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     {
         return base.Init()
             .WithImage(CosmosDbImage)
+            .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithPortBinding(CosmosDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
@@ -73,25 +74,24 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
         public async Task<bool> UntilAsync(IContainer container)
         {
             // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string requestUri = "https://localhost/_explorer/emulator.pem";
+            const string REQUEST_URI = "http://localhost";
 
-            var httpClient = ((CosmosDbContainer)container).HttpClient;
+            using var httpClient = ((CosmosDbContainer)container).HttpClient;
 
             try
             {
-                using var httpResponse = await httpClient.GetAsync(requestUri)
+                using var httpResponse = await httpClient.GetAsync(REQUEST_URI)
                     .ConfigureAwait(false);
 
-                return httpResponse.IsSuccessStatusCode;
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    await Task.Delay(2_000);
+                    return true;
+                }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally
-            {
-                httpClient.Dispose();
-            }
+            catch { }
+
+            return false;
         }
     }
 }
