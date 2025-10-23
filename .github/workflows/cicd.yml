@@ -89,7 +89,7 @@ jobs:
           path: test-results
 
   cd:
-    if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
+    if: ${{ github.repository == 'testcontainers/testcontainers-dotnet' && contains(fromJson('["develop", "main"]'), github.ref_name) }}
 
     needs: ci
 
