@@ -21,9 +21,13 @@
     <RepositoryUrl>https://github.com/testcontainers/testcontainers-dotnet</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src/strongname.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
+    <!-- Enable signing only in CI or when explicitly requested -->
+    <SignAssembly Condition="'$(SIGN_ASSEMBLY)' == 'true' or '$(CI)' == 'true'">true</SignAssembly>
+    <SignAssembly Condition="'$(SignAssembly)' == ''">false</SignAssembly>
     <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src/strongname.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>CA1859,CA1861,CS0618,CS1591,xUnit1044,xUnit1045</NoWarn>
@@ -41,9 +45,14 @@
     <None Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false" Pack="true" PackagePath="" />
     <None Include="$(MSBuildThisFileDirectory)README.md" Visible="false" Pack="true" PackagePath="" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(SignAssembly)' == 'true'">
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Testcontainers.Tests, PublicKey=$([System.IO.File]::ReadAllText($(MSBuildThisFileDirectory)src/strongname.pub))</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup Condition="'$(SignAssembly)' != 'true'">
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Testcontainers.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 </Project>
