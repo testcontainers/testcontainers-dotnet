@@ -9,6 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{78E879DE-E97B-4E19-B71B-628ED9FA7F7C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\cicd.yml = .github\workflows\cicd.yml
+		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
+		.github\workflows\test-report.yml = .github\workflows\test-report.yml
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{673F23AE-7694-4BB9-ABD4-136D6C13634E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7164F1FB-7F24-444A-ACD2-2C329C2B3CCF}"
@@ -756,6 +763,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{78E879DE-E97B-4E19-B71B-628ED9FA7F7C} = {AF017206-CE20-4DDF-8301-CAC68CED1BE6}
 		{5365F780-0E6C-41F0-B1B9-7DC34368F80C} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{AB9C1563-07C7-4685-BACD-BB1FF64B3611} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
 		{3F2E254F-C203-43FD-A078-DC3E2CBC0F9F} = {673F23AE-7694-4BB9-ABD4-136D6C13634E}
