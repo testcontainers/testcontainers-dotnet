@@ -39,10 +39,16 @@ jobs:
         with:
           lfs: true
 
+      - id: get-all-changed-files
+        name: Collect Changed Files
+        uses: tj-actions/changed-files@v47
+
       - id: set-test-projects
         name: Collect Test Projects
         shell: pwsh
         run: echo "test-projects=$(.github/scripts/Collect-TestProjects.ps1)" >> $env:GITHUB_OUTPUT
+        env:
+          ALL_CHANGED_FILES: ${{ steps.get-all-changed-files.outputs.all_changed_files }}
 
   ci:
     needs: collect-test-projects
