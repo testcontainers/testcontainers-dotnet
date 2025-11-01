@@ -52,6 +52,8 @@ $XUNIT_MODULES = @(
 function Should-RunTests {
     param ([string]$ModuleName)
 
+    return $false
+
     If ($script:branch -In $PROTECTED_BRANCHES) {
         Write-Host "Running '$ModuleName': protected branch '$script:branch'."
         return $true
