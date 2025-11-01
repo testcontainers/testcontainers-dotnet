@@ -1,99 +1,98 @@
 <#
     .SYNOPSIS
-    Filters test projects for CI workflows.
+    Filters test projects based on changed files to optimize CI workflow execution.
 
     .DESCRIPTION
-    Receives test project objects from the pipeline and returns them.
-    Currently, all projects are passed through unchanged.
+    Analyzes changed files and determines which test projects need to run. Protected
+    branches and global repository changes run all tests. Other branches run only
+    affected modules.
 #>
 
 $PROTECTED_BRANCHES = @(
-    'main',
-    'develop'
+    "main",
+    "develop"
 )
 
 $GLOBAL_PATTERNS = @(
-    '^\.github/scripts/',
-    '^\.github/workflows/',
-    '^build/',
-    '^Directory\.Build\.props$',
-    '^Directory\.Packages\.props$',
-    '^src/Testcontainers/'
+    "^\.github/scripts/",
+    "^\.github/workflows/",
+    "^build/",
+    "^Directory\.Build\.props$",
+    "^Directory\.Packages\.props$",
+    "^src/Testcontainers/"
 )
 
 $DATABASE_MODULES = @(
-    'Testcontainers.Cassandra',
-    'Testcontainers.ClickHouse',
-    'Testcontainers.CockroachDb',
-    'Testcontainers.Db2',
-    'Testcontainers.FirebirdSql',
-    'Testcontainers.MariaDb',
-    'Testcontainers.MsSql',
-    'Testcontainers.MySql',
-    'Testcontainers.Oracle',
-    'Testcontainers.PostgreSql',
-    'Testcontainers.Xunit',
-    'Testcontainers.XunitV3'
+    "Testcontainers.Cassandra",
+    "Testcontainers.ClickHouse",
+    "Testcontainers.CockroachDb",
+    "Testcontainers.Db2",
+    "Testcontainers.FirebirdSql",
+    "Testcontainers.MariaDb",
+    "Testcontainers.MsSql",
+    "Testcontainers.MySql",
+    "Testcontainers.Oracle",
+    "Testcontainers.PostgreSql",
+    "Testcontainers.Xunit",
+    "Testcontainers.XunitV3"
 )
 
 $ORACLE_MODULES = @(
-    'Testcontainers.Oracle',
-    'Testcontainers.Oracle11',
-    'Testcontainers.Oracle18',
-    'Testcontainers.Oracle21',
-    'Testcontainers.Oracle23'
+    "Testcontainers.Oracle",
+    "Testcontainers.Oracle11",
+    "Testcontainers.Oracle18",
+    "Testcontainers.Oracle21",
+    "Testcontainers.Oracle23"
 )
 
 $XUNIT_MODULES = @(
-    'Testcontainers.Xunit',
-    'Testcontainers.XunitV3'
+    "Testcontainers.Xunit",
+    "Testcontainers.XunitV3"
 )
 
 function Should-RunTests {
     param ([string]$ModuleName)
 
-    return $false
-
     If ($script:branch -In $PROTECTED_BRANCHES) {
         Write-Host "Running '$ModuleName': protected branch '$script:branch'."
-        return $true
+        return $True
     }
 
     ForEach ($pattern In $GLOBAL_PATTERNS) {
         If ($script:allChangedFiles | Where-Object { $_ -Match $pattern }) {
             Write-Host "Running '$ModuleName': global changes detected ($pattern)."
-            return $true
+            return $True
         }
     }
 
     If ($script:allChangedFiles | Where-Object { $_ -Match "^(src|tests)/$ModuleName" }) {
         Write-Host "Running '$ModuleName': module-specific changes detected."
-        return $true
+        return $True
     }
 
     If ($ModuleName -In $DATABASE_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^tests/Testcontainers\.Databases\.Tests' })) {
         Write-Host "Running '$ModuleName': database test changes detected."
-        return $true
+        return $True
     }
 
     If ($ModuleName -In $ORACLE_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^(src|tests)/Testcontainers\.Oracle' })) {
         Write-Host "Running '$ModuleName': Oracle module changes detected."
-        return $true
+        return $True
     }
 
     If ($ModuleName -In $XUNIT_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^(src|tests)/Testcontainers\.Xunit(V3)?' })) {
         Write-Host "Running '$ModuleName': xUnit module changes detected."
-        return $true
+        return $True
     }
 
     Write-Host "Skipping '$ModuleName': no relevant changes detected."
-    return $false
+    return $False
 }
 
 function Filter-TestProjects {
     [CmdletBinding()]
     Param (
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter(ValueFromPipeline = $True)]
         $TestProject
     )
 
