@@ -26,4 +26,5 @@ If ($runsOnNotFound) {
 }
 
 # Filter projects and output as compressed JSON.
-$testProjects | & (Join-Path $PSScriptRoot 'Filter-TestProjects.ps1') | ConvertTo-Json -Compress
+$filteredTestProjects = $testProjects | & (Join-Path $PSScriptRoot 'Filter-TestProjects.ps1') | ConvertTo-Json -AsArray -Compress
+$filteredTestProjects ?? "[]"

@@ -39,3 +39,4 @@ jobs:
           use-actions-summary: false
           list-suites: failed
           list-tests: failed
+          fail-on-empty: false
