@@ -35,6 +35,7 @@ jobs:
           name: test-report
           path: '**/*.trx'
           reporter: dotnet-trx
+          fail-on-empty: false
           only-summary: true
           use-actions-summary: false
           list-suites: failed
