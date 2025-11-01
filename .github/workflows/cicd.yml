@@ -51,6 +51,8 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.get-all-changed-files.outputs.all_changed_files }}
 
   ci:
+    if: ${{ needs.collect-test-projects.outputs.test-projects != '[]' }}
+
     needs: collect-test-projects
 
     strategy:
