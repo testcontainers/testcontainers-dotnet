@@ -13,7 +13,7 @@ namespace Testcontainers.Playwright.Tests
 
     private const string PlaywrightContainerName = "testplaywright";
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
       var network = CreateNetwork();
 
@@ -23,7 +23,7 @@ namespace Testcontainers.Playwright.Tests
       await StartContainersAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
       await DisposeContainersAsync();
     }
