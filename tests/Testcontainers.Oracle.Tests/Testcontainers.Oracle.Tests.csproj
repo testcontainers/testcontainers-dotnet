@@ -1,18 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
+        <OutputType>Exe</OutputType>
+        <DefineConstants>$(DefineConstants);ORACLE_DEFAULT</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
-        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.v3"/>
         <PackageReference Include="Oracle.ManagedDataAccess.Core"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Oracle/Testcontainers.Oracle.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

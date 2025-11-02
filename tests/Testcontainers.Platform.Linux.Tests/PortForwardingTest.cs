@@ -9,28 +9,37 @@ public abstract class PortForwardingTest : IAsyncLifetime
         _container = container;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _container.StartAsync();
+        await _container.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesHostConnection()
     {
-        var exitCode = await _container.GetExitCodeAsync()
+        var exitCode = await _container.GetExitCodeAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false)
+        var (stdout, _) = await _container.GetLogsAsync(timestampsEnabled: false, ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Equal(0, exitCode);
         Assert.Equal(bool.TrueString, stdout);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _container.DisposeAsync();
     }
 
     [UsedImplicitly]
@@ -41,8 +50,9 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
-                .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
@@ -56,9 +66,10 @@ public abstract class PortForwardingTest : IAsyncLifetime
                 .WithImage(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
-                .WithCommand(fixture.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
+                .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
@@ -76,22 +87,23 @@ public abstract class PortForwardingTest : IAsyncLifetime
             _tcpListener.Start();
         }
 
-        public string Host => "host.testcontainers.internal";
+        public static string Host => "host.testcontainers.internal";
 
         public ushort Port => Convert.ToUInt16(((IPEndPoint)_tcpListener.LocalEndpoint).Port);
 
-        public Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
-            return Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync());
+            await Task.WhenAny(TestcontainersSettings.ExposeHostPortsAsync(Port), AcceptSocketAsync())
+                .ConfigureAwait(false);
         }
 
-        public Task DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
             _tcpListener.Stop();
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         private async Task AcceptSocketAsync()

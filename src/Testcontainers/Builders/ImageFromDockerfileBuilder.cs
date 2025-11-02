@@ -58,9 +58,15 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ImageFromDockerfileBuilder WithName(IImage name)
+    public ImageFromDockerfileBuilder WithName(IImage image)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyHubImageNamePrefix()));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithContextDirectory(string contextDirectory)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(contextDirectory: contextDirectory));
     }
 
     /// <inheritdoc />
@@ -81,6 +87,12 @@ namespace DotNet.Testcontainers.Builders
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithTarget(string target)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(target: target));
     }
 
     /// <inheritdoc />

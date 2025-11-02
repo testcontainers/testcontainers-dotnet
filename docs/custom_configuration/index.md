@@ -2,24 +2,25 @@
 
 Testcontainers supports various configurations to set up your test environment. It automatically discovers the Docker environment and applies the configuration. You can set or override the default values either with the Testcontainers [properties file][properties-file-format] (`~/.testcontainers.properties`) or with environment variables. The following configurations are available:
 
-| Properties File             | Environment Variable                       | Description                                                                                                               | Default                     |
-|-----------------------------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| `docker.config`             | `DOCKER_CONFIG`                            | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                |
-| `docker.host`               | `DOCKER_HOST`                              | The Docker daemon socket to connect to.                                                                                   | -                           |
-| `docker.context`            | `DOCKER_CONTEXT`                           | The Docker context to connect to.                                                                                         | -                           |
-| `docker.auth.config`        | `DOCKER_AUTH_CONFIG`                       | The Docker configuration file content (GitLab: [Use statically-defined credentials][use-statically-defined-credentials]). | -                           |
-| `docker.cert.path`          | `DOCKER_CERT_PATH`                         | The directory path that contains the client certificate (`{ca,cert,key}.pem`) files.                                      | `~/.docker/`                |
-| `docker.tls`                | `DOCKER_TLS`                               | Enables TLS.                                                                                                              | `false`                     |
-| `docker.tls.verify`         | `DOCKER_TLS_VERIFY`                        | Enables TLS verify.                                                                                                       | `false`                     |
-| `host.override`             | `TESTCONTAINERS_HOST_OVERRIDE`             | The host that exposes Docker's ports.                                                                                     | -                           |
-| `docker.socket.override`    | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`    | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`      |
-| `ryuk.disabled`             | `TESTCONTAINERS_RYUK_DISABLED`             | Disables Ryuk (resource reaper).                                                                                          | `false`                     |
-| `ryuk.container.privileged` | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED` | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `false`                     |
-| `ryuk.container.image`      | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`      | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.5.1` |
-| `hub.image.name.prefix`     | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`     | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                           |
-| `wait.strategy.retries`     | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`     | The wait strategy retry count.                                                                                            | `infinite`                  |
-| `wait.strategy.interval`    | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`    | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                  |
-| `wait.strategy.timeout`     | `TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT`     | The wait strategy timeout<sup>1</sup>.                                                                                    | `01:00:00`                  |
+| Properties File                 | Environment Variable                           | Description                                                                                                               | Default                      |
+|---------------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------|
+| `docker.config`                 | `DOCKER_CONFIG`                                | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                 |
+| `docker.host`                   | `DOCKER_HOST`                                  | The Docker daemon socket to connect to.                                                                                   | -                            |
+| `docker.context`                | `DOCKER_CONTEXT`                               | The Docker context to connect to.                                                                                         | -                            |
+| `docker.auth.config`            | `DOCKER_AUTH_CONFIG`                           | The Docker configuration file content (GitLab: [Use statically-defined credentials][use-statically-defined-credentials]). | -                            |
+| `docker.cert.path`              | `DOCKER_CERT_PATH`                             | The directory path that contains the client certificate (`{ca,cert,key}.pem`) files.                                      | `~/.docker/`                 |
+| `docker.tls`                    | `DOCKER_TLS`                                   | Enables TLS.                                                                                                              | `false`                      |
+| `docker.tls.verify`             | `DOCKER_TLS_VERIFY`                            | Enables TLS verify.                                                                                                       | `false`                      |
+| `host.override`                 | `TESTCONTAINERS_HOST_OVERRIDE`                 | The host that exposes Docker's ports.                                                                                     | -                            |
+| `docker.socket.override`        | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`        | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`       |
+| `ryuk.disabled`                 | `TESTCONTAINERS_RYUK_DISABLED`                 | Disables Ryuk (resource reaper).                                                                                          | `false`                      |
+| `ryuk.container.privileged`     | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED`     | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `true`                       |
+| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.12.0` |
+| `hub.image.name.prefix`         | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`         | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                            |
+| `wait.strategy.retries`         | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`         | The wait strategy retry count.                                                                                            | `infinite`                   |
+| `wait.strategy.interval`        | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`        | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                   |
+| `wait.strategy.timeout`         | `TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT`         | The wait strategy timeout<sup>1</sup>.                                                                                    | `01:00:00`                   |
+| `named.pipe.connection.timeout` | `TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT` | The named pipe connection timeout<sup>1</sup>.                                                                            | `00:00:01`                   |
 
 1) The value represent the string representation of a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan), for example, `00:00:01` for 1 second.
 
@@ -58,6 +59,36 @@ Setting the context to `tcc` in this example will use the Docker host running at
     ```
     docker.context=tcc
     ```
+
+## Automatically modify Docker Hub image names
+
+Testcontainers can automatically add a registry prefix to Docker Hub image names used in your tests. This is handy if you use a private registry that mirrors Docker Hub images with predictable naming.
+
+You can set this up in two ways:
+
+=== "Environment Variable"
+    ```
+    TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
+    ```
+
+=== "Properties File"
+    ```
+    hub.image.name.prefix=registry.mycompany.com/mirror/
+    ```
+
+Once configured, Testcontainers will rewrite Docker Hub image names by adding the prefix.
+
+For example, the image:
+
+```
+testcontainers/helloworld:1.3.0
+```
+
+will automatically become:
+
+```
+registry.mycompany.com/mirror/testcontainers/helloworld:1.3.0
+```
 
 ## Enable logging
 

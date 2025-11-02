@@ -9,17 +9,22 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         _keycloakContainer = keycloakContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _keycloakContainer.StartAsync();
+        await _keycloakContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _keycloakContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task GetOpenIdEndpointReturnsHttpStatusCodeOk()
     {
         // Given
@@ -27,25 +32,31 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_keycloakContainer.GetBaseAddress());
 
         // When
-        using var response = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration")
+        using var httpResponse = await httpClient.GetAsync("/realms/master/.well-known/openid-configuration", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task MasterRealmIsEnabled()
     {
         // Given
         var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
 
         // When
-        var masterRealm = await keycloakClient.GetRealmAsync("master")
+        var masterRealm = await keycloakClient.GetRealmAsync("master", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.True(masterRealm.Enabled);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _keycloakContainer.DisposeAsync();
     }
 
     [UsedImplicitly]
@@ -63,6 +74,39 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
         public KeycloakV25Configuration()
             : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build())
         {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KeycloakV26Configuration : KeycloakContainerTest
+    {
+        public KeycloakV26Configuration()
+            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KeycloakRealmConfiguration : KeycloakContainerTest
+    {
+        public KeycloakRealmConfiguration()
+            : base(new KeycloakBuilder().WithRealm("realm-export.json").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task AllRealmsAreEnabled()
+        {
+            // Given
+            var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+
+            // When
+            var realms = await keycloakClient.GetRealmsAsync("master", TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Collection(realms, realm => Assert.True(realm.Enabled), realm => Assert.True(realm.Enabled));
         }
     }
 }

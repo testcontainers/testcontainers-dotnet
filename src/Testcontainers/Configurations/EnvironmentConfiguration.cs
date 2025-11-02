@@ -42,6 +42,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string WaitStrategyTimeout = "TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT";
 
+    private const string NamedPipeConnectionTimeout = "TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT";
+
     static EnvironmentConfiguration()
     {
     }
@@ -68,6 +70,7 @@ namespace DotNet.Testcontainers.Configurations
           WaitStrategyRetries,
           WaitStrategyInterval,
           WaitStrategyTimeout,
+          NamedPipeConnectionTimeout,
         }
         .ToDictionary(key => key, Environment.GetEnvironmentVariable))
     {
@@ -140,7 +143,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return GetRyukContainerPrivileged(RyukContainerPrivileged);
     }
@@ -173,6 +176,12 @@ namespace DotNet.Testcontainers.Configurations
     public TimeSpan? GetWaitStrategyTimeout()
     {
       return GetWaitStrategyTimeout(WaitStrategyTimeout);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      return GetWaitStrategyTimeout(NamedPipeConnectionTimeout);
     }
   }
 }

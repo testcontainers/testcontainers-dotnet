@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Clients
 
     public const string TestcontainersReuseHashLabel = TestcontainersLabel + ".reuse-hash";
 
-    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+    public static readonly string Version = typeof(TestcontainersClient).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
     private static readonly string OSRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
@@ -143,6 +143,28 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public async Task PauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.PauseAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
+    public async Task UnpauseAsync(string id, CancellationToken ct = default)
+    {
+      if (await Container.ExistsWithIdAsync(id, ct)
+            .ConfigureAwait(false))
+      {
+        await Container.UnpauseAsync(id, ct)
+          .ConfigureAwait(false);
+      }
+    }
+
+    /// <inheritdoc />
     public async Task RemoveAsync(string id, CancellationToken ct = default)
     {
       if (await Container.ExistsWithIdAsync(id, ct)
@@ -182,7 +204,7 @@ namespace DotNet.Testcontainers.Clients
     {
       if (Directory.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(id, new DirectoryInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.UserId, resourceMapping.GroupId, resourceMapping.FileMode, ct)
           .ConfigureAwait(false);
 
         return;
@@ -190,7 +212,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (File.Exists(resourceMapping.Source))
       {
-        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.FileMode, ct)
+        await CopyAsync(id, new FileInfo(resourceMapping.Source), resourceMapping.Target, resourceMapping.UserId, resourceMapping.GroupId, resourceMapping.FileMode, ct)
           .ConfigureAwait(false);
 
         return;
@@ -210,11 +232,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, DirectoryInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, true, fileMode, ct)
+        await tarOutputMemStream.AddAsync(source, true, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -226,11 +248,11 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default)
+    public async Task CopyAsync(string id, FileInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default)
     {
       using (var tarOutputMemStream = new TarOutputMemoryStream(target, _logger))
       {
-        await tarOutputMemStream.AddAsync(source, fileMode, ct)
+        await tarOutputMemStream.AddAsync(source, uid, gid, fileMode, ct)
           .ConfigureAwait(false);
 
         tarOutputMemStream.Close();
@@ -289,7 +311,9 @@ namespace DotNet.Testcontainers.Clients
     {
       ImageInspectResponse cachedImage;
 
-      if (TestcontainersSettings.ResourceReaperEnabled && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
+      if (TestcontainersSettings.ResourceReaperEnabled
+          && ResourceReaper.IsUnavailable
+          && ResourceReaper.DefaultSessionId.Equals(configuration.SessionId))
       {
         var isWindowsEngineEnabled = await System.GetIsWindowsEngineEnabled(ct)
           .ConfigureAwait(false);
@@ -349,7 +373,13 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImageBuildPolicy(cachedImage))
       {
-        var dockerfileArchive = new DockerfileArchive(configuration.DockerfileDirectory, configuration.Dockerfile, configuration.Image, _logger);
+        var dockerfileArchive = new DockerfileArchive(
+          configuration.ContextDirectory,
+          configuration.DockerfileDirectory,
+          configuration.Dockerfile,
+          configuration.Image,
+          configuration.BuildArguments,
+          _logger);
 
         var baseImages = dockerfileArchive.GetBaseImages().ToArray();
 
@@ -383,6 +413,12 @@ namespace DotNet.Testcontainers.Clients
 
       if (dockerRegistryServerAddress == null)
       {
+        // https://hub.docker.com/_/scratch.
+        if ("scratch".Equals(image.Repository, StringComparison.OrdinalIgnoreCase))
+        {
+          return;
+        }
+
         var info = await System.GetInfoAsync(ct)
           .ConfigureAwait(false);
 

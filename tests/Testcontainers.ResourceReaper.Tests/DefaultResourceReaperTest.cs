@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
 
   public sealed class DefaultResourceReaperTest : IAsyncLifetime
   {
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
       var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig, ConsoleLogger.Instance)
         .ConfigureAwait(false);
@@ -18,9 +18,9 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
         .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return Task.CompletedTask;
+      return ValueTask.CompletedTask;
     }
 
     [Theory]
@@ -38,10 +38,10 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
         .Build();
 
       // When
-      await container.StartAsync()
+      await container.StartAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      await container.StopAsync()
+      await container.StopAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then

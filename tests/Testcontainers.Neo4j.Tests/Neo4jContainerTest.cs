@@ -12,14 +12,18 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public abstract string Edition { get; }
 
     // # --8<-- [start:UseNeo4jContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _neo4jContainer.StartAsync();
+        await _neo4jContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _neo4jContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -47,6 +51,11 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         Assert.Equal(Edition, edition);
     }
     // # --8<-- [end:UseNeo4jContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _neo4jContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreateNeo4jContainer]
     [UsedImplicitly]

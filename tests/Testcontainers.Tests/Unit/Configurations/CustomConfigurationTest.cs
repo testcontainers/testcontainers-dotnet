@@ -17,6 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
+        EnvironmentVariables.Add("DOCKER_CONTEXT");
         EnvironmentVariables.Add("DOCKER_AUTH_CONFIG");
         EnvironmentVariables.Add("DOCKER_CERT_PATH");
         EnvironmentVariables.Add("DOCKER_TLS");
@@ -30,6 +31,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_RETRIES");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
+        EnvironmentVariables.Add("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT");
       }
 
       [Theory]
@@ -158,11 +160,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", "", false)]
-      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", false)]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "", null)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "false", false)]
       [InlineData("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string propertyName, string propertyValue, bool? expected)
       {
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
@@ -224,6 +226,18 @@ namespace DotNet.Testcontainers.Tests.Unit
         SetEnvironmentVariable(propertyName, propertyValue);
         ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
         Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "", null)]
+      [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "-00:00:00.001", null)]
+      [InlineData("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT", "00:00:01", "00:00:01")]
+      public void GetNamedPipeConnectionTimeoutCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetNamedPipeConnectionTimeout()?.ToString());
       }
 
       public void Dispose()
@@ -361,11 +375,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Theory]
-      [InlineData("", false)]
-      [InlineData("ryuk.container.privileged=", false)]
+      [InlineData("", null)]
+      [InlineData("ryuk.container.privileged=", null)]
       [InlineData("ryuk.container.privileged=false", false)]
       [InlineData("ryuk.container.privileged=true", true)]
-      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool expected)
+      public void GetRyukContainerPrivilegedCustomConfiguration(string configuration, bool? expected)
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetRyukContainerPrivileged());
@@ -421,6 +435,17 @@ namespace DotNet.Testcontainers.Tests.Unit
       {
         ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
         Assert.Equal(expected, customConfiguration.GetWaitStrategyTimeout()?.ToString());
+      }
+
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("named.pipe.connection.timeout=", null)]
+      [InlineData("named.pipe.connection.timeout=-00:00:00.001", null)]
+      [InlineData("named.pipe.connection.timeout=00:00:01", "00:00:01")]
+      public void GetNamedPipeConnectionTimeoutCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetNamedPipeConnectionTimeout()?.ToString());
       }
     }
   }

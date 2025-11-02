@@ -68,7 +68,7 @@ public sealed class FirebirdSqlConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the FirebirdSql database.
     /// </summary>
-    public string Database => Image.Tag.StartsWith("2.5") || Image.Tag.StartsWith("v2.5") ? string.Join("/", "/firebird/data", _database) : _database;
+    public string Database => Image.Tag != null && (Image.Tag.StartsWith("2.5") || Image.Tag.StartsWith("v2.5")) ? string.Join("/", "/firebird/data", _database) : _database;
 
     /// <summary>
     /// Gets the FirebirdSql username.

@@ -24,7 +24,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         _filters.Add("label", string.Join("=", _labelKey, _labelValue));
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         for (var _ = 0; _ < 3; _++)
         {
@@ -56,9 +56,9 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         }
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return Task.WhenAll(_disposables
+        await Task.WhenAll(_disposables
             .Take(3)
             .Select(disposable =>
             {
@@ -71,6 +71,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldReuseExistingResource()
     {
         using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
@@ -83,13 +84,13 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
-        var containers = await client.Containers.ListContainersAsync(containersListParameters)
+        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters)
+        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters)
+        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Single(containers);
@@ -99,9 +100,87 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
     public static class ReuseHashTest
     {
+        public sealed class EqualTest
+        {
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForKnownConfiguration()
+            {
+                // Given
+                var env = new Dictionary<string, string>();
+                env["keyA"] = "valueA";
+                env["keyB"] = "valueB";
+
+                // When
+                var hash = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env)
+                    .WithLabel("labelA", "A")
+                    .WithLabel("labelB", "B")
+                    .GetReuseHash();
+
+                // Then
+
+                // The hash is calculated from the minified JSON. For readability, the JSON
+                // shown below is formatted. `Dtj7Jx6NVlbDUnA3vmH1nNZw+o8=` is the
+                // Base64-encoded SHA-1 hash for this JSON (minified):
+                //
+                // {
+                //     "Image": null,
+                //     "Name": null,
+                //     "Entrypoint": null,
+                //     "Command": [],
+                //     "Environments": {
+                //         "keyA": "valueA",
+                //         "keyB": "valueB"
+                //     },
+                //     "ExposedPorts": {},
+                //     "PortBindings": {},
+                //     "NetworkAliases": [],
+                //     "Labels": {
+                //         "labelA": "A",
+                //         "labelB": "B",
+                //         "org.testcontainers": "true",
+                //         "org.testcontainers.lang": "dotnet"
+                //     }
+                // }
+                Assert.Equal("Dtj7Jx6NVlbDUnA3vmH1nNZw+o8=", hash);
+            }
+
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForSameConfigurationInDifferentOrder()
+            {
+                // Given
+                var env1 = new Dictionary<string, string>();
+                env1["keyA"] = "valueA";
+                env1["keyB"] = "valueB";
+
+                var env2 = new Dictionary<string, string>();
+                env2["keyB"] = "valueB";
+                env2["keyA"] = "valueA";
+
+                // When
+                var hash1 = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env1)
+                    .WithLabel("labelA", "A")
+                    .WithLabel("labelB", "B")
+                    .GetReuseHash();
+
+                var hash2 = new ReuseHashContainerBuilder()
+                    .WithEnvironment(env2)
+                    .WithLabel("labelB", "B")
+                    .WithLabel("labelA", "A")
+                    .GetReuseHash();
+
+                // Then
+                Assert.Equal(hash1, hash2);
+            }
+        }
+
         public sealed class NotEqualTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void ForDifferentNames()
             {
                 var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
@@ -120,6 +199,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class ContainerBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
@@ -133,6 +213,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
             }
 
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledAutoRemoveThrowsException()
             {
                 // Given
@@ -149,6 +230,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class NetworkBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
@@ -165,6 +247,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         public sealed class VolumeBuilderTest
         {
             [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void EnabledCleanUpThrowsException()
             {
                 // Given
@@ -182,7 +265,12 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
     {
         public ReuseHashContainerBuilder() : this(new ContainerConfiguration())
-            => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        {
+            // By default, the constructor calls `Init()`, which sets up the default builder
+            // configurations, including ones for the port forwarding container if it's running.
+            // To avoid applying those settings during tests, this class intentionally doesn't
+            // call `Init()`.
+        }
 
         private ReuseHashContainerBuilder(ContainerConfiguration configuration) : base(configuration)
             => DockerResourceConfiguration = configuration;

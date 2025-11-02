@@ -44,6 +44,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(username: username))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", username)
             .WithEnvironment("KEYCLOAK_ADMIN", username);
     }
 
@@ -55,7 +56,24 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(password: password))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
+    }
+
+    /// <summary>
+    /// Configures Keycloak to import a realm configuration file during startup.
+    /// </summary>
+    /// <remarks>
+    /// The file will be copied to the <c>/opt/keycloak/data/import/</c> directory
+    /// inside the container:
+    /// https://www.keycloak.org/server/importExport#_importing_a_realm_during_startup.
+    /// </remarks>
+    /// <param name="realmConfigurationFilePath">The local path to the realm configuration file (JSON).</param>
+    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    public KeycloakBuilder WithRealm(string realmConfigurationFilePath)
+    {
+        return WithCommand("--import-realm")
+            .WithResourceMapping(realmConfigurationFilePath, "/opt/keycloak/data/import/");
     }
 
     /// <inheritdoc />
@@ -71,6 +89,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
         var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
 
         var waitStrategy = Wait.ForUnixContainer()
+            .UntilMessageIsLogged("Added user '[^']+' to realm '[^']+'|Created temporary admin user with username \\S+")
             .UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
 

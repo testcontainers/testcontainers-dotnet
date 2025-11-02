@@ -22,11 +22,11 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private FakeGcsServerBuilder(FakeGcsServerConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private FakeGcsServerBuilder(FakeGcsServerConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -61,7 +61,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
                 // error: HttpStatusCode.NotFound. The HTTP request appears incorrect. The
                 // container logs indicate the presence of an extra slash: `PUT //upload/storage/v1`.
                 startupScript.Append("-external-url " + new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGcsServerPort)).ToString().Trim('/'));
-                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
+                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
             });
     }
 

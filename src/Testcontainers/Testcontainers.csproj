@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DotNet.Testcontainers</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
@@ -17,6 +20,5 @@
     <PackageReference Include="BouncyCastle.Cryptography"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
     <PackageReference Include="Microsoft.Bcl.HashCode"/>
-    <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
 </Project>

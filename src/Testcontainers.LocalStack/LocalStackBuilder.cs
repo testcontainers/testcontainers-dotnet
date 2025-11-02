@@ -20,11 +20,11 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private LocalStackBuilder(LocalStackConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private LocalStackBuilder(LocalStackConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -48,13 +48,13 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     }
 
     /// <inheritdoc />
-    protected override LocalStackBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override LocalStackBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new LocalStackConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override LocalStackBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override LocalStackBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new LocalStackConfiguration(resourceConfiguration));
     }
