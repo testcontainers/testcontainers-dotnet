@@ -45,9 +45,9 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  # Copy 'appsettings.json' into the '/app' directory.
+  // Copy 'appsettings.json' into the '/app' directory.
   .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
-  # Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
+  // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
   .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
@@ -192,7 +192,6 @@ const ushort MagicNumberPort = 80;
 var deepThoughtContainer = new ContainerBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("alpine")
-  .WithExposedPort(MagicNumberPort)
   .WithPortBinding(MagicNumberPort, true)
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")
