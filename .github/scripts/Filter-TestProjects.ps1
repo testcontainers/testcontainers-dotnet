@@ -6,6 +6,18 @@
     Analyzes changed files and determines which test projects need to run. Protected
     branches and global repository changes run all tests. Other branches run only
     affected modules.
+
+    .EXAMPLE
+    # Test protected branch (runs all tests):
+    $env:GITHUB_REF_NAME="main"; $env:ALL_CHANGED_FILES="README.md"; $input | Filter-TestProjects
+
+    .EXAMPLE
+    # Test core library changes (runs all tests):
+    $env:GITHUB_REF_NAME="1/merge"; $env:ALL_CHANGED_FILES="src/Testcontainers/Testcontainers.csproj"; $input | Filter-TestProjects
+
+    .EXAMPLE
+    # Test module-specific changes (runs only affected module):
+    $env:GITHUB_REF_NAME="2/merge"; $env:ALL_CHANGED_FILES="src/Testcontainers.Redis/RedisBuilder.cs"; $input | Filter-TestProjects
 #>
 
 $PROTECTED_BRANCHES = @(
@@ -53,11 +65,14 @@ $XUNIT_MODULES = @(
 function Should-RunTests {
     param ([string]$ModuleName)
 
+    # Rule 1: Protected branches always run all tests.
+    # Ensures main/develop branches have full test coverage.
     If ($script:branch -In $PROTECTED_BRANCHES) {
         Write-Host "Running '$ModuleName': protected branch '$script:branch'."
         return $True
     }
 
+    # Rule 2: Global changes affect all modules.
     ForEach ($pattern In $GLOBAL_PATTERNS) {
         If ($script:allChangedFiles | Where-Object { $_ -Match $pattern }) {
             Write-Host "Running '$ModuleName': global changes detected ($pattern)."
@@ -65,21 +80,25 @@ function Should-RunTests {
         }
     }
 
+    # Rule 3: Module-specific changes.
     If ($script:allChangedFiles | Where-Object { $_ -Match "^(src|tests)/$ModuleName" }) {
         Write-Host "Running '$ModuleName': module-specific changes detected."
         return $True
     }
 
+    # Rule 4: Shared database tests for ADO.NET compatible modules.
     If ($ModuleName -In $DATABASE_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^tests/Testcontainers\.Databases\.Tests' })) {
         Write-Host "Running '$ModuleName': database test changes detected."
         return $True
     }
 
+    # Rule 5: Oracle integration variants.
     If ($ModuleName -In $ORACLE_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^(src|tests)/Testcontainers\.Oracle' })) {
         Write-Host "Running '$ModuleName': Oracle module changes detected."
         return $True
     }
 
+    # Rule 6: xUnit integration variants.
     If ($ModuleName -In $XUNIT_MODULES -And ($script:allChangedFiles | Where-Object { $_ -Match '^(src|tests)/Testcontainers\.Xunit(V3)?' })) {
         Write-Host "Running '$ModuleName': xUnit module changes detected."
         return $True
