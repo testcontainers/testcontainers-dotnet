@@ -1,25 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <IsPublishable>false</IsPublishable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="coverlet.collector"/>
-    <PackageReference Include="xunit.runner.visualstudio"/>
-    <PackageReference Include="xunit"/>
-    <PackageReference Include="Microsoft.Playwright"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Testcontainers.Playwright\Testcontainers.Playwright.csproj"/>
-    <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Update="Microsoft.Playwright" Version="1.48.0" />
-  </ItemGroup>
-
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="Microsoft.Playwright"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.Playwright/Testcontainers.Playwright.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
 </Project>
