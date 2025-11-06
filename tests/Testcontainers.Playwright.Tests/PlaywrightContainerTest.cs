@@ -1,28 +1,87 @@
-namespace Testcontainers.Playwright.Tests;
+namespace Testcontainers.Playwright;
 
-public class PlaywrightContainerTest : IClassFixture<TestInitializer>
+public abstract class PlaywrightContainerTest : IAsyncLifetime
 {
-  private readonly Uri _helloWorldBaseAddress;
+    private readonly Uri _helloWorldBaseAddress = new UriBuilder(Uri.UriSchemeHttp, "hello-world-container", 8080).Uri;
 
-  public PlaywrightContainerTest(TestInitializer testInitializer)
-  {
-    _helloWorldBaseAddress = testInitializer._helloWorldBaseAddress;
-  }
+    private readonly IContainer _helloWorldContainer;
 
-  [Fact]
-  public async Task HeadingElementReturnsHelloWorld()
-  {
-    // Given
-    var playwright = await Microsoft.Playwright.Playwright.CreateAsync();
-    var browser = await playwright.Chromium.ConnectAsync($"ws://localhost:63333/playwright");
-    var page = await browser.NewPageAsync();
+    private readonly PlaywrightContainer _playwrightContainer;
 
-    // When
-    await page.GotoAsync(_helloWorldBaseAddress.ToString());
-    var headingElement = await page.QuerySelectorAsync("h1");
-    var headingElementText = await headingElement.InnerTextAsync();
+    private PlaywrightContainerTest(PlaywrightContainer playwrightContainer)
+    {
+        _helloWorldContainer = new ContainerBuilder()
+            .WithImage(CommonImages.HelloWorld)
+            .WithNetwork(playwrightContainer.GetNetwork())
+            .WithNetworkAliases(_helloWorldBaseAddress.Host)
+            .WithPortBinding(_helloWorldBaseAddress.Port, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/").ForPort(Convert.ToUInt16(_helloWorldBaseAddress.Port))))
+            .Build();
 
-    // Then
-    Assert.Equal("Hello world", headingElementText);
-  }
+        _playwrightContainer = playwrightContainer;
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _playwrightContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        await _helloWorldContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task HeadingElementReturnsHelloWorld()
+    {
+        // Given
+        var playwright = await Microsoft.Playwright.Playwright.CreateAsync()
+            .ConfigureAwait(true);
+
+        var browser = await playwright.Chromium.ConnectAsync(_playwrightContainer.GetConnectionString())
+            .ConfigureAwait(true);
+
+        var page = await browser.NewPageAsync()
+            .ConfigureAwait(true);
+
+        // When
+        await page.GotoAsync(_helloWorldBaseAddress.ToString())
+            .ConfigureAwait(true);
+
+        var headingElement = await page.QuerySelectorAsync("h1")
+            .ConfigureAwait(true);
+
+        var headingElementText = await headingElement!.InnerTextAsync()
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal("Hello world", headingElementText);
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        await _helloWorldContainer.DisposeAsync()
+            .ConfigureAwait(false);
+
+        await _playwrightContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [UsedImplicitly]
+    public sealed class PlaywrightDefaultConfiguration : PlaywrightContainerTest
+    {
+        public PlaywrightDefaultConfiguration()
+            : base(new PlaywrightBuilder().Build())
+        {
+        }
+    }
 }

@@ -1,98 +1,81 @@
 namespace Testcontainers.Playwright;
 
-/// <inheritdoc cref="PlaywrightBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
-/// <remarks>
-/// Find further information about the Playwright image, here: https://playwright.dev/dotnet/docs/docker.
-/// </remarks>
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, PlaywrightContainer, PlaywrightConfiguration>
+public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, PlaywrightContainer, PlaywrightConfiguration>
 {
-  private const ushort PlaywrightPort = 53333;
-  private const string PlaywrightEndpointPath = "/playwright";
+    public const string PlaywrightNetworkAlias = "standalone-container";
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
-  /// </summary>
-  public PlaywrightBuilder() : this(new PlaywrightConfiguration())
-  {
-    DockerResourceConfiguration = Init().DockerResourceConfiguration;
-  }
+    public const ushort PlaywrightPort = 53333;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
-  /// </summary>
-  /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-  private PlaywrightBuilder(PlaywrightConfiguration resourceConfiguration)
-    : base(resourceConfiguration)
-  {
-    DockerResourceConfiguration = resourceConfiguration;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    public PlaywrightBuilder()
+        : this(new PlaywrightConfiguration())
+    {
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
 
-  /// <inheritdoc />
-  protected override PlaywrightConfiguration DockerResourceConfiguration { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private PlaywrightBuilder(PlaywrightConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
+    }
 
-  public override PlaywrightContainer Build()
-  {
-    Validate();
-    return new PlaywrightContainer(DockerResourceConfiguration);
-  }
+    /// <inheritdoc />
+    protected override PlaywrightConfiguration DockerResourceConfiguration { get; }
 
-  /// <inheritdoc />
-  protected override PlaywrightBuilder Init()
-  {
-    return base.Init()
-      .WithBrowser(PlaywrightBrowser.Chrome)
-      .WithEndpointPath(PlaywrightEndpointPath)
-      .WithBrowserPort(PlaywrightPort)
-      .WithWaitStrategy(Wait.ForUnixContainer()
-        .UntilMessageIsLogged($"ws://.*:{PlaywrightPort}{PlaywrightEndpointPath}"));
-  }
+    /// <summary>
+    /// Sets the Playwright browser configuration.
+    /// </summary>
+    /// <remarks>
+    /// https://github.com/JacobLinCool/playwright-docker.
+    /// </remarks>
+    /// <param name="playwrightBrowser">The Playwright browser configuration.</param>
+    /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
+    public PlaywrightBuilder WithBrowser(PlaywrightBrowser playwrightBrowser)
+    {
+        return WithImage(playwrightBrowser.Image);
+    }
 
-  public PlaywrightBuilder WithBrowser(PlaywrightBrowser playwrightBrowser)
-  {
-    return WithImage(playwrightBrowser.Image);
-  }
+    /// <inheritdoc />
+    public override PlaywrightContainer Build()
+    {
+        Validate();
+        return new PlaywrightContainer(DockerResourceConfiguration);
+    }
 
-  /// <summary>
-  /// Sets the BROWSER WS ENDPOINT.
-  /// </summary>
-  /// <param name="endpointPath">The BROWSER WS ENDPOINT.</param>
-  /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
-  public PlaywrightBuilder WithEndpointPath(string endpointPath)
-  {
-    return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(endpoint: endpointPath))
-      .WithEnvironment("BROWSER_WS_ENDPOINT", endpointPath);
-  }
+    /// <inheritdoc />
+    protected override PlaywrightBuilder Init()
+    {
+        return base.Init()
+            .WithBrowser(PlaywrightBrowser.Chrome)
+            .WithNetwork(new NetworkBuilder().Build())
+            .WithNetworkAliases(PlaywrightNetworkAlias)
+            .WithPortBinding(PlaywrightPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("ws://localhost:" + PlaywrightPort + "/playwright"));
+    }
 
-  /// <summary>
-  /// Sets the BROWSER WS PORT.
-  /// </summary>
-  /// <param name="port">The BROWSER WS PORT.</param>
-  /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
-  public PlaywrightBuilder WithBrowserPort(int port, bool assignRandomHostPort=false)
-  {
-    return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(port: port))
-      .WithEnvironment("BROWSER_PORT", port.ToString())
-      .WithPortBinding(port, assignRandomHostPort);
-  }
+    /// <inheritdoc />
+    protected override PlaywrightBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(resourceConfiguration));
+    }
 
+    /// <inheritdoc />
+    protected override PlaywrightBuilder Clone(IContainerConfiguration resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(resourceConfiguration));
+    }
 
-
-  /// <inheritdoc />
-  protected override PlaywrightBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-  {
-    return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(resourceConfiguration));
-  }
-
-  /// <inheritdoc />
-  protected override PlaywrightBuilder Clone(IContainerConfiguration resourceConfiguration)
-  {
-    return Merge(DockerResourceConfiguration, new PlaywrightConfiguration(resourceConfiguration));
-  }
-
-  /// <inheritdoc />
-  protected override PlaywrightBuilder Merge(PlaywrightConfiguration oldValue, PlaywrightConfiguration newValue)
-  {
-    return new PlaywrightBuilder(new PlaywrightConfiguration(oldValue, newValue));
-  }
+    /// <inheritdoc />
+    protected override PlaywrightBuilder Merge(PlaywrightConfiguration oldValue, PlaywrightConfiguration newValue)
+    {
+        return new PlaywrightBuilder(new PlaywrightConfiguration(oldValue, newValue));
+    }
 }
