@@ -39,6 +39,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
         GC.SuppressFinalize(this);
     }
 
+    // # --8<-- [start:UsePlaywrightContainer]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task HeadingElementReturnsHelloWorld()
@@ -66,6 +67,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
         // Then
         Assert.Equal("Hello world", headingElementText);
     }
+    // # --8<-- [end:UsePlaywrightContainer]
 
     protected virtual async ValueTask DisposeAsyncCore()
     {
