@@ -38,7 +38,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 ## Browser selection
 
-By default, the Playwright module uses Chrome as the browser. You can configure different browsers using the `WithBrowser` method:
+By default, the Playwright module uses Chrome as the browser. You can configure different browsers using the `WithBrowser` builder method:
 
 === "Chromium"
     ```csharp

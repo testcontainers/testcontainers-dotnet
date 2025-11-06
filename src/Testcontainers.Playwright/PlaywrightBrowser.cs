@@ -4,6 +4,8 @@ namespace Testcontainers.Playwright;
 /// Playwright browser configuration.
 /// </summary>
 /// <remarks>
+/// These configuration use Playwright version 1.55.
+///
 /// The browsers are standalone, pre-built Playwright versions from the
 /// https://github.com/JacobLinCool/playwright-docker repository.
 /// </remarks>
