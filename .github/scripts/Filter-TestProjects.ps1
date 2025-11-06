@@ -117,7 +117,7 @@ function Filter-TestProjects {
 
     Begin {
         $script:branch = $env:GITHUB_REF_NAME
-        $script:allChangedFiles = $env:ALL_CHANGED_FILES -Split "`n"
+        $script:allChangedFiles = $env:ALL_CHANGED_FILES -Split "[\s\t\n]"
         $script:filteredModules = @()
 
         Write-Host "Filtering test projects for branch '$script:branch'."
