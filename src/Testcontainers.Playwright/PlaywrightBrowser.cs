@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Playwright;
+namespace Testcontainers.Playwright;
 
 /// <summary>
 /// Playwright browser configuration.
