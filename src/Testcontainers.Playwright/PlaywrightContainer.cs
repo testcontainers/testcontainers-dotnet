@@ -22,7 +22,7 @@ public sealed class PlaywrightContainer : DockerContainer
     /// <returns>The Playwright connection string.</returns>
     public string GetConnectionString()
     {
-        return new UriBuilder("ws", Hostname, GetMappedPublicPort(PlaywrightBuilder.PlaywrightPort), "/playwright").ToString();
+        return new UriBuilder("ws", Hostname, GetMappedPublicPort(PlaywrightBuilder.PlaywrightPort)).ToString();
     }
 
     /// <summary>

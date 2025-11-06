@@ -8,7 +8,7 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.Playwright
 ```
 
-You can start a Playwright container instance from any .NET application. To create and start a container instance with the default configuration (Chrome browser), use the module-specific builder as shown below:
+You can start a Playwright container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
 === "Start a Playwright container"
     ```csharp
@@ -35,31 +35,6 @@ The test example uses the following NuGet dependencies:
 To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
-
-## Browser selection
-
-By default, the Playwright module uses Chrome as the browser. You can configure different browsers using the `WithBrowser` builder method:
-
-=== "Chromium"
-    ```csharp
-    var playwrightContainer = new PlaywrightBuilder()
-        .WithBrowser(PlaywrightBrowser.Chromium)
-        .Build();
-    ```
-
-=== "Firefox"
-    ```csharp
-    var playwrightContainer = new PlaywrightBuilder()
-        .WithBrowser(PlaywrightBrowser.Firefox)
-        .Build();
-    ```
-
-=== "Edge"
-    ```csharp
-    var playwrightContainer = new PlaywrightBuilder()
-        .WithBrowser(PlaywrightBrowser.Edge)
-        .Build();
-    ```
 
 ## Network configuration
 

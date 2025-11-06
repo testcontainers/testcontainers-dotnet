@@ -6,7 +6,9 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
 {
     public const string PlaywrightNetworkAlias = "standalone-container";
 
-    public const ushort PlaywrightPort = 53333;
+    public const string PlaywrightImage = "mcr.microsoft.com/playwright:v1.55.1";
+
+    public const ushort PlaywrightPort = 8080;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
@@ -30,19 +32,6 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <inheritdoc />
     protected override PlaywrightConfiguration DockerResourceConfiguration { get; }
 
-    /// <summary>
-    /// Sets the Playwright browser configuration.
-    /// </summary>
-    /// <remarks>
-    /// https://github.com/JacobLinCool/playwright-docker.
-    /// </remarks>
-    /// <param name="playwrightBrowser">The Playwright browser configuration.</param>
-    /// <returns>A configured instance of <see cref="PlaywrightBuilder" />.</returns>
-    public PlaywrightBuilder WithBrowser(PlaywrightBrowser playwrightBrowser)
-    {
-        return WithImage(playwrightBrowser.Image);
-    }
-
     /// <inheritdoc />
     public override PlaywrightContainer Build()
     {
@@ -54,11 +43,14 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     protected override PlaywrightBuilder Init()
     {
         return base.Init()
-            .WithBrowser(PlaywrightBrowser.Chrome)
+            .WithImage(PlaywrightImage)
             .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(PlaywrightNetworkAlias)
             .WithPortBinding(PlaywrightPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("ws://localhost:" + PlaywrightPort + "/playwright"));
+            .WithEntrypoint("/bin/sh", "-c")
+            // Extract the Playwright version from the container at startup.
+            .WithCommand("npx -y playwright@$(sed --quiet 's/.*\\\"driverVersion\\\": *\"\\([^\"]*\\)\".*/\\1/p' ms-playwright/.docker-info) run-server --port " + PlaywrightPort)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Listening on ws://localhost:8080/"));
     }
 
     /// <inheritdoc />
