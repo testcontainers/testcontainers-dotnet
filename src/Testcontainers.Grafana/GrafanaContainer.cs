@@ -17,27 +17,11 @@ public sealed class GrafanaContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Grafana HTTP endpoint.
+    /// Gets the Grafana base address.
     /// </summary>
-    /// <returns>The Grafana HTTP endpoint.</returns>
-    public string GetHttpEndpoint()
+    /// <returns>The Grafana base address.</returns>
+    public string GetBaseAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(GrafanaBuilder.GrafanaPort)).ToString();
-    }
-
-    /// <summary>
-    /// Gets the Grafana connection string.
-    /// </summary>
-    /// <returns>The Grafana connection string.</returns>
-    public string GetConnectionString()
-    {
-        var endpoint = GetHttpEndpoint();
-        var username = _configuration.Username ?? GrafanaBuilder.DefaultUsername;
-        var password = _configuration.Password ?? GrafanaBuilder.DefaultPassword;
-        return new UriBuilder(endpoint)
-        {
-            UserName = username,
-            Password = password
-        }.ToString();
     }
 }

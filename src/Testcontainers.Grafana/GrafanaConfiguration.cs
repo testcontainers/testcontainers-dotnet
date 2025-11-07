@@ -55,8 +55,8 @@ public sealed class GrafanaConfiguration : ContainerConfiguration
     public GrafanaConfiguration(GrafanaConfiguration oldValue, GrafanaConfiguration newValue)
         : base(oldValue, newValue)
     {
-        Username = newValue.Username ?? oldValue.Username;
-        Password = newValue.Password ?? oldValue.Password;
+        Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
+        Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
     }
 
     /// <summary>

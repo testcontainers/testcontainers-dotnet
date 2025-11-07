@@ -1,8 +1,22 @@
 namespace Testcontainers.Grafana;
 
-public sealed class GrafanaContainerTest : IAsyncLifetime
+public abstract class GrafanaContainerTest : IAsyncLifetime
 {
-    private readonly GrafanaContainer _grafanaContainer = new GrafanaBuilder().Build();
+    private readonly GrafanaContainer _grafanaContainer;
+
+    private readonly string _username;
+
+    private readonly string _password;
+
+    private GrafanaContainerTest(
+        GrafanaContainer grafanaContainer,
+        string username,
+        string password)
+    {
+        _grafanaContainer = grafanaContainer;
+        _username = username;
+        _password = password;
+    }
 
     public async ValueTask InitializeAsync()
     {
@@ -10,37 +24,24 @@ public sealed class GrafanaContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _grafanaContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task HealthEndpointReturnsOk()
+    public async Task GetCurrentOrganizationReturnsHttpStatusCodeOk()
     {
         // Given
+        var basicAuth = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Join(":", _username, _password)));
+
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_grafanaContainer.GetHttpEndpoint());
-
-        // When
-        using var httpResponse = await httpClient.GetAsync("api/health", TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
-    }
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task AuthenticatedRequestReturnsOk()
-    {
-        // Given
-        using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_grafanaContainer.GetHttpEndpoint());
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-            "Basic", Convert.ToBase64String(
-                System.Text.Encoding.UTF8.GetBytes($"{GrafanaBuilder.DefaultUsername}:{GrafanaBuilder.DefaultPassword}")));
+        httpClient.BaseAddress = new Uri(_grafanaContainer.GetBaseAddress());
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
 
         // When
         using var httpResponse = await httpClient.GetAsync("api/org", TestContext.Current.CancellationToken)
@@ -50,89 +51,40 @@ public sealed class GrafanaContainerTest : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void GetConnectionStringReturnsExpectedFormat()
+    protected virtual async ValueTask DisposeAsyncCore()
     {
-        // When
-        var connectionString = _grafanaContainer.GetConnectionString();
-
-        // Then
-        Assert.NotNull(connectionString);
-        Assert.Contains(GrafanaBuilder.DefaultUsername, connectionString);
-        Assert.Contains(GrafanaBuilder.DefaultPassword, connectionString);
-        Assert.Contains(_grafanaContainer.Hostname, connectionString);
+        await _grafanaContainer.DisposeAsync()
+            .ConfigureAwait(false);
     }
 
-    public sealed class WithCustomCredentials : IAsyncLifetime
+    [UsedImplicitly]
+    public sealed class GrafanaDefaultConfiguration : GrafanaContainerTest
     {
-        private readonly GrafanaContainer _grafanaContainer = new GrafanaBuilder()
-            .WithUsername("custom-user")
-            .WithPassword("custom-pass")
-            .Build();
-
-        public async ValueTask InitializeAsync()
+        public GrafanaDefaultConfiguration()
+            : base(new GrafanaBuilder().Build(), GrafanaBuilder.DefaultUsername, GrafanaBuilder.DefaultPassword)
         {
-            await _grafanaContainer.StartAsync()
-                .ConfigureAwait(false);
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return _grafanaContainer.DisposeAsync();
-        }
-
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task AuthenticatedRequestWithCustomCredentialsReturnsOk()
-        {
-            // Given
-            using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(_grafanaContainer.GetHttpEndpoint());
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-                "Basic", Convert.ToBase64String(
-                    System.Text.Encoding.UTF8.GetBytes("custom-user:custom-pass")));
-
-            // When
-            using var httpResponse = await httpClient.GetAsync("api/org", TestContext.Current.CancellationToken)
-                .ConfigureAwait(true);
-
-            // Then
-            Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         }
     }
 
-    public sealed class WithAnonymousAccess : IAsyncLifetime
+    [UsedImplicitly]
+    public sealed class CustomCredentialsConfiguration : GrafanaContainerTest
     {
-        private readonly GrafanaContainer _grafanaContainer = new GrafanaBuilder()
-            .WithAnonymousAccessEnabled()
-            .Build();
+        private static readonly string Username = Guid.NewGuid().ToString("D");
 
-        public async ValueTask InitializeAsync()
+        private static readonly string Password = Guid.NewGuid().ToString("D");
+
+        public CustomCredentialsConfiguration()
+            : base(new GrafanaBuilder().WithUsername(Username).WithPassword(Password).Build(), Username, Password)
         {
-            await _grafanaContainer.StartAsync()
-                .ConfigureAwait(false);
         }
+    }
 
-        public ValueTask DisposeAsync()
+    [UsedImplicitly]
+    public sealed class NoAuthCredentialsConfiguration : GrafanaContainerTest
+    {
+        public NoAuthCredentialsConfiguration()
+            : base(new GrafanaBuilder().WithAnonymousAccessEnabled().Build(), string.Empty, string.Empty)
         {
-            return _grafanaContainer.DisposeAsync();
-        }
-
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public async Task AnonymousRequestReturnsOk()
-        {
-            // Given
-            using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(_grafanaContainer.GetHttpEndpoint());
-
-            // When
-            using var httpResponse = await httpClient.GetAsync("api/org", TestContext.Current.CancellationToken)
-                .ConfigureAwait(true);
-
-            // Then
-            Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         }
     }
 }

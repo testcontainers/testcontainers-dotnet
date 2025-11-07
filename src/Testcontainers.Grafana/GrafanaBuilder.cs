@@ -57,15 +57,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     }
 
     /// <summary>
-    /// Disables the anonymous access.
-    /// </summary>
-    /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
-    public GrafanaBuilder WithAnonymousAccessDisabled()
-    {
-        return WithEnvironment("GF_AUTH_ANONYMOUS_ENABLED", "false");
-    }
-
-    /// <summary>
     /// Enables the anonymous access.
     /// </summary>
     /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
@@ -85,36 +76,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
         return WithBindMount(datasourceFilePath, "/etc/grafana/provisioning/datasources/");
     }
 
-    /// <summary>
-    /// Mounts a dashboard configuration file.
-    /// </summary>
-    /// <param name="dashboardFilePath">The path to the dashboard configuration file.</param>
-    /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
-    public GrafanaBuilder WithDashboard(string dashboardFilePath)
-    {
-        return WithBindMount(dashboardFilePath, "/etc/grafana/provisioning/dashboards/");
-    }
-
-    /// <summary>
-    /// Mounts a plugin configuration file.
-    /// </summary>
-    /// <param name="pluginFilePath">The path to the plugin configuration file.</param>
-    /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
-    public GrafanaBuilder WithPlugin(string pluginFilePath)
-    {
-        return WithBindMount(pluginFilePath, "/etc/grafana/provisioning/plugins/");
-    }
-
-    /// <summary>
-    /// Mounts a notifier configuration file.
-    /// </summary>
-    /// <param name="notifierFilePath">The path to the notifier configuration file.</param>
-    /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
-    public GrafanaBuilder WithNotifier(string notifierFilePath)
-    {
-        return WithBindMount(notifierFilePath, "/etc/grafana/provisioning/notifiers/");
-    }
-
     /// <inheritdoc />
     public override GrafanaContainer Build()
     {
@@ -130,13 +91,8 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
             .WithPortBinding(GrafanaPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithEnvironment("GF_AUTH_ANONYMOUS_ENABLED", "false")
-            .WithEnvironment("GF_AUTH_BASIC_ENABLED", "true")
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(request => request
-                    .ForPort(GrafanaPort)
-                    .ForPath("/api/health")
-                    .ForStatusCode(HttpStatusCode.OK)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/api/health").ForPort(GrafanaPort)));
     }
 
     /// <inheritdoc />
