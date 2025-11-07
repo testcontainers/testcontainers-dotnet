@@ -60,6 +60,7 @@ nav:
     - modules/mssql.md
     - modules/neo4j.md
     - modules/opensearch.md
+    - modules/playwright.md
     - modules/postgres.md
     - modules/qdrant.md
     - modules/rabbitmq.md
