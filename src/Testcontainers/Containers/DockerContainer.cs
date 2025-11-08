@@ -1,12 +1,5 @@
 namespace DotNet.Testcontainers.Containers
 {
-  using Docker.DotNet;
-  using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Images;
-  using JetBrains.Annotations;
-  using Microsoft.Extensions.Logging;
   using System;
   using System.Collections.Generic;
   using System.Globalization;
@@ -14,6 +7,13 @@ namespace DotNet.Testcontainers.Containers
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
+  using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Clients;
+  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Images;
+  using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <inheritdoc cref="IContainer" />
   [PublicAPI]
@@ -150,28 +150,28 @@ namespace DotNet.Testcontainers.Containers
           case "http":
           case "https":
           case "tcp":
-            {
-              return dockerEndpoint.Host;
-            }
+          {
+            return dockerEndpoint.Host;
+          }
 
           case "npipe":
           case "unix":
+          {
+            const string localhost = "127.0.0.1";
+
+            if (!Exists())
             {
-              const string localhost = "127.0.0.1";
-
-              if (!Exists())
-              {
-                return localhost;
-              }
-
-              if (!_client.IsRunningInsideDocker)
-              {
-                return localhost;
-              }
-
-              var endpointSettings = _container.NetworkSettings.Networks.First().Value;
-              return endpointSettings.Gateway;
+              return localhost;
             }
+
+            if (!_client.IsRunningInsideDocker)
+            {
+              return localhost;
+            }
+
+            var endpointSettings = _container.NetworkSettings.Networks.First().Value;
+            return endpointSettings.Gateway;
+          }
 
           default:
             throw new InvalidOperationException($"Docker endpoint {dockerEndpoint} is not supported.");

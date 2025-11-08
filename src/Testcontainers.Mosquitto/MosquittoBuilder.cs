@@ -36,38 +36,39 @@ public class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoCont
 	{
 		Validate();
 
-		var sb = new StringBuilder();
-		sb.AppendUnixLine("per_listener_settings true");
+		var sb = new StringWriter();
+		sb.NewLine = "\n";
+		sb.WriteLine("per_listener_settings true");
 
-		sb.AppendUnixLine();
-		sb.AppendUnixLine("# MQTT listener");
-		sb.AppendUnixLine($"listener {TcpPort}");
-		sb.AppendUnixLine("protocol mqtt");
-		sb.AppendUnixLine("allow_anonymous true");
+		sb.WriteLine();
+		sb.WriteLine("# MQTT listener");
+		sb.WriteLine($"listener {TcpPort}");
+		sb.WriteLine("protocol mqtt");
+		sb.WriteLine("allow_anonymous true");
 
-		sb.AppendUnixLine();
-		sb.AppendUnixLine("# WebSocket listener");
-		sb.AppendUnixLine($"listener {WsPort}");
-		sb.AppendUnixLine("protocol websockets");
-		sb.AppendUnixLine("allow_anonymous true");
+		sb.WriteLine();
+		sb.WriteLine("# WebSocket listener");
+		sb.WriteLine($"listener {WsPort}");
+		sb.WriteLine("protocol websockets");
+		sb.WriteLine("allow_anonymous true");
 
 		if (DockerResourceConfiguration.HasCertificate)
 		{
-			sb.AppendUnixLine();
-			sb.AppendUnixLine("# MQTT listener (encrypted)");
-			sb.AppendUnixLine($"listener {TlsPort}");
-			sb.AppendUnixLine("protocol mqtt");
-			sb.AppendUnixLine("allow_anonymous true");
-			sb.AppendUnixLine($"certfile {CertificateFilePath}");
-			sb.AppendUnixLine($"keyfile {CertificateKeyFilePath}");
+			sb.WriteLine();
+			sb.WriteLine("# MQTT listener (encrypted)");
+			sb.WriteLine($"listener {TlsPort}");
+			sb.WriteLine("protocol mqtt");
+			sb.WriteLine("allow_anonymous true");
+			sb.WriteLine($"certfile {CertificateFilePath}");
+			sb.WriteLine($"keyfile {CertificateKeyFilePath}");
 
-			sb.AppendUnixLine();
-			sb.AppendUnixLine("# WebSocket listener (encrypted)");
-			sb.AppendUnixLine($"listener {WssPort}");
-			sb.AppendUnixLine("protocol websockets");
-			sb.AppendUnixLine("allow_anonymous true");
-			sb.AppendUnixLine($"certfile {CertificateFilePath}");
-			sb.AppendUnixLine($"keyfile {CertificateKeyFilePath}");
+			sb.WriteLine();
+			sb.WriteLine("# WebSocket listener (encrypted)");
+			sb.WriteLine($"listener {WssPort}");
+			sb.WriteLine("protocol websockets");
+			sb.WriteLine("allow_anonymous true");
+			sb.WriteLine($"certfile {CertificateFilePath}");
+			sb.WriteLine($"keyfile {CertificateKeyFilePath}");
 		}
 
 		var config = Clone(DockerResourceConfiguration)
@@ -75,7 +76,6 @@ public class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoCont
 
 		return new MosquittoContainer(config.DockerResourceConfiguration);
 	}
-
 
 	public MosquittoBuilder WithCertificate(string certificate, string certificateKey)
 	{
@@ -93,7 +93,7 @@ public class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoCont
 			.WithImage(MosquittoImage)
 			.WithPortBinding(TcpPort, true)
 			.WithPortBinding(WsPort, true)
-			.WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(@"mosquitto.*running"));
+			.WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));
 
 		return builder;
 	}
