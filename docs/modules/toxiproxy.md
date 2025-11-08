@@ -30,21 +30,21 @@ To test network conditions with Toxiproxy, you need to configure the communicati
 
 2. Configure the Toxiproxy proxy to redirect traffic from the test host to the service container. The proxy's `Listen` address specifies where Toxiproxy listens for incoming connections, and the `Upstream` address specifies the target service.
 
-    === "Proxy configuration"
+    === "Proxy Configuration"
         ```csharp
         --8<-- "tests/Testcontainers.Toxiproxy.Tests/ToxiproxyContainerTest.cs:ProxyConfiguration"
         ```
 
 3. Connect through Toxiproxy using its hostname and one of its proxied ports. The Toxiproxy module initializes `32` ports starting from `8666` that can be used to configure proxies and redirect traffic. In the example, the Redis connection uses the Toxiproxy container's hostname and port instead of connecting directly to Redis.
 
-    === "Connect through toxiproxy"
+    === "Connect Through Toxiproxy"
         ```csharp
         --8<-- "tests/Testcontainers.Toxiproxy.Tests/ToxiproxyContainerTest.cs:ConnectThroughToxiproxy"
         ```
 
 4. Apply toxics to the proxy to simulate network conditions. For example, a latency toxic to the downstream traffic.
 
-    === "Toxic configuration"
+    === "Toxic Configuration"
         ```csharp
         --8<-- "tests/Testcontainers.Toxiproxy.Tests/ToxiproxyContainerTest.cs:ToxicConfiguration"
         ```

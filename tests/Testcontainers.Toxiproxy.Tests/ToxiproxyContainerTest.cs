@@ -57,6 +57,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         const ushort toxiproxyPort = ToxiproxyBuilder.FirstProxiedPort;
 
         const string key = "key";
+
         const string value = "value";
 
         // GetMappedPublicPort() retrieves the first bound port, which corresponds
@@ -64,9 +65,10 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         using var connection = new Connection(_toxiproxyContainer.Hostname, _toxiproxyContainer.GetMappedPublicPort());
         var client = connection.Client();
 
-        // # --8<-- [start:ProxyConfiguration]
         // The proxy configuration forwards traffic from the test host to the
         // Toxiproxy container and then to the Redis container.
+
+        // # --8<-- [start:ProxyConfiguration]
         var proxy = new Proxy();
         proxy.Name = "redis";
         proxy.Enabled = true;
@@ -75,10 +77,11 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         var redisProxy = client.Add(proxy);
         // # --8<-- [end:ProxyConfiguration]
 
-        // # --8<-- [start:ConnectThroughToxiproxy]
-        // We don't establish a connection directly to the Redis container.
-        // Instead, we connect through the Toxiproxy container using the first of
+        // Don't establish a connection directly to the Redis container.
+        // Instead, connect through the Toxiproxy container using the first of
         // the 32 ports initialized during the Toxiproxy module startup.
+
+        // # --8<-- [start:ConnectThroughToxiproxy]
         var connectionString = new UriBuilder("redis", _toxiproxyContainer.Hostname, _toxiproxyContainer.GetMappedPublicPort(toxiproxyPort)).Uri.Authority;
         // # --8<-- [end:ConnectThroughToxiproxy]
 
@@ -94,9 +97,10 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         var latencyWithoutToxic = await MeasureLatencyAsync(db, key, value)
             .ConfigureAwait(true);
 
-        // # --8<-- [start:ToxicConfiguration]
-        // We apply the toxic to the proxy. In this case, we add additional
+        // Apply the toxic to the proxy. In this case, add additional
         // latency to the downstream traffic.
+
+        // # --8<-- [start:ToxicConfiguration]
         var latencyToxic = new LatencyToxic();
         latencyToxic.Name = "latency_downstream";
         latencyToxic.Stream = ToxicDirection.DownStream;
