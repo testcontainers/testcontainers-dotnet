@@ -8,16 +8,14 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
 
     private readonly string _password;
 
-    private GrafanaContainerTest(
-        GrafanaContainer grafanaContainer,
-        string username,
-        string password)
+    private GrafanaContainerTest(GrafanaContainer grafanaContainer, string username, string password)
     {
         _grafanaContainer = grafanaContainer;
         _username = username;
         _password = password;
     }
 
+    // # --8<-- [start:UseGrafanaContainer]
     public async ValueTask InitializeAsync()
     {
         await _grafanaContainer.StartAsync()
@@ -50,6 +48,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
+    // # --8<-- [end:UseGrafanaContainer]
 
     protected virtual async ValueTask DisposeAsyncCore()
     {
@@ -57,6 +56,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
+    // # --8<-- [start:CreateGrafanaContainer]
     [UsedImplicitly]
     public sealed class GrafanaDefaultConfiguration : GrafanaContainerTest
     {
@@ -87,4 +87,5 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:CreateGrafanaContainer]
 }

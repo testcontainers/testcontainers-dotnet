@@ -4,7 +4,7 @@ namespace Testcontainers.Grafana;
 [PublicAPI]
 public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaContainer, GrafanaConfiguration>
 {
-    public const string GrafanaImage = "grafana/grafana:11.0.0";
+    public const string GrafanaImage = "grafana/grafana:12.2";
 
     public const ushort GrafanaPort = 3000;
 
@@ -64,16 +64,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     {
         return WithEnvironment("GF_AUTH_ANONYMOUS_ENABLED", "true")
             .WithEnvironment("GF_AUTH_ANONYMOUS_ORG_ROLE", "Admin");
-    }
-
-    /// <summary>
-    /// Mounts a datasource configuration file.
-    /// </summary>
-    /// <param name="datasourceFilePath">The path to the datasource configuration file.</param>
-    /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
-    public GrafanaBuilder WithDataSource(string datasourceFilePath)
-    {
-        return WithBindMount(datasourceFilePath, "/etc/grafana/provisioning/datasources/");
     }
 
     /// <inheritdoc />
