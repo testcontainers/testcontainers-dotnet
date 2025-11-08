@@ -6,7 +6,11 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
 {
     public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy:2.12.0";
 
-    public const ushort ToxiproxyPort = 8474;
+    public const ushort ToxiproxyControlPort = 8474;
+
+    public const ushort FirstProxiedPort = 8666;
+
+    public const ushort LastProxiedPort = 8666 + 32;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
@@ -30,18 +34,6 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <inheritdoc />
     protected override ToxiproxyConfiguration DockerResourceConfiguration { get; }
 
-    /// <summary>
-    /// Adds an initial proxy that will be created automatically after the container starts.
-    /// </summary>
-    /// <param name="name">The proxy name.</param>
-    /// <param name="listen">The listen address (e.g., 127.0.0.1:8888).</param>
-    /// <param name="upstream">The upstream address (e.g., backend:80).</param>
-    /// <returns>The builder instance.</returns>
-    public ToxiproxyBuilder WithProxy(string name, string listen, string upstream)
-    {
-        return this;
-    }
-
     /// <inheritdoc />
     public override ToxiproxyContainer Build()
     {
@@ -52,11 +44,20 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <inheritdoc />
     protected override ToxiproxyBuilder Init()
     {
-        return base.Init()
+        const int count = LastProxiedPort - FirstProxiedPort;
+
+        var toxiproxyBuilder = base.Init()
             .WithImage(ToxiproxyImage)
-            .WithPortBinding(ToxiproxyPort, true)
+            .WithPortBinding(ToxiproxyControlPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/proxies").ForPort(ToxiproxyPort)));
+                request.ForPath("/version").ForPort(ToxiproxyControlPort)));
+
+        // Allows up to 32 ports to be proxied (arbitrary value). The ports are
+        // exposed here, but whether Toxiproxy listens on them is controlled at
+        // runtime when configuring the proxy.
+        return Enumerable.Range(FirstProxiedPort, count)
+            .Aggregate(toxiproxyBuilder, (builder, port) =>
+                builder.WithPortBinding(port, true));
     }
 
     /// <inheritdoc />

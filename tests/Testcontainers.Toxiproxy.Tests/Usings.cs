@@ -1,10 +1,13 @@
 global using System;
 global using System.Diagnostics;
-global using System.Net;
-global using System.Net.Sockets;
-global using System.Text;
 global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Builders;
+global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Containers;
+global using DotNet.Testcontainers.Networks;
+global using StackExchange.Redis;
+global using Testcontainers.Redis;
 global using Toxiproxy.Net;
 global using Toxiproxy.Net.Toxics;
 global using Xunit;
+global using Proxy = Toxiproxy.Net.Proxy;

@@ -11,9 +11,11 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
         <PackageReference Include="Toxiproxy.Net"/>
+        <PackageReference Include="StackExchange.Redis"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>

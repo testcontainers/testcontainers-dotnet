@@ -15,13 +15,4 @@ public sealed class ToxiproxyContainer : DockerContainer
     {
         _configuration = configuration;
     }
-
-    /// <summary>
-    /// Gets the Toxiproxy base address.
-    /// </summary>
-    /// <returns>The Toxiproxy base address.</returns>
-    public string GetBaseAddress()
-    {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ToxiproxyBuilder.ToxiproxyPort)).ToString();
-    }
 }
