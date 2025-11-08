@@ -4,8 +4,6 @@ namespace Testcontainers.Toxiproxy;
 [PublicAPI]
 public sealed class ToxiproxyContainer : DockerContainer
 {
-    private readonly ToxiproxyConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyContainer" /> class.
     /// </summary>
@@ -13,6 +11,5 @@ public sealed class ToxiproxyContainer : DockerContainer
     public ToxiproxyContainer(ToxiproxyConfiguration configuration)
         : base(configuration)
     {
-        _configuration = configuration;
     }
 }

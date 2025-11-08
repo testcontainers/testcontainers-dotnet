@@ -24,10 +24,10 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _toxiproxyContainer.StartAsync()
+        await _redisContainer.StartAsync()
             .ConfigureAwait(false);
 
-        await _redisContainer.StartAsync()
+        await _toxiproxyContainer.StartAsync()
             .ConfigureAwait(false);
     }
 
@@ -48,7 +48,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
     public async Task LatencyToxicIncreasesResponseTime()
     {
         // Given
-        
+
         // The Toxiproxy module initializes 32 ports during startup that we can
         // use to configure the proxy and redirect traffic.
         const ushort toxiproxyPort = ToxiproxyBuilder.FirstProxiedPort;
@@ -56,6 +56,8 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         const string key = "key";
         const string value = "value";
 
+        // GetMappedPublicPort() retrieves the first bound port, which corresponds
+        // to Toxiproxy's control port.
         using var connection = new Connection(_toxiproxyContainer.Hostname, _toxiproxyContainer.GetMappedPublicPort());
         var client = connection.Client();
 
@@ -90,7 +92,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         var latencyToxic = new LatencyToxic();
         latencyToxic.Name = "latency_downstream";
         latencyToxic.Stream = ToxicDirection.DownStream;
-        latencyToxic.Toxicity = 1.0;
+        latencyToxic.Toxicity = 1;
         latencyToxic.Attributes.Latency = 1100;
         latencyToxic.Attributes.Jitter = 100;
         redisProxy.Add(latencyToxic);

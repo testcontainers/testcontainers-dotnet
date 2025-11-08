@@ -4,8 +4,6 @@ namespace Testcontainers.Grafana;
 [PublicAPI]
 public sealed class GrafanaContainer : DockerContainer
 {
-    private readonly GrafanaConfiguration _configuration;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GrafanaContainer" /> class.
     /// </summary>
@@ -13,7 +11,6 @@ public sealed class GrafanaContainer : DockerContainer
     public GrafanaContainer(GrafanaConfiguration configuration)
         : base(configuration)
     {
-        _configuration = configuration;
     }
 
     /// <summary>
