@@ -7,8 +7,8 @@ dotnet add package Testcontainers
 ```csharp title="Run the Hello World container"
 // Create a new instance of a container.
 var container = new ContainerBuilder()
-  // Set the image for the container to "testcontainers/helloworld:1.2.0".
-  .WithImage("testcontainers/helloworld:1.2.0")
+  // Set the image for the container to "testcontainers/helloworld:1.3.0".
+  .WithImage("testcontainers/helloworld:1.3.0")
   // Bind port 8080 of the container to a random port on the host.
   .WithPortBinding(8080, true)
   // Wait until the HTTP endpoint of the container is available.
@@ -64,7 +64,7 @@ Debug.Assert(Guid.TryParse(guid, out _));
 
 ## About
 
-Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker Remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.
 
@@ -94,7 +94,7 @@ See [contributors][testcontainers-dotnet-contributors] for all contributors.
 
 ----
 
-Join our [Slack workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
+Join our [Slack Workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
 
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <!-- -8<- [start:PackageReferences] -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit.v3"/>
+    </ItemGroup>
+    <!-- -8<- [end:PackageReferences] -->
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.Grafana/Testcontainers.Grafana.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+</Project>

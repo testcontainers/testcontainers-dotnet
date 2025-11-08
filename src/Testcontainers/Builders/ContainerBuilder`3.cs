@@ -22,7 +22,7 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity>
+  public abstract class ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity> : AbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters, TConfigurationEntity>, IContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TBuilderEntity : ContainerBuilder<TBuilderEntity, TContainerEntity, TConfigurationEntity>
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
@@ -134,6 +134,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithCommand(params string[] command)
     {
+      var composable = new AppendEnumerable<string>(command);
+      return WithCommand(composable);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithCommand(ComposableEnumerable<string> command)
+    {
       return Clone(new ContainerConfiguration(command: command));
     }
 
@@ -201,66 +208,66 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, fileMode));
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       if (Uri.IsWellFormedUriString(source, UriKind.Absolute) && Uri.TryCreate(source, UriKind.Absolute, out var uri) && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme))
       {
-        return WithResourceMapping(uri, target, fileMode);
+        return WithResourceMapping(uri, target, uid, gid, fileMode);
       }
 
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return WithResourceMapping(new DirectoryInfo(source), target, fileMode);
+        return WithResourceMapping(new DirectoryInfo(source), target, uid, gid, fileMode);
       }
       else
       {
-        return WithResourceMapping(new FileInfo(source), target, fileMode);
+        return WithResourceMapping(new FileInfo(source), target, uid, gid, fileMode);
       }
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
+      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, fileMode));
+      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       using (var fileStream = source.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       {
         using (var streamReader = new BinaryReader(fileStream))
         {
           var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
-          return WithResourceMapping(resourceContent, target.ToString(), fileMode);
+          return WithResourceMapping(resourceContent, target.ToString(), uid, gid, fileMode);
         }
       }
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       if (source.IsFile)
       {
-        return WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, fileMode));
+        return WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, uid, gid, fileMode));
       }
       else
       {
-        return WithResourceMapping(new UriResourceMapping(source, target, fileMode));
+        return WithResourceMapping(new UriResourceMapping(source, target, uid, gid, fileMode));
       }
     }
 
@@ -380,13 +387,19 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback)
     {
-      return Clone(new ContainerConfiguration(startupCallback: (container, ct) => startupCallback((TContainerEntity)container, ct)));
+      return Clone(new ContainerConfiguration(startupCallback: (container, _, ct) => startupCallback((TContainerEntity)container, ct)));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithStartupCallback(Func<TContainerEntity, TConfigurationEntity, CancellationToken, Task> startupCallback)
+    {
+      return Clone(new ContainerConfiguration(startupCallback: (container, configuration, ct) => startupCallback((TContainerEntity)container, (TConfigurationEntity)configuration, ct)));
     }
 
     /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
-      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _) => Task.CompletedTask);
+      return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _, _) => Task.CompletedTask);
     }
 
     /// <inheritdoc />

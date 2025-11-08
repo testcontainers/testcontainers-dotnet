@@ -4,9 +4,9 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.128.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.128.1"/>
+        <PackageVersion Include="BouncyCastle.Cryptography" Version="2.6.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.129.0"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.129.0"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
         <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
@@ -51,7 +51,7 @@
         <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Json" Version="2.8.0"/>
         <PackageVersion Include="Confluent.SchemaRegistry" Version="2.8.0"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
-        <PackageVersion Include="CouchbaseNetClient" Version="3.6.4"/>
+        <PackageVersion Include="CouchbaseNetClient" Version="3.7.2"/>
         <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
@@ -64,10 +64,11 @@
         <PackageVersion Include="InfluxDB.Client" Version="4.18.0"/>
         <PackageVersion Include="JanusGraph.Net" Version="1.0.0"/>
         <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
-        <PackageVersion Include="KubernetesClient" Version="15.0.1"/>
+        <PackageVersion Include="KubernetesClient" Version="17.0.14"/>
         <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="12.2.8"/>
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
+        <PackageVersion Include="Microsoft.Playwright" Version="1.55.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6"/>
         <PackageVersion Include="MongoDB.Driver" Version="3.2.0"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
@@ -79,6 +80,7 @@
         <PackageVersion Include="Net.IBM.Data.Db2" Version="9.0.0.100"/>
         <PackageVersion Include="Npgsql" Version="6.0.11"/>
         <PackageVersion Include="OllamaSharp" Version="5.1.13"/>
+        <PackageVersion Include="OpenSearch.Client" Version="1.8.0"/>
         <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.7.0"/>
         <PackageVersion Include="Qdrant.Client" Version="1.13.0"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>

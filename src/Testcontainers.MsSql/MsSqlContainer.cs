@@ -62,7 +62,7 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
         var sqlCmdFilePath = await GetSqlCmdFilePathAsync(ct)
             .ConfigureAwait(false);
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-U", _configuration.Username, "-P", _configuration.Password, "-i", scriptFilePath }, ct)

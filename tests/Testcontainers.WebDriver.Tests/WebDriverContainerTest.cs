@@ -79,6 +79,8 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
             var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
 
             // When
+            HeadingElementReturnsHelloWorld();
+
             await _webDriverContainer.StopAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 

@@ -53,11 +53,15 @@ nav:
     - modules/pulsar.md # Apache
     - modules/eventhubs.md # Azure
     - modules/servicebus.md # Azure
+    - modules/clickhouse.md
     - modules/db2.md
     - modules/elasticsearch.md
+    - modules/grafana.md
     - modules/mongodb.md
     - modules/mssql.md
     - modules/neo4j.md
+    - modules/opensearch.md
+    - modules/playwright.md
     - modules/postgres.md
     - modules/qdrant.md
     - modules/rabbitmq.md

@@ -59,13 +59,35 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the port is available.
+    /// Waits until a TCP port is available from within the container itself.
+    /// This verifies that a service inside the container is listening on the specified port.
     /// </summary>
-    /// <param name="port">The port to be checked.</param>
+    /// <param name="containerPort">The TCP port of the service running inside the container.</param>
     /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+    IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
+    /// Waits until a TCP port is available from the test host to the container.
+    /// This verifies that the port is exposed and reachable externally.
+    /// </summary>
+    /// <remarks>
+    /// This does not necessarily mean that the TCP connection to the service running inside
+    /// the container was successful. For container runtimes like Docker Desktop, Podman, or similar,
+    /// this usually only indicates that the port has been mapped and that a connection could be
+    /// established to the host-side proxy that maps the port.
+    ///
+    /// This wait strategy is particularly useful for container runtimes that may take some time
+    /// to finish setting up port mappings. In some cases, other strategies such as log-based
+    /// readiness checks may indicate readiness before the runtime has fully configured the port
+    /// mapping, leading to connection failures. This strategy helps to avoid that race condition.
+    /// </remarks>
+    /// <param name="containerPort">The TCP port of the service running inside the container.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilExternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Waits until the file exists.

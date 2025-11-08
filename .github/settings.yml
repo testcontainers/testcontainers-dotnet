@@ -106,7 +106,7 @@ labels:
 
   - name: question
     color: '#8ba7f4'
-    description: Have you tried our Slack workspace (https://testcontainers.slack.com)?
+    description: Have you tried our Slack Workspace (https://testcontainers.slack.com)?
 
   - name: security
     color: '#d93f0b'

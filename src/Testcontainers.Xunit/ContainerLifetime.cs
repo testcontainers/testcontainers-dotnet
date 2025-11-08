@@ -6,7 +6,7 @@ namespace Testcontainers.Xunit;
 /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
 /// <typeparam name="TContainerEntity">The container entity.</typeparam>
 public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsyncLifetime
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer
 {
     private readonly Lazy<TContainerEntity> _container;
@@ -91,8 +91,8 @@ public abstract class ContainerLifetime<TBuilderEntity, TContainerEntity> : IAsy
 
 #if XUNIT_V3
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
-#else 
-    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync" /> 
+#else
+    /// <inheritdoc cref="IAsyncLifetime.DisposeAsync" />
 #endif
     protected virtual async LifetimeTask DisposeAsyncCore()
     {

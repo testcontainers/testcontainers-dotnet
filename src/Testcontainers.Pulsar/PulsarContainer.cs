@@ -116,7 +116,7 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.Write(" --no-stream-storage");
         }
 
-        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
+        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
     }
 
     private static bool IsVersionAffectedByGhIssue22811(System.Version version)

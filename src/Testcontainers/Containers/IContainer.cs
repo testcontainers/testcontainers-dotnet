@@ -164,6 +164,12 @@ namespace DotNet.Testcontainers.Containers
     long HealthCheckFailingStreak { get; }
 
     /// <summary>
+    /// Resolves the first public assigned host port.
+    /// </summary>
+    /// <returns>Returns the first public assigned host port.</returns>
+    ushort GetMappedPublicPort();
+
+    /// <summary>
     /// Resolves the public assigned host port.
     /// </summary>
     /// <remarks>
@@ -171,7 +177,7 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
-    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    /// <exception cref="InvalidOperationException">Container has not been created, or no mapped port was found.</exception>
     ushort GetMappedPublicPort(int containerPort);
 
     /// <summary>
@@ -184,6 +190,13 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Returns the public assigned host port.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     ushort GetMappedPublicPort(string containerPort);
+
+    /// <summary>
+    /// Resolves all public assigned host ports.
+    /// </summary>
+    /// <returns>Returns all public assigned host ports.</returns>
+    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts();
 
     /// <summary>
     /// Gets the container exit code.
@@ -244,47 +257,55 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="fileContent">The byte array content of the file.</param>
     /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns></returns>
-    Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host directory or file to the container.
     /// </summary>
     /// <param name="source">The source directory or file to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory or file has been copied.</returns>
-    Task CopyAsync(string source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host directory to the container.
     /// </summary>
     /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
-    Task CopyAsync(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host file to the container.
     /// </summary>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>
-    Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
+    Task CopyAsync(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
     /// Reads a file from the container.
     /// </summary>
     /// <param name="filePath">An absolute path or a name value within the container.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the file has been read.</returns>
+    /// <returns>A task that completes when the file has been read.</returns>
     Task<byte[]> ReadFileAsync(string filePath, CancellationToken ct = default);
 
     /// <summary>
@@ -292,7 +313,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="command">Shell command.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the shell command has been executed.</returns>
+    /// <returns>A task that completes when the shell command has been executed.</returns>
     Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default);
   }
 }
