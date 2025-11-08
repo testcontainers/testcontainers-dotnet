@@ -7,7 +7,7 @@
 [![Alert Status](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers_testcontainers-dotnet&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers_testcontainers-dotnet)
 
-> Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+> Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker Remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 ![Testcontainers Banner](https://raw.githubusercontent.com/testcontainers/testcontainers-dotnet/main/docs/banner.png)
 
@@ -25,7 +25,7 @@ See [contributors][testcontainers-dotnet-contributors] for all contributors.
 
 ----
 
-Join our [Slack workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
+Join our [Slack Workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
 
 [testcontainers-dotnet-documentation]: https://dotnet.testcontainers.org/
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/

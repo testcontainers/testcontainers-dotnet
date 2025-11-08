@@ -48,7 +48,7 @@ string pulsarServiceUrl = _pulsarContainer.GetHttpServiceUrl();
 If you need to use token authentication, use the following builder configuration to enable authentication:
 
 ```csharp
-PulsarContainer _pulsarContainer = PulsarBuilder().WithTokenAuthentication().Build();
+PulsarContainer _pulsarContainer = new PulsarBuilder().WithTokenAuthentication().Build();
 ```
 
 Start the container and obtain an authentication token with a specified expiration time
@@ -70,5 +70,5 @@ var authToken = await container.CreateAuthenticationTokenAsync(Timeout.InfiniteT
 If you need to use Pulsar Functions, use the following builder configuration to enable it:
 
 ```csharp
-PulsarContainer _pulsarContainer = PulsarBuilder().WithFunctions().Build();
+PulsarContainer _pulsarContainer = new PulsarBuilder().WithFunctions().Build();
 ```

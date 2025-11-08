@@ -11,5 +11,5 @@ namespace Testcontainers.Xunit;
 [PublicAPI]
 public class ContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
     : ContainerLifetime<TBuilderEntity, TContainerEntity>(new MessageSinkLogger(messageSink))
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer;

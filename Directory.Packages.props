@@ -5,8 +5,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="BouncyCastle.Cryptography" Version="2.6.1"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.128.5"/>
-        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.128.5"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.129.0"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.129.0"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
         <PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
@@ -64,10 +64,11 @@
         <PackageVersion Include="InfluxDB.Client" Version="4.18.0"/>
         <PackageVersion Include="JanusGraph.Net" Version="1.0.0"/>
         <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
-        <PackageVersion Include="KubernetesClient" Version="15.0.1"/>
+        <PackageVersion Include="KubernetesClient" Version="17.0.14"/>
         <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="12.2.8"/>
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
+        <PackageVersion Include="Microsoft.Playwright" Version="1.55.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6"/>
         <PackageVersion Include="MongoDB.Driver" Version="3.2.0"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
@@ -87,5 +88,6 @@
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
+        <PackageVersion Include="Toxiproxy.Net" Version="2.0.1"/>
     </ItemGroup>
 </Project>

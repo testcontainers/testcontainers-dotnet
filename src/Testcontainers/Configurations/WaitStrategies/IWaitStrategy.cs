@@ -10,6 +10,13 @@ namespace DotNet.Testcontainers.Configurations
   public interface IWaitStrategy
   {
     /// <summary>
+    /// Sets the wait strategy mode.
+    /// </summary>
+    /// <param name="mode">The wait strategy mode.</param>
+    /// <returns>The updated instance of the wait strategy.</returns>
+    IWaitStrategy WithMode(WaitStrategyMode mode);
+
+    /// <summary>
     /// Sets the number of retries for the wait strategy.
     /// </summary>
     /// <param name="retries">The number of retries.</param>

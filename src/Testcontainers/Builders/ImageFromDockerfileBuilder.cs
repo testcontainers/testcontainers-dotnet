@@ -64,6 +64,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithContextDirectory(string contextDirectory)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(contextDirectory: contextDirectory));
+    }
+
+    /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
       var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));
@@ -81,6 +87,12 @@ namespace DotNet.Testcontainers.Builders
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithTarget(string target)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(target: target));
     }
 
     /// <inheritdoc />

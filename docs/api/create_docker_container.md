@@ -27,9 +27,9 @@ To configure an ASP.NET Core application, either one or both mechanisms can be u
 ```csharp
 _ = new ContainerBuilder()
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
-  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
+  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.pfx")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
-  .WithResourceMapping("certificate.crt", "/app/");
+  .WithResourceMapping("certificate.pfx", "/app/");
 ```
 
 `WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file into the container. Note, this does not follow our best practices. Host paths differ between environments and may not be available on every system or Docker setup, e.g. CI.
@@ -45,9 +45,9 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  # Copy 'appsettings.json' into the '/app' directory.
+  // Copy 'appsettings.json' into the '/app' directory.
   .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
-  # Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
+  // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
   .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
@@ -57,6 +57,30 @@ Another overloaded member of the container builder API allows you to copy the co
 _ = new ContainerBuilder()
   .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
 ```
+
+### Specifying file ownership
+
+When copying files into a container, you can specify the user ID (UID) and group ID (GID) to set the correct ownership of the copied files. This is particularly useful when the container runs as a non-root user or when specific file permissions are required for security or application functionality.
+
+```csharp title="Copying a file with specific UID and GID"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new DirectoryInfo("."), "/app/", uid: 1000, gid: 1000);
+```
+
+### Specifying file permission
+
+When copying files into a container, you can specify the file mode to set the correct permissions for the copied files.
+
+```csharp title="Copying a script with executable permissions"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new DirectoryInfo("."), "/app/", fileMode: Unix.FileMode755);
+```
+
+The `Unix` class provides common permission configurations like `FileMode755` (read, write, execute for owner; read, execute for group and others). For individual permission combinations, you can use the `UnixFileModes` enumeration to create custom configurations.
+
+### Copying files to a running container
+
+The same UID, GID, and file mode arguments are also available when copying files to already running containers using the `IContainer.CopyAsync(...)` APIs.
 
 ## Reading files from the container
 
@@ -76,7 +100,8 @@ Starting a container or creating a resource (such as a network or a volume) can 
 
 ```csharp title="Canceling container start after one minute"
 using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-await _container.StartAsync(timeoutCts.Token);
+await _container.StartAsync(timeoutCts.Token)
+  .ConfigureAwait(false);
 ```
 
 ## Getting log messages
@@ -86,7 +111,8 @@ Testcontainers for .NET provides two approaches for retrieving log messages from
 The `GetLogsAsync` method is available through the `IContainer` interface. It allows you to fetch logs from a container for a specific time range or from the beginning until the present. This approach is useful for retrieving logs after a test has run, especially when troubleshooting issues or failures.
 
 ```csharp title="Getting all log messages"
-var (stdout, stderr) = await _container.GetLogsAsync();
+var (stdout, stderr) = await _container.GetLogsAsync()
+  .ConfigureAwait(false);
 ```
 
 The `WithOutputConsumer` method is part of the `ContainerBuilder` class and is used to continuously forward container log messages to a specified output consumer. This approach provides real-time access to logs as the container runs.
@@ -166,7 +192,6 @@ const ushort MagicNumberPort = 80;
 var deepThoughtContainer = new ContainerBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("alpine")
-  .WithExposedPort(MagicNumberPort)
   .WithPortBinding(MagicNumberPort, true)
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")
