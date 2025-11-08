@@ -62,7 +62,7 @@ public sealed class MosquittoConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets a value indicating whether TLS is enabled or not.
     /// </summary>
-    public bool TlsEnabled => Certificate != null;
+    public bool TlsEnabled => Certificate != null && CertificateKey != null;
 
     /// <summary>
     /// Gets the public certificate in PEM format.

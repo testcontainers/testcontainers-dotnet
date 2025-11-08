@@ -22,7 +22,7 @@ public sealed class MosquittoContainer : DockerContainer
     /// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
     public string GetEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetMappedPublicPort(MosquittoBuilder.MqttPort)).ToString();
+        return new UriBuilder("mqtt", Hostname, GetMappedPublicPort(MosquittoBuilder.MqttPort)).ToString();
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public sealed class MosquittoContainer : DockerContainer
     public string GetSecureEndpoint()
     {
         ThrowIfTlsNotEnabled();
-        return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetMappedPublicPort(MosquittoBuilder.MqttTlsPort)).ToString();
+        return new UriBuilder("mqtts", Hostname, GetMappedPublicPort(MosquittoBuilder.MqttTlsPort)).ToString();
     }
 
     /// <summary>
