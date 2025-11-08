@@ -1,127 +1,139 @@
-﻿namespace TestContainers.Mosquitto;
+﻿namespace Testcontainers.Mosquitto;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
+public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
 {
-	public const string MosquittoImage = "eclipse-mosquitto:2.0";
+    public const string MosquittoImage = "eclipse-mosquitto:2.0";
 
-	public const int TcpPort = 1883;
-	public const int TlsPort = 8883;
-	public const int WsPort = 80;
-	public const int WssPort = 443;
-	public const string CertificateFilePath = "/mosquitto/certs/server.pem";
-	public const string CertificateKeyFilePath = "/mosquitto/certs/server-key.pem";
+    public const ushort MqttPort = 1883;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
-	/// </summary>
-	public MosquittoBuilder()
-	  : this(new MosquittoConfiguration())
-	{
-		DockerResourceConfiguration = Init().DockerResourceConfiguration;
-	}
+    public const ushort MqttTlsPort = 8883;
 
-	public MosquittoBuilder(MosquittoConfiguration resourceConfiguration)
-		: base(resourceConfiguration)
-	{
-		DockerResourceConfiguration = resourceConfiguration;
-	}
+    public const ushort MqttWsPort = 8080;
 
-	/// <inheritdoc />
-	protected override MosquittoConfiguration DockerResourceConfiguration { get; }
+    public const ushort MqttWssPort = 8081;
 
-	/// <inheritdoc />
-	public override MosquittoContainer Build()
-	{
-		Validate();
+    public const string CertificateFilePath = "/etc/mosquitto/certs/server.crt";
 
-		var sb = new StringWriter();
-		sb.NewLine = "\n";
-		sb.WriteLine("per_listener_settings true");
+    public const string CertificateKeyFilePath = "/etc/mosquitto/certs/server.key";
 
-		sb.WriteLine();
-		sb.WriteLine("# MQTT listener");
-		sb.WriteLine($"listener {TcpPort}");
-		sb.WriteLine("protocol mqtt");
-		sb.WriteLine("allow_anonymous true");
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    public MosquittoBuilder()
+        : this(new MosquittoConfiguration())
+    {
+        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
 
-		sb.WriteLine();
-		sb.WriteLine("# WebSocket listener");
-		sb.WriteLine($"listener {WsPort}");
-		sb.WriteLine("protocol websockets");
-		sb.WriteLine("allow_anonymous true");
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    public MosquittoBuilder(MosquittoConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
+    }
 
-		if (DockerResourceConfiguration.HasCertificate)
-		{
-			sb.WriteLine();
-			sb.WriteLine("# MQTT listener (encrypted)");
-			sb.WriteLine($"listener {TlsPort}");
-			sb.WriteLine("protocol mqtt");
-			sb.WriteLine("allow_anonymous true");
-			sb.WriteLine($"certfile {CertificateFilePath}");
-			sb.WriteLine($"keyfile {CertificateKeyFilePath}");
+    /// <inheritdoc />
+    protected override MosquittoConfiguration DockerResourceConfiguration { get; }
 
-			sb.WriteLine();
-			sb.WriteLine("# WebSocket listener (encrypted)");
-			sb.WriteLine($"listener {WssPort}");
-			sb.WriteLine("protocol websockets");
-			sb.WriteLine("allow_anonymous true");
-			sb.WriteLine($"certfile {CertificateFilePath}");
-			sb.WriteLine($"keyfile {CertificateKeyFilePath}");
-		}
+    /// <summary>
+    /// Sets the public certificate and private key to enable TLS.
+    /// </summary>
+    /// <param name="certificate">The public certificate in PEM format.</param>
+    /// <param name="certificateKey">The private key associated with the certificate in PEM format.</param>
+    /// <returns>A configured instance of <see cref="MosquittoBuilder" />.</returns>
+    public MosquittoBuilder WithCertificate(string certificate, string certificateKey)
+    {
+        return Merge(DockerResourceConfiguration, new MosquittoConfiguration(certificate: certificate, certificateKey: certificateKey))
+            .WithPortBinding(MqttTlsPort, true)
+            .WithPortBinding(MqttWssPort, true)
+            .WithResourceMapping(Encoding.Default.GetBytes(certificate), CertificateFilePath)
+            .WithResourceMapping(Encoding.Default.GetBytes(certificateKey), CertificateKeyFilePath);
+    }
 
-		var config = Clone(DockerResourceConfiguration)
-			.WithResourceMapping(Encoding.UTF8.GetBytes(sb.ToString()), "/mosquitto/config/mosquitto.conf");
+    /// <inheritdoc />
+    public override MosquittoContainer Build()
+    {
+        Validate();
 
-		return new MosquittoContainer(config.DockerResourceConfiguration);
-	}
+        // Maybe we should move this into the startup callback.
+        var mosquittoConfig = new StringWriter();
+        mosquittoConfig.NewLine = "\n";
 
-	public MosquittoBuilder WithCertificate(string certificate, string certificateKey)
-	{
-		return Merge(DockerResourceConfiguration, new MosquittoConfiguration(certificate: certificate, certificateKey: certificateKey))
-			.WithPortBinding(TlsPort, true)
-			.WithPortBinding(WssPort, true)
-			.WithResourceMapping(Encoding.UTF8.GetBytes(certificate), CertificateFilePath)
-			.WithResourceMapping(Encoding.UTF8.GetBytes(certificateKey), CertificateKeyFilePath);
-	}
+        mosquittoConfig.WriteLine("per_listener_settings true");
+        mosquittoConfig.WriteLine("log_dest stdout");
+        mosquittoConfig.WriteLine("log_type information");
 
-	/// <inheritdoc />
-	protected override MosquittoBuilder Init()
-	{
-		var builder = base.Init()
-			.WithImage(MosquittoImage)
-			.WithPortBinding(TcpPort, true)
-			.WithPortBinding(WsPort, true)
-			.WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));
+        mosquittoConfig.WriteLine();
+        mosquittoConfig.WriteLine("persistence false");
+        mosquittoConfig.WriteLine("persistence_location /mosquitto/data/");
 
-		return builder;
-	}
+        mosquittoConfig.WriteLine();
+        mosquittoConfig.WriteLine("# MQTT, unencrypted, unauthenticated");
+        mosquittoConfig.WriteLine($"listener {MqttPort} 0.0.0.0");
+        mosquittoConfig.WriteLine("protocol mqtt");
+        mosquittoConfig.WriteLine("allow_anonymous true");
 
-	/// <inheritdoc />
-	protected override void Validate()
-	{
-		base.Validate();
+        mosquittoConfig.WriteLine();
+        mosquittoConfig.WriteLine("# MQTT over WebSockets, unencrypted, unauthenticated");
+        mosquittoConfig.WriteLine($"listener {MqttWsPort} 0.0.0.0");
+        mosquittoConfig.WriteLine("protocol websockets");
+        mosquittoConfig.WriteLine("allow_anonymous true");
 
-		_ = Guard.Argument(DockerResourceConfiguration, "Certificate")
-			.ThrowIf(argument => 1.Equals(new[] { argument.Value.Certificate, argument.Value.CertificateKey }.Count(string.IsNullOrWhiteSpace)), argument => new ArgumentException($"Both {nameof(argument.Value.Certificate)} and {nameof(argument.Value.CertificateKey)} must be supplied if one is.", argument.Name));
-	}
+        if (DockerResourceConfiguration.TlsEnabled)
+        {
+            mosquittoConfig.WriteLine();
+            mosquittoConfig.WriteLine("# MQTT, encrypted, unauthenticated");
+            mosquittoConfig.WriteLine($"listener {MqttTlsPort} 0.0.0.0");
+            mosquittoConfig.WriteLine("protocol mqtt");
+            mosquittoConfig.WriteLine("allow_anonymous true");
+            mosquittoConfig.WriteLine("tls_version tlsv1.2");
+            mosquittoConfig.WriteLine($"certfile {CertificateFilePath}");
+            mosquittoConfig.WriteLine($"keyfile {CertificateKeyFilePath}");
 
-	/// <inheritdoc />
-	protected override MosquittoBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-	{
-		return Merge(DockerResourceConfiguration, new MosquittoConfiguration(resourceConfiguration));
-	}
+            mosquittoConfig.WriteLine();
+            mosquittoConfig.WriteLine("# MQTT over WebSockets, encrypted, unauthenticated");
+            mosquittoConfig.WriteLine($"listener {MqttWssPort} 0.0.0.0");
+            mosquittoConfig.WriteLine("protocol websockets");
+            mosquittoConfig.WriteLine("allow_anonymous true");
+            mosquittoConfig.WriteLine("tls_version tlsv1.2");
+            mosquittoConfig.WriteLine($"certfile {CertificateFilePath}");
+            mosquittoConfig.WriteLine($"keyfile {CertificateKeyFilePath}");
+        }
 
-	/// <inheritdoc />
-	protected override MosquittoBuilder Clone(IContainerConfiguration resourceConfiguration)
-	{
-		return Merge(DockerResourceConfiguration, new MosquittoConfiguration(resourceConfiguration));
-	}
+        var mosquittoBuilder = WithResourceMapping(Encoding.Default.GetBytes(mosquittoConfig.ToString()), "/mosquitto/config/mosquitto.conf");
+        return new MosquittoContainer(mosquittoBuilder.DockerResourceConfiguration);
+    }
 
-	/// <inheritdoc />
-	protected override MosquittoBuilder Merge(MosquittoConfiguration oldValue, MosquittoConfiguration newValue)
-	{
-		return new MosquittoBuilder(new MosquittoConfiguration(oldValue, newValue));
-	}
+    /// <inheritdoc />
+    protected override MosquittoBuilder Init()
+    {
+        return base.Init()
+            .WithImage(MosquittoImage)
+            .WithPortBinding(MqttPort, true)
+            .WithPortBinding(MqttWsPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));
+    }
+
+    /// <inheritdoc />
+    protected override MosquittoBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new MosquittoConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override MosquittoBuilder Clone(IContainerConfiguration resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new MosquittoConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override MosquittoBuilder Merge(MosquittoConfiguration oldValue, MosquittoConfiguration newValue)
+    {
+        return new MosquittoBuilder(new MosquittoConfiguration(oldValue, newValue));
+    }
 }

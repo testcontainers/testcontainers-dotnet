@@ -1,84 +1,68 @@
-﻿namespace TestContainers.Mosquitto;
+﻿namespace Testcontainers.Mosquitto;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
 public sealed class MosquittoContainer : DockerContainer
 {
-	private readonly bool _isSecure;
+    private readonly MosquittoConfiguration _configuration;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="MosquittoContainer" /> class.
-	/// </summary>
-	/// <param name="configuration">The container configuration.</param>
-	public MosquittoContainer(MosquittoConfiguration configuration)
-		  : base(configuration)
-	{
-		_isSecure = configuration.HasCertificate;
-	}
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
+    public MosquittoContainer(MosquittoConfiguration configuration)
+        : base(configuration)
+    {
+        _configuration = configuration;
+    }
 
-	/// <summary>
-	/// Gets the MQTT endpoint.
-	/// </summary>
-	/// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
-	public string GetEndpoint()
-	{
-		return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetPort()).ToString();
-	}
+    /// <summary>
+    /// Gets the MQTT endpoint.
+    /// </summary>
+    /// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
+    public string GetEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetMappedPublicPort(MosquittoBuilder.MqttPort)).ToString();
+    }
 
-	/// <summary>
-	/// Gets the MQTT endpoint port.
-	/// </summary>
-	/// <returns>Exposed port for insecure MQQT connections.</returns>
-	public ushort GetPort()
-	{
-		return GetMappedPublicPort(MosquittoBuilder.TcpPort);
-	}
+    /// <summary>
+    /// Gets the secure MQTT endpoint.
+    /// </summary>
+    /// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
+    public string GetSecureEndpoint()
+    {
+        ThrowIfTlsNotEnabled();
+        return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetMappedPublicPort(MosquittoBuilder.MqttTlsPort)).ToString();
+    }
 
-	/// <summary>
-	/// Gets the secure MQTT endpoint.
-	/// </summary>
-	/// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
-	public string GetSecureEndpoint()
-	{
-		ThrowIfNotSecure();
-		return new UriBuilder(Uri.UriSchemeNetTcp, Hostname, GetMappedPublicPort(MosquittoBuilder.TlsPort)).ToString();
-	}
+    /// <summary>
+    /// Gets the WebSocket endpoint.
+    /// </summary>
+    /// <returns>A WS address in the format: <c>ws://hostname:port</c>.</returns>
+    public string GetWsEndpoint()
+    {
+        return new UriBuilder("ws", Hostname, GetMappedPublicPort(MosquittoBuilder.MqttWsPort)).ToString();
+    }
 
-	/// <summary>
-	/// Gets the secure MQTT endpoint port.
-	/// </summary>
-	/// <returns>Exposed port for secure MQTT connections.</returns>
-	public ushort GetSecurePort()
-	{
-		return GetMappedPublicPort(MosquittoBuilder.TlsPort);
-	}
+    /// <summary>
+    /// Gets the secure WebSocket endpoint.
+    /// </summary>
+    /// <returns>A WS address in the format: <c>wss://hostname:port</c>.</returns>
+    public string GetWssEndpoint()
+    {
+        ThrowIfTlsNotEnabled();
+        return new UriBuilder("wss", Hostname, GetMappedPublicPort(MosquittoBuilder.MqttWssPort)).ToString();
+    }
 
-	/// <summary>
-	/// Gets the WebSocket endpoint.
-	/// </summary>
-	/// <returns>A WS address in the format: <c>ws://hostname:port</c>.</returns>
-	public string GetWsEndpoint()
-	{
-		return new UriBuilder("ws", Hostname, GetMappedPublicPort(MosquittoBuilder.WsPort)).ToString();
-	}
-
-	/// <summary>
-	/// Gets the secure WebSocket endpoint.
-	/// </summary>
-	/// <returns>A WS address in the format: <c>ws://hostname:port</c>.</returns>
-	public string GetWssEndpoint()
-	{
-		ThrowIfNotSecure();
-		return new UriBuilder("wss", Hostname, GetMappedPublicPort(MosquittoBuilder.WssPort)).ToString();
-	}
-
-	private void ThrowIfNotSecure()
-	{
-		if (_isSecure)
-		{
-			return;
-		}
-
-		throw new InvalidOperationException("The container was not configured with TLS/SSL support.");
-	}
+    /// <summary>
+    /// Throws <see cref="InvalidOperationException" /> when TLS/SSL is not enabled in the configuration.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">TLS/SSL is not enabled in the configuration.</exception>
+    private void ThrowIfTlsNotEnabled()
+    {
+        if (!_configuration.TlsEnabled)
+        {
+            throw new InvalidOperationException("TLS/SSL support is not enabled in the container configuration.");
+        }
+    }
 }

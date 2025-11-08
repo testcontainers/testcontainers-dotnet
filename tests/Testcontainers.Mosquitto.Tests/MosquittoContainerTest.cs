@@ -1,168 +1,135 @@
-namespace TestContainers.Mosquitto.Tests;
+namespace Testcontainers.Mosquitto;
 
 public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, MosquittoContainer>
 {
-	private IMqttClient _client;
+    private static readonly string Certificate = File.ReadAllText(Certificates.Instance.GetFilePath("server", "server.crt"));
 
-	protected MosquittoContainerTest(ITestOutputHelper outputHelper, Func<MosquittoBuilder, MosquittoBuilder> configure = null)
-	  : base(outputHelper, configure)
-	{
-	}
+    private static readonly string CertificateKey = File.ReadAllText(Certificates.Instance.GetFilePath("server", "server.key"));
 
-	protected override async ValueTask InitializeAsync()
-	{
-		await base.InitializeAsync();
+    private readonly MqttClientFactory _clientFactory = new MqttClientFactory();
 
-		var mqttFactory = new MqttClientFactory();
-		_client = mqttFactory.CreateMqttClient();
-	}
+    private MosquittoContainerTest(ITestOutputHelper testOutputHelper)
+        : base(testOutputHelper)
+    {
+    }
 
-	protected override async ValueTask DisposeAsyncCore()
-	{
-		await _client?.TryDisconnectAsync(MqttClientDisconnectOptionsReason.NormalDisconnection);
-		_client?.Dispose();
+    protected abstract MqttClientOptions GetClientOptions();
 
-		await base.DisposeAsyncCore();
-	}
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task EstablishesConnection()
+    {
+        // Given
+        using var client = _clientFactory.CreateMqttClient();
 
-	[Fact]
-	[Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-	public async Task CanEstablishAConnection()
-	{
-		var result = await _client.ConnectAsync(GetClientOptions(), TestContext.Current.CancellationToken);
-		Assert.Equal(MqttClientConnectResultCode.Success, result.ResultCode);
-	}
+        // When
+        var result = await client.ConnectAsync(GetClientOptions(), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-	[Fact]
-	[Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-	public async Task PublishedMessageIsReceived()
-	{
-		const string topic = "test/topic";
-		const string payload = "Hello, MQTT!";
+        // Then
+        Assert.Equal(MqttClientConnectResultCode.Success, result.ResultCode);
+    }
 
-		var tcs = new TaskCompletionSource();
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task SubTopicReturnsPubMessage()
+    {
+        // Given
+        const string helloMosquitto = "Hello, Mosquitto!";
 
-		var options = new MqttClientSubscribeOptionsBuilder()
-		  .WithTopicFilter(f => f.WithTopic(topic))
-		  .Build();
+        const string topicId = "hello-topic";
 
-		bool messageReceived = false;
+        var messageReceived = new TaskCompletionSource<string>();
 
-		await _client.ConnectAsync(GetClientOptions(), TestContext.Current.CancellationToken);
-		_client.ApplicationMessageReceivedAsync += e =>
-		{
-			Assert.Equal(topic, e.ApplicationMessage.Topic);
-			Assert.Equal(payload, e.ApplicationMessage.ConvertPayloadToString());
-			messageReceived = true;
-			tcs.SetResult();
-			return Task.CompletedTask;
-		};
+        using var client = _clientFactory.CreateMqttClient();
 
-		var sub = await _client.SubscribeAsync(options, TestContext.Current.CancellationToken);
+        // When
+        _ = await client.ConnectAsync(GetClientOptions(), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-		await _client.PublishStringAsync(topic, payload, cancellationToken: TestContext.Current.CancellationToken);
-		await Task.WhenAny(tcs.Task, Task.Delay(-1, TestContext.Current.CancellationToken));
+        client.ApplicationMessageReceivedAsync += e =>
+        {
+            messageReceived.SetResult(e.ApplicationMessage.ConvertPayloadToString());
+            return Task.CompletedTask;
+        };
 
-		Assert.True(messageReceived);
-	}
+        _ = await client.SubscribeAsync(topicId, cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-	protected abstract MqttClientOptions GetClientOptions();
+        _ = await client.PublishStringAsync(topicId, helloMosquitto, cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-	[UsedImplicitly]
-	public sealed class MosquittoTcpAnonymousConfiguration : MosquittoContainerTest
-	{
-		public MosquittoTcpAnonymousConfiguration(ITestOutputHelper outputHelper)
-			: base(outputHelper)
-		{
-		}
+        var completedTask = await Task.WhenAny(messageReceived.Task, Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken))
+            .ConfigureAwait(true);
 
-		protected override MqttClientOptions GetClientOptions()
-		{
-			var builder = new MqttClientOptionsBuilder()
-			  .WithClientId($"testcontainers.mosquitto-{Guid.NewGuid()}")
-			  .WithCleanStart()
-			  .WithTcpServer(Container.Hostname, Container.GetPort());
+        // Then
+        Assert.Equal(messageReceived.Task, completedTask);
 
-			return builder.Build();
-		}
-	}
+        var message = await messageReceived.Task
+            .ConfigureAwait(true);
 
-	[UsedImplicitly]
-	public sealed class MosquittoTcpEncryptedAnonymousConfiguration : MosquittoContainerTest
-	{
-		public MosquittoTcpEncryptedAnonymousConfiguration(ITestOutputHelper outputHelper)
-			: base(outputHelper, builder => builder.WithCertificate(PemCertificate.Instance.Certificate, PemCertificate.Instance.CertificateKey))
-		{
-		}
+        Assert.Equal(helloMosquitto, message);
+    }
 
-		protected override MqttClientOptions GetClientOptions()
-		{
-			var builder = new MqttClientOptionsBuilder()
-			  .WithTlsOptions(o =>
-				o.UseTls()
-				  .WithAllowUntrustedCertificates()
-				  .WithIgnoreCertificateChainErrors()
-				  .WithIgnoreCertificateRevocationErrors()
-				  .WithCertificateValidationHandler(context =>
-					{
-						Assert.NotNull(context.Certificate);
-						return true;
-					})
-			  )
-			  .WithClientId($"testcontainers.mosquitto-{Guid.NewGuid()}")
-			  .WithCleanStart()
-			  .WithTcpServer(Container.Hostname, Container.GetSecurePort());
+    [UsedImplicitly]
+    public sealed class TcpUnencryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
+        : MosquittoContainerTest(testOutputHelper)
+    {
+        protected override MqttClientOptions GetClientOptions()
+        {
+            return new MqttClientOptionsBuilder()
+                .WithTcpServer(Container.Hostname, Container.GetMappedPublicPort(MosquittoBuilder.MqttPort))
+                .Build();
+        }
+    }
 
-			return builder.Build();
-		}
-	}
+    [UsedImplicitly]
+    public sealed class TcpEncryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
+        : MosquittoContainerTest(testOutputHelper)
+    {
+        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
+        {
+            return builder.WithCertificate(Certificate, CertificateKey);
+        }
 
-	[UsedImplicitly]
-	public sealed class MosquittoWebSocketAnonymousConfiguration : MosquittoContainerTest
-	{
-		public MosquittoWebSocketAnonymousConfiguration(ITestOutputHelper outputHelper)
-			: base(outputHelper)
-		{
-		}
+        protected override MqttClientOptions GetClientOptions()
+        {
+            return new MqttClientOptionsBuilder()
+                .WithTcpServer(Container.Hostname, Container.GetMappedPublicPort(MosquittoBuilder.MqttTlsPort))
+                .WithTlsOptions(options => options.WithCertificateValidationHandler(e =>
+                    "CN=Test CA".Equals(e.Certificate.Issuer, StringComparison.Ordinal)))
+                .Build();
+        }
+    }
 
-		protected override MqttClientOptions GetClientOptions()
-		{
-			var builder = new MqttClientOptionsBuilder()
-			  .WithClientId($"testcontainers.mosquitto-{Guid.NewGuid()}")
-			  .WithCleanStart()
-			  .WithWebSocketServer(o => o.WithUri(Container.GetWsEndpoint()));
+    [UsedImplicitly]
+    public sealed class WebSocketUnencryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
+        : MosquittoContainerTest(testOutputHelper)
+    {
+        protected override MqttClientOptions GetClientOptions()
+        {
+            return new MqttClientOptionsBuilder()
+                .WithWebSocketServer(options => options.WithUri(Container.GetWsEndpoint()))
+                .Build();
+        }
+    }
 
-			return builder.Build();
-		}
-	}
+    [UsedImplicitly]
+    public sealed class WebSocketEncryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
+        : MosquittoContainerTest(testOutputHelper)
+    {
+        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
+        {
+            return builder.WithCertificate(Certificate, CertificateKey);
+        }
 
-	[UsedImplicitly]
-	public sealed class MosquittoWebSocketSecureAnonymousConfiguration : MosquittoContainerTest
-	{
-		public MosquittoWebSocketSecureAnonymousConfiguration(ITestOutputHelper outputHelper)
-			: base(outputHelper, builder => builder.WithCertificate(PemCertificate.Instance.Certificate, PemCertificate.Instance.CertificateKey))
-		{
-		}
-
-		protected override MqttClientOptions GetClientOptions()
-		{
-			var builder = new MqttClientOptionsBuilder()
-			  .WithTlsOptions(o =>
-				o.UseTls()
-				  .WithAllowUntrustedCertificates()
-				  .WithIgnoreCertificateChainErrors()
-				  .WithIgnoreCertificateRevocationErrors()
-				  .WithCertificateValidationHandler(context =>
-					{
-						Assert.NotNull(context.Certificate);
-						return true;
-					})
-			  )
-			  .WithClientId($"testcontainers.mosquitto-{Guid.NewGuid()}")
-			  .WithCleanStart()
-			  .WithWebSocketServer(o => o.WithUri(Container.GetWssEndpoint()));
-
-			return builder.Build();
-		}
-	}
+        protected override MqttClientOptions GetClientOptions()
+        {
+            return new MqttClientOptionsBuilder()
+                .WithWebSocketServer(options => options.WithUri(Container.GetWssEndpoint()))
+                .WithTlsOptions(options => options.WithCertificateValidationHandler(e =>
+                    "CN=Test CA".Equals(e.Certificate.Issuer, StringComparison.Ordinal)))
+                .Build();
+        }
+    }
 }
