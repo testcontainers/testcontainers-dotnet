@@ -4,6 +4,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
 {
     private const string RedisNetworkAlias = "redis-container";
 
+    // # --8<-- [start:CreateToxiproxyContainer]
     private readonly INetwork _network = new NetworkBuilder().Build();
 
     private readonly IContainer _redisContainer;
@@ -42,7 +43,9 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         await _network.DisposeAsync()
             .ConfigureAwait(false);
     }
+    // # --8<-- [end:CreateToxiproxyContainer]
 
+    // # --8<-- [start:UseToxiproxyContainer]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task LatencyToxicIncreasesResponseTime()
@@ -61,6 +64,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         using var connection = new Connection(_toxiproxyContainer.Hostname, _toxiproxyContainer.GetMappedPublicPort());
         var client = connection.Client();
 
+        // # --8<-- [start:ProxyConfiguration]
         // The proxy configuration forwards traffic from the test host to the
         // Toxiproxy container and then to the Redis container.
         var proxy = new Proxy();
@@ -69,11 +73,14 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         proxy.Listen = "0.0.0.0:" + toxiproxyPort;
         proxy.Upstream = RedisNetworkAlias + ":6379";
         var redisProxy = client.Add(proxy);
+        // # --8<-- [end:ProxyConfiguration]
 
+        // # --8<-- [start:ConnectThroughToxiproxy]
         // We don't establish a connection directly to the Redis container.
         // Instead, we connect through the Toxiproxy container using the first of
         // the 32 ports initialized during the Toxiproxy module startup.
         var connectionString = new UriBuilder("redis", _toxiproxyContainer.Hostname, _toxiproxyContainer.GetMappedPublicPort(toxiproxyPort)).Uri.Authority;
+        // # --8<-- [end:ConnectThroughToxiproxy]
 
         using var redis = await ConnectionMultiplexer.ConnectAsync(connectionString)
             .ConfigureAwait(true);
@@ -87,6 +94,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         var latencyWithoutToxic = await MeasureLatencyAsync(db, key, value)
             .ConfigureAwait(true);
 
+        // # --8<-- [start:ToxicConfiguration]
         // We apply the toxic to the proxy. In this case, we add additional
         // latency to the downstream traffic.
         var latencyToxic = new LatencyToxic();
@@ -96,6 +104,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         latencyToxic.Attributes.Latency = 1100;
         latencyToxic.Attributes.Jitter = 100;
         redisProxy.Add(latencyToxic);
+        // # --8<-- [end:ToxicConfiguration]
 
         var latencyWithToxic = await MeasureLatencyAsync(db, key, value)
             .ConfigureAwait(true);
@@ -104,6 +113,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
         Assert.InRange(latencyWithoutToxic, 0, 250);
         Assert.InRange(latencyWithToxic, 1000, 1500);
     }
+    // # --8<-- [end:UseToxiproxyContainer]
 
     private static async Task<double> MeasureLatencyAsync(IDatabase db, string key, string expectedValue)
     {

@@ -5,6 +5,7 @@
         <IsPublishable>false</IsPublishable>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
+    <!-- -8<- [start:PackageReferences] -->
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="coverlet.collector"/>
@@ -13,6 +14,7 @@
         <PackageReference Include="Toxiproxy.Net"/>
         <PackageReference Include="StackExchange.Redis"/>
     </ItemGroup>
+    <!-- -8<- [end:PackageReferences] -->
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
         <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>

@@ -65,5 +65,6 @@ nav:
     - modules/postgres.md
     - modules/qdrant.md
     - modules/rabbitmq.md
+    - modules/toxiproxy.md
   - contributing.md
   - contributing_docs.md
