@@ -11,10 +11,13 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="Toxiproxy.Net"/>
+        <PackageReference Include="StackExchange.Redis"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.Grafana/Testcontainers.Grafana.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
 </Project>
