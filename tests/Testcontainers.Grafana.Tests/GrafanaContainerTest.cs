@@ -35,7 +35,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
     public async Task GetCurrentOrganizationReturnsHttpStatusCodeOk()
     {
         // Given
-        var basicAuth = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Join(":", _username, _password)));
+        var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(":", _username, _password)));
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_grafanaContainer.GetBaseAddress());
