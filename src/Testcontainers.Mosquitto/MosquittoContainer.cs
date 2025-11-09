@@ -19,7 +19,7 @@ public sealed class MosquittoContainer : DockerContainer
     /// <summary>
     /// Gets the MQTT endpoint.
     /// </summary>
-    /// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
+    /// <returns>An MQTT address in the format: <c>mqtt://hostname:port</c>.</returns>
     public string GetEndpoint()
     {
         return new UriBuilder("mqtt", Hostname, GetMappedPublicPort(MosquittoBuilder.MqttPort)).ToString();
@@ -28,7 +28,7 @@ public sealed class MosquittoContainer : DockerContainer
     /// <summary>
     /// Gets the secure MQTT endpoint.
     /// </summary>
-    /// <returns>A TCP address in the format: <c>tcp://hostname:port</c>.</returns>
+    /// <returns>A secure MQTT address in the format: <c>mqtts://hostname:port</c>.</returns>
     public string GetSecureEndpoint()
     {
         ThrowIfTlsNotEnabled();
@@ -47,7 +47,7 @@ public sealed class MosquittoContainer : DockerContainer
     /// <summary>
     /// Gets the secure WebSocket endpoint.
     /// </summary>
-    /// <returns>A WS address in the format: <c>wss://hostname:port</c>.</returns>
+    /// <returns>A secure WS address in the format: <c>wss://hostname:port</c>.</returns>
     public string GetWssEndpoint()
     {
         ThrowIfTlsNotEnabled();
