@@ -71,6 +71,7 @@
         <PackageVersion Include="Microsoft.Playwright" Version="1.55.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.2.2-preview.6"/>
         <PackageVersion Include="MongoDB.Driver" Version="3.2.0"/>
+        <PackageVersion Include="MQTTnet" Version="5.0.1.1416"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
         <PackageVersion Include="NATS.Client" Version="1.0.8"/>
