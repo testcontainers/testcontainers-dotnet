@@ -78,7 +78,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
-                .WithTcpServer(Container.Hostname, Container.GetMappedPublicPort(MosquittoBuilder.MqttPort))
+                .WithTcpServer(Container.Hostname, Container.MqttPort)
                 .Build();
         }
     }
@@ -95,7 +95,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
-                .WithTcpServer(Container.Hostname, Container.GetMappedPublicPort(MosquittoBuilder.MqttTlsPort))
+                .WithTcpServer(Container.Hostname, Container.MqttTlsPort)
                 .WithTlsOptions(options => options.WithCertificateValidationHandler(e =>
                     "CN=Test CA".Equals(e.Certificate.Issuer, StringComparison.Ordinal)))
                 .Build();
@@ -109,7 +109,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
-                .WithWebSocketServer(options => options.WithUri(Container.GetWsEndpoint()))
+                .WithWebSocketServer(options => options.WithUri(Container.GetWsConnectionString()))
                 .Build();
         }
     }
@@ -126,7 +126,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
-                .WithWebSocketServer(options => options.WithUri(Container.GetWssEndpoint()))
+                .WithWebSocketServer(options => options.WithUri(Container.GetWssConnectionString()))
                 .WithTlsOptions(options => options.WithCertificateValidationHandler(e =>
                     "CN=Test CA".Equals(e.Certificate.Issuer, StringComparison.Ordinal)))
                 .Build();
