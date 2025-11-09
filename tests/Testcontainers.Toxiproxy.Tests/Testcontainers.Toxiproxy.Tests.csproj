@@ -11,7 +11,7 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="Toxiproxy.Net"/>
+        <PackageReference Include="ToxiproxyNetCore"/>
         <PackageReference Include="StackExchange.Redis"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>

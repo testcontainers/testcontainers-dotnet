@@ -13,7 +13,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true
     },
-    "ghcr.io/devcontainers/features/dotnet:2.2.2": {
+    "ghcr.io/devcontainers/features/dotnet:2.4.0": {
       "version": "9.0",
       "installUsingApt": false
     }

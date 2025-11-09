@@ -35,5 +35,6 @@ testcontainer
 testcontainers
 tlsverify
 toml
+toxiproxy
 vstest
 weaviate

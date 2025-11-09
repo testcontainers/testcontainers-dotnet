@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Mosquitto;
+namespace Testcontainers.Mosquitto;
 
 /// <inheritdoc cref="ContainerConfiguration" />
 [PublicAPI]
