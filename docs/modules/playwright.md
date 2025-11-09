@@ -41,7 +41,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 The Playwright container is configured with a network that can be shared with other containers. This is useful when testing applications that need to communicate with other services. Use the `GetNetwork()` method to access the container's network:
 
 ```csharp
-var helloWorldContainer = new ContainerBuilder()
-    .WithNetwork(playwrightContainer.GetNetwork())
+IContainer _helloWorldContainer = new ContainerBuilder()
+    .WithNetwork(_playwrightContainer.GetNetwork())
     .Build();
 ```
