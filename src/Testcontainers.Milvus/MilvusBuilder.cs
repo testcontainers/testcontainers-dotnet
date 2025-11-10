@@ -64,6 +64,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithPortBinding(MilvusManagementPort, true)
             .WithPortBinding(MilvusGrpcPort, true)
             .WithCommand("milvus", "run", "standalone")
+            .WithEnvironment("DEPLOY_MODE", "STANDALONE")
             .WithEnvironment("COMMON_STORAGETYPE", "local")
             // For embedded etcd only; see WithEtcdEndpoint(string) for using an external etcd.
             .WithEnvironment("ETCD_USE_EMBED", "true")
