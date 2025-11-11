@@ -81,13 +81,13 @@ Once configured, Testcontainers will rewrite Docker Hub image names by adding th
 For example, the image:
 
 ```
-testcontainers/helloworld:1.2.0
+testcontainers/helloworld:1.3.0
 ```
 
 will automatically become:
 
 ```
-registry.mycompany.com/mirror/testcontainers/helloworld:1.2.0
+registry.mycompany.com/mirror/testcontainers/helloworld:1.3.0
 ```
 
 ## Enable logging

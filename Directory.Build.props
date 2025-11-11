@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>4.7.0</Version>
+    <Version>4.9.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
@@ -26,7 +26,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <NoWarn>CS0618,CS1591,SA0001,SA1600,SA1633,SA1649,CA1859,CA1861</NoWarn>
+    <NoWarn>CA1859,CA1861,CS0618,CS1591,xUnit1044,xUnit1045</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

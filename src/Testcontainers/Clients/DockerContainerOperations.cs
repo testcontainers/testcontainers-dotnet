@@ -112,7 +112,13 @@ namespace DotNet.Testcontainers.Clients
     public Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default)
     {
       Logger.CopyArchiveToDockerContainer(id, tarStream.ContentLength);
-      return DockerClient.Containers.ExtractArchiveToContainerAsync(id, new ContainerPathStatParameters { Path = path }, tarStream, ct);
+
+      var copyToContainerParameters = new CopyToContainerParameters
+      {
+        Path = path,
+      };
+
+      return DockerClient.Containers.ExtractArchiveToContainerAsync(id, copyToContainerParameters, tarStream, ct);
     }
 
     public async Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default)

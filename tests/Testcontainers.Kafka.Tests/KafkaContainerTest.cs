@@ -1,8 +1,13 @@
 namespace Testcontainers.Kafka;
 
-public sealed class KafkaContainerTest : IAsyncLifetime
+public abstract class KafkaContainerTest : IAsyncLifetime
 {
-    private readonly KafkaContainer _kafkaContainer = new KafkaBuilder().Build();
+    private readonly KafkaContainer _kafkaContainer;
+
+    private KafkaContainerTest(KafkaContainer kafkaContainer)
+    {
+        _kafkaContainer = kafkaContainer;
+    }
 
     public async ValueTask InitializeAsync()
     {
@@ -10,9 +15,12 @@ public sealed class KafkaContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _kafkaContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -48,5 +56,63 @@ public sealed class KafkaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _kafkaContainer.DisposeAsync();
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaDefaultConfiguration : KafkaContainerTest
+    {
+        public KafkaDefaultConfiguration()
+            : base(new KafkaBuilder().Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaKRaftConfiguration : KafkaContainerTest
+    {
+        public KafkaKRaftConfiguration()
+            : base(new KafkaBuilder()
+                .WithKRaft()
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaZooKeeperConfiguration : KafkaContainerTest
+    {
+        public KafkaZooKeeperConfiguration()
+            : base(new KafkaBuilder()
+                .WithZooKeeper()
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ApacheKafkaConfiguration : KafkaContainerTest
+    {
+        public ApacheKafkaConfiguration()
+            : base(new KafkaBuilder()
+                .WithImage("apache/kafka:3.9.1")
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ApacheKafkaNativeConfiguration : KafkaContainerTest
+    {
+        public ApacheKafkaNativeConfiguration()
+            : base(new KafkaBuilder()
+                .WithImage("apache/kafka-native:3.9.1")
+                .Build())
+        {
+        }
     }
 }
