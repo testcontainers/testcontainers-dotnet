@@ -1,4 +1,4 @@
-#if NETSTANDARD
+#if NETSTANDARD || NETFRAMEWORK
 namespace DotNet.Testcontainers.Polyfills
 {
   using System;

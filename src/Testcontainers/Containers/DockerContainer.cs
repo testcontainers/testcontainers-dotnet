@@ -200,7 +200,7 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETFRAMEWORK
           return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), _container.State.Status, true);
 #else
           return Enum.Parse<TestcontainersStates>(_container.State.Status, true);
@@ -230,7 +230,7 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETFRAMEWORK
           return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), _container.State.Health.Status, true);
 #else
           return Enum.Parse<TestcontainersHealthStatus>(_container.State.Health.Status, true);
