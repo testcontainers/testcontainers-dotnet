@@ -68,11 +68,7 @@ namespace DotNet.Testcontainers.Clients
     /// <returns>Task that completes when the information has been logged.</returns>
     public async Task LogContainerRuntimeInfoAsync(CancellationToken ct = default)
     {
-#if NETFRAMEWORK
-      var hashCode = Polyfills.HashCode.Combine(DockerClient, Logger);
-#else
       var hashCode = HashCode.Combine(DockerClient, Logger);
-#endif
 
       await RuntimeInitialized.WaitAsync(ct)
         .ConfigureAwait(false);
