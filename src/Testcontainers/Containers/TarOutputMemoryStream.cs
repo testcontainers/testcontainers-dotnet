@@ -80,7 +80,7 @@ namespace DotNet.Testcontainers.Containers
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
 
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
       await WriteAsync(fileContent, 0, fileContent.Length, ct)
         .ConfigureAwait(false);
 #else

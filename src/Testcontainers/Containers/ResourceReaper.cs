@@ -328,7 +328,7 @@ namespace DotNet.Testcontainers.Containers
             {
               using (var messageBuffer = new MemoryStream())
               {
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
                 await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
                   .ConfigureAwait(false);
 #else
@@ -343,7 +343,7 @@ namespace DotNet.Testcontainers.Containers
 
                 do
                 {
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
                   var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
                     .ConfigureAwait(false);
 #else
@@ -370,7 +370,7 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
                       .ConfigureAwait(false);
 #else
@@ -382,7 +382,7 @@ namespace DotNet.Testcontainers.Containers
                   }
                   else
                   {
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
                       .ConfigureAwait(false);
 #else
@@ -403,7 +403,7 @@ namespace DotNet.Testcontainers.Containers
             while (!_maintainConnectionCts.IsCancellationRequested)
             {
               // Keep the connection to Ryuk up.
-#if NETSTANDARD2_0 || NETFRAMEWORK
+#if NETSTANDARD2_0
               _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #else
