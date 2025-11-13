@@ -57,6 +57,13 @@ namespace DotNet.Testcontainers.Configurations
       = new PropertiesFileConfiguration();
 
     /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      const string propertyName = "docker.api.version";
+      return GetDockerApiVersion(propertyName);
+    }
+
+    /// <inheritdoc />
     public string GetDockerConfig()
     {
       const string propertyName = "docker.config";

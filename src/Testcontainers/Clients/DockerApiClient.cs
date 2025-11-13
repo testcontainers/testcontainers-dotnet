@@ -134,7 +134,7 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
       {
-        return dockerClientConfiguration.CreateClient();
+        return dockerClientConfiguration.CreateClient(TestcontainersSettings.DockerApiVersion);
       }
     }
   }

@@ -58,6 +58,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      return _customConfiguration.GetDockerApiVersion();
+    }
+
+    /// <inheritdoc />
     public string GetDockerConfig()
     {
       return _customConfiguration.GetDockerConfig();

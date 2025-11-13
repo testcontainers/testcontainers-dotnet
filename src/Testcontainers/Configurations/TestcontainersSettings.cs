@@ -43,6 +43,16 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
+    /// Gets or sets the Docker API version.
+    /// </summary>
+    /// <remarks>
+    /// https://github.com/moby/moby/releases/tag/docker-v29.0.0.
+    /// </remarks>
+    [CanBeNull]
+    public static Version DockerApiVersion { get; set; }
+      = EnvironmentConfiguration.Instance.GetDockerApiVersion() ?? PropertiesFileConfiguration.Instance.GetDockerApiVersion() ?? new Version(1, 44);
+
+    /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
     [CanBeNull]
