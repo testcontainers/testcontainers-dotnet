@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   {
     public DockerTlsFixture()
       : base(new ContainerBuilder()
-        .WithCommand("--tlsverify=false"), "20.10.18")
+        .WithCommand("--tlsverify=false"), "29.0.0")
     {
     }
 

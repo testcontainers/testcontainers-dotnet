@@ -10,6 +10,8 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   internal class EnvironmentConfiguration : CustomConfiguration, ICustomConfiguration
   {
+    private const string DockerApiVersion = "DOCKER_API_VERSION";
+
     private const string DockerConfig = "DOCKER_CONFIG";
 
     private const string DockerHost = "DOCKER_HOST";
@@ -54,11 +56,12 @@ namespace DotNet.Testcontainers.Configurations
     public EnvironmentConfiguration()
       : base(new[]
         {
-          DockerAuthConfig,
-          DockerCertPath,
+          DockerApiVersion,
           DockerConfig,
           DockerHost,
           DockerContext,
+          DockerAuthConfig,
+          DockerCertPath,
           DockerTls,
           DockerTlsVerify,
           DockerHostOverride,
@@ -81,6 +84,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public static ICustomConfiguration Instance { get; }
       = new EnvironmentConfiguration();
+
+    /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      return GetDockerApiVersion(DockerApiVersion);
+    }
 
     /// <inheritdoc />
     public string GetDockerConfig()

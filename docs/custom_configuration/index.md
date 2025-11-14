@@ -4,6 +4,7 @@ Testcontainers supports various configurations to set up your test environment. 
 
 | Properties File                 | Environment Variable                           | Description                                                                                                               | Default                      |
 |---------------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------|
+| `docker.api.version`            | `DOCKER_API_VERSION`                           | The Docker API version to use.                                                                                            | `1.44`                       |
 | `docker.config`                 | `DOCKER_CONFIG`                                | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                 |
 | `docker.host`                   | `DOCKER_HOST`                                  | The Docker daemon socket to connect to.                                                                                   | -                            |
 | `docker.context`                | `DOCKER_CONTEXT`                               | The Docker context to connect to.                                                                                         | -                            |

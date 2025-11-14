@@ -15,6 +15,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       static EnvironmentConfigurationTest()
       {
+        EnvironmentVariables.Add("DOCKER_API_VERSION");
         EnvironmentVariables.Add("DOCKER_CONFIG");
         EnvironmentVariables.Add("DOCKER_HOST");
         EnvironmentVariables.Add("DOCKER_CONTEXT");
@@ -32,6 +33,18 @@ namespace DotNet.Testcontainers.Tests.Unit
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_INTERVAL");
         EnvironmentVariables.Add("TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT");
         EnvironmentVariables.Add("TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT");
+      }
+
+      [Theory]
+      [InlineData("", "", null)]
+      [InlineData("DOCKER_API_VERSION", "", null)]
+      [InlineData("DOCKER_API_VERSION", "version", null)]
+      [InlineData("DOCKER_API_VERSION", "1.52", "1.52")]
+      public void GetDockerApiVersionCustomConfiguration(string propertyName, string propertyValue, string expected)
+      {
+        SetEnvironmentVariable(propertyName, propertyValue);
+        ICustomConfiguration customConfiguration = new EnvironmentConfiguration();
+        Assert.Equal(expected, customConfiguration.GetDockerApiVersion()?.ToString());
       }
 
       [Theory]
@@ -259,6 +272,17 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public sealed class PropertiesFileConfigurationTest
     {
+      [Theory]
+      [InlineData("", null)]
+      [InlineData("docker.api.version=", null)]
+      [InlineData("docker.api.version=version", null)]
+      [InlineData("docker.api.version=1.52", "1.52")]
+      public void GetDockerApiVersionCustomConfiguration(string configuration, string expected)
+      {
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { configuration });
+        Assert.Equal(expected, customConfiguration.GetDockerApiVersion()?.ToString());
+      }
+
       [Theory]
       [InlineData("", null)]
       [InlineData("docker.config=", null)]
