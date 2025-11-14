@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   [UsedImplicitly]
   public sealed class OpenSsl3_1Fixture : DockerMTls
   {
-    public OpenSsl3_1Fixture() : base("24.0.5")
+    public OpenSsl3_1Fixture() : base("29.0.0")
     {
     }
   }
