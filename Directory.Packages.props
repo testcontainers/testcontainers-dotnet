@@ -54,7 +54,7 @@
         <PackageVersion Include="CouchbaseNetClient" Version="3.7.2"/>
         <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3"/>
-        <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="22.0.0"/>
+        <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="23.3.9"/>
         <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"/>
         <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.4.0"/>
         <PackageVersion Include="Google.Cloud.Bigtable.Admin.V2" Version="3.7.0"/>
