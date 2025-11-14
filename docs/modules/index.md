@@ -20,7 +20,7 @@ await moduleNameContainer.StartAsync();
     We will add module-specific documentations soon.
 
 | Module            | Image                                                               | NuGet                                                                | Source                                                                                                          |
-|-------------------|---------------------------------------------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| ----------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | ActiveMQ Artemis  | `apache/activemq-artemis:2.31.2`                                    | [NuGet](https://www.nuget.org/packages/Testcontainers.ActiveMq)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.ActiveMq)      |
 | ArangoDB          | `arangodb:3.11.5`                                                   | [NuGet](https://www.nuget.org/packages/Testcontainers.ArangoDb)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.ArangoDb)      |
 | Azure Cosmos DB   | `mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest`     | [NuGet](https://www.nuget.org/packages/Testcontainers.CosmosDb)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.CosmosDb)      |
@@ -77,6 +77,7 @@ await moduleNameContainer.StartAsync();
 | Typesense         | `typesense/typesense:28.0`                                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Typesense)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Typesense)     |
 | Weaviate          | `semitechnologies/weaviate:1.26.14`                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.Weaviate)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Weaviate)      |
 | WebDriver         | `selenium/standalone-chrome:110.0`                                  | [NuGet](https://www.nuget.org/packages/Testcontainers.WebDriver)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.WebDriver)     |
+| SpiceDB           | `authzed/spicedb:v1.45.1`                                           | [NuGet](https://www.nuget.org/packages/Testcontainers.SpiceDB)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.SpiceDB)       |
 | WireMock          | -                                                                   | [NuGet](https://www.nuget.org/packages/WireMock.Net.Testcontainers)  | [Source](https://github.com/wiremock/WireMock.Net)                                                              |
 
 ## Implement a module

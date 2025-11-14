@@ -2,6 +2,11 @@ name: Continuous Integration & Delivery
 
 on:
   push:
+    branches: [develop, main, bugfix/*, feature/*]
+    paths-ignore: ["docs/**", "examples/**"]
+  pull_request:
+    branches: [develop, main]
+    paths-ignore: ["docs/**", "examples/**"]
     branches: [ develop, main, bugfix/*, feature/* ]
   pull_request:
     branches: [ develop, main ]

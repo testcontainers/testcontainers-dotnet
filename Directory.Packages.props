@@ -5,6 +5,9 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="BouncyCastle.Cryptography" Version="2.6.1"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.128.3"/>
+        <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.128.3"/>
+        <PackageVersion Include="Grpc.Core" Version="2.46.6" />
         <PackageVersion Include="Docker.DotNet.Enhanced.X509" Version="3.129.0"/>
         <PackageVersion Include="Docker.DotNet.Enhanced" Version="3.129.0"/>
         <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0"/>
@@ -61,6 +64,8 @@
         <PackageVersion Include="Google.Cloud.Firestore" Version="3.1.0"/>
         <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.5.0"/>
         <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.6.0"/>
+        <PackageVersion Include="Grpc.HealthCheck" Version="2.60.0"/>
+        <PackageVersion Include="Grpc.Net.Client" Version="2.60.0"/>
         <PackageVersion Include="InfluxDB.Client" Version="4.18.0"/>
         <PackageVersion Include="JanusGraph.Net" Version="1.0.0"/>
         <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
