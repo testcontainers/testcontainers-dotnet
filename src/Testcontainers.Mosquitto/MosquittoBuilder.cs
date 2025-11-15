@@ -60,6 +60,8 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     {
         Validate();
 
+        const string allowAnonymous = "allow_anonymous true";
+
         // Maybe we should move this into the startup callback.
         var mosquittoConfig = new StringWriter();
         mosquittoConfig.NewLine = "\n";
@@ -76,13 +78,13 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
         mosquittoConfig.WriteLine("# MQTT, unencrypted, unauthenticated");
         mosquittoConfig.WriteLine($"listener {MqttPort} 0.0.0.0");
         mosquittoConfig.WriteLine("protocol mqtt");
-        mosquittoConfig.WriteLine("allow_anonymous true");
+        mosquittoConfig.WriteLine(allowAnonymous);
 
         mosquittoConfig.WriteLine();
         mosquittoConfig.WriteLine("# MQTT over WebSockets, unencrypted, unauthenticated");
         mosquittoConfig.WriteLine($"listener {MqttWsPort} 0.0.0.0");
         mosquittoConfig.WriteLine("protocol websockets");
-        mosquittoConfig.WriteLine("allow_anonymous true");
+        mosquittoConfig.WriteLine(allowAnonymous);
 
         if (DockerResourceConfiguration.TlsEnabled)
         {
@@ -90,7 +92,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
             mosquittoConfig.WriteLine("# MQTT, encrypted, unauthenticated");
             mosquittoConfig.WriteLine($"listener {MqttTlsPort} 0.0.0.0");
             mosquittoConfig.WriteLine("protocol mqtt");
-            mosquittoConfig.WriteLine("allow_anonymous true");
+            mosquittoConfig.WriteLine(allowAnonymous);
             mosquittoConfig.WriteLine("tls_version tlsv1.2");
             mosquittoConfig.WriteLine($"certfile {CertificateFilePath}");
             mosquittoConfig.WriteLine($"keyfile {CertificateKeyFilePath}");
@@ -99,7 +101,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
             mosquittoConfig.WriteLine("# MQTT over WebSockets, encrypted, unauthenticated");
             mosquittoConfig.WriteLine($"listener {MqttWssPort} 0.0.0.0");
             mosquittoConfig.WriteLine("protocol websockets");
-            mosquittoConfig.WriteLine("allow_anonymous true");
+            mosquittoConfig.WriteLine(allowAnonymous);
             mosquittoConfig.WriteLine("tls_version tlsv1.2");
             mosquittoConfig.WriteLine($"certfile {CertificateFilePath}");
             mosquittoConfig.WriteLine($"keyfile {CertificateKeyFilePath}");
