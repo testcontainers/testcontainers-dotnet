@@ -117,6 +117,7 @@ namespace DotNet.Testcontainers.Clients
           runtimeInfo.AppendLine("  Labels: ");
           runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
+
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
       catch (Exception e)
