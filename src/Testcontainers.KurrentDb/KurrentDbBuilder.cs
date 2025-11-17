@@ -4,7 +4,7 @@ namespace Testcontainers.KurrentDb;
 [PublicAPI]
 public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, KurrentDbContainer, KurrentDbConfiguration>
 {
-    public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.0";
+    public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.1";
 
     public const ushort KurrentDbPort = 2113;
 
