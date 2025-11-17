@@ -71,7 +71,7 @@
     <Project Path="src/Testcontainers.Xunit/Testcontainers.Xunit.csproj" />
     <Project Path="src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj" />
     <Project Path="src/Testcontainers/Testcontainers.csproj" />
-    <Project Path="src\Testcontainers.KurrentDb\Testcontainers.KurrentDb.csproj" Type="Classic C#" />
+    <Project Path="src/Testcontainers.KurrentDb/Testcontainers.KurrentDb.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Testcontainers.ActiveMq.Tests/Testcontainers.ActiveMq.Tests.csproj" />
@@ -143,6 +143,6 @@
     <Project Path="tests/Testcontainers.WebDriver.Tests/Testcontainers.WebDriver.Tests.csproj" />
     <Project Path="tests/Testcontainers.Xunit.Tests/Testcontainers.Xunit.Tests.csproj" />
     <Project Path="tests/Testcontainers.XunitV3.Tests/Testcontainers.XunitV3.Tests.csproj" />
-    <Project Path="tests\Testcontainers.KurrentDb.Tests\Testcontainers.KurrentDb.Tests.csproj" Type="Classic C#" />
+    <Project Path="tests/Testcontainers.KurrentDb.Tests/Testcontainers.KurrentDb.Tests.csproj" />
   </Folder>
 </Solution>
