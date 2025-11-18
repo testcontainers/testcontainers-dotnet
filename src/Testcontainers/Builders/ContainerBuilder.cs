@@ -3,13 +3,15 @@ namespace DotNet.Testcontainers.Builders
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
+  using System;
 
   /// <summary>
   /// A fluent Docker container builder.
   /// </summary>
   /// <remarks>
-  /// The container builder configuration requires at least the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> configuration.
+  /// The container builder configuration requires image tag to be provided. Either invoke the constructor with image tag as a parameter or call the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> method after.
   /// </remarks>
   /// <example>
   ///   The default configuration is equivalent to:
@@ -31,10 +33,31 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
+    [Obsolete("Prefer constructor with image as a parameter instead.")]
     public ContainerBuilder()
       : this(new ContainerConfiguration())
     {
       DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public ContainerBuilder(string image)
+      : this(new ContainerConfiguration())
+    {
+      DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ContainerBuilder(IImage image)
+      : this(new ContainerConfiguration())
+    {
+      DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

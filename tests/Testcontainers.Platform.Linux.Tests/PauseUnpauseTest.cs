@@ -2,8 +2,7 @@ namespace Testcontainers.Tests;
 
 public sealed class PauseUnpauseTest : IAsyncLifetime
 {
-    private readonly IContainer _container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+    private readonly IContainer _container = new ContainerBuilder(CommonImages.Alpine)
         .WithCommand(CommonCommands.SleepInfinity)
         .Build();
 

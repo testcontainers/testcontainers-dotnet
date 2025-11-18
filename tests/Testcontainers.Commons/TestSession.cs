@@ -9,4 +9,19 @@ public static class TestSession
     {
         Directory.CreateDirectory(TempDirectoryPath);
     }
+
+    public static IImage GetImageFromDockerfile(
+        string path = "Dockerfile",
+        int lineIndex = 0)
+    {
+        var fullpath = Path.GetFullPath(path);
+        var lines = File.ReadAllLines(fullpath);
+        if (lines.Length == 0 || lines.Length <= lineIndex) throw new Exception($"Dockerfile located at '{fullpath}' is empty or shorter than {lineIndex + 1} line(s).");
+        var imageLine = lines[lineIndex];
+        var imageLineSplit = imageLine.Split(" ");
+        if (imageLineSplit.Length < 2) throw new Exception($"Dockerfile has invalid image at line {lineIndex + 1}. The line should start with 'FROM' instruction, followed by space and image tag. For example: 'FROM postgres:17'.");
+        var imageTag = imageLineSplit[1];
+        var image = new DockerImage(imageTag);
+        return image;
+    }
 }

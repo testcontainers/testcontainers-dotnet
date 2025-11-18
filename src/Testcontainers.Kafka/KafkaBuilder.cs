@@ -27,10 +27,31 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
+    [Obsolete("Prefer constructor with image as a parameter instead.")]
     public KafkaBuilder()
         : this(new KafkaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(KafkaImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public KafkaBuilder(string image)
+        : this(new KafkaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KafkaBuilder(IImage image)
+        : this(new KafkaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

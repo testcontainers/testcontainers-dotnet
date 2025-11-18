@@ -22,10 +22,31 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
+    [Obsolete("Prefer constructor with image as a parameter instead.")]
     public WebDriverBuilder()
         : this(new WebDriverConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(FFmpegImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public WebDriverBuilder(string image)
+        : this(new WebDriverConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public WebDriverBuilder(IImage image)
+        : this(new WebDriverConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -73,8 +94,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
     public WebDriverBuilder WithRecording()
     {
-        var ffmpegContainer = new ContainerBuilder()
-            .WithImage(FFmpegImage)
+        var ffmpegContainer = new ContainerBuilder(FFmpegImage)
             .WithNetwork(DockerResourceConfiguration.Networks.Single())
             .WithNetworkAliases(FFmpegNetworkAlias)
             .WithEnvironment("FILE_NAME", Path.GetFileName(VideoFilePath))
