@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.ClickHouse;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -19,10 +21,31 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public ClickHouseBuilder()
         : this(new ClickHouseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(ClickHouseImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/clickhouse/tags">https://hub.docker.com/_/clickhouse/tags</see>.</param>
+    public ClickHouseBuilder(string image)
+        : this(new ClickHouseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ClickHouseBuilder(IImage image)
+        : this(new ClickHouseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

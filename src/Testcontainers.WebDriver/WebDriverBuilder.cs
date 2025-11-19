@@ -22,11 +22,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
-    [Obsolete("Prefer constructor with image as a parameter instead.")]
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public WebDriverBuilder()
         : this(new WebDriverConfiguration())
     {
-        DockerResourceConfiguration = Init().WithImage(FFmpegImage).DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(WebDriverBrowser.Chrome.Image).DockerResourceConfiguration;
     }
 
     /// <summary>

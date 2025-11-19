@@ -27,7 +27,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
-    [Obsolete("Prefer constructor with image as a parameter instead.")]
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public KafkaBuilder()
         : this(new KafkaConfiguration())
     {

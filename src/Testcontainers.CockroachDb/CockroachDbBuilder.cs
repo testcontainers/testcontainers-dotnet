@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.CockroachDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -19,10 +21,31 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public CockroachDbBuilder()
         : this(new CockroachDbConfiguration())
     {
         DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags">https://hub.docker.com/r/cockroachdb/cockroach/tags</see>.</param>
+    public CockroachDbBuilder(string image)
+        : this(new CockroachDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CockroachDbBuilder(IImage image)
+        : this(new CockroachDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

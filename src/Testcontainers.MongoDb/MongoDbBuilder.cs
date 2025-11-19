@@ -21,7 +21,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
-    [Obsolete("Prefer constructor with image as a parameter instead.")]
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public MongoDbBuilder()
         : this(new MongoDbConfiguration())
     {
