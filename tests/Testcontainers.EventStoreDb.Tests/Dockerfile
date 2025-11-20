@@ -1,0 +1,1 @@
+﻿FROM eventstore/eventstore:lts

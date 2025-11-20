@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.Db2;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,10 +19,31 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public Db2Builder()
         : this(new Db2Configuration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(Db2Image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public Db2Builder(string image)
+        : this(new Db2Configuration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public Db2Builder(IImage image)
+        : this(new Db2Configuration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

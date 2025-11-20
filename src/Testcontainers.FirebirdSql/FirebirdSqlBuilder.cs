@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.FirebirdSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -21,10 +23,31 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public FirebirdSqlBuilder()
         : this(new FirebirdSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(FirebirdSqlImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/firebirdsql/firebird/tags">https://hub.docker.com/r/firebirdsql/firebird/tags</see>.</param>
+    public FirebirdSqlBuilder(string image)
+        : this(new FirebirdSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public FirebirdSqlBuilder(IImage image)
+        : this(new FirebirdSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

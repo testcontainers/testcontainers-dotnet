@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -11,10 +13,31 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public EventStoreDbBuilder()
         : this(new EventStoreDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(EventStoreDbImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/eventstore/eventstore/tags">https://hub.docker.com/r/eventstore/eventstore/tags</see>.</param>
+    public EventStoreDbBuilder(string image)
+        : this(new EventStoreDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public EventStoreDbBuilder(IImage image)
+        : this(new EventStoreDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

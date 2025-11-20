@@ -25,7 +25,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/consul/tags">https://hub.docker.com/_/consul/tags</see>.</param>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/hashicorp/consul/tags">https://hub.docker.com/r/hashicorp/consul/tags</see>.</param>
     public ConsulBuilder(string image)
         : this(new ConsulConfiguration())
     {
