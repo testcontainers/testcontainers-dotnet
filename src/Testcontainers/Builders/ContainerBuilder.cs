@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Builders
   /// A fluent Docker container builder.
   /// </summary>
   /// <remarks>
-  /// The container builder configuration requires image tag to be provided. Either invoke the constructor with image tag as a parameter or call the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> method after.
+  /// The container builder configuration requires image tag to be provided. Either invoke the constructor with image tag as a parameter (recommended) or call the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> method after creating instance of <see cref="ContainerBuilder"/>.
   /// </remarks>
   /// <example>
   ///   The default configuration is equivalent to:
@@ -19,8 +19,9 @@ namespace DotNet.Testcontainers.Builders
   ///   _ = new ContainerBuilder()
   ///     .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
   ///     .WithLabel(DefaultLabels.Instance)
-  ///     .WithCleanUp(true)
+  ///     .WithLogger(ConsoleLogger.Instance)
   ///     .WithImagePullPolicy(PullPolicy.Missing)
+  ///     .WithPortForwarding()
   ///     .WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr())
   ///     .WithWaitStrategy(Wait.ForUnixContainer())
   ///     .WithStartupCallback((_, ct) => Task.CompletedTask)

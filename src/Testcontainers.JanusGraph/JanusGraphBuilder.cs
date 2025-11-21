@@ -1,3 +1,6 @@
+using DotNet.Testcontainers.Images;
+using System;
+
 namespace Testcontainers.JanusGraph;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -11,10 +14,31 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// <summary>
     /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public JanusGraphBuilder()
         : this(new JanusGraphConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(JanusGraphImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags">https://hub.docker.com/r/janusgraph/janusgraph/tags</see>.</param>
+    public JanusGraphBuilder(string image)
+        : this(new JanusGraphConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public JanusGraphBuilder(IImage image)
+        : this(new JanusGraphConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

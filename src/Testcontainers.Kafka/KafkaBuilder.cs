@@ -37,7 +37,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags">https://hub.docker.com/r/confluentinc/cp-kafka/tags</see>.</param>
     public KafkaBuilder(string image)
         : this(new KafkaConfiguration())
     {

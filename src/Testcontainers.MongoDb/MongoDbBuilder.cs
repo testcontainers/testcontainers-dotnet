@@ -31,7 +31,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mongo/tags">https://hub.docker.com/_/mongo/tags</see>.</param>
     public MongoDbBuilder(string image)
         : this(new MongoDbConfiguration())
     {
