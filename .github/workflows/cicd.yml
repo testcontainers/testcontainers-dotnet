@@ -2,9 +2,9 @@ name: Continuous Integration & Delivery
 
 on:
   push:
-    branches: [develop, main, bugfix/*, feature/*]
+    branches: [ develop, main, bugfix/*, feature/* ]
   pull_request:
-    branches: [develop, main]
+    branches: [ develop, main ]
   workflow_dispatch:
     inputs:
       publish_nuget_package:
