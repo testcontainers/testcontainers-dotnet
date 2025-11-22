@@ -1,5 +1,3 @@
-using KurrentDB.Client;
-
 namespace Testcontainers.KurrentDb;
 
 public sealed class KurrentDbContainerTest : IAsyncLifetime
@@ -33,7 +31,7 @@ public sealed class KurrentDbContainerTest : IAsyncLifetime
         var eventData = new EventData(Uuid.NewUuid(), eventType, Array.Empty<byte>());
 
         // When
-        _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, [eventData], cancellationToken: TestContext.Current.CancellationToken)
+        _ = await client.AppendToStreamAsync(streamName, StreamState.NoStream, new[] { eventData }, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         var resolvedEvents = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start, cancellationToken: TestContext.Current.CancellationToken);

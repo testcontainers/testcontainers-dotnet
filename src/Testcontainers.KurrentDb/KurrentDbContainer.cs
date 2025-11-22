@@ -19,11 +19,8 @@ public sealed class KurrentDbContainer : DockerContainer
     /// <returns>The KurrentDb connection string.</returns>
     public string GetConnectionString()
     {
-        var endpoint =
-            new UriBuilder("kurrentdb", Hostname, GetMappedPublicPort(KurrentDbBuilder.KurrentDbPort))
-            {
-                Query = "tls=false",
-            };
+        var endpoint = new UriBuilder("kurrentdb", Hostname, GetMappedPublicPort(KurrentDbBuilder.KurrentDbPort));
+        endpoint.Query = "tls=false";
         return endpoint.ToString();
     }
 }
