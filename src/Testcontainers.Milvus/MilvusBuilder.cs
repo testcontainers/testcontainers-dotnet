@@ -59,6 +59,9 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <inheritdoc />
     protected override MilvusBuilder Init()
     {
+        // Imitate what is done in the official script
+        // https://github.com/milvus-io/milvus/blob/2134f83aa34bfbcc3750d69c4874adca5dd85d62/scripts/standalone_embed.sh#L43
+
         return base.Init()
             .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
@@ -71,8 +74,18 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(MilvusManagementPort).ForPath("/healthz")));
+            .WithCreateParameterModifier(p =>
+            {
+                p.Healthcheck = new HealthcheckConfig
+                {
+                    Test = ["CMD-SHELL", $"curl -f http://localhost:{MilvusManagementPort}/healthz"],
+                    Interval = TimeSpan.FromSeconds(30),
+                    StartPeriod = 90 * 1_000_000_000L, // 90s
+                    Timeout = TimeSpan.FromSeconds(20),
+                    Retries = 3,
+                };
+            })
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 
     /// <inheritdoc />
