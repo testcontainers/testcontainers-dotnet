@@ -59,9 +59,6 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <inheritdoc />
     protected override MilvusBuilder Init()
     {
-        // Imitate what is done in the official script
-        // https://github.com/milvus-io/milvus/blob/2134f83aa34bfbcc3750d69c4874adca5dd85d62/scripts/standalone_embed.sh#L43
-
         return base.Init()
             .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
@@ -74,18 +71,10 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
-            .WithCreateParameterModifier(p =>
-            {
-                p.Healthcheck = new HealthcheckConfig
-                {
-                    Test = ["CMD-SHELL", $"curl -f http://localhost:{MilvusManagementPort}/healthz"],
-                    Interval = TimeSpan.FromSeconds(30),
-                    StartPeriod = 90 * 1_000_000_000L, // 90s
-                    Timeout = TimeSpan.FromSeconds(20),
-                    Retries = 3,
-                };
-            })
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(MilvusManagementPort).ForPath("/healthz")))
+            .WithCreateParameterModifier(parameterModifier =>
+                parameterModifier.Healthcheck = Healthcheck.Instance);
     }
 
     /// <inheritdoc />
@@ -104,5 +93,28 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Merge(MilvusConfiguration oldValue, MilvusConfiguration newValue)
     {
         return new MilvusBuilder(new MilvusConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// This setup mirrors the behavior of Milvus's official configuration:
+    /// https://github.com/milvus-io/milvus/blob/4def0255a928287f982f1d6b8c53ed32127bb84d/scripts/standalone_embed.sh#L56-L60
+    /// </summary>
+    private sealed class Healthcheck : HealthcheckConfig
+    {
+        private Healthcheck()
+        {
+            const long ninetySeconds = 90 * 1_000_000_000L;
+            Test = ["CMD-SHELL", $"curl -f http://localhost:{MilvusManagementPort}/healthz"];
+            Interval = TimeSpan.FromSeconds(30);
+            Timeout = TimeSpan.FromSeconds(20);
+            StartPeriod = ninetySeconds;
+            Retries = 3;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="HealthcheckConfig" /> instance.
+        /// </summary>
+        public static HealthcheckConfig Instance { get; }
+            = new Healthcheck();
     }
 }
