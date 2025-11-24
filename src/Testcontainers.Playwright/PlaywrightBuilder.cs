@@ -13,10 +13,31 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public PlaywrightBuilder()
         : this(new PlaywrightConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(PlaywrightImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags">https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags</see>.</param>
+    public PlaywrightBuilder(string image)
+        : this(new PlaywrightConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PlaywrightBuilder(IImage image)
+        : this(new PlaywrightConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
