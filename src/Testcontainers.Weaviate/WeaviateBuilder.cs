@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.Weaviate;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -13,8 +15,29 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public WeaviateBuilder() : this(new WeaviateConfiguration())
-        => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        => DockerResourceConfiguration = Init().WithImage(WeaviateImage).DockerResourceConfiguration;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags">https://hub.docker.com/r/semitechnologies/weaviate/tags</see>.</param>
+    public WeaviateBuilder(string image)
+        : this(new WeaviateConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public WeaviateBuilder(IImage image)
+        : this(new WeaviateConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
