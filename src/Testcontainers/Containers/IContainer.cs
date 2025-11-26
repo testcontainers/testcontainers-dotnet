@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Containers
   /// A container instance.
   /// </summary>
   [PublicAPI]
-  public interface IContainer : IAsyncDisposable
+  public interface IContainer : IConnectionStringProvider, IAsyncDisposable
   {
     /// <summary>
     /// Subscribes to the creating event.

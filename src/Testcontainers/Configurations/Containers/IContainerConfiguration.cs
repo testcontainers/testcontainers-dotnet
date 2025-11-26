@@ -125,5 +125,10 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the startup callback.
     /// </summary>
     Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
+
+    /// <summary>
+    /// Gets the connection string provider.
+    /// </summary>
+    IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
   }
 }

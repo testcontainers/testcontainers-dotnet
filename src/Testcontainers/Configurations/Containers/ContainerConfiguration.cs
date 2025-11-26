@@ -62,6 +62,7 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer = null,
       IEnumerable<WaitStrategy> waitStrategies = null,
       Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
+      IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -87,6 +88,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
+      ConnectionStringProvider = connectionStringProvider;
     }
 
     /// <summary>
@@ -135,6 +137,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
       WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
+      ConnectionStringProvider = BuildConfiguration.Combine(oldValue.ConnectionStringProvider, newValue.ConnectionStringProvider);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
@@ -217,5 +220,9 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     [JsonIgnore]
     public Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
   }
 }
