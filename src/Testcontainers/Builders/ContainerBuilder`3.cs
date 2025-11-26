@@ -397,6 +397,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider)
+    {
+      return Clone(new ContainerConfiguration(connectionStringProvider: new ConnectionStringProvider<TContainerEntity, TConfigurationEntity>(connectionStringProvider)));
+    }
+
+    /// <inheritdoc />
     protected override TBuilderEntity Init()
     {
       return base.Init().WithImagePullPolicy(PullPolicy.Missing).WithPortForwarding().WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr()).WithWaitStrategy(Wait.ForUnixContainer()).WithStartupCallback((_, _, _) => Task.CompletedTask);

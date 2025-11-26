@@ -179,7 +179,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Configures the Couchbase node.
     /// </summary>
-    /// <param name="container">The container.</param>
+    /// <param name="container">The Couchbase container.</param>
     /// <param name="ct">Cancellation token.</param>
     private async Task ConfigureCouchbaseAsync(IContainer container, CancellationToken ct = default)
     {
