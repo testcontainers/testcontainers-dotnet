@@ -22,7 +22,8 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_USE_POLLING_FILE_WATCHER: true
   NUGET_XMLDOC_MODE: skip
-  TZ: CET # https://stackoverflow.com/q/53510011
+  # https://stackoverflow.com/q/53510011.
+  TZ: CET
 
 jobs:
   collect-test-projects:
@@ -59,6 +60,10 @@ jobs:
         test-projects: ${{ fromJSON(needs.collect-test-projects.outputs.test-projects) }}
 
     runs-on: ${{ matrix.test-projects.runs-on }}
+
+    env:
+      # Lowest API version that GitHub runners support.
+      DOCKER_API_VERSION: 1.47
 
     steps:
       - name: Checkout Repository
@@ -170,7 +175,7 @@ jobs:
         run: ./build.sh --target=Publish
         shell: bash
 
-      # Cake sets the semVer environment variable
+      # Cake sets the semVer environment variable.
       - uses: release-drafter/release-drafter@v6
         with:
           version: ${{ env.semVer }}

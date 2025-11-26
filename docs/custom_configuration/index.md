@@ -16,7 +16,7 @@ Testcontainers supports various configurations to set up your test environment. 
 | `docker.socket.override`        | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`        | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`       |
 | `ryuk.disabled`                 | `TESTCONTAINERS_RYUK_DISABLED`                 | Disables Ryuk (resource reaper).                                                                                          | `false`                      |
 | `ryuk.container.privileged`     | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED`     | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `true`                       |
-| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.12.0` |
+| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.14.0` |
 | `hub.image.name.prefix`         | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`         | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                            |
 | `wait.strategy.retries`         | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`         | The wait strategy retry count.                                                                                            | `infinite`                   |
 | `wait.strategy.interval`        | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`        | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                   |
@@ -107,7 +107,7 @@ In .NET logging usually goes through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:00.47] Searching Docker registry credential in CredsStore
     [testcontainers.org 00:00:00.47] Searching Docker registry credential in Auths
     [testcontainers.org 00:00:00.51] Docker registry credential https://index.docker.io/v1/ found
-    [testcontainers.org 00:00:03.16] Docker image testcontainers/ryuk:0.3.4 created
+    [testcontainers.org 00:00:03.16] Docker image testcontainers/ryuk:0.14.0 created
     [testcontainers.org 00:00:03.24] Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e created
     [testcontainers.org 00:00:03.29] Start Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e
     [testcontainers.org 00:00:06.18] Docker image alpine:latest created
