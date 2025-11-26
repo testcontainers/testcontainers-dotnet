@@ -423,7 +423,7 @@ namespace DotNet.Testcontainers.Containers
     {
       if (_connectionStringProvider == null)
       {
-        throw new InvalidOperationException("No connection string provider is configured for this container.");
+        throw new ConnectionStringProviderNotConfiguredException();
       }
 
       return _connectionStringProvider.GetConnectionString(connectionMode);
@@ -434,7 +434,7 @@ namespace DotNet.Testcontainers.Containers
     {
       if (_connectionStringProvider == null)
       {
-        throw new InvalidOperationException("No connection string provider is configured for this container.");
+        throw new ConnectionStringProviderNotConfiguredException();
       }
 
       return _connectionStringProvider.GetConnectionString(name, connectionMode);

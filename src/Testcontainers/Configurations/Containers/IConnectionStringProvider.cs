@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Configurations
 {
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -13,6 +14,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="connectionMode">The connection mode.</param>
     /// <returns>The connection string.</returns>
+    /// <exception cref="ConnectionStringProviderNotConfiguredException">Thrown when the connection string provider is not configured.</exception>
     [NotNull]
     string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host);
 
@@ -22,6 +24,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="name">The connection string name.</param>
     /// <param name="connectionMode">The connection mode.</param>
     /// <returns>The connection string.</returns>
+    /// <exception cref="ConnectionStringProviderNotConfiguredException">Thrown when the connection string provider is not configured.</exception>
     [NotNull]
     string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host);
   }
