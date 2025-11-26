@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Configurations
     private readonly IConnectionStringProvider<TContainerEntity, TConfigurationEntity> _connectionStringProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
+    /// Initializes a new instance of the <see cref="ConnectionStringProvider{TContainerEntity, TConfigurationEntity}" /> class.
     /// </summary>
     /// <param name="connectionStringProvider">The connection string provider.</param>
     public ConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider)
