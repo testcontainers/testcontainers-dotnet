@@ -68,4 +68,27 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     /// Gets the Elasticsearch password.
     /// </summary>
     public string Password { get; }
+
+    /// <summary>
+    /// Checks if https connection to container is supported, based on configuration environment variables.
+    /// </summary>
+    public bool HttpsEnabled
+    {
+        get
+        {
+            var hasSecurityEnabled = Environments
+                .TryGetValue("xpack.security.enabled", out var securityEnabled);
+
+            var hasHttpSslEnabled = Environments
+                .TryGetValue("xpack.security.http.ssl.enabled", out var httpSslEnabled);
+
+            var httpsDisabled =
+                hasSecurityEnabled &&
+                hasHttpSslEnabled &&
+                "false".Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
+                "false".Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
+
+            return !httpsDisabled;
+        }
+    }
 }

@@ -65,7 +65,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc />
     protected override ElasticsearchBuilder Init()
     {
-        return base.Init()
+        var builder = base.Init()
             .WithImage(ElasticsearchImage)
             .WithPortBinding(ElasticsearchHttpsPort, true)
             .WithPortBinding(ElasticsearchTcpPort, true)
@@ -73,8 +73,9 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
             .WithEnvironment("ingest.geoip.downloader.enabled", "false")
-            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath);
+
+        return builder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(builder.DockerResourceConfiguration)));
     }
 
     /// <inheritdoc />
@@ -121,15 +122,36 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
+        private readonly ElasticsearchConfiguration _configuration;
+
+        public WaitUntil(ElasticsearchConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
-                .ConfigureAwait(false);
+            using var httpMessageHandler = new HttpClientHandler();
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
-            return Pattern.Any(stdout.Contains);
+            var creds = Convert.ToBase64String(Encoding.UTF8.GetBytes(_configuration.Username + ":" + _configuration.Password));
+
+            var httpWaitStrategy = new HttpWaitStrategy()
+                .UsingHttpMessageHandler(httpMessageHandler)
+                .UsingTls(_configuration.HttpsEnabled)
+                .ForPath("/_cluster/health")
+                .ForPort(ElasticsearchHttpsPort)
+                .ForStatusCode(HttpStatusCode.OK)
+                .WithHeader("Authorization", "Basic " + creds)
+                .ForResponseMessageMatching(async (m) =>
+                {
+                    var response = await m.Content.ReadAsStringAsync();
+                    return response.Contains("\"status\":\"yellow\"") || response.Contains("\"status\":\"green\"");
+                });
+
+            return await httpWaitStrategy.UntilAsync(container)
+                .ConfigureAwait(false);
         }
     }
 }
