@@ -1,4 +1,4 @@
-namespace Testcontainers.Elasticsearch;
+﻿namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -138,7 +138,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
         public async Task<bool> UntilAsync(IContainer container)
         {
             using var httpMessageHandler = new HttpClientHandler();
-            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true; // intentionally trusting the self‑signed test certificate
 
             var httpWaitStrategy = new HttpWaitStrategy()
                 .UsingHttpMessageHandler(httpMessageHandler)
@@ -147,12 +147,19 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
                 .ForPort(ElasticsearchHttpsPort)
                 .ForStatusCode(HttpStatusCode.OK)
                 .WithHeader("Authorization", "Basic " + _credentials)
-                .ForResponseMessageMatching(async (m) =>
+                .ForResponseMessageMatching(async m =>
                 {
-                    var content = await m.Content.ReadAsStringAsync();
-                    var response = JsonSerializer.Deserialize<ElasticHealthResponse>(content);
-                    return string.Equals(ElasticHealthResponse.YellowStatus, response.Status, StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(ElasticHealthResponse.GreenStatus, response.Status, StringComparison.OrdinalIgnoreCase);
+                    var content = await m.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    try
+                    {
+                        var response = JsonSerializer.Deserialize<ElasticHealthResponse>(content);
+                        return string.Equals(ElasticHealthResponse.YellowStatus, response.Status, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(ElasticHealthResponse.GreenStatus, response.Status, StringComparison.OrdinalIgnoreCase);
+                    }
+                    catch (JsonException)
+                    {
+                        return false;
+                    }
                 });
 
             return await httpWaitStrategy.UntilAsync(container)
@@ -165,7 +172,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             public const string GreenStatus = "green";
 
             [JsonPropertyName("status")]
-            public string Status { get; set; }
+            public string Status { get; set; } = "unknown";
         }
     }
 }
