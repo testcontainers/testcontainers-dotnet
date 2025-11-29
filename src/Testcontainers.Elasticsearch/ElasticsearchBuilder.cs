@@ -65,7 +65,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc />
     protected override ElasticsearchBuilder Init()
     {
-        var builder = base.Init()
+        return base.Init()
             .WithImage(ElasticsearchImage)
             .WithPortBinding(ElasticsearchHttpsPort, true)
             .WithPortBinding(ElasticsearchTcpPort, true)
@@ -73,9 +73,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
             .WithEnvironment("ingest.geoip.downloader.enabled", "false")
-            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath);
-
-        return builder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(builder.DockerResourceConfiguration)));
+            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
     /// <inheritdoc />
@@ -122,37 +121,31 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly ElasticsearchConfiguration _configuration;
-        private readonly string _credentials;
-
-        public WaitUntil(ElasticsearchConfiguration configuration)
-        {
-            _configuration = configuration;
-
-            var username = _configuration.Username ?? DefaultUsername;
-            var password = _configuration.Password ?? DefaultPassword;
-            _credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
-        }
-
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
+            if (container is not ElasticsearchContainer elasticContainer) return false;
+            var containerCredentials = elasticContainer.GetCredentials();
+            var username = containerCredentials.UserName ?? DefaultUsername;
+            var password = containerCredentials.Password ?? DefaultPassword;
+            var base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+
             using var httpMessageHandler = new HttpClientHandler();
             httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true; // intentionally trusting the self‑signed test certificate
 
             var httpWaitStrategy = new HttpWaitStrategy()
                 .UsingHttpMessageHandler(httpMessageHandler)
-                .UsingTls(_configuration.HttpsEnabled)
+                .UsingTls(elasticContainer.HttpsEnabled)
                 .ForPath("/_cluster/health")
                 .ForPort(ElasticsearchHttpsPort)
                 .ForStatusCode(HttpStatusCode.OK)
-                .WithHeader("Authorization", "Basic " + _credentials)
+                .WithHeader("Authorization", "Basic " + base64Credentials)
                 .ForResponseMessageMatching(async m =>
                 {
                     var content = await m.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
                     {
-                        var response = JsonSerializer.Deserialize<ElasticHealthResponse>(content);
+                        var response = JsonSerializer.Deserialize<ElasticHealthResponse>(content) ?? new ElasticHealthResponse();
                         return string.Equals(ElasticHealthResponse.YellowStatus, response.Status, StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(ElasticHealthResponse.GreenStatus, response.Status, StringComparison.OrdinalIgnoreCase);
                     }

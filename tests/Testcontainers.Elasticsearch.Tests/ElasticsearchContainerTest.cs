@@ -1,9 +1,14 @@
 namespace Testcontainers.Elasticsearch;
 
-public sealed class ElasticsearchContainerTest : IAsyncLifetime
+public abstract class ElasticsearchContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseElasticsearchContainer]
-    private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
+    private readonly ElasticsearchContainer _elasticsearchContainer;
+
+    protected ElasticsearchContainerTest(ElasticsearchContainer container)
+    {
+        _elasticsearchContainer = container;
+    }
 
     public async ValueTask InitializeAsync()
     {
@@ -33,4 +38,18 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
         Assert.True(response.IsValidResponse);
     }
     // # --8<-- [end:UseElasticsearchContainer]
+
+    public sealed class DefaultConfiguration : ElasticsearchContainerTest
+    {
+        public DefaultConfiguration() : base(new ElasticsearchBuilder().Build())
+        {
+        }
+    }
+
+    public sealed class CustomCredentialsConfiguration : ElasticsearchContainerTest
+    {
+        public CustomCredentialsConfiguration() : base(new ElasticsearchBuilder().WithPassword("CustomCredentialsConfiguration").Build())
+        {
+        }
+    }
 }

@@ -70,7 +70,7 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     public string Password { get; }
 
     /// <summary>
-    /// Checks if https connection to container is supported, based on configuration environment variables.
+    /// Returns <c>true</c> if https connection to container is enabled, based on configuration environment variables.
     /// </summary>
     public bool HttpsEnabled
     {

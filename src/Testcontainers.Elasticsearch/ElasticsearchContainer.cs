@@ -17,6 +17,17 @@ public sealed class ElasticsearchContainer : DockerContainer
     }
 
     /// <summary>
+    /// Returns <c>true</c> if https connection to container is enabled.
+    /// </summary>
+    public bool HttpsEnabled => _configuration.HttpsEnabled;
+
+    /// <summary>
+    /// Gets the Elasticsearch credentials.
+    /// </summary>
+    /// <returns>The Elasticsearch credentials.</returns>
+    public NetworkCredential GetCredentials() => new(_configuration.Username, _configuration.Password);
+
+    /// <summary>
     /// Gets the Elasticsearch connection string.
     /// </summary>
     /// <remarks>
