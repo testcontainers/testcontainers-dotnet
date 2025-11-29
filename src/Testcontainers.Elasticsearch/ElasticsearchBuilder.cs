@@ -1,4 +1,4 @@
-namespace Testcontainers.Elasticsearch;
+﻿namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
@@ -121,15 +121,51 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
-
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            var (stdout, _) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
-                .ConfigureAwait(false);
+            if (container is not ElasticsearchContainer elasticContainer) return false;
+            var containerCredentials = elasticContainer.GetCredentials();
+            var username = containerCredentials.UserName ?? DefaultUsername;
+            var password = containerCredentials.Password ?? DefaultPassword;
+            var base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
 
-            return Pattern.Any(stdout.Contains);
+            using var httpMessageHandler = new HttpClientHandler();
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true; // intentionally trusting the self‑signed test certificate
+
+            var httpWaitStrategy = new HttpWaitStrategy()
+                .UsingHttpMessageHandler(httpMessageHandler)
+                .UsingTls(elasticContainer.HttpsEnabled)
+                .ForPath("/_cluster/health")
+                .ForPort(ElasticsearchHttpsPort)
+                .ForStatusCode(HttpStatusCode.OK)
+                .WithHeader("Authorization", "Basic " + base64Credentials)
+                .ForResponseMessageMatching(async m =>
+                {
+                    var content = await m.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    try
+                    {
+                        var response = JsonSerializer.Deserialize<ElasticHealthResponse>(content) ?? new ElasticHealthResponse();
+                        return string.Equals(ElasticHealthResponse.YellowStatus, response.Status, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(ElasticHealthResponse.GreenStatus, response.Status, StringComparison.OrdinalIgnoreCase);
+                    }
+                    catch (JsonException)
+                    {
+                        return false;
+                    }
+                });
+
+            return await httpWaitStrategy.UntilAsync(container)
+                .ConfigureAwait(false);
+        }
+
+        private class ElasticHealthResponse
+        {
+            public const string YellowStatus = "yellow";
+            public const string GreenStatus = "green";
+
+            [JsonPropertyName("status")]
+            public string Status { get; set; } = "unknown";
         }
     }
 }
