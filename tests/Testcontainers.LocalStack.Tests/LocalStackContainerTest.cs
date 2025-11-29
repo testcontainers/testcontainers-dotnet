@@ -161,7 +161,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
         public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -170,7 +170,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).WithImage("localstack/localstack:1.4").Build())
         {
         }
     }

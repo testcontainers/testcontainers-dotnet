@@ -1,0 +1,1 @@
+﻿FROM localstack/localstack:4

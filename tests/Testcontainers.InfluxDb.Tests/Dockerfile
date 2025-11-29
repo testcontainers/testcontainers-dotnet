@@ -1,1 +1,1 @@
-﻿FROM influxdb:core
+﻿FROM influxdb:2.7

@@ -6,18 +6,23 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="xunit.runner.visualstudio"/>
-        <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="AWSSDK.CloudWatchLogs"/>
-        <PackageReference Include="AWSSDK.DynamoDBv2"/>
-        <PackageReference Include="AWSSDK.S3"/>
-        <PackageReference Include="AWSSDK.SimpleNotificationService"/>
-        <PackageReference Include="AWSSDK.SQS"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="xunit.v3" />
+        <PackageReference Include="AWSSDK.CloudWatchLogs" />
+        <PackageReference Include="AWSSDK.DynamoDBv2" />
+        <PackageReference Include="AWSSDK.S3" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" />
+        <PackageReference Include="AWSSDK.SQS" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.LocalStack/Testcontainers.LocalStack.csproj"/>
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.LocalStack/Testcontainers.LocalStack.csproj" />
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Dockerfile">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
