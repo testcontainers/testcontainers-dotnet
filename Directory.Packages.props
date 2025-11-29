@@ -65,6 +65,7 @@
         <PackageVersion Include="JanusGraph.Net" Version="1.1.0"/>
         <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
         <PackageVersion Include="KubernetesClient" Version="17.0.14"/>
+        <PackageVersion Include="KurrentDB.Client" Version="1.2.0"/>
         <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="12.2.8"/>
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>

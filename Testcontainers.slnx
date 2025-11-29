@@ -37,6 +37,7 @@
         <Project Path="src/Testcontainers.K3s/Testcontainers.K3s.csproj"/>
         <Project Path="src/Testcontainers.Kafka/Testcontainers.Kafka.csproj"/>
         <Project Path="src/Testcontainers.Keycloak/Testcontainers.Keycloak.csproj"/>
+        <Project Path="src/Testcontainers.KurrentDb/Testcontainers.KurrentDb.csproj"/>
         <Project Path="src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
         <Project Path="src/Testcontainers.LocalStack/Testcontainers.LocalStack.csproj"/>
         <Project Path="src/Testcontainers.LowkeyVault/Testcontainers.LowkeyVault.csproj"/>
@@ -101,6 +102,7 @@
         <Project Path="tests/Testcontainers.K3s.Tests/Testcontainers.K3s.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Kafka.Tests/Testcontainers.Kafka.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Keycloak.Tests/Testcontainers.Keycloak.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.KurrentDb.Tests/Testcontainers.KurrentDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Kusto.Tests/Testcontainers.Kusto.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LocalStack.Tests/Testcontainers.LocalStack.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LowkeyVault.Tests/Testcontainers.LowkeyVault.Tests.csproj"/>

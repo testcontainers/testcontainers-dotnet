@@ -4,6 +4,7 @@ namespace Testcontainers.EventStoreDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
+[Obsolete("Use KurrentDB instead of the EventStoreDB module. More info: https://www.kurrent.io/blog/kurrent-re-brand-faq.")]
 public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
 {
     public const string EventStoreDbImage = "eventstore/eventstore:22.10.1-buster-slim";
