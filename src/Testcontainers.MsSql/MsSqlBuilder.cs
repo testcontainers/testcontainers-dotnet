@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.MsSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,10 +19,31 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public MsSqlBuilder()
         : this(new MsSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(MsSqlImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags">https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags</see>.</param>
+    public MsSqlBuilder(string image)
+        : this(new MsSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MsSqlBuilder(IImage image)
+        : this(new MsSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

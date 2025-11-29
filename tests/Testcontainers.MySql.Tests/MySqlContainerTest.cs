@@ -35,6 +35,11 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
     public class MySqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MySqlBuilder, MySqlContainer>(messageSink)
     {
+        protected override MySqlBuilder Configure(MySqlBuilder builder)
+        {
+            return builder.WithImage(TestSession.GetImageFromDockerfile());
+        }
+
         public override DbProviderFactory DbProviderFactory
             => MySqlConnectorFactory.Instance;
     }
@@ -44,7 +49,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         : MySqlDefaultFixture(messageSink)
     {
         protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]
@@ -52,7 +57,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         : MySqlDefaultFixture(messageSink)
     {
         protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithUsername("root");
+            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithUsername("root");
     }
 
     [UsedImplicitly]

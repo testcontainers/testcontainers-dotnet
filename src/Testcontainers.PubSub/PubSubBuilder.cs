@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.PubSub;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -11,10 +13,31 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public PubSubBuilder()
         : this(new PubSubConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(GoogleCloudCliImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1">https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1</see>.</param>
+    public PubSubBuilder(string image)
+        : this(new PubSubConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PubSubBuilder(IImage image)
+        : this(new PubSubConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

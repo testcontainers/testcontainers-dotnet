@@ -44,7 +44,7 @@ public abstract class CockroachDbContainerTest(CockroachDbContainerTest.Cockroac
         : CockroachDbDefaultFixture(messageSink)
     {
         protected override CockroachDbBuilder Configure(CockroachDbBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

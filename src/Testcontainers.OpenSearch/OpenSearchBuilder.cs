@@ -1,3 +1,6 @@
+using DotNet.Testcontainers.Images;
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Testcontainers.OpenSearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -19,10 +22,31 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public OpenSearchBuilder()
         : this(new OpenSearchConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(OpenSearchImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags">https://hub.docker.com/r/opensearchproject/opensearch/tags</see>.</param>
+    public OpenSearchBuilder(string image)
+        : this(new OpenSearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public OpenSearchBuilder(IImage image)
+        : this(new OpenSearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

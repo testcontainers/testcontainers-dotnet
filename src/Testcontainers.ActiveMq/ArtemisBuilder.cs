@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.ActiveMq;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,10 +19,31 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// <summary>
     /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public ArtemisBuilder()
         : this(new ActiveMqConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(ArtemisImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/apache/activemq-artemis/tags">https://hub.docker.com/r/apache/activemq-artemis/tags</see>.</param>
+    public ArtemisBuilder(string image)
+        : this(new ActiveMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ArtemisBuilder(IImage image)
+        : this(new ActiveMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.MongoDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -19,10 +21,31 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public MongoDbBuilder()
         : this(new MongoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(MongoDbImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mongo/tags">https://hub.docker.com/_/mongo/tags</see>.</param>
+    public MongoDbBuilder(string image)
+        : this(new MongoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MongoDbBuilder(IImage image)
+        : this(new MongoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

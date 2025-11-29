@@ -61,7 +61,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
     public sealed class GrafanaDefaultConfiguration : GrafanaContainerTest
     {
         public GrafanaDefaultConfiguration()
-            : base(new GrafanaBuilder().Build(), GrafanaBuilder.DefaultUsername, GrafanaBuilder.DefaultPassword)
+            : base(new GrafanaBuilder(TestSession.GetImageFromDockerfile()).Build(), GrafanaBuilder.DefaultUsername, GrafanaBuilder.DefaultPassword)
         {
         }
     }
@@ -74,7 +74,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
         private static readonly string Password = Guid.NewGuid().ToString("D");
 
         public CustomCredentialsConfiguration()
-            : base(new GrafanaBuilder().WithUsername(Username).WithPassword(Password).Build(), Username, Password)
+            : base(new GrafanaBuilder(TestSession.GetImageFromDockerfile()).WithUsername(Username).WithPassword(Password).Build(), Username, Password)
         {
         }
     }
@@ -83,7 +83,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
     public sealed class NoAuthCredentialsConfiguration : GrafanaContainerTest
     {
         public NoAuthCredentialsConfiguration()
-            : base(new GrafanaBuilder().WithAnonymousAccessEnabled().Build(), string.Empty, string.Empty)
+            : base(new GrafanaBuilder(TestSession.GetImageFromDockerfile()).WithAnonymousAccessEnabled().Build(), string.Empty, string.Empty)
         {
         }
     }

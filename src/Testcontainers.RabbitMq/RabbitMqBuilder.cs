@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.RabbitMq;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -15,10 +17,31 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public RabbitMqBuilder()
         : this(new RabbitMqConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(RabbitMqImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/rabbitmq/tags">https://hub.docker.com/_/rabbitmq/tags</see>.</param>
+    public RabbitMqBuilder(string image)
+        : this(new RabbitMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public RabbitMqBuilder(IImage image)
+        : this(new RabbitMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

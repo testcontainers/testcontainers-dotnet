@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.FakeGcsServer;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -13,10 +15,31 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public FakeGcsServerBuilder()
         : this(new FakeGcsServerConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(FakeGcsServerImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags">https://hub.docker.com/r/fsouza/fake-gcs-server/tags</see>.</param>
+    public FakeGcsServerBuilder(string image)
+        : this(new FakeGcsServerConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public FakeGcsServerBuilder(IImage image)
+        : this(new FakeGcsServerConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.Grafana;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -15,10 +17,31 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// <summary>
     /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public GrafanaBuilder()
         : this(new GrafanaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(GrafanaImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/grafana/grafana/tags">https://hub.docker.com/r/grafana/grafana/tags</see>.</param>
+    public GrafanaBuilder(string image)
+        : this(new GrafanaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public GrafanaBuilder(IImage image)
+        : this(new GrafanaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

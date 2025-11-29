@@ -3,7 +3,7 @@ namespace Testcontainers.Elasticsearch;
 public sealed class ElasticsearchContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseElasticsearchContainer]
-    private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
+    private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

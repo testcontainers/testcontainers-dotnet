@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.CosmosDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -13,10 +15,31 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public CosmosDbBuilder()
         : this(new CosmosDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(CosmosDbImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public CosmosDbBuilder(string image)
+        : this(new CosmosDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CosmosDbBuilder(IImage image)
+        : this(new CosmosDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.Couchbase;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -58,10 +60,31 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public CouchbaseBuilder()
         : this(new CouchbaseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(CouchbaseImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/couchbase/tags">https://hub.docker.com/_/couchbase/tags</see>.</param>
+    public CouchbaseBuilder(string image)
+        : this(new CouchbaseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CouchbaseBuilder(IImage image)
+        : this(new CouchbaseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

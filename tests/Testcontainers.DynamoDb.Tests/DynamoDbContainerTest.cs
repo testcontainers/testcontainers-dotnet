@@ -2,7 +2,7 @@ namespace Testcontainers.DynamoDb;
 
 public sealed class DynamoDbContainerTest : IAsyncLifetime
 {
-    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder().Build();
+    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static DynamoDbContainerTest()
     {

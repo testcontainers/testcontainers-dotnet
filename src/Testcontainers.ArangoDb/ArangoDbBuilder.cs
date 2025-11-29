@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.ArangoDb;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -15,10 +17,31 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public ArangoDbBuilder()
         : this(new ArangoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(ArangoDbImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/arangodb/tags">https://hub.docker.com/_/arangodb/tags</see>.</param>
+    public ArangoDbBuilder(string image)
+        : this(new ArangoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ArangoDbBuilder(IImage image)
+        : this(new ArangoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

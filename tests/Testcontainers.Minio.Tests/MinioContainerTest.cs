@@ -2,7 +2,7 @@ namespace Testcontainers.Minio;
 
 public sealed class MinioContainerTest : IAsyncLifetime
 {
-    private readonly MinioContainer _minioContainer = new MinioBuilder().Build();
+    private readonly MinioContainer _minioContainer = new MinioBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

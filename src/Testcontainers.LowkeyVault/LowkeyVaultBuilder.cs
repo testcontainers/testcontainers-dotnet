@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.LowkeyVault;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -13,10 +15,31 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public LowkeyVaultBuilder()
         : this(new LowkeyVaultConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(LowkeyVaultImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags">https://hub.docker.com/r/nagyesta/lowkey-vault/tags</see>.</param>
+    public LowkeyVaultBuilder(string image)
+        : this(new LowkeyVaultConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public LowkeyVaultBuilder(IImage image)
+        : this(new LowkeyVaultConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

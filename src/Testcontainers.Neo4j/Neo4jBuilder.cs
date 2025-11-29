@@ -13,10 +13,31 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public Neo4jBuilder()
         : this(new Neo4jConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(Neo4jImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/neo4j/tags">https://hub.docker.com/_/neo4j/tags</see>.</param>
+    public Neo4jBuilder(string image)
+        : this(new Neo4jConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public Neo4jBuilder(IImage image)
+        : this(new Neo4jConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

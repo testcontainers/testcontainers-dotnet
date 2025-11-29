@@ -16,8 +16,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage(CommonImages.Alpine)
+    private readonly IContainer _container = new ContainerBuilder(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
       .WithCommand("hostname > " + ContainerFilePath + "; trap : TERM INT; sleep infinity & wait")
       .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(ContainerFilePath, FileSystem.Container))

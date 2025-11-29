@@ -5,7 +5,7 @@ public abstract partial class ClickHouseContainerTest
     // <!-- -8<- [start:UseClickHouseContainer] -->
     public sealed class ClickHouseContainerExample : IAsyncLifetime
     {
-        private readonly ClickHouseContainer _clickHouseContainer = new ClickHouseBuilder().Build();
+        private readonly ClickHouseContainer _clickHouseContainer = new ClickHouseBuilder(TestSession.GetImageFromDockerfile()).Build();
 
         public async ValueTask InitializeAsync()
         {

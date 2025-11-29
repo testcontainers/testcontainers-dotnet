@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -25,10 +27,31 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public ElasticsearchBuilder()
         : this(new ElasticsearchConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(ElasticsearchImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/elasticsearch/tags">https://hub.docker.com/_/elasticsearch/tags</see>.</param>
+    public ElasticsearchBuilder(string image)
+        : this(new ElasticsearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ElasticsearchBuilder(IImage image)
+        : this(new ElasticsearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

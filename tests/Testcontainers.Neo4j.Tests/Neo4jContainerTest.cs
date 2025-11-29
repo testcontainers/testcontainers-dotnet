@@ -62,7 +62,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jDefaultConfiguration : Neo4jContainerTest
     {
         public Neo4jDefaultConfiguration()
-            : base(new Neo4jBuilder().Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 
@@ -73,7 +73,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jEnterpriseEditionConfiguration : Neo4jContainerTest
     {
         public Neo4jEnterpriseEditionConfiguration()
-            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).WithEnterpriseEdition(true).Build())
         {
         }
 

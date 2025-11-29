@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.ServiceBus;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,10 +19,31 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public ServiceBusBuilder()
         : this(new ServiceBusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(ServiceBusImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags</see>.</param>
+    public ServiceBusBuilder(string image)
+        : this(new ServiceBusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ServiceBusBuilder(IImage image)
+        : this(new ServiceBusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

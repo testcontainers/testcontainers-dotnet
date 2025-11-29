@@ -140,7 +140,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class InsecureNoAuthConfiguration : OpenSearchContainerTest
     {
         public InsecureNoAuthConfiguration()
-            : base(new OpenSearchBuilder()
+            : base(new OpenSearchBuilder(TestSession.GetImageFromDockerfile())
                 .WithSecurityEnabled(false)
                 .Build())
         {
@@ -160,7 +160,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class SslBasicAuthDefaultCredentialsConfiguration : OpenSearchContainerTest
     {
         public SslBasicAuthDefaultCredentialsConfiguration()
-            : base(new OpenSearchBuilder()
+            : base(new OpenSearchBuilder(TestSession.GetImageFromDockerfile())
                 .Build())
         {
         }
@@ -172,7 +172,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
     public sealed class SslBasicAuthCustomCredentialsConfiguration : OpenSearchContainerTest
     {
         public SslBasicAuthCustomCredentialsConfiguration()
-            : base(new OpenSearchBuilder()
+            : base(new OpenSearchBuilder(TestSession.GetImageFromDockerfile())
                 .WithPassword(new string(OpenSearchBuilder.DefaultPassword.Reverse().ToArray()))
                 .Build())
         {

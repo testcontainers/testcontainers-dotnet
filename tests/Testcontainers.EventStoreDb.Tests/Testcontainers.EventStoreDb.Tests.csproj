@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
@@ -7,15 +7,20 @@
     </PropertyGroup>
     <ItemGroup>
         <!-- https://github.com/kurrent-io/KurrentDB-Client-Dotnet/issues/372: -->
-        <PackageReference Include="System.Linq.Async" VersionOverride="6.0.1" ExcludeAssets="all"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="xunit.runner.visualstudio"/>
-        <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="EventStore.Client.Grpc.Streams"/>
+        <PackageReference Include="System.Linq.Async" VersionOverride="6.0.1" ExcludeAssets="all" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="xunit.v3" />
+        <PackageReference Include="EventStore.Client.Grpc.Streams" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.EventStoreDb/Testcontainers.EventStoreDb.csproj"/>
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.EventStoreDb/Testcontainers.EventStoreDb.csproj" />
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Dockerfile">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

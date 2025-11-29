@@ -1,3 +1,5 @@
+using DotNet.Testcontainers.Images;
+
 namespace Testcontainers.EventHubs;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
@@ -17,10 +19,31 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public EventHubsBuilder()
         : this(new EventHubsConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(EventHubsImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags</see>.</param>
+    public EventHubsBuilder(string image)
+        : this(new EventHubsConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public EventHubsBuilder(IImage image)
+        : this(new EventHubsConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

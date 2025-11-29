@@ -6,8 +6,7 @@ public abstract class WaitStrategyModeTest : IAsyncLifetime
 
     private WaitStrategyModeTest(WaitStrategyMode waitStrategyMode)
     {
-        _container = new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        _container = new ContainerBuilder(CommonImages.Alpine)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(waitStrategyMode)))
             .Build();
     }
