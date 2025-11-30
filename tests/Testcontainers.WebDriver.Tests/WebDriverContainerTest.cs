@@ -66,7 +66,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingEnabled : WebDriverContainerTest
     {
         public RecordingEnabled()
-            : base(new WebDriverBuilder().WithRecording().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).WithRecording().Build())
         {
         }
 
@@ -103,7 +103,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingDisabled : WebDriverContainerTest
     {
         public RecordingDisabled()
-            : base(new WebDriverBuilder().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 

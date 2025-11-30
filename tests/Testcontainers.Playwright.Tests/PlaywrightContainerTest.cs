@@ -81,7 +81,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
     public sealed class PlaywrightDefaultConfiguration : PlaywrightContainerTest
     {
         public PlaywrightDefaultConfiguration()
-            : base(new PlaywrightBuilder().Build())
+            : base(new PlaywrightBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }

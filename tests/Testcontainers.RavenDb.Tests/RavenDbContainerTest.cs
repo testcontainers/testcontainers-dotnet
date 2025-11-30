@@ -2,7 +2,7 @@ namespace Testcontainers.RavenDb;
 
 public sealed class RavenDbContainerTest : IAsyncLifetime
 {
-    private readonly RavenDbContainer _ravenDbContainer = new RavenDbBuilder().Build();
+    private readonly RavenDbContainer _ravenDbContainer = new RavenDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

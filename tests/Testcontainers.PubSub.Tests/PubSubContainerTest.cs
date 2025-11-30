@@ -2,7 +2,7 @@ namespace Testcontainers.PubSub;
 
 public sealed class PubSubContainerTest : IAsyncLifetime
 {
-    private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
+    private readonly PubSubContainer _pubSubContainer = new PubSubBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

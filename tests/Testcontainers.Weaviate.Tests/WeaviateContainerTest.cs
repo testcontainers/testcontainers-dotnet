@@ -2,7 +2,7 @@ namespace Testcontainers.Weaviate;
 
 public sealed class WeaviateContainerTest : IAsyncLifetime
 {
-    private readonly WeaviateContainer _weaviateContainer = new WeaviateBuilder().Build();
+    private readonly WeaviateContainer _weaviateContainer = new WeaviateBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

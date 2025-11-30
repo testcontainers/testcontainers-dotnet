@@ -3,7 +3,7 @@ namespace Testcontainers.RabbitMq;
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseRabbitMqContainer]
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

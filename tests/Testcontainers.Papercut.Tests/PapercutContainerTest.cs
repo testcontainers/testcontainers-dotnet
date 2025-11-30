@@ -2,7 +2,7 @@ namespace Testcontainers.Papercut;
 
 public sealed class PapercutContainerTest : IAsyncLifetime
 {
-    private readonly PapercutContainer _papercutContainer = new PapercutBuilder().Build();
+    private readonly PapercutContainer _papercutContainer = new PapercutBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

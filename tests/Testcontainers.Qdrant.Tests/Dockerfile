@@ -1,0 +1,1 @@
+﻿FROM qdrant/qdrant:v1
