@@ -35,7 +35,7 @@ public abstract class MilvusContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         // Then
-        Assert.EndsWith(version, MilvusBuilder.MilvusImage);
+        Assert.EndsWith(version, _milvusContainer.Image.Tag);
     }
 
     protected virtual ValueTask DisposeAsyncCore()
