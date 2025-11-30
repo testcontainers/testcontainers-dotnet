@@ -1,5 +1,3 @@
-using DotNet.Testcontainers.Images;
-
 namespace Testcontainers.Firestore;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />

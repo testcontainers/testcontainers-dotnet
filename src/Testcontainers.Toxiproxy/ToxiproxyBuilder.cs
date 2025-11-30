@@ -1,6 +1,3 @@
-using DotNet.Testcontainers.Images;
-using System;
-
 namespace Testcontainers.Toxiproxy;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />

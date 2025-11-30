@@ -1,6 +1,3 @@
-using DotNet.Testcontainers.Images;
-using System;
-
 namespace Testcontainers.Sftp;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />

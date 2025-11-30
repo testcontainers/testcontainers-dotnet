@@ -11,10 +11,31 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// <summary>
     /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use constructor with image as a parameter instead.")]
     public KurrentDbBuilder()
         : this(new KurrentDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(KurrentDbImage).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags">https://hub.docker.com/r/kurrentplatform/kurrentdb/tags</see>.</param>
+    public KurrentDbBuilder(string image)
+        : this(new KurrentDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KurrentDbBuilder(IImage image)
+        : this(new KurrentDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

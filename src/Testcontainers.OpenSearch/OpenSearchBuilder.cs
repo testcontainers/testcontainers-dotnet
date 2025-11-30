@@ -1,6 +1,3 @@
-using DotNet.Testcontainers.Images;
-using static System.Net.Mime.MediaTypeNames;
-
 namespace Testcontainers.OpenSearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
