@@ -28,6 +28,6 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
         var buildNumber = documentStore.Maintenance.Server.Send(new GetBuildNumberOperation());
 
         // Then
-        Assert.Equal("5.4", buildNumber.ProductVersion);
+        Assert.Contains(buildNumber.ProductVersion, _ravenDbContainer.Image.Tag);
     }
 }
