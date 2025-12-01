@@ -59,7 +59,11 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     public override ElasticsearchContainer Build()
     {
         Validate();
-        return new ElasticsearchContainer(DockerResourceConfiguration);
+
+        // By default, the base builder waits until the container is running. However, for Elasticsearch, a more advanced waiting strategy is necessary that requires access to the username and password.
+        // If the user does not provide a custom waiting strategy, append the default Elasticsearch waiting strategy.
+        var elasticsearchBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new ElasticsearchContainer(elasticsearchBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -73,8 +77,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
             .WithEnvironment("ingest.geoip.downloader.enabled", "false")
-            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath);
     }
 
     /// <inheritdoc />
@@ -121,15 +124,61 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly IEnumerable<string> Pattern = new[] { "\"message\":\"started", "\"message\": \"started\"" };
+        private readonly bool _tlsEnabled;
 
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
+        private readonly string _authToken;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(ElasticsearchConfiguration configuration)
         {
-            var (stdout, _) = await container.GetLogsAsync(since: container.StoppedTime, timestampsEnabled: false)
+            var username = configuration.Username;
+            var password = configuration.Password;
+            _tlsEnabled = configuration.TlsEnabled;
+            _authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(":", username, password)));
+        }
+
+        private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
+        {
+            const StringComparison comparisonType = StringComparison.OrdinalIgnoreCase;
+
+            // https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-health.
+            var jsonString = await response.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            return Pattern.Any(stdout.Contains);
+            try
+            {
+                var status = JsonDocument.Parse(jsonString)
+                    .RootElement
+                    .GetProperty("status")
+                    .GetString();
+
+                return "green".Equals(status, comparisonType) || "yellow".Equals(status, comparisonType);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            using var httpMessageHandler = new HttpClientHandler();
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+
+            var httpWaitStrategy = new HttpWaitStrategy()
+                .UsingHttpMessageHandler(httpMessageHandler)
+                .UsingTls(_tlsEnabled)
+                .ForPort(ElasticsearchHttpsPort)
+                .ForPath("/_cluster/health")
+                .WithHeader("Authorization", "Basic " + _authToken)
+                .ForResponseMessageMatching(IsNodeReadyAsync);
+
+            return await httpWaitStrategy.UntilAsync(container)
+                .ConfigureAwait(false);
         }
     }
 }

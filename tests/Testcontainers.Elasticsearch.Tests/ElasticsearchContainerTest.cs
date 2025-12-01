@@ -1,19 +1,27 @@
 namespace Testcontainers.Elasticsearch;
 
-public sealed class ElasticsearchContainerTest : IAsyncLifetime
+public abstract class ElasticsearchContainerTest : IAsyncLifetime
 {
-    // # --8<-- [start:UseElasticsearchContainer]
-    private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
+    private readonly ElasticsearchContainer _elasticsearchContainer;
 
+    private ElasticsearchContainerTest(ElasticsearchContainer elasticsearchContainer)
+    {
+        _elasticsearchContainer = elasticsearchContainer;
+    }
+
+    // # --8<-- [start:UseElasticsearchContainer]
     public async ValueTask InitializeAsync()
     {
         await _elasticsearchContainer.StartAsync()
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _elasticsearchContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -33,4 +41,29 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
         Assert.True(response.IsValidResponse);
     }
     // # --8<-- [end:UseElasticsearchContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _elasticsearchContainer.DisposeAsync();
+    }
+
+    // # --8<-- [start:CreateElasticsearchContainer]
+    [UsedImplicitly]
+    public sealed class ElasticsearchDefaultConfiguration : ElasticsearchContainerTest
+    {
+        public ElasticsearchDefaultConfiguration()
+            : base(new ElasticsearchBuilder().Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ElasticsearchAuthConfiguration : ElasticsearchContainerTest
+    {
+        public ElasticsearchAuthConfiguration()
+            : base(new ElasticsearchBuilder().WithPassword("some-password").Build())
+        {
+        }
+    }
+    // # --8<-- [end:CreateElasticsearchContainer]
 }
