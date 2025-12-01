@@ -2,7 +2,6 @@ namespace Testcontainers.Elasticsearch;
 
 public abstract class ElasticsearchContainerTest : IAsyncLifetime
 {
-    // # --8<-- [start:UseElasticsearchContainer]
     private readonly ElasticsearchContainer _elasticsearchContainer;
 
     protected ElasticsearchContainerTest(ElasticsearchContainer container)
@@ -10,6 +9,7 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
         _elasticsearchContainer = container;
     }
 
+    // # --8<-- [start:UseElasticsearchContainer]
     public async ValueTask InitializeAsync()
     {
         await _elasticsearchContainer.StartAsync()
@@ -47,10 +47,12 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
         return _elasticsearchContainer.DisposeAsync();
     }
 
+    // # --8<-- [start:CreateElasticsearchContainer]
     [UsedImplicitly]
     public sealed class ElasticsearchDefaultConfiguration : ElasticsearchContainerTest
     {
-        public ElasticsearchDefaultConfiguration() : base(new ElasticsearchBuilder().Build())
+        public ElasticsearchDefaultConfiguration()
+            : base(new ElasticsearchBuilder().Build())
         {
         }
     }
@@ -58,8 +60,10 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     [UsedImplicitly]
     public sealed class ElasticsearchAuthConfiguration : ElasticsearchContainerTest
     {
-        public ElasticsearchAuthConfiguration() : base(new ElasticsearchBuilder().WithPassword("CustomCredentialsConfiguration").Build())
+        public ElasticsearchAuthConfiguration()
+            : base(new ElasticsearchBuilder().WithPassword("some-password").Build())
         {
         }
     }
+    // # --8<-- [start:CreateElasticsearchContainer]
 }
