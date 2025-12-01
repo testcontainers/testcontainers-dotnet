@@ -4,9 +4,9 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
 {
     private readonly ElasticsearchContainer _elasticsearchContainer;
 
-    protected ElasticsearchContainerTest(ElasticsearchContainer container)
+    private ElasticsearchContainerTest(ElasticsearchContainer elasticsearchContainer)
     {
-        _elasticsearchContainer = container;
+        _elasticsearchContainer = elasticsearchContainer;
     }
 
     // # --8<-- [start:UseElasticsearchContainer]
@@ -65,5 +65,5 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
         {
         }
     }
-    // # --8<-- [start:CreateElasticsearchContainer]
+    // # --8<-- [end:CreateElasticsearchContainer]
 }
