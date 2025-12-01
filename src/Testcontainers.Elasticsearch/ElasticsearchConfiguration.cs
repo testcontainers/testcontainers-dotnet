@@ -70,9 +70,9 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
     public string Password { get; }
 
     /// <summary>
-    /// Returns <c>true</c> if https connection to container is enabled, based on configuration environment variables.
+    /// Gets a value indicating whether TLS is enabled or not.
     /// </summary>
-    public bool HttpsEnabled
+    public bool TlsEnabled
     {
         get
         {

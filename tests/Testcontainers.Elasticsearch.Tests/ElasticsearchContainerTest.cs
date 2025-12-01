@@ -16,9 +16,12 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _elasticsearchContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -39,16 +42,23 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UseElasticsearchContainer]
 
-    public sealed class DefaultConfiguration : ElasticsearchContainerTest
+    protected virtual ValueTask DisposeAsyncCore()
     {
-        public DefaultConfiguration() : base(new ElasticsearchBuilder().Build())
+        return _elasticsearchContainer.DisposeAsync();
+    }
+
+    [UsedImplicitly]
+    public sealed class ElasticsearchDefaultConfiguration : ElasticsearchContainerTest
+    {
+        public ElasticsearchDefaultConfiguration() : base(new ElasticsearchBuilder().Build())
         {
         }
     }
 
-    public sealed class CustomCredentialsConfiguration : ElasticsearchContainerTest
+    [UsedImplicitly]
+    public sealed class ElasticsearchAuthConfiguration : ElasticsearchContainerTest
     {
-        public CustomCredentialsConfiguration() : base(new ElasticsearchBuilder().WithPassword("CustomCredentialsConfiguration").Build())
+        public ElasticsearchAuthConfiguration() : base(new ElasticsearchBuilder().WithPassword("CustomCredentialsConfiguration").Build())
         {
         }
     }

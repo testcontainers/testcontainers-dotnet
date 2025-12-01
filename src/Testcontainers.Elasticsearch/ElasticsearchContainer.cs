@@ -17,17 +17,6 @@ public sealed class ElasticsearchContainer : DockerContainer
     }
 
     /// <summary>
-    /// Returns <c>true</c> if https connection to container is enabled.
-    /// </summary>
-    public bool HttpsEnabled => _configuration.HttpsEnabled;
-
-    /// <summary>
-    /// Gets the Elasticsearch credentials.
-    /// </summary>
-    /// <returns>The Elasticsearch credentials.</returns>
-    public NetworkCredential GetCredentials() => new(_configuration.Username, _configuration.Password);
-
-    /// <summary>
     /// Gets the Elasticsearch connection string.
     /// </summary>
     /// <remarks>
@@ -39,8 +28,7 @@ public sealed class ElasticsearchContainer : DockerContainer
     /// <returns>The Elasticsearch connection string.</returns>
     public string GetConnectionString()
     {
-        var scheme = _configuration.HttpsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
-
+        var scheme = _configuration.TlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
         var endpoint = new UriBuilder(scheme, Hostname, GetMappedPublicPort(ElasticsearchBuilder.ElasticsearchHttpsPort));
         endpoint.UserName = _configuration.Username;
         endpoint.Password = _configuration.Password;
