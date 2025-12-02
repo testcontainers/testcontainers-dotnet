@@ -4,7 +4,7 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
-    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2025-latest";
+    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2025-RTM-ubuntu-22.04";
 
     public const ushort MsSqlPort = 1433;
 
