@@ -27,15 +27,15 @@ namespace DotNet.Testcontainers.Clients
         _logger.LogDebug(value.Stream.TrimEnd());
       }
 
-      if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
-      {
-        _logger.LogDebug(value.ProgressMessage.TrimEnd());
-      }
-
-      if (!string.IsNullOrWhiteSpace(value.ErrorMessage))
-      {
-        _logger.LogError(value.ErrorMessage.TrimEnd());
-      }
+      // if (!string.IsNullOrWhiteSpace(value.ProgressMessage))
+      // {
+      //   _logger.LogDebug(value.ProgressMessage.TrimEnd());
+      // }
+      //
+      // if (!string.IsNullOrWhiteSpace(value.Error.Message))
+      // {
+      //   _logger.LogError(value.ErrorMessage.TrimEnd());
+      // }
 
 #pragma warning restore CA1848, CA2254
     }

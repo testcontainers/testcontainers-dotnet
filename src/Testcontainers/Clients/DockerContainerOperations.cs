@@ -204,7 +204,6 @@ namespace DotNet.Testcontainers.Clients
         Image = configuration.Image.FullName,
         Name = configuration.Name,
         Hostname = configuration.Hostname,
-        MacAddress = configuration.MacAddress,
         WorkingDir = configuration.WorkingDirectory,
         Entrypoint = converter.Entrypoint,
         Cmd = converter.Command,
