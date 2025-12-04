@@ -4,170 +4,169 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
-    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
+	public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
 
-    public const ushort MsSqlPort = 1433;
+	public const ushort MsSqlPort = 1433;
 
-    public const string DefaultDatabase = "master";
+	public const string DefaultDatabase = "master";
 
-    public const string DefaultUsername = "sa";
+	public const string DefaultUsername = "sa";
 
-    public const string DefaultPassword = "yourStrong(!)Password";
+	public const string DefaultPassword = "yourStrong(!)Password";
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
-    /// </summary>
-    [Obsolete("Use constructor with image as a parameter instead.")]
-    public MsSqlBuilder()
-        : this(new MsSqlConfiguration())
-    {
-        DockerResourceConfiguration = Init().WithImage(MsSqlImage).DockerResourceConfiguration;
-    }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+	/// </summary>
+	[Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+	public MsSqlBuilder()
+		: this(MsSqlImage)
+	{
+	}
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
-    /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags">https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags</see>.</param>
-    public MsSqlBuilder(string image)
-        : this(new MsSqlConfiguration())
-    {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
-    }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+	/// </summary>
+	/// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags">https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags</see>.</param>
+	public MsSqlBuilder(string image)
+		: this(new MsSqlConfiguration())
+	{
+		DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+	}
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
-    /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
-    public MsSqlBuilder(IImage image)
-        : this(new MsSqlConfiguration())
-    {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
-    }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+	/// </summary>
+	/// <param name="image">Image instance to use in configuration.</param>
+	public MsSqlBuilder(IImage image)
+		: this(new MsSqlConfiguration())
+	{
+		DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+	}
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
-    /// </summary>
-    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
-    private MsSqlBuilder(MsSqlConfiguration resourceConfiguration)
-        : base(resourceConfiguration)
-    {
-        DockerResourceConfiguration = resourceConfiguration;
-    }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+	/// </summary>
+	/// <param name="resourceConfiguration">The Docker resource configuration.</param>
+	private MsSqlBuilder(MsSqlConfiguration resourceConfiguration)
+		: base(resourceConfiguration)
+	{
+		DockerResourceConfiguration = resourceConfiguration;
+	}
 
-    /// <inheritdoc />
-    protected override MsSqlConfiguration DockerResourceConfiguration { get; }
+	/// <inheritdoc />
+	protected override MsSqlConfiguration DockerResourceConfiguration { get; }
 
-    /// <summary>
-    /// Sets the MsSql password.
-    /// </summary>
-    /// <param name="password">The MsSql password.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    public MsSqlBuilder WithPassword(string password)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(password: password))
-            .WithEnvironment("MSSQL_SA_PASSWORD", password)
-            .WithEnvironment("SQLCMDPASSWORD", password);
-    }
+	/// <summary>
+	/// Sets the MsSql password.
+	/// </summary>
+	/// <param name="password">The MsSql password.</param>
+	/// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+	public MsSqlBuilder WithPassword(string password)
+	{
+		return Merge(DockerResourceConfiguration, new MsSqlConfiguration(password: password))
+			.WithEnvironment("MSSQL_SA_PASSWORD", password)
+			.WithEnvironment("SQLCMDPASSWORD", password);
+	}
 
-    /// <inheritdoc />
-    public override MsSqlContainer Build()
-    {
-        Validate();
-        return new MsSqlContainer(DockerResourceConfiguration);
-    }
+	/// <inheritdoc />
+	public override MsSqlContainer Build()
+	{
+		Validate();
+		return new MsSqlContainer(DockerResourceConfiguration);
+	}
 
-    /// <inheritdoc />
-    protected override MsSqlBuilder Init()
-    {
-        return base.Init()
-            .WithImage(MsSqlImage)
-            .WithPortBinding(MsSqlPort, true)
-            .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithDatabase(DefaultDatabase)
-            .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
-    }
+	/// <inheritdoc />
+	protected override MsSqlBuilder Init()
+	{
+		return base.Init()
+			.WithImage(MsSqlImage)
+			.WithPortBinding(MsSqlPort, true)
+			.WithEnvironment("ACCEPT_EULA", "Y")
+			.WithDatabase(DefaultDatabase)
+			.WithUsername(DefaultUsername)
+			.WithPassword(DefaultPassword)
+			.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+	}
 
-    /// <inheritdoc />
-    protected override void Validate()
-    {
-        base.Validate();
+	/// <inheritdoc />
+	protected override void Validate()
+	{
+		base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
-            .NotNull()
-            .NotEmpty();
-    }
+		_ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+			.NotNull()
+			.NotEmpty();
+	}
 
-    /// <inheritdoc />
-    protected override MsSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(resourceConfiguration));
-    }
+	/// <inheritdoc />
+	protected override MsSqlBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+	{
+		return Merge(DockerResourceConfiguration, new MsSqlConfiguration(resourceConfiguration));
+	}
 
-    /// <inheritdoc />
-    protected override MsSqlBuilder Clone(IContainerConfiguration resourceConfiguration)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(resourceConfiguration));
-    }
+	/// <inheritdoc />
+	protected override MsSqlBuilder Clone(IContainerConfiguration resourceConfiguration)
+	{
+		return Merge(DockerResourceConfiguration, new MsSqlConfiguration(resourceConfiguration));
+	}
 
-    /// <inheritdoc />
-    protected override MsSqlBuilder Merge(MsSqlConfiguration oldValue, MsSqlConfiguration newValue)
-    {
-        return new MsSqlBuilder(new MsSqlConfiguration(oldValue, newValue));
-    }
+	/// <inheritdoc />
+	protected override MsSqlBuilder Merge(MsSqlConfiguration oldValue, MsSqlConfiguration newValue)
+	{
+		return new MsSqlBuilder(new MsSqlConfiguration(oldValue, newValue));
+	}
 
-    /// <summary>
-    /// Sets the MsSql database.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
-    /// <param name="database">The MsSql database.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithDatabase(string database)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
-            .WithEnvironment("SQLCMDDBNAME", database);
-    }
+	/// <summary>
+	/// Sets the MsSql database.
+	/// </summary>
+	/// <remarks>
+	/// The Docker image does not allow to configure the database.
+	/// </remarks>
+	/// <param name="database">The MsSql database.</param>
+	/// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+	private MsSqlBuilder WithDatabase(string database)
+	{
+		return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
+			.WithEnvironment("SQLCMDDBNAME", database);
+	}
 
-    /// <summary>
-    /// Sets the MsSql username.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the username.
-    /// </remarks>
-    /// <param name="username">The MsSql username.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithUsername(string username)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
-            .WithEnvironment("SQLCMDUSER", username);
-    }
+	/// <summary>
+	/// Sets the MsSql username.
+	/// </summary>
+	/// <remarks>
+	/// The Docker image does not allow to configure the username.
+	/// </remarks>
+	/// <param name="username">The MsSql username.</param>
+	/// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+	private MsSqlBuilder WithUsername(string username)
+	{
+		return Merge(DockerResourceConfiguration, new MsSqlConfiguration(username: username))
+			.WithEnvironment("SQLCMDUSER", username);
+	}
 
-    /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
-    /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
-    /// </remarks>
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public Task<bool> UntilAsync(IContainer container)
-        {
-            return UntilAsync(container as MsSqlContainer);
-        }
+	/// <inheritdoc cref="IWaitUntil" />
+	/// <remarks>
+	/// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
+	/// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
+	/// </remarks>
+	private sealed class WaitUntil : IWaitUntil
+	{
+		/// <inheritdoc />
+		public Task<bool> UntilAsync(IContainer container)
+		{
+			return UntilAsync(container as MsSqlContainer);
+		}
 
-        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private static async Task<bool> UntilAsync(MsSqlContainer container)
-        {
-            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
-                .ConfigureAwait(false);
+		/// <inheritdoc cref="IWaitUntil.UntilAsync" />
+		private static async Task<bool> UntilAsync(MsSqlContainer container)
+		{
+			var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
+				.ConfigureAwait(false);
 
-            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
-                .ConfigureAwait(false);
+			var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
+				.ConfigureAwait(false);
 
-            return 0L.Equals(execResult.ExitCode);
-        }
-    }
+			return 0L.Equals(execResult.ExitCode);
+		}
+	}
 }

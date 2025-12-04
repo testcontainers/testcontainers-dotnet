@@ -28,11 +28,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
     /// </summary>
-    [Obsolete("Use constructor with image as a parameter instead.")]
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public AzuriteBuilder()
-        : this(new AzuriteConfiguration())
+        : this(AzuriteImage)
     {
-        DockerResourceConfiguration = Init().WithImage(AzuriteImage).DockerResourceConfiguration;
     }
 
     /// <summary>

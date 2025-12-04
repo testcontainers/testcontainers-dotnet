@@ -15,11 +15,10 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
-    [Obsolete("Use constructor with image as a parameter instead.")]
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ArangoDbBuilder()
-        : this(new ArangoDbConfiguration())
+        : this(ArangoDbImage)
     {
-        DockerResourceConfiguration = Init().WithImage(ArangoDbImage).DockerResourceConfiguration;
     }
 
     /// <summary>

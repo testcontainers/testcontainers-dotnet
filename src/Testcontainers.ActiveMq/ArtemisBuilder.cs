@@ -17,11 +17,10 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// <summary>
     /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
     /// </summary>
-    [Obsolete("Use constructor with image as a parameter instead.")]
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ArtemisBuilder()
-        : this(new ActiveMqConfiguration())
+        : this(ArtemisImage)
     {
-        DockerResourceConfiguration = Init().WithImage(ArtemisImage).DockerResourceConfiguration;
     }
 
     /// <summary>

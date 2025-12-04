@@ -34,7 +34,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
-    [Obsolete("Use constructor with image as a parameter instead.")]
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ContainerBuilder()
       : this(new ContainerConfiguration())
     {
