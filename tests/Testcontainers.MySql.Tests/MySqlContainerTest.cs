@@ -66,7 +66,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
     {
         // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
         protected override MySqlBuilder Configure(MySqlBuilder builder)
-            => builder.WithImage("mysql:8.0.28");
+            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "mysql8.0.28"));
     }
 
     [UsedImplicitly]

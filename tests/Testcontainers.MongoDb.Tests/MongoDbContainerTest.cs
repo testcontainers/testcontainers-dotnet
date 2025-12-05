@@ -111,7 +111,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
     {
         public MongoDbV5Configuration()
-            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile()).WithImage("mongo:5.0").Build())
+            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "mongo5.0")).Build())
         {
         }
     }
@@ -120,7 +120,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile()).WithImage("mongo:4.4").Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
+            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "mongo4.4")).Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
         {
         }
     }

@@ -57,7 +57,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage("jacobalberty/firebird:2.5-sc");
+            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb2.5-sc"));
     }
 
     [UsedImplicitly]
@@ -65,7 +65,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage("jacobalberty/firebird:2.5-ss");
+            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb2.5-ss"));
     }
 
     [UsedImplicitly]
@@ -73,7 +73,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage("jacobalberty/firebird:v3.0"); // firebirdsql/firebird:3
+            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb3.0"));
     }
 
     [UsedImplicitly]

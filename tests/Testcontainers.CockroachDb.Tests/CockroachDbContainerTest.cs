@@ -35,6 +35,11 @@ public abstract class CockroachDbContainerTest(CockroachDbContainerTest.Cockroac
     public class CockroachDbDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<CockroachDbBuilder, CockroachDbContainer>(messageSink)
     {
+        protected override CockroachDbBuilder Configure(CockroachDbBuilder builder)
+        {
+            return builder.WithImage(TestSession.GetImageFromDockerfile());
+        }
+
         public override DbProviderFactory DbProviderFactory
             => NpgsqlFactory.Instance;
     }

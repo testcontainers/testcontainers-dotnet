@@ -12,17 +12,40 @@ public static class TestSession
 
     public static IImage GetImageFromDockerfile(
         string relativePath = "Dockerfile",
-        int lineIndex = 0)
+        string stage = "")
     {
         var fullpath = Path.GetFullPath(relativePath);
         if (!File.Exists(fullpath)) throw new Exception($"Dockerfile not found at '{fullpath}'.");
         var lines = File.ReadAllLines(fullpath);
-        if (lines.Length == 0 || lines.Length <= lineIndex) throw new Exception($"Dockerfile located at '{fullpath}' is empty or shorter than {lineIndex + 1} line(s).");
-        var imageLine = lines[lineIndex];
-        var imageLineSplit = imageLine.Split(" ");
-        if (imageLineSplit.Length < 2) throw new Exception($"Dockerfile located at '{fullpath}' has invalid image tag at line {lineIndex + 1}. The line should start with 'FROM' instruction, followed by space and image tag. For example: 'FROM postgres:17'.");
-        var imageTag = imageLineSplit[1];
-        var image = new DockerImage(imageTag);
-        return image;
+        if (lines.Length == 0) throw new Exception($"Dockerfile located at '{fullpath}' is empty.");
+        if (!string.IsNullOrEmpty(stage)) return FindStage(lines, stage);
+        else return FindFirstTag(lines);
+
+        DockerImage FindFirstTag(IEnumerable<string> lines)
+        {
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrEmpty(line)) continue;
+                var split = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length < 2) continue;
+                var imageTag = split[1];
+                return new DockerImage(imageTag);
+            }
+            throw new Exception($"Failed to find any image tag in Dockerfile located at '{fullpath}'.");
+        }
+
+        DockerImage FindStage(IEnumerable<string> lines, string stage)
+        {
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrEmpty(line)) continue;
+                if (!line.Trim().ToLowerInvariant().EndsWith($"as {stage}")) continue;
+                var split = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length < 2) continue;
+                var imageTag = split[1];
+                return new DockerImage(imageTag);
+            }
+            throw new Exception($"Failed to find image with stage {stage} in Dockerfile located at '{fullpath}'.");
+        }
     }
 }
