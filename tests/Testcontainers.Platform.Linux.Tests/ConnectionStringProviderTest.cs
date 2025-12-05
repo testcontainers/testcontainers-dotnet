@@ -1,40 +1,70 @@
 namespace Testcontainers.Tests;
 
-public sealed class ConnectionStringProviderTests : IAsyncLifetime
+public static class ConnectionStringProviderTests
 {
     private const string ExpectedConnectionString = "connection string";
 
-    private readonly ConnectionStringProvider _connectionStringProvider = new ConnectionStringProvider();
-
-    private readonly IContainer _container;
-
-    public ConnectionStringProviderTests()
+    public sealed class Configured : IAsyncLifetime
     {
-        _container = new ContainerBuilder()
+        private readonly ConnectionStringProvider _connectionStringProvider = new ConnectionStringProvider();
+
+        private readonly IContainer _container;
+
+        public Configured()
+        {
+            _container = new ContainerBuilder()
+                .WithImage(CommonImages.Alpine)
+                .WithCommand(CommonCommands.SleepInfinity)
+                .WithConnectionStringProvider(_connectionStringProvider)
+                .Build();
+        }
+
+        public async ValueTask InitializeAsync()
+        {
+            await _container.StartAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _container.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public void GetConnectionStringReturnsExpectedValue()
+        {
+            Assert.True(_connectionStringProvider.IsConfigured, "Configure should have been called during container startup.");
+            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString());
+            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString("name"));
+        }
+    }
+
+    public sealed class NotConfigured : IAsyncLifetime
+    {
+        private readonly IContainer _container = new ContainerBuilder()
             .WithImage(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
-            .WithConnectionStringProvider(_connectionStringProvider)
             .Build();
-    }
 
-    public async ValueTask InitializeAsync()
-    {
-        await _container.StartAsync()
-            .ConfigureAwait(false);
-    }
+        public async ValueTask InitializeAsync()
+        {
+            await _container.StartAsync()
+                .ConfigureAwait(false);
+        }
 
-    public async ValueTask DisposeAsync()
-    {
-        await _container.DisposeAsync()
-            .ConfigureAwait(false);
-    }
+        public async ValueTask DisposeAsync()
+        {
+            await _container.DisposeAsync()
+                .ConfigureAwait(false);
+        }
 
-    [Fact]
-    public void GetConnectionStringReturnsExpectedValue()
-    {
-        Assert.True(_connectionStringProvider.IsConfigured, "Configure should have been called during container startup.");
-        Assert.Equal(ExpectedConnectionString, _container.GetConnectionString());
-        Assert.Equal(ExpectedConnectionString, _container.GetConnectionString("name"));
+        [Fact]
+        public void GetConnectionStringThrowsException()
+        {
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString());
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString("name"));
+        }
     }
 
     private sealed class ConnectionStringProvider : IConnectionStringProvider<IContainer, IContainerConfiguration>
