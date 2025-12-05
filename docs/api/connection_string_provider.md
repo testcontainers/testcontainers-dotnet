@@ -29,7 +29,7 @@ var containerConnectionString = container.GetConnectionString(ConnectionMode.Con
 
 To create a custom provider, implement the generic interface: `IConnectionStringProvider<TContainer, TConfiguration>`. The `Configure(TContainer, TConfiguration)` method is invoked after the container has successfully started, ensuring that all runtime-assigned values are available.
 
-=== "Generic provider"
+=== "Generic builder"
     ```csharp
     public sealed class MyProvider1 : IConnectionStringProvider<IContainer, IContainerConfiguration>
     {
@@ -54,23 +54,29 @@ To create a custom provider, implement the generic interface: `IConnectionString
     }
     ```
 
-=== "Module provider"
+=== "Module builder"
     ```csharp
     public sealed class MyProvider2 : IConnectionStringProvider<PostgreSqlContainer, PostgreSqlConfiguration>
     {
+      private string _host;
+
+      private ushort _port;
+
       public void Configure(PostgreSqlContainer container, PostgreSqlConfiguration configuration)
       {
-        // Initialize provider with PostgreSQL-specific container information.
+        // Initialize provider with container information.
+        _host = container.Hostname;
+        _port = container.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
       }
 
       public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
       {
-        return "Host=localhost;Port=5432;...";
+        return $"Host={_host};Port={_port};...";
       }
 
       public string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host)
       {
-        return "Host=localhost;Port=5432;...;SSL Mode=Require";
+        return $"Host={_host};Port={_port};...;SSL Mode=Require";
       }
     }
     ```
