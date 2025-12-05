@@ -20,8 +20,8 @@
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Update="Dockerfile">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

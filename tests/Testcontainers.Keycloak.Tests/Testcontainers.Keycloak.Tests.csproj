@@ -18,7 +18,7 @@
     </ItemGroup>
     <ItemGroup>
         <None Update="Dockerfile">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="realm-export.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
