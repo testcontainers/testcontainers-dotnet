@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
@@ -7,16 +7,16 @@
     </PropertyGroup>
     <ItemGroup>
         <!-- -8<- [start:PackageReferences] -->
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="xunit.runner.visualstudio" />
-        <PackageReference Include="xunit.v3" />
-        <PackageReference Include="OpenSearch.Client" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="OpenSearch.Client"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.OpenSearch/Testcontainers.OpenSearch.csproj" />
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
+        <ProjectReference Include="../../src/Testcontainers.OpenSearch/Testcontainers.OpenSearch.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <None Update="Dockerfile">

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
@@ -6,16 +6,16 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="xunit.runner.visualstudio" />
-        <PackageReference Include="xunit.v3" />
-        <PackageReference Include="MySqlConnector" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="MySqlConnector"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj" />
-        <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj" />
-        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj" />
+        <ProjectReference Include="../../src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <None Update="Dockerfile">
