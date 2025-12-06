@@ -4,6 +4,7 @@ namespace Testcontainers.ClickHouse;
 [PublicAPI]
 public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ClickHouseImage = "clickhouse/clickhouse-server:23.6-alpine";
 
     public const ushort HttpPort = 8123;
@@ -102,7 +103,6 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     protected override ClickHouseBuilder Init()
     {
         return base.Init()
-            .WithImage(ClickHouseImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(NativePort, true)
             .WithDatabase(DefaultDatabase)

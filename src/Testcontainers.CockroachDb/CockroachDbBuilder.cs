@@ -4,6 +4,7 @@ namespace Testcontainers.CockroachDb;
 [PublicAPI]
 public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CockroachDbImage = "cockroachdb/cockroach:latest-v23.1";
 
     public const ushort CockroachDbPort = 26257;
@@ -102,7 +103,6 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     protected override CockroachDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CockroachDbImage)
             .WithPortBinding(CockroachDbPort, true)
             .WithPortBinding(CockroachDbRestPort, true)
             .WithDatabase(DefaultDatabase)

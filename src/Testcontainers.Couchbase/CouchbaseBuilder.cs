@@ -7,6 +7,7 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CouchbaseImage = "couchbase:community-7.0.2";
 
     public const ushort MgmtPort = 8091;
@@ -149,7 +150,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     protected override CouchbaseBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchbaseImage)
             .WithPortBinding(MgmtPort, true)
             .WithPortBinding(MgmtSslPort, true)
             .WithPortBinding(ViewPort, true)

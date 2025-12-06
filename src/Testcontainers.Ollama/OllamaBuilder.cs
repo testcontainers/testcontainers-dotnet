@@ -4,6 +4,7 @@ namespace Testcontainers.Ollama;
 [PublicAPI]
 public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OllamaImage = "ollama/ollama:0.6.6";
 
     public const ushort OllamaPort = 11434;
@@ -61,7 +62,6 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     protected override OllamaBuilder Init()
     {
         return base.Init()
-            .WithImage(OllamaImage)
             .WithPortBinding(OllamaPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/api/version").ForPort(OllamaPort)));

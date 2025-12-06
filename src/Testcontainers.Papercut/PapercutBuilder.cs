@@ -4,6 +4,7 @@ namespace Testcontainers.Papercut;
 [PublicAPI]
 public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PapercutImage = "changemakerstudiosus/papercut-smtp:7.0";
 
     public const ushort SmtpPort = 2525;
@@ -63,7 +64,6 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     protected override PapercutBuilder Init()
     {
         return base.Init()
-            .WithImage(PapercutImage)
             .WithPortBinding(SmtpPort, true)
             .WithPortBinding(HttpPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>

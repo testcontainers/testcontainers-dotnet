@@ -4,6 +4,7 @@ namespace Testcontainers.BigQuery;
 [PublicAPI]
 public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
 
     public const ushort BigQueryPort = 9050;
@@ -73,7 +74,6 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     protected override BigQueryBuilder Init()
     {
         return base.Init()
-            .WithImage(BigQueryImage)
             .WithPortBinding(BigQueryPort, true)
             .WithProject(DefaultProjectId)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));

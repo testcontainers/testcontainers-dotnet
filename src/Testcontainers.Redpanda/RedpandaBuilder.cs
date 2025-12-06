@@ -4,6 +4,7 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
     public const ushort RedpandaPort = 9092;
@@ -65,7 +66,6 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     protected override RedpandaBuilder Init()
     {
         return base.Init()
-            .WithImage(RedpandaImage)
             .WithPortBinding(SchemaRegistryPort, true)
             .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")

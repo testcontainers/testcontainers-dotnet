@@ -4,6 +4,7 @@ namespace Testcontainers.Toxiproxy;
 [PublicAPI]
 public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, ToxiproxyContainer, ToxiproxyConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy:2.12.0";
 
     public const ushort ToxiproxyControlPort = 8474;
@@ -67,7 +68,6 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
         const int count = LastProxiedPort - FirstProxiedPort;
 
         var toxiproxyBuilder = base.Init()
-            .WithImage(ToxiproxyImage)
             .WithPortBinding(ToxiproxyControlPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/version").ForPort(ToxiproxyControlPort)));

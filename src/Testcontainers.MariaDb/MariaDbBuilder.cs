@@ -4,6 +4,7 @@ namespace Testcontainers.MariaDb;
 [PublicAPI]
 public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MariaDbImage = "mariadb:10.10";
 
     public const ushort MariaDbPort = 3306;
@@ -105,7 +106,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     protected override MariaDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

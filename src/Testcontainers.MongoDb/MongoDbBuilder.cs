@@ -4,6 +4,7 @@ namespace Testcontainers.MongoDb;
 [PublicAPI]
 public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbContainer, MongoDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MongoDbImage = "mongo:6.0";
 
     public const ushort MongoDbPort = 27017;
@@ -129,7 +130,6 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     protected override MongoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

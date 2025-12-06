@@ -4,6 +4,7 @@ namespace Testcontainers.FirebirdSql;
 [PublicAPI]
 public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
 
     public const ushort FirebirdSqlPort = 3050;
@@ -105,7 +106,6 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     protected override FirebirdSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(FirebirdSqlImage)
             .WithPortBinding(FirebirdSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

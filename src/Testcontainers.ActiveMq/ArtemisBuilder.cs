@@ -4,6 +4,7 @@ namespace Testcontainers.ActiveMq;
 [PublicAPI]
 public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ArtemisImage = "apache/activemq-artemis:2.31.2";
 
     public const ushort ArtemisMainPort = 61616;
@@ -89,7 +90,6 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     protected override ArtemisBuilder Init()
     {
         return base.Init()
-            .WithImage(ArtemisImage)
             .WithPortBinding(ArtemisMainPort, true)
             .WithPortBinding(ArtemisConsolePort, true)
             .WithUsername(DefaultUsername)

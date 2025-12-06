@@ -4,6 +4,7 @@ namespace Testcontainers.RabbitMq;
 [PublicAPI]
 public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMqContainer, RabbitMqConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RabbitMqImage = "rabbitmq:3.11";
 
     public const ushort RabbitMqPort = 5672;
@@ -87,7 +88,6 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     protected override RabbitMqBuilder Init()
     {
         return base.Init()
-            .WithImage(RabbitMqImage)
             .WithPortBinding(RabbitMqPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

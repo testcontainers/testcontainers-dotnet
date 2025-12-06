@@ -4,6 +4,7 @@ namespace Testcontainers.CouchDb;
 [PublicAPI]
 public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CouchDbImage = "couchdb:3.3";
 
     public const ushort CouchDbPort = 5984;
@@ -87,7 +88,6 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     protected override CouchDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchDbImage)
             .WithPortBinding(CouchDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

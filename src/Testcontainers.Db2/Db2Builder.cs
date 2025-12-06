@@ -4,6 +4,7 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2Configuration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
 
     public const ushort Db2Port = 50000;
@@ -123,7 +124,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
     /// <inheritdoc />
     protected override Db2Builder Init() => base.Init()
-        .WithImage(Db2Image)
         .WithPortBinding(Db2Port, true)
         .WithDatabase(DefaultDatabase)
         .WithUsername(DefaultUsername)

@@ -4,6 +4,7 @@ namespace Testcontainers.Weaviate;
 [PublicAPI]
 public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, WeaviateContainer, WeaviateConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string WeaviateImage = "semitechnologies/weaviate:1.26.14";
 
     public const ushort WeaviateHttpPort = 8080;
@@ -56,7 +57,6 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <inheritdoc />
     protected override WeaviateBuilder Init()
         => base.Init()
-            .WithImage(WeaviateImage)
             .WithPortBinding(WeaviateHttpPort, true)
             .WithPortBinding(WeaviateGrpcPort, true)
             .WithEnvironment("AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED", "true")

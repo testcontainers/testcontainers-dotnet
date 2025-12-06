@@ -4,6 +4,7 @@ namespace Testcontainers.KurrentDb;
 [PublicAPI]
 public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, KurrentDbContainer, KurrentDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.1";
 
     public const ushort KurrentDbPort = 2113;
@@ -60,7 +61,6 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     protected override KurrentDbBuilder Init()
     {
         return base.Init()
-            .WithImage(KurrentDbImage)
             .WithPortBinding(KurrentDbPort, true)
             .WithEnvironment("KURRENTDB_CLUSTER_SIZE", "1")
             .WithEnvironment("KURRENTDB_RUN_PROJECTIONS", "All")

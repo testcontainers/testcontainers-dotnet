@@ -4,6 +4,7 @@ namespace Testcontainers.DynamoDb;
 [PublicAPI]
 public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDbContainer, DynamoDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string DynamoDbImage = "amazon/dynamodb-local:1.21.0";
 
     public const ushort DynamoDbPort = 8000;
@@ -61,7 +62,6 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     protected override DynamoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(DynamoDbPort).ForStatusCode(HttpStatusCode.BadRequest)));

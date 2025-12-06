@@ -4,6 +4,7 @@ namespace Testcontainers.Redis;
 [PublicAPI]
 public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RedisImage = "redis:7.0";
 
     public const ushort RedisPort = 6379;
@@ -61,7 +62,6 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     protected override RedisBuilder Init()
     {
         return base.Init()
-            .WithImage(RedisImage)
             .WithPortBinding(RedisPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
     }

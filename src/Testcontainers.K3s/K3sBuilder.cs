@@ -4,6 +4,7 @@ namespace Testcontainers.K3s;
 [PublicAPI]
 public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RancherImage = "rancher/k3s:v1.26.2-k3s1";
 
     public const ushort KubeSecurePort = 6443;
@@ -63,7 +64,6 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Init()
     {
         return base.Init()
-            .WithImage(RancherImage)
             .WithPrivileged(true)
             .WithPortBinding(KubeSecurePort, true)
             .WithPortBinding(RancherWebhookPort, true)

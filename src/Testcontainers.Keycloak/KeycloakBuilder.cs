@@ -4,6 +4,7 @@ namespace Testcontainers.Keycloak;
 [PublicAPI]
 public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1";
 
     public const ushort KeycloakPort = 8080;
@@ -121,7 +122,6 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     protected override KeycloakBuilder Init()
     {
         return base.Init()
-            .WithImage(KeycloakImage)
             .WithCommand("start-dev")
             .WithPortBinding(KeycloakPort, true)
             .WithPortBinding(KeycloakHealthPort, true)

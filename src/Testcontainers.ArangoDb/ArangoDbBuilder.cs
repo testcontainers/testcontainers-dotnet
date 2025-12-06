@@ -4,6 +4,7 @@ namespace Testcontainers.ArangoDb;
 [PublicAPI]
 public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ArangoDbImage = "arangodb:3.11.5";
 
     public const ushort ArangoDbPort = 8529;
@@ -76,7 +77,6 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     protected override ArangoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(ArangoDbImage)
             .WithPortBinding(ArangoDbPort, true)
             .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Have fun!"));

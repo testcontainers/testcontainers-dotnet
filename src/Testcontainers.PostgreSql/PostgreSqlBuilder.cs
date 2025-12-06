@@ -4,6 +4,7 @@ namespace Testcontainers.PostgreSql;
 [PublicAPI]
 public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PostgreSqlImage = "postgres:15.1";
 
     public const ushort PostgreSqlPort = 5432;
@@ -104,7 +105,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     protected override PostgreSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

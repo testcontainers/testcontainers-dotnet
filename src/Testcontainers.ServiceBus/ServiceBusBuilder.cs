@@ -8,6 +8,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const string DatabaseNetworkAlias = "database-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ServiceBusImage = "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
 
     public const ushort ServiceBusPort = 5672;
@@ -148,7 +149,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     protected override ServiceBusBuilder Init()
     {
         return base.Init()
-            .WithImage(ServiceBusImage)
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")

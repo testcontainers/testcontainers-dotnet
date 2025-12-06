@@ -4,6 +4,7 @@ namespace Testcontainers.PubSub;
 [PublicAPI]
 public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort PubSubPort = 8085;
@@ -61,7 +62,6 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     protected override PubSubBuilder Init()
     {
         return base.Init()
-            .WithImage(GoogleCloudCliImage)
             .WithPortBinding(PubSubPort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort)

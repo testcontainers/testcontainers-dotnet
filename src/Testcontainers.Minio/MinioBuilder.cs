@@ -4,6 +4,7 @@ namespace Testcontainers.Minio;
 [PublicAPI]
 public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
 
     public const ushort MinioPort = 9000;
@@ -87,7 +88,6 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     protected override MinioBuilder Init()
     {
         return base.Init()
-            .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
             .WithCommand("server", "/data")
             .WithUsername(DefaultUsername)

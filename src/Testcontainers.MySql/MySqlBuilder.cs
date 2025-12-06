@@ -4,6 +4,7 @@ namespace Testcontainers.MySql;
 [PublicAPI]
 public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer, MySqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MySqlImage = "mysql:8.0";
 
     public const ushort MySqlPort = 3306;
@@ -105,7 +106,6 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     protected override MySqlBuilder Init()
     {
         return base.Init()
-            .WithImage(MySqlImage)
             .WithPortBinding(MySqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

@@ -6,6 +6,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
 {
     public const string PlaywrightNetworkAlias = "standalone-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PlaywrightImage = "mcr.microsoft.com/playwright:v1.55.1";
 
     public const ushort PlaywrightPort = 8080;
@@ -63,7 +64,6 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     protected override PlaywrightBuilder Init()
     {
         return base.Init()
-            .WithImage(PlaywrightImage)
             .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(PlaywrightNetworkAlias)
             .WithPortBinding(PlaywrightPort, true)

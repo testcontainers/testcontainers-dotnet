@@ -4,6 +4,7 @@ namespace Testcontainers.Oracle;
 [PublicAPI]
 public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
 
     public const ushort OraclePort = 1521;
@@ -116,7 +117,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Init()
     {
         return base.Init()
-            .WithImage(OracleImage)
             .WithPortBinding(OraclePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

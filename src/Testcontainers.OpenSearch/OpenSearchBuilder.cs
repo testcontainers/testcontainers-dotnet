@@ -4,6 +4,7 @@ namespace Testcontainers.OpenSearch;
 [PublicAPI]
 public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
     public const ushort OpenSearchRestApiPort = 9200;
@@ -126,7 +127,6 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     protected override OpenSearchBuilder Init()
     {
         return base.Init()
-            .WithImage(OpenSearchImage)
             .WithPortBinding(OpenSearchRestApiPort, true)
             .WithPortBinding(OpenSearchTransportPort, true)
             .WithPortBinding(OpenSearchPerformanceAnalyzerPort, true)

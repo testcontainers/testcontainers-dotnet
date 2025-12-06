@@ -4,6 +4,7 @@ namespace Testcontainers.Firestore;
 [PublicAPI]
 public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, FirestoreContainer, FirestoreConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort FirestorePort = 8080;
@@ -61,7 +62,6 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     protected override FirestoreBuilder Init()
     {
         return base.Init()
-            .WithImage(GoogleCloudCliImage)
             .WithPortBinding(FirestorePort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort)

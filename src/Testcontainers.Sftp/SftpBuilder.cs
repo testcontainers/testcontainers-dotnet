@@ -4,6 +4,7 @@ namespace Testcontainers.Sftp;
 [PublicAPI]
 public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, SftpConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string SftpImage = "atmoz/sftp:alpine";
 
     public const ushort SftpPort = 22;
@@ -106,7 +107,6 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     protected override SftpBuilder Init()
     {
         return base.Init()
-            .WithImage(SftpImage)
             .WithPortBinding(SftpPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

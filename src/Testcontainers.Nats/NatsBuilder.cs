@@ -4,6 +4,7 @@ namespace Testcontainers.Nats;
 [PublicAPI]
 public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, NatsConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string NatsImage = "nats:2.9";
 
     public const ushort NatsClientPort = 4222;
@@ -87,7 +88,6 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     protected override NatsBuilder Init()
     {
         return base.Init()
-            .WithImage(NatsImage)
             .WithPortBinding(NatsClientPort, true)
             .WithPortBinding(NatsHttpManagementPort, true)
             .WithPortBinding(NatsClusterRoutingPort, true)

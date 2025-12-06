@@ -8,6 +8,7 @@ namespace Testcontainers.Kusto;
 [PublicAPI]
 public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KustoImage = "mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest";
 
     public const ushort KustoPort = 8080;
@@ -65,7 +66,6 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     protected override KustoBuilder Init()
     {
         return base.Init()
-            .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request

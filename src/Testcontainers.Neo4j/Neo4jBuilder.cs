@@ -4,6 +4,7 @@ namespace Testcontainers.Neo4j;
 [PublicAPI]
 public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string Neo4jImage = "neo4j:5.4";
 
     public const ushort Neo4jHttpPort = 7474;
@@ -143,7 +144,6 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Init()
     {
         return base.Init()
-            .WithImage(Neo4jImage)
             .WithPortBinding(Neo4jHttpPort, true)
             .WithPortBinding(Neo4jBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")

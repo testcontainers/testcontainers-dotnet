@@ -4,6 +4,7 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, LowkeyVaultContainer, LowkeyVaultConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.1-ubi9-minimal";
 
     public const ushort LowkeyVaultPort = 8443;
@@ -79,7 +80,6 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     protected override LowkeyVaultBuilder Init()
     {
         return base.Init()
-            .WithImage(LowkeyVaultImage)
             .WithPortBinding(LowkeyVaultPort, true)
             .WithPortBinding(LowkeyVaultTokenPort, true)
             .WithArguments(new[] { "--LOWKEY_VAULT_RELAXED_PORTS=true" })

@@ -4,6 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
     public const ushort PulsarBrokerDataPort = 6650;
@@ -110,7 +111,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Init()
     {
         return base.Init()
-            .WithImage(PulsarImage)
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)

@@ -4,6 +4,7 @@ namespace Testcontainers.Mosquitto;
 [PublicAPI]
 public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MosquittoImage = "eclipse-mosquitto:2.0";
 
     public const ushort MqttPort = 1883;
@@ -135,7 +136,6 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     protected override MosquittoBuilder Init()
     {
         return base.Init()
-            .WithImage(MosquittoImage)
             .WithPortBinding(MqttPort, true)
             .WithPortBinding(MqttWsPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));

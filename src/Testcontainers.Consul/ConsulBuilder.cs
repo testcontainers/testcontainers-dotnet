@@ -4,6 +4,7 @@ namespace Testcontainers.Consul;
 [PublicAPI]
 public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ConsulImage = "consul:1.15";
 
     public const int ConsulHttpPort = 8500;
@@ -63,7 +64,6 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     protected override ConsulBuilder Init()
     {
         return base.Init()
-            .WithImage(ConsulImage)
             .WithPortBinding(ConsulHttpPort, true)
             .WithPortBinding(ConsulGrpcPort, true)
             .WithCommand("agent", "-dev", "-client", "0.0.0.0")

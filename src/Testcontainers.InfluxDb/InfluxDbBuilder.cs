@@ -4,6 +4,7 @@ namespace Testcontainers.InfluxDb;
 [PublicAPI]
 public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string InfluxDbImage = "influxdb:2.7";
 
     public const ushort InfluxDbPort = 8086;
@@ -135,7 +136,6 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     protected override InfluxDbBuilder Init()
     {
         return base.Init()
-            .WithImage(InfluxDbImage)
             .WithPortBinding(InfluxDbPort, true)
             .WithEnvironment("DOCKER_INFLUXDB_INIT_MODE", "setup")
             .WithUsername(DefaultUsername)

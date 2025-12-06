@@ -11,6 +11,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     public const string FFmpegNetworkAlias = "ffmpeg-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20230306";
 
     public const ushort WebDriverPort = 4444;
@@ -90,10 +91,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Enables the video recording.
     /// </summary>
+    /// <param name="fFmpegImage">The FFmpeg image tag to use for recording.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithRecording()
+    public WebDriverBuilder WithRecording(string fFmpegImage = FFmpegImage)
     {
-        var ffmpegContainer = new ContainerBuilder(FFmpegImage)
+        var ffmpegContainer = new ContainerBuilder(fFmpegImage)
             .WithNetwork(DockerResourceConfiguration.Networks.Single())
             .WithNetworkAliases(FFmpegNetworkAlias)
             .WithEnvironment("FILE_NAME", Path.GetFileName(VideoFilePath))

@@ -6,6 +6,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
 {
     public const string MilvusEtcdConfigFilePath = "/milvus/configs/embedEtcd.yaml";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MilvusImage = "milvusdb/milvus:v2.3.10";
 
     public const ushort MilvusManagementPort = 9091;
@@ -80,7 +81,6 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Init()
     {
         return base.Init()
-            .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
             .WithPortBinding(MilvusGrpcPort, true)
             .WithCommand("milvus", "run", "standalone")

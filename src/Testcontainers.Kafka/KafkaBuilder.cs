@@ -4,6 +4,7 @@ namespace Testcontainers.Kafka;
 [PublicAPI]
 public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KafkaImage = "confluentinc/cp-kafka:7.5.9";
 
     public const ushort KafkaPort = 9092;
@@ -237,7 +238,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     protected override KafkaBuilder Init()
     {
         return base.Init()
-            .WithImage(KafkaImage)
             .WithPortBinding(KafkaPort, true)
             .WithPortBinding(BrokerPort, true)
             .WithEnvironment("KAFKA_LISTENERS", $"PLAINTEXT://:{KafkaPort},BROKER://:{BrokerPort},CONTROLLER://:{ControllerPort}")

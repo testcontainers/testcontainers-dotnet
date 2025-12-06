@@ -4,6 +4,7 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string LocalStackImage = "localstack/localstack:2.0";
 
     public const ushort LocalStackPort = 4566;
@@ -61,7 +62,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackBuilder Init()
     {
         return base.Init()
-            .WithImage(LocalStackImage)
             .WithPortBinding(LocalStackPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_localstack/health").ForPort(LocalStackPort)));

@@ -5,6 +5,7 @@ namespace Testcontainers.EventStoreDb;
 [Obsolete("Use KurrentDB instead of the EventStoreDB module. More info: https://www.kurrent.io/blog/kurrent-re-brand-faq.")]
 public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string EventStoreDbImage = "eventstore/eventstore:22.10.1-buster-slim";
 
     public const ushort EventStoreDbPort = 2113;
@@ -61,7 +62,6 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     protected override EventStoreDbBuilder Init()
     {
         return base.Init()
-            .WithImage(EventStoreDbImage)
             .WithPortBinding(EventStoreDbPort, true)
             .WithEnvironment("EVENTSTORE_CLUSTER_SIZE", "1")
             .WithEnvironment("EVENTSTORE_RUN_PROJECTIONS", "All")

@@ -4,6 +4,7 @@ namespace Testcontainers.Cassandra;
 [PublicAPI]
 public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, CassandraContainer, CassandraConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CassandraImage = "cassandra:5.0";
 
     public const ushort CqlPort = 9042;
@@ -63,7 +64,6 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     protected override CassandraBuilder Init()
     {
         return base.Init()
-            .WithImage(CassandraImage)
             .WithPortBinding(CqlPort, true)
             .WithEnvironment("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0")
             .WithEnvironment("HEAP_NEWSIZE", "128M")

@@ -4,6 +4,7 @@ namespace Testcontainers.Qdrant;
 [PublicAPI]
 public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string QdrantImage = "qdrant/qdrant:v1.13.4";
 
     public const ushort QdrantHttpPort = 6333;
@@ -98,7 +99,6 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     protected override QdrantBuilder Init()
     {
         return base.Init()
-            .WithImage(QdrantImage)
             .WithPortBinding(QdrantHttpPort, true)
             .WithPortBinding(QdrantGrpcPort, true);
     }

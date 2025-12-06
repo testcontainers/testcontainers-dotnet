@@ -4,6 +4,7 @@ namespace Testcontainers.RavenDb;
 [PublicAPI]
 public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbContainer, RavenDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RavenDbImage = "ravendb/ravendb:5.4-ubuntu-latest";
 
     public const ushort RavenDbPort = 8080;
@@ -61,7 +62,6 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     protected override RavenDbBuilder Init()
     {
         return base.Init()
-            .WithImage(RavenDbImage)
             .WithPortBinding(RavenDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server started"));
     }

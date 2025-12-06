@@ -4,6 +4,7 @@ namespace Testcontainers.Grafana;
 [PublicAPI]
 public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaContainer, GrafanaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GrafanaImage = "grafana/grafana:12.2";
 
     public const ushort GrafanaPort = 3000;
@@ -97,7 +98,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     protected override GrafanaBuilder Init()
     {
         return base.Init()
-            .WithImage(GrafanaImage)
             .WithPortBinding(GrafanaPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

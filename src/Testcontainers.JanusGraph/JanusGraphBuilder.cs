@@ -4,6 +4,7 @@ namespace Testcontainers.JanusGraph;
 [PublicAPI]
 public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0";
 
     public const ushort JanusGraphPort = 8182;
@@ -61,7 +62,6 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     protected override JanusGraphBuilder Init()
     {
         return base.Init()
-            .WithImage(JanusGraphImage)
             .WithPortBinding(JanusGraphPort, true)
             .WithEnvironment("janusgraph.storage.backend", "inmemory")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Channel started at port"));

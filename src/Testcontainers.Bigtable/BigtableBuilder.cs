@@ -4,6 +4,7 @@ namespace Testcontainers.Bigtable;
 [PublicAPI]
 public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, BigtableContainer, BigtableConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort BigtablePort = 9000;
@@ -61,7 +62,6 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     protected override BigtableBuilder Init()
     {
         return base.Init()
-            .WithImage(GoogleCloudCliImage)
             .WithPortBinding(BigtablePort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "bigtable", "start", "--host-port", "0.0.0.0:" + BigtablePort)

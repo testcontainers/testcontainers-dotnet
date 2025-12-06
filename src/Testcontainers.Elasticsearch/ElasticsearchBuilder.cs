@@ -10,6 +10,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const string ElasticsearchDefaultMemoryVmOptionFilePath = ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ElasticsearchImage = "elasticsearch:8.6.1";
 
     public const ushort ElasticsearchHttpsPort = 9200;
@@ -90,7 +91,6 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     protected override ElasticsearchBuilder Init()
     {
         return base.Init()
-            .WithImage(ElasticsearchImage)
             .WithPortBinding(ElasticsearchHttpsPort, true)
             .WithPortBinding(ElasticsearchTcpPort, true)
             .WithUsername(DefaultUsername)
