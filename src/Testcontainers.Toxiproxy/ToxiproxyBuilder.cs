@@ -4,6 +4,7 @@ namespace Testcontainers.Toxiproxy;
 [PublicAPI]
 public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, ToxiproxyContainer, ToxiproxyConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy:2.12.0";
 
     public const ushort ToxiproxyControlPort = 8474;
@@ -15,10 +16,30 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ToxiproxyBuilder()
+        : this(ToxiproxyImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy">https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy</see>.</param>
+    public ToxiproxyBuilder(string image)
         : this(new ToxiproxyConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ToxiproxyBuilder(IImage image)
+        : this(new ToxiproxyConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -47,7 +68,6 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
         const int count = LastProxiedPort - FirstProxiedPort;
 
         var toxiproxyBuilder = base.Init()
-            .WithImage(ToxiproxyImage)
             .WithPortBinding(ToxiproxyControlPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/version").ForPort(ToxiproxyControlPort)));

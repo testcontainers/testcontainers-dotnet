@@ -4,6 +4,7 @@ namespace Testcontainers.PostgreSql;
 [PublicAPI]
 public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PostgreSqlImage = "postgres:15.1";
 
     public const ushort PostgreSqlPort = 5432;
@@ -17,10 +18,30 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PostgreSqlBuilder()
+        : this(PostgreSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/postgres/tags">https://hub.docker.com/_/postgres/tags</see>.</param>
+    public PostgreSqlBuilder(string image)
         : this(new PostgreSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PostgreSqlBuilder(IImage image)
+        : this(new PostgreSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -84,7 +105,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     protected override PostgreSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

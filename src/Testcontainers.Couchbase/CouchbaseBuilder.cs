@@ -7,6 +7,7 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CouchbaseImage = "couchbase:community-7.0.2";
 
     public const ushort MgmtPort = 8091;
@@ -58,10 +59,30 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public CouchbaseBuilder()
+        : this(CouchbaseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/couchbase/tags">https://hub.docker.com/_/couchbase/tags</see>.</param>
+    public CouchbaseBuilder(string image)
         : this(new CouchbaseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CouchbaseBuilder(IImage image)
+        : this(new CouchbaseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -129,7 +150,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     protected override CouchbaseBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchbaseImage)
             .WithPortBinding(MgmtPort, true)
             .WithPortBinding(MgmtSslPort, true)
             .WithPortBinding(ViewPort, true)

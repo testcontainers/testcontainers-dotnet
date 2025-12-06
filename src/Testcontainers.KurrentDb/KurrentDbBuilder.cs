@@ -4,6 +4,7 @@ namespace Testcontainers.KurrentDb;
 [PublicAPI]
 public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, KurrentDbContainer, KurrentDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.1";
 
     public const ushort KurrentDbPort = 2113;
@@ -11,10 +12,30 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// <summary>
     /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public KurrentDbBuilder()
+        : this(KurrentDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags">https://hub.docker.com/r/kurrentplatform/kurrentdb/tags</see>.</param>
+    public KurrentDbBuilder(string image)
         : this(new KurrentDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KurrentDbBuilder(IImage image)
+        : this(new KurrentDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -40,7 +61,6 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     protected override KurrentDbBuilder Init()
     {
         return base.Init()
-            .WithImage(KurrentDbImage)
             .WithPortBinding(KurrentDbPort, true)
             .WithEnvironment("KURRENTDB_CLUSTER_SIZE", "1")
             .WithEnvironment("KURRENTDB_RUN_PROJECTIONS", "All")

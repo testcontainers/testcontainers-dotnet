@@ -76,7 +76,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
     {
         public EventHubsDefaultAzuriteConfiguration()
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 .Build())
@@ -89,7 +89,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
     {
         public EventHubsCustomAzuriteConfiguration(DatabaseFixture fixture)
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 // # --8<-- [start:ReuseExistingAzuriteContainer]

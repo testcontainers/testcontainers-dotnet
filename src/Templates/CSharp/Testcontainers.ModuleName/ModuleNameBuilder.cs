@@ -7,11 +7,12 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleNameBuilder" /> class.
     /// </summary>
-    public ModuleNameBuilder()
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/...">https://hub.docker.com/...</see>.</param>
+    public ModuleNameBuilder(string image)
         : this(new ModuleNameConfiguration())
     {
         // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "ModuleNameBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
+        //    Append the module configuration to base.Init() e.g. base.Init().WithXXX().
 
         // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
         //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
@@ -19,7 +20,17 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
         // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "ModuleNameBuilder WithModuleNameConfig(object)".
         //    Merge the current module configuration with a new instance of the immutable ModuleNameConfiguration type to update the module configuration.
 
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        // DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ModuleNameBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ModuleNameBuilder(IImage image)
+        : this(new ModuleNameConfiguration())
+    {
+        // DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

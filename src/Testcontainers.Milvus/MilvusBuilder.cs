@@ -6,6 +6,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
 {
     public const string MilvusEtcdConfigFilePath = "/milvus/configs/embedEtcd.yaml";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MilvusImage = "milvusdb/milvus:v2.3.10";
 
     public const ushort MilvusManagementPort = 9091;
@@ -17,10 +18,30 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MilvusBuilder()
+        : this(MilvusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/milvusdb/milvus/tags">https://hub.docker.com/r/milvusdb/milvus/tags</see>.</param>
+    public MilvusBuilder(string image)
         : this(new MilvusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MilvusBuilder(IImage image)
+        : this(new MilvusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -60,7 +81,6 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Init()
     {
         return base.Init()
-            .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
             .WithPortBinding(MilvusGrpcPort, true)
             .WithCommand("milvus", "run", "standalone")

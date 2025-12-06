@@ -9,16 +9,19 @@ public readonly struct WebDriverBrowser
     /// <summary>
     /// Gets the Selenium standalone Chrome configuration.
     /// </summary>
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public static readonly WebDriverBrowser Chrome = new WebDriverBrowser("selenium/standalone-chrome:110.0");
 
     /// <summary>
     /// Gets the Selenium standalone Firefox configuration.
     /// </summary>
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public static readonly WebDriverBrowser Firefox = new WebDriverBrowser("selenium/standalone-firefox:110.0");
 
     /// <summary>
     /// Gets the Selenium standalone Edge configuration.
     /// </summary>
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public static readonly WebDriverBrowser Edge = new WebDriverBrowser("selenium/standalone-edge:110.0");
 
     /// <summary>

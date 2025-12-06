@@ -4,6 +4,7 @@ namespace Testcontainers.Redis;
 [PublicAPI]
 public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RedisImage = "redis:7.0";
 
     public const ushort RedisPort = 6379;
@@ -11,10 +12,30 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public RedisBuilder()
+        : this(RedisImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/redis/tags">https://hub.docker.com/_/redis/tags</see>.</param>
+    public RedisBuilder(string image)
         : this(new RedisConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public RedisBuilder(IImage image)
+        : this(new RedisConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +62,6 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     protected override RedisBuilder Init()
     {
         return base.Init()
-            .WithImage(RedisImage)
             .WithPortBinding(RedisPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
     }

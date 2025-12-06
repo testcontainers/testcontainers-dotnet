@@ -4,6 +4,7 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.28.0";
 
     public const ushort BlobPort = 10000;
@@ -28,10 +29,30 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public AzuriteBuilder()
+        : this(AzuriteImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite">https://hub.docker.com/r/microsoft/azure-storage-azurite</see>.</param>
+    public AzuriteBuilder(string image)
         : this(new AzuriteConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public AzuriteBuilder(IImage image)
+        : this(new AzuriteConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -97,7 +118,6 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     protected override AzuriteBuilder Init()
     {
         return base.Init()
-            .WithImage(AzuriteImage)
             .WithPortBinding(BlobPort, true)
             .WithPortBinding(QueuePort, true)
             .WithPortBinding(TablePort, true)

@@ -125,8 +125,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [UsedImplicitly]
     public sealed class HttpFixture : IAsyncLifetime
     {
-      public IContainer Container { get; } = new ContainerBuilder()
-        .WithImage(CommonImages.Socat)
+      public IContainer Container { get; } = new ContainerBuilder(CommonImages.Socat)
         .WithCommand("-v")
         .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
         .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")

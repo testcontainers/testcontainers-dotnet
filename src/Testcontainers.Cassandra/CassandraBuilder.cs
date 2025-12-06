@@ -4,6 +4,7 @@ namespace Testcontainers.Cassandra;
 [PublicAPI]
 public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, CassandraContainer, CassandraConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CassandraImage = "cassandra:5.0";
 
     public const ushort CqlPort = 9042;
@@ -13,10 +14,30 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     /// <summary>
     /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public CassandraBuilder()
+        : this(CassandraImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/cassandra/tags">https://hub.docker.com/_/cassandra/tags</see>.</param>
+    public CassandraBuilder(string image)
         : this(new CassandraConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CassandraBuilder(IImage image)
+        : this(new CassandraConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     protected override CassandraBuilder Init()
     {
         return base.Init()
-            .WithImage(CassandraImage)
             .WithPortBinding(CqlPort, true)
             .WithEnvironment("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0")
             .WithEnvironment("HEAP_NEWSIZE", "128M")

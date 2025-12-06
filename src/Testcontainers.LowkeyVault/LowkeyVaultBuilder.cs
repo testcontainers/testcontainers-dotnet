@@ -4,6 +4,7 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, LowkeyVaultContainer, LowkeyVaultConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.1-ubi9-minimal";
 
     public const ushort LowkeyVaultPort = 8443;
@@ -13,10 +14,30 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public LowkeyVaultBuilder()
+        : this(LowkeyVaultImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags">https://hub.docker.com/r/nagyesta/lowkey-vault/tags</see>.</param>
+    public LowkeyVaultBuilder(string image)
         : this(new LowkeyVaultConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public LowkeyVaultBuilder(IImage image)
+        : this(new LowkeyVaultConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -59,7 +80,6 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     protected override LowkeyVaultBuilder Init()
     {
         return base.Init()
-            .WithImage(LowkeyVaultImage)
             .WithPortBinding(LowkeyVaultPort, true)
             .WithPortBinding(LowkeyVaultTokenPort, true)
             .WithArguments(new[] { "--LOWKEY_VAULT_RELAXED_PORTS=true" })

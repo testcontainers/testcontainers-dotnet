@@ -86,7 +86,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     public sealed class DefaultCredentialsConfiguration : ArtemisContainerTest
     {
         public DefaultCredentialsConfiguration()
-            : base(new ArtemisBuilder().Build(), ArtemisBuilder.DefaultUsername, ArtemisBuilder.DefaultPassword)
+            : base(new ArtemisBuilder(TestSession.GetImageFromDockerfile()).Build(), ArtemisBuilder.DefaultUsername, ArtemisBuilder.DefaultPassword)
         {
         }
     }
@@ -101,7 +101,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
         private static readonly string Password = Guid.NewGuid().ToString("D");
 
         public CustomCredentialsConfiguration()
-            : base(new ArtemisBuilder().WithUsername(Username).WithPassword(Password).Build(), Username, Password)
+            : base(new ArtemisBuilder(TestSession.GetImageFromDockerfile()).WithUsername(Username).WithPassword(Password).Build(), Username, Password)
         {
         }
     }
@@ -112,7 +112,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
     public sealed class NoAuthCredentialsConfiguration : ArtemisContainerTest
     {
         public NoAuthCredentialsConfiguration()
-            : base(new ArtemisBuilder().WithEnvironment("ANONYMOUS_LOGIN", bool.TrueString).Build(), string.Empty, string.Empty)
+            : base(new ArtemisBuilder(TestSession.GetImageFromDockerfile()).WithEnvironment("ANONYMOUS_LOGIN", bool.TrueString).Build(), string.Empty, string.Empty)
         {
         }
     }

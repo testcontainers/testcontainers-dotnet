@@ -2,7 +2,7 @@ namespace Testcontainers.Redpanda;
 
 public sealed class RedpandaContainerTest : IAsyncLifetime
 {
-    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder().Build();
+    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

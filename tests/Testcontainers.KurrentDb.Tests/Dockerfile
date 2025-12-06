@@ -1,0 +1,1 @@
+﻿FROM kurrentplatform/kurrentdb:25.1

@@ -4,6 +4,7 @@ namespace Testcontainers.RabbitMq;
 [PublicAPI]
 public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMqContainer, RabbitMqConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RabbitMqImage = "rabbitmq:3.11";
 
     public const ushort RabbitMqPort = 5672;
@@ -15,10 +16,30 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public RabbitMqBuilder()
+        : this(RabbitMqImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/rabbitmq/tags">https://hub.docker.com/_/rabbitmq/tags</see>.</param>
+    public RabbitMqBuilder(string image)
         : this(new RabbitMqConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public RabbitMqBuilder(IImage image)
+        : this(new RabbitMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +88,6 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     protected override RabbitMqBuilder Init()
     {
         return base.Init()
-            .WithImage(RabbitMqImage)
             .WithPortBinding(RabbitMqPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

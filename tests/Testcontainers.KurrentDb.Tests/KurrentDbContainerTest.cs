@@ -2,7 +2,7 @@ namespace Testcontainers.KurrentDb;
 
 public sealed class KurrentDbContainerTest : IAsyncLifetime
 {
-    private readonly KurrentDbContainer _kurrentDbContainer = new KurrentDbBuilder().Build();
+    private readonly KurrentDbContainer _kurrentDbContainer = new KurrentDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

@@ -8,6 +8,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     public const string AzuriteNetworkAlias = "azurite-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
@@ -17,10 +18,30 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public EventHubsBuilder()
+        : this(EventHubsImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags</see>.</param>
+    public EventHubsBuilder(string image)
         : this(new EventHubsConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public EventHubsBuilder(IImage image)
+        : this(new EventHubsConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -135,7 +156,6 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override EventHubsBuilder Init()
     {
         return base.Init()
-            .WithImage(EventHubsImage)
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>

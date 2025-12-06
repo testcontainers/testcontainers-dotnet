@@ -16,8 +16,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public WaitUntilMessageIsLoggedTest()
     {
-      _container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+      _container = new ContainerBuilder(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("echo \"Started\" | tee /dev/stderr && trap : TERM INT; sleep infinity & wait")
         .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"))

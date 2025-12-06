@@ -18,7 +18,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
             .WithNetworkAliases(RedisNetworkAlias)
             .Build();
 
-        _toxiproxyContainer = new ToxiproxyBuilder()
+        _toxiproxyContainer = new ToxiproxyBuilder(TestSession.GetImageFromDockerfile())
             .WithNetwork(_network)
             .Build();
     }

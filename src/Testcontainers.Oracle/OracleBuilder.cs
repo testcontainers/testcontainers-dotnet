@@ -4,6 +4,7 @@ namespace Testcontainers.Oracle;
 [PublicAPI]
 public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
 
     public const ushort OraclePort = 1521;
@@ -18,10 +19,30 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public OracleBuilder()
+        : this(OracleImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public OracleBuilder(string image)
         : this(new OracleConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public OracleBuilder(IImage image)
+        : this(new OracleConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -96,7 +117,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Init()
     {
         return base.Init()
-            .WithImage(OracleImage)
             .WithPortBinding(OraclePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

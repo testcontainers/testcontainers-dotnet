@@ -4,6 +4,7 @@ namespace Testcontainers.MariaDb;
 [PublicAPI]
 public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MariaDbImage = "mariadb:10.10";
 
     public const ushort MariaDbPort = 3306;
@@ -17,10 +18,30 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MariaDbBuilder()
+        : this(MariaDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mariadb/tags">https://hub.docker.com/_/mariadb/tags</see>.</param>
+    public MariaDbBuilder(string image)
         : this(new MariaDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MariaDbBuilder(IImage image)
+        : this(new MariaDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +106,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     protected override MariaDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

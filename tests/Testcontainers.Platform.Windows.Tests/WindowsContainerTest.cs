@@ -39,8 +39,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     public sealed class UntilCommandIsCompleted : WindowsContainerTest
     {
         public UntilCommandIsCompleted()
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.ServerCore)
+            : base(new ContainerBuilder(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilCommandIsCompleted("Exit(-Not(Test-Path -Path 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'))"))
@@ -53,8 +52,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     public sealed class UntilInternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilInternalTcpPortIsAvailable()
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.ServerCore)
+            : base(new ContainerBuilder(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilInternalTcpPortIsAvailable(8080))
@@ -67,8 +65,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     public sealed class UntilExternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilExternalTcpPortIsAvailable()
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.ServerCore)
+            : base(new ContainerBuilder(CommonImages.ServerCore)
                 .WithPortBinding(8080, true)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")

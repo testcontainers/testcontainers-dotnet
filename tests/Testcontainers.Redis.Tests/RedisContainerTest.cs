@@ -2,7 +2,7 @@ namespace Testcontainers.Redis;
 
 public sealed class RedisContainerTest : IAsyncLifetime
 {
-    private readonly RedisContainer _redisContainer = new RedisBuilder().Build();
+    private readonly RedisContainer _redisContainer = new RedisBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

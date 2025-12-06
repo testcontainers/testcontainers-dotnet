@@ -11,9 +11,14 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
         <PackageReference Include="Microsoft.Azure.Kusto.Data"/>
-  </ItemGroup>
-  <ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-  </ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

@@ -89,7 +89,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     {
         protected override MosquittoBuilder Configure(MosquittoBuilder builder)
         {
-            return builder.WithCertificate(Certificate, CertificateKey);
+            return builder.WithImage(TestSession.GetImageFromDockerfile()).WithCertificate(Certificate, CertificateKey);
         }
 
         protected override MqttClientOptions GetClientOptions()
@@ -106,6 +106,11 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     public sealed class WebSocketUnencryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
         : MosquittoContainerTest(testOutputHelper)
     {
+        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
+        {
+            return builder.WithImage(TestSession.GetImageFromDockerfile());
+        }
+
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
@@ -120,7 +125,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     {
         protected override MosquittoBuilder Configure(MosquittoBuilder builder)
         {
-            return builder.WithCertificate(Certificate, CertificateKey);
+            return builder.WithImage(TestSession.GetImageFromDockerfile()).WithCertificate(Certificate, CertificateKey);
         }
 
         protected override MqttClientOptions GetClientOptions()

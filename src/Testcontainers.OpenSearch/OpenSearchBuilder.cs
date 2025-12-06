@@ -4,6 +4,7 @@ namespace Testcontainers.OpenSearch;
 [PublicAPI]
 public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
     public const ushort OpenSearchRestApiPort = 9200;
@@ -19,10 +20,30 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public OpenSearchBuilder()
+        : this(OpenSearchImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags">https://hub.docker.com/r/opensearchproject/opensearch/tags</see>.</param>
+    public OpenSearchBuilder(string image)
         : this(new OpenSearchConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public OpenSearchBuilder(IImage image)
+        : this(new OpenSearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -106,7 +127,6 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     protected override OpenSearchBuilder Init()
     {
         return base.Init()
-            .WithImage(OpenSearchImage)
             .WithPortBinding(OpenSearchRestApiPort, true)
             .WithPortBinding(OpenSearchTransportPort, true)
             .WithPortBinding(OpenSearchPerformanceAnalyzerPort, true)

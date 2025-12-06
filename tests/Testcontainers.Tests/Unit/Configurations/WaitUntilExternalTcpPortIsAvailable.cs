@@ -16,8 +16,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private const ushort UnmappedPort = 49154;
 
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage(CommonImages.Socat)
+    private readonly IContainer _container = new ContainerBuilder(CommonImages.Socat)
       .WithCommand("-v")
       .WithCommand($"TCP-LISTEN:{ListeningPort},crlf,reuseaddr,fork")
       .WithCommand("EXEC:cat")

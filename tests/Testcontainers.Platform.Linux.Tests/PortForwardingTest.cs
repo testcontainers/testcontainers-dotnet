@@ -46,8 +46,7 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public sealed class PortForwardingDefaultConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingDefaultConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
@@ -62,8 +61,7 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public sealed class PortForwardingNetworkConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingNetworkConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))

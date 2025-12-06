@@ -11,7 +11,7 @@ public sealed class OpenSearchBuilderTest
     public void ShouldUseHardcodedDefaultPassword(string image)
     {
         // Given
-        var opensearchContainer = new OpenSearchBuilder().WithImage(image).Build();
+        var opensearchContainer = new OpenSearchBuilder(image).Build();
 
         // When
         var credentials = opensearchContainer.GetCredentials();

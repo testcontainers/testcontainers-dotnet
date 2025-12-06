@@ -6,6 +6,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
 {
     public const string PlaywrightNetworkAlias = "standalone-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PlaywrightImage = "mcr.microsoft.com/playwright:v1.55.1";
 
     public const ushort PlaywrightPort = 8080;
@@ -13,10 +14,30 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PlaywrightBuilder()
+        : this(PlaywrightImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags">https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags</see>.</param>
+    public PlaywrightBuilder(string image)
         : this(new PlaywrightConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PlaywrightBuilder(IImage image)
+        : this(new PlaywrightConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     protected override PlaywrightBuilder Init()
     {
         return base.Init()
-            .WithImage(PlaywrightImage)
             .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(PlaywrightNetworkAlias)
             .WithPortBinding(PlaywrightPort, true)

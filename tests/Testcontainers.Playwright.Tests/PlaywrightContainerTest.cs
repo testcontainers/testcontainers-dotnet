@@ -10,8 +10,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
 
     private PlaywrightContainerTest(PlaywrightContainer playwrightContainer)
     {
-        _helloWorldContainer = new ContainerBuilder()
-            .WithImage(CommonImages.HelloWorld)
+        _helloWorldContainer = new ContainerBuilder(CommonImages.HelloWorld)
             .WithNetwork(playwrightContainer.GetNetwork())
             .WithNetworkAliases(_helloWorldBaseAddress.Host)
             .WithPortBinding(_helloWorldBaseAddress.Port, true)
@@ -82,7 +81,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
     public sealed class PlaywrightDefaultConfiguration : PlaywrightContainerTest
     {
         public PlaywrightDefaultConfiguration()
-            : base(new PlaywrightBuilder().Build())
+            : base(new PlaywrightBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }

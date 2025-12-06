@@ -1,0 +1,1 @@
+﻿FROM ravendb/ravendb:7.1-latest

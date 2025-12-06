@@ -4,6 +4,7 @@ namespace Testcontainers.Minio;
 [PublicAPI]
 public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
 
     public const ushort MinioPort = 9000;
@@ -15,10 +16,30 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MinioBuilder()
+        : this(MinioImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/minio/minio/tags">https://hub.docker.com/r/minio/minio/tags</see>.</param>
+    public MinioBuilder(string image)
         : this(new MinioConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MinioBuilder(IImage image)
+        : this(new MinioConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +88,6 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     protected override MinioBuilder Init()
     {
         return base.Init()
-            .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
             .WithCommand("server", "/data")
             .WithUsername(DefaultUsername)

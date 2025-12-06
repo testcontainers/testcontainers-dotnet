@@ -27,5 +27,10 @@
         <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
     <Import Project="Testcontainers.Db2.Tests.targets" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
 </Project>

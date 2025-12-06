@@ -2,7 +2,7 @@ namespace Testcontainers.EventStoreDb;
 
 public sealed class EventStoreDbContainerTest : IAsyncLifetime
 {
-    private readonly EventStoreDbContainer _eventStoreDbContainer = new EventStoreDbBuilder().Build();
+    private readonly EventStoreDbContainer _eventStoreDbContainer = new EventStoreDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

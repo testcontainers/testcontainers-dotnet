@@ -8,6 +8,7 @@ namespace Testcontainers.Kusto;
 [PublicAPI]
 public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KustoImage = "mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest";
 
     public const ushort KustoPort = 8080;
@@ -15,10 +16,30 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public KustoBuilder()
+        : this(KustoImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public KustoBuilder(string image)
         : this(new KustoConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KustoBuilder(IImage image)
+        : this(new KustoConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -45,7 +66,6 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     protected override KustoBuilder Init()
     {
         return base.Init()
-            .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request

@@ -4,6 +4,7 @@ namespace Testcontainers.Typesense;
 [PublicAPI]
 public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, TypesenseContainer, TypesenseConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string TypesenseImage = "typesense/typesense:28.0";
 
     public const ushort TypesensePort = 8108;
@@ -15,10 +16,30 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public TypesenseBuilder()
+        : this(TypesenseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/typesense/typesense/tags">https://hub.docker.com/r/typesense/typesense/tags</see>.</param>
+    public TypesenseBuilder(string image)
         : this(new TypesenseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public TypesenseBuilder(IImage image)
+        : this(new TypesenseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -65,7 +86,6 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     protected override TypesenseBuilder Init()
     {
         return base.Init()
-            .WithImage(TypesenseImage)
             .WithPortBinding(TypesensePort, true)
             .WithDataDirectory(DefaultDataDirectory)
             .WithApiKey(DefaultApiKey)

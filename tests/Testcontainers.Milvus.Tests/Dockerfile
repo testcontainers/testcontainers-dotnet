@@ -1,0 +1,1 @@
+﻿FROM milvusdb/milvus:v2.6.6

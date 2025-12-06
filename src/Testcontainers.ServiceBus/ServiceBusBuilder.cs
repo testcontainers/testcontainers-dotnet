@@ -8,6 +8,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const string DatabaseNetworkAlias = "database-container";
 
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ServiceBusImage = "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
 
     public const ushort ServiceBusPort = 5672;
@@ -17,10 +18,30 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ServiceBusBuilder()
+        : this(ServiceBusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags</see>.</param>
+    public ServiceBusBuilder(string image)
         : this(new ServiceBusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ServiceBusBuilder(IImage image)
+        : this(new ServiceBusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -128,7 +149,6 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     protected override ServiceBusBuilder Init()
     {
         return base.Init()
-            .WithImage(ServiceBusImage)
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")

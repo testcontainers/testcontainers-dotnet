@@ -35,7 +35,7 @@ public abstract class MilvusContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         // Then
-        Assert.EndsWith(version, MilvusBuilder.MilvusImage);
+        Assert.EndsWith(version, _milvusContainer.Image.Tag);
     }
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -47,7 +47,7 @@ public abstract class MilvusContainerTest : IAsyncLifetime
     public sealed class MilvusDefaultConfiguration : MilvusContainerTest
     {
         public MilvusDefaultConfiguration()
-            : base(new MilvusBuilder().Build())
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -61,10 +61,9 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         }
 
         private MilvusSidecarConfiguration(INetwork network)
-            : base(new MilvusBuilder()
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile())
                 .WithEtcdEndpoint("etcd:2379")
-                .DependsOn(new ContainerBuilder()
-                    .WithImage("quay.io/coreos/etcd:v3.5.5")
+                .DependsOn(new ContainerBuilder("quay.io/coreos/etcd:v3.5.5")
                     .WithNetworkAliases("etcd")
                     .WithCommand("etcd")
                     .WithCommand("-advertise-client-urls=http://127.0.0.1:2379")

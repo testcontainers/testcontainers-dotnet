@@ -4,6 +4,7 @@ namespace Testcontainers.ArangoDb;
 [PublicAPI]
 public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ArangoDbImage = "arangodb:3.11.5";
 
     public const ushort ArangoDbPort = 8529;
@@ -15,10 +16,30 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ArangoDbBuilder()
+        : this(ArangoDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/arangodb/tags">https://hub.docker.com/_/arangodb/tags</see>.</param>
+    public ArangoDbBuilder(string image)
         : this(new ArangoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ArangoDbBuilder(IImage image)
+        : this(new ArangoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -56,7 +77,6 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     protected override ArangoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(ArangoDbImage)
             .WithPortBinding(ArangoDbPort, true)
             .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Have fun!"));

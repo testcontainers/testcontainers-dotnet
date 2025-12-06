@@ -4,6 +4,7 @@ namespace Testcontainers.BigQuery;
 [PublicAPI]
 public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
 
     public const ushort BigQueryPort = 9050;
@@ -13,10 +14,30 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public BigQueryBuilder()
+        : this(BigQueryImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator">https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator</see>.</param>
+    public BigQueryBuilder(string image)
         : this(new BigQueryConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public BigQueryBuilder(IImage image)
+        : this(new BigQueryConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -53,7 +74,6 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     protected override BigQueryBuilder Init()
     {
         return base.Init()
-            .WithImage(BigQueryImage)
             .WithPortBinding(BigQueryPort, true)
             .WithProject(DefaultProjectId)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));

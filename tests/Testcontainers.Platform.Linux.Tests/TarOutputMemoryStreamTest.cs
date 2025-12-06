@@ -143,8 +143,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             targetFilePaths.Add(string.Join("/", targetDirectoryPath4, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath5, _testFile.Name));
 
-            await using var container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
@@ -198,8 +197,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             targetFilePaths.Add(targetFilePath1);
             targetFilePaths.Add(targetFilePath2);
 
-            await using var container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithResourceMapping(resourceContent, targetFilePath1, uid, gid, mode)
                 .Build();
@@ -223,8 +221,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         {
             private const ushort HttpPort = 80;
 
-            private readonly IContainer _container = new ContainerBuilder()
-                .WithImage(CommonImages.Socat)
+            private readonly IContainer _container = new ContainerBuilder(CommonImages.Socat)
                 .WithCommand("-v")
                 .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
                 .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")

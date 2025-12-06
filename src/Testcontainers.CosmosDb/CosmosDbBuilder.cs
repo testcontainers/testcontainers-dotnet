@@ -4,6 +4,7 @@ namespace Testcontainers.CosmosDb;
 [PublicAPI]
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
 
     public const ushort CosmosDbPort = 8081;
@@ -13,10 +14,30 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public CosmosDbBuilder()
+        : this(CosmosDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public CosmosDbBuilder(string image)
         : this(new CosmosDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CosmosDbBuilder(IImage image)
+        : this(new CosmosDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CosmosDbImage)
             .WithPortBinding(CosmosDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }

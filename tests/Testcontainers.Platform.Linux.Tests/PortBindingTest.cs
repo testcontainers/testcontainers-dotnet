@@ -6,7 +6,7 @@ public abstract class PortBindingTest : IAsyncLifetime
 
     private PortBindingTest(ushort[] expectedPorts)
     {
-        var containerBuilder = new ContainerBuilder().WithImage(CommonImages.Alpine).WithEntrypoint(CommonCommands.SleepInfinity);
+        var containerBuilder = new ContainerBuilder(CommonImages.Alpine).WithEntrypoint(CommonCommands.SleepInfinity);
         _container = expectedPorts.Aggregate(containerBuilder, (builder, port) => builder.WithPortBinding(port, true)).Build();
     }
 
