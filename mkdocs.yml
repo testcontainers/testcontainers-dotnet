@@ -40,6 +40,7 @@ nav:
   - api/resource_reaper.md
   - api/resource_reuse.md
   - api/wait_strategies.md
+  - api/connection_string_provider.md
   - api/best_practices.md
   - dind/index.md
   - full_framework/index.md

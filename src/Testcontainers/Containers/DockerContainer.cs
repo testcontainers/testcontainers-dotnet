@@ -29,6 +29,8 @@ namespace DotNet.Testcontainers.Containers
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
 
+    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
     /// </summary>
@@ -416,6 +418,28 @@ namespace DotNet.Testcontainers.Containers
       return _client.ExecAsync(Id, command, ct);
     }
 
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(connectionMode);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(name, connectionMode);
+    }
+
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -560,6 +584,13 @@ namespace DotNet.Testcontainers.Containers
       Logger.CompleteReadinessCheck(_container.ID);
 
       StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+
+      if (_configuration.ConnectionStringProvider != null)
+      {
+        _connectionStringProvider = _configuration.ConnectionStringProvider;
+        _connectionStringProvider.Configure(this, _configuration);
+      }
+
       Started?.Invoke(this, EventArgs.Empty);
     }
 

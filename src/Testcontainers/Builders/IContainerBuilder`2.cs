@@ -21,6 +21,8 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
   public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity, out TConfigurationEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
+    where TContainerEntity : IContainer
+    where TConfigurationEntity : IContainerConfiguration
   {
     /// <summary>
     /// Accepts the license agreement.
@@ -500,5 +502,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithStartupCallback(Func<TContainerEntity, TConfigurationEntity, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets the connection string provider.
+    /// </summary>
+    /// <param name="connectionStringProvider">The connection string provider.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider);
   }
 }
