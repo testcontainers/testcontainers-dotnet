@@ -4,7 +4,7 @@ namespace Testcontainers.Sftp;
 [PublicAPI]
 public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, SftpConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string SftpImage = "atmoz/sftp:alpine";
 
     public const ushort SftpPort = 22;
@@ -18,7 +18,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public SftpBuilder()
         : this(SftpImage)
     {

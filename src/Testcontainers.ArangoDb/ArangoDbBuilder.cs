@@ -4,7 +4,7 @@ namespace Testcontainers.ArangoDb;
 [PublicAPI]
 public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ArangoDbImage = "arangodb:3.11.5";
 
     public const ushort ArangoDbPort = 8529;
@@ -16,7 +16,7 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ArangoDbBuilder()
         : this(ArangoDbImage)
     {

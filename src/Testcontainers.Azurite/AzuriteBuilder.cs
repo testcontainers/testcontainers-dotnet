@@ -4,7 +4,7 @@ namespace Testcontainers.Azurite;
 [PublicAPI]
 public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteContainer, AzuriteConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string AzuriteImage = "mcr.microsoft.com/azure-storage/azurite:3.28.0";
 
     public const ushort BlobPort = 10000;
@@ -29,7 +29,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public AzuriteBuilder()
         : this(AzuriteImage)
     {

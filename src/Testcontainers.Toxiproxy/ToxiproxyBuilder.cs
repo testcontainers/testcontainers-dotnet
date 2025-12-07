@@ -4,7 +4,7 @@ namespace Testcontainers.Toxiproxy;
 [PublicAPI]
 public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, ToxiproxyContainer, ToxiproxyConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy:2.12.0";
 
     public const ushort ToxiproxyControlPort = 8474;
@@ -16,7 +16,7 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ToxiproxyBuilder()
         : this(ToxiproxyImage)
     {

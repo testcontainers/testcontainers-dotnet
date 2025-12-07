@@ -4,7 +4,7 @@ namespace Testcontainers.RavenDb;
 [PublicAPI]
 public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbContainer, RavenDbConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RavenDbImage = "ravendb/ravendb:5.4-ubuntu-latest";
 
     public const ushort RavenDbPort = 8080;
@@ -12,7 +12,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="RavenDbBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public RavenDbBuilder()
         : this(RavenDbImage)
     {

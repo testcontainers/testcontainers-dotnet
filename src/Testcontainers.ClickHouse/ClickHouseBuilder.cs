@@ -4,7 +4,7 @@ namespace Testcontainers.ClickHouse;
 [PublicAPI]
 public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ClickHouseImage = "clickhouse/clickhouse-server:23.6-alpine";
 
     public const ushort HttpPort = 8123;
@@ -20,7 +20,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ClickHouseBuilder()
         : this(ClickHouseImage)
     {

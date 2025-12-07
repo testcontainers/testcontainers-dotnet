@@ -4,7 +4,7 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
     public const ushort RedpandaPort = 9092;
@@ -16,7 +16,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public RedpandaBuilder()
         : this(RedpandaImage)
     {

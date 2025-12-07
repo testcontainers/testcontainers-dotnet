@@ -8,7 +8,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     public const string AzuriteNetworkAlias = "azurite-container";
 
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
@@ -18,7 +18,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public EventHubsBuilder()
         : this(EventHubsImage)
     {

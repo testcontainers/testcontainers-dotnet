@@ -4,7 +4,7 @@ namespace Testcontainers.Mosquitto;
 [PublicAPI]
 public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MosquittoImage = "eclipse-mosquitto:2.0";
 
     public const ushort MqttPort = 1883;
@@ -22,7 +22,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// <summary>
     /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MosquittoBuilder()
         : this(MosquittoImage)
     {

@@ -4,7 +4,7 @@ namespace Testcontainers.FakeGcsServer;
 [PublicAPI]
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47";
 
     public const ushort FakeGcsServerPort = 4443;
@@ -14,7 +14,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public FakeGcsServerBuilder()
         : this(FakeGcsServerImage)
     {

@@ -4,7 +4,7 @@ namespace Testcontainers.JanusGraph;
 [PublicAPI]
 public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0";
 
     public const ushort JanusGraphPort = 8182;
@@ -12,7 +12,7 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// <summary>
     /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public JanusGraphBuilder()
         : this(JanusGraphImage)
     {

@@ -6,7 +6,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
 {
     public const string PlaywrightNetworkAlias = "standalone-container";
 
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PlaywrightImage = "mcr.microsoft.com/playwright:v1.55.1";
 
     public const ushort PlaywrightPort = 8080;
@@ -14,7 +14,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public PlaywrightBuilder()
         : this(PlaywrightImage)
     {

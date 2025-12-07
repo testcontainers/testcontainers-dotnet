@@ -4,7 +4,7 @@ namespace Testcontainers.MariaDb;
 [PublicAPI]
 public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MariaDbImage = "mariadb:10.10";
 
     public const ushort MariaDbPort = 3306;
@@ -18,7 +18,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MariaDbBuilder()
         : this(MariaDbImage)
     {

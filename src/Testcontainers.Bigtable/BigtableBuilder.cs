@@ -4,7 +4,7 @@ namespace Testcontainers.Bigtable;
 [PublicAPI]
 public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, BigtableContainer, BigtableConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort BigtablePort = 9000;
@@ -12,7 +12,7 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     /// <summary>
     /// Initializes a new instance of the <see cref="BigtableBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public BigtableBuilder()
         : this(GoogleCloudCliImage)
     {

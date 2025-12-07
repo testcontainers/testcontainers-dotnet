@@ -9,6 +9,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 {
     public const string WebDriverNetworkAlias = "standalone-container";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FFmpegNetworkAlias = "ffmpeg-container";
 
     public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20230306";
@@ -22,7 +23,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public WebDriverBuilder()
         : this(WebDriverBrowser.Chrome.Image)
     {
@@ -102,11 +103,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Enables the video recording.
     /// </summary>
-    /// <param name="fFmpegImage">The FFmpeg image tag to use for recording.</param>
+    /// <param name="ffmpegImage">The FFmpeg image to use for recording.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithRecording(string fFmpegImage = FFmpegImage)
+    public WebDriverBuilder WithRecording(string ffmpegImage = FFmpegImage)
     {
-        var ffmpegContainer = new ContainerBuilder(fFmpegImage)
+        var ffmpegContainer = new ContainerBuilder(ffmpegImage)
             .WithNetwork(DockerResourceConfiguration.Networks.Single())
             .WithNetworkAliases(FFmpegNetworkAlias)
             .WithEnvironment("FILE_NAME", Path.GetFileName(VideoFilePath))

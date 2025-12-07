@@ -4,7 +4,7 @@ namespace Testcontainers.Consul;
 [PublicAPI]
 public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ConsulImage = "consul:1.15";
 
     public const int ConsulHttpPort = 8500;
@@ -14,7 +14,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
     /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ConsulBuilder()
         : this(ConsulImage)
     {
