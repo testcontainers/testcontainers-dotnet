@@ -26,7 +26,6 @@
         <Project Path="src/Testcontainers.DynamoDb/Testcontainers.DynamoDb.csproj"/>
         <Project Path="src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
         <Project Path="src/Testcontainers.EventHubs/Testcontainers.EventHubs.csproj"/>
-        <Project Path="src/Testcontainers.EventStoreDb/Testcontainers.EventStoreDb.csproj"/>
         <Project Path="src/Testcontainers.FakeGcsServer/Testcontainers.FakeGcsServer.csproj"/>
         <Project Path="src/Testcontainers.FirebirdSql/Testcontainers.FirebirdSql.csproj"/>
         <Project Path="src/Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>

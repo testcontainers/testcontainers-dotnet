@@ -39,6 +39,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
+    /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <param name="autoRemove">A value indicating whether Docker removes the container after it exits or not.</param>
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(

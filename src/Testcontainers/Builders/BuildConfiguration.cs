@@ -42,9 +42,29 @@ namespace DotNet.Testcontainers.Builders
         return Array.Empty<T>();
       }
 
-      if (newValue == null || oldValue == null)
+      if (newValue == null)
       {
-        return newValue ?? oldValue;
+        return oldValue;
+      }
+
+      if (oldValue == null)
+      {
+        return newValue;
+      }
+
+      if (newValue is ICollection<T> collection && collection.Count == 0)
+      {
+        return oldValue;
+      }
+
+      if (oldValue is not ICollection<T>)
+      {
+        oldValue = oldValue.ToArray();
+      }
+
+      if (newValue is not ICollection<T>)
+      {
+        newValue = newValue.ToArray();
       }
 
       return oldValue.Concat(newValue).ToArray();
@@ -68,9 +88,19 @@ namespace DotNet.Testcontainers.Builders
         return Array.Empty<T>();
       }
 
-      if (newValue == null || oldValue == null)
+      if (newValue == null)
       {
-        return newValue ?? oldValue;
+        return oldValue;
+      }
+
+      if (oldValue == null)
+      {
+        return newValue;
+      }
+
+      if (newValue.Count == 0)
+      {
+        return oldValue;
       }
 
       return oldValue.Concat(newValue).ToArray();
@@ -128,9 +158,19 @@ namespace DotNet.Testcontainers.Builders
         return new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
       }
 
-      if (newValue == null || oldValue == null)
+      if (newValue == null)
       {
-        return newValue ?? oldValue;
+        return oldValue;
+      }
+
+      if (oldValue == null)
+      {
+        return newValue;
+      }
+
+      if (newValue.Count == 0)
+      {
+        return oldValue;
       }
 
       var result = new Dictionary<TKey, TValue>(oldValue.Count + newValue.Count);

@@ -38,7 +38,7 @@ internal sealed class DockerfileParser
         var stages = fromMatches
             .Select(match => new
             {
-                Stage = match.Value.Split(separator, options).Skip(1).DefaultIfEmpty(string.Empty).First(),
+                Stage = match.Value.Split(separator, options).Skip(1).FirstOrDefault(string.Empty),
                 Image = match.Groups[imageGroup].Value,
             })
             .ToDictionary(
