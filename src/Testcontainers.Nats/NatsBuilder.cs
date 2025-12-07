@@ -4,6 +4,7 @@ namespace Testcontainers.Nats;
 [PublicAPI]
 public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, NatsConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string NatsImage = "nats:2.9";
 
     public const ushort NatsClientPort = 4222;
@@ -15,10 +16,30 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public NatsBuilder()
+        : this(NatsImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/nats/tags">https://hub.docker.com/_/nats/tags</see>.</param>
+    public NatsBuilder(string image)
         : this(new NatsConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public NatsBuilder(IImage image)
+        : this(new NatsConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +88,6 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     protected override NatsBuilder Init()
     {
         return base.Init()
-            .WithImage(NatsImage)
             .WithPortBinding(NatsClientPort, true)
             .WithPortBinding(NatsHttpManagementPort, true)
             .WithPortBinding(NatsClusterRoutingPort, true)

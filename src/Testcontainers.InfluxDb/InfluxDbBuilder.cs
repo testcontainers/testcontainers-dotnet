@@ -4,6 +4,7 @@ namespace Testcontainers.InfluxDb;
 [PublicAPI]
 public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string InfluxDbImage = "influxdb:2.7";
 
     public const ushort InfluxDbPort = 8086;
@@ -19,10 +20,30 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public InfluxDbBuilder()
+        : this(InfluxDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/influxdb/tags">https://hub.docker.com/_/influxdb/tags</see>.</param>
+    public InfluxDbBuilder(string image)
         : this(new InfluxDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public InfluxDbBuilder(IImage image)
+        : this(new InfluxDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -115,7 +136,6 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     protected override InfluxDbBuilder Init()
     {
         return base.Init()
-            .WithImage(InfluxDbImage)
             .WithPortBinding(InfluxDbPort, true)
             .WithEnvironment("DOCKER_INFLUXDB_INIT_MODE", "setup")
             .WithUsername(DefaultUsername)

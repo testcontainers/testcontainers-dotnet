@@ -4,6 +4,7 @@ namespace Testcontainers.Grafana;
 [PublicAPI]
 public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaContainer, GrafanaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GrafanaImage = "grafana/grafana:12.2";
 
     public const ushort GrafanaPort = 3000;
@@ -15,10 +16,30 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// <summary>
     /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public GrafanaBuilder()
+        : this(GrafanaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/grafana/grafana/tags">https://hub.docker.com/r/grafana/grafana/tags</see>.</param>
+    public GrafanaBuilder(string image)
         : this(new GrafanaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public GrafanaBuilder(IImage image)
+        : this(new GrafanaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -77,7 +98,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     protected override GrafanaBuilder Init()
     {
         return base.Init()
-            .WithImage(GrafanaImage)
             .WithPortBinding(GrafanaPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

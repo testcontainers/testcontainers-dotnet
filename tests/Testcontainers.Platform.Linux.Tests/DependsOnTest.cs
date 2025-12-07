@@ -17,13 +17,11 @@ public sealed class DependsOnTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        var childContainer1 = new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        var childContainer1 = new ContainerBuilder(CommonImages.Alpine)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
-        var childContainer2 = new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        var childContainer2 = new ContainerBuilder(CommonImages.Alpine)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
@@ -35,12 +33,11 @@ public sealed class DependsOnTest : IAsyncLifetime
             .WithLabel(_labelKey, _labelValue)
             .Build();
 
-        var parentContainer = new ContainerBuilder()
+        var parentContainer = new ContainerBuilder(CommonImages.Alpine)
             .DependsOn(childContainer1)
             .DependsOn(childContainer2)
             .DependsOn(network)
             .DependsOn(volume, "/workdir")
-            .WithImage(CommonImages.Alpine)
             .WithLabel(_labelKey, _labelValue)
             .Build();
 

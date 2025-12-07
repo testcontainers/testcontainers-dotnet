@@ -4,6 +4,7 @@ namespace Testcontainers.Consul;
 [PublicAPI]
 public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ConsulImage = "consul:1.15";
 
     public const int ConsulHttpPort = 8500;
@@ -13,10 +14,30 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ConsulBuilder()
+        : this(ConsulImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/hashicorp/consul/tags">https://hub.docker.com/r/hashicorp/consul/tags</see>.</param>
+    public ConsulBuilder(string image)
         : this(new ConsulConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ConsulBuilder(IImage image)
+        : this(new ConsulConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     protected override ConsulBuilder Init()
     {
         return base.Init()
-            .WithImage(ConsulImage)
             .WithPortBinding(ConsulHttpPort, true)
             .WithPortBinding(ConsulGrpcPort, true)
             .WithCommand("agent", "-dev", "-client", "0.0.0.0")

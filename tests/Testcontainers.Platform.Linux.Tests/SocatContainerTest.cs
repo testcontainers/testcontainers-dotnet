@@ -15,8 +15,7 @@ public sealed class SocatContainerTest : IAsyncLifetime
         _network = new NetworkBuilder()
             .Build();
 
-        _helloWorldContainer = new ContainerBuilder()
-            .WithImage(CommonImages.HelloWorld)
+        _helloWorldContainer = new ContainerBuilder(CommonImages.HelloWorld)
             .WithNetwork(_network)
             .WithNetworkAliases(HelloWorldAlias)
             .Build();

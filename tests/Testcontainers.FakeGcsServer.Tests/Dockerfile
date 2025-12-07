@@ -1,0 +1,1 @@
+﻿FROM fsouza/fake-gcs-server:1

@@ -2,7 +2,7 @@ namespace Testcontainers.LowkeyVault;
 
 public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 {
-    private readonly LowkeyVaultContainer _lowkeyVaultContainer = new LowkeyVaultBuilder().Build();
+    private readonly LowkeyVaultContainer _lowkeyVaultContainer = new LowkeyVaultBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     protected abstract TokenCredential GetTokenCredential();
 

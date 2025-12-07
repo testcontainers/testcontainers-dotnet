@@ -2,7 +2,7 @@ namespace Testcontainers.Bigtable;
 
 public sealed class BigtableContainerTest : IAsyncLifetime
 {
-    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder().Build();
+    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

@@ -1,0 +1,1 @@
+﻿FROM rabbitmq:4

@@ -4,6 +4,7 @@ namespace Testcontainers.Qdrant;
 [PublicAPI]
 public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string QdrantImage = "qdrant/qdrant:v1.13.4";
 
     public const ushort QdrantHttpPort = 6333;
@@ -17,10 +18,30 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// <summary>
     /// Initializes a new instance of the <see cref="QdrantBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public QdrantBuilder()
+        : this(QdrantImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QdrantBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/qdrant/qdrant/tags">https://hub.docker.com/r/qdrant/qdrant/tags</see>.</param>
+    public QdrantBuilder(string image)
         : this(new QdrantConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QdrantBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public QdrantBuilder(IImage image)
+        : this(new QdrantConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -78,7 +99,6 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     protected override QdrantBuilder Init()
     {
         return base.Init()
-            .WithImage(QdrantImage)
             .WithPortBinding(QdrantHttpPort, true)
             .WithPortBinding(QdrantGrpcPort, true);
     }

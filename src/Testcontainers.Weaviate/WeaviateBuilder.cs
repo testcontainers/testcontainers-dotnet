@@ -4,6 +4,7 @@ namespace Testcontainers.Weaviate;
 [PublicAPI]
 public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, WeaviateContainer, WeaviateConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string WeaviateImage = "semitechnologies/weaviate:1.26.14";
 
     public const ushort WeaviateHttpPort = 8080;
@@ -13,8 +14,28 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
     /// </summary>
-    public WeaviateBuilder() : this(new WeaviateConfiguration())
-        => DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    public WeaviateBuilder() : this(WeaviateImage) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags">https://hub.docker.com/r/semitechnologies/weaviate/tags</see>.</param>
+    public WeaviateBuilder(string image)
+        : this(new WeaviateConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public WeaviateBuilder(IImage image)
+        : this(new WeaviateConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
@@ -36,7 +57,6 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <inheritdoc />
     protected override WeaviateBuilder Init()
         => base.Init()
-            .WithImage(WeaviateImage)
             .WithPortBinding(WeaviateHttpPort, true)
             .WithPortBinding(WeaviateGrpcPort, true)
             .WithEnvironment("AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED", "true")

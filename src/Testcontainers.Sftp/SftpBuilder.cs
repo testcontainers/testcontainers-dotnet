@@ -4,6 +4,7 @@ namespace Testcontainers.Sftp;
 [PublicAPI]
 public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, SftpConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string SftpImage = "atmoz/sftp:alpine";
 
     public const ushort SftpPort = 22;
@@ -17,10 +18,30 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public SftpBuilder()
+        : this(SftpImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/atmoz/sftp/tags">https://hub.docker.com/r/atmoz/sftp/tags</see>.</param>
+    public SftpBuilder(string image)
         : this(new SftpConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public SftpBuilder(IImage image)
+        : this(new SftpConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -86,7 +107,6 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     protected override SftpBuilder Init()
     {
         return base.Init()
-            .WithImage(SftpImage)
             .WithPortBinding(SftpPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

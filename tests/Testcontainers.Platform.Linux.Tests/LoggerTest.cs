@@ -11,8 +11,7 @@ public abstract class LoggerTest : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        await new ContainerBuilder(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
             .WithLogger(_fakeLogger)
             .Build()

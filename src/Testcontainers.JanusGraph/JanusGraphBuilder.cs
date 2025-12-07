@@ -4,6 +4,7 @@ namespace Testcontainers.JanusGraph;
 [PublicAPI]
 public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, JanusGraphContainer, JanusGraphConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string JanusGraphImage = "janusgraph/janusgraph:1.0.0";
 
     public const ushort JanusGraphPort = 8182;
@@ -11,10 +12,30 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// <summary>
     /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public JanusGraphBuilder()
+        : this(JanusGraphImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags">https://hub.docker.com/r/janusgraph/janusgraph/tags</see>.</param>
+    public JanusGraphBuilder(string image)
         : this(new JanusGraphConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public JanusGraphBuilder(IImage image)
+        : this(new JanusGraphConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +62,6 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     protected override JanusGraphBuilder Init()
     {
         return base.Init()
-            .WithImage(JanusGraphImage)
             .WithPortBinding(JanusGraphPort, true)
             .WithEnvironment("janusgraph.storage.backend", "inmemory")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Channel started at port"));

@@ -1,0 +1,1 @@
+﻿FROM semitechnologies/weaviate:1.34.2

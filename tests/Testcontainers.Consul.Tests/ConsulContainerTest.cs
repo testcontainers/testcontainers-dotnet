@@ -2,7 +2,7 @@ namespace Testcontainers.Consul;
 
 public sealed class ConsulContainerTest : IAsyncLifetime
 {
-    private readonly ConsulContainer _consulContainer = new ConsulBuilder().Build();
+    private readonly ConsulContainer _consulContainer = new ConsulBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

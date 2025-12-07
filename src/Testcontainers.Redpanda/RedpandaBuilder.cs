@@ -4,6 +4,7 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
     public const ushort RedpandaPort = 9092;
@@ -15,10 +16,30 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public RedpandaBuilder()
+        : this(RedpandaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/redpandadata/redpanda/tags">https://hub.docker.com/r/redpandadata/redpanda/tags</see>.</param>
+    public RedpandaBuilder(string image)
         : this(new RedpandaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public RedpandaBuilder(IImage image)
+        : this(new RedpandaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -45,7 +66,6 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     protected override RedpandaBuilder Init()
     {
         return base.Init()
-            .WithImage(RedpandaImage)
             .WithPortBinding(SchemaRegistryPort, true)
             .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")

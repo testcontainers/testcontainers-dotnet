@@ -4,6 +4,7 @@ namespace Testcontainers.FirebirdSql;
 [PublicAPI]
 public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
 
     public const ushort FirebirdSqlPort = 3050;
@@ -21,10 +22,30 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public FirebirdSqlBuilder()
+        : this(FirebirdSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/firebirdsql/firebird/tags">https://hub.docker.com/r/firebirdsql/firebird/tags</see>.</param>
+    public FirebirdSqlBuilder(string image)
         : this(new FirebirdSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public FirebirdSqlBuilder(IImage image)
+        : this(new FirebirdSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +106,6 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     protected override FirebirdSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(FirebirdSqlImage)
             .WithPortBinding(FirebirdSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

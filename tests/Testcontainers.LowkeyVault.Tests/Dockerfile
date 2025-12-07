@@ -1,0 +1,1 @@
+﻿FROM nagyesta/lowkey-vault:5.0.14

@@ -4,6 +4,7 @@ namespace Testcontainers.Papercut;
 [PublicAPI]
 public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, PapercutContainer, PapercutConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PapercutImage = "changemakerstudiosus/papercut-smtp:7.0";
 
     public const ushort SmtpPort = 2525;
@@ -13,10 +14,30 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     /// <summary>
     /// Initializes a new instance of the <see cref="PapercutBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PapercutBuilder()
+        : this(PapercutImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PapercutBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/changemakerstudiosus/papercut-smtp/tags">https://hub.docker.com/r/changemakerstudiosus/papercut-smtp/tags</see>.</param>
+    public PapercutBuilder(string image)
         : this(new PapercutConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PapercutBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PapercutBuilder(IImage image)
+        : this(new PapercutConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     protected override PapercutBuilder Init()
     {
         return base.Init()
-            .WithImage(PapercutImage)
             .WithPortBinding(SmtpPort, true)
             .WithPortBinding(HttpPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>

@@ -4,6 +4,7 @@ namespace Testcontainers.LocalStack;
 [PublicAPI]
 public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, LocalStackContainer, LocalStackConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string LocalStackImage = "localstack/localstack:2.0";
 
     public const ushort LocalStackPort = 4566;
@@ -11,10 +12,30 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public LocalStackBuilder()
+        : this(LocalStackImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/localstack/localstack/tags">https://hub.docker.com/r/localstack/localstack/tags</see>.</param>
+    public LocalStackBuilder(string image)
         : this(new LocalStackConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public LocalStackBuilder(IImage image)
+        : this(new LocalStackConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +62,6 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     protected override LocalStackBuilder Init()
     {
         return base.Init()
-            .WithImage(LocalStackImage)
             .WithPortBinding(LocalStackPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_localstack/health").ForPort(LocalStackPort)));

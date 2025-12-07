@@ -4,6 +4,7 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2Configuration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
 
     public const ushort Db2Port = 50000;
@@ -17,10 +18,30 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public Db2Builder()
+        : this(Db2Image)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag.</param>
+    public Db2Builder(string image)
         : this(new Db2Configuration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public Db2Builder(IImage image)
+        : this(new Db2Configuration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -103,7 +124,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
     /// <inheritdoc />
     protected override Db2Builder Init() => base.Init()
-        .WithImage(Db2Image)
         .WithPortBinding(Db2Port, true)
         .WithDatabase(DefaultDatabase)
         .WithUsername(DefaultUsername)

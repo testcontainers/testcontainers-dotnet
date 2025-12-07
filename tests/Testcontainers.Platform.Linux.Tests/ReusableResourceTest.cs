@@ -28,8 +28,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     {
         for (var _ = 0; _ < 3; _++)
         {
-            var container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithLabel(_labelKey, _labelValue)
                 .WithReuse(true)

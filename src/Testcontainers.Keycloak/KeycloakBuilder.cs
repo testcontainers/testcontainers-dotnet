@@ -4,6 +4,7 @@ namespace Testcontainers.Keycloak;
 [PublicAPI]
 public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1";
 
     public const ushort KeycloakPort = 8080;
@@ -17,10 +18,30 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public KeycloakBuilder()
+        : this(KeycloakImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://quay.io/repository/keycloak/keycloak?tab=tags">https://quay.io/repository/keycloak/keycloak?tab=tags</see>.</param>
+    public KeycloakBuilder(string image)
         : this(new KeycloakConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KeycloakBuilder(IImage image)
+        : this(new KeycloakConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -101,7 +122,6 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     protected override KeycloakBuilder Init()
     {
         return base.Init()
-            .WithImage(KeycloakImage)
             .WithCommand("start-dev")
             .WithPortBinding(KeycloakPort, true)
             .WithPortBinding(KeycloakHealthPort, true)

@@ -1,0 +1,1 @@
+﻿FROM mariadb:12

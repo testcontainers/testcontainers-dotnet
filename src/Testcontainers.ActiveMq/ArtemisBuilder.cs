@@ -4,6 +4,7 @@ namespace Testcontainers.ActiveMq;
 [PublicAPI]
 public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisContainer, ActiveMqConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ArtemisImage = "apache/activemq-artemis:2.31.2";
 
     public const ushort ArtemisMainPort = 61616;
@@ -17,10 +18,30 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// <summary>
     /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ArtemisBuilder()
+        : this(ArtemisImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/apache/activemq-artemis/tags">https://hub.docker.com/r/apache/activemq-artemis/tags</see>.</param>
+    public ArtemisBuilder(string image)
         : this(new ActiveMqConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArtemisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ArtemisBuilder(IImage image)
+        : this(new ActiveMqConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -69,7 +90,6 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     protected override ArtemisBuilder Init()
     {
         return base.Init()
-            .WithImage(ArtemisImage)
             .WithPortBinding(ArtemisMainPort, true)
             .WithPortBinding(ArtemisConsolePort, true)
             .WithUsername(DefaultUsername)

@@ -4,6 +4,7 @@ namespace Testcontainers.ClickHouse;
 [PublicAPI]
 public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string ClickHouseImage = "clickhouse/clickhouse-server:23.6-alpine";
 
     public const ushort HttpPort = 8123;
@@ -19,10 +20,30 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public ClickHouseBuilder()
+        : this(ClickHouseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/clickhouse/tags">https://hub.docker.com/_/clickhouse/tags</see>.</param>
+    public ClickHouseBuilder(string image)
         : this(new ClickHouseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public ClickHouseBuilder(IImage image)
+        : this(new ClickHouseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -82,7 +103,6 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     protected override ClickHouseBuilder Init()
     {
         return base.Init()
-            .WithImage(ClickHouseImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(NativePort, true)
             .WithDatabase(DefaultDatabase)

@@ -4,6 +4,7 @@ namespace Testcontainers.Ollama;
 [PublicAPI]
 public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContainer, OllamaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OllamaImage = "ollama/ollama:0.6.6";
 
     public const ushort OllamaPort = 11434;
@@ -11,10 +12,30 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public OllamaBuilder()
+        : this(OllamaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/ollama/ollama/tags">https://hub.docker.com/r/ollama/ollama/tags</see>.</param>
+    public OllamaBuilder(string image)
         : this(new OllamaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public OllamaBuilder(IImage image)
+        : this(new OllamaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +62,6 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     protected override OllamaBuilder Init()
     {
         return base.Init()
-            .WithImage(OllamaImage)
             .WithPortBinding(OllamaPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/api/version").ForPort(OllamaPort)));

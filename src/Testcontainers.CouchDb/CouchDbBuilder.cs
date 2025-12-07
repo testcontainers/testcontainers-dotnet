@@ -4,6 +4,7 @@ namespace Testcontainers.CouchDb;
 [PublicAPI]
 public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CouchDbImage = "couchdb:3.3";
 
     public const ushort CouchDbPort = 5984;
@@ -15,10 +16,30 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public CouchDbBuilder()
+        : this(CouchDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/couchdb/tags">https://hub.docker.com/_/couchdb/tags</see>.</param>
+    public CouchDbBuilder(string image)
         : this(new CouchDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CouchDbBuilder(IImage image)
+        : this(new CouchDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +88,6 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     protected override CouchDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchDbImage)
             .WithPortBinding(CouchDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

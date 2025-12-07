@@ -4,6 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
     public const ushort PulsarBrokerDataPort = 6650;
@@ -21,10 +22,30 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PulsarBuilder()
+        : this(PulsarImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags">https://hub.docker.com/r/apachepulsar/pulsar/tags</see>.</param>
+    public PulsarBuilder(string image)
         : this(new PulsarConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PulsarBuilder(IImage image)
+        : this(new PulsarConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -90,7 +111,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Init()
     {
         return base.Init()
-            .WithImage(PulsarImage)
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)

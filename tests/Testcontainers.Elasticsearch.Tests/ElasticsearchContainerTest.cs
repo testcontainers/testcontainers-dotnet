@@ -52,7 +52,7 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     public sealed class ElasticsearchDefaultConfiguration : ElasticsearchContainerTest
     {
         public ElasticsearchDefaultConfiguration()
-            : base(new ElasticsearchBuilder().Build())
+            : base(new ElasticsearchBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -61,7 +61,7 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     public sealed class ElasticsearchAuthConfiguration : ElasticsearchContainerTest
     {
         public ElasticsearchAuthConfiguration()
-            : base(new ElasticsearchBuilder().WithPassword("some-password").Build())
+            : base(new ElasticsearchBuilder(TestSession.GetImageFromDockerfile()).WithPassword("some-password").Build())
         {
         }
     }

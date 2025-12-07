@@ -4,6 +4,7 @@ namespace Testcontainers.Mosquitto;
 [PublicAPI]
 public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MosquittoImage = "eclipse-mosquitto:2.0";
 
     public const ushort MqttPort = 1883;
@@ -21,10 +22,30 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// <summary>
     /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MosquittoBuilder()
+        : this(MosquittoImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/eclipse-mosquitto/tags">https://hub.docker.com/_/eclipse-mosquitto/tags</see>.</param>
+    public MosquittoBuilder(string image)
         : this(new MosquittoConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MosquittoBuilder(IImage image)
+        : this(new MosquittoConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -115,7 +136,6 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     protected override MosquittoBuilder Init()
     {
         return base.Init()
-            .WithImage(MosquittoImage)
             .WithPortBinding(MqttPort, true)
             .WithPortBinding(MqttWsPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));

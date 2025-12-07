@@ -63,7 +63,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakDefaultConfiguration : KeycloakContainerTest
     {
         public KeycloakDefaultConfiguration()
-            : base(new KeycloakBuilder().Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -72,7 +72,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV25Configuration : KeycloakContainerTest
     {
         public KeycloakV25Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak25.0")).Build())
         {
         }
     }
@@ -81,7 +81,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV26Configuration : KeycloakContainerTest
     {
         public KeycloakV26Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak26.0")).Build())
         {
         }
     }
@@ -90,7 +90,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakRealmConfiguration : KeycloakContainerTest
     {
         public KeycloakRealmConfiguration()
-            : base(new KeycloakBuilder().WithRealm("realm-export.json").Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile()).WithRealm("realm-export.json").Build())
         {
         }
 

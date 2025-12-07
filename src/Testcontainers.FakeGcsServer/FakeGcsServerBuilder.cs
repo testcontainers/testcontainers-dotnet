@@ -4,6 +4,7 @@ namespace Testcontainers.FakeGcsServer;
 [PublicAPI]
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47";
 
     public const ushort FakeGcsServerPort = 4443;
@@ -13,10 +14,30 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public FakeGcsServerBuilder()
+        : this(FakeGcsServerImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags">https://hub.docker.com/r/fsouza/fake-gcs-server/tags</see>.</param>
+    public FakeGcsServerBuilder(string image)
         : this(new FakeGcsServerConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public FakeGcsServerBuilder(IImage image)
+        : this(new FakeGcsServerConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +64,6 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     protected override FakeGcsServerBuilder Init()
     {
         return base.Init()
-            .WithImage(FakeGcsServerImage)
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)

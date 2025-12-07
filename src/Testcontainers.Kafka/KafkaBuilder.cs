@@ -4,6 +4,7 @@ namespace Testcontainers.Kafka;
 [PublicAPI]
 public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KafkaImage = "confluentinc/cp-kafka:7.5.9";
 
     public const ushort KafkaPort = 9092;
@@ -27,10 +28,30 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public KafkaBuilder()
+        : this(KafkaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags">https://hub.docker.com/r/confluentinc/cp-kafka/tags</see>.</param>
+    public KafkaBuilder(string image)
         : this(new KafkaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public KafkaBuilder(IImage image)
+        : this(new KafkaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -217,7 +238,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     protected override KafkaBuilder Init()
     {
         return base.Init()
-            .WithImage(KafkaImage)
             .WithPortBinding(KafkaPort, true)
             .WithPortBinding(BrokerPort, true)
             .WithEnvironment("KAFKA_LISTENERS", $"PLAINTEXT://:{KafkaPort},BROKER://:{BrokerPort},CONTROLLER://:{ControllerPort}")

@@ -4,6 +4,7 @@ namespace Testcontainers.Neo4j;
 [PublicAPI]
 public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string Neo4jImage = "neo4j:5.4";
 
     public const ushort Neo4jHttpPort = 7474;
@@ -13,10 +14,30 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public Neo4jBuilder()
+        : this(Neo4jImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/neo4j/tags">https://hub.docker.com/_/neo4j/tags</see>.</param>
+    public Neo4jBuilder(string image)
         : this(new Neo4jConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public Neo4jBuilder(IImage image)
+        : this(new Neo4jConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -123,7 +144,6 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Init()
     {
         return base.Init()
-            .WithImage(Neo4jImage)
             .WithPortBinding(Neo4jHttpPort, true)
             .WithPortBinding(Neo4jBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")

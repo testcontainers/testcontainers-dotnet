@@ -4,6 +4,7 @@ namespace Testcontainers.MySql;
 [PublicAPI]
 public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer, MySqlConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MySqlImage = "mysql:8.0";
 
     public const ushort MySqlPort = 3306;
@@ -17,10 +18,30 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MySqlBuilder()
+        : this(MySqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mysql/tags">https://hub.docker.com/_/mysql/tags</see>.</param>
+    public MySqlBuilder(string image)
         : this(new MySqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MySqlBuilder(IImage image)
+        : this(new MySqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +106,6 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     protected override MySqlBuilder Init()
     {
         return base.Init()
-            .WithImage(MySqlImage)
             .WithPortBinding(MySqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

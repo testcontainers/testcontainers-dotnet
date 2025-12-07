@@ -4,6 +4,7 @@ namespace Testcontainers.CockroachDb;
 [PublicAPI]
 public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string CockroachDbImage = "cockroachdb/cockroach:latest-v23.1";
 
     public const ushort CockroachDbPort = 26257;
@@ -19,10 +20,30 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public CockroachDbBuilder()
+        : this(CockroachDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags">https://hub.docker.com/r/cockroachdb/cockroach/tags</see>.</param>
+    public CockroachDbBuilder(string image)
         : this(new CockroachDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public CockroachDbBuilder(IImage image)
+        : this(new CockroachDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -82,7 +103,6 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     protected override CockroachDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CockroachDbImage)
             .WithPortBinding(CockroachDbPort, true)
             .WithPortBinding(CockroachDbRestPort, true)
             .WithDatabase(DefaultDatabase)

@@ -4,6 +4,7 @@ namespace Testcontainers.PubSub;
 [PublicAPI]
 public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort PubSubPort = 8085;
@@ -11,10 +12,30 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PubSubBuilder()
+        : this(GoogleCloudCliImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1">https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1</see>.</param>
+    public PubSubBuilder(string image)
         : this(new PubSubConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public PubSubBuilder(IImage image)
+        : this(new PubSubConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +62,6 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     protected override PubSubBuilder Init()
     {
         return base.Init()
-            .WithImage(GoogleCloudCliImage)
             .WithPortBinding(PubSubPort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort)

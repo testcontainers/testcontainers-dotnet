@@ -4,6 +4,7 @@ namespace Testcontainers.MongoDb;
 [PublicAPI]
 public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbContainer, MongoDbConfiguration>
 {
+    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string MongoDbImage = "mongo:6.0";
 
     public const ushort MongoDbPort = 27017;
@@ -19,10 +20,30 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public MongoDbBuilder()
+        : this(MongoDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mongo/tags">https://hub.docker.com/_/mongo/tags</see>.</param>
+    public MongoDbBuilder(string image)
         : this(new MongoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">Image instance to use in configuration.</param>
+    public MongoDbBuilder(IImage image)
+        : this(new MongoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -109,7 +130,6 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     protected override MongoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
