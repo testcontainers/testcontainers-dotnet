@@ -4,7 +4,7 @@ namespace Testcontainers.Qdrant;
 [PublicAPI]
 public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContainer, QdrantConfiguration>
 {
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string QdrantImage = "qdrant/qdrant:v1.13.4";
 
     public const ushort QdrantHttpPort = 6333;
@@ -18,7 +18,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// <summary>
     /// Initializes a new instance of the <see cref="QdrantBuilder" /> class.
     /// </summary>
-    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public QdrantBuilder()
         : this(QdrantImage)
     {

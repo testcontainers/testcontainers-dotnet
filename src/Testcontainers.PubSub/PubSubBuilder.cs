@@ -4,7 +4,7 @@ namespace Testcontainers.PubSub;
 [PublicAPI]
 public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContainer, PubSubConfiguration>
 {
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string GoogleCloudCliImage = "gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators";
 
     public const ushort PubSubPort = 8085;
@@ -12,7 +12,7 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PubSubBuilder" /> class.
     /// </summary>
-    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public PubSubBuilder()
         : this(GoogleCloudCliImage)
     {

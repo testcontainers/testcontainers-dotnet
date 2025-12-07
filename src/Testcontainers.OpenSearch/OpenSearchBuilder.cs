@@ -4,7 +4,7 @@ namespace Testcontainers.OpenSearch;
 [PublicAPI]
 public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, OpenSearchContainer, OpenSearchConfiguration>
 {
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string OpenSearchImage = "opensearchproject/opensearch:2.12.0";
 
     public const ushort OpenSearchRestApiPort = 9200;
@@ -20,7 +20,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
-    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public OpenSearchBuilder()
         : this(OpenSearchImage)
     {

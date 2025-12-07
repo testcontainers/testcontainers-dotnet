@@ -4,7 +4,7 @@ namespace Testcontainers.KurrentDb;
 [PublicAPI]
 public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, KurrentDbContainer, KurrentDbConfiguration>
 {
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.1";
 
     public const ushort KurrentDbPort = 2113;
@@ -12,7 +12,7 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// <summary>
     /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
     /// </summary>
-    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public KurrentDbBuilder()
         : this(KurrentDbImage)
     {

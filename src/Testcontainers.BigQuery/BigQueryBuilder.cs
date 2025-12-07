@@ -4,7 +4,7 @@ namespace Testcontainers.BigQuery;
 [PublicAPI]
 public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
 
     public const ushort BigQueryPort = 9050;
@@ -14,7 +14,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
-    [Obsolete("Use the constructor with the image argument instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public BigQueryBuilder()
         : this(BigQueryImage)
     {
