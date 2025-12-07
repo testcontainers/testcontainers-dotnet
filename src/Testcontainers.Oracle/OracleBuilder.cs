@@ -4,6 +4,7 @@ namespace Testcontainers.Oracle;
 [PublicAPI]
 public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
 
     public const ushort OraclePort = 1521;
@@ -18,10 +19,42 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public OracleBuilder()
+        : this(OracleImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>gvenzl/oracle-xe:21.3.0-slim-faststart</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
+    public OracleBuilder(string image)
         : this(new OracleConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
+    public OracleBuilder(IImage image)
+        : this(new OracleConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -96,7 +129,6 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Init()
     {
         return base.Init()
-            .WithImage(OracleImage)
             .WithPortBinding(OraclePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

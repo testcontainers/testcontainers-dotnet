@@ -6,6 +6,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
 {
     public const string MilvusEtcdConfigFilePath = "/milvus/configs/embedEtcd.yaml";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MilvusImage = "milvusdb/milvus:v2.3.10";
 
     public const ushort MilvusManagementPort = 9091;
@@ -17,10 +18,42 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MilvusBuilder()
+        : this(MilvusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>milvusdb/milvus:v2.3.10</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
+    public MilvusBuilder(string image)
         : this(new MilvusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
+    public MilvusBuilder(IImage image)
+        : this(new MilvusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -60,7 +93,6 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Init()
     {
         return base.Init()
-            .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
             .WithPortBinding(MilvusGrpcPort, true)
             .WithCommand("milvus", "run", "standalone")

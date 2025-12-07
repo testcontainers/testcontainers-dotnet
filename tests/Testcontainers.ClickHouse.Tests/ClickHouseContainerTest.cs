@@ -35,6 +35,9 @@ public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.Cl
     public class ClickHouseDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<ClickHouseBuilder, ClickHouseContainer>(messageSink)
     {
+        protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => ClickHouseConnectionFactory.Instance;
     }
@@ -44,7 +47,7 @@ public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.Cl
         : ClickHouseDefaultFixture(messageSink)
     {
         protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

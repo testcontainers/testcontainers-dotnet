@@ -4,6 +4,7 @@ namespace Testcontainers.MariaDb;
 [PublicAPI]
 public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbContainer, MariaDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MariaDbImage = "mariadb:10.10";
 
     public const ushort MariaDbPort = 3306;
@@ -17,10 +18,42 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MariaDbBuilder()
+        : this(MariaDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mariadb:10.10</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mariadb/tags" />.
+    /// </remarks>
+    public MariaDbBuilder(string image)
         : this(new MariaDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MariaDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mariadb/tags" />.
+    /// </remarks>
+    public MariaDbBuilder(IImage image)
+        : this(new MariaDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +118,6 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     protected override MariaDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MariaDbImage)
             .WithPortBinding(MariaDbPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

@@ -6,6 +6,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
 {
     public const string PlaywrightNetworkAlias = "standalone-container";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PlaywrightImage = "mcr.microsoft.com/playwright:v1.55.1";
 
     public const ushort PlaywrightPort = 8080;
@@ -13,10 +14,42 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public PlaywrightBuilder()
+        : this(PlaywrightImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/playwright:v1.55.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// </remarks>
+    public PlaywrightBuilder(string image)
         : this(new PlaywrightConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// </remarks>
+    public PlaywrightBuilder(IImage image)
+        : this(new PlaywrightConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +76,6 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     protected override PlaywrightBuilder Init()
     {
         return base.Init()
-            .WithImage(PlaywrightImage)
             .WithNetwork(new NetworkBuilder().Build())
             .WithNetworkAliases(PlaywrightNetworkAlias)
             .WithPortBinding(PlaywrightPort, true)

@@ -8,6 +8,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
     public const string AzuriteNetworkAlias = "azurite-container";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string EventHubsImage = "mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest";
 
     public const ushort EventHubsPort = 5672;
@@ -17,10 +18,40 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// <summary>
     /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public EventHubsBuilder()
+        : this(EventHubsImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// </remarks>
+    public EventHubsBuilder(string image)
         : this(new EventHubsConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// </remarks>
+    public EventHubsBuilder(IImage image)
+        : this(new EventHubsConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -135,7 +166,6 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override EventHubsBuilder Init()
     {
         return base.Init()
-            .WithImage(EventHubsImage)
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>

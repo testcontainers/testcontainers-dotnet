@@ -2,7 +2,7 @@ namespace Testcontainers.Sftp;
 
 public sealed class SftpContainerTest : IAsyncLifetime
 {
-    private readonly SftpContainer _sftpContainer = new SftpBuilder().Build();
+    private readonly SftpContainer _sftpContainer = new SftpBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

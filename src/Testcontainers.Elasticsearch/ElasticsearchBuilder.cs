@@ -10,6 +10,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const string ElasticsearchDefaultMemoryVmOptionFilePath = ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ElasticsearchImage = "elasticsearch:8.6.1";
 
     public const ushort ElasticsearchHttpsPort = 9200;
@@ -25,10 +26,40 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ElasticsearchBuilder()
+        : this(ElasticsearchImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>elasticsearch:8.6.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// </remarks>
+    public ElasticsearchBuilder(string image)
         : this(new ElasticsearchConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// </remarks>
+    public ElasticsearchBuilder(IImage image)
+        : this(new ElasticsearchConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -70,7 +101,6 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     protected override ElasticsearchBuilder Init()
     {
         return base.Init()
-            .WithImage(ElasticsearchImage)
             .WithPortBinding(ElasticsearchHttpsPort, true)
             .WithPortBinding(ElasticsearchTcpPort, true)
             .WithUsername(DefaultUsername)

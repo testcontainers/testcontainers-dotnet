@@ -7,6 +7,7 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string CouchbaseImage = "couchbase:community-7.0.2";
 
     public const ushort MgmtPort = 8091;
@@ -58,10 +59,40 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public CouchbaseBuilder()
+        : this(CouchbaseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>couchbase:community-7.0.2</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
+    public CouchbaseBuilder(string image)
         : this(new CouchbaseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
+    public CouchbaseBuilder(IImage image)
+        : this(new CouchbaseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -129,7 +160,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     protected override CouchbaseBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchbaseImage)
             .WithPortBinding(MgmtPort, true)
             .WithPortBinding(MgmtSslPort, true)
             .WithPortBinding(ViewPort, true)

@@ -4,6 +4,7 @@ namespace Testcontainers.LowkeyVault;
 [PublicAPI]
 public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, LowkeyVaultContainer, LowkeyVaultConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string LowkeyVaultImage = "nagyesta/lowkey-vault:2.7.1-ubi9-minimal";
 
     public const ushort LowkeyVaultPort = 8443;
@@ -13,10 +14,42 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public LowkeyVaultBuilder()
+        : this(LowkeyVaultImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>nagyesta/lowkey-vault:2.7.1-ubi9-minimal</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// </remarks>
+    public LowkeyVaultBuilder(string image)
         : this(new LowkeyVaultConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// </remarks>
+    public LowkeyVaultBuilder(IImage image)
+        : this(new LowkeyVaultConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -59,7 +92,6 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     protected override LowkeyVaultBuilder Init()
     {
         return base.Init()
-            .WithImage(LowkeyVaultImage)
             .WithPortBinding(LowkeyVaultPort, true)
             .WithPortBinding(LowkeyVaultTokenPort, true)
             .WithArguments(new[] { "--LOWKEY_VAULT_RELAXED_PORTS=true" })

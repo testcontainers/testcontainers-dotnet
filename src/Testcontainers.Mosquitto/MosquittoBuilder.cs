@@ -4,6 +4,7 @@ namespace Testcontainers.Mosquitto;
 [PublicAPI]
 public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, MosquittoContainer, MosquittoConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MosquittoImage = "eclipse-mosquitto:2.0";
 
     public const ushort MqttPort = 1883;
@@ -21,10 +22,42 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// <summary>
     /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MosquittoBuilder()
+        : this(MosquittoImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>eclipse-mosquitto:2.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// </remarks>
+    public MosquittoBuilder(string image)
         : this(new MosquittoConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// </remarks>
+    public MosquittoBuilder(IImage image)
+        : this(new MosquittoConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -115,7 +148,6 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     protected override MosquittoBuilder Init()
     {
         return base.Init()
-            .WithImage(MosquittoImage)
             .WithPortBinding(MqttPort, true)
             .WithPortBinding(MqttWsPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));

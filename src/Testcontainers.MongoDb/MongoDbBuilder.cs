@@ -4,6 +4,7 @@ namespace Testcontainers.MongoDb;
 [PublicAPI]
 public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbContainer, MongoDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MongoDbImage = "mongo:6.0";
 
     public const ushort MongoDbPort = 27017;
@@ -19,10 +20,42 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MongoDbBuilder()
+        : this(MongoDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mongo:6.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// </remarks>
+    public MongoDbBuilder(string image)
         : this(new MongoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// </remarks>
+    public MongoDbBuilder(IImage image)
+        : this(new MongoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -109,7 +142,6 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     protected override MongoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

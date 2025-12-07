@@ -5,6 +5,7 @@ namespace Testcontainers.EventStoreDb;
 [Obsolete("Use KurrentDB instead of the EventStoreDB module. More info: https://www.kurrent.io/blog/kurrent-re-brand-faq.")]
 public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, EventStoreDbContainer, EventStoreDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string EventStoreDbImage = "eventstore/eventstore:22.10.1-buster-slim";
 
     public const ushort EventStoreDbPort = 2113;
@@ -12,10 +13,42 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public EventStoreDbBuilder()
+        : this(EventStoreDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>eventstore/eventstore:22.10.1-buster-slim</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/eventstore/eventstore/tags" />.
+    /// </remarks>
+    public EventStoreDbBuilder(string image)
         : this(new EventStoreDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventStoreDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/eventstore/eventstore/tags" />.
+    /// </remarks>
+    public EventStoreDbBuilder(IImage image)
+        : this(new EventStoreDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +74,6 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     protected override EventStoreDbBuilder Init()
     {
         return base.Init()
-            .WithImage(EventStoreDbImage)
             .WithPortBinding(EventStoreDbPort, true)
             .WithEnvironment("EVENTSTORE_CLUSTER_SIZE", "1")
             .WithEnvironment("EVENTSTORE_RUN_PROJECTIONS", "All")

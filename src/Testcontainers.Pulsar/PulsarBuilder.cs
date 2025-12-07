@@ -4,6 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
     public const ushort PulsarBrokerDataPort = 6650;
@@ -21,10 +22,42 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public PulsarBuilder()
+        : this(PulsarImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>apachepulsar/pulsar:3.0.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
+    public PulsarBuilder(string image)
         : this(new PulsarConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
+    public PulsarBuilder(IImage image)
+        : this(new PulsarConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -90,7 +123,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Init()
     {
         return base.Init()
-            .WithImage(PulsarImage)
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)

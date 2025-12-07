@@ -4,6 +4,7 @@ namespace Testcontainers.Sftp;
 [PublicAPI]
 public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, SftpConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string SftpImage = "atmoz/sftp:alpine";
 
     public const ushort SftpPort = 22;
@@ -17,10 +18,42 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public SftpBuilder()
+        : this(SftpImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>atmoz/sftp:alpine</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// </remarks>
+    public SftpBuilder(string image)
         : this(new SftpConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// </remarks>
+    public SftpBuilder(IImage image)
+        : this(new SftpConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -86,7 +119,6 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     protected override SftpBuilder Init()
     {
         return base.Init()
-            .WithImage(SftpImage)
             .WithPortBinding(SftpPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

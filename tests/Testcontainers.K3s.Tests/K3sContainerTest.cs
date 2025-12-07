@@ -2,7 +2,7 @@ namespace Testcontainers.K3s;
 
 public sealed class K3sContainerTest : IAsyncLifetime
 {
-    private readonly K3sContainer _k3sConainter = new K3sBuilder().Build();
+    private readonly K3sContainer _k3sConainter = new K3sBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

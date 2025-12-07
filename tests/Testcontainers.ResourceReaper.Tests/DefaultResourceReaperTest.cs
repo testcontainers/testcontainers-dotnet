@@ -30,8 +30,7 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
     public async Task ContainerCleanUpStartsDefaultResourceReaper(bool resourceReaperEnabled)
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+      var container = new ContainerBuilder(CommonImages.Alpine)
         .WithEntrypoint(CommonCommands.SleepInfinity)
         .WithAutoRemove(true)
         .WithCleanUp(resourceReaperEnabled)

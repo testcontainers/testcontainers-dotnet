@@ -4,6 +4,7 @@ namespace Testcontainers.Toxiproxy;
 [PublicAPI]
 public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, ToxiproxyContainer, ToxiproxyConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ToxiproxyImage = "ghcr.io/shopify/toxiproxy:2.12.0";
 
     public const ushort ToxiproxyControlPort = 8474;
@@ -15,10 +16,42 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ToxiproxyBuilder()
+        : this(ToxiproxyImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ghcr.io/shopify/toxiproxy:2.12.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// </remarks>
+    public ToxiproxyBuilder(string image)
         : this(new ToxiproxyConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// </remarks>
+    public ToxiproxyBuilder(IImage image)
+        : this(new ToxiproxyConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -47,7 +80,6 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
         const int count = LastProxiedPort - FirstProxiedPort;
 
         var toxiproxyBuilder = base.Init()
-            .WithImage(ToxiproxyImage)
             .WithPortBinding(ToxiproxyControlPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/version").ForPort(ToxiproxyControlPort)));

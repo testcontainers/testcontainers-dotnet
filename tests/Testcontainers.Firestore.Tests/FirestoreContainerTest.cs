@@ -2,7 +2,7 @@ namespace Testcontainers.Firestore;
 
 public sealed class FirestoreContainerTest : IAsyncLifetime
 {
-    private readonly FirestoreContainer _firestoreContainer = new FirestoreBuilder().Build();
+    private readonly FirestoreContainer _firestoreContainer = new FirestoreBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

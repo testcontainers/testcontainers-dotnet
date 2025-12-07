@@ -4,6 +4,7 @@ namespace Testcontainers.Redpanda;
 [PublicAPI]
 public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, RedpandaContainer, RedpandaConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RedpandaImage = "docker.redpanda.com/redpandadata/redpanda:v22.2.1";
 
     public const ushort RedpandaPort = 9092;
@@ -15,10 +16,42 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// <summary>
     /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public RedpandaBuilder()
+        : this(RedpandaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>docker.redpanda.com/redpandadata/redpanda:v22.2.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/redpandadata/redpanda/tags" />.
+    /// </remarks>
+    public RedpandaBuilder(string image)
         : this(new RedpandaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedpandaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/redpandadata/redpanda/tags" />.
+    /// </remarks>
+    public RedpandaBuilder(IImage image)
+        : this(new RedpandaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -45,7 +78,6 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     protected override RedpandaBuilder Init()
     {
         return base.Init()
-            .WithImage(RedpandaImage)
             .WithPortBinding(SchemaRegistryPort, true)
             .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")

@@ -16,4 +16,9 @@
         <ProjectReference Include="../../src/Testcontainers.ArangoDb/Testcontainers.ArangoDb.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

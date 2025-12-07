@@ -4,6 +4,7 @@ namespace Testcontainers.Db2;
 [PublicAPI]
 public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2Configuration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
 
     public const ushort Db2Port = 50000;
@@ -17,10 +18,40 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public Db2Builder()
+        : this(Db2Image)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>icr.io/db2_community/db2:12.1.0.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// </remarks>
+    public Db2Builder(string image)
         : this(new Db2Configuration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Db2Builder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// </remarks>
+    public Db2Builder(IImage image)
+        : this(new Db2Configuration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -103,7 +134,6 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
 
     /// <inheritdoc />
     protected override Db2Builder Init() => base.Init()
-        .WithImage(Db2Image)
         .WithPortBinding(Db2Port, true)
         .WithDatabase(DefaultDatabase)
         .WithUsername(DefaultUsername)

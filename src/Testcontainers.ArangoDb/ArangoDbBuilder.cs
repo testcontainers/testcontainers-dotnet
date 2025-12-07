@@ -4,6 +4,7 @@ namespace Testcontainers.ArangoDb;
 [PublicAPI]
 public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDbContainer, ArangoDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ArangoDbImage = "arangodb:3.11.5";
 
     public const ushort ArangoDbPort = 8529;
@@ -15,10 +16,42 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ArangoDbBuilder()
+        : this(ArangoDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>arangodb:3.11.5</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// </remarks>
+    public ArangoDbBuilder(string image)
         : this(new ArangoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// </remarks>
+    public ArangoDbBuilder(IImage image)
+        : this(new ArangoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -56,7 +89,6 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     protected override ArangoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(ArangoDbImage)
             .WithPortBinding(ArangoDbPort, true)
             .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Have fun!"));

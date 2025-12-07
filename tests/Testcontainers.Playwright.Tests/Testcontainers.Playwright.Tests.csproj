@@ -18,4 +18,9 @@
         <ProjectReference Include="../../src/Testcontainers.Playwright/Testcontainers.Playwright.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

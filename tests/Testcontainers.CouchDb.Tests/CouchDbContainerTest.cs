@@ -2,7 +2,7 @@ namespace Testcontainers.CouchDb;
 
 public sealed class CouchDbContainerTest : IAsyncLifetime
 {
-    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder().Build();
+    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

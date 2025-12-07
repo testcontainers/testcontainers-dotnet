@@ -4,6 +4,7 @@ namespace Testcontainers.FakeGcsServer;
 [PublicAPI]
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47";
 
     public const ushort FakeGcsServerPort = 4443;
@@ -13,10 +14,42 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public FakeGcsServerBuilder()
+        : this(FakeGcsServerImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>fsouza/fake-gcs-server:1.47</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
+    public FakeGcsServerBuilder(string image)
         : this(new FakeGcsServerConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
+    public FakeGcsServerBuilder(IImage image)
+        : this(new FakeGcsServerConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +76,6 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     protected override FakeGcsServerBuilder Init()
     {
         return base.Init()
-            .WithImage(FakeGcsServerImage)
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)

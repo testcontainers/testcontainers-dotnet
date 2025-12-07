@@ -4,6 +4,7 @@ namespace Testcontainers.Kafka;
 [PublicAPI]
 public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string KafkaImage = "confluentinc/cp-kafka:7.5.9";
 
     public const ushort KafkaPort = 9092;
@@ -27,10 +28,40 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public KafkaBuilder()
+        : this(KafkaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>confluentinc/cp-kafka:7.5.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// </remarks>
+    public KafkaBuilder(string image)
         : this(new KafkaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// </remarks>
+    public KafkaBuilder(IImage image)
+        : this(new KafkaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -217,7 +248,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     protected override KafkaBuilder Init()
     {
         return base.Init()
-            .WithImage(KafkaImage)
             .WithPortBinding(KafkaPort, true)
             .WithPortBinding(BrokerPort, true)
             .WithEnvironment("KAFKA_LISTENERS", $"PLAINTEXT://:{KafkaPort},BROKER://:{BrokerPort},CONTROLLER://:{ControllerPort}")

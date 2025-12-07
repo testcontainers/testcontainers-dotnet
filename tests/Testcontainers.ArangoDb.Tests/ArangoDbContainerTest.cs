@@ -2,7 +2,7 @@ namespace Testcontainers.ArangoDb;
 
 public sealed class ArangoDbContainerTest : IAsyncLifetime
 {
-    private readonly ArangoDbContainer _arangoDbContainer = new ArangoDbBuilder().Build();
+    private readonly ArangoDbContainer _arangoDbContainer = new ArangoDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

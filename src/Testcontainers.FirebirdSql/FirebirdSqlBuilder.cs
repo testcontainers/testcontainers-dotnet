@@ -4,6 +4,7 @@ namespace Testcontainers.FirebirdSql;
 [PublicAPI]
 public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, FirebirdSqlContainer, FirebirdSqlConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
 
     public const ushort FirebirdSqlPort = 3050;
@@ -21,10 +22,40 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public FirebirdSqlBuilder()
+        : this(FirebirdSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>jacobalberty/firebird:v4.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/firebirdsql/firebird/tags" />.
+    /// </remarks>
+    public FirebirdSqlBuilder(string image)
         : this(new FirebirdSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FirebirdSqlBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/firebirdsql/firebird/tags" />.
+    /// </remarks>
+    public FirebirdSqlBuilder(IImage image)
+        : this(new FirebirdSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +116,6 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     protected override FirebirdSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(FirebirdSqlImage)
             .WithPortBinding(FirebirdSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

@@ -85,7 +85,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public sealed class AzuriteDefaultConfiguration : AzuriteContainerTest
     {
         public AzuriteDefaultConfiguration()
-            : base(new AzuriteBuilder().Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -94,7 +94,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public sealed class AzuriteInMemoryConfiguration : AzuriteContainerTest
     {
         public AzuriteInMemoryConfiguration()
-            : base(new AzuriteBuilder().WithInMemoryPersistence().Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).WithInMemoryPersistence().Build())
         {
         }
     }
@@ -107,7 +107,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         private static readonly string[] LineEndings = { "\r\n", "\n" };
 
         public AzuriteMemoryLimitConfiguration()
-            : base(new AzuriteBuilder().WithInMemoryPersistence(MemoryLimitInMb).Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).WithInMemoryPersistence(MemoryLimitInMb).Build())
         {
         }
 

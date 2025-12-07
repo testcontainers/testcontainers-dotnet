@@ -4,6 +4,7 @@ namespace Testcontainers.KurrentDb;
 [PublicAPI]
 public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, KurrentDbContainer, KurrentDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string KurrentDbImage = "kurrentplatform/kurrentdb:25.1";
 
     public const ushort KurrentDbPort = 2113;
@@ -11,10 +12,42 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// <summary>
     /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public KurrentDbBuilder()
+        : this(KurrentDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>kurrentplatform/kurrentdb:25.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags" />.
+    /// </remarks>
+    public KurrentDbBuilder(string image)
         : this(new KurrentDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KurrentDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags" />.
+    /// </remarks>
+    public KurrentDbBuilder(IImage image)
+        : this(new KurrentDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -40,7 +73,6 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     protected override KurrentDbBuilder Init()
     {
         return base.Init()
-            .WithImage(KurrentDbImage)
             .WithPortBinding(KurrentDbPort, true)
             .WithEnvironment("KURRENTDB_CLUSTER_SIZE", "1")
             .WithEnvironment("KURRENTDB_RUN_PROJECTIONS", "All")

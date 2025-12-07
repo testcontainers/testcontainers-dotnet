@@ -4,6 +4,7 @@ namespace Testcontainers.PostgreSql;
 [PublicAPI]
 public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PostgreSqlImage = "postgres:15.1";
 
     public const ushort PostgreSqlPort = 5432;
@@ -17,10 +18,42 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public PostgreSqlBuilder()
+        : this(PostgreSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>postgres:15.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
+    public PostgreSqlBuilder(string image)
         : this(new PostgreSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
+    public PostgreSqlBuilder(IImage image)
+        : this(new PostgreSqlConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -84,7 +117,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     protected override PostgreSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

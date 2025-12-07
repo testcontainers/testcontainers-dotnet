@@ -17,8 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public TestcontainersNetworkTest(NetworkFixture networkFixture)
     {
-      var containerBuilder = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+      var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
         .WithEntrypoint(CommonCommands.SleepInfinity)
         .WithNetwork(networkFixture.Network.Name);
 

@@ -4,6 +4,7 @@ namespace Testcontainers.Typesense;
 [PublicAPI]
 public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, TypesenseContainer, TypesenseConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string TypesenseImage = "typesense/typesense:28.0";
 
     public const ushort TypesensePort = 8108;
@@ -15,10 +16,42 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public TypesenseBuilder()
+        : this(TypesenseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>typesense/typesense:28.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// </remarks>
+    public TypesenseBuilder(string image)
         : this(new TypesenseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// </remarks>
+    public TypesenseBuilder(IImage image)
+        : this(new TypesenseConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -65,7 +98,6 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     protected override TypesenseBuilder Init()
     {
         return base.Init()
-            .WithImage(TypesenseImage)
             .WithPortBinding(TypesensePort, true)
             .WithDataDirectory(DefaultDataDirectory)
             .WithApiKey(DefaultApiKey)

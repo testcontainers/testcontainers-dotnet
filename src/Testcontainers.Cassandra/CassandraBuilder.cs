@@ -4,6 +4,7 @@ namespace Testcontainers.Cassandra;
 [PublicAPI]
 public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, CassandraContainer, CassandraConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string CassandraImage = "cassandra:5.0";
 
     public const ushort CqlPort = 9042;
@@ -13,10 +14,42 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     /// <summary>
     /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public CassandraBuilder()
+        : this(CassandraImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>cassandra:5.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/cassandra/tags" />.
+    /// </remarks>
+    public CassandraBuilder(string image)
         : this(new CassandraConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CassandraBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/cassandra/tags" />.
+    /// </remarks>
+    public CassandraBuilder(IImage image)
+        : this(new CassandraConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +76,6 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     protected override CassandraBuilder Init()
     {
         return base.Init()
-            .WithImage(CassandraImage)
             .WithPortBinding(CqlPort, true)
             .WithEnvironment("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0")
             .WithEnvironment("HEAP_NEWSIZE", "128M")

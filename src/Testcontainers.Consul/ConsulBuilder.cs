@@ -4,6 +4,7 @@ namespace Testcontainers.Consul;
 [PublicAPI]
 public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContainer, ConsulConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ConsulImage = "consul:1.15";
 
     public const int ConsulHttpPort = 8500;
@@ -13,10 +14,42 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ConsulBuilder()
+        : this(ConsulImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>consul:1.15</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/consul/tags" />.
+    /// </remarks>
+    public ConsulBuilder(string image)
         : this(new ConsulConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsulBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/consul/tags" />.
+    /// </remarks>
+    public ConsulBuilder(IImage image)
+        : this(new ConsulConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +76,6 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     protected override ConsulBuilder Init()
     {
         return base.Init()
-            .WithImage(ConsulImage)
             .WithPortBinding(ConsulHttpPort, true)
             .WithPortBinding(ConsulGrpcPort, true)
             .WithCommand("agent", "-dev", "-client", "0.0.0.0")

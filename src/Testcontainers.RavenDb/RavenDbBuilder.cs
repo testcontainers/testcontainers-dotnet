@@ -4,6 +4,7 @@ namespace Testcontainers.RavenDb;
 [PublicAPI]
 public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbContainer, RavenDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RavenDbImage = "ravendb/ravendb:5.4-ubuntu-latest";
 
     public const ushort RavenDbPort = 8080;
@@ -11,10 +12,42 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="RavenDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public RavenDbBuilder()
+        : this(RavenDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RavenDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ravendb/ravendb:5.4-ubuntu-latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ravendb/ravendb/tags" />.
+    /// </remarks>
+    public RavenDbBuilder(string image)
         : this(new RavenDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RavenDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ravendb/ravendb/tags" />.
+    /// </remarks>
+    public RavenDbBuilder(IImage image)
+        : this(new RavenDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +74,6 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     protected override RavenDbBuilder Init()
     {
         return base.Init()
-            .WithImage(RavenDbImage)
             .WithPortBinding(RavenDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server started"));
     }

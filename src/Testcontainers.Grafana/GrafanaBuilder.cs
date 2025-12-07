@@ -4,6 +4,7 @@ namespace Testcontainers.Grafana;
 [PublicAPI]
 public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaContainer, GrafanaConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string GrafanaImage = "grafana/grafana:12.2";
 
     public const ushort GrafanaPort = 3000;
@@ -15,10 +16,42 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// <summary>
     /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public GrafanaBuilder()
+        : this(GrafanaImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>grafana/grafana:12.2</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/grafana/grafana/tags" />.
+    /// </remarks>
+    public GrafanaBuilder(string image)
         : this(new GrafanaConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GrafanaBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/grafana/grafana/tags" />.
+    /// </remarks>
+    public GrafanaBuilder(IImage image)
+        : this(new GrafanaConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -77,7 +110,6 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     protected override GrafanaBuilder Init()
     {
         return base.Init()
-            .WithImage(GrafanaImage)
             .WithPortBinding(GrafanaPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
