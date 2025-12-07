@@ -31,9 +31,8 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
     /// </remarks>
     public FakeGcsServerBuilder(string image)
-        : this(new FakeGcsServerConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

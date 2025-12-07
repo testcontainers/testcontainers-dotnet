@@ -35,9 +35,8 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
     /// </remarks>
     public MilvusBuilder(string image)
-        : this(new MilvusConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

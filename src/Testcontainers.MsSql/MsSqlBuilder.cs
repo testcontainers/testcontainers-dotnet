@@ -35,9 +35,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
     /// </remarks>
     public MsSqlBuilder(string image)
-        : this(new MsSqlConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

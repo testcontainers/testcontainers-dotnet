@@ -37,9 +37,8 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
     /// </remarks>
     public MongoDbBuilder(string image)
-        : this(new MongoDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

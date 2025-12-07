@@ -35,9 +35,8 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
     /// </remarks>
     public Db2Builder(string image)
-        : this(new Db2Configuration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

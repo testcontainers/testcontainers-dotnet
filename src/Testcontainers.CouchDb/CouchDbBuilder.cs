@@ -33,9 +33,8 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
     /// </remarks>
     public CouchDbBuilder(string image)
-        : this(new CouchDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

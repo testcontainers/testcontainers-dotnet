@@ -29,9 +29,8 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// Docker image tags available at <see href="https://hub.docker.com/_/redis/tags" />.
     /// </remarks>
     public RedisBuilder(string image)
-        : this(new RedisConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

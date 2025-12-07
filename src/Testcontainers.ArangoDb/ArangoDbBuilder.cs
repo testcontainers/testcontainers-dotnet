@@ -33,9 +33,8 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
     /// </remarks>
     public ArangoDbBuilder(string image)
-        : this(new ArangoDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

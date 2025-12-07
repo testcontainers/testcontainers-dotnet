@@ -37,9 +37,8 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// Docker image tags available at <see href="https://hub.docker.com/_/influxdb/tags" />.
     /// </remarks>
     public InfluxDbBuilder(string image)
-        : this(new InfluxDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

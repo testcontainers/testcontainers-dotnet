@@ -31,9 +31,8 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     /// Docker image tags available at <see href="https://hub.docker.com/_/cassandra/tags" />.
     /// </remarks>
     public CassandraBuilder(string image)
-        : this(new CassandraConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

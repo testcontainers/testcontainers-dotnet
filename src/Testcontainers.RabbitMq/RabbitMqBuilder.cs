@@ -33,9 +33,8 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// Docker image tags available at <see href="https://hub.docker.com/_/rabbitmq/tags" />.
     /// </remarks>
     public RabbitMqBuilder(string image)
-        : this(new RabbitMqConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

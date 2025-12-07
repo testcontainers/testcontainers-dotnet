@@ -15,7 +15,7 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
     /// Docker image tags available at <see href="https://hub.docker.com/..." />.
     /// </remarks>
     public ModuleNameBuilder(string image)
-        : this(new ModuleNameConfiguration())
+        : this(new DockerImage(image))
     {
         // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "ModuleNameBuilder Init()" method.
         //    Append the module configuration to base.Init() e.g. base.Init().WithXXX().
@@ -25,8 +25,6 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
 
         // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "ModuleNameBuilder WithModuleNameConfig(object)".
         //    Merge the current module configuration with a new instance of the immutable ModuleNameConfiguration type to update the module configuration.
-
-        // DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

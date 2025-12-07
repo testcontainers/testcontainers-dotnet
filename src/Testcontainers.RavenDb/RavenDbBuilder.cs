@@ -29,9 +29,8 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     /// Docker image tags available at <see href="https://hub.docker.com/r/ravendb/ravendb/tags" />.
     /// </remarks>
     public RavenDbBuilder(string image)
-        : this(new RavenDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

@@ -29,9 +29,8 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
     /// </remarks>
     public PubSubBuilder(string image)
-        : this(new PubSubConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

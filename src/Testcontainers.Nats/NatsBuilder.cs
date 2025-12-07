@@ -33,9 +33,8 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
     /// </remarks>
     public NatsBuilder(string image)
-        : this(new NatsConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

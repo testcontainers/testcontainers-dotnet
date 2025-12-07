@@ -39,9 +39,8 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
     /// </remarks>
     public MosquittoBuilder(string image)
-        : this(new MosquittoConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

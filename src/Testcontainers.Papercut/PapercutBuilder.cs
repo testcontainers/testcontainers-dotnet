@@ -31,9 +31,8 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     /// Docker image tags available at <see href="https://hub.docker.com/r/changemakerstudiosus/papercut-smtp/tags" />.
     /// </remarks>
     public PapercutBuilder(string image)
-        : this(new PapercutConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

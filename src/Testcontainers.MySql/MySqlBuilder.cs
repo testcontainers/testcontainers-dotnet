@@ -35,9 +35,8 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
     /// </remarks>
     public MySqlBuilder(string image)
-        : this(new MySqlConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

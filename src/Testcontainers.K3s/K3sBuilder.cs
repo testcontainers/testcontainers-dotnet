@@ -31,9 +31,8 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
     /// </remarks>
     public K3sBuilder(string image)
-        : this(new K3sConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

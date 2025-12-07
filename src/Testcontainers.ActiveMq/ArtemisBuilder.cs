@@ -35,9 +35,8 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// Docker image tags available at <see href="https://hub.docker.com/r/apache/activemq-artemis/tags" />.
     /// </remarks>
     public ArtemisBuilder(string image)
-        : this(new ActiveMqConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

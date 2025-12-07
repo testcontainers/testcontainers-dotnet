@@ -29,9 +29,8 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// Docker image tags available at <see href="https://hub.docker.com/r/localstack/localstack/tags" />.
     /// </remarks>
     public LocalStackBuilder(string image)
-        : this(new LocalStackConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

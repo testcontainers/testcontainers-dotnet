@@ -45,9 +45,8 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
     /// </remarks>
     public KafkaBuilder(string image)
-        : this(new KafkaConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

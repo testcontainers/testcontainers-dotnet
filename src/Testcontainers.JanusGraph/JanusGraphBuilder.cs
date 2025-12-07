@@ -29,9 +29,8 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// Docker image tags available at <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags" />.
     /// </remarks>
     public JanusGraphBuilder(string image)
-        : this(new JanusGraphConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

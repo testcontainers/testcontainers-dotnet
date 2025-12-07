@@ -28,9 +28,8 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// Docker image tags available at <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags" />.
     /// </remarks>
     public WeaviateBuilder(string image)
-        : this(new WeaviateConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

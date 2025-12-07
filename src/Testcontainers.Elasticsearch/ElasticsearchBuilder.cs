@@ -43,9 +43,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
     /// </remarks>
     public ElasticsearchBuilder(string image)
-        : this(new ElasticsearchConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

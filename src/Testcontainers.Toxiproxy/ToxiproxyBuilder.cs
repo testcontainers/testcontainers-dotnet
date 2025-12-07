@@ -33,9 +33,8 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
     /// </remarks>
     public ToxiproxyBuilder(string image)
-        : this(new ToxiproxyConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

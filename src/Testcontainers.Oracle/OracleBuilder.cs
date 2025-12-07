@@ -36,9 +36,8 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
     /// </remarks>
     public OracleBuilder(string image)
-        : this(new OracleConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

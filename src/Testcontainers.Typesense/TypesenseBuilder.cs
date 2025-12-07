@@ -33,9 +33,8 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
     /// </remarks>
     public TypesenseBuilder(string image)
-        : this(new TypesenseConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

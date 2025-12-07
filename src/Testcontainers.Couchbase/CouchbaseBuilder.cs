@@ -76,9 +76,8 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
     /// </remarks>
     public CouchbaseBuilder(string image)
-        : this(new CouchbaseConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

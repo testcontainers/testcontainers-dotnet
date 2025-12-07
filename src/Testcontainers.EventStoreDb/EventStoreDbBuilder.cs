@@ -30,9 +30,8 @@ public sealed class EventStoreDbBuilder : ContainerBuilder<EventStoreDbBuilder, 
     /// Docker image tags available at <see href="https://hub.docker.com/r/eventstore/eventstore/tags" />.
     /// </remarks>
     public EventStoreDbBuilder(string image)
-        : this(new EventStoreDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

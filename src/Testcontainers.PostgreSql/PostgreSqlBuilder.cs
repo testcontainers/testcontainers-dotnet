@@ -35,9 +35,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
     /// </remarks>
     public PostgreSqlBuilder(string image)
-        : this(new PostgreSqlConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

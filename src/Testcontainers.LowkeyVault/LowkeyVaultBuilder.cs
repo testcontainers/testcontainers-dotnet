@@ -31,9 +31,8 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
     /// </remarks>
     public LowkeyVaultBuilder(string image)
-        : this(new LowkeyVaultConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

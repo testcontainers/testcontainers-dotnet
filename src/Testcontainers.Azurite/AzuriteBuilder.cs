@@ -46,9 +46,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite/tags" />.
     /// </remarks>
     public AzuriteBuilder(string image)
-        : this(new AzuriteConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

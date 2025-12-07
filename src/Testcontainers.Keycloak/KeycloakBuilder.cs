@@ -35,9 +35,8 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
     /// </remarks>
     public KeycloakBuilder(string image)
-        : this(new KeycloakConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
