@@ -29,9 +29,8 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// Docker image tags available at <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags" />.
     /// </remarks>
     public KurrentDbBuilder(string image)
-        : this(new KurrentDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

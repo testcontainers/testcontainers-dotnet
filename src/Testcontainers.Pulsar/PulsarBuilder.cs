@@ -39,9 +39,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
     /// </remarks>
     public PulsarBuilder(string image)
-        : this(new PulsarConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

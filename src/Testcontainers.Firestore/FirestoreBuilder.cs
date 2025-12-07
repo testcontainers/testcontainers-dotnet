@@ -29,9 +29,8 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
     /// </remarks>
     public FirestoreBuilder(string image)
-        : this(new FirestoreConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

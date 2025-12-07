@@ -37,9 +37,8 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// Docker image tags available at <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags" />.
     /// </remarks>
     public OpenSearchBuilder(string image)
-        : this(new OpenSearchConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

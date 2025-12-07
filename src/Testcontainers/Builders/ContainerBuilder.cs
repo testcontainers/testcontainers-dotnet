@@ -50,9 +50,8 @@ namespace DotNet.Testcontainers.Builders
     /// (e.g., <c>repository:tag</c>).
     /// </param>
     public ContainerBuilder(string image)
-      : this(new ContainerConfiguration())
+      : this(new DockerImage(image))
     {
-      DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

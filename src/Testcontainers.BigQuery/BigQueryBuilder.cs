@@ -31,9 +31,8 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
     /// </remarks>
     public BigQueryBuilder(string image)
-        : this(new BigQueryConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

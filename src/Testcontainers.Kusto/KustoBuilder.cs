@@ -33,9 +33,8 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
     /// </remarks>
     public KustoBuilder(string image)
-        : this(new KustoConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

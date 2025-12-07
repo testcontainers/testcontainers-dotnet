@@ -35,9 +35,8 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
     /// </remarks>
     public SftpBuilder(string image)
-        : this(new SftpConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

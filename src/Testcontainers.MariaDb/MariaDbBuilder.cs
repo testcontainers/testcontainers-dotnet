@@ -35,9 +35,8 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// Docker image tags available at <see href="https://hub.docker.com/_/mariadb/tags" />.
     /// </remarks>
     public MariaDbBuilder(string image)
-        : this(new MariaDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

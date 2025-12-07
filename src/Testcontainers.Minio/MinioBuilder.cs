@@ -33,9 +33,8 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// Docker image tags available at <see href="https://hub.docker.com/r/minio/minio/tags" />.
     /// </remarks>
     public MinioBuilder(string image)
-        : this(new MinioConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

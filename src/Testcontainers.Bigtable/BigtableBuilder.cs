@@ -29,9 +29,8 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
     /// </remarks>
     public BigtableBuilder(string image)
-        : this(new BigtableConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

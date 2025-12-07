@@ -33,9 +33,8 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// Docker image tags available at <see href="https://hub.docker.com/r/grafana/grafana/tags" />.
     /// </remarks>
     public GrafanaBuilder(string image)
-        : this(new GrafanaConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

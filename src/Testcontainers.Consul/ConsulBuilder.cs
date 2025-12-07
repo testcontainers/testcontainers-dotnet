@@ -31,9 +31,8 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/consul/tags" />.
     /// </remarks>
     public ConsulBuilder(string image)
-        : this(new ConsulConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

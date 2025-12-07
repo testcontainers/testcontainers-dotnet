@@ -29,9 +29,8 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// Docker image tags available at <see href="https://hub.docker.com/r/amazon/dynamodb-local/tags" />.
     /// </remarks>
     public DynamoDbBuilder(string image)
-        : this(new DynamoDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

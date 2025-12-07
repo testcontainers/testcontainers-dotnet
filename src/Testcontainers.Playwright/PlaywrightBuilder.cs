@@ -31,9 +31,8 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
     /// </remarks>
     public PlaywrightBuilder(string image)
-        : this(new PlaywrightConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

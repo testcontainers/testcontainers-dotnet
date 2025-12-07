@@ -33,9 +33,8 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// Docker image tags available at <see href="https://hub.docker.com/r/redpandadata/redpanda/tags" />.
     /// </remarks>
     public RedpandaBuilder(string image)
-        : this(new RedpandaConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

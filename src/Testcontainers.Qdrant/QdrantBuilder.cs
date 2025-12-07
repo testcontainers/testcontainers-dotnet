@@ -35,9 +35,8 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/qdrant/qdrant/tags" />.
     /// </remarks>
     public QdrantBuilder(string image)
-        : this(new QdrantConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

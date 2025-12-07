@@ -31,9 +31,8 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
     /// </remarks>
     public Neo4jBuilder(string image)
-        : this(new Neo4jConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

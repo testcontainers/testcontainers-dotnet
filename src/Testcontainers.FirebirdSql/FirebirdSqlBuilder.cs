@@ -39,9 +39,8 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// Docker image tags available at <see href="https://hub.docker.com/r/firebirdsql/firebird/tags" />.
     /// </remarks>
     public FirebirdSqlBuilder(string image)
-        : this(new FirebirdSqlConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

@@ -37,9 +37,8 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
     /// </remarks>
     public CockroachDbBuilder(string image)
-        : this(new CockroachDbConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

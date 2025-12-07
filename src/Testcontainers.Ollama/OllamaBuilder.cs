@@ -29,9 +29,8 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// Docker image tags available at <see href="https://hub.docker.com/r/ollama/ollama/tags" />.
     /// </remarks>
     public OllamaBuilder(string image)
-        : this(new OllamaConfiguration())
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
