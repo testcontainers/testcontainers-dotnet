@@ -3,6 +3,8 @@ namespace DotNet.Testcontainers.Commons;
 [PublicAPI]
 public static class TestSession
 {
+    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+
     public static readonly string TempDirectoryPath = Path.Combine(Path.GetTempPath(), "testcontainers-tests", Guid.NewGuid().ToString("D"));
 
     static TestSession()
@@ -10,42 +12,41 @@ public static class TestSession
         Directory.CreateDirectory(TempDirectoryPath);
     }
 
-    public static IImage GetImageFromDockerfile(
-        string relativePath = "Dockerfile",
-        string stage = "")
+    public static string GetImageFromDockerfile(string dockerfileFilePath = "Dockerfile", string stage = "")
     {
-        var fullpath = Path.GetFullPath(relativePath);
-        if (!File.Exists(fullpath)) throw new Exception($"Dockerfile not found at '{fullpath}'.");
-        var lines = File.ReadAllLines(fullpath);
-        if (lines.Length == 0) throw new Exception($"Dockerfile located at '{fullpath}' is empty.");
-        if (!string.IsNullOrEmpty(stage)) return FindStage(lines, stage);
-        else return FindFirstTag(lines);
+        const string imageGroup = "image";
 
-        DockerImage FindFirstTag(IEnumerable<string> lines)
+        var absoluteFilePath = Path.GetFullPath(dockerfileFilePath);
+
+        if (!File.Exists(absoluteFilePath))
         {
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrEmpty(line)) continue;
-                var split = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length < 2) continue;
-                var imageTag = split[1];
-                return new DockerImage(imageTag);
-            }
-            throw new Exception($"Failed to find any image tag in Dockerfile located at '{fullpath}'.");
+            throw new FileNotFoundException($"Dockerfile '{absoluteFilePath}' not found.");
         }
 
-        DockerImage FindStage(IEnumerable<string> lines, string stage)
-        {
-            foreach (var line in lines)
+        var lines = File.ReadAllLines(absoluteFilePath)
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrEmpty(line))
+            .Where(line => !line.StartsWith('#'))
+            .ToArray();
+
+        var fromMatches = lines
+            .Select(line => FromLinePattern.Match(line))
+            .Where(match => match.Success)
+            .ToArray();
+
+        var stages = fromMatches
+            .Select(match => new
             {
-                if (string.IsNullOrEmpty(line)) continue;
-                if (!line.Trim().ToLowerInvariant().EndsWith($"as {stage}")) continue;
-                var split = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length < 2) continue;
-                var imageTag = split[1];
-                return new DockerImage(imageTag);
-            }
-            throw new Exception($"Failed to find image with stage {stage} in Dockerfile located at '{fullpath}'.");
+                Stage = match.Value.Split(new[] { " AS ", " As ", " aS ", " as " }, StringSplitOptions.RemoveEmptyEntries).Skip(1).DefaultIfEmpty(string.Empty).First(),
+                Image = match.Groups[imageGroup].Value,
+            })
+            .ToDictionary(item => item.Stage, item => item.Image);
+
+        if (stages.TryGetValue(stage, out var image))
+        {
+            return image;
         }
+
+        throw new InvalidOperationException($"Stage '{stage}' not found in Dockerfile.");
     }
 }
