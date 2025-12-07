@@ -27,7 +27,13 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>icr.io/db2_community/db2:12.1.0.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// </remarks>
     public Db2Builder(string image)
         : this(new Db2Configuration())
     {
@@ -37,7 +43,11 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// </remarks>
     public Db2Builder(IImage image)
         : this(new Db2Configuration())
     {

@@ -68,7 +68,13 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/couchbase/tags">https://hub.docker.com/_/couchbase/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>couchbase:community-7.0.2</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
     public CouchbaseBuilder(string image)
         : this(new CouchbaseConfiguration())
     {
@@ -78,7 +84,11 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
     public CouchbaseBuilder(IImage image)
         : this(new CouchbaseConfiguration())
     {

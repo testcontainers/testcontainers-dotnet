@@ -25,7 +25,13 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/rabbitmq/tags">https://hub.docker.com/_/rabbitmq/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>rabbitmq:3.11</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/rabbitmq/tags" />.
+    /// </remarks>
     public RabbitMqBuilder(string image)
         : this(new RabbitMqConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Initializes a new instance of the <see cref="RabbitMqBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/rabbitmq/tags" />.
+    /// </remarks>
     public RabbitMqBuilder(IImage image)
         : this(new RabbitMqConfiguration())
     {

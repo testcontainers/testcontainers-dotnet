@@ -23,7 +23,13 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator">https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ghcr.io/goccy/bigquery-emulator:0.4</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// </remarks>
     public BigQueryBuilder(string image)
         : this(new BigQueryConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// </remarks>
     public BigQueryBuilder(IImage image)
         : this(new BigQueryConfiguration())
     {

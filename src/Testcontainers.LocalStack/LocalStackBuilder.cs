@@ -21,7 +21,13 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/localstack/localstack/tags">https://hub.docker.com/r/localstack/localstack/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>localstack/localstack:2.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/localstack/localstack/tags" />.
+    /// </remarks>
     public LocalStackBuilder(string image)
         : this(new LocalStackConfiguration())
     {
@@ -31,7 +37,13 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStackBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/localstack/localstack/tags" />.
+    /// </remarks>
     public LocalStackBuilder(IImage image)
         : this(new LocalStackConfiguration())
     {

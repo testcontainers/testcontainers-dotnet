@@ -21,7 +21,13 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1">https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli?pli=1</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// </remarks>
     public FirestoreBuilder(string image)
         : this(new FirestoreConfiguration())
     {
@@ -31,7 +37,13 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     /// <summary>
     /// Initializes a new instance of the <see cref="FirestoreBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// </remarks>
     public FirestoreBuilder(IImage image)
         : this(new FirestoreConfiguration())
     {

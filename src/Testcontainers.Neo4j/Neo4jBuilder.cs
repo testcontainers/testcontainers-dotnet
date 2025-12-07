@@ -23,7 +23,13 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/neo4j/tags">https://hub.docker.com/_/neo4j/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>neo4j:5.4</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// </remarks>
     public Neo4jBuilder(string image)
         : this(new Neo4jConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// </remarks>
     public Neo4jBuilder(IImage image)
         : this(new Neo4jConfiguration())
     {

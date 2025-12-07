@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Builders
   /// A fluent Docker container builder.
   /// </summary>
   /// <remarks>
-  /// The container builder configuration requires image tag to be provided. Either invoke the constructor with image tag as a parameter (recommended) or call the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> method after creating instance of <see cref="ContainerBuilder"/>.
+  /// The container builder configuration requires image tag to be provided. Either invoke the constructor with image tag as a parameter (recommended) or call the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> method after creating instance of <see cref="ContainerBuilder" />.
   /// </remarks>
   /// <example>
   ///   The default configuration is equivalent to:
@@ -44,7 +44,10 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>repository:tag</c>).
+    /// </param>
     public ContainerBuilder(string image)
       : this(new ContainerConfiguration())
     {
@@ -54,7 +57,8 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
     public ContainerBuilder(IImage image)
       : this(new ContainerConfiguration())
     {

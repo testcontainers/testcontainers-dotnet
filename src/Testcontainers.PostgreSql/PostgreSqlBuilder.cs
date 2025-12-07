@@ -27,7 +27,13 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/postgres/tags">https://hub.docker.com/_/postgres/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>postgres:15.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
     public PostgreSqlBuilder(string image)
         : this(new PostgreSqlConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
     public PostgreSqlBuilder(IImage image)
         : this(new PostgreSqlConfiguration())
     {

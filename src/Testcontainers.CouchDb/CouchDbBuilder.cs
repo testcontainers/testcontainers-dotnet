@@ -25,7 +25,13 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/couchdb/tags">https://hub.docker.com/_/couchdb/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>couchdb:3.3</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// </remarks>
     public CouchDbBuilder(string image)
         : this(new CouchDbConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// </remarks>
     public CouchDbBuilder(IImage image)
         : this(new CouchDbConfiguration())
     {

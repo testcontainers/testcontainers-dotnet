@@ -11,7 +11,6 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 
     public const string FFmpegNetworkAlias = "ffmpeg-container";
 
-    [Obsolete("This image tag is not recommended: https://github.com/testcontainers/testcontainers-dotnet/issues/1540.")]
     public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20230306";
 
     public const ushort WebDriverPort = 4444;
@@ -32,7 +31,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>selenium/standalone-chrome:110.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    /// </remarks>
     public WebDriverBuilder(string image)
         : this(new WebDriverConfiguration())
     {
@@ -42,7 +47,13 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    /// </remarks>
     public WebDriverBuilder(IImage image)
         : this(new WebDriverConfiguration())
     {

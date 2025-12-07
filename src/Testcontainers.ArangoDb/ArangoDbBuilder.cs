@@ -25,7 +25,13 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/arangodb/tags">https://hub.docker.com/_/arangodb/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>arangodb:3.11.5</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// </remarks>
     public ArangoDbBuilder(string image)
         : this(new ArangoDbConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="ArangoDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// </remarks>
     public ArangoDbBuilder(IImage image)
         : this(new ArangoDbConfiguration())
     {

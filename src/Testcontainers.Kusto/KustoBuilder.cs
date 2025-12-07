@@ -25,7 +25,13 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// </remarks>
     public KustoBuilder(string image)
         : this(new KustoConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// </remarks>
     public KustoBuilder(IImage image)
         : this(new KustoConfiguration())
     {

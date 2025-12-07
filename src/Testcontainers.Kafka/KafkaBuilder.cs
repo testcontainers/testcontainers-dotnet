@@ -37,7 +37,13 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags">https://hub.docker.com/r/confluentinc/cp-kafka/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>confluentinc/cp-kafka:7.5.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// </remarks>
     public KafkaBuilder(string image)
         : this(new KafkaConfiguration())
     {
@@ -47,7 +53,11 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// </remarks>
     public KafkaBuilder(IImage image)
         : this(new KafkaConfiguration())
     {

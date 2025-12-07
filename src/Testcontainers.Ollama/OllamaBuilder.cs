@@ -21,7 +21,13 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/ollama/ollama/tags">https://hub.docker.com/r/ollama/ollama/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ollama/ollama:0.6.6</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ollama/ollama/tags" />.
+    /// </remarks>
     public OllamaBuilder(string image)
         : this(new OllamaConfiguration())
     {
@@ -31,7 +37,13 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/ollama/ollama/tags" />.
+    /// </remarks>
     public OllamaBuilder(IImage image)
         : this(new OllamaConfiguration())
     {

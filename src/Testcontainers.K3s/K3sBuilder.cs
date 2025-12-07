@@ -23,7 +23,13 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/rancher/k3s/tags">https://hub.docker.com/r/rancher/k3s/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>rancher/k3s:v1.26.2-k3s1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// </remarks>
     public K3sBuilder(string image)
         : this(new K3sConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// </remarks>
     public K3sBuilder(IImage image)
         : this(new K3sConfiguration())
     {

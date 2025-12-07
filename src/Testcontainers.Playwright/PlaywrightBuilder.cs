@@ -23,7 +23,13 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags">https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/playwright:v1.55.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// </remarks>
     public PlaywrightBuilder(string image)
         : this(new PlaywrightConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaywrightBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// </remarks>
     public PlaywrightBuilder(IImage image)
         : this(new PlaywrightConfiguration())
     {

@@ -27,7 +27,13 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/milvusdb/milvus/tags">https://hub.docker.com/r/milvusdb/milvus/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>milvusdb/milvus:v2.3.10</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
     public MilvusBuilder(string image)
         : this(new MilvusConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
     public MilvusBuilder(IImage image)
         : this(new MilvusConfiguration())
     {

@@ -20,7 +20,13 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags">https://hub.docker.com/r/semitechnologies/weaviate/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>semitechnologies/weaviate:1.26.14</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags" />.
+    /// </remarks>
     public WeaviateBuilder(string image)
         : this(new WeaviateConfiguration())
     {
@@ -30,7 +36,13 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaviateBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags" />.
+    /// </remarks>
     public WeaviateBuilder(IImage image)
         : this(new WeaviateConfiguration())
     {

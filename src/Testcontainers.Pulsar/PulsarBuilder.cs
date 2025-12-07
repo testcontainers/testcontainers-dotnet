@@ -31,7 +31,13 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags">https://hub.docker.com/r/apachepulsar/pulsar/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>apachepulsar/pulsar:3.0.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
     public PulsarBuilder(string image)
         : this(new PulsarConfiguration())
     {
@@ -41,7 +47,13 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
     public PulsarBuilder(IImage image)
         : this(new PulsarConfiguration())
     {

@@ -27,7 +27,13 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-messaging/servicebus-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
     public ServiceBusBuilder(string image)
         : this(new ServiceBusConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
     public ServiceBusBuilder(IImage image)
         : this(new ServiceBusConfiguration())
     {

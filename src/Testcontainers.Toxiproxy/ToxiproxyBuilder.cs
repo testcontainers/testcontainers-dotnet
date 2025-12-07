@@ -25,7 +25,13 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy">https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ghcr.io/shopify/toxiproxy:2.12.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// </remarks>
     public ToxiproxyBuilder(string image)
         : this(new ToxiproxyConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// <summary>
     /// Initializes a new instance of the <see cref="ToxiproxyBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// </remarks>
     public ToxiproxyBuilder(IImage image)
         : this(new ToxiproxyConfiguration())
     {

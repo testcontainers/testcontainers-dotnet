@@ -29,7 +29,13 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/clickhouse/tags">https://hub.docker.com/_/clickhouse/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>clickhouse/clickhouse-server:23.6-alpine</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// </remarks>
     public ClickHouseBuilder(string image)
         : this(new ClickHouseConfiguration())
     {
@@ -39,7 +45,13 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// </remarks>
     public ClickHouseBuilder(IImage image)
         : this(new ClickHouseConfiguration())
     {

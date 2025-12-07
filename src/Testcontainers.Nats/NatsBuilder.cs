@@ -25,7 +25,13 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/nats/tags">https://hub.docker.com/_/nats/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>nats:2.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// </remarks>
     public NatsBuilder(string image)
         : this(new NatsConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// </remarks>
     public NatsBuilder(IImage image)
         : this(new NatsConfiguration())
     {

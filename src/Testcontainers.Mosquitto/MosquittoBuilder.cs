@@ -31,7 +31,13 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// <summary>
     /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/eclipse-mosquitto/tags">https://hub.docker.com/_/eclipse-mosquitto/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>eclipse-mosquitto:2.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// </remarks>
     public MosquittoBuilder(string image)
         : this(new MosquittoConfiguration())
     {
@@ -41,7 +47,13 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// <summary>
     /// Initializes a new instance of the <see cref="MosquittoBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// </remarks>
     public MosquittoBuilder(IImage image)
         : this(new MosquittoConfiguration())
     {

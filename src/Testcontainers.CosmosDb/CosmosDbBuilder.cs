@@ -23,7 +23,13 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// </remarks>
     public CosmosDbBuilder(string image)
         : this(new CosmosDbConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// </remarks>
     public CosmosDbBuilder(IImage image)
         : this(new CosmosDbConfiguration())
     {

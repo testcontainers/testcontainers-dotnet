@@ -27,7 +27,13 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/atmoz/sftp/tags">https://hub.docker.com/r/atmoz/sftp/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>atmoz/sftp:alpine</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// </remarks>
     public SftpBuilder(string image)
         : this(new SftpConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// <summary>
     /// Initializes a new instance of the <see cref="SftpBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// </remarks>
     public SftpBuilder(IImage image)
         : this(new SftpConfiguration())
     {

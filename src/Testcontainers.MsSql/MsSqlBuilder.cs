@@ -27,7 +27,13 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags">https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// </remarks>
     public MsSqlBuilder(string image)
         : this(new MsSqlConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// </remarks>
     public MsSqlBuilder(IImage image)
         : this(new MsSqlConfiguration())
     {

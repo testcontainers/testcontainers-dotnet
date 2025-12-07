@@ -28,7 +28,13 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>gvenzl/oracle-xe:21.3.0-slim-faststart</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
     public OracleBuilder(string image)
         : this(new OracleConfiguration())
     {
@@ -38,7 +44,13 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
     public OracleBuilder(IImage image)
         : this(new OracleConfiguration())
     {

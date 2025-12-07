@@ -23,7 +23,13 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags">https://hub.docker.com/r/fsouza/fake-gcs-server/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>fsouza/fake-gcs-server:1.47</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
     public FakeGcsServerBuilder(string image)
         : this(new FakeGcsServerConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
     public FakeGcsServerBuilder(IImage image)
         : this(new FakeGcsServerConfiguration())
     {

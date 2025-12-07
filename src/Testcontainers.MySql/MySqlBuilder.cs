@@ -27,7 +27,13 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/mysql/tags">https://hub.docker.com/_/mysql/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mysql:8.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// </remarks>
     public MySqlBuilder(string image)
         : this(new MySqlConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// </remarks>
     public MySqlBuilder(IImage image)
         : this(new MySqlConfiguration())
     {

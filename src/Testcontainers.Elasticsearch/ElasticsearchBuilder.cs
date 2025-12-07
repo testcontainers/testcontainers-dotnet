@@ -35,7 +35,13 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/_/elasticsearch/tags">https://hub.docker.com/_/elasticsearch/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>elasticsearch:8.6.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// </remarks>
     public ElasticsearchBuilder(string image)
         : this(new ElasticsearchConfiguration())
     {
@@ -45,7 +51,11 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// </remarks>
     public ElasticsearchBuilder(IImage image)
         : this(new ElasticsearchConfiguration())
     {

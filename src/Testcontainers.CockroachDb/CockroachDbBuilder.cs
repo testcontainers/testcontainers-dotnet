@@ -29,7 +29,13 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags">https://hub.docker.com/r/cockroachdb/cockroach/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>cockroachdb/cockroach:latest-v23.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// </remarks>
     public CockroachDbBuilder(string image)
         : this(new CockroachDbConfiguration())
     {
@@ -39,7 +45,13 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// </remarks>
     public CockroachDbBuilder(IImage image)
         : this(new CockroachDbConfiguration())
     {

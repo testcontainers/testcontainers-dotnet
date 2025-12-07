@@ -21,7 +21,13 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// <summary>
     /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags">https://hub.docker.com/r/janusgraph/janusgraph/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>janusgraph/janusgraph:1.0.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags" />.
+    /// </remarks>
     public JanusGraphBuilder(string image)
         : this(new JanusGraphConfiguration())
     {
@@ -31,7 +37,13 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// <summary>
     /// Initializes a new instance of the <see cref="JanusGraphBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags" />.
+    /// </remarks>
     public JanusGraphBuilder(IImage image)
         : this(new JanusGraphConfiguration())
     {

@@ -29,7 +29,13 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags">https://hub.docker.com/r/opensearchproject/opensearch/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>opensearchproject/opensearch:2.12.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags" />.
+    /// </remarks>
     public OpenSearchBuilder(string image)
         : this(new OpenSearchConfiguration())
     {
@@ -39,7 +45,13 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags" />.
+    /// </remarks>
     public OpenSearchBuilder(IImage image)
         : this(new OpenSearchConfiguration())
     {

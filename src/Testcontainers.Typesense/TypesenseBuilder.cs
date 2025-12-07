@@ -25,7 +25,13 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/typesense/typesense/tags">https://hub.docker.com/r/typesense/typesense/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>typesense/typesense:28.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// </remarks>
     public TypesenseBuilder(string image)
         : this(new TypesenseConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Initializes a new instance of the <see cref="TypesenseBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// </remarks>
     public TypesenseBuilder(IImage image)
         : this(new TypesenseConfiguration())
     {

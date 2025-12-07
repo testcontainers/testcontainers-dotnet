@@ -25,9 +25,15 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags">https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// </remarks>
     public EventHubsBuilder(string image)
         : this(new EventHubsConfiguration())
     {
@@ -35,9 +41,13 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ElasticsearchBuilder" /> class.
+    /// Initializes a new instance of the <see cref="EventHubsBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// </remarks>
     public EventHubsBuilder(IImage image)
         : this(new EventHubsConfiguration())
     {

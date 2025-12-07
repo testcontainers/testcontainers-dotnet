@@ -27,7 +27,13 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://quay.io/repository/keycloak/keycloak?tab=tags">https://quay.io/repository/keycloak/keycloak?tab=tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>quay.io/keycloak/keycloak:21.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// </remarks>
     public KeycloakBuilder(string image)
         : this(new KeycloakConfiguration())
     {
@@ -37,7 +43,13 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// </remarks>
     public KeycloakBuilder(IImage image)
         : this(new KeycloakConfiguration())
     {

@@ -23,7 +23,13 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags">https://hub.docker.com/r/nagyesta/lowkey-vault/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>nagyesta/lowkey-vault:2.7.1-ubi9-minimal</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// </remarks>
     public LowkeyVaultBuilder(string image)
         : this(new LowkeyVaultConfiguration())
     {
@@ -33,7 +39,13 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// <summary>
     /// Initializes a new instance of the <see cref="LowkeyVaultBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// </remarks>
     public LowkeyVaultBuilder(IImage image)
         : this(new LowkeyVaultConfiguration())
     {

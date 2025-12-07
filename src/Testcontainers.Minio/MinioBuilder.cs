@@ -25,7 +25,13 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
-    /// <param name="image">Docker image tag. Available tags can be found here: <see href="https://hub.docker.com/r/minio/minio/tags">https://hub.docker.com/r/minio/minio/tags</see>.</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>minio/minio:RELEASE.2023-01-31T02-24-19Z</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/minio/minio/tags" />.
+    /// </remarks>
     public MinioBuilder(string image)
         : this(new MinioConfiguration())
     {
@@ -35,7 +41,13 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
-    /// <param name="image">Image instance to use in configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/minio/minio/tags" />.
+    /// </remarks>
     public MinioBuilder(IImage image)
         : this(new MinioConfiguration())
     {
