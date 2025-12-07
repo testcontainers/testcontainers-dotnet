@@ -37,7 +37,24 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// (e.g., <c>selenium/standalone-chrome:110.0</c>).
     /// </param>
     /// <remarks>
-    /// Docker image tags available at <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    /// Docker image tags for standalone Selenium browsers:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             Chrome: <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Firefox: <see href="https://hub.docker.com/r/selenium/standalone-firefox/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Edge: <see href="https://hub.docker.com/r/selenium/standalone-edge/tags" />.
+    ///         </description>
+    ///     </item>
+    /// </list>
     /// </remarks>
     public WebDriverBuilder(string image)
         : this(new WebDriverConfiguration())
@@ -53,7 +70,24 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// for the container builder configuration.
     /// </param>
     /// <remarks>
-    /// Docker image tags available at <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    /// Docker image tags for standalone Selenium browsers:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             Chrome: <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Firefox: <see href="https://hub.docker.com/r/selenium/standalone-firefox/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Edge: <see href="https://hub.docker.com/r/selenium/standalone-edge/tags" />.
+    ///         </description>
+    ///     </item>
+    /// </list>
     /// </remarks>
     public WebDriverBuilder(IImage image)
         : this(new WebDriverConfiguration())

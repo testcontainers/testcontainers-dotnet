@@ -1,11 +1,11 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
-  using System;
 
   /// <summary>
   /// A fluent Docker container builder.

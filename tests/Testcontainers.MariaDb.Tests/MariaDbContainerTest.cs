@@ -36,9 +36,7 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
         : DbContainerFixture<MariaDbBuilder, MariaDbContainer>(messageSink)
     {
         protected override MariaDbBuilder Configure(MariaDbBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => MySqlConnectorFactory.Instance;

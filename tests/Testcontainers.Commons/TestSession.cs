@@ -12,11 +12,11 @@ public static class TestSession
         Directory.CreateDirectory(TempDirectoryPath);
     }
 
-    public static string GetImageFromDockerfile(string dockerfileFilePath = "Dockerfile", string stage = "")
+    public static string GetImageFromDockerfile(string relativeFilePath = "Dockerfile", string stage = "")
     {
         const string imageGroup = "image";
 
-        var absoluteFilePath = Path.GetFullPath(dockerfileFilePath);
+        var absoluteFilePath = Path.GetFullPath(relativeFilePath);
 
         if (!File.Exists(absoluteFilePath))
         {

@@ -67,7 +67,8 @@ public abstract class KafkaContainerTest : IAsyncLifetime
     public sealed class KafkaDefaultConfiguration : KafkaContainerTest
     {
         public KafkaDefaultConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile()).Build())
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile())
+                .Build())
         {
         }
     }

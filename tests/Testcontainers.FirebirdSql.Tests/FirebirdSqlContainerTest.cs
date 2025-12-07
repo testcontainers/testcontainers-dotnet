@@ -36,9 +36,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : DbContainerFixture<FirebirdSqlBuilder, FirebirdSqlContainer>(messageSink)
     {
         protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => FirebirdClientFactory.Instance;

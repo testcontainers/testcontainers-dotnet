@@ -70,9 +70,7 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
         : DbContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>(messageSink)
     {
         protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => NpgsqlFactory.Instance;

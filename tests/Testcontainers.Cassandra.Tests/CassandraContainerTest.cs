@@ -61,9 +61,7 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
     {
         protected override CassandraBuilder Configure(CassandraBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => CqlProviderFactory.Instance;

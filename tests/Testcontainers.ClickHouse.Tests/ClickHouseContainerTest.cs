@@ -36,9 +36,7 @@ public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.Cl
         : DbContainerFixture<ClickHouseBuilder, ClickHouseContainer>(messageSink)
     {
         protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => ClickHouseConnectionFactory.Instance;

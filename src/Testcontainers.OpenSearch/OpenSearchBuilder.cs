@@ -77,11 +77,31 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// <remarks>
     /// The password must meet the following complexity requirements:
     /// <list type="bullet">
-    ///     <item><description>Minimum of 8 characters</description></item>
-    ///     <item><description>At least one uppercase letter</description></item>
-    ///     <item><description>At least one lowercase letter</description></item>
-    ///     <item><description>At least one digit</description></item>
-    ///     <item><description>At least one special character</description></item>
+    ///     <item>
+    ///         <description>
+    ///             Minimum of 8 characters
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             At least one uppercase letter
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             At least one lowercase letter
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             At least one digit
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             At least one special character
+    ///         </description>
+    ///     </item>
     /// </list>
     /// </remarks>
     /// <param name="password">The <c>admin</c> user password.</param>

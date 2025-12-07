@@ -36,9 +36,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         : DbContainerFixture<MySqlBuilder, MySqlContainer>(messageSink)
     {
         protected override MySqlBuilder Configure(MySqlBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => MySqlConnectorFactory.Instance;

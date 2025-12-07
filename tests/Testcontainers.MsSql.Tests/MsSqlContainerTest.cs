@@ -38,9 +38,7 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
         protected override MsSqlBuilder Configure(MsSqlBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
+            => builder.WithImage(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => SqlClientFactory.Instance;
