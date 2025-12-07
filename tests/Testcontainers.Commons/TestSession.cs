@@ -3,7 +3,7 @@ namespace DotNet.Testcontainers.Commons;
 [PublicAPI]
 public static class TestSession
 {
-    private static readonly ConcurrentDictionary<string, Dictionary<string, string>> Cache = new ConcurrentDictionary<string, Dictionary<string, string>>();
+    private static readonly ConcurrentDictionary<string, Dictionary<string, string>> Stages = new ConcurrentDictionary<string, Dictionary<string, string>>();
 
     public static readonly string TempDirectoryPath = Path.Combine(Path.GetTempPath(), "testcontainers-tests", Guid.NewGuid().ToString("D"));
 
@@ -16,7 +16,7 @@ public static class TestSession
     {
         var absoluteFilePath = Path.GetFullPath(relativeFilePath);
 
-        var stages = Cache.GetOrAdd(absoluteFilePath, filePath => new DockerfileParser(filePath).Parse());
+        var stages = Stages.GetOrAdd(absoluteFilePath, filePath => new DockerfileParser(filePath).Parse());
 
         if (stages.TryGetValue(stage, out var image))
         {
