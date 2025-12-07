@@ -1,1 +1,1 @@
-﻿FROM atmoz/sftp:alpine
+FROM atmoz/sftp:alpine

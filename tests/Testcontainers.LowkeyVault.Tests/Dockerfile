@@ -1,1 +1,1 @@
-﻿FROM nagyesta/lowkey-vault:5.0.14
+FROM nagyesta/lowkey-vault:5.0.14

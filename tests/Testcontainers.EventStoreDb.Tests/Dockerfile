@@ -1,1 +1,1 @@
-﻿FROM eventstore/eventstore:lts
+FROM eventstore/eventstore:lts

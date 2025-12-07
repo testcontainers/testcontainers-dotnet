@@ -1,1 +1,1 @@
-﻿FROM icr.io/db2_community/db2:12.1.0.0
+FROM icr.io/db2_community/db2:12.1.0.0

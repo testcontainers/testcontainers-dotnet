@@ -1,1 +1,1 @@
-﻿FROM fsouza/fake-gcs-server:1
+FROM fsouza/fake-gcs-server:1

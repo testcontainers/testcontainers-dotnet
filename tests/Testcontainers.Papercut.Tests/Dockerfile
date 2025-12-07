@@ -1,1 +1,1 @@
-﻿FROM changemakerstudiosus/papercut-smtp:7.6
+FROM changemakerstudiosus/papercut-smtp:7.6

@@ -1,1 +1,1 @@
-﻿FROM janusgraph/janusgraph:1.2.0-20251114-142114.b424a8f
+FROM janusgraph/janusgraph:1.2.0-20251114-142114.b424a8f

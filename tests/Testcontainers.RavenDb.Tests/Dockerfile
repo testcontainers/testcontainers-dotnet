@@ -1,1 +1,1 @@
-﻿FROM ravendb/ravendb:7.1-latest
+FROM ravendb/ravendb:7.1-latest

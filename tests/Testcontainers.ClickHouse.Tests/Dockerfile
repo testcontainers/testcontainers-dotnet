@@ -1,1 +1,1 @@
-﻿FROM clickhouse:25.9
+FROM clickhouse:25.9

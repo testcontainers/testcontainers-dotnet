@@ -1,1 +1,1 @@
-﻿FROM mcr.microsoft.com/azure-messaging/eventhubs-emulator:2.1.0
+FROM mcr.microsoft.com/azure-messaging/eventhubs-emulator:2.1.0

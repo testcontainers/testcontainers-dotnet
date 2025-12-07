@@ -1,1 +1,1 @@
-﻿FROM mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest
+FROM mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest

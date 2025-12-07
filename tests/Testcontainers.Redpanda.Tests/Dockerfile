@@ -1,1 +1,1 @@
-﻿FROM redpandadata/redpanda:v25.3.1
+FROM redpandadata/redpanda:v25.3.1

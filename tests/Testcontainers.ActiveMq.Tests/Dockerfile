@@ -1,1 +1,1 @@
-﻿FROM apache/activemq-artemis:2.44.0
+FROM apache/activemq-artemis:2.44.0
