@@ -1,1 +1,1 @@
-FROM cassandra:5
+﻿FROM cassandra:5.0

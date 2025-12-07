@@ -1,1 +1,1 @@
-FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:548.0.0-emulators
+﻿FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators

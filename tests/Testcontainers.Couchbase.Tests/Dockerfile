@@ -1,1 +1,1 @@
-FROM couchbase:community-8.0.0
+﻿FROM couchbase:community-7.0.2

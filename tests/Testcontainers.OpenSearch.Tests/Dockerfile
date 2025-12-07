@@ -1,1 +1,1 @@
-FROM opensearchproject/opensearch:3
+﻿FROM opensearchproject/opensearch:2.12.0
