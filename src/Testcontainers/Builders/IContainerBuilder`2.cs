@@ -88,6 +88,14 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithImage(IImage image);
 
     /// <summary>
+    /// Sets the platform.
+    /// </summary>
+    /// <param name="platform">The platform.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithPlatform(string platform);
+
+    /// <summary>
     /// Sets the image pull policy.
     /// </summary>
     /// <param name="imagePullPolicy">The image pull policy.</param>

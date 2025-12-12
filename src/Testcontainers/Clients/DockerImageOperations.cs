@@ -55,11 +55,12 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
+    public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, string platform = null, CancellationToken ct = default)
     {
       var createParameters = new ImagesCreateParameters
       {
         FromImage = image.FullName,
+        Platform = platform,
       };
 
       var authConfig = new AuthConfig

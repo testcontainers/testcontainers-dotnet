@@ -20,6 +20,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="ContainerConfiguration" /> class.
     /// </summary>
     /// <param name="image">The image.</param>
+    /// <param name="platform">The platform.</param>
     /// <param name="imagePullPolicy">The image pull policy.</param>
     /// <param name="name">The name.</param>
     /// <param name="hostname">The hostname.</param>
@@ -44,6 +45,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(
       IImage image = null,
+      string platform = null,
       Func<ImageInspectResponse, bool> imagePullPolicy = null,
       string name = null,
       string hostname = null,
@@ -70,6 +72,7 @@ namespace DotNet.Testcontainers.Configurations
       AutoRemove = autoRemove;
       Privileged = privileged;
       Image = image;
+      Platform = platform;
       ImagePullPolicy = imagePullPolicy;
       Name = name;
       Hostname = hostname;
@@ -119,6 +122,7 @@ namespace DotNet.Testcontainers.Configurations
       : base(oldValue, newValue)
     {
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
+      Platform = BuildConfiguration.Combine(oldValue.Platform, newValue.Platform);
       ImagePullPolicy = BuildConfiguration.Combine(oldValue.ImagePullPolicy, newValue.ImagePullPolicy);
       Name = BuildConfiguration.Combine(oldValue.Name, newValue.Name);
       Hostname = BuildConfiguration.Combine(oldValue.Hostname, newValue.Hostname);
@@ -153,6 +157,10 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IImage Image { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public string Platform { get; }
 
     /// <inheritdoc />
     [JsonIgnore]

@@ -32,6 +32,11 @@ namespace DotNet.Testcontainers.Configurations
     IImage Image { get; }
 
     /// <summary>
+    /// Gets the platform.
+    /// </summary>
+    string Platform { get; }
+
+    /// <summary>
     /// Gets the image pull policy.
     /// </summary>
     Func<ImageInspectResponse, bool> ImagePullPolicy { get; }

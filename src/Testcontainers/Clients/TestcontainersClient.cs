@@ -334,7 +334,7 @@ namespace DotNet.Testcontainers.Clients
 
       if (configuration.ImagePullPolicy(cachedImage))
       {
-        await PullImageAsync(configuration.Image, ct)
+        await PullImageAsync(configuration.Image, configuration.Platform, ct)
           .ConfigureAwait(false);
       }
 
@@ -392,7 +392,7 @@ namespace DotNet.Testcontainers.Clients
 
         var uncachedImages = baseImages.Where(baseImage => !repositoryTags.Contains(baseImage.FullName));
 
-        await Task.WhenAll(uncachedImages.Select(image => PullImageAsync(image, ct)))
+        await Task.WhenAll(uncachedImages.Select(image => PullImageAsync(image, null, ct)))
           .ConfigureAwait(false);
 
         _ = await Image.BuildAsync(configuration, dockerfileArchive, ct)
@@ -406,8 +406,9 @@ namespace DotNet.Testcontainers.Clients
     /// Pulls an image from a registry.
     /// </summary>
     /// <param name="image">The image to pull.</param>
+    /// <param name="platform">The platform.</param>
     /// <param name="ct">Cancellation token.</param>
-    private async Task PullImageAsync(IImage image, CancellationToken ct = default)
+    private async Task PullImageAsync(IImage image, string platform = null, CancellationToken ct = default)
     {
       var dockerRegistryServerAddress = image.GetHostname();
 
@@ -427,7 +428,7 @@ namespace DotNet.Testcontainers.Clients
 
       var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
 
-      await Image.CreateAsync(image, authConfig, ct)
+      await Image.CreateAsync(image, authConfig, platform, ct)
         .ConfigureAwait(false);
     }
   }

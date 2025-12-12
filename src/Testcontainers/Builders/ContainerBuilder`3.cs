@@ -96,6 +96,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithPlatform(string platform)
+    {
+      return Clone(new ContainerConfiguration(platform: platform));
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithImagePullPolicy(Func<ImageInspectResponse, bool> imagePullPolicy)
     {
       return Clone(new ContainerConfiguration(imagePullPolicy: imagePullPolicy));
