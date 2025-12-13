@@ -5,7 +5,7 @@ namespace Testcontainers.Kafka;
 public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer, KafkaConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string KafkaImage = "confluentinc/cp-kafka:7.5.9";
+    public const string KafkaImage = "confluentinc/cp-kafka:7.5.12";
 
     public const ushort KafkaPort = 9092;
 
@@ -39,7 +39,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>confluentinc/cp-kafka:7.5.9</c>).
+    /// (e.g., <c>confluentinc/cp-kafka:7.5.12</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.

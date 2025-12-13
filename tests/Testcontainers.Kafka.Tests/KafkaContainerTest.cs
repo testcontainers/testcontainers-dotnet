@@ -99,7 +99,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
     public sealed class ApacheKafkaConfiguration : KafkaContainerTest
     {
         public ApacheKafkaConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka3.9.1"))
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka4.1.1"))
                 .Build())
         {
         }
@@ -109,7 +109,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
     public sealed class ApacheKafkaNativeConfiguration : KafkaContainerTest
     {
         public ApacheKafkaNativeConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka-native3.9.1"))
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka-native4.1.1"))
                 .Build())
         {
         }
