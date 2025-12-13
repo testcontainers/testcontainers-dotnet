@@ -12,7 +12,7 @@ You can start an OpenSearch container instance from any .NET application. To cre
 
 === "Start an OpenSearch container"
     ```csharp
-    var openSearchContainer = new OpenSearchBuilder().Build();
+    var openSearchContainer = new OpenSearchBuilder("opensearchproject/opensearch:2.12.0").Build();
     await openSearchContainer.StartAsync();
     ```
 

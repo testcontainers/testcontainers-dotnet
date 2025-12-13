@@ -9,7 +9,7 @@ Both `ENTRYPOINT` and `CMD` allows you to configure an executable and parameters
 Instead of running the NGINX application, the following container configuration overrides the default start procedure of the image and just tests the NGINX configuration file.
 
 ```csharp
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("nginx:1.26.3-alpine3.20")
   .WithEntrypoint("nginx")
   .WithCommand("-t");
 ```
@@ -25,7 +25,7 @@ Apps or services running inside a container are usually configured either with e
 To configure an ASP.NET Core application, either one or both mechanisms can be used.
 
 ```csharp
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("mcr.microsoft.com/dotnet/aspnet:10.0")
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.pfx")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
@@ -39,12 +39,12 @@ _ = new ContainerBuilder()
 Sometimes it is necessary to copy files into the container to configure the services running inside the container in advance, like the `appsettings.json` or an SSL certificate. The container builder API provides a member `WithResourceMapping(string, string)`, including several overloads to copy directories or individual files to a container's directory.
 
 ```csharp title="Copying a directory"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(new DirectoryInfo("."), "/app/");
 ```
 
 ```csharp title="Copying a file"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   // Copy 'appsettings.json' into the '/app' directory.
   .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
   // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
@@ -54,7 +54,7 @@ _ = new ContainerBuilder()
 Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
 
 ```csharp title="Copying a byte array"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
 ```
 
@@ -63,7 +63,7 @@ _ = new ContainerBuilder()
 When copying files into a container, you can specify the user ID (UID) and group ID (GID) to set the correct ownership of the copied files. This is particularly useful when the container runs as a non-root user or when specific file permissions are required for security or application functionality.
 
 ```csharp title="Copying a file with specific UID and GID"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(new DirectoryInfo("."), "/app/", uid: 1000, gid: 1000);
 ```
 
@@ -72,7 +72,7 @@ _ = new ContainerBuilder()
 When copying files into a container, you can specify the file mode to set the correct permissions for the copied files.
 
 ```csharp title="Copying a script with executable permissions"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(new DirectoryInfo("."), "/app/", fileMode: Unix.FileMode755);
 ```
 
@@ -120,7 +120,7 @@ The `WithOutputConsumer` method is part of the `ContainerBuilder` class and is u
 ```csharp title="Forwarding all log messages"
 using IOutputConsumer outputConsumer = Consume.RedirectStdoutAndStderrToConsole();
 
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithOutputConsumer(outputConsumer);
 ```
 
@@ -146,7 +146,7 @@ If a module applies default commands and you need to override or remove them ent
 //   .WithCommand("-c", "synchronous_commit=off")
 //   ...
 
-var postgreSqlContainer = new PostgreSqlBuilder()
+var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1")
   .WithCommand(new OverwriteEnumerable<string>(Array.Empty<string>()))
   .Build();
 ```
@@ -164,9 +164,8 @@ An NGINX container that binds the HTTP port to a random host port and hosts stat
 ```csharp
 const ushort HttpPort = 80;
 
-var nginxContainer = new ContainerBuilder()
+var nginxContainer = new ContainerBuilder("nginx:1.26.3-alpine3.20")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("nginx")
   .WithPortBinding(HttpPort, true)
   .Build();
 
@@ -189,9 +188,8 @@ const string MagicNumber = "42";
 
 const ushort MagicNumberPort = 80;
 
-var deepThoughtContainer = new ContainerBuilder()
+var deepThoughtContainer = new ContainerBuilder("alpine:3.20.0")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("alpine")
   .WithPortBinding(MagicNumberPort, true)
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")

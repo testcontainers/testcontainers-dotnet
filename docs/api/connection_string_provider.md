@@ -11,7 +11,7 @@ The Connection String Provider API provides a standardized way to access and man
 Register a custom connection string provider via the container builder:
 
 ```csharp
-IContainer container = new ContainerBuilder()
+IContainer container = new ContainerBuilder("alpine:3.20.0")
   .WithConnectionStringProvider(new MyProvider1())
   .Build();
 

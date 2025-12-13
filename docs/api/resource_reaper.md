@@ -16,8 +16,7 @@ Creates a scoped Resource Reaper and assigns its session id to a container (Dock
 var resourceReaper = await ResourceReaper.GetAndStartNewAsync()
   .ConfigureAwait(false);
 
-await new ContainerBuilder()
-  .WithImage("alpine")
+await new ContainerBuilder("alpine:3.20.0")
   .WithResourceReaperSessionId(resourceReaper.SessionId)
   .Build()
   .StartAsync()

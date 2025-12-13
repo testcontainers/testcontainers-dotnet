@@ -4,6 +4,6 @@ Testcontainers does not expose all available [Docker Engine APIs](https://docs.d
 
 ```csharp title="Setting the memory limit to 2GB"
 const long TwoGB = 2L * 1024 * 1024 * 1024;
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithCreateParameterModifier(parameterModifier => parameterModifier.HostConfig.Memory = TwoGB);
 ```
