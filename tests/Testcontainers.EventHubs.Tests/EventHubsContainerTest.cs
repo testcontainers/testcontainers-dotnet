@@ -108,7 +108,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             Network = new NetworkBuilder()
                 .Build();
 
-            Container = new AzuriteBuilder()
+            Container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.28.0")
                 .WithNetwork(Network)
                 .WithNetworkAliases(AzuriteNetworkAlias)
                 .Build();

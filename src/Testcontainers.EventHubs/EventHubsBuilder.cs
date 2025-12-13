@@ -142,7 +142,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         var network = new NetworkBuilder()
             .Build();
 
-        var container = new AzuriteBuilder()
+        var container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.28.0")
             .WithNetwork(network)
             .WithNetworkAliases(AzuriteNetworkAlias)
             .Build();

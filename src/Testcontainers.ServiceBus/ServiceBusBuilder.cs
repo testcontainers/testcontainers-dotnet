@@ -147,7 +147,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         var network = new NetworkBuilder()
             .Build();
 
-        var container = new MsSqlBuilder()
+        var container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
             .WithNetwork(network)
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();
