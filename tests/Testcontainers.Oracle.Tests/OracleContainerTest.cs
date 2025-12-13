@@ -36,8 +36,10 @@ public abstract class OracleContainerTest(OracleContainerTest.OracleFixture fixt
     {
         public override DbProviderFactory DbProviderFactory => OracleClientFactory.Instance;
 
-        protected override OracleBuilder Configure(OracleBuilder builder)
+        protected override OracleBuilder Configure()
         {
+            var builder = new OracleBuilder();
+
             if (edition == null && version == null)
             {
                 return Apply(builder, oracle => oracle);

@@ -14,5 +14,6 @@ public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutpu
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer
 {
+    [Obsolete("This method is obsolete and will be removed. Use the parameterless Configure() method and create the builder explicitly instead.")]
     protected override TBuilderEntity Configure(TBuilderEntity builder) => configure != null ? configure(builder) : builder;
 }

@@ -63,6 +63,9 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         protected override CassandraBuilder Configure(CassandraBuilder builder)
             => builder.WithImage(TestSession.GetImageFromDockerfile());
 
+        protected override CassandraBuilder Configure()
+            => new CassandraBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => CqlProviderFactory.Instance;
     }
@@ -71,8 +74,8 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
     public class CassandraWaitForDatabaseFixture(IMessageSink messageSink)
         : CassandraDefaultFixture(messageSink)
     {
-        protected override CassandraBuilder Configure(CassandraBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override CassandraBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]
