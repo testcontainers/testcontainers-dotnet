@@ -23,9 +23,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     private readonly IContainer _container;
 
-    protected ProtectDockerDaemonSocket(ContainerBuilder containerConfiguration)
+    protected ProtectDockerDaemonSocket(ContainerBuilder containerBuilder)
     {
-      _container = containerConfiguration
+      _container = containerBuilder
         .WithPrivileged(true)
         .WithPortBinding(TlsPort, true)
         .WithBindMount(_hostCertsDirectoryPath, _containerCertsDirectoryPath, AccessMode.ReadWrite)

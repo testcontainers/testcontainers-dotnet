@@ -21,7 +21,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       [Theory]
       [InlineData(null)]
       [InlineData("")]
-      public void ShouldThrowArgumentNullExceptionWhenContainerBuilderHasNoImage(string image)
+      public void ShouldThrowArgumentExceptionWhenContainerBuilderHasNoImage(string image)
       {
         Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder(image));
       }
