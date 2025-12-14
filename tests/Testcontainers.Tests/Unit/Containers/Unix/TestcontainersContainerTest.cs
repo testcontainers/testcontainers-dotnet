@@ -18,10 +18,12 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     public sealed class WithConfiguration
     {
-      [Fact]
-      public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
+      [Theory]
+      [InlineData(null)]
+      [InlineData("")]
+      public void ShouldThrowArgumentExceptionWhenContainerBuilderHasNoImage(string image)
       {
-        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder().Build());
+        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder(image));
       }
 
       [Fact]

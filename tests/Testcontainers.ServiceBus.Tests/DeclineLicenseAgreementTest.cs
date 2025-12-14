@@ -9,7 +9,7 @@ public sealed partial class DeclineLicenseAgreementTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void WithoutAcceptingLicenseAgreementThrowsArgumentException()
     {
-        var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder().Build());
+        var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder(TestSession.GetImageFromDockerfile()).Build());
         Assert.Matches(LicenseAgreementNotAccepted(), exception.Message);
     }
 
@@ -17,7 +17,7 @@ public sealed partial class DeclineLicenseAgreementTest
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void WithLicenseAgreementDeclinedThrowsArgumentException()
     {
-        var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder().WithAcceptLicenseAgreement(false).Build());
+        var exception = Assert.Throws<ArgumentException>(() => new ServiceBusBuilder(TestSession.GetImageFromDockerfile()).WithAcceptLicenseAgreement(false).Build());
         Assert.Matches(LicenseAgreementNotAccepted(), exception.Message);
     }
 }

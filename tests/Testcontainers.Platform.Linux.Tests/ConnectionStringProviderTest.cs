@@ -12,8 +12,7 @@ public static class ConnectionStringProviderTests
 
         public Configured()
         {
-            _container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            _container = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
                 .WithConnectionStringProvider(_connectionStringProvider)
                 .Build();
@@ -42,8 +41,7 @@ public static class ConnectionStringProviderTests
 
     public sealed class NotConfigured : IAsyncLifetime
     {
-        private readonly IContainer _container = new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        private readonly IContainer _container = new ContainerBuilder(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
             .Build();
 

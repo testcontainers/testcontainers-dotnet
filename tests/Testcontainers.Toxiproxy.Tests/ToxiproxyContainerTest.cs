@@ -13,7 +13,7 @@ public sealed class ToxiproxyContainerTest : IAsyncLifetime
 
     public ToxiproxyContainerTest()
     {
-        _redisContainer = new RedisBuilder()
+        _redisContainer = new RedisBuilder("redis:7.0")
             .WithNetwork(_network)
             .WithNetworkAliases(RedisNetworkAlias)
             .Build();

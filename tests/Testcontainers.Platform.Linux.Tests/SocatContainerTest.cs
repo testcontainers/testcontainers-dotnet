@@ -20,7 +20,7 @@ public sealed class SocatContainerTest : IAsyncLifetime
             .WithNetworkAliases(HelloWorldAlias)
             .Build();
 
-        _socatContainer = new SocatBuilder()
+        _socatContainer = new SocatBuilder(CommonImages.Socat)
             .WithNetwork(_network)
             .WithTarget(8080, HelloWorldAlias)
             .WithTarget(8081, HelloWorldAlias, 8080)
