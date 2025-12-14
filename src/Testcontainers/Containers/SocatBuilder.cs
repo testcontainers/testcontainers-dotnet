@@ -14,16 +14,15 @@ namespace DotNet.Testcontainers.Containers
   public sealed class SocatBuilder : ContainerBuilder<SocatBuilder, SocatContainer, SocatConfiguration>
   {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string SocatImage = "alpine/socat:1.7.4.3-r0";
+    public const string SocatImage = "alpine/socat:1.7.4.4";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SocatBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public SocatBuilder()
-      : this(new SocatConfiguration())
+      : this(SocatImage)
     {
-      DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -31,7 +30,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>alpine/socat:1.7.4.3-r0</c>).
+    /// (e.g., <c>alpine/socat:1.7.4.4</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/alpine/socat/tags" />.

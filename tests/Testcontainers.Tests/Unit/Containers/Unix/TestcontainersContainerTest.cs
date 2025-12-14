@@ -18,12 +18,13 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     public sealed class WithConfiguration
     {
-      // This test will always pass, because we always set Image inside builder constructor.
-      // [Fact]
-      // public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
-      // {
-      //   Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder(CommonImages.Alpine).Build());
-      // }
+      [Theory]
+      [InlineData(null)]
+      [InlineData("")]
+      public void ShouldThrowArgumentNullExceptionWhenContainerBuilderHasNoImage(string image)
+      {
+        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder(image));
+      }
 
       [Fact]
       public async Task GeneratedContainerName()

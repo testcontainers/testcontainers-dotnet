@@ -9,7 +9,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
   public sealed class DockerTlsFixture : ProtectDockerDaemonSocket
   {
     public DockerTlsFixture()
-      : base(new ContainerBuilder(new DockerImage("docker", null, "29.0.0-dind"))
+      : base(new ContainerBuilder("docker:29.0.0-dind")
         .WithCommand("--tlsverify=false"))
     {
     }
