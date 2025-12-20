@@ -12,7 +12,7 @@ You can start a PostgreSQL container instance from any .NET application. To crea
 
 === "Start a PostgreSQL container"
     ```csharp
-    var postgreSqlContainer = new PostgreSqlBuilder().Build();
+    var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
     await postgreSqlContainer.StartAsync();
     ```
 

@@ -11,7 +11,7 @@ dotnet add package Testcontainers.ModuleName
 All modules follow the same design and come pre-configured with best practices. Usually, you do not need to worry about configuring them yourself. To create and start a container, all you need is:
 
 ```csharp
-var moduleNameContainer = new ModuleNameBuilder().Build();
+var moduleNameContainer = new ModuleNameBuilder("<repository>:<tag>").Build();
 await moduleNameContainer.StartAsync();
 ```
 
@@ -115,10 +115,15 @@ To set the PostgreSQL module default configuration, override the read-only `Dock
 The .NET template already includes this configuration, making it easy for developers to quickly get started by simply commenting out the necessary parts:
 
 ```csharp
-public PostgreSqlBuilder()
+public PostgreSqlBuilder(string image)
+  : this(new DockerImage(image))
+{
+}
+
+public PostgreSqlBuilder(IImage image)
   : this(new PostgreSqlConfiguration())
 {
-  DockerResourceConfiguration = Init().DockerResourceConfiguration;
+  DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
 }
 
 private PostgreSqlBuilder(PostgreSqlConfiguration resourceConfiguration)
@@ -130,13 +135,13 @@ private PostgreSqlBuilder(PostgreSqlConfiguration resourceConfiguration)
 protected override PostgreSqlConfiguration DockerResourceConfiguration { get; }
 ```
 
-To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the `Init()` member and add the necessary configurations such as the Docker image and a wait strategy to the base implementation:
+To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the `Init()` member and add the necessary configurations and a wait strategy to the base implementation:
 
 ```csharp
 protected override PostgreSqlBuilder Init()
 {
   var waitStrategy = Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready");
-  return base.Init().WithImage("postgres:15.1").WithPortBinding(5432, true).WithWaitStrategy(waitStrategy);
+  return base.Init().WithPortBinding(5432, true).WithWaitStrategy(waitStrategy);
 }
 ```
 

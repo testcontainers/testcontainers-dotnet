@@ -40,5 +40,5 @@ To execute the tests, use the command `dotnet test` from a terminal.
 Developers can enable anonymous access using the Grafana builder API `WithAnonymousAccessEnabled()`. This will enable anonymous access and no authentication is necessary to access Grafana:
 
 ```csharp
-GrafanaContainer _grafanaContainer = new GrafanaBuilder().WithAnonymousAccessEnabled().Build();
+GrafanaContainer _grafanaContainer = new GrafanaBuilder("grafana/grafana:12.2").WithAnonymousAccessEnabled().Build();
 ```
