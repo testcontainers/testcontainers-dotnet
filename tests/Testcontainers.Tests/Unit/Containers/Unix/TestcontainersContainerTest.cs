@@ -89,8 +89,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         const string macAddress = "92:95:5e:30:fe:6d";
 
+        await using var network = new NetworkBuilder()
+          .Build();
+
         await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithNetwork(network)
           .WithMacAddress(macAddress)
           .Build();
 

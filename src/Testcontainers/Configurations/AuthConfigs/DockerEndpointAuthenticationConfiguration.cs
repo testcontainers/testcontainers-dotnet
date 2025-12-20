@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Configurations
     // class or stop exposing the `TestcontainersSettings` properties publicly.
     // Instead, we could rely only on custom configurations via environment variables
     // or the properties file.
-    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
