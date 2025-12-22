@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.IO;
-  using System.Linq;
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
@@ -23,13 +22,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var expected = new[]
       {
-        "mcr.microsoft.com/dotnet/sdk:8.0",
-        "mcr.microsoft.com/dotnet/runtime:8.0",
-        "mcr.microsoft.com/dotnet/aspnet:8.0-jammy",
-        "mcr.microsoft.com/dotnet/aspnet:8.0-noble",
-        "mcr.microsoft.com/dotnet/aspnet:8.0-alpine",
-        "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0",
-        "mcr.microsoft.com/dotnet/sdk:8.0.414",
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-jammy"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-noble"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/amd64"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm64"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm/v6"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm/v7"),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414"),
       };
 
       IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
@@ -44,7 +46,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var actual = dockerfileArchive.GetBaseImages();
 
       // Then
-      Assert.Equal(expected, actual.Select(baseImage => baseImage.FullName));
+      Assert.Equivalent(expected, actual);
     }
 
     [Fact]

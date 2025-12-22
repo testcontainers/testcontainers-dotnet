@@ -34,6 +34,17 @@ namespace DotNet.Testcontainers.Images
     string Digest { get; }
 
     /// <summary>
+    /// Gets the platform.
+    /// </summary>
+    /// <remarks>
+    /// The supported format is <c>&lt;os&gt;|&lt;arch&gt;|&lt;os&gt;/&lt;arch&gt;[/&lt;variant&gt;]</c>.
+    /// You can provide the operating system, the architecture, or both.
+    /// For more details and examples, see <see href="https://github.com/containerd/platforms">containerd/platforms</see>.
+    /// </remarks>
+    [CanBeNull]
+    string Platform { get; }
+
+    /// <summary>
     /// Gets the full image name.
     /// </summary>
     /// <remarks>

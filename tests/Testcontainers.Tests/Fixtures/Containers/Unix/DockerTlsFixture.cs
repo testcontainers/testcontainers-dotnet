@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   [UsedImplicitly]

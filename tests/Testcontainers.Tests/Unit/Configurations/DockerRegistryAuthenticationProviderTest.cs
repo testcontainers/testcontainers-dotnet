@@ -48,7 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void GetHostnameFromHubImageNamePrefix(string repository, string tag)
     {
       const string hubImageNamePrefix = "myregistry.azurecr.io";
-      IImage image = new DockerImage(repository, null, tag, null, hubImageNamePrefix);
+      IImage image = new DockerImage(repository, null, tag, null, null, hubImageNamePrefix);
       Assert.Equal(hubImageNamePrefix, image.GetHostname());
     }
 

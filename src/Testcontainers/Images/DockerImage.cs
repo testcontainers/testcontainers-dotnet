@@ -31,12 +31,15 @@ namespace DotNet.Testcontainers.Images
     [CanBeNull]
     private readonly string _digest;
 
+    [CanBeNull]
+    private readonly string _platform;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
     /// <param name="image">The image.</param>
     public DockerImage(IImage image)
-      : this(image.Repository, image.Registry, image.Tag, image.Digest)
+      : this(image.Repository, image.Registry, image.Tag, image.Digest, image.Platform)
     {
     }
 
@@ -53,10 +56,30 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
+    /// <remarks>
+    /// The supported format for <paramref name="platform" /> is <c>&lt;os&gt;|&lt;arch&gt;|&lt;os&gt;/&lt;arch&gt;[/&lt;variant&gt;]</c>.
+    /// You can provide the operating system, the architecture, or both.
+    /// For more details and examples, see <see href="https://github.com/containerd/platforms">containerd/platforms</see>.
+    /// </remarks>
+    /// <param name="image">The image.</param>
+    /// <param name="platform">The platform.</param>
+    /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
+    public DockerImage(
+      string image,
+      string platform)
+      : this(GetDockerImage(image))
+    {
+      _platform = TrimOrDefault(platform);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DockerImage" /> class.
+    /// </summary>
     /// <param name="repository">The repository.</param>
     /// <param name="registry">The registry.</param>
     /// <param name="tag">The tag.</param>
     /// <param name="digest">The digest.</param>
+    /// <param name="platform">The platform.</param>
     /// <param name="hubImageNamePrefix">The Docker Hub image name prefix.</param>
     /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
     public DockerImage(
@@ -64,12 +87,14 @@ namespace DotNet.Testcontainers.Images
       string registry = null,
       string tag = null,
       string digest = null,
+      string platform = null,
       string hubImageNamePrefix = null)
       : this(
         TrimOrDefault(repository),
         TrimOrDefault(registry),
         TrimOrDefault(tag, tag == null && digest == null ? LatestTag : null),
         TrimOrDefault(digest),
+        TrimOrDefault(platform),
         hubImageNamePrefix == null ? [] : hubImageNamePrefix.Trim(TrimChars).Split(SlashChar, 2, StringSplitOptions.RemoveEmptyEntries))
     {
     }
@@ -79,6 +104,7 @@ namespace DotNet.Testcontainers.Images
       string registry,
       string tag,
       string digest,
+      string platform,
       string[] substitutions)
     {
       _ = Guard.Argument(repository, nameof(repository))
@@ -109,6 +135,7 @@ namespace DotNet.Testcontainers.Images
 
       _tag = tag;
       _digest = digest;
+      _platform = platform;
     }
 
     /// <inheritdoc />
@@ -122,6 +149,9 @@ namespace DotNet.Testcontainers.Images
 
     /// <inheritdoc />
     public string Digest => _digest;
+
+    /// <inheritdoc />
+    public string Platform => _platform;
 
     /// <inheritdoc />
     public string FullName

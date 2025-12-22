@@ -27,7 +27,7 @@ namespace DotNet.Testcontainers.Images
         return image;
       }
 
-      return new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, TestcontainersSettings.HubImageNamePrefix);
+      return new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, image.Platform, TestcontainersSettings.HubImageNamePrefix);
     }
   }
 }

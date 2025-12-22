@@ -123,11 +123,13 @@ namespace DotNet.Testcontainers.Images
     /// <returns>An <see cref="IEnumerable{T}" /> of <see cref="IImage" />.</returns>
     public IEnumerable<IImage> GetBaseImages()
     {
-      const string imageGroup = "image";
-
       const string nameGroup = "name";
 
       const string valueGroup = "value";
+
+      const string argGroup = "arg";
+
+      const string imageGroup = "image";
 
       var lines = File.ReadAllLines(_dockerfile.FullName)
         .Select(line => line.Trim())
@@ -160,13 +162,16 @@ namespace DotNet.Testcontainers.Images
         .ToArray();
 
       var images = fromMatches
-        .Select(match => match.Groups[imageGroup])
-        .Select(match => match.Value)
-        .Select(line => ReplaceVariables(line, args))
-        .Where(line => !line.Any(char.IsUpper))
-        .Where(value => !stages.Contains(value))
-        .Distinct()
-        .Select(value => new DockerImage(value))
+        .Select(match => (Arg: match.Groups[argGroup], Image: match.Groups[imageGroup]))
+        .Select(item => (Arg: ReplaceVariables(item.Arg.Value, args), Image: ReplaceVariables(item.Image.Value, args)))
+        .Where(item => !item.Image.Any(char.IsUpper))
+        .Where(item => !stages.Contains(item.Image))
+        .Select(item =>
+        {
+          var fromArgs = ParseFromArgs(item.Arg).ToDictionary(arg => arg.Name, arg => arg.Value);
+          _ = fromArgs.TryGetValue("platform", out var platform);
+          return new DockerImage(item.Image, platform);
+        })
         .ToArray();
 
       return images;
@@ -213,11 +218,11 @@ namespace DotNet.Testcontainers.Images
               .ConfigureAwait(false);
           }
 
-          var dockerfileDirectoryLength  = _dockerfileDirectory.FullName
+          var dockerfileDirectoryLength = _dockerfileDirectory.FullName
             .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
           var dockerfileRelativeFilePath = _dockerfile.FullName
-            .Substring(dockerfileDirectoryLength );
+            .Substring(dockerfileDirectoryLength);
 
           var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
 
@@ -306,23 +311,124 @@ namespace DotNet.Testcontainers.Images
     /// corresponding build argument if present; otherwise, the default value in the
     /// Dockerfile is preserved.
     /// </summary>
-    /// <param name="image">The image string from a Dockerfile <c>FROM</c> statement.</param>
+    /// <param name="line">The line from a Dockerfile <c>FROM</c> statement.</param>
     /// <param name="variables">A dictionary containing variable names as keys and their replacement values as values.</param>
     /// <returns>A new image string where placeholders are replaced with their corresponding values.</returns>
-    private static string ReplaceVariables(string image, IDictionary<string, string> variables)
+    private static string ReplaceVariables(string line, IDictionary<string, string> variables)
     {
       const string nameGroup = "name";
 
       if (variables.Count == 0)
       {
-        return image;
+        return line;
       }
 
-      return VariablePattern.Replace(image, match =>
+      return VariablePattern.Replace(line, match =>
       {
         var name = match.Groups[nameGroup].Value;
         return variables.TryGetValue(name, out var value) ? value : match.Value;
       });
+    }
+
+    /// <summary>
+    /// Parses a FROM statement arg string into flag and value pairs.
+    /// </summary>
+    /// <remarks>
+    /// This method parses a string containing FROM statement style flags,
+    /// respecting quoted values. Both double quotes (<c>"</c>) and single
+    /// quotes (<c>'</c>) are supported. Whitespaces outside of quotes are
+    /// treated as separators.
+    ///
+    /// For example, the line:
+    /// <code>
+    ///   --pull=always --platform="linux/amd64"
+    /// </code>
+    /// becomes:
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>
+    ///       (<c>pull</c>, <c>always</c>)
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <description>
+    ///       (<c>platform</c>, <c>linux/amd64</c>)
+    ///     </description>
+    ///   </item>
+    /// </list>
+    /// </remarks>
+    /// <param name="line">
+    /// The FROM statement arg string containing flags and optional values.
+    /// </param>
+    /// <returns>
+    /// A sequence of (<c>Name</c>, <c>Value</c>) tuples.
+    /// </returns>
+    /// <exception cref="FormatException">
+    /// Thrown if a quoted value is missing a closing quote.
+    /// </exception>
+    private static IEnumerable<(string Name, string Value)> ParseFromArgs(string line)
+    {
+      if (string.IsNullOrEmpty(line))
+      {
+        yield break;
+      }
+
+      char? quote = null;
+
+      var start = 0;
+
+      for (var i = 0; i < line.Length; i++)
+      {
+        var c = line[i];
+
+        if ((c == '"' || c == '\'') && (quote == null || quote == c))
+        {
+          quote = quote == null ? c : null;
+        }
+
+        if (quote != null || !char.IsWhiteSpace(c))
+        {
+          continue;
+        }
+
+        if (i > start)
+        {
+          yield return ParseFlag(line.Substring(start, i - start));
+        }
+
+        start = i + 1;
+      }
+
+      if (quote != null)
+      {
+        throw new FormatException($"Unmatched {quote} quote starting at position {start - 1} in line: '{line}'.");
+      }
+
+      if (line.Length > start)
+      {
+        yield return ParseFlag(line.Substring(start));
+      }
+    }
+
+    /// <summary>
+    /// Splits a single flag token into a flag name and an optional value.
+    /// </summary>
+    /// <param name="flag">A single flag token, optionally containing an equals sign and value.</param>
+    /// <returns>A tuple containing the flag name and its value, or <c>null</c> if no value is specified.</returns>
+    private static (string Name, string Value) ParseFlag(string flag)
+    {
+      var trimmed = flag.TrimStart('-');
+      var eqIndex = trimmed.IndexOf('=');
+      if (eqIndex == -1)
+      {
+        return (trimmed, null);
+      }
+      else
+      {
+        var name = trimmed.Substring(0, eqIndex);
+        var value = trimmed.Substring(eqIndex + 1).Trim(' ', '"', '\'');
+        return (name, value);
+      }
     }
   }
 }
