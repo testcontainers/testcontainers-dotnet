@@ -2,6 +2,24 @@
 
 Testcontainers' generic container support offers the greatest flexibility and makes it easy to use virtually any container image in the context of a temporary test environment. To interact or exchange data with a container, Testcontainers provides `ContainerBuilder` to configure and create the resource.
 
+## Configure container image
+
+Use `WithImage(...)` to specify the container image.
+
+The simplest overload accepts a `string`:
+
+```csharp
+_ = new ContainerBuilder()
+  .WithImage("postgres:15.1");
+```
+
+For platform-specific scenarios, `WithImage` also accepts an `IImage`. Using the `DockerImage` implementation, you can explicitly set the platform:
+
+```csharp
+_ = new ContainerBuilder()
+  .WithImage(new DockerImage("postgres:15.1", "linux/amd64"));
+```
+
 ## Configure container start
 
 Both `ENTRYPOINT` and `CMD` allows you to configure an executable and parameters, that a container runs at the start. By default, a container will run whatever `ENTRYPOINT` or `CMD` is specified in the Docker container image. At least one of both configurations is necessary. The container builder implementation supports `WithEntrypoint(params string[])` and `WithCommand(params string[])` to set or override the executable. Ideally, the `ENTRYPOINT` should set the container's executable, whereas the `CMD` sets the default arguments for the `ENTRYPOINT`.

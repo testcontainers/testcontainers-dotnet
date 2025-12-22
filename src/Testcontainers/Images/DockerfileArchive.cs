@@ -401,7 +401,7 @@ namespace DotNet.Testcontainers.Images
 
       if (quote != null)
       {
-        throw new FormatException($"Unmatched {quote} quote starting at position {start - 1} in line: '{line}'.");
+        throw new FormatException($"Unmatched {quote} quote in line: '{line}'.");
       }
 
       if (line.Length > start)
@@ -426,7 +426,7 @@ namespace DotNet.Testcontainers.Images
       else
       {
         var name = trimmed.Substring(0, eqIndex);
-        var value = trimmed.Substring(eqIndex + 1).Trim(' ', '"', '\'');
+        var value = trimmed.Substring(eqIndex + 1).Trim().Trim('"', '\'');
         return (name, value);
       }
     }
