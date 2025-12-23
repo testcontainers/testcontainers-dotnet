@@ -70,17 +70,33 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void Platform_PlatformIsLinuxAmd64_ReturnsLinuxAmd64()
+    public void Platform_NoPlatformSpecified_ReturnsNull()
     {
       // Given
-      const string linuxAmd64 = "linux/amd64";
-      IImage dockerImage = new DockerImage("foo", new Platform(linuxAmd64));
+      IImage dockerImage = new DockerImage("foo");
 
       // When
       var result = dockerImage.Platform;
 
       // Then
-      Assert.Equal(linuxAmd64, result);
+      Assert.Null(result);
+    }
+
+    [Theory]
+    [InlineData("linux/amd64")]
+    [InlineData("linux/arm64")]
+    [InlineData("linux/arm/v6")]
+    [InlineData("linux/arm/v7")]
+    public void Platform_PlatformSpecified_ReturnsPlatform(string platform)
+    {
+      // Given
+      IImage dockerImage = new DockerImage("foo", new Platform(platform));
+
+      // When
+      var result = dockerImage.Platform;
+
+      // Then
+      Assert.Equal(platform, result);
     }
 
     [Fact]

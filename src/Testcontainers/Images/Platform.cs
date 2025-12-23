@@ -1,4 +1,4 @@
-﻿namespace DotNet.Testcontainers.Images
+namespace DotNet.Testcontainers.Images
 {
   using JetBrains.Annotations;
 
