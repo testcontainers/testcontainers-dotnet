@@ -162,13 +162,13 @@ namespace DotNet.Testcontainers.Images
         .ToArray();
 
       var images = fromMatches
-        .Select(match => (Arg: match.Groups[argGroup], Image: match.Groups[imageGroup]))
-        .Select(item => (Arg: ReplaceVariables(item.Arg.Value, args), Image: ReplaceVariables(item.Image.Value, args)))
+        .Select(match => (FromArgs: match.Groups[argGroup], Image: match.Groups[imageGroup]))
+        .Select(item => (FromArgs: ReplaceVariables(item.FromArgs.Value, args), Image: ReplaceVariables(item.Image.Value, args)))
         .Where(item => !item.Image.Any(char.IsUpper))
         .Where(item => !stages.Contains(item.Image))
         .Select(item =>
         {
-          var fromArgs = ParseFromArgs(item.Arg).ToDictionary(arg => arg.Name, arg => arg.Value);
+          var fromArgs = ParseFromArgs(item.FromArgs).ToDictionary(arg => arg.Name, arg => arg.Value);
           _ = fromArgs.TryGetValue("platform", out var platform);
           return new DockerImage(item.Image, new Platform(platform));
         })

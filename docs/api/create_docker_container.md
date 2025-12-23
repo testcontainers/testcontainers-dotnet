@@ -15,7 +15,7 @@ _ = new ContainerBuilder()
 
 For more advanced scenarios, `WithImage` also supports `IImage`, giving you more control over how the image is represented and its properties are resolved.
 
-If you need to target a specific platform, the `DockerImage` implementation provides an overload that lets you explicitly set the platform, such as `linux/amd64`.
+If you need to target a specific platform, the `DockerImage` implementation provides an overload that lets you explicitly set the platform, such as `linux/amd64`. By default, the container runtime uses the platform that matches the container host.
 
 ```csharp
 _ = new ContainerBuilder()
@@ -24,7 +24,7 @@ _ = new ContainerBuilder()
 
 !!!tip
 
-    A specifier has the format `<os>|<arch>|<os>/<arch>[/<variant>]`. The user can provide either the operating system or the architecture or both. For more details, [see containerd/platforms](https://github.com/containerd/platforms).
+    A specifier has the format `<os>|<arch>|<os>/<arch>[/<variant>]`. The user can provide either the operating system or the architecture or both. For more details, see [containerd/platforms](https://github.com/containerd/platforms).
 
 ## Configure container start
 

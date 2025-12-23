@@ -22,6 +22,7 @@
     [PublicAPI]
     public Platform(string value)
     {
+      Value = value;
     }
 
     /// <summary>
