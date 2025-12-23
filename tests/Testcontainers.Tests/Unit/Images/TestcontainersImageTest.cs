@@ -73,14 +73,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void Platform_PlatformIsLinuxAmd64_ReturnsLinuxAmd64()
     {
       // Given
-      const string platform = "linux/amd64";
-      IImage dockerImage = new DockerImage("foo", platform);
+      const string linuxAmd64 = "linux/amd64";
+      IImage dockerImage = new DockerImage("foo", new Platform(linuxAmd64));
 
       // When
       var result = dockerImage.Platform;
 
       // Then
-      Assert.Equal(platform, result);
+      Assert.Equal(linuxAmd64, result);
     }
 
     [Fact]
