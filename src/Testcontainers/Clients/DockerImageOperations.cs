@@ -60,6 +60,7 @@ namespace DotNet.Testcontainers.Clients
       var createParameters = new ImagesCreateParameters
       {
         FromImage = image.FullName,
+        Platform = image.Platform,
       };
 
       var authConfig = new AuthConfig

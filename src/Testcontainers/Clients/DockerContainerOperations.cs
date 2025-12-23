@@ -202,6 +202,7 @@ namespace DotNet.Testcontainers.Clients
       var createParameters = new CreateContainerParameters
       {
         Image = configuration.Image.FullName,
+        Platform = configuration.Image.Platform,
         Name = configuration.Name,
         Hostname = configuration.Hostname,
         WorkingDir = configuration.WorkingDirectory,
