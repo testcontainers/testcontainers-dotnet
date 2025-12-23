@@ -4,7 +4,7 @@ Testcontainers' generic container support offers the greatest flexibility and ma
 
 ## Configure container image
 
-Use `WithImage(...)` to specify the container image.
+To specify the container image, use `WithImage(...)`.
 
 The simplest overload accepts a `string`:
 
@@ -13,12 +13,18 @@ _ = new ContainerBuilder()
   .WithImage("postgres:15.1");
 ```
 
-For platform-specific scenarios, `WithImage` also accepts an `IImage`. Using the `DockerImage` implementation, you can explicitly set the platform:
+For more advanced scenarios, `WithImage` also supports `IImage`, giving you more control over how the image is represented and its properties are resolved.
+
+If you need to target a specific platform, the `DockerImage` implementation provides an overload that lets you explicitly set the platform, such as `linux/amd64`.
 
 ```csharp
 _ = new ContainerBuilder()
-  .WithImage(new DockerImage("postgres:15.1", "linux/amd64"));
+  .WithImage(new DockerImage("postgres:15.1", new Platform("linux/amd64")));
 ```
+
+!!!tip
+
+    A specifier has the format `<os>|<arch>|<os>/<arch>[/<variant>]`. The user can provide either the operating system or the architecture or both. For more details, [see containerd/platforms](https://github.com/containerd/platforms).
 
 ## Configure container start
 

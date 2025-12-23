@@ -170,7 +170,7 @@ namespace DotNet.Testcontainers.Images
         {
           var fromArgs = ParseFromArgs(item.Arg).ToDictionary(arg => arg.Name, arg => arg.Value);
           _ = fromArgs.TryGetValue("platform", out var platform);
-          return new DockerImage(item.Image, platform);
+          return new DockerImage(item.Image, new Platform(platform));
         })
         .ToArray();
 
@@ -339,11 +339,8 @@ namespace DotNet.Testcontainers.Images
     /// quotes (<c>'</c>) are supported. Whitespaces outside of quotes are
     /// treated as separators.
     ///
-    /// For example, the line:
-    /// <code>
-    ///   --pull=always --platform="linux/amd64"
-    /// </code>
-    /// becomes:
+    /// E.g., the line <c>--pull=always --platform="linux/amd64"</c> becomes:
+    ///
     /// <list type="bullet">
     ///   <item>
     ///     <description>
@@ -393,7 +390,7 @@ namespace DotNet.Testcontainers.Images
 
         if (i > start)
         {
-          yield return ParseFlag(line.Substring(start, i - start));
+          yield return ParseArg(line.Substring(start, i - start));
         }
 
         start = i + 1;
@@ -406,18 +403,18 @@ namespace DotNet.Testcontainers.Images
 
       if (line.Length > start)
       {
-        yield return ParseFlag(line.Substring(start));
+        yield return ParseArg(line.Substring(start));
       }
     }
 
     /// <summary>
-    /// Splits a single flag token into a flag name and an optional value.
+    /// Splits a single arg into flag name and an optional value.
     /// </summary>
-    /// <param name="flag">A single flag token, optionally containing an equals sign and value.</param>
+    /// <param name="arg">A single arg, optionally containing an equals sign and value.</param>
     /// <returns>A tuple containing the flag name and its value, or <c>null</c> if no value is specified.</returns>
-    private static (string Name, string Value) ParseFlag(string flag)
+    private static (string Name, string Value) ParseArg(string arg)
     {
-      var trimmed = flag.TrimStart('-');
+      var trimmed = arg.TrimStart('-');
       var eqIndex = trimmed.IndexOf('=');
       if (eqIndex == -1)
       {

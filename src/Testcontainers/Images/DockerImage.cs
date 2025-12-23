@@ -56,20 +56,15 @@ namespace DotNet.Testcontainers.Images
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerImage" /> class.
     /// </summary>
-    /// <remarks>
-    /// The supported format for <paramref name="platform" /> is <c>&lt;os&gt;|&lt;arch&gt;|&lt;os&gt;/&lt;arch&gt;[/&lt;variant&gt;]</c>.
-    /// You can provide the operating system, the architecture, or both.
-    /// For more details and examples, see <see href="https://github.com/containerd/platforms">containerd/platforms</see>.
-    /// </remarks>
     /// <param name="image">The image.</param>
     /// <param name="platform">The platform.</param>
     /// <example><c>fedora/httpd:version1.0</c> where <c>fedora/httpd</c> is the repository and <c>version1.0</c> the tag.</example>
     public DockerImage(
       string image,
-      string platform)
+      Platform platform)
       : this(GetDockerImage(image))
     {
-      _platform = TrimOrDefault(platform);
+      _platform = platform.Value;
     }
 
     /// <summary>

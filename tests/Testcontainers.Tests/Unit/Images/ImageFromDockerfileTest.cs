@@ -27,10 +27,10 @@ namespace DotNet.Testcontainers.Tests.Unit
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-jammy"),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-noble"),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-alpine"),
-        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/amd64"),
-        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm64"),
-        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm/v6"),
-        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", "linux/arm/v7"),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/amd64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
         new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414"),
       };
 
