@@ -4,6 +4,7 @@ namespace Testcontainers.MySql;
 [PublicAPI]
 public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer, MySqlConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MySqlImage = "mysql:8.0";
 
     public const ushort MySqlPort = 3306;
@@ -17,10 +18,41 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MySqlBuilder()
+        : this(MySqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mysql:8.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// </remarks>
+    public MySqlBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// </remarks>
+    public MySqlBuilder(IImage image)
         : this(new MySqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -85,7 +117,6 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     protected override MySqlBuilder Init()
     {
         return base.Init()
-            .WithImage(MySqlImage)
             .WithPortBinding(MySqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)

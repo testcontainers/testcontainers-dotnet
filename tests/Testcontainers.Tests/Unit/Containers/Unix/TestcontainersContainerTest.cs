@@ -18,23 +18,24 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     public sealed class WithConfiguration
     {
-      [Fact]
-      public void ShouldThrowArgumentNullExceptionWhenBuildConfigurationHasNoImage()
+      [Theory]
+      [InlineData(null)]
+      [InlineData("")]
+      public void ShouldThrowArgumentExceptionWhenContainerBuilderHasNoImage(string image)
       {
-        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder().Build());
+        Assert.Throws<ArgumentException>(() => _ = new ContainerBuilder(image));
       }
 
       [Fact]
       public async Task GeneratedContainerName()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -47,14 +48,13 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var name = Guid.NewGuid().ToString("D");
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithName(name)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -67,17 +67,16 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var hostname = Guid.NewGuid().ToString("D");
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint("/bin/sh", "-c", $"hostname | grep '{hostname}' &> /dev/null")
           .WithHostname(hostname)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -90,14 +89,17 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         const string macAddress = "92:95:5e:30:fe:6d";
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var network = new NetworkBuilder()
+          .Build();
+
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithNetwork(network)
           .WithMacAddress(macAddress)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -108,17 +110,16 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task WorkingDirectory()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint("/bin/sh", "-c", "test -d /tmp && exit $? || exit $?")
           .WithWorkingDirectory("/tmp")
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -129,16 +130,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task Entrypoint()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint("/bin/sh", "-c", "exit 255")
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var exitCode = await container.GetExitCodeAsync()
+        var exitCode = await container.GetExitCodeAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -155,15 +155,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
         var hostPort = ((IPEndPoint)socket.LocalEndPoint).Port;
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Nginx)
+        await using var container = new ContainerBuilder(CommonImages.Nginx)
           .WithPortBinding(hostPort, containerPort)
           .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
             request.ForPort(containerPort)))
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -171,20 +170,40 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
-      public async Task RandomPortBinding()
+      public async Task RandomUdpPortBinding()
+      {
+        // Given
+        const ushort containerPort = 53;
+
+        const string qualifiedContainerPort = "53/udp";
+
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(qualifiedContainerPort, true)
+          .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.NotEqual(containerPort, container.GetMappedPublicPort(qualifiedContainerPort));
+      }
+
+      [Fact]
+      public async Task RandomTcpPortBinding()
       {
         // Given
         const ushort containerPort = 80;
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Nginx)
+        await using var container = new ContainerBuilder(CommonImages.Nginx)
           .WithPortBinding(containerPort, true)
           .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
             request.ForPort(containerPort)))
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -195,14 +214,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task UnboundPortBindingThrowsException()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithPortBinding(80, true)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -217,16 +235,15 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         const string file = "hostname";
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Nginx)
+        await using var container = new ContainerBuilder(CommonImages.Nginx)
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"hostname > /{target}/{file}")
           .WithBindMount(TestSession.TempDirectoryPath, $"/{target}")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file)))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file), waitStrategyModifier: o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -245,17 +262,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Nginx)
+        await using var container = new ContainerBuilder(CommonImages.Nginx)
           .WithEnvironment("DAY_OF_WEEK", dayOfWeek)
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"printf $DAY_OF_WEEK > /{target}/{file}")
           .WithBindMount(TestSession.TempDirectoryPath, $"/{target}")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file)))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(Path.Combine(TestSession.TempDirectoryPath, file), waitStrategyModifier: o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -268,13 +284,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task DockerEndpoint()
       {
         // Given
-        await using var container = new ContainerBuilder()
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
-          .WithImage(CommonImages.Alpine)
           .Build();
 
         // When
-        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
 
         // Then
@@ -292,9 +307,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       [InlineData("1.1.1.1", "tcp://1.1.1.1")]
       public async Task HostnameShouldMatchDockerGatewayAddress(string expectedHostname, string endpoint)
       {
-        await using var container = new ContainerBuilder()
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithDockerEndpoint(endpoint)
-          .WithImage(CommonImages.Alpine)
           .Build();
 
         Assert.Equal(expectedHostname, container.Hostname);
@@ -309,26 +323,25 @@ namespace DotNet.Testcontainers.Tests.Unit
         var unixTimeInMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
 
         // When
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint("/bin/sh", "-c")
           .WithCommand($"printf \"%s\" \"{unixTimeInMilliseconds}\" | tee /dev/stderr")
           .WithOutputConsumer(consumer)
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds))
+          .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(unixTimeInMilliseconds, o => o.WithMode(WaitStrategyMode.OneShot)))
           .Build();
 
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         consumer.Stdout.Seek(0, SeekOrigin.Begin);
         consumer.Stderr.Seek(0, SeekOrigin.Begin);
 
         using var stdoutReader = new StreamReader(consumer.Stdout, leaveOpen: true);
-        var stdout = await stdoutReader.ReadToEndAsync()
+        var stdout = await stdoutReader.ReadToEndAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         using var stderrReader = new StreamReader(consumer.Stderr, leaveOpen: true);
-        var stderr = await stderrReader.ReadToEndAsync()
+        var stderr = await stderrReader.ReadToEndAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -340,14 +353,13 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task WaitStrategy()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntilFiveSecondsPassedFixture()))
           .Build();
 
         // When
-        var exception = await Record.ExceptionAsync(() => container.StartAsync())
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
 
         // Then
@@ -358,16 +370,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task ExecCommandInRunningContainer()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" })
+        var execResult = await container.ExecAsync(new[] { "/bin/sh", "-c", "exit 255" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -378,16 +389,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task ExecCommandInRunningContainerWithStdout()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.com" })
+        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.com" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -398,16 +408,15 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task ExecCommandInRunningContainerWithStderr()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.invalid" })
+        var execResult = await container.ExecAsync(new[] { "ping", "-c", "1", "google.invalid" }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -422,19 +431,18 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath)
+        await container.CopyAsync(Encoding.Default.GetBytes(dayOfWeek), dayOfWeekFilePath, ct: TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath })
+        var execResult = await container.ExecAsync(new[] { "test", "-f", dayOfWeekFilePath }, TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -445,20 +453,19 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task AutoRemoveFalseShouldNotRemoveContainer()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithAutoRemove(false)
           .WithCleanUp(false)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         var id = container.Id;
 
-        await Task.Delay(TimeSpan.FromSeconds(1))
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -469,23 +476,22 @@ namespace DotNet.Testcontainers.Tests.Unit
       public async Task AutoRemoveTrueShouldRemoveContainer()
       {
         // Given
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithAutoRemove(true)
           .WithCleanUp(false)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         var id = container.Id;
 
-        await container.StopAsync()
+        await container.StopAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
-        await Task.Delay(TimeSpan.FromSeconds(1))
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -498,15 +504,14 @@ namespace DotNet.Testcontainers.Tests.Unit
         // Given
         var name = Guid.NewGuid().ToString("D");
 
-        await using var container = new ContainerBuilder()
-          .WithImage(CommonImages.Alpine)
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithCreateParameterModifier(parameterModifier => parameterModifier.Name = "placeholder")
           .WithCreateParameterModifier(parameterModifier => parameterModifier.Name = name)
           .Build();
 
         // When
-        await container.StartAsync()
+        await container.StartAsync(TestContext.Current.CancellationToken)
           .ConfigureAwait(true);
 
         // Then
@@ -514,15 +519,30 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task PullDigest()
+      {
+        // Given
+        await using var container = new ContainerBuilder("alpine@sha256:3451da08fc6ef554a100da3e2df5ac6d598c82f2a774d5f6ed465c3d80cd163a")
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .Build();
+
+        // When
+        var exception = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.Null(exception);
+      }
+
+      [Fact]
       public async Task PullPolicyNever()
       {
-        await using var container = new ContainerBuilder()
-          .WithImage("alpine:3")
+        await using var container = new ContainerBuilder("alpine:3")
           .WithEntrypoint(CommonCommands.SleepInfinity)
           .WithImagePullPolicy(PullPolicy.Never)
           .Build();
 
-        await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync())
+        await Assert.ThrowsAnyAsync<Exception>(() => container.StartAsync(TestContext.Current.CancellationToken))
           .ConfigureAwait(true);
       }
     }

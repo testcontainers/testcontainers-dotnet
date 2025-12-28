@@ -2,7 +2,9 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
+  using System.Data.Common;
   using System.Text.RegularExpressions;
+  using DotNet.Testcontainers.Containers;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -57,13 +59,35 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilCommandIsCompleted(IEnumerable<string> command, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the port is available.
+    /// Waits until a TCP port is available from within the container itself.
+    /// This verifies that a service inside the container is listening on the specified port.
     /// </summary>
-    /// <param name="port">The port to be checked.</param>
+    /// <param name="containerPort">The TCP port of the service running inside the container.</param>
     /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
     /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
     [PublicAPI]
-    IWaitForContainerOS UntilPortIsAvailable(int port, Action<IWaitStrategy> waitStrategyModifier = null);
+    IWaitForContainerOS UntilInternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
+    /// Waits until a TCP port is available from the test host to the container.
+    /// This verifies that the port is exposed and reachable externally.
+    /// </summary>
+    /// <remarks>
+    /// This does not necessarily mean that the TCP connection to the service running inside
+    /// the container was successful. For container runtimes like Docker Desktop, Podman, or similar,
+    /// this usually only indicates that the port has been mapped and that a connection could be
+    /// established to the host-side proxy that maps the port.
+    ///
+    /// This wait strategy is particularly useful for container runtimes that may take some time
+    /// to finish setting up port mappings. In some cases, other strategies such as log-based
+    /// readiness checks may indicate readiness before the runtime has fully configured the port
+    /// mapping, leading to connection failures. This strategy helps to avoid that race condition.
+    /// </remarks>
+    /// <param name="containerPort">The TCP port of the service running inside the container.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilExternalTcpPortIsAvailable(int containerPort, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Waits until the file exists.
@@ -94,18 +118,6 @@ namespace DotNet.Testcontainers.Configurations
     IWaitForContainerOS UntilMessageIsLogged(Regex pattern, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
-    /// Waits until the operation is completed successfully.
-    /// </summary>
-    /// <param name="operation">The operation to be executed.</param>
-    /// <param name="maxCallCount">The number of attempts before an exception is thrown.</param>
-    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
-    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
-    /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="maxCallCount" />.</exception>
-    [PublicAPI]
-    [Obsolete("Use one of the other wait strategies in combination with the `Action<IWaitStrategy>` argument, and set the number of retries.")]
-    IWaitForContainerOS UntilOperationIsSucceeded(Func<bool> operation, int maxCallCount, Action<IWaitStrategy> waitStrategyModifier = null);
-
-    /// <summary>
     /// Waits until the http request is completed successfully.
     /// </summary>
     /// <param name="request">The http request to be executed.</param>
@@ -123,6 +135,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="TimeoutException">Thrown when number of failed operations exceeded <paramref name="failingStreak" />.</exception>
     [PublicAPI]
     IWaitForContainerOS UntilContainerIsHealthy(long failingStreak = 3, Action<IWaitStrategy> waitStrategyModifier = null);
+
+    /// <summary>
+    /// Waits until a successful connection to the database can be established.
+    /// </summary>
+    /// <remarks>
+    /// To use this wait strategy, the container must implement the <see cref="IDatabaseContainer" /> interface.
+    /// </remarks>
+    /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create the database connection.</param>
+    /// <param name="waitStrategyModifier">The wait strategy modifier to cancel the readiness check.</param>
+    /// <returns>A configured instance of <see cref="IWaitForContainerOS" />.</returns>
+    [PublicAPI]
+    IWaitForContainerOS UntilDatabaseIsAvailable(DbProviderFactory dbProviderFactory, Action<IWaitStrategy> waitStrategyModifier = null);
 
     /// <summary>
     /// Returns a collection with all configured wait strategies.

@@ -2,16 +2,17 @@ namespace Testcontainers.CouchDb;
 
 public sealed class CouchDbContainerTest : IAsyncLifetime
 {
-    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder().Build();
+    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _couchDbContainer.StartAsync();
+        await _couchDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _couchDbContainer.DisposeAsync().AsTask();
+        return _couchDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -22,7 +23,7 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
         using var client = new MyCouchClient(_couchDbContainer.GetConnectionString(), "db");
 
         // When
-        var database = await client.Database.PutAsync()
+        var database = await client.Database.PutAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

@@ -4,7 +4,8 @@ namespace Testcontainers.MsSql;
 [PublicAPI]
 public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer, MsSqlConfiguration>
 {
-    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04";
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
 
     public const ushort MsSqlPort = 1433;
 
@@ -17,10 +18,41 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MsSqlBuilder()
+        : this(MsSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// </remarks>
+    public MsSqlBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MsSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// </remarks>
+    public MsSqlBuilder(IImage image)
         : this(new MsSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -59,7 +91,6 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     protected override MsSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(MsSqlImage)
             .WithPortBinding(MsSqlPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithDatabase(DefaultDatabase)
@@ -126,17 +157,24 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
 
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// Uses the sqlcmd utility scripting variables to detect readiness of the MsSql container:
+    /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private readonly string[] _command = { "/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;" };
-
         /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
+        public Task<bool> UntilAsync(IContainer container)
         {
-            var execResult = await container.ExecAsync(_command)
+            return UntilAsync(container as MsSqlContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private static async Task<bool> UntilAsync(MsSqlContainer container)
+        {
+            var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
+                .ConfigureAwait(false);
+
+            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);

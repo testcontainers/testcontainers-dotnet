@@ -4,6 +4,7 @@ namespace Testcontainers.Nats;
 [PublicAPI]
 public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, NatsConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string NatsImage = "nats:2.9";
 
     public const ushort NatsClientPort = 4222;
@@ -15,10 +16,41 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public NatsBuilder()
+        : this(NatsImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>nats:2.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// </remarks>
+    public NatsBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NatsBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// </remarks>
+    public NatsBuilder(IImage image)
         : this(new NatsConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +99,6 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     protected override NatsBuilder Init()
     {
         return base.Init()
-            .WithImage(NatsImage)
             .WithPortBinding(NatsClientPort, true)
             .WithPortBinding(NatsHttpManagementPort, true)
             .WithPortBinding(NatsClusterRoutingPort, true)

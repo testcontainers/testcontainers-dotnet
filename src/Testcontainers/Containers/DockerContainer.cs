@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -18,7 +19,7 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public class DockerContainer : Resource, IContainer
   {
-    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Exited;
+    private const TestcontainersStates ContainerHasBeenCreatedStates = TestcontainersStates.Created | TestcontainersStates.Running | TestcontainersStates.Paused | TestcontainersStates.Exited;
 
     private const TestcontainersHealthStatus ContainerHasHealthCheck = TestcontainersHealthStatus.Starting | TestcontainersHealthStatus.Healthy | TestcontainersHealthStatus.Unhealthy;
 
@@ -27,6 +28,8 @@ namespace DotNet.Testcontainers.Containers
     private readonly IContainerConfiguration _configuration;
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
+
+    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
@@ -48,6 +51,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopping;
 
     /// <inheritdoc />
+    public event EventHandler Pausing;
+
+    /// <inheritdoc />
+    public event EventHandler Unpausing;
+
+    /// <inheritdoc />
     public event EventHandler Created;
 
     /// <inheritdoc />
@@ -57,6 +66,12 @@ namespace DotNet.Testcontainers.Containers
     public event EventHandler Stopped;
 
     /// <inheritdoc />
+    public event EventHandler Paused;
+
+    /// <inheritdoc />
+    public event EventHandler Unpaused;
+
+    /// <inheritdoc />
     public DateTime CreatedTime { get; private set; }
 
     /// <inheritdoc />
@@ -64,6 +79,12 @@ namespace DotNet.Testcontainers.Containers
 
     /// <inheritdoc />
     public DateTime StoppedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime PausedTime { get; private set; }
+
+    /// <inheritdoc />
+    public DateTime UnpausedTime { get; private set; }
 
     /// <inheritdoc />
     public ILogger Logger
@@ -181,7 +202,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersStates)Enum.Parse(typeof(TestcontainersStates), _container.State.Status, true);
+#else
+          return Enum.Parse<TestcontainersStates>(_container.State.Status, true);
+#endif
         }
         catch (Exception)
         {
@@ -207,7 +232,11 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
+#if NETSTANDARD2_0
           return (TestcontainersHealthStatus)Enum.Parse(typeof(TestcontainersHealthStatus), _container.State.Health.Status, true);
+#else
+          return Enum.Parse<TestcontainersHealthStatus>(_container.State.Health.Status, true);
+#endif
         }
         catch (Exception)
         {
@@ -226,6 +255,13 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public ushort GetMappedPublicPort()
+    {
+      using var enumerator = GetMappedPublicPorts().Values.GetEnumerator();
+      return enumerator.MoveNext() ? enumerator.Current : throw new InvalidOperationException("No mapped port found.");
+    }
+
+    /// <inheritdoc />
     public ushort GetMappedPublicPort(int containerPort)
     {
       return GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
@@ -236,14 +272,40 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfResourceNotFound();
 
-      if (_container.NetworkSettings.Ports.TryGetValue($"{containerPort}/tcp", out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var publicPort))
+      var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
+
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
       {
-        return publicPort;
+        return hostPort;
       }
       else
       {
-        throw new InvalidOperationException($"Exposed port {containerPort} is not mapped.");
+        throw new InvalidOperationException($"Exposed port {qualifiedContainerPort} is not mapped.");
       }
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
+    {
+      ThrowIfResourceNotFound();
+
+      return _container.NetworkSettings.Ports
+        .Where(
+          kvp =>
+          {
+            return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
+          })
+        .ToDictionary(
+          kvp =>
+          {
+            var containerPort = kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
+            return ushort.Parse(containerPort);
+          },
+          kvp =>
+          {
+            var hostPort = kvp.Value[0].HostPort;
+            return ushort.Parse(hostPort);
+          });
     }
 
     /// <inheritdoc />
@@ -292,36 +354,56 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public async Task PauseAsync(CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafePauseAsync(ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(string source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public async Task UnpauseAsync(CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeUnpauseAsync(ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    {
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, uid, gid, fileMode), ct);
+    }
+
+    /// <inheritdoc />
+    public Task CopyAsync(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return CopyAsync(new DirectoryInfo(source), target, fileMode, ct);
+        return CopyAsync(new DirectoryInfo(source), target, uid, gid, fileMode, ct);
       }
       else
       {
-        return CopyAsync(new FileInfo(source), target, fileMode, ct);
+        return CopyAsync(new FileInfo(source), target, uid, gid, fileMode, ct);
       }
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />
@@ -334,6 +416,28 @@ namespace DotNet.Testcontainers.Containers
     public Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
       return _client.ExecAsync(Id, command, ct);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(connectionMode);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(name, connectionMode);
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
@@ -417,7 +521,7 @@ namespace DotNet.Testcontainers.Containers
       _container = await _client.Container.ByIdAsync(id, ct)
         .ConfigureAwait(false);
 
-      CreatedTime = DateTime.UtcNow;
+      CreatedTime = _container.Created;
       Created?.Invoke(this, EventArgs.Empty);
     }
 
@@ -464,12 +568,12 @@ namespace DotNet.Testcontainers.Containers
       await _client.StartAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      _ = await CheckReadinessAsync(new [] { portBindingsMapped }, ct)
+      _ = await CheckReadinessAsync(new[] { portBindingsMapped }, ct)
         .ConfigureAwait(false);
 
       Starting?.Invoke(this, EventArgs.Empty);
 
-      await _configuration.StartupCallback(this, ct)
+      await _configuration.StartupCallback(this, _configuration, ct)
         .ConfigureAwait(false);
 
       Logger.StartReadinessCheck(_container.ID);
@@ -479,7 +583,14 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      StartedTime = DateTime.UtcNow;
+      StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+
+      if (_configuration.ConnectionStringProvider != null)
+      {
+        _connectionStringProvider = _configuration.ConnectionStringProvider;
+        _connectionStringProvider.Configure(this, _configuration);
+      }
+
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -505,17 +616,82 @@ namespace DotNet.Testcontainers.Containers
       await _client.StopAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
+      try
+      {
+        _container = await _client.Container.ByIdAsync(_container.ID, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerContainerNotFoundException)
+      {
+        _container = new ContainerInspectResponse();
+      }
+
+      StoppedTime = DateTime.TryParse(_container.State?.FinishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var stoppedTime) ? stoppedTime : DateTime.UtcNow;
+      Stopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Pauses the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been paused.</returns>
+    protected virtual async Task UnsafePauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Pausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.PauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      StoppedTime = DateTime.UtcNow;
-      Stopped?.Invoke(this, EventArgs.Empty);
+      PausedTime = DateTime.UtcNow;
+      Paused?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Unpauses the container.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="PauseAsync" /> and <see cref="UnpauseAsync" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
+    protected virtual async Task UnsafeUnpauseAsync(CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      if (!Exists())
+      {
+        return;
+      }
+
+      Unpausing?.Invoke(this, EventArgs.Empty);
+
+      await _client.UnpauseAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
+
+      UnpausedTime = DateTime.UtcNow;
+      Unpaused?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
     protected override bool Exists()
     {
-      return _container != null && ContainerHasBeenCreatedStates.HasFlag(State);
+      return ContainerHasBeenCreatedStates.HasFlag(State);
     }
 
     /// <summary>
@@ -526,11 +702,27 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A task representing the asynchronous operation, returning true if the wait strategy indicates readiness; otherwise, false.</returns>
     private async Task<bool> CheckReadinessAsync(WaitStrategy waitStrategy, CancellationToken ct = default)
     {
+      Exception exception = null;
+
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      return await waitStrategy.UntilAsync(this, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        return await waitStrategy.UntilAsync(this, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException e)
+      {
+        exception = e;
+      }
+      finally
+      {
+        await ThrowIfContainerNotRunningAsync(waitStrategy.Mode, exception)
+          .ConfigureAwait(false);
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -554,6 +746,28 @@ namespace DotNet.Testcontainers.Containers
       return true;
     }
 
+    /// <summary>
+    /// Throws <see cref="ContainerNotRunningException" /> when the container exited unexpectedly.
+    /// </summary>
+    /// <param name="waitStrategyMode">The wait strategy mode.</param>
+    /// <param name="innerException">The inner exception.</param>
+    /// <exception cref="ContainerNotRunningException">The container exited unexpectedly.</exception>
+    private async Task ThrowIfContainerNotRunningAsync(WaitStrategyMode waitStrategyMode, [CanBeNull] Exception innerException = null)
+    {
+      if (innerException == null && (TestcontainersStates.Exited != State || WaitStrategyMode.Running != waitStrategyMode))
+      {
+        return;
+      }
+
+      var (stdout, stderr) = await GetLogsAsync()
+        .ConfigureAwait(false);
+
+      var exitCode = await GetExitCodeAsync()
+        .ConfigureAwait(false);
+
+      throw new ContainerNotRunningException(Id, stdout, stderr, exitCode, innerException);
+    }
+
     private sealed class WaitUntilPortBindingsMapped : WaitStrategy
     {
       private readonly DockerContainer _parent;
@@ -561,11 +775,12 @@ namespace DotNet.Testcontainers.Containers
       public WaitUntilPortBindingsMapped(DockerContainer parent)
       {
         _parent = parent;
+        _ = WithMode(WaitStrategyMode.OneShot);
         _ = WithInterval(TimeSpan.FromSeconds(1));
         _ = WithTimeout(TimeSpan.FromSeconds(15));
       }
 
-      public override Task<bool> UntilAsync(IContainer _, CancellationToken ct = default)
+      public override Task<bool> UntilAsync(IContainer container, CancellationToken ct = default)
       {
         var boundPorts = _parent._container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
         return Task.FromResult(_parent._configuration.PortBindings == null || /* IPv4 or IPv6 */ _parent._configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * _parent._configuration.PortBindings.Count == boundPorts);

@@ -4,6 +4,7 @@ namespace Testcontainers.CouchDb;
 [PublicAPI]
 public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbContainer, CouchDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string CouchDbImage = "couchdb:3.3";
 
     public const ushort CouchDbPort = 5984;
@@ -15,10 +16,41 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public CouchDbBuilder()
+        : this(CouchDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>couchdb:3.3</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// </remarks>
+    public CouchDbBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// </remarks>
+    public CouchDbBuilder(IImage image)
         : this(new CouchDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,7 +99,6 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     protected override CouchDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchDbImage)
             .WithPortBinding(CouchDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)

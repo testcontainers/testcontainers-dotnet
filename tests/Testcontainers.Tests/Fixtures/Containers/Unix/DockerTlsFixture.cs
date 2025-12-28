@@ -2,14 +2,15 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   [UsedImplicitly]
   public sealed class DockerTlsFixture : ProtectDockerDaemonSocket
   {
     public DockerTlsFixture()
-      : base(new ContainerBuilder()
-        .WithCommand("--tlsverify=false"), "20.10.18")
+      : base(new ContainerBuilder("docker:29.0.0-dind")
+        .WithCommand("--tlsverify=false"))
     {
     }
 

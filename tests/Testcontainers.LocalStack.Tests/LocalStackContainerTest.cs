@@ -17,14 +17,18 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         _localStackContainer = localStackContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _localStackContainer.StartAsync();
+        await _localStackContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _localStackContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -41,7 +45,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When
-        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -78,13 +82,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest)
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest)
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest)
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -103,7 +107,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonS3Client(config);
 
         // When
-        var buckets = await client.ListBucketsAsync()
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -122,7 +126,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
         // When
-        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"))
+        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -141,18 +145,23 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         using var client = new AmazonSQSClient(config);
 
         // When
-        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _localStackContainer.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
         public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -161,7 +170,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile(stage: "localstack1.4")).Build())
         {
         }
     }

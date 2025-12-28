@@ -3,8 +3,10 @@ name: CodeQL
 on:
   push:
     branches: [ develop, main ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
   pull_request:
     branches: [ develop, main ]
+    paths-ignore: [ 'docs/**', 'examples/**' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
@@ -20,21 +22,21 @@ jobs:
     permissions:
       security-events: write
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

@@ -1,15 +1,17 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   /// <summary>
   /// A fluent Docker container builder.
   /// </summary>
   /// <remarks>
-  /// The container builder configuration requires at least the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}.WithImage(string)" /> configuration.
+  /// The container builder requires a container image, which must be provided through the constructor.
   /// </remarks>
   /// <example>
   ///   The default configuration is equivalent to:
@@ -18,7 +20,9 @@ namespace DotNet.Testcontainers.Builders
   ///     .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
   ///     .WithLabel(DefaultLabels.Instance)
   ///     .WithCleanUp(true)
+  ///     .WithLogger(ConsoleLogger.Instance)
   ///     .WithImagePullPolicy(PullPolicy.Missing)
+  ///     .WithPortForwarding()
   ///     .WithOutputConsumer(Consume.DoNotConsumeStdoutAndStderr())
   ///     .WithWaitStrategy(Wait.ForUnixContainer())
   ///     .WithStartupCallback((_, ct) => Task.CompletedTask)
@@ -31,10 +35,34 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ContainerBuilder()
       : this(new ContainerConfiguration())
     {
       DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>repository:tag</c>).
+    /// </param>
+    public ContainerBuilder(string image)
+      : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    public ContainerBuilder(IImage image)
+      : this(new ContainerConfiguration())
+    {
+      DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

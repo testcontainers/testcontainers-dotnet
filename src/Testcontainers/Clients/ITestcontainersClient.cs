@@ -79,6 +79,22 @@ namespace DotNet.Testcontainers.Clients
     Task StopAsync(string id, CancellationToken ct = default);
 
     /// <summary>
+    /// Pauses the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been paused.</returns>
+    Task PauseAsync(string id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Unpauses the container.
+    /// </summary>
+    /// <param name="id">The container id.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been unpaused.</returns>
+    Task UnpauseAsync(string id, CancellationToken ct = default);
+
+    /// <summary>
     /// Removes the container.
     /// </summary>
     /// <param name="id">The container id.</param>
@@ -119,10 +135,12 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">The container id.</param>
     /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the directory has been copied.</returns>
-    Task CopyAsync(string id, DirectoryInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
+    Task CopyAsync(string id, DirectoryInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default);
 
     /// <summary>
     /// Copies a test host file to the container.
@@ -130,10 +148,12 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">The container id.</param>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory.</param>
+    /// <param name="gid">The group ID to set for the copied file or directory.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the file has been copied.</returns>
-    Task CopyAsync(string id, FileInfo source, string target, UnixFileModes fileMode, CancellationToken ct = default);
+    Task CopyAsync(string id, FileInfo source, string target, uint uid, uint gid, UnixFileModes fileMode, CancellationToken ct = default);
 
     /// <summary>
     /// Reads a file from the container.

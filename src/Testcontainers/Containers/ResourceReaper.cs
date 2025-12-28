@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.6.0");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.14.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -55,10 +55,9 @@ namespace DotNet.Testcontainers.Containers
 
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode)
     {
-      _resourceReaperContainer = new ContainerBuilder()
+      _resourceReaperContainer = new ContainerBuilder(resourceReaperImage)
         .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
-        .WithImage(resourceReaperImage)
         .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
@@ -83,12 +82,19 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the default <see cref="ResourceReaper" /> session id.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, bool, CancellationToken)" />
+    /// The default <see cref="ResourceReaper" /> will start either on <see cref="GetAndStartDefaultAsync(IDockerEndpointAuthenticationConfiguration, ILogger, bool, CancellationToken)" />
     /// or if a <see cref="IContainer" /> is configured with <see cref="IAbstractBuilder{TBuilderEntity, TContainerEntity, TCreateResourceEntity}.WithCleanUp" />.
     /// </remarks>
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
       = Guid.NewGuid();
+
+    /// <summary>
+    /// Gets a value indicating whether the default <see cref="ResourceReaper" /> instance is running and available.
+    /// </summary>
+    [PublicAPI]
+    public static bool IsUnavailable
+      => _defaultInstance == null || _defaultInstance._disposed;
 
     /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
@@ -156,7 +162,12 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
+#if NET6_0_OR_GREATER
+        await _maintainConnectionCts.CancelAsync()
+          .ConfigureAwait(false);
+#else
         _maintainConnectionCts.Cancel();
+#endif
 
         // Close connection before disposing Resource Reaper.
         await _maintainConnectionTask
@@ -210,7 +221,7 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode);
 
-      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
+      initTimeout = TimeSpan.Equals(TimeSpan.Zero, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
       try
       {
@@ -358,12 +369,26 @@ namespace DotNet.Testcontainers.Containers
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
-                    messageBuffer.Write(readBytes, 0, numberOfBytes);
+#if NETSTANDARD2_0
+                    await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
+                      .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+                      .ConfigureAwait(false);
+#endif
+
                     hasAcknowledge = false;
                   }
                   else
                   {
-                    messageBuffer.Write(readBytes, 0, indexOfNewLine);
+#if NETSTANDARD2_0
+                    await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
+                      .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+                      .ConfigureAwait(false);
+#endif
+
                     hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
                   }

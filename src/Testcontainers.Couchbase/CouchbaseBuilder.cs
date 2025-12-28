@@ -7,6 +7,7 @@ namespace Testcontainers.Couchbase;
 [PublicAPI]
 public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, CouchbaseContainer, CouchbaseConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string CouchbaseImage = "couchbase:community-7.0.2";
 
     public const ushort MgmtPort = 8091;
@@ -58,10 +59,39 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public CouchbaseBuilder()
+        : this(CouchbaseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>couchbase:community-7.0.2</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
+    public CouchbaseBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CouchbaseBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// </remarks>
+    public CouchbaseBuilder(IImage image)
         : this(new CouchbaseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -129,7 +159,6 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     protected override CouchbaseBuilder Init()
     {
         return base.Init()
-            .WithImage(CouchbaseImage)
             .WithPortBinding(MgmtPort, true)
             .WithPortBinding(MgmtSslPort, true)
             .WithPortBinding(ViewPort, true)
@@ -179,7 +208,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// <summary>
     /// Configures the Couchbase node.
     /// </summary>
-    /// <param name="container">The container.</param>
+    /// <param name="container">The Couchbase container.</param>
     /// <param name="ct">Cancellation token.</param>
     private async Task ConfigureCouchbaseAsync(IContainer container, CancellationToken ct = default)
     {
@@ -269,7 +298,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             .Build()
             .Last();
 
-        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
+        await WaitStrategy.WaitUntilAsync(() => waitUntilBucketIsCreated.UntilAsync(container, ct), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
             .ConfigureAwait(false);
     }
 
@@ -281,7 +310,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// </remarks>
     /// <param name="response">The HTTP response that contains the cluster information.</param>
     /// <returns>A value indicating whether the single-node is healthy or not.</returns>
-    private async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
+    private static async Task<bool> IsNodeHealthyAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);
@@ -312,7 +341,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// </remarks>
     /// <param name="response">The HTTP response that contains the bucket information.</param>
     /// <returns>A value indicating whether all services are enabled for a bucket or not.</returns>
-    private async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
+    private static async Task<bool> AllServicesEnabledAsync(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);

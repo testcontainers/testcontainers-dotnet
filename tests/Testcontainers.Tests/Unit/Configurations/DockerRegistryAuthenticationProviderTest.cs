@@ -34,10 +34,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [InlineData("fedora/httpd:version1.0", null)]
     [InlineData("myregistryhost:5000/fedora/httpd:version1.0", "myregistryhost:5000")]
     [InlineData("myregistryhost:5000/httpd:version1.0", "myregistryhost:5000")]
-    [InlineData("baz/.foo/bar:1.0.0", null)]
-    [InlineData("baz/:foo/bar:1.0.0", null)]
     [InlineData("myregistry.azurecr.io/baz.foo/bar:1.0.0", "myregistry.azurecr.io")]
-    [InlineData("myregistry.azurecr.io/baz:foo/bar:1.0.0", "myregistry.azurecr.io")]
     public void GetHostnameFromDockerImage(string dockerImageName, string hostname)
     {
       IImage image = new DockerImage(dockerImageName);
@@ -45,20 +42,22 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
-    [InlineData("", "docker", "stable")]
-    [InlineData("fedora", "httpd", "1.0")]
-    [InlineData("foo/bar", "baz", "1.0.0")]
-    public void GetHostnameFromHubImageNamePrefix(string repository, string name, string tag)
+    [InlineData("baz/foo/bar", null)]
+    [InlineData("baz/foo/bar", "")]
+    [InlineData("baz/foo/bar", "1.0.0")]
+    public void GetHostnameFromHubImageNamePrefix(string repository, string tag)
     {
       const string hubImageNamePrefix = "myregistry.azurecr.io";
-      IImage image = new DockerImage(repository, name, tag, hubImageNamePrefix);
+      IImage image = new DockerImage(repository, null, tag, null, hubImageNamePrefix);
       Assert.Equal(hubImageNamePrefix, image.GetHostname());
     }
 
     [Fact]
     public void ShouldGetDefaultDockerRegistryAuthenticationConfiguration()
     {
-      var authenticationProvider = new DockerRegistryAuthenticationProvider("/tmp/docker.config", NullLogger.Instance);
+      // Make sure the auth provider does not accidentally read the user's `config.json` file.
+      ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + Path.Combine("C:", "CON") });
+      var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), NullLogger.Instance);
       Assert.Equal(default(DockerRegistryAuthenticationConfiguration), authenticationProvider.GetAuthConfig("index.docker.io"));
     }
 
@@ -67,9 +66,29 @@ namespace DotNet.Testcontainers.Tests.Unit
       private readonly WarnLogger _warnLogger = new WarnLogger();
 
       [Theory]
-      [InlineData("{\"auths\":{\"ghcr.io\":{}}}")]
-      [InlineData("{\"auths\":{\"://ghcr.io\":{}}}")]
-      public void ResolvePartialDockerRegistry(string jsonDocument)
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"ghcr.io\":{}}}", "ghcr", false)]
+      [InlineData("{\"auths\":{\"http://ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"https://ghcr.io\":{}}}", "ghcr.io", true)]
+      [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost:5000", true)]
+      [InlineData("{\"auths\":{\"registry.example.com:5000\":{}}}", "registry.example.com", false)]
+      [InlineData("{\"auths\":{\"localhost:5000\":{}}}", "localhost", false)]
+      [InlineData("{\"auths\":{\"https://registry.example.com:5000\":{}}}", "registry.example.com:5000", true)]
+      [InlineData("{\"auths\":{\"http://localhost:8080\":{}}}", "localhost:8080", true)]
+      [InlineData("{\"auths\":{\"docker.io\":{}}}", "docker.io", true)]
+      [InlineData("{\"auths\":{\"docker.io\":{}}}", "index.docker.io", false)]
+      [InlineData("{\"auths\":{\"index.docker.io\":{}}}", "docker.io", false)]
+      [InlineData("{\"auths\":{\"https://index.docker.io/v1/\":{}}}", "index.docker.io", true)]
+      [InlineData("{\"auths\":{\"registry.k8s.io\":{}}}", "registry.k8s.io", true)]
+      [InlineData("{\"auths\":{\"gcr.io\":{}}}", "gcr.io", true)]
+      [InlineData("{\"auths\":{\"us-docker.pkg.dev\":{}}}", "us-docker.pkg.dev", true)]
+      [InlineData("{\"auths\":{\"quay.io\":{}}}", "quay.io", true)]
+      [InlineData("{\"auths\":{\"localhost\":{}}}", "localhost", true)]
+      [InlineData("{\"auths\":{\"127.0.0.1:5000\":{}}}", "127.0.0.1:5000", true)]
+      [InlineData("{\"auths\":{\"[::1]:5000\":{}}}", "[::1]:5000", true)]
+      [InlineData("{\"auths\":{\"https://registry.example.com/v2\":{}}}", "registry.example.com", true)]
+      public void ResolvePartialDockerRegistry(string jsonDocument, string hostname, bool expectedResult)
       {
         // Given
         var jsonElement = JsonDocument.Parse(jsonDocument).RootElement;
@@ -78,8 +97,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         var authenticationProvider = new Base64Provider(jsonElement, NullLogger.Instance);
 
         // Then
-        Assert.False(authenticationProvider.IsApplicable("ghcr"));
-        Assert.True(authenticationProvider.IsApplicable("ghcr.io"));
+        Assert.Equal(expectedResult, authenticationProvider.IsApplicable(hostname));
       }
 
       [Theory]

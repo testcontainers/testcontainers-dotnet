@@ -10,6 +10,18 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public readonly struct DockerEndpointAuthenticationConfiguration : IDockerEndpointAuthenticationConfiguration
   {
+    // https://github.com/moby/moby/releases/tag/docker-v29.0.0.
+    private static readonly Version DockerEngineApi = EnvironmentConfiguration.Instance.GetDockerApiVersion() ?? PropertiesFileConfiguration.Instance.GetDockerApiVersion() ?? new Version(1, 44);
+
+    // Since the static `TestcontainersSettings` class holds the detected container
+    // runtime information from the auto-discovery mechanism, we can't add a static
+    // `NamedPipeConnectionTimeout` property to it because that would create a
+    // circular dependency during discovery. To fix this, we either need to split the
+    // class or stop exposing the `TestcontainersSettings` properties publicly.
+    // Instead, we could rely only on custom configurations via environment variables
+    // or the properties file.
+    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(5);
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
     /// </summary>
@@ -17,15 +29,18 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="credentials">The Docker API authentication credentials.</param>
     public DockerEndpointAuthenticationConfiguration(Uri endpoint, Credentials credentials = null)
     {
-      Credentials = credentials;
       Endpoint = endpoint;
+      Credentials = credentials;
     }
 
     /// <inheritdoc />
-    public Credentials Credentials { get; }
+    public Version Version => DockerEngineApi;
 
     /// <inheritdoc />
     public Uri Endpoint { get; }
+
+    /// <inheritdoc />
+    public Credentials Credentials { get; }
 
     /// <inheritdoc />
     public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
@@ -33,7 +48,8 @@ namespace DotNet.Testcontainers.Configurations
       var defaultHttpRequestHeaders = new Dictionary<string, string>();
       defaultHttpRequestHeaders.Add("User-Agent", "tc-dotnet/" + TestcontainersClient.Version);
       defaultHttpRequestHeaders.Add("x-tc-sid", sessionId.ToString("D"));
-      return new DockerClientConfiguration(Endpoint, Credentials, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
+
+      return new DockerClientConfiguration(Endpoint, Credentials, namedPipeConnectTimeout: NamedPipeConnectionTimeout, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
     }
   }
 }

@@ -8,6 +8,7 @@ namespace Testcontainers.Kusto;
 [PublicAPI]
 public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer, KustoConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string KustoImage = "mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest";
 
     public const ushort KustoPort = 8080;
@@ -15,10 +16,41 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public KustoBuilder()
+        : this(KustoImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// </remarks>
+    public KustoBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KustoBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// </remarks>
+    public KustoBuilder(IImage image)
         : this(new KustoConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -45,14 +77,13 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     protected override KustoBuilder Init()
     {
         return base.Init()
-            .WithImage(KustoImage)
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request
                 .WithMethod(HttpMethod.Post)
                 .ForPort(KustoPort)
                 .ForPath("/v1/rest/mgmt")
-                .WithContent(() => new StringContent("{\"csl\":\".show cluster\"}", Encoding.Default, "application/json"))));
+                .WithContent(() => new StringContent("{\"csl\":\".show cluster\"}", Encoding.UTF8, "application/json"))));
     }
 
     /// <inheritdoc />

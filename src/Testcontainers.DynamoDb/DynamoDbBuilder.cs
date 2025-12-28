@@ -4,6 +4,7 @@ namespace Testcontainers.DynamoDb;
 [PublicAPI]
 public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDbContainer, DynamoDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string DynamoDbImage = "amazon/dynamodb-local:1.21.0";
 
     public const ushort DynamoDbPort = 8000;
@@ -11,20 +12,51 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public DynamoDbBuilder()
-        : this(new DynamoDbConfiguration())
+        : this(DynamoDbImage)
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private DynamoDbBuilder(DynamoDbConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>amazon/dynamodb-local:1.21.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/amazon/dynamodb-local/tags" />.
+    /// </remarks>
+    public DynamoDbBuilder(string image)
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/amazon/dynamodb-local/tags" />.
+    /// </remarks>
+    public DynamoDbBuilder(IImage image)
+        : this(new DynamoDbConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DynamoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private DynamoDbBuilder(DynamoDbConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -41,20 +73,19 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     protected override DynamoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(DynamoDbImage)
             .WithPortBinding(DynamoDbPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(DynamoDbPort).ForStatusCode(HttpStatusCode.BadRequest)));
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override DynamoDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override DynamoDbBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new DynamoDbConfiguration(resourceConfiguration));
     }

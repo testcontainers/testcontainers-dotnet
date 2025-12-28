@@ -9,14 +9,18 @@ public abstract class NatsContainerTest : IAsyncLifetime
         _natsContainer = natsContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _natsContainer.StartAsync();
+        await _natsContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _natsContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -24,18 +28,18 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public async Task HealthcheckReturnsHttpStatusCodeOk()
     {
         // Given
-        using var client = new HttpClient();
-        client.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_natsContainer.GetManagementEndpoint());
 
         // When
-        using var response = await client.GetAsync("/healthz")
+        using var httpResponse = await httpClient.GetAsync("/healthz", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var jsonStatusString = await response.Content.ReadAsStringAsync()
+        var jsonStatusString = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         Assert.Equal("{\"status\":\"ok\"}", jsonStatusString);
     }
 
@@ -61,11 +65,16 @@ public abstract class NatsContainerTest : IAsyncLifetime
         Assert.Equal(message, actualMessage);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _natsContainer.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
         public NatsDefaultConfiguration()
-            : base(new NatsBuilder().Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -74,20 +83,22 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public sealed class NatsAuthConfiguration : NatsContainerTest
     {
         public NatsAuthConfiguration()
-            : base(new NatsBuilder().WithUsername("%username!").WithPassword("?password&").Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("%username!").WithPassword("?password&").Build())
         {
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfUsernameIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithPassword("password").Build());
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfPasswordIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("username").Build());
         }
     }
 }

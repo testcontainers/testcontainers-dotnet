@@ -1,17 +1,26 @@
 namespace Testcontainers.Kafka;
 
-public sealed class KafkaContainerTest : IAsyncLifetime
+public abstract class KafkaContainerTest : IAsyncLifetime
 {
-    private readonly KafkaContainer _kafkaContainer = new KafkaBuilder().Build();
+    private readonly KafkaContainer _kafkaContainer;
 
-    public Task InitializeAsync()
+    private KafkaContainerTest(KafkaContainer kafkaContainer)
     {
-        return _kafkaContainer.StartAsync();
+        _kafkaContainer = kafkaContainer;
     }
 
-    public Task DisposeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _kafkaContainer.DisposeAsync().AsTask();
+        await _kafkaContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -36,7 +45,7 @@ public sealed class KafkaContainerTest : IAsyncLifetime
 
         // When
         using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
-        _ = await producer.ProduceAsync(topic, message)
+        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
@@ -47,5 +56,62 @@ public sealed class KafkaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _kafkaContainer.DisposeAsync();
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaDefaultConfiguration : KafkaContainerTest
+    {
+        public KafkaDefaultConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile())
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaKRaftConfiguration : KafkaContainerTest
+    {
+        public KafkaKRaftConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile())
+                .WithKRaft()
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KafkaZooKeeperConfiguration : KafkaContainerTest
+    {
+        public KafkaZooKeeperConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile())
+                .WithZooKeeper()
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ApacheKafkaConfiguration : KafkaContainerTest
+    {
+        public ApacheKafkaConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka4.1.1"))
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ApacheKafkaNativeConfiguration : KafkaContainerTest
+    {
+        public ApacheKafkaNativeConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka-native4.1.1"))
+                .Build())
+        {
+        }
     }
 }

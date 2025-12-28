@@ -2,26 +2,35 @@ namespace Testcontainers.Pulsar;
 
 public abstract class PulsarContainerTest : IAsyncLifetime
 {
+    private static readonly IReadOnlyDictionary<string, string> MemorySettings = new Dictionary<string, string> { { "PULSAR_MEM", "-Xms256m -Xmx512m" } };
+
     private readonly PulsarContainer _pulsarContainer;
 
-    private PulsarContainerTest(PulsarContainer pulsarContainer)
+    private readonly bool _authenticationEnabled;
+
+    private PulsarContainerTest(PulsarContainer pulsarContainer, bool authenticationEnabled)
     {
         _pulsarContainer = pulsarContainer;
+        _authenticationEnabled = authenticationEnabled;
     }
 
-    protected abstract Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default);
-
-    public Task InitializeAsync()
+    // # --8<-- [start:UsePulsarContainer]
+    public async ValueTask InitializeAsync()
     {
-        return _pulsarContainer.StartAsync();
+        await _pulsarContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _pulsarContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReceivesSendMessage()
     {
         // Given
@@ -31,8 +40,15 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         var name = Guid.NewGuid().ToString("D");
 
-        await using var client = await CreateClientAsync()
-            .ConfigureAwait(true);
+        var clientBuilder = PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress()));
+
+        if (_authenticationEnabled)
+        {
+            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(Timeout.InfiniteTimeSpan, TestContext.Current.CancellationToken);
+            _ = clientBuilder.Authentication(new TokenAuthentication(authToken));
+        }
+
+        await using var client = clientBuilder.Build();
 
         await using var producer = client.NewProducer(Schema.String)
             .Topic(topic)
@@ -41,48 +57,76 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         await using var consumer = client.NewConsumer(Schema.String)
             .Topic(topic)
             .SubscriptionName(name)
-            .InitialPosition(SubscriptionInitialPosition.Earliest)
             .Create();
 
         // When
-        _ = await producer.Send(helloPulsar)
+        _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var message = await consumer.Receive()
+        _ = await producer.OnStateChangeTo(ProducerState.Connected, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        _ = await producer.Send(helloPulsar, cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var message = await consumer.Receive(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
     }
+    // # --8<-- [end:UsePulsarContainer]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _pulsarContainer.DisposeAsync();
+    }
+
+    // # --8<-- [start:CreatePulsarContainer]
     [UsedImplicitly]
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
         public PulsarDefaultConfiguration()
-            : base(new PulsarBuilder().Build())
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
-        }
-
-        protected override Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
-        {
-            return Task.FromResult(PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Build());
         }
     }
+    // # --8<-- [end:CreatePulsarContainer]
 
     [UsedImplicitly]
     public sealed class PulsarAuthConfiguration : PulsarContainerTest
     {
         public PulsarAuthConfiguration()
-            : base(new PulsarBuilder().WithAuthentication().Build())
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
         {
         }
+    }
 
-        protected override async Task<IPulsarClient> CreateClientAsync(CancellationToken ct = default)
+    [UsedImplicitly]
+    public sealed class PulsarV4Configuration : PulsarContainerTest
+    {
+        public PulsarV4Configuration()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
+                .WithEnvironment(MemorySettings)
+                .Build(), false)
         {
-            var authToken = await _pulsarContainer.CreateAuthenticationTokenAsync(TimeSpan.FromHours(1), ct)
-                .ConfigureAwait(false);
+        }
+    }
 
-            return PulsarClient.Builder().ServiceUrl(new Uri(_pulsarContainer.GetBrokerAddress())).Authentication(new TokenAuthentication(authToken)).Build();
+    [UsedImplicitly]
+    public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
+    {
+        public PulsarV4AuthConfiguration()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
+                .WithAuthentication()
+                .WithEnvironment(MemorySettings)
+                .Build(), true)
+        {
         }
     }
 }

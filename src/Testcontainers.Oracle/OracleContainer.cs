@@ -36,7 +36,7 @@ public sealed class OracleContainer : DockerContainer, IDatabaseContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "/bin/sh", "-c", $"exit | sqlplus -LOGON -SILENT {_configuration.Username}/{_configuration.Password}@localhost:1521/{_configuration.Database} @{scriptFilePath}" }, ct)

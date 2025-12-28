@@ -17,21 +17,22 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public static class TestcontainersSettings
   {
+    internal static readonly List<DockerEndpointAuthenticationProvider> DockerEndpointAuthProviders
+      = new List<DockerEndpointAuthenticationProvider>
+      {
+        new TestcontainersEndpointAuthenticationProvider(),
+        new MTlsEndpointAuthenticationProvider(),
+        new TlsEndpointAuthenticationProvider(),
+        new EnvironmentEndpointAuthenticationProvider(),
+        new NpipeEndpointAuthenticationProvider(),
+        new UnixEndpointAuthenticationProvider(),
+        new DockerDesktopEndpointAuthenticationProvider(),
+        new RootlessUnixEndpointAuthenticationProvider(),
+      };
+
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = new IDockerEndpointAuthenticationProvider[]
-        {
-          new TestcontainersEndpointAuthenticationProvider(),
-          new MTlsEndpointAuthenticationProvider(),
-          new TlsEndpointAuthenticationProvider(),
-          new EnvironmentEndpointAuthenticationProvider(),
-          new NpipeEndpointAuthenticationProvider(),
-          new UnixEndpointAuthenticationProvider(),
-          new DockerDesktopEndpointAuthenticationProvider(),
-          new RootlessUnixEndpointAuthenticationProvider(),
-        }
-        .Where(authProvider => authProvider.IsApplicable())
-        .FirstOrDefault(authProvider => authProvider.IsAvailable());
+      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
 
     [CanBeNull]
     private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
@@ -67,7 +68,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> privileged mode is enabled or not.
     /// </summary>
     public static bool ResourceReaperPrivilegedModeEnabled { get; set; }
-      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() || PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged();
+      = EnvironmentConfiguration.Instance.GetRyukContainerPrivileged() ?? PropertiesFileConfiguration.Instance.GetRyukContainerPrivileged() ?? true;
 
     /// <summary>
     /// Gets or sets the <see cref="ResourceReaper" /> image.
@@ -141,7 +142,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? (IOperatingSystem)new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)

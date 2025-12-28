@@ -4,6 +4,7 @@ namespace Testcontainers.Redis;
 [PublicAPI]
 public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer, RedisConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RedisImage = "redis:7.0";
 
     public const ushort RedisPort = 6379;
@@ -11,10 +12,41 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public RedisBuilder()
+        : this(RedisImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>redis:7.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/redis/tags" />.
+    /// </remarks>
+    public RedisBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/redis/tags" />.
+    /// </remarks>
+    public RedisBuilder(IImage image)
         : this(new RedisConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -41,7 +73,6 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     protected override RedisBuilder Init()
     {
         return base.Init()
-            .WithImage(RedisImage)
             .WithPortBinding(RedisPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
     }

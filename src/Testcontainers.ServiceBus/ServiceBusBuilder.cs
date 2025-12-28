@@ -1,0 +1,187 @@
+namespace Testcontainers.ServiceBus;
+
+/// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+[PublicAPI]
+public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, ServiceBusContainer, ServiceBusConfiguration>
+{
+    public const string ServiceBusNetworkAlias = "servicebus-container";
+
+    public const string DatabaseNetworkAlias = "database-container";
+
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string ServiceBusImage = "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
+
+    public const ushort ServiceBusPort = 5672;
+
+    public const ushort ServiceBusHttpPort = 5300;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public ServiceBusBuilder()
+        : this(ServiceBusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-messaging/servicebus-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
+    public ServiceBusBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
+    public ServiceBusBuilder(IImage image)
+        : this(new ServiceBusConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private ServiceBusBuilder(ServiceBusConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
+    }
+
+    /// <inheritdoc />
+    protected override ServiceBusConfiguration DockerResourceConfiguration { get; }
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "ACCEPT_EULA";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "Y";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "N";
+
+    /// <summary>
+    /// Accepts the license agreement.
+    /// </summary>
+    /// <remarks>
+    /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Azure Service Bus Emulator <see href="https://github.com/Azure/azure-service-bus-emulator-installer/blob/main/EMULATOR_EULA.txt">license</see> is accepted.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Azure Service Bus Emulator license agreement is accepted.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public override ServiceBusBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
+    {
+        var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;
+        return WithEnvironment(AcceptLicenseAgreementEnvVar, licenseAgreement);
+    }
+
+    /// <summary>
+    /// Sets the dependent MSSQL container for the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// This method allows an existing MSSQL container to be attached to the Azure Service
+    /// Bus Emulator. The containers must be on the same network to enable communication
+    /// between them.
+    /// </remarks>
+    /// <param name="network">The network to connect the container to.</param>
+    /// <param name="container">The MSSQL container.</param>
+    /// <param name="networkAlias">The MSSQL container network alias.</param>
+    /// <param name="password">The MSSQL container password.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithMsSqlContainer(
+        INetwork network,
+        MsSqlContainer container,
+        string networkAlias,
+        string password = MsSqlBuilder.DefaultPassword)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(databaseContainer: container))
+            .DependsOn(container)
+            .WithNetwork(network)
+            .WithNetworkAliases(ServiceBusNetworkAlias)
+            .WithEnvironment("SQL_SERVER", networkAlias)
+            .WithEnvironment("MSSQL_SA_PASSWORD", password);
+    }
+
+    /// <summary>
+    /// Sets the configuration for the Azure Service Bus Emulator.
+    /// </summary>
+    /// <remarks>
+    /// Default emulator configuration: https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator?tabs=automated-script#interact-with-the-emulator.
+    /// </remarks>
+    /// <param name="configFilePath">The path to the JSON file containing the Azure Service Bus Emulator configuration.</param>
+    /// <returns>A configured instance of <see cref="ServiceBusBuilder" />.</returns>
+    public ServiceBusBuilder WithConfig(string configFilePath)
+    {
+        return WithResourceMapping(new FileInfo(configFilePath), new FileInfo("/ServiceBus_Emulator/ConfigFiles/Config.json"));
+    }
+
+    /// <inheritdoc />
+    public override ServiceBusContainer Build()
+    {
+        Validate();
+        ValidateLicenseAgreement();
+
+        if (DockerResourceConfiguration.DatabaseContainer != null)
+        {
+            return new ServiceBusContainer(DockerResourceConfiguration);
+        }
+
+        // If the user has not provided an existing MSSQL container instance,
+        // we configure one.
+        var network = new NetworkBuilder()
+            .Build();
+
+        var container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
+            .WithNetwork(network)
+            .WithNetworkAliases(DatabaseNetworkAlias)
+            .Build();
+
+        var serviceBusBuilder = WithMsSqlContainer(network, container, DatabaseNetworkAlias);
+        return new ServiceBusContainer(serviceBusBuilder.DockerResourceConfiguration);
+    }
+
+    /// <inheritdoc />
+    protected override ServiceBusBuilder Init()
+    {
+        return base.Init()
+            .WithPortBinding(ServiceBusPort, true)
+            .WithPortBinding(ServiceBusHttpPort, true)
+            .WithEnvironment("SQL_WAIT_INTERVAL", "0")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(ServiceBusHttpPort).ForPath("/health")));
+    }
+
+    /// <inheritdoc />
+    protected override ServiceBusBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override ServiceBusBuilder Clone(IContainerConfiguration resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new ServiceBusConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override ServiceBusBuilder Merge(ServiceBusConfiguration oldValue, ServiceBusConfiguration newValue)
+    {
+        return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
+    }
+}

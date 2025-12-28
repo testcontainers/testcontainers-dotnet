@@ -4,6 +4,7 @@ namespace Testcontainers.K3s;
 [PublicAPI]
 public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string RancherImage = "rancher/k3s:v1.26.2-k3s1";
 
     public const ushort KubeSecurePort = 6443;
@@ -13,10 +14,41 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// <summary>
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public K3sBuilder()
+        : this(RancherImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>rancher/k3s:v1.26.2-k3s1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// </remarks>
+    public K3sBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// </remarks>
+    public K3sBuilder(IImage image)
         : this(new K3sConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,7 +75,6 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     protected override K3sBuilder Init()
     {
         return base.Init()
-            .WithImage(RancherImage)
             .WithPrivileged(true)
             .WithPortBinding(KubeSecurePort, true)
             .WithPortBinding(RancherWebhookPort, true)

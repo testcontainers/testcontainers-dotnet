@@ -4,6 +4,7 @@ namespace Testcontainers.BigQuery;
 [PublicAPI]
 public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQueryContainer, BigQueryConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string BigQueryImage = "ghcr.io/goccy/bigquery-emulator:0.4";
 
     public const ushort BigQueryPort = 9050;
@@ -13,10 +14,41 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// <summary>
     /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public BigQueryBuilder()
+        : this(BigQueryImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>ghcr.io/goccy/bigquery-emulator:0.4</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// </remarks>
+    public BigQueryBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BigQueryBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// </remarks>
+    public BigQueryBuilder(IImage image)
         : this(new BigQueryConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -53,7 +85,6 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     protected override BigQueryBuilder Init()
     {
         return base.Init()
-            .WithImage(BigQueryImage)
             .WithPortBinding(BigQueryPort, true)
             .WithProject(DefaultProjectId)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));

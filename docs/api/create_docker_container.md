@@ -27,9 +27,9 @@ To configure an ASP.NET Core application, either one or both mechanisms can be u
 ```csharp
 _ = new ContainerBuilder()
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
-  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.crt")
+  .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.pfx")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
-  .WithResourceMapping("certificate.crt", "/app/");
+  .WithResourceMapping("certificate.pfx", "/app/");
 ```
 
 `WithBindMount(string, string)` is another option to provide access to directories or files. It mounts a host directory or file into the container. Note, this does not follow our best practices. Host paths differ between environments and may not be available on every system or Docker setup, e.g. CI.
@@ -45,7 +45,10 @@ _ = new ContainerBuilder()
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder()
-  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/");
+  // Copy 'appsettings.json' into the '/app' directory.
+  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
+  // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
+  .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
 ```
 
 Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
@@ -54,6 +57,30 @@ Another overloaded member of the container builder API allows you to copy the co
 _ = new ContainerBuilder()
   .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
 ```
+
+### Specifying file ownership
+
+When copying files into a container, you can specify the user ID (UID) and group ID (GID) to set the correct ownership of the copied files. This is particularly useful when the container runs as a non-root user or when specific file permissions are required for security or application functionality.
+
+```csharp title="Copying a file with specific UID and GID"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new DirectoryInfo("."), "/app/", uid: 1000, gid: 1000);
+```
+
+### Specifying file permission
+
+When copying files into a container, you can specify the file mode to set the correct permissions for the copied files.
+
+```csharp title="Copying a script with executable permissions"
+_ = new ContainerBuilder()
+  .WithResourceMapping(new DirectoryInfo("."), "/app/", fileMode: Unix.FileMode755);
+```
+
+The `Unix` class provides common permission configurations like `FileMode755` (read, write, execute for owner; read, execute for group and others). For individual permission combinations, you can use the `UnixFileModes` enumeration to create custom configurations.
+
+### Copying files to a running container
+
+The same UID, GID, and file mode arguments are also available when copying files to already running containers using the `IContainer.CopyAsync(...)` APIs.
 
 ## Reading files from the container
 
@@ -73,8 +100,62 @@ Starting a container or creating a resource (such as a network or a volume) can 
 
 ```csharp title="Canceling container start after one minute"
 using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-await _container.StartAsync(timeoutCts.Token);
+await _container.StartAsync(timeoutCts.Token)
+  .ConfigureAwait(false);
 ```
+
+## Getting log messages
+
+Testcontainers for .NET provides two approaches for retrieving log messages from containers: `GetLogsAsync` and `WithOutputConsumer`. Each method serves different use cases for handling container logs.
+
+The `GetLogsAsync` method is available through the `IContainer` interface. It allows you to fetch logs from a container for a specific time range or from the beginning until the present. This approach is useful for retrieving logs after a test has run, especially when troubleshooting issues or failures.
+
+```csharp title="Getting all log messages"
+var (stdout, stderr) = await _container.GetLogsAsync()
+  .ConfigureAwait(false);
+```
+
+The `WithOutputConsumer` method is part of the `ContainerBuilder` class and is used to continuously forward container log messages to a specified output consumer. This approach provides real-time access to logs as the container runs.
+
+```csharp title="Forwarding all log messages"
+using IOutputConsumer outputConsumer = Consume.RedirectStdoutAndStderrToConsole();
+
+_ = new ContainerBuilder()
+  .WithOutputConsumer(outputConsumer);
+```
+
+The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
+
+## Composing command arguments
+
+Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
+
+Because our builders are immutable, this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
+
+`ComposableEnumerable<T>` lets you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
+
+If a module applies default commands and you need to override or remove them entirely, you can do this e.g. by explicitly resetting the command list:
+
+```csharp title="Resetting command arguments"
+// Default PostgreSQL builder configuration:
+//
+// base.Init()
+//   ...
+//   .WithCommand("-c", "fsync=off")
+//   .WithCommand("-c", "full_page_writes=off")
+//   .WithCommand("-c", "synchronous_commit=off")
+//   ...
+
+var postgreSqlContainer = new PostgreSqlBuilder()
+  .WithCommand(new OverwriteEnumerable<string>(Array.Empty<string>()))
+  .Build();
+```
+
+Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default command configurations. This is useful when you want full control over the PostgreSQL startup or when the default configurations do not match your requirements.
+
+!!!tip
+
+    You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
 ## Examples
 
@@ -111,7 +192,6 @@ const ushort MagicNumberPort = 80;
 var deepThoughtContainer = new ContainerBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .WithImage("alpine")
-  .WithExposedPort(MagicNumberPort)
   .WithPortBinding(MagicNumberPort, true)
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")

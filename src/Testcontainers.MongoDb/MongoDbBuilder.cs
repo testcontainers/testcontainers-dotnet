@@ -4,6 +4,7 @@ namespace Testcontainers.MongoDb;
 [PublicAPI]
 public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbContainer, MongoDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MongoDbImage = "mongo:6.0";
 
     public const ushort MongoDbPort = 27017;
@@ -12,13 +13,48 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
     public const string DefaultPassword = "mongo";
 
+    private const string InitKeyFileScriptFilePath = "/docker-entrypoint-initdb.d/01-init-keyfile.sh";
+
+    private const string KeyFileFilePath = "/tmp/mongodb-keyfile";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MongoDbBuilder()
+        : this(MongoDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mongo:6.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// </remarks>
+    public MongoDbBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MongoDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// </remarks>
+    public MongoDbBuilder(IImage image)
         : this(new MongoDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -60,15 +96,44 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", initDbRootPassword);
     }
 
+    /// <summary>
+    /// Initializes MongoDB as a single-node replica set.
+    /// </summary>
+    /// <param name="replicaSetName">The replica set name.</param>
+    /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
+    public MongoDbBuilder WithReplicaSet(string replicaSetName = "rs0")
+    {
+        var initKeyFileScript = new StringWriter();
+        initKeyFileScript.NewLine = "\n";
+        initKeyFileScript.WriteLine("#!/bin/bash");
+        initKeyFileScript.WriteLine("openssl rand -base64 32 > \"" + KeyFileFilePath + "\"");
+        initKeyFileScript.WriteLine("chmod 600 \"" + KeyFileFilePath + "\"");
+
+        return Merge(DockerResourceConfiguration, new MongoDbConfiguration(replicaSetName: replicaSetName))
+            .WithCommand("--replSet", replicaSetName, "--keyFile", KeyFileFilePath, "--bind_ip_all")
+            .WithResourceMapping(Encoding.Default.GetBytes(initKeyFileScript.ToString()), InitKeyFileScriptFilePath, fileMode: Unix.FileMode755);
+    }
+
     /// <inheritdoc />
     public override MongoDbContainer Build()
     {
         Validate();
 
-        // The wait strategy relies on the configuration of MongoDb. If credentials are
-        // provided, the log message "Waiting for connections" appears twice.
+        IWaitUntil waitUntil;
+
+        if (string.IsNullOrEmpty(DockerResourceConfiguration.ReplicaSetName))
+        {
+            // The wait strategy relies on the configuration of MongoDb. If credentials are
+            // provided, the log message "Waiting for connections" appears twice.
+            waitUntil = new WaitIndicateReadiness(DockerResourceConfiguration);
+        }
+        else
+        {
+            waitUntil = new WaitInitiateReplicaSet();
+        }
+
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
-        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var mongoDbBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(waitUntil));
         return new MongoDbContainer(mongoDbBuilder.DockerResourceConfiguration);
     }
 
@@ -76,10 +141,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     protected override MongoDbBuilder Init()
     {
         return base.Init()
-            .WithImage(MongoDbImage)
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithStartupCallback(InitiateReplicaSetAsync);
     }
 
     /// <inheritdoc />
@@ -117,18 +182,50 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         return new MongoDbBuilder(new MongoDbConfiguration(oldValue, newValue));
     }
 
+    /// <summary>
+    /// Initiates the MongoDB replica set.
+    /// </summary>
+    /// <param name="container">The container instance.</param>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the replica set initiation has been executed.</returns>
+    private static async Task InitiateReplicaSetAsync(MongoDbContainer container, MongoDbConfiguration configuration, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(configuration.ReplicaSetName))
+        {
+            return;
+        }
+
+        // This is a simple workaround to use the default options, which can be configured
+        // with custom configurations as needed.
+        var options = new WaitStrategy();
+
+        var scriptContent = $"var r=rs.initiate({{_id:\"{configuration.ReplicaSetName}\",members:[{{_id:0,host:\"127.0.0.1:27017\"}}]}});quit(r.ok===1?0:1);";
+
+        var initiate = async () =>
+        {
+            var execResult = await container.ExecScriptAsync(scriptContent, ct)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        };
+
+        await WaitStrategy.WaitUntilAsync(initiate, options.Interval, options.Timeout, options.Retries, ct)
+            .ConfigureAwait(false);
+    }
+
     /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
+    private sealed class WaitIndicateReadiness : IWaitUntil
     {
         private static readonly string[] LineEndings = { "\r\n", "\n" };
 
         private readonly int _count;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// Initializes a new instance of the <see cref="WaitIndicateReadiness" /> class.
         /// </summary>
         /// <param name="configuration">The container configuration.</param>
-        public WaitUntil(MongoDbConfiguration configuration)
+        public WaitIndicateReadiness(MongoDbConfiguration configuration)
         {
             _count = string.IsNullOrEmpty(configuration.Username) && string.IsNullOrEmpty(configuration.Password) ? 1 : 2;
         }
@@ -143,6 +240,27 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
                 .Concat(stdout.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Concat(stderr.Split(LineEndings, StringSplitOptions.RemoveEmptyEntries))
                 .Count(line => line.Contains("Waiting for connections")));
+        }
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitInitiateReplicaSet : IWaitUntil
+    {
+        private const string ScriptContent = "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";
+
+        /// <inheritdoc />
+        public Task<bool> UntilAsync(IContainer container)
+        {
+            return UntilAsync(container as MongoDbContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private static async Task<bool> UntilAsync(MongoDbContainer container)
+        {
+            var execResult = await container.ExecScriptAsync(ScriptContent)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }

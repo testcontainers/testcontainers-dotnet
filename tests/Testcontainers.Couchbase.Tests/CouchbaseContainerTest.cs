@@ -2,16 +2,17 @@ namespace Testcontainers.Couchbase;
 
 public sealed class CouchbaseContainerTest : IAsyncLifetime
 {
-    private readonly CouchbaseContainer _couchbaseContainer = new CouchbaseBuilder().Build();
+    private readonly CouchbaseContainer _couchbaseContainer = new CouchbaseBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _couchbaseContainer.StartAsync();
+        await _couchbaseContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _couchbaseContainer.DisposeAsync().AsTask();
+        return _couchbaseContainer.DisposeAsync();
     }
 
     [Fact]

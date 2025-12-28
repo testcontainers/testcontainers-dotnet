@@ -1,49 +1,34 @@
 # Neo4j
 
-[Neo4j](https://neo4j.com/product/neo4j-graph-database/) is a graph database designed to work with nodes and edges. It is a ACID-compliant transactional graph database engine, and developers can communicate with it using the HTTP endpoint or by using the **Bolt** protocol.
+[Neo4j](https://neo4j.com/product/neo4j-graph-database/) is a graph database designed to work with nodes and edges. It is an ACID-compliant transactional graph database engine, and developers can communicate with it using the HTTP endpoint or by using the **Bolt** protocol.
 
-The following example uses the following NuGet packages:
+Add the following dependency to your project file:
 
-```console title="Install the NuGet dependencies"
+```shell title="NuGet"
 dotnet add package Testcontainers.Neo4j
-dotnet add package Neo4j.Driver
-dotnet add package xunit
 ```
 
-IDEs and editors may also require the following packages to run tests: `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk`.
+You can start an Neo4j container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
-Copy and paste the following code into a new `.cs` test file within an existing test project.
+=== "Create Container Instance"
+    ```csharp
+    --8<-- "tests/Testcontainers.Neo4j.Tests/Neo4jContainerTest.cs:CreateNeo4jContainer"
+    ```
 
-```csharp
-using Neo4j.Driver;
-using Testcontainers.Neo4j;
-using Xunit;
+This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-namespace TestcontainersModules;
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.Neo4j.Tests/Neo4jContainerTest.cs:UseNeo4jContainer"
+    ```
 
-public sealed class Neo4jContainerTest : IAsyncLifetime
-{
-    private readonly Neo4jContainer _neo4jContainer
-        = new Neo4jBuilder().Build();
+The test example uses the following NuGet dependencies:
 
-    [Fact]
-    public async Task CanReadNeo4jDatabase()
-    {
-        const string database = "neo4j";
-
-        await using var client = GraphDatabase.Driver(_neo4jContainer.GetConnectionString());
-
-        await using var session = client.AsyncSession(cfg => cfg.WithDatabase(database));
-
-        Assert.Equal(database, session.SessionConfig.Database);
-    }
-
-    public Task InitializeAsync()
-        => _neo4jContainer.StartAsync();
-
-    public Task DisposeAsync()
-        => _neo4jContainer.DisposeAsync().AsTask();
-}
-```
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.Neo4j.Tests/Testcontainers.Neo4j.Tests.csproj:PackageReferences"
+    ```
 
 To execute the tests, use the command `dotnet test` from a terminal.
+
+--8<-- "docs/modules/_call_out_test_projects.txt"

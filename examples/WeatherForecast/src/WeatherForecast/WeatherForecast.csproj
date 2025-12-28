@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Fast.Components.FluentUI"/>
@@ -17,7 +17,7 @@
     <InternalsVisibleTo Include="WeatherForecast.InProcess.Test"/>
   </ItemGroup>
   <ItemGroup>
-    <None Update="certificate.crt" Visible="false">
+    <None Update="certificate.pfx" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

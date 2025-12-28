@@ -2,16 +2,17 @@ namespace Testcontainers.Redpanda;
 
 public sealed class RedpandaContainerTest : IAsyncLifetime
 {
-    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder().Build();
+    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _redpandaContainer.StartAsync();
+        await _redpandaContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _redpandaContainer.DisposeAsync().AsTask();
+        return _redpandaContainer.DisposeAsync();
     }
 
     [Fact]
@@ -36,7 +37,7 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
 
         // When
         using var producer = new ProducerBuilder<string, string>(producerConfig).Build();
-        _ = await producer.ProduceAsync(topic, message)
+        _ = await producer.ProduceAsync(topic, message, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         using var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();

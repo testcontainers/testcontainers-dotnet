@@ -6,6 +6,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
 {
     public const string MilvusEtcdConfigFilePath = "/milvus/configs/embedEtcd.yaml";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MilvusImage = "milvusdb/milvus:v2.3.10";
 
     public const ushort MilvusManagementPort = 9091;
@@ -17,10 +18,41 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// <summary>
     /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MilvusBuilder()
+        : this(MilvusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>milvusdb/milvus:v2.3.10</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
+    public MilvusBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MilvusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// </remarks>
+    public MilvusBuilder(IImage image)
         : this(new MilvusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -60,18 +92,19 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Init()
     {
         return base.Init()
-            .WithImage(MilvusImage)
             .WithPortBinding(MilvusManagementPort, true)
             .WithPortBinding(MilvusGrpcPort, true)
             .WithCommand("milvus", "run", "standalone")
+            .WithEnvironment("DEPLOY_MODE", "STANDALONE")
             .WithEnvironment("COMMON_STORAGETYPE", "local")
             // For embedded etcd only; see WithEtcdEndpoint(string) for using an external etcd.
             .WithEnvironment("ETCD_USE_EMBED", "true")
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(MilvusManagementPort).ForPath("/healthz")));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
+            .WithCreateParameterModifier(parameterModifier =>
+                parameterModifier.Healthcheck = Healthcheck.Instance);
     }
 
     /// <inheritdoc />
@@ -90,5 +123,28 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     protected override MilvusBuilder Merge(MilvusConfiguration oldValue, MilvusConfiguration newValue)
     {
         return new MilvusBuilder(new MilvusConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// This setup mirrors the behavior of Milvus's official configuration:
+    /// https://github.com/milvus-io/milvus/blob/4def0255a928287f982f1d6b8c53ed32127bb84d/scripts/standalone_embed.sh#L56-L60
+    /// </summary>
+    private sealed class Healthcheck : HealthcheckConfig
+    {
+        private Healthcheck()
+        {
+            const long ninetySeconds = 90 * 1_000_000_000L;
+            Test = ["CMD-SHELL", $"curl -f http://localhost:{MilvusManagementPort}/healthz"];
+            Interval = TimeSpan.FromSeconds(30);
+            Timeout = TimeSpan.FromSeconds(20);
+            StartPeriod = ninetySeconds;
+            Retries = 3;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="HealthcheckConfig" /> instance.
+        /// </summary>
+        public static HealthcheckConfig Instance { get; }
+            = new Healthcheck();
     }
 }

@@ -4,6 +4,7 @@ namespace Testcontainers.InfluxDb;
 [PublicAPI]
 public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDbContainer, InfluxDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string InfluxDbImage = "influxdb:2.7";
 
     public const ushort InfluxDbPort = 8086;
@@ -19,10 +20,41 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public InfluxDbBuilder()
+        : this(InfluxDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>influxdb:2.7</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/influxdb/tags" />.
+    /// </remarks>
+    public InfluxDbBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfluxDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/influxdb/tags" />.
+    /// </remarks>
+    public InfluxDbBuilder(IImage image)
         : this(new InfluxDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -115,7 +147,6 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     protected override InfluxDbBuilder Init()
     {
         return base.Init()
-            .WithImage(InfluxDbImage)
             .WithPortBinding(InfluxDbPort, true)
             .WithEnvironment("DOCKER_INFLUXDB_INIT_MODE", "setup")
             .WithUsername(DefaultUsername)

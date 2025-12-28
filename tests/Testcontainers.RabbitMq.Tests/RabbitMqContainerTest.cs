@@ -2,16 +2,18 @@ namespace Testcontainers.RabbitMq;
 
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
+    // # --8<-- [start:UseRabbitMqContainer]
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _rabbitMqContainer.StartAsync();
+        await _rabbitMqContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _rabbitMqContainer.DisposeAsync().AsTask();
+        return _rabbitMqContainer.DisposeAsync();
     }
 
     [Fact]
@@ -28,4 +30,5 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
         // Then
         Assert.True(connection.IsOpen);
     }
+    // # --8<-- [end:UseRabbitMqContainer]
 }

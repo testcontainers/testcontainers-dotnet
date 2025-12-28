@@ -4,10 +4,12 @@ namespace Testcontainers.Oracle;
 [PublicAPI]
 public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContainer, OracleConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
 
     public const ushort OraclePort = 1521;
 
+    [Obsolete("This constant is obsolete and should not be used. It is only applicable for Oracle images between versions 11 and 22.")]
     public const string DefaultDatabase = "XEPDB1";
 
     public const string DefaultUsername = "oracle";
@@ -17,10 +19,41 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public OracleBuilder()
+        : this(OracleImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>gvenzl/oracle-xe:21.3.0-slim-faststart</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
+    public OracleBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OracleBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// </remarks>
+    public OracleBuilder(IImage image)
         : this(new OracleConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -35,6 +68,19 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
 
     /// <inheritdoc />
     protected override OracleConfiguration DockerResourceConfiguration { get; }
+
+    /// <summary>
+    /// Sets the Oracle database.
+    /// </summary>
+    /// <remarks>
+    /// The database can only be set for Oracle 18 and onwards.
+    /// </remarks>
+    /// <param name="database">The Oracle database.</param>
+    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
+    public OracleBuilder WithDatabase(string database)
+    {
+        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
+    }
 
     /// <summary>
     /// Sets the Oracle username.
@@ -63,6 +109,18 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     public override OracleContainer Build()
     {
         Validate();
+
+        var defaultServiceName = GetDefaultServiceName();
+        if (DockerResourceConfiguration.Database == null)
+        {
+            return new OracleContainer(WithDatabase(defaultServiceName).DockerResourceConfiguration);
+        }
+
+        if (DockerResourceConfiguration.Database != defaultServiceName)
+        {
+            return new OracleContainer(WithEnvironment("ORACLE_DATABASE", DockerResourceConfiguration.Database).DockerResourceConfiguration);
+        }
+
         return new OracleContainer(DockerResourceConfiguration);
     }
 
@@ -70,9 +128,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override OracleBuilder Init()
     {
         return base.Init()
-            .WithImage(OracleImage)
             .WithPortBinding(OraclePort, true)
-            .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("DATABASE IS READY TO USE!"));
@@ -82,6 +138,18 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     protected override void Validate()
     {
         base.Validate();
+
+        const string message = "The image '{0}' does not support configuring the database. It is only supported on Oracle 18 and onwards.";
+
+        Predicate<OracleConfiguration> databaseConfigurationNotSupported = value =>
+            value.Database != null && value.Image.MatchVersion(v => v.Major < 18);
+
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
+            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => throw new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull()
+            .NotEmpty();
 
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
             .NotNull()
@@ -106,16 +174,18 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
         return new OracleBuilder(new OracleConfiguration(oldValue, newValue));
     }
 
-    /// <summary>
-    /// Sets the Oracle database.
-    /// </summary>
-    /// <remarks>
-    /// The Docker image does not allow to configure the database.
-    /// </remarks>
-    /// <param name="database">The Oracle database.</param>
-    /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
-    private OracleBuilder WithDatabase(string database)
+    private string GetDefaultServiceName()
     {
-        return Merge(DockerResourceConfiguration, new OracleConfiguration(database: database));
+        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major >= 23))
+        {
+            return "FREEPDB1";
+        }
+
+        if (DockerResourceConfiguration.Image.MatchVersion(v => v.Major > 11))
+        {
+            return "XEPDB1";
+        }
+
+        return "XE";
     }
 }

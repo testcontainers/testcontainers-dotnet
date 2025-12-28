@@ -4,6 +4,7 @@ namespace Testcontainers.ClickHouse;
 [PublicAPI]
 public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, ClickHouseContainer, ClickHouseConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ClickHouseImage = "clickhouse/clickhouse-server:23.6-alpine";
 
     public const ushort HttpPort = 8123;
@@ -19,10 +20,41 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public ClickHouseBuilder()
+        : this(ClickHouseImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>clickhouse/clickhouse-server:23.6-alpine</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// </remarks>
+    public ClickHouseBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClickHouseBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// </remarks>
+    public ClickHouseBuilder(IImage image)
         : this(new ClickHouseConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -82,7 +114,6 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     protected override ClickHouseBuilder Init()
     {
         return base.Init()
-            .WithImage(ClickHouseImage)
             .WithPortBinding(HttpPort, true)
             .WithPortBinding(NativePort, true)
             .WithDatabase(DefaultDatabase)
@@ -120,7 +151,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
         return new ClickHouseBuilder(new ClickHouseConfiguration(oldValue, newValue));
     }
 
-    private async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
+    private static async Task<bool> IsNodeReadyAsync(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync()
             .ConfigureAwait(false);

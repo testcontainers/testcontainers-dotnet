@@ -4,6 +4,7 @@ namespace Testcontainers.CockroachDb;
 [PublicAPI]
 public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, CockroachDbContainer, CockroachDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string CockroachDbImage = "cockroachdb/cockroach:latest-v23.1";
 
     public const ushort CockroachDbPort = 26257;
@@ -19,10 +20,41 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public CockroachDbBuilder()
+        : this(CockroachDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>cockroachdb/cockroach:latest-v23.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// </remarks>
+    public CockroachDbBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CockroachDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// </remarks>
+    public CockroachDbBuilder(IImage image)
         : this(new CockroachDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -82,7 +114,6 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     protected override CockroachDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CockroachDbImage)
             .WithPortBinding(CockroachDbPort, true)
             .WithPortBinding(CockroachDbRestPort, true)
             .WithDatabase(DefaultDatabase)

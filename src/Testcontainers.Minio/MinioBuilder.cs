@@ -4,6 +4,7 @@ namespace Testcontainers.Minio;
 [PublicAPI]
 public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer, MinioConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MinioImage = "minio/minio:RELEASE.2023-01-31T02-24-19Z";
 
     public const ushort MinioPort = 9000;
@@ -15,20 +16,51 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public MinioBuilder()
-        : this(new MinioConfiguration())
+        : this(MinioImage)
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private MinioBuilder(MinioConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>minio/minio:RELEASE.2023-01-31T02-24-19Z</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/minio/minio/tags" />.
+    /// </remarks>
+    public MinioBuilder(string image)
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/minio/minio/tags" />.
+    /// </remarks>
+    public MinioBuilder(IImage image)
+        : this(new MinioConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinioBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private MinioBuilder(MinioConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -67,7 +99,6 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     protected override MinioBuilder Init()
     {
         return base.Init()
-            .WithImage(MinioImage)
             .WithPortBinding(MinioPort, true)
             .WithCommand("server", "/data")
             .WithUsername(DefaultUsername)
@@ -91,13 +122,13 @@ public sealed class MinioBuilder : ContainerBuilder<MinioBuilder, MinioContainer
     }
 
     /// <inheritdoc />
-    protected override MinioBuilder Clone(IContainerConfiguration resourceConfiguration)
+    protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override MinioBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    protected override MinioBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new MinioConfiguration(resourceConfiguration));
     }

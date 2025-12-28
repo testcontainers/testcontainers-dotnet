@@ -2,16 +2,17 @@ namespace Testcontainers.RavenDb;
 
 public sealed class RavenDbContainerTest : IAsyncLifetime
 {
-    private readonly RavenDbContainer _ravenDbContainer = new RavenDbBuilder().Build();
+    private readonly RavenDbContainer _ravenDbContainer = new RavenDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _ravenDbContainer.StartAsync();
+        await _ravenDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _ravenDbContainer.DisposeAsync().AsTask();
+        return _ravenDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -27,6 +28,6 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
         var buildNumber = documentStore.Maintenance.Server.Send(new GetBuildNumberOperation());
 
         // Then
-        Assert.Equal("5.4", buildNumber.ProductVersion);
+        Assert.Contains(buildNumber.ProductVersion, _ravenDbContainer.Image.Tag);
     }
 }

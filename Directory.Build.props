@@ -2,18 +2,18 @@
 <Project>
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>3.9.0</Version>
+    <Version>4.10.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Product>Testcontainers</Product>
-    <Copyright>Copyright (c) 2019 - 2024 Andre Hofmeister and other authors</Copyright>
+    <Copyright>Copyright (c) 2019 - 2025 Andre Hofmeister and other authors</Copyright>
     <Authors>Andre Hofmeister and contributors</Authors>
     <Company>Andre Hofmeister</Company>
     <Description>Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions.</Description>
     <Summary>Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.</Summary>
     <PackageIcon>docs/logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/testcontainers/testcontainers-dotnet/raw/develop/docs/logo.png</PackageIconUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://dotnet.testcontainers.org/</PackageProjectUrl>
     <PackageTags>automation;docker;dotnet;testcontainers;testcontainers-dotnet;testing</PackageTags>
@@ -26,12 +26,15 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <NoWarn>CS0618,CS1591,SA0001,SA1600,SA1633,SA1649,CA1859,CA1861</NoWarn>
+    <NoWarn>CA1859,CA1861,CS0618,CS1591,xUnit1044,xUnit1045</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="SauceControl.InheritDoc" VersionOverride="2.0.2" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)docs/banner.png" Visible="false" Pack="true" PackagePath="docs/" />
     <None Include="$(MSBuildThisFileDirectory)docs/logo.png" Visible="false" Pack="true" PackagePath="docs/" />

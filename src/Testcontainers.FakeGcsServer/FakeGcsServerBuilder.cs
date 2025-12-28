@@ -4,6 +4,7 @@ namespace Testcontainers.FakeGcsServer;
 [PublicAPI]
 public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder, FakeGcsServerContainer, FakeGcsServerConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FakeGcsServerImage = "fsouza/fake-gcs-server:1.47";
 
     public const ushort FakeGcsServerPort = 4443;
@@ -13,20 +14,51 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public FakeGcsServerBuilder()
-        : this(new FakeGcsServerConfiguration())
+        : this(FakeGcsServerImage)
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
     /// </summary>
-    /// <param name="dockerResourceConfiguration">The Docker resource configuration.</param>
-    private FakeGcsServerBuilder(FakeGcsServerConfiguration dockerResourceConfiguration)
-        : base(dockerResourceConfiguration)
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>fsouza/fake-gcs-server:1.47</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
+    public FakeGcsServerBuilder(string image)
+        : this(new DockerImage(image))
     {
-        DockerResourceConfiguration = dockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// </remarks>
+    public FakeGcsServerBuilder(IImage image)
+        : this(new FakeGcsServerConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FakeGcsServerBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
+    private FakeGcsServerBuilder(FakeGcsServerConfiguration resourceConfiguration)
+        : base(resourceConfiguration)
+    {
+        DockerResourceConfiguration = resourceConfiguration;
     }
 
     /// <inheritdoc />
@@ -43,7 +75,6 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     protected override FakeGcsServerBuilder Init()
     {
         return base.Init()
-            .WithImage(FakeGcsServerImage)
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
@@ -61,7 +92,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
                 // error: HttpStatusCode.NotFound. The HTTP request appears incorrect. The
                 // container logs indicate the presence of an extra slash: `PUT //upload/storage/v1`.
                 startupScript.Append("-external-url " + new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGcsServerPort)).ToString().Trim('/'));
-                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, Unix.FileMode755, ct);
+                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
             });
     }
 

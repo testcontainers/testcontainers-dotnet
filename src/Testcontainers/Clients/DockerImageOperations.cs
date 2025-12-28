@@ -36,31 +36,30 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<ImageInspectResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Images.InspectImageAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Images.InspectImageAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _ = await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
 
-      return response != null;
+        return true;
+      }
+      catch (DockerImageNotFoundException)
+      {
+        return false;
+      }
     }
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
     {
       var createParameters = new ImagesCreateParameters
       {
-        FromImage = image.FullName.Replace(":" + image.Tag, string.Empty), // Workaround until https://github.com/dotnet/Docker.DotNet/issues/595 is fixed.
-        Tag = image.Tag,
+        FromImage = image.FullName,
       };
 
       var authConfig = new AuthConfig
@@ -99,6 +98,7 @@ namespace DotNet.Testcontainers.Clients
       var buildParameters = new ImageBuildParameters
       {
         Dockerfile = configuration.Dockerfile,
+        Target = configuration.Target,
         Tags = new List<string> { image.FullName },
         BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),

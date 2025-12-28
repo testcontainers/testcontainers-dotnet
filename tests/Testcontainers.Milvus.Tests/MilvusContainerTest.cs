@@ -2,8 +2,6 @@ namespace Testcontainers.Milvus;
 
 public abstract class MilvusContainerTest : IAsyncLifetime
 {
-    private const string MilvusVersion = "v2.3.10";
-
     private readonly MilvusContainer _milvusContainer;
 
     private MilvusContainerTest(MilvusContainer milvusContainer)
@@ -11,14 +9,18 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         _milvusContainer = milvusContainer;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _milvusContainer.StartAsync();
+        await _milvusContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _milvusContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -29,18 +31,23 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         using var client = new MilvusClient(_milvusContainer.GetEndpoint());
 
         // When
-        var version = await client.GetVersionAsync()
+        var version = await client.GetVersionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(MilvusVersion, version);
+        Assert.EndsWith(version, _milvusContainer.Image.Tag);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _milvusContainer.DisposeAsync();
     }
 
     [UsedImplicitly]
     public sealed class MilvusDefaultConfiguration : MilvusContainerTest
     {
         public MilvusDefaultConfiguration()
-            : base(new MilvusBuilder().WithImage("milvusdb/milvus:" + MilvusVersion).Build())
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -54,11 +61,9 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         }
 
         private MilvusSidecarConfiguration(INetwork network)
-            : base(new MilvusBuilder()
-                .WithImage("milvusdb/milvus:" + MilvusVersion)
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile())
                 .WithEtcdEndpoint("etcd:2379")
-                .DependsOn(new ContainerBuilder()
-                    .WithImage("quay.io/coreos/etcd:v3.5.5")
+                .DependsOn(new ContainerBuilder("quay.io/coreos/etcd:v3.5.5")
                     .WithNetworkAliases("etcd")
                     .WithCommand("etcd")
                     .WithCommand("-advertise-client-urls=http://127.0.0.1:2379")

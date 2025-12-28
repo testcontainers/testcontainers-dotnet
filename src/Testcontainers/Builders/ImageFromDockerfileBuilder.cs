@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.Text.RegularExpressions;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -57,15 +58,22 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ImageFromDockerfileBuilder WithName(IImage name)
+    public ImageFromDockerfileBuilder WithName(IImage image)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyHubImageNamePrefix()));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithContextDirectory(string contextDirectory)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(contextDirectory: contextDirectory));
     }
 
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfile));
+      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath));
     }
 
     /// <inheritdoc />
@@ -79,6 +87,12 @@ namespace DotNet.Testcontainers.Builders
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithTarget(string target)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(target: target));
     }
 
     /// <inheritdoc />
@@ -110,7 +124,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected sealed override ImageFromDockerfileBuilder Init()
     {
-      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty));
+      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
     }
 
     /// <inheritdoc />

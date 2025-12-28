@@ -4,9 +4,12 @@ namespace Testcontainers.Keycloak;
 [PublicAPI]
 public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, KeycloakContainer, KeycloakConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string KeycloakImage = "quay.io/keycloak/keycloak:21.1";
 
     public const ushort KeycloakPort = 8080;
+
+    public const ushort KeycloakHealthPort = 9000;
 
     public const string DefaultUsername = "admin";
 
@@ -15,10 +18,41 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public KeycloakBuilder()
+        : this(KeycloakImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>quay.io/keycloak/keycloak:21.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// </remarks>
+    public KeycloakBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeycloakBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// </remarks>
+    public KeycloakBuilder(IImage image)
         : this(new KeycloakConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -42,6 +76,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithUsername(string username)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(username: username))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", username)
             .WithEnvironment("KEYCLOAK_ADMIN", username);
     }
 
@@ -53,28 +88,57 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     public KeycloakBuilder WithPassword(string password)
     {
         return Merge(DockerResourceConfiguration, new KeycloakConfiguration(password: password))
+            .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)
             .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", password);
+    }
+
+    /// <summary>
+    /// Configures Keycloak to import a realm configuration file during startup.
+    /// </summary>
+    /// <remarks>
+    /// The file will be copied to the <c>/opt/keycloak/data/import/</c> directory
+    /// inside the container:
+    /// https://www.keycloak.org/server/importExport#_importing_a_realm_during_startup.
+    /// </remarks>
+    /// <param name="realmConfigurationFilePath">The local path to the realm configuration file (JSON).</param>
+    /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
+    public KeycloakBuilder WithRealm(string realmConfigurationFilePath)
+    {
+        return WithCommand("--import-realm")
+            .WithResourceMapping(realmConfigurationFilePath, "/opt/keycloak/data/import/");
     }
 
     /// <inheritdoc />
     public override KeycloakContainer Build()
     {
         Validate();
-        return new KeycloakContainer(DockerResourceConfiguration);
+
+        Predicate<System.Version> predicate = v => v.Major >= 25;
+
+        var image = DockerResourceConfiguration.Image;
+
+        // https://www.keycloak.org/docs/latest/release_notes/index.html#management-port-for-metrics-and-health-endpoints.
+        var isMajorVersionGreaterOrEqual25 = image.MatchLatestOrNightly() || image.MatchVersion(predicate);
+
+        var waitStrategy = Wait.ForUnixContainer()
+            .UntilMessageIsLogged("Added user '[^']+' to realm '[^']+'|Created temporary admin user with username \\S+")
+            .UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/health/ready").ForPort(isMajorVersionGreaterOrEqual25 ? KeycloakHealthPort : KeycloakPort));
+
+        var keycloakBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        return new KeycloakContainer(keycloakBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
     protected override KeycloakBuilder Init()
     {
         return base.Init()
-            .WithImage(KeycloakImage)
             .WithCommand("start-dev")
             .WithPortBinding(KeycloakPort, true)
+            .WithPortBinding(KeycloakHealthPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithEnvironment("KC_HEALTH_ENABLED", "true")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath("/health/ready").ForPort(KeycloakPort)));
+            .WithEnvironment("KC_HEALTH_ENABLED", "true");
     }
 
     /// <inheritdoc />
