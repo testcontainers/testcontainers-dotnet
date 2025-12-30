@@ -110,7 +110,7 @@ namespace DotNet.Testcontainers.Builders
             validationChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             validationChain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
             validationChain.ChainPolicy.ExtraStore.Add(caCertificate);
-            validationChain.ChainPolicy.ExtraStore.AddRange(chain.ChainElements.Select(element => element.Certificate).ToArray());
+            validationChain.ChainPolicy.ExtraStore.AddRange(chain.ChainElements.OfType<X509ChainElement>().Select(element => element.Certificate).ToArray());
             var isVerified = validationChain.Build(new X509Certificate2(certificate));
             var isSignedByExpectedRoot = validationChain.ChainElements[validationChain.ChainElements.Count - 1].Certificate.RawData.SequenceEqual(caCertificate.RawData);
             return isVerified && isSignedByExpectedRoot;
