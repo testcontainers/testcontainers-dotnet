@@ -1,5 +1,7 @@
 namespace Testcontainers.WebDriver;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 /// <remarks>
 /// Find further information about the Selenium Grid image, including its configurations, here: https://github.com/SeleniumHQ/docker-selenium.
@@ -24,6 +26,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public WebDriverBuilder()
         : this(WebDriverBrowser.Chrome.Image)
     {

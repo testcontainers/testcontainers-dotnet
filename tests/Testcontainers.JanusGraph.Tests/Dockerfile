@@ -1,1 +1,1 @@
-﻿FROM janusgraph/janusgraph:1.0.0
+FROM janusgraph/janusgraph:1.0.0

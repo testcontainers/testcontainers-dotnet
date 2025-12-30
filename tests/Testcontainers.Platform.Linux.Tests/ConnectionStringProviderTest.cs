@@ -33,9 +33,10 @@ public static class ConnectionStringProviderTests
         [Fact]
         public void GetConnectionStringReturnsExpectedValue()
         {
+            IConnectionStringProvider connectionStringProvider = _container;
             Assert.True(_connectionStringProvider.IsConfigured, "Configure should have been called during container startup.");
-            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString());
-            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString("name"));
+            Assert.Equal(ExpectedConnectionString, connectionStringProvider.GetConnectionString());
+            Assert.Equal(ExpectedConnectionString, connectionStringProvider.GetConnectionString("name"));
         }
     }
 
@@ -60,8 +61,9 @@ public static class ConnectionStringProviderTests
         [Fact]
         public void GetConnectionStringThrowsException()
         {
-            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString());
-            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString("name"));
+            IConnectionStringProvider connectionStringProvider = _container;
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString());
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString("name"));
         }
     }
 

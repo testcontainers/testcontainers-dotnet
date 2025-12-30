@@ -1,4 +1,5 @@
 global using System;
+global using System.Diagnostics.CodeAnalysis;
 global using System.IO;
 global using System.Text;
 global using Docker.DotNet.Models;

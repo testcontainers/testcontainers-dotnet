@@ -16,6 +16,11 @@ namespace DotNet.Testcontainers.Clients
 
     public void Report(JSONMessage value)
     {
+      if (!_logger.IsEnabled(LogLevel.Error))
+      {
+        return;
+      }
+
       if (value.Error != null)
       {
         _logger.LogError("ID={ID}: {Error}", value.ID, value.Error.Message);
