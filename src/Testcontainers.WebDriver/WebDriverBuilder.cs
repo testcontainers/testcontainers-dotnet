@@ -1,5 +1,7 @@
 namespace Testcontainers.WebDriver;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 /// <remarks>
 /// Find further information about the Selenium Grid image, including its configurations, here: https://github.com/SeleniumHQ/docker-selenium.

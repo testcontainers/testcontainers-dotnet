@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Builders
 {
   using System;
+  using System.Diagnostics.CodeAnalysis;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;

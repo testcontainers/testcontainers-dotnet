@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
