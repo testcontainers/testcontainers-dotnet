@@ -117,7 +117,6 @@ namespace DotNet.Testcontainers.Containers
     protected override SocatBuilder Init()
     {
       return base.Init()
-        .WithImage(SocatImage)
         .WithEntrypoint("/bin/sh", "-c");
     }
 
