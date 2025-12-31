@@ -60,9 +60,6 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
     public class CassandraDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
     {
-        protected override CassandraBuilder Configure(CassandraBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile());
-
         protected override CassandraBuilder Configure()
             => new CassandraBuilder(TestSession.GetImageFromDockerfile());
 
