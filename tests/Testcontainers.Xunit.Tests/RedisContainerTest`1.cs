@@ -4,10 +4,10 @@ namespace Testcontainers.Xunit.Example1;
 public sealed partial class RedisContainerTest(ITestOutputHelper testOutputHelper)
     : ContainerTest<RedisBuilder, RedisContainer>(testOutputHelper)
 {
-    protected override RedisBuilder Configure(RedisBuilder builder)
+    protected override RedisBuilder Configure()
     {
         // 👇 Configure your container instance here.
-        return builder.WithImage("redis:7.0");
+        return new RedisBuilder("redis:7.0");
     }
 }
 // # --8<-- [end:ConfigureRedisContainer]

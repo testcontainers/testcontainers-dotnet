@@ -5,9 +5,9 @@ namespace Testcontainers.Xunit.Example2;
 public sealed class RedisContainerFixture(IMessageSink messageSink)
     : ContainerFixture<RedisBuilder, RedisContainer>(messageSink)
 {
-    protected override RedisBuilder Configure(RedisBuilder builder)
+    protected override RedisBuilder Configure()
     {
-        return builder.WithImage("redis:7.0");
+        return new RedisBuilder("redis:7.0");
     }
 }
 // # --8<-- [end:ConfigureRedisContainer]

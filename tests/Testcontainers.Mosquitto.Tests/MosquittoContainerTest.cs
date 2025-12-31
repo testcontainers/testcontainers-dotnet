@@ -13,6 +13,9 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     {
     }
 
+    protected override MosquittoBuilder Configure()
+        => new MosquittoBuilder(TestSession.GetImageFromDockerfile());
+
     protected abstract MqttClientOptions GetClientOptions();
 
     [Fact]
@@ -87,10 +90,8 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     public sealed class TcpEncryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
         : MosquittoContainerTest(testOutputHelper)
     {
-        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile()).WithCertificate(Certificate, CertificateKey);
-        }
+        protected override MosquittoBuilder Configure()
+            => base.Configure().WithCertificate(Certificate, CertificateKey);
 
         protected override MqttClientOptions GetClientOptions()
         {
@@ -106,11 +107,6 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     public sealed class WebSocketUnencryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
         : MosquittoContainerTest(testOutputHelper)
     {
-        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile());
-        }
-
         protected override MqttClientOptions GetClientOptions()
         {
             return new MqttClientOptionsBuilder()
@@ -123,10 +119,8 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     public sealed class WebSocketEncryptedUnauthenticatedConfiguration(ITestOutputHelper testOutputHelper)
         : MosquittoContainerTest(testOutputHelper)
     {
-        protected override MosquittoBuilder Configure(MosquittoBuilder builder)
-        {
-            return builder.WithImage(TestSession.GetImageFromDockerfile()).WithCertificate(Certificate, CertificateKey);
-        }
+        protected override MosquittoBuilder Configure()
+            => base.Configure().WithCertificate(Certificate, CertificateKey);
 
         protected override MqttClientOptions GetClientOptions()
         {
