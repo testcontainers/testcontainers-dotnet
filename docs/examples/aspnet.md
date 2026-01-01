@@ -59,7 +59,7 @@ private sealed class RedisConfigurationProvider : ConfigurationProvider
 
   public async Task LoadAsync()
   {
-    var redisContainer = new RedisBuilder().Build();
+    var redisContainer = new RedisBuilder("redis:7.0").Build();
 
     await redisContainer.StartAsync()
       .ConfigureAwait(false);
@@ -93,13 +93,12 @@ const string connectionString = $"server={weatherForecastStorage};user id={MsSql
 _weatherForecastNetwork = new NetworkBuilder()
   .Build();
 
-_msSqlContainer = new MsSqlBuilder()
+_msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
   .WithNetwork(_weatherForecastNetwork)
   .WithNetworkAliases(weatherForecastStorage)
   .Build();
 
-_weatherForecastContainer = new ContainerBuilder()
-  .WithImage(Image)
+_weatherForecastContainer = new ContainerBuilder(Image)
   .WithNetwork(_weatherForecastNetwork)
   .WithPortBinding(WeatherForecastImage.HttpsPort, true)
   .WithEnvironment("ASPNETCORE_URLS", "https://+")

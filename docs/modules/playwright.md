@@ -12,7 +12,7 @@ You can start a Playwright container instance from any .NET application. To crea
 
 === "Start a Playwright container"
     ```csharp
-    var playwrightContainer = new PlaywrightBuilder().Build();
+    var playwrightContainer = new PlaywrightBuilder("mcr.microsoft.com/playwright:v1.55.1").Build();
     await playwrightContainer.StartAsync();
     ```
 
@@ -41,7 +41,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 The Playwright container is configured with a network that can be shared with other containers. This is useful when testing applications that need to communicate with other services. Use the `GetNetwork()` method to access the container's network:
 
 ```csharp
-IContainer helloWorldContainer = new ContainerBuilder()
+IContainer helloWorldContainer = new ContainerBuilder("testcontainers/helloworld:1.3.0")
     .WithNetwork(_playwrightContainer.GetNetwork())
     .Build();
 ```

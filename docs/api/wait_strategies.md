@@ -103,7 +103,7 @@ HEALTHCHECK --interval=1s CMD test -e /healthcheck
 You can leverage the container's health status as your wait strategy to report readiness of your application or service:
 
 ```csharp
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
 ```
 

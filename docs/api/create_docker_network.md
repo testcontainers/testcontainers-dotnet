@@ -29,9 +29,8 @@ var network = new NetworkBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .Build();
 
-var deepThoughtContainer = new ContainerBuilder()
+var deepThoughtContainer = new ContainerBuilder("alpine:3.20.0")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("alpine")
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")
   .WithCommand($"while true; do echo \"$MAGIC_NUMBER\" | nc -l -p {MagicNumberPort}; done")
@@ -39,9 +38,8 @@ var deepThoughtContainer = new ContainerBuilder()
   .WithNetworkAliases(MagicNumberHost)
   .Build();
 
-var ultimateQuestionContainer = new ContainerBuilder()
+var ultimateQuestionContainer = new ContainerBuilder("alpine:3.20.0")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("alpine")
   .WithEntrypoint("top")
   .WithNetwork(network)
   .Build();
