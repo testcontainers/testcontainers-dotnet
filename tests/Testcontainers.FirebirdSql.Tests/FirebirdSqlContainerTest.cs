@@ -35,8 +35,8 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
     public class FirebirdSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<FirebirdSqlBuilder, FirebirdSqlContainer>(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile());
+        protected override FirebirdSqlBuilder Configure()
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => FirebirdClientFactory.Instance;
@@ -46,40 +46,40 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
     public class FirebirdSqlWaitForDatabaseFixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override FirebirdSqlBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]
     public class FirebirdSql25ScFixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb2.5-sc"));
+        protected override FirebirdSqlBuilder Configure()
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb2.5-sc"));
     }
 
     [UsedImplicitly]
     public class FirebirdSql25SsFixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb2.5-ss"));
+        protected override FirebirdSqlBuilder Configure()
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb2.5-ss"));
     }
 
     [UsedImplicitly]
     public class FirebirdSql30Fixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile(stage: "fb3.0"));
+        protected override FirebirdSqlBuilder Configure()
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb3.0"));
     }
 
     [UsedImplicitly]
     public class FirebirdSqlSysdbaFixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
-        protected override FirebirdSqlBuilder Configure(FirebirdSqlBuilder builder)
-            => builder.WithImage(TestSession.GetImageFromDockerfile()).WithUsername("sysdba").WithPassword("some-password");
+        protected override FirebirdSqlBuilder Configure()
+            => base.Configure().WithUsername("sysdba").WithPassword("some-password");
     }
 
     [UsedImplicitly]

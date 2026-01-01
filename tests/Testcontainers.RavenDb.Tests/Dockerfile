@@ -1,1 +1,1 @@
-﻿FROM ravendb/ravendb:5.4-ubuntu-latest
+FROM ravendb/ravendb:5.4-ubuntu-latest

@@ -30,7 +30,7 @@ jobs:
           pattern: Testcontainers*
 
       - name: Publish Test Report
-        uses: dorny/test-reporter@v2.1.1
+        uses: dorny/test-reporter@v2.3.0
         with:
           name: test-report
           path: '**/*.trx'

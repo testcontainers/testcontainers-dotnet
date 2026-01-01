@@ -202,9 +202,9 @@ namespace DotNet.Testcontainers.Clients
       var createParameters = new CreateContainerParameters
       {
         Image = configuration.Image.FullName,
+        Platform = configuration.Image.Platform,
         Name = configuration.Name,
         Hostname = configuration.Hostname,
-        MacAddress = configuration.MacAddress,
         WorkingDir = configuration.WorkingDirectory,
         Entrypoint = converter.Entrypoint,
         Cmd = converter.Command,

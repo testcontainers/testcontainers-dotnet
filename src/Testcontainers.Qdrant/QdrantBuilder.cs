@@ -19,6 +19,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// Initializes a new instance of the <see cref="QdrantBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public QdrantBuilder()
         : this(QdrantImage)
     {

@@ -1,3 +1,3 @@
-FROM confluentinc/cp-kafka:7.5.9
-FROM apache/kafka:3.9.1 AS kafka3.9.1
-FROM apache/kafka-native:3.9.1 AS kafka-native3.9.1
+FROM confluentinc/cp-kafka:7.5.12
+FROM apache/kafka:4.1.1 AS kafka4.1.1
+FROM apache/kafka-native:4.1.1 AS kafka-native4.1.1

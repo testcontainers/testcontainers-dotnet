@@ -44,7 +44,7 @@ PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
 59349127f8c0   redis:7.0                   "docker-entrypoint.s…"   4 seconds ago
-45fa02b3e997   testcontainers/ryuk:0.9.0   "/bin/ryuk"              4 seconds ago
+45fa02b3e997   testcontainers/ryuk:0.14.0   "/bin/ryuk"             4 seconds ago
 ```
 
 ## Creating a shared test context
@@ -78,7 +78,7 @@ The output of `docker ps` shows that, instead of two Redis containers, only one 
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
-e878f0b8f4bc   testcontainers/ryuk:0.9.0   "/bin/ryuk"              3 seconds ago
+e878f0b8f4bc   testcontainers/ryuk:0.14.0   "/bin/ryuk"             3 seconds ago
 ```
 
 To use a single container fixture across all tests of a test-assembly (using xUnit.net v3 or an extension), add the `[assembly: AssemblyFixture(typeof(TContainerFixtureEntity))]` annotation referring to your subclass to the assembly. The fixture can then be injected into test class constructors (as shown above), or accessed using the `TestContext.Current.GetFixture<TContainerFixtureEntity>()` method (v3 only) in any test.

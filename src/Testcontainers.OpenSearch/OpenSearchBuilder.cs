@@ -21,6 +21,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// Initializes a new instance of the <see cref="OpenSearchBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public OpenSearchBuilder()
         : this(OpenSearchImage)
     {
@@ -115,7 +116,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// Enables or disables the built-in security plugin in OpenSearch.
     /// </summary>
     /// <remarks>
-    /// When disabled, the <see cref="OpenSearchContainer.GetConnectionString" /> method
+    /// When disabled, the <see cref="OpenSearchContainer.GetConnectionString()" /> method
     /// will use the <c>http</c> protocol instead of <c>https</c>.
     /// </remarks>
     /// <param name="securityEnabled"><c>true</c> to enable the security plugin; <c>false</c> to disable it.</param>

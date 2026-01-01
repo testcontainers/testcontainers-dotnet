@@ -12,8 +12,7 @@ public static class ConnectionStringProviderTests
 
         public Configured()
         {
-            _container = new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            _container = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
                 .WithConnectionStringProvider(_connectionStringProvider)
                 .Build();
@@ -34,16 +33,16 @@ public static class ConnectionStringProviderTests
         [Fact]
         public void GetConnectionStringReturnsExpectedValue()
         {
+            IConnectionStringProvider connectionStringProvider = _container;
             Assert.True(_connectionStringProvider.IsConfigured, "Configure should have been called during container startup.");
-            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString());
-            Assert.Equal(ExpectedConnectionString, _container.GetConnectionString("name"));
+            Assert.Equal(ExpectedConnectionString, connectionStringProvider.GetConnectionString());
+            Assert.Equal(ExpectedConnectionString, connectionStringProvider.GetConnectionString("name"));
         }
     }
 
     public sealed class NotConfigured : IAsyncLifetime
     {
-        private readonly IContainer _container = new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        private readonly IContainer _container = new ContainerBuilder(CommonImages.Alpine)
             .WithCommand(CommonCommands.SleepInfinity)
             .Build();
 
@@ -62,8 +61,9 @@ public static class ConnectionStringProviderTests
         [Fact]
         public void GetConnectionStringThrowsException()
         {
-            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString());
-            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => _container.GetConnectionString("name"));
+            IConnectionStringProvider connectionStringProvider = _container;
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString());
+            Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString("name"));
         }
     }
 

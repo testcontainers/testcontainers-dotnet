@@ -15,6 +15,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// Initializes a new instance of the <see cref="K3sBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public K3sBuilder()
         : this(RancherImage)
     {

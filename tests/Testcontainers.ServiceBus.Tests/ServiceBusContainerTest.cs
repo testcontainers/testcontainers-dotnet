@@ -116,7 +116,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
             Network = new NetworkBuilder()
                 .Build();
 
-            Container = new MsSqlBuilder()
+            Container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
                 .WithNetwork(Network)
                 .WithNetworkAliases(DatabaseNetworkAlias)
                 .Build();

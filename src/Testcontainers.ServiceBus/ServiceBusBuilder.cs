@@ -19,6 +19,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public ServiceBusBuilder()
         : this(ServiceBusImage)
     {
@@ -147,7 +148,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         var network = new NetworkBuilder()
             .Build();
 
-        var container = new MsSqlBuilder()
+        var container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
             .WithNetwork(network)
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();

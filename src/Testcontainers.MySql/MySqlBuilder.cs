@@ -19,6 +19,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// Initializes a new instance of the <see cref="MySqlBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public MySqlBuilder()
         : this(MySqlImage)
     {

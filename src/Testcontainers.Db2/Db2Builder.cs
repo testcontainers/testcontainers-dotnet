@@ -19,6 +19,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// Initializes a new instance of the <see cref="Db2Builder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public Db2Builder()
         : this(Db2Image)
     {

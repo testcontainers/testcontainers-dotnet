@@ -91,7 +91,6 @@
         <Project Path="tests/Testcontainers.DynamoDb.Tests/Testcontainers.DynamoDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj"/>
         <Project Path="tests/Testcontainers.EventHubs.Tests/Testcontainers.EventHubs.Tests.csproj"/>
-        <Project Path="tests/Testcontainers.EventStoreDb.Tests/Testcontainers.EventStoreDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.FakeGcsServer.Tests/Testcontainers.FakeGcsServer.Tests.csproj"/>
         <Project Path="tests/Testcontainers.FirebirdSql.Tests/Testcontainers.FirebirdSql.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Firestore.Tests/Testcontainers.Firestore.Tests.csproj"/>

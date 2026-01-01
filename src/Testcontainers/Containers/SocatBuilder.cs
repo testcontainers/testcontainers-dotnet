@@ -2,25 +2,60 @@ namespace DotNet.Testcontainers.Containers
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
   [PublicAPI]
   public sealed class SocatBuilder : ContainerBuilder<SocatBuilder, SocatContainer, SocatConfiguration>
   {
-    public const string SocatImage = "alpine/socat:1.7.4.3-r0";
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string SocatImage = "alpine/socat:1.7.4.4";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SocatBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public SocatBuilder()
-      : this(new SocatConfiguration())
+      : this(SocatImage)
     {
-      DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SocatBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>alpine/socat:1.7.4.4</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/alpine/socat/tags" />.
+    /// </remarks>
+    public SocatBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SocatBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/alpine/socat/tags" />.
+    /// </remarks>
+    public SocatBuilder(IImage image)
+        : this(new SocatConfiguration())
+    {
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -84,7 +119,6 @@ namespace DotNet.Testcontainers.Containers
     protected override SocatBuilder Init()
     {
       return base.Init()
-        .WithImage(SocatImage)
         .WithEntrypoint("/bin/sh", "-c");
     }
 

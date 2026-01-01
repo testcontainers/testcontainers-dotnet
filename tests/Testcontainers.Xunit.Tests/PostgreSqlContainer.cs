@@ -4,10 +4,9 @@ namespace Testcontainers.Xunit.Example3;
 public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper)
     : DbContainerTest<PostgreSqlBuilder, PostgreSqlContainer>(testOutputHelper)
 {
-    protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
+    protected override PostgreSqlBuilder Configure()
     {
-        return builder
-            .WithImage("postgres:15.1")
+        return new PostgreSqlBuilder("postgres:15.1")
             .WithResourceMapping("Chinook_PostgreSql_AutoIncrementPKs.sql", "/docker-entrypoint-initdb.d/");
     }
 }
