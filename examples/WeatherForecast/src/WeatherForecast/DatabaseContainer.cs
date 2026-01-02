@@ -2,7 +2,7 @@ namespace WeatherForecast;
 
 public sealed class DatabaseContainer : IHostedService
 {
-  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
+  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
 
   public Task StartAsync(CancellationToken cancellationToken)
   {
