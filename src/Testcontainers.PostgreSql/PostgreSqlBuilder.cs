@@ -2,7 +2,8 @@ namespace Testcontainers.PostgreSql;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
+public sealed class
+    PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PostgreSqlImage = "postgres:15.1";
@@ -14,6 +15,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     public const string DefaultUsername = "postgres";
 
     public const string DefaultPassword = "postgres";
+
+    private const string DefaultCertificatesDirectory = "/var/lib/postgresql/certs";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
@@ -102,14 +105,122 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             .WithEnvironment("POSTGRES_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Sets the PostgreSql SSL mode.
+    /// </summary>
+    /// <param name="sslMode">The PostgreSql SSL mode.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSslMode(SslMode sslMode)
+    {
+        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(sslMode: sslMode))
+            .WithEnvironment("PGSSLMODE", sslMode.ToString().ToLowerInvariant());
+    }
+
+    /// <summary>
+    /// Sets the PostgreSql root certificate file.
+    /// </summary>
+    /// <param name="rootCertFile">The path to the root certificate file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithRootCertificate(string rootCertFile)
+    {
+        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(rootCertFile: rootCertFile))
+            .WithBindMount(rootCertFile, Path.Combine(DefaultCertificatesDirectory, "root.crt"), AccessMode.ReadOnly)
+            .WithEnvironment("PGSSLROOTCERT", Path.Combine(DefaultCertificatesDirectory, "root.crt"));
+    }
+
+    /// <summary>
+    /// Sets the PostgreSql client certificate and key files.
+    /// </summary>
+    /// <param name="clientCertFile">The path to the client certificate file.</param>
+    /// <param name="clientKeyFile">The path to the client key file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithClientCertificate(string clientCertFile, string clientKeyFile)
+    {
+        return Merge(DockerResourceConfiguration,
+                new PostgreSqlConfiguration(clientCertFile: clientCertFile, clientKeyFile: clientKeyFile))
+            .WithBindMount(clientCertFile, Path.Combine(DefaultCertificatesDirectory, "postgresql.crt"),
+                AccessMode.ReadOnly)
+            .WithBindMount(clientKeyFile, Path.Combine(DefaultCertificatesDirectory, "postgresql.key"),
+                AccessMode.ReadOnly)
+            .WithEnvironment("PGSSLCERT", Path.Combine(DefaultCertificatesDirectory, "postgresql.crt"))
+            .WithEnvironment("PGSSLKEY", Path.Combine(DefaultCertificatesDirectory, "postgresql.key"));
+    }
+
+    /// <summary>
+    /// Configures the PostgreSQL server to run with SSL using the provided CA certificate, server certificate and private key.
+    /// This enables server-side SSL configuration with client certificate authentication.
+    /// </summary>
+    /// <param name="caCertFile">The path to the CA certificate file.</param>
+    /// <param name="serverCertFile">The path to the server certificate file.</param>
+    /// <param name="serverKeyFile">The path to the server private key file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    /// <remarks>
+    /// This method configures PostgreSQL for server-side SSL with client certificate authentication.
+    /// It requires a custom PostgreSQL configuration file that enables SSL and sets the appropriate
+    /// certificate paths. The certificates are mounted into the container and PostgreSQL is configured
+    /// to use them for SSL connections.
+    /// </remarks>
+    public PostgreSqlBuilder WithSSLSettings(string caCertFile, string serverCertFile, string serverKeyFile)
+    {
+        if (string.IsNullOrWhiteSpace(caCertFile))
+        {
+            throw new ArgumentException("CA certificate file path cannot be null or empty.", nameof(caCertFile));
+        }
+
+        if (string.IsNullOrWhiteSpace(serverCertFile))
+        {
+            throw new ArgumentException("Server certificate file path cannot be null or empty.",
+                nameof(serverCertFile));
+        }
+
+        if (string.IsNullOrWhiteSpace(serverKeyFile))
+        {
+            throw new ArgumentException("Server key file path cannot be null or empty.", nameof(serverKeyFile));
+        }
+
+        const string sslConfigDir = "/tmp/testcontainers-dotnet/postgres";
+
+        var wrapperEntrypoint = @"#!/bin/sh
+set -e
+SSL_DIR=/tmp/testcontainers-dotnet/postgres
+# Fix ownership and permissions for SSL key/cert before Postgres init runs
+if [ -f ""$SSL_DIR/server.key"" ]; then
+  chown postgres:postgres ""$SSL_DIR/server.key"" || true
+  chmod 600 ""$SSL_DIR/server.key"" || true
+fi
+if [ -f ""$SSL_DIR/server.crt"" ]; then
+  chown postgres:postgres ""$SSL_DIR/server.crt"" || true
+fi
+if [ -f ""$SSL_DIR/ca_cert.pem"" ]; then
+  chown postgres:postgres ""$SSL_DIR/ca_cert.pem"" || true
+fi
+exec /usr/local/bin/docker-entrypoint.sh ""$@""
+";
+
+        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(
+                serverCertFile: serverCertFile,
+                serverKeyFile: serverKeyFile,
+                caCertFile: caCertFile))
+            .WithResourceMapping(File.ReadAllBytes(caCertFile), $"{sslConfigDir}/ca_cert.pem", fileMode: Unix.FileMode644)
+            .WithResourceMapping(File.ReadAllBytes(serverCertFile), $"{sslConfigDir}/server.crt", fileMode: Unix.FileMode644)
+            .WithResourceMapping(File.ReadAllBytes(serverKeyFile), $"{sslConfigDir}/server.key", fileMode: Unix.FileMode700)
+            .WithResourceMapping(Encoding.UTF8.GetBytes(wrapperEntrypoint), "/usr/local/bin/docker-entrypoint-ssl.sh", fileMode: Unix.FileMode755)
+            .WithEntrypoint("/usr/local/bin/docker-entrypoint-ssl.sh")
+            .WithCommand("-c", "ssl=on")
+            .WithCommand("-c", $"ssl_ca_file={sslConfigDir}/ca_cert.pem")
+            .WithCommand("-c", $"ssl_cert_file={sslConfigDir}/server.crt")
+            .WithCommand("-c", $"ssl_key_file={sslConfigDir}/server.key");
+    }
+
     /// <inheritdoc />
     public override PostgreSqlContainer Build()
     {
         Validate();
 
-        // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
-        // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
-        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        // Ensure PostgreSQL is actually ready to accept connections over TCP, not just that the container is running.
+        // Always append the pg_isready-based wait strategy by default so tests using the default fixture are stable.
+        var postgreSqlBuilder =
+            WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration);
     }
 
@@ -167,7 +278,11 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         public WaitUntil(PostgreSqlConfiguration configuration)
         {
             // Explicitly specify the host to ensure readiness only after the initdb scripts have executed, and the server is listening on TCP/IP.
-            _command = new List<string> { "pg_isready", "--host", "localhost", "--dbname", configuration.Database, "--username", configuration.Username };
+            _command = new List<string>
+            {
+                "pg_isready", "--host", "localhost", "--dbname", configuration.Database, "--username",
+                configuration.Username
+            };
         }
 
         /// <summary>
@@ -186,7 +301,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
             if (execResult.Stderr.Contains("pg_isready was not found"))
             {
-                throw new NotSupportedException($"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards.");
+                throw new NotSupportedException(
+                    $"The '{container.Image.FullName}' image does not contain: pg_isready. Please use 'postgres:9.3' onwards.");
             }
 
             return 0L.Equals(execResult.ExitCode);
