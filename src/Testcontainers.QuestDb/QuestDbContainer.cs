@@ -2,7 +2,7 @@ namespace Testcontainers.QuestDb;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]
-public sealed class QuestDbContainer : DockerContainer
+public sealed class QuestDbContainer : DockerContainer, IDatabaseContainer
 {
     private readonly QuestDbConfiguration _configuration;
 
@@ -57,15 +57,6 @@ public sealed class QuestDbContainer : DockerContainer
     public string GetWebConsoleUrl()
     {
         return GetRestApiAddress();
-    }
-
-    /// <summary>
-    /// Gets the InfluxDB Line Protocol (ILP) endpoint for high-speed time-series ingestion.
-    /// </summary>
-    /// <returns>The ILP endpoint in format "host::port".</returns>
-    public string GetInfluxLineProtocolEndpoint()
-    {
-        return $"{Hostname}::{GetMappedPublicPort(QuestDbBuilder.QuestDbInfluxLinePort)}";
     }
 
     /// <summary>
