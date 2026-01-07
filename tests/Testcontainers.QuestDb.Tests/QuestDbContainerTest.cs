@@ -136,9 +136,7 @@ public sealed class QuestDbContainerTest : IAsyncLifetime
     public async Task QuestDbClientIngestReturnsSuccess()
     {
         // Given - Official QuestDB .NET client
-        var ilpHost = _questDbContainer.GetInfluxLineProtocolHost();
-        var ilpPort = _questDbContainer.GetInfluxLineProtocolPort();
-        var configString = $"http::addr={ilpHost}:{_questDbContainer.GetHttpApiPort()};";
+        var configString = _questDbContainer.GetClientConnectionString(useHttpTransport: true);
 
         using var sender = Sender.New(configString);
 

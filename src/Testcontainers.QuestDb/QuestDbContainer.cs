@@ -60,6 +60,25 @@ public sealed class QuestDbContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
+    /// Gets the connection string for the official QuestDB .NET client (net-questdb-client).
+    /// </summary>
+    /// <param name="useHttpTransport">If true, uses HTTP transport; otherwise uses TCP (default).</param>
+    /// <returns>The QuestDB client connection string in format "protocol::addr=host:port;".</returns>
+    /// <remarks>
+    /// TCP example: tcp::addr=localhost:9009;
+    /// HTTP example: http::addr=localhost:9000;
+    /// </remarks>
+    public string GetClientConnectionString(bool useHttpTransport = false)
+    {
+        if (useHttpTransport)
+        {
+            return $"http::addr={Hostname}:{GetMappedPublicPort(QuestDbBuilder.QuestDbHttpPort)};";
+        }
+
+        return $"tcp::addr={Hostname}:{GetMappedPublicPort(QuestDbBuilder.QuestDbInfluxLinePort)};";
+    }
+
+    /// <summary>
     /// Gets the InfluxDB Line Protocol (ILP) host.
     /// </summary>
     /// <returns>The ILP host.</returns>
