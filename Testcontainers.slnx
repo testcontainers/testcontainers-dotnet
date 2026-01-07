@@ -58,6 +58,7 @@
         <Project Path="src/Testcontainers.PubSub/Testcontainers.PubSub.csproj"/>
         <Project Path="src/Testcontainers.Pulsar/Testcontainers.Pulsar.csproj"/>
         <Project Path="src/Testcontainers.Qdrant/Testcontainers.Qdrant.csproj"/>
+        <Project Path="src/Testcontainers.QuestDb/Testcontainers.QuestDb.csproj"/>
         <Project Path="src/Testcontainers.RabbitMq/Testcontainers.RabbitMq.csproj"/>
         <Project Path="src/Testcontainers.RavenDb/Testcontainers.RavenDb.csproj"/>
         <Project Path="src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
@@ -128,6 +129,7 @@
         <Project Path="tests/Testcontainers.PubSub.Tests/Testcontainers.PubSub.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Pulsar.Tests/Testcontainers.Pulsar.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Qdrant.Tests/Testcontainers.Qdrant.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.QuestDb.Tests/Testcontainers.QuestDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.RabbitMq.Tests/Testcontainers.RabbitMq.Tests.csproj"/>
         <Project Path="tests/Testcontainers.RavenDb.Tests/Testcontainers.RavenDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Redis.Tests/Testcontainers.Redis.Tests.csproj"/>
