@@ -1,43 +1,20 @@
 namespace Testcontainers.Tests;
 
-public abstract class TarOutputMemoryStreamTest : IDisposable
+public abstract class TarOutputMemoryStreamTest : FileTestBase
 {
     private const string TargetDirectoryPath = "/tmp";
 
     private readonly TarOutputMemoryStream _tarOutputMemoryStream = new TarOutputMemoryStream(TargetDirectoryPath, NullLogger.Instance);
 
-    private readonly FileInfo _testFile = new FileInfo(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"), Path.GetRandomFileName()));
-
-    private bool _disposed;
-
-    protected TarOutputMemoryStreamTest()
+    protected TarOutputMemoryStreamTest() : base()
     {
-        _ = Directory.CreateDirectory(_testFile.Directory!.FullName);
-
-        using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-        fileStream.WriteByte(13);
     }
 
-    public void Dispose()
+    protected override void DisposeManagedResources()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        base.DisposeManagedResources();
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            _tarOutputMemoryStream.Dispose();
-            _testFile.Directory!.Delete(true);
-        }
-
-        _disposed = true;
+        _tarOutputMemoryStream.Dispose();
     }
 
     [Fact]

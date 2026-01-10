@@ -301,6 +301,15 @@ namespace DotNet.Testcontainers.Containers
     Task CopyAsync(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
+    /// Copies a tar archive contents to the container.
+    /// </summary>
+    /// <param name="tarArchive">The <see cref="Stream"/> with the tar archive contents.</param>
+    /// <param name="containerPath">The path where tar archive contents should be placed.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task that completes when the tar archive has been copied.</returns>
+    Task CopyTarArchiveAsync(Stream tarArchive, string containerPath = "/", CancellationToken ct = default);
+
+    /// <summary>
     /// Reads a file from the container.
     /// </summary>
     /// <param name="filePath">An absolute path or a name value within the container.</param>

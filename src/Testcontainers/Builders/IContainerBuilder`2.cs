@@ -324,6 +324,14 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
+    /// Copies a tar archive contents to the container before it starts.
+    /// </summary>
+    /// <param name="tarArchive">The <see cref="Stream"/> with the tar archive contents.</param>
+    /// <param name="containerPath">The path where tar archive contents should be placed.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    TBuilderEntity WithCopyTarArchive(Stream tarArchive, string containerPath = "/");
+
+    /// <summary>
     /// Assigns the mount configuration to manage data in the container.
     /// </summary>
     /// <param name="mount">The mount configuration.</param>
