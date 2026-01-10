@@ -1,16 +1,16 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using Docker.DotNet;
+  using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
+  using Microsoft.Extensions.Logging;
   using System;
   using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet;
-  using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
-  using Microsoft.Extensions.Logging;
 
   internal sealed class DockerContainerOperations : DockerApiClient, IDockerContainerOperations
   {
@@ -109,9 +109,9 @@ namespace DotNet.Testcontainers.Clients
       return DockerClient.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, ct);
     }
 
-    public Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default)
+    public Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default)
     {
-      Logger.CopyArchiveToDockerContainer(id, tarStream.ContentLength);
+      Logger.CopyArchiveToDockerContainer(id, tarStream.Length);
 
       var copyToContainerParameters = new CopyToContainerParameters
       {

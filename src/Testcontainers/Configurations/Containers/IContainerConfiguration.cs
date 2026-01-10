@@ -1,14 +1,16 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Threading;
-  using System.Threading.Tasks;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Configurations.Containers;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
+  using System;
+  using System.Collections.Generic;
+  using System.IO;
+  using System.Threading;
+  using System.Threading.Tasks;
 
   /// <summary>
   /// A container configuration.
@@ -85,6 +87,11 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets a list of resource mappings.
     /// </summary>
     IEnumerable<IResourceMapping> ResourceMappings { get; }
+
+    /// <summary>
+    /// Gets a list of tar archive mappings.
+    /// </summary>
+    IEnumerable<TarArchiveMapping> TarArchiveMappings { get; }
 
     /// <summary>
     /// Gets a list of dependent containers.

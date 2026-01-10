@@ -1,17 +1,18 @@
+using Docker.DotNet.Models;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations.Containers;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
+using DotNet.Testcontainers.Networks;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Text.Json.Serialization;
-  using System.Threading;
-  using System.Threading.Tasks;
-  using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Builders;
-  using DotNet.Testcontainers.Containers;
-  using DotNet.Testcontainers.Images;
-  using DotNet.Testcontainers.Networks;
-  using JetBrains.Annotations;
-
   /// <inheritdoc cref="IContainerConfiguration" />
   [PublicAPI]
   public class ContainerConfiguration : ResourceConfiguration<CreateContainerParameters>, IContainerConfiguration
@@ -42,6 +43,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <param name="autoRemove">A value indicating whether Docker removes the container after it exits or not.</param>
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
+    /// <param name="tarArchiveMappings">A list of tar archive mappings.</param>
     public ContainerConfiguration(
       IImage image = null,
       Func<ImageInspectResponse, bool> imagePullPolicy = null,
@@ -65,7 +67,8 @@ namespace DotNet.Testcontainers.Configurations
       Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
       IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider = null,
       bool? autoRemove = null,
-      bool? privileged = null)
+      bool? privileged = null,
+      IEnumerable<TarArchiveMapping> tarArchiveMappings = null)
     {
       AutoRemove = autoRemove;
       Privileged = privileged;
@@ -90,6 +93,7 @@ namespace DotNet.Testcontainers.Configurations
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
       ConnectionStringProvider = connectionStringProvider;
+      TarArchiveMappings = tarArchiveMappings;
     }
 
     /// <summary>
@@ -130,6 +134,7 @@ namespace DotNet.Testcontainers.Configurations
       ExposedPorts = BuildConfiguration.Combine(oldValue.ExposedPorts, newValue.ExposedPorts);
       PortBindings = BuildConfiguration.Combine(oldValue.PortBindings, newValue.PortBindings);
       ResourceMappings = BuildConfiguration.Combine(oldValue.ResourceMappings, newValue.ResourceMappings);
+      TarArchiveMappings = BuildConfiguration.Combine(oldValue.TarArchiveMappings, newValue.TarArchiveMappings);
       Containers = BuildConfiguration.Combine(oldValue.Containers, newValue.Containers);
       Mounts = BuildConfiguration.Combine(oldValue.Mounts, newValue.Mounts);
       Networks = BuildConfiguration.Combine(oldValue.Networks, newValue.Networks);
@@ -191,6 +196,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     [JsonIgnore]
     public IEnumerable<IResourceMapping> ResourceMappings { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public IEnumerable<TarArchiveMapping> TarArchiveMappings { get; }
 
     /// <inheritdoc />
     [JsonIgnore]

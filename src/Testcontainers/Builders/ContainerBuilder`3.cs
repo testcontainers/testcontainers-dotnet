@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Configurations.Containers;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Networks;
@@ -269,6 +270,13 @@ namespace DotNet.Testcontainers.Builders
       {
         return WithResourceMapping(new UriResourceMapping(source, target, uid, gid, fileMode));
       }
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithCopyTarArchive(Stream tarArchive, string containerPath = "/")
+    {
+      var tarArchiveMappings = new[] { new TarArchiveMapping(tarArchive, containerPath) };
+      return Clone(new ContainerConfiguration(tarArchiveMappings: tarArchiveMappings));
     }
 
     /// <inheritdoc />
