@@ -326,6 +326,9 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Copies a tar archive contents to the container before it starts.
     /// </summary>
+    /// <remarks>
+    /// Set the <paramref name="tarArchive"/> property <see cref="Stream.Position"/> to 0 before calling this method.
+    /// </remarks>
     /// <param name="tarArchive">The <see cref="Stream"/> with the tar archive contents.</param>
     /// <param name="containerPath">The path where tar archive contents should be placed.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>

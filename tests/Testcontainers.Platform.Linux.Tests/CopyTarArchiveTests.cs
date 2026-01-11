@@ -29,14 +29,14 @@ namespace Testcontainers.Tests
 
             var bufferFilePath = Path.Combine(_testFile.Directory.Parent.FullName, Path.GetRandomFileName());
 
-            using var memStore = new FileStream(bufferFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            await TarFile.CreateFromDirectoryAsync(_testFile.Directory.FullName, memStore, false, TestContext.Current.CancellationToken);
-            await memStore.FlushAsync(TestContext.Current.CancellationToken);
-            memStore.Position = 0;
+            using var tarBuffer = new FileStream(bufferFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            await TarFile.CreateFromDirectoryAsync(_testFile.Directory.FullName, tarBuffer, false, TestContext.Current.CancellationToken);
+            await tarBuffer.FlushAsync(TestContext.Current.CancellationToken);
+            tarBuffer.Position = 0;
 
-            var container = new ContainerBuilder(CommonImages.Alpine)
+            await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
-                .WithCopyTarArchive(memStore, targetDirectoryPath1)
+                .WithCopyTarArchive(tarBuffer, targetDirectoryPath1)
                 .Build();
 
             // When
@@ -67,7 +67,7 @@ namespace Testcontainers.Tests
             await TarFile.CreateFromDirectoryAsync(_testFile.Directory.FullName, memStore, false, TestContext.Current.CancellationToken);
             memStore.Position = 0; // must rewind underlying Stream to start position before copying
 
-            var container = new ContainerBuilder(CommonImages.Alpine)
+            await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithCopyTarArchive(memStore, targetDirectoryPath1) // this will copy the Stream with tar archive contents in container just before the container startup
                 .Build();
@@ -133,7 +133,7 @@ namespace Testcontainers.Tests
             tarArchive.Close();
             memStore.Position = 0; // must rewind underlying Stream to start position before copying
 
-            var container = new ContainerBuilder(CommonImages.Alpine)
+            await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithCopyTarArchive(memStore) // this will copy the Stream with tar archive contents in container just before the container startup
                 .Build();
