@@ -304,7 +304,13 @@ namespace DotNet.Testcontainers.Containers
     /// Copies a tar archive contents to the container.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Set the <paramref name="tarArchive"/> property <see cref="Stream.Position"/> to 0 before calling this method.
+    /// </para>
+    /// <para>
+    /// The caller retains ownership of the stream and is responsible for disposal.
+    /// The stream content is copied during container startup, so the stream must remain open and readable until the container starts.
+    /// </para>
     /// </remarks>
     /// <param name="tarArchive">The <see cref="Stream"/> with the tar archive contents.</param>
     /// <param name="containerPath">The path where tar archive contents should be placed.</param>
