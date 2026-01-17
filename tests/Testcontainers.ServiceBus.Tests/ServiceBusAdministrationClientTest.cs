@@ -39,8 +39,6 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
                 .Build())
         { }
     }
-
-
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateQueueViaServiceBusAdministrationClient()
