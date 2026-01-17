@@ -2,6 +2,7 @@ global using System;
 global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using Azure.Messaging.ServiceBus;
+global using Azure.Messaging.ServiceBus.Administration;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
 global using DotNet.Testcontainers.Networks;
