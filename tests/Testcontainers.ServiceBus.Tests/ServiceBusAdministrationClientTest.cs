@@ -30,7 +30,6 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
         return _serviceBusContainer.DisposeAsync();
     }
 
-
     [UsedImplicitly]
     public sealed class ServiceBusDefaultConfiguration : ServiceBusAdministrationClientTest
     {
