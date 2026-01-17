@@ -168,8 +168,10 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         return base.Init()
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(EventHubsHttpPort).ForPath("/health")));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .AddCustomWaitStrategy(new WorkaroundGhIssue69())
+                .UntilHttpRequestIsSucceeded(request =>
+                    request.ForPort(EventHubsHttpPort).ForPath("/health")));
     }
 
     /// <inheritdoc />
@@ -188,5 +190,20 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     protected override EventHubsBuilder Merge(EventHubsConfiguration oldValue, EventHubsConfiguration newValue)
     {
         return new EventHubsBuilder(new EventHubsConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// See GH issue: https://github.com/Azure/azure-event-hubs-emulator-installer/issues/69#issuecomment-3762895979.
+    /// </summary>
+    private sealed class WorkaroundGhIssue69 : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5))
+                .ConfigureAwait(false);
+
+            return true;
+        }
     }
 }
