@@ -55,6 +55,7 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         // Then
+        Assert.NotNull(receivedMessage);
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
     }
 
