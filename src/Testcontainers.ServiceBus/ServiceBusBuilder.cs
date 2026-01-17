@@ -164,8 +164,10 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(ServiceBusHttpPort).ForPath("/health")));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .AddCustomWaitStrategy(new WorkaroundGhIssue69())
+                .UntilHttpRequestIsSucceeded(request =>
+                    request.ForPort(ServiceBusHttpPort).ForPath("/health")));
     }
 
     /// <inheritdoc />
@@ -184,5 +186,20 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     protected override ServiceBusBuilder Merge(ServiceBusConfiguration oldValue, ServiceBusConfiguration newValue)
     {
         return new ServiceBusBuilder(new ServiceBusConfiguration(oldValue, newValue));
+    }
+
+    /// <summary>
+    /// See GH issue: https://github.com/Azure/azure-event-hubs-emulator-installer/issues/69#issuecomment-3762895979.
+    /// </summary>
+    private sealed class WorkaroundGhIssue69 : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5))
+                .ConfigureAwait(false);
+
+            return true;
+        }
     }
 }
