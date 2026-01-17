@@ -32,14 +32,13 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
 
 
     [UsedImplicitly]
-    public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusAdministrationClientTest
+    public sealed class ServiceBusDefaultConfiguration : ServiceBusAdministrationClientTest
     {
-        public ServiceBusDefaultMsSqlConfiguration()
+        public ServiceBusDefaultConfiguration()
             : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .Build())
-        {
-        }
+        { }
     }
 
 
