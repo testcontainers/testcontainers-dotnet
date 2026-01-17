@@ -1,6 +1,6 @@
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace Testcontainers.ServiceBus.Tests;
+namespace Testcontainers.ServiceBus;
 
 public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
 {
