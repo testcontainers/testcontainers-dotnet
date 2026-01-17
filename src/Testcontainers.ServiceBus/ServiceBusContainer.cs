@@ -29,8 +29,10 @@ public sealed class ServiceBusContainer : DockerContainer
 
     /// <summary>
     /// Gets the Service Bus HTTP connection string.
-    /// This connection string is intended for use with the ServiceBusAdministrationClient.
     /// </summary>
+    /// <remarks>
+    /// This connection string is intended for use with the ServiceBusAdministrationClient.
+    /// </remarks>
     /// <returns>The Service Bus HTTP connection string.</returns>
     public string GetHttpConnectionString()
     {

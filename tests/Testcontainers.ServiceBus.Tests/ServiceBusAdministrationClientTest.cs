@@ -1,5 +1,3 @@
-using Azure.Messaging.ServiceBus.Administration;
-
 namespace Testcontainers.ServiceBus;
 
 public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
@@ -25,26 +23,13 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
         GC.SuppressFinalize(this);
     }
 
-    protected virtual ValueTask DisposeAsyncCore()
-    {
-        return _serviceBusContainer.DisposeAsync();
-    }
-
-    [UsedImplicitly]
-    public sealed class ServiceBusDefaultConfiguration : ServiceBusAdministrationClientTest
-    {
-        public ServiceBusDefaultConfiguration()
-            : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
-                .WithAcceptLicenseAgreement(true)
-                .Build())
-        { }
-    }
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateQueueViaServiceBusAdministrationClient()
     {
         // Given
         const string helloServiceBus = "Hello, Service Bus!";
+
         var queueName = $"sample-queue-{Guid.NewGuid()}";
 
         // By default, the emulator uses the following configuration:
@@ -71,5 +56,21 @@ public abstract class ServiceBusAdministrationClientTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _serviceBusContainer.DisposeAsync();
+    }
+
+    [UsedImplicitly]
+    public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusAdministrationClientTest
+    {
+        public ServiceBusDefaultMsSqlConfiguration()
+            : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
+                .WithAcceptLicenseAgreement(true)
+                .Build())
+        {
+        }
     }
 }
