@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <returns>The connection string.</returns>
     protected string GetRequiredConnectionString(string connectionString, ConnectionMode connectionMode)
     {
-      return string.IsNullOrEmpty(connectionString) ? throw new ConnectionStringNotAvailableException(GetType(), connectionMode) : connectionString;
+      return string.IsNullOrEmpty(connectionString) ? throw new ConnectionStringNotAvailableException(connectionMode, GetType()) : connectionString;
     }
   }
 }

@@ -13,9 +13,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionStringNotAvailableException" /> class.
     /// </summary>
-    /// <param name="providerType">The provider type.</param>
     /// <param name="connectionMode">The connection mode.</param>
-    public ConnectionStringNotAvailableException(Type providerType, ConnectionMode connectionMode)
+    /// <param name="providerType">The provider type.</param>
+    public ConnectionStringNotAvailableException(ConnectionMode connectionMode, Type providerType)
       : base($"The connection string provider '{providerType.FullName}' did not return a connection string for connection mode '{connectionMode}'.")
     {
     }
