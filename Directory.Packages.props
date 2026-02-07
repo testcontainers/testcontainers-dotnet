@@ -14,7 +14,7 @@
         <PackageVersion Include="SSH.NET" Version="2025.1.0"/>
         <!-- Cake build: -->
         <PackageVersion Include="Cake.Frosting.Git" Version="5.0.1"/>
-        <PackageVersion Include="Cake.Frosting" Version="5.0.0"/>
+        <PackageVersion Include="Cake.Frosting" Version="5.1.0"/>
         <PackageVersion Include="Cake.Sonar" Version="5.0.0"/>
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
