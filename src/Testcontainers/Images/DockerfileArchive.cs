@@ -116,7 +116,7 @@ namespace DotNet.Testcontainers.Images
     /// excludes stages that do not correspond to base images. For example, it will not include
     /// the second line from the following Dockerfile configuration:
     /// <code>
-    ///   FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+    ///   FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
     ///   FROM build
     /// </code>
     /// </remarks>
