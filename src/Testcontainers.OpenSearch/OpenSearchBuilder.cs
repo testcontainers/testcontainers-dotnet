@@ -165,7 +165,8 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
             .WithEnvironment("discovery.type", "single-node")
             .WithSecurityEnabled()
             .WithUsername(DefaultUsername)
-            .WithPassword(DefaultPassword);
+            .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new OpenSearchConnectionStringProvider());
     }
 
     /// <inheritdoc />

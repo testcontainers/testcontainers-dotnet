@@ -124,7 +124,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
-            .WithCommand("-c", "synchronous_commit=off");
+            .WithCommand("-c", "synchronous_commit=off")
+            .WithConnectionStringProvider(new PostgreSqlConnectionStringProvider());
     }
 
     /// <inheritdoc />

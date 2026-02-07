@@ -38,5 +38,6 @@ public sealed class OllamaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(embedResponse);
         Assert.NotEmpty(embedResponse.Embeddings);
+        Assert.Equal(_ollamaContainer.GetBaseAddress(), _ollamaContainer.GetConnectionString());
     }
 }

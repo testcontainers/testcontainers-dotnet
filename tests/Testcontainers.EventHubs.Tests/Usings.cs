@@ -6,6 +6,7 @@ global using Azure.Messaging.EventHubs.Consumer;
 global using Azure.Messaging.EventHubs.Producer;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
 global using DotNet.Testcontainers.Networks;
 global using JetBrains.Annotations;
 global using Testcontainers.Azurite;

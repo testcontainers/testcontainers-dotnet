@@ -51,6 +51,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("Hello world", headingElementText);
+        Assert.Equal(_webDriverContainer.GetConnectionString(), _webDriverContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     protected virtual async ValueTask DisposeAsyncCore()

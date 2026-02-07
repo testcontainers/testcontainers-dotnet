@@ -32,5 +32,6 @@ public sealed class ArangoDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, response.Code);
+        Assert.Equal(_arangoDbContainer.GetTransportAddress(), _arangoDbContainer.GetConnectionString());
     }
 }

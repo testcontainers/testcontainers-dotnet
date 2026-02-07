@@ -48,5 +48,6 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+        Assert.Equal(_redpandaContainer.GetBootstrapAddress(), _redpandaContainer.GetConnectionString());
     }
 }

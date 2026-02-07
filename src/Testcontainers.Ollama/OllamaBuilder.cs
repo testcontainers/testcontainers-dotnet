@@ -75,6 +75,7 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     {
         return base.Init()
             .WithPortBinding(OllamaPort, true)
+            .WithConnectionStringProvider(new OllamaConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/api/version").ForPort(OllamaPort)));
     }

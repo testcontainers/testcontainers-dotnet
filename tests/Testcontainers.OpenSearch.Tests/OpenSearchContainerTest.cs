@@ -41,6 +41,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(response.IsValid);
+        Assert.Equal(_openSearchContainer.GetConnectionString(), _openSearchContainer.GetConnectionString(ConnectionMode.Host));
     }
     // <!-- -8<- [end:PingExample] -->
 
@@ -150,6 +151,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         {
             var connectionString = new Uri(_openSearchContainer.GetConnectionString());
             Assert.Equal(Uri.UriSchemeHttp, connectionString.Scheme);
+
             return new OpenSearchClient(connectionString);
         }
     }

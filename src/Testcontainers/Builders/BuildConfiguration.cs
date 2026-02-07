@@ -12,6 +12,18 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   public static class BuildConfiguration
   {
+    private static class EmptyComposableEnumerableCache<T>
+    {
+      internal static readonly ComposableEnumerable<T> Instance
+        = new AppendEnumerable<T>(Array.Empty<T>());
+    }
+
+    private static class EmptyReadOnlyDictionaryCache<TKey, TValue>
+    {
+      internal static readonly IReadOnlyDictionary<TKey, TValue> Instance
+        = new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+    }
+
     /// <summary>
     /// Returns the updated configuration value. If the new value is <c>null</c> or
     /// <c>default</c>, the old value is returned.
@@ -129,7 +141,7 @@ namespace DotNet.Testcontainers.Builders
       // the append implementation.
       if (newValue == null && oldValue == null)
       {
-        return new AppendEnumerable<T>(Array.Empty<T>());
+        return EmptyComposableEnumerableCache<T>.Instance;
       }
 
       if (newValue == null || oldValue == null)
@@ -155,7 +167,7 @@ namespace DotNet.Testcontainers.Builders
     {
       if (newValue == null && oldValue == null)
       {
-        return new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+        return EmptyReadOnlyDictionaryCache<TKey, TValue>.Instance;
       }
 
       if (newValue == null)

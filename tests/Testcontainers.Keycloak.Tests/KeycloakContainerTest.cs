@@ -37,6 +37,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Equal(_keycloakContainer.GetBaseAddress(), _keycloakContainer.GetConnectionString());
     }
 
     [Fact]

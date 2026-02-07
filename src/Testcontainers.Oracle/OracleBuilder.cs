@@ -132,6 +132,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
             .WithPortBinding(OraclePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new OracleConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("DATABASE IS READY TO USE!"));
     }
 

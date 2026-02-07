@@ -75,6 +75,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     {
         return base.Init()
             .WithPortBinding(LocalStackPort, true)
+            .WithConnectionStringProvider(new LocalStackConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
     }

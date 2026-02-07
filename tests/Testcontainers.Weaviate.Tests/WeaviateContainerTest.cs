@@ -29,5 +29,6 @@ public sealed class WeaviateContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Equal(_weaviateContainer.GetBaseAddress(), _weaviateContainer.GetConnectionString());
     }
 }

@@ -121,6 +121,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithResourceMapping(Encoding.Default.GetBytes(TestQueryString), "/home/firebird_check.sql")
+            .WithConnectionStringProvider(new FirebirdSqlConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 

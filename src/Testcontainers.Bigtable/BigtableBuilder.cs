@@ -77,6 +77,7 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
             .WithPortBinding(BigtablePort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "bigtable", "start", "--host-port", "0.0.0.0:" + BigtablePort)
+            .WithConnectionStringProvider(new BigtableConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*running.*$"));
     }
 

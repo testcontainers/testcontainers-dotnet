@@ -109,6 +109,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
             .WithCommand("--jetstream")
             .WithCommand("--debug")
             .WithCommand("--trace")
+            .WithConnectionStringProvider(new NatsConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is ready"));
     }
 

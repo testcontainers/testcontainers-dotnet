@@ -28,5 +28,6 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.Created, database.StatusCode);
+        Assert.Equal(_couchDbContainer.GetConnectionString(), _couchDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

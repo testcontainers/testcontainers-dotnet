@@ -56,6 +56,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+        Assert.Equal(_kafkaContainer.GetBootstrapAddress(), _kafkaContainer.GetConnectionString());
     }
 
     protected virtual ValueTask DisposeAsyncCore()

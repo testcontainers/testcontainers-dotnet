@@ -77,6 +77,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     {
         return base.Init()
             .WithPortBinding(CosmosDbPort, true)
+            .WithConnectionStringProvider(new CosmosDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 

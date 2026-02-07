@@ -77,6 +77,7 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
             .WithPortBinding(FirestorePort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "firestore", "start", "--host-port", "0.0.0.0:" + FirestorePort)
+            .WithConnectionStringProvider(new FirestoreConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*running.*$"));
     }
 
