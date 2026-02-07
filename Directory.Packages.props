@@ -14,21 +14,22 @@
         <PackageVersion Include="SSH.NET" Version="2025.1.0"/>
         <!-- Cake build: -->
         <PackageVersion Include="Cake.Frosting.Git" Version="5.0.1"/>
-        <PackageVersion Include="Cake.Frosting" Version="5.0.0"/>
+        <PackageVersion Include="Cake.Frosting" Version="5.1.0"/>
         <PackageVersion Include="Cake.Sonar" Version="5.0.0"/>
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
         <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.10.0"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
         <PackageVersion Include="Dapper" Version="2.1.66"/>
+        <PackageVersion Include="Moq" Version="4.20.72"/>
         <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
-        <PackageVersion Include="xunit.analyzers" Version="1.25.0"/>
+        <PackageVersion Include="xunit.analyzers" Version="1.27.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
         <PackageVersion Include="xunit" Version="2.9.3"/>
-        <PackageVersion Include="xunit.v3" Version="3.1.0"/>
+        <PackageVersion Include="xunit.v3" Version="3.2.2"/>
         <!-- xUnit.net extensibility for Testcontainers.Xunit and Testcontainers.XunitV3 packages: -->
         <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
-        <PackageVersion Include="xunit.v3.extensibility.core" Version="3.1.0"/>
+        <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.2"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.1"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
