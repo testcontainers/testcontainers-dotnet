@@ -43,8 +43,7 @@ public sealed class PapercutContainerTest : IAsyncLifetime
 
     private sealed record Message
     {
-        [JsonConstructor]
-        public Message(string id, string subject, string size, DateTime createdAt)
+        public Message(string subject)
         {
             Subject = subject;
         }
