@@ -8,6 +8,6 @@ internal sealed class QdrantConnectionStringProvider : ContainerConnectionString
     /// <inheritdoc />
     protected override string GetHostConnectionString()
     {
-        return Container.GetGrpcConnectionString();
+        return Container.GetHttpConnectionString();
     }
 }

@@ -17,15 +17,6 @@ public sealed class KafkaContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the broker address.
-    /// </summary>
-    /// <returns>The broker address.</returns>
-    public string GetBootstrapAddress()
-    {
-        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
-    }
-
-    /// <summary>
     /// Gets a list of advertised listeners.
     /// </summary>
     public IEnumerable<string> AdvertisedListeners
@@ -34,5 +25,14 @@ public sealed class KafkaContainer : DockerContainer
         {
             return _configuration.AdvertisedListeners;
         }
+    }
+
+    /// <summary>
+    /// Gets the broker address.
+    /// </summary>
+    /// <returns>The broker address.</returns>
+    public string GetBootstrapAddress()
+    {
+        return new UriBuilder("PLAINTEXT", Hostname, GetMappedPublicPort(KafkaBuilder.KafkaPort)).ToString();
     }
 }

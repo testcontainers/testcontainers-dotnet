@@ -29,7 +29,7 @@ public sealed class QdrantDefaultContainerTest : IAsyncLifetime
 
         // Then
         Assert.NotEmpty(response.Title);
-        Assert.Equal(_qdrantContainer.GetGrpcConnectionString(), _qdrantContainer.GetConnectionString());
+        Assert.Equal(_qdrantContainer.GetHttpConnectionString(), _qdrantContainer.GetConnectionString());
     }
     // # --8<-- [end:UseQdrantContainer]
 
