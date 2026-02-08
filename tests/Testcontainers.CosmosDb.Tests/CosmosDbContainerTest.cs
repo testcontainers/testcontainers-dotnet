@@ -23,7 +23,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         using var httpClient = _cosmosDbContainer.HttpClient;
 
         var cosmosClientOptions = new CosmosClientOptions();
-        cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+        cosmosClientOptions.ConnectionMode = CosmosConnectionMode.Gateway;
         cosmosClientOptions.HttpClientFactory = () => httpClient;
 
         using var cosmosClient = new CosmosClient(_cosmosDbContainer.GetConnectionString(), cosmosClientOptions);
@@ -34,5 +34,6 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("localhost", accountProperties.Id);
+        Assert.Equal(_cosmosDbContainer.GetConnectionString(), _cosmosDbContainer.GetConnectionString(TestcontainersConnectionMode.Host));
     }
 }

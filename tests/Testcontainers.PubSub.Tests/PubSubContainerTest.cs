@@ -67,5 +67,6 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloPubSub, response.ReceivedMessages.Single().Message.Data.ToStringUtf8());
+        Assert.Equal(_pubSubContainer.GetEmulatorEndpoint(), _pubSubContainer.GetConnectionString());
     }
 }

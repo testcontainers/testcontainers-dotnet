@@ -51,5 +51,6 @@ public sealed class FakeGcsServerContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloWorld, Encoding.Default.GetString(readStream.ToArray()));
+        Assert.Equal(_fakeGcsServerContainer.GetConnectionString(), _fakeGcsServerContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

@@ -122,6 +122,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
             .WithPassword(DefaultPassword)
             .WithCommand("start-single-node")
             .WithCommand("--insecure")
+            .WithConnectionStringProvider(new CockroachDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(CockroachDbRestPort).ForPath("/health")));
     }

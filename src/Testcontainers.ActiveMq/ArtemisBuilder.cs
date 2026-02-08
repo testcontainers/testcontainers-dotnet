@@ -106,6 +106,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
             .WithPortBinding(ArtemisConsolePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new ActiveMqConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("HTTP Server started"));
     }
 

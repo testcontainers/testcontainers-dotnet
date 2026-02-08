@@ -41,5 +41,6 @@ public sealed class KurrentDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(eventType, resolvedEvent.Event.EventType);
+        Assert.Equal(_kurrentDbContainer.GetConnectionString(), _kurrentDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

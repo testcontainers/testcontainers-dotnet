@@ -168,6 +168,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
         return base.Init()
             .WithPortBinding(EventHubsPort, true)
             .WithPortBinding(EventHubsHttpPort, true)
+            .WithConnectionStringProvider(new EventHubsConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
                 // https://github.com/Azure/azure-event-hubs-emulator-installer/issues/69#issuecomment-3762895979.
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")

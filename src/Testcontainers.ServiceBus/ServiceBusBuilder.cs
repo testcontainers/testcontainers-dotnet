@@ -164,6 +164,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")
+            .WithConnectionStringProvider(new ServiceBusConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
                 // https://github.com/Azure/azure-event-hubs-emulator-installer/issues/69#issuecomment-3762895979.
                 .UntilMessageIsLogged("Emulator Service is Successfully Up!")

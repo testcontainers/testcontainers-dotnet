@@ -15,6 +15,7 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

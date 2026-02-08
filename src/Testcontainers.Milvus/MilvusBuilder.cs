@@ -103,6 +103,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
+            .WithConnectionStringProvider(new MilvusConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
             .WithCreateParameterModifier(parameterModifier =>
                 parameterModifier.Healthcheck = Healthcheck.Instance);

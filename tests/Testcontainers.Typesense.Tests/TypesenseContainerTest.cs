@@ -33,5 +33,6 @@ public sealed class TypesenseContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("[]", response);
+        Assert.Equal(_typesenseContainer.GetBaseAddress(), _typesenseContainer.GetConnectionString());
     }
 }

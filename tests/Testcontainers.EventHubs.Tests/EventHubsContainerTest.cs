@@ -63,6 +63,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
+        Assert.Equal(_eventHubsContainer.GetConnectionString(), _eventHubsContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseEventHubsContainer]
 

@@ -107,7 +107,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             .WithPassword(DefaultPassword)
             .WithEnvironment("discovery.type", "single-node")
             .WithEnvironment("ingest.geoip.downloader.enabled", "false")
-            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath);
+            .WithResourceMapping(DefaultMemoryVmOption, ElasticsearchDefaultMemoryVmOptionFilePath)
+            .WithConnectionStringProvider(new ElasticsearchConnectionStringProvider());
     }
 
     /// <inheritdoc />

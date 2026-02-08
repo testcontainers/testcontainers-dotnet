@@ -21,6 +21,7 @@ public sealed class RedisContainerTest : IAsyncLifetime
     {
         using var connection = ConnectionMultiplexer.Connect(_redisContainer.GetConnectionString());
         Assert.True(connection.IsConnected);
+        Assert.Equal(_redisContainer.GetConnectionString(), _redisContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

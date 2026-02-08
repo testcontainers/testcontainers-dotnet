@@ -50,6 +50,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_localStackContainer.GetConnectionString(), _localStackContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

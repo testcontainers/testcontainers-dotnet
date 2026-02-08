@@ -91,6 +91,7 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
         return base.Init()
             .WithPortBinding(ArangoDbPort, true)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new ArangoDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Have fun!"));
     }
 

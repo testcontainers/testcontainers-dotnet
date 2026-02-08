@@ -154,6 +154,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
             .WithPassword(DefaultPassword)
             .WithOrganization(DefaultOrganization)
             .WithBucket(DefaultBucket)
+            .WithConnectionStringProvider(new InfluxDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(InfluxDbPort).ForPath("/ping").ForStatusCode(HttpStatusCode.NoContent)));
     }

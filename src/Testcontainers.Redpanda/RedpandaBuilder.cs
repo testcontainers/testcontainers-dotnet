@@ -82,6 +82,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
             .WithPortBinding(RedpandaPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
+            .WithConnectionStringProvider(new RedpandaConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
             .WithStartupCallback((container, ct) =>
             {

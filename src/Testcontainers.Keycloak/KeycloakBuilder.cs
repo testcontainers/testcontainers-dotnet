@@ -139,7 +139,8 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
             .WithPortBinding(KeycloakHealthPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithEnvironment("KC_HEALTH_ENABLED", "true");
+            .WithEnvironment("KC_HEALTH_ENABLED", "true")
+            .WithConnectionStringProvider(new KeycloakConnectionStringProvider());
     }
 
     /// <inheritdoc />

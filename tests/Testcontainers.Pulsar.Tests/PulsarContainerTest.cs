@@ -74,6 +74,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
+        Assert.Equal(_pulsarContainer.GetBrokerAddress(), _pulsarContainer.GetConnectionString());
     }
     // # --8<-- [end:UsePulsarContainer]
 

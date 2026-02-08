@@ -58,6 +58,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(receivedMessage);
         Assert.Equal(helloServiceBus, receivedMessage.Body.ToString());
+        Assert.Equal(_serviceBusContainer.GetConnectionString(), _serviceBusContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseServiceBusContainer]
 

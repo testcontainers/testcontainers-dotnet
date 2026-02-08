@@ -112,7 +112,8 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     {
         return base.Init()
             .WithPortBinding(QdrantHttpPort, true)
-            .WithPortBinding(QdrantGrpcPort, true);
+            .WithPortBinding(QdrantGrpcPort, true)
+            .WithConnectionStringProvider(new QdrantConnectionStringProvider());
     }
 
     /// <inheritdoc />

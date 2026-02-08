@@ -36,6 +36,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // Then
         Assert.False(HasError(properties));
+        Assert.Equal(_azuriteContainer.GetConnectionString(), _azuriteContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

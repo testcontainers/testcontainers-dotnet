@@ -103,6 +103,7 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
             .WithPortBinding(CouchDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new CouchDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(CouchDbPort)));
     }
