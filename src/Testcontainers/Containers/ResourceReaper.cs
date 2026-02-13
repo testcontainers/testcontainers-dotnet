@@ -304,6 +304,7 @@ namespace DotNet.Testcontainers.Containers
 
         using (var tcpClient = new TcpClient())
         {
+          tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
           tcpClient.LingerState = DiscardAllPendingData;
 
           try
