@@ -52,94 +52,11 @@ public sealed class TemporalBuilder : ContainerBuilder<TemporalBuilder, Temporal
     /// <inheritdoc />
     protected override TemporalConfiguration DockerResourceConfiguration { get; }
 
-    /// <summary>
-    /// Adds a namespace to pre-register at startup. The "default" namespace is always
-    /// registered regardless. Multiple namespaces can be added by chaining calls.
-    /// </summary>
-    /// <param name="namespace">The namespace name to pre-register.</param>
-    /// <returns>A configured instance of <see cref="TemporalBuilder" />.</returns>
-    public TemporalBuilder WithNamespace(string @namespace)
-    {
-        return Merge(DockerResourceConfiguration, new TemporalConfiguration(namespaces: [@namespace]));
-    }
-
-    /// <summary>
-    /// Registers a custom search attribute. Type must be one of:
-    /// Text, Keyword, Int, Double, Bool, Datetime, KeywordList.
-    /// </summary>
-    /// <param name="name">The search attribute name.</param>
-    /// <param name="type">The search attribute type.</param>
-    /// <returns>A configured instance of <see cref="TemporalBuilder" />.</returns>
-    public TemporalBuilder WithSearchAttribute(string name, string type)
-    {
-        return Merge(DockerResourceConfiguration, new TemporalConfiguration(searchAttributes: [name + "=" + type]));
-    }
-
-    /// <summary>
-    /// Sets a dynamic configuration value. Keys must be identifiers, and values must be
-    /// JSON values (e.g., key <c>frontend.enableUpdateWorkflowExecution</c> with value <c>true</c>).
-    /// </summary>
-    /// <param name="key">The configuration key.</param>
-    /// <param name="jsonValue">The configuration value as a JSON literal.</param>
-    /// <returns>A configured instance of <see cref="TemporalBuilder" />.</returns>
-    public TemporalBuilder WithDynamicConfigValue(string key, string jsonValue)
-    {
-        return Merge(DockerResourceConfiguration, new TemporalConfiguration(dynamicConfigValues: [key + "=" + jsonValue]));
-    }
-
-    /// <summary>
-    /// Sets the path to a database file inside the container for persistent Temporal state.
-    /// By default, Workflow Executions are lost when the container is removed.
-    /// </summary>
-    /// <param name="path">The path to the database file inside the container.</param>
-    /// <returns>A configured instance of <see cref="TemporalBuilder" />.</returns>
-    public TemporalBuilder WithDbFilename(string path)
-    {
-        return Merge(DockerResourceConfiguration, new TemporalConfiguration(dbFilename: path));
-    }
-
     /// <inheritdoc />
     public override TemporalContainer Build()
     {
         Validate();
-
-        var command = new List<string> { "server", "start-dev", "--ip", "0.0.0.0" };
-
-        if (DockerResourceConfiguration.Namespaces != null && DockerResourceConfiguration.Namespaces.Any())
-        {
-            foreach (var ns in DockerResourceConfiguration.Namespaces)
-            {
-                command.Add("--namespace");
-                command.Add(ns);
-            }
-        }
-
-        if (DockerResourceConfiguration.SearchAttributes != null && DockerResourceConfiguration.SearchAttributes.Any())
-        {
-            foreach (var attr in DockerResourceConfiguration.SearchAttributes)
-            {
-                command.Add("--search-attribute");
-                command.Add(attr);
-            }
-        }
-
-        if (DockerResourceConfiguration.DynamicConfigValues != null && DockerResourceConfiguration.DynamicConfigValues.Any())
-        {
-            foreach (var value in DockerResourceConfiguration.DynamicConfigValues)
-            {
-                command.Add("--dynamic-config-value");
-                command.Add(value);
-            }
-        }
-
-        if (!string.IsNullOrEmpty(DockerResourceConfiguration.DbFilename))
-        {
-            command.Add("--db-filename");
-            command.Add(DockerResourceConfiguration.DbFilename);
-        }
-
-        var temporalBuilder = WithCommand(command.ToArray());
-        return new TemporalContainer(temporalBuilder.DockerResourceConfiguration);
+        return new TemporalContainer(DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -148,12 +65,12 @@ public sealed class TemporalBuilder : ContainerBuilder<TemporalBuilder, Temporal
         return base.Init()
             .WithPortBinding(TemporalGrpcPort, true)
             .WithPortBinding(TemporalHttpPort, true)
+            .WithCommand("server", "start-dev", "--ip", "0.0.0.0")
             .WithConnectionStringProvider(new TemporalConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilInternalTcpPortIsAvailable(TemporalGrpcPort)
-                .UntilInternalTcpPortIsAvailable(TemporalHttpPort)
                 .UntilHttpRequestIsSucceeded(request =>
-                    request.ForPath("/api/v1/namespaces").ForPort(TemporalHttpPort)));
+                    request.ForPath("/api/v1/namespaces").ForPort(TemporalHttpPort))
+                .UntilInternalTcpPortIsAvailable(TemporalGrpcPort));
     }
 
     /// <inheritdoc />
