@@ -64,6 +64,7 @@
         <Project Path="src/Testcontainers.Redpanda/Testcontainers.Redpanda.csproj"/>
         <Project Path="src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
         <Project Path="src/Testcontainers.Sftp/Testcontainers.Sftp.csproj"/>
+        <Project Path="src/Testcontainers.Temporalio/Testcontainers.Temporalio.csproj"/>
         <Project Path="src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
         <Project Path="src/Testcontainers.Typesense/Testcontainers.Typesense.csproj"/>
         <Project Path="src/Testcontainers.Weaviate/Testcontainers.Weaviate.csproj"/>
@@ -135,6 +136,7 @@
         <Project Path="tests/Testcontainers.ResourceReaper.Tests/Testcontainers.ResourceReaper.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ServiceBus.Tests/Testcontainers.ServiceBus.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Sftp.Tests/Testcontainers.Sftp.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Temporalio.Tests/Testcontainers.Temporalio.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Tests/Testcontainers.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Toxiproxy.Tests/Testcontainers.Toxiproxy.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Typesense.Tests/Testcontainers.Typesense.Tests.csproj"/>
