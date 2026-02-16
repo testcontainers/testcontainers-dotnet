@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -128,7 +128,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ServiceBus",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Sftp", "src\Testcontainers.Sftp\Testcontainers.Sftp.csproj", "{7D5C6816-0DD2-4E13-A585-033B5D3C80D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Temporalio", "src\Testcontainers.Temporalio\Testcontainers.Temporalio.csproj", "{24431BF1-7BEB-4C53-BAE8-B9D9F622A240}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Temporal", "src\Testcontainers.Temporal\Testcontainers.Temporal.csproj", "{24431BF1-7BEB-4C53-BAE8-B9D9F622A240}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Toxiproxy", "src\Testcontainers.Toxiproxy\Testcontainers.Toxiproxy.csproj", "{65A47BA4-4DC8-4206-9B00-CBC87FC944FC}"
 EndProject
@@ -268,7 +268,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.ServiceBus.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Sftp.Tests", "tests\Testcontainers.Sftp.Tests\Testcontainers.Sftp.Tests.csproj", "{B73C3CC0-9F16-4B34-92BE-6EC0853912C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Temporalio.Tests", "tests\Testcontainers.Temporalio.Tests\Testcontainers.Temporalio.Tests.csproj", "{28B5DEDF-C19B-4A7E-B276-FC4C83DBB7EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Temporal.Tests", "tests\Testcontainers.Temporal.Tests\Testcontainers.Temporal.Tests.csproj", "{28B5DEDF-C19B-4A7E-B276-FC4C83DBB7EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testcontainers.Tests", "tests\Testcontainers.Tests\Testcontainers.Tests.csproj", "{27CDB869-A150-4593-958F-6F26E5391E7C}"
 EndProject

@@ -13,7 +13,7 @@
         <PackageReference Include="Temporalio"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Testcontainers.Temporalio/Testcontainers.Temporalio.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Temporal/Testcontainers.Temporal.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>
     <ItemGroup>
