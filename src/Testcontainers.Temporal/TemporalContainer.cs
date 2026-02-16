@@ -1,4 +1,4 @@
-namespace Testcontainers.Temporalio;
+namespace Testcontainers.Temporal;
 
 /// <inheritdoc cref="DockerContainer" />
 [PublicAPI]

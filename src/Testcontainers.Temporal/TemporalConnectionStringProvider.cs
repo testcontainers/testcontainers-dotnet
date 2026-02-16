@@ -1,4 +1,4 @@
-namespace Testcontainers.Temporalio;
+namespace Testcontainers.Temporal;
 
 /// <summary>
 /// Provides the Temporal connection string.
