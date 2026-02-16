@@ -2,7 +2,6 @@ namespace Testcontainers.Temporalio;
 
 public sealed class TemporalContainerTest : IAsyncLifetime
 {
-    // # --8<-- [start:UseTemporalContainer]
     private readonly TemporalContainer _temporalContainer = new TemporalBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
@@ -21,16 +20,18 @@ public sealed class TemporalContainerTest : IAsyncLifetime
     public async Task ListNamespacesReturnsDefaultNamespace()
     {
         // Given
-        var client = await TemporalClient.ConnectAsync(new(_temporalContainer.GetGrpcAddress())
-        {
-            Namespace = "default",
-        }).ConfigureAwait(true);
+        var clientOptions = new TemporalClientConnectOptions();
+        clientOptions.TargetHost = _temporalContainer.GetGrpcAddress();
+
+        var connectedClient = await TemporalClient.ConnectAsync(clientOptions)
+            .ConfigureAwait(true);
 
         // When
-        var response = await client.Connection.WorkflowService.ListNamespacesAsync(new()).ConfigureAwait(true);
+        var response = await connectedClient.WorkflowService.ListNamespacesAsync(new ListNamespacesRequest())
+            .ConfigureAwait(true);
 
         // Then
-        Assert.Contains(response.Namespaces, ns => ns.NamespaceInfo.Name == "default");
+        Assert.Contains(response.Namespaces, ns => ns.NamespaceInfo.Name == clientOptions.Namespace);
         Assert.Equal(_temporalContainer.GetGrpcAddress(), _temporalContainer.GetConnectionString());
     }
 
@@ -39,26 +40,30 @@ public sealed class TemporalContainerTest : IAsyncLifetime
     public async Task DescribeWorkflowReturnsStartedWorkflow()
     {
         // Given
-        var client = await TemporalClient.ConnectAsync(new(_temporalContainer.GetGrpcAddress())
-        {
-            Namespace = "default",
-        }).ConfigureAwait(true);
+        const string workflowType = "my-workflow";
 
-        var workflowId = Guid.NewGuid().ToString("D");
+        var workflowOptions = new WorkflowOptions();
+        workflowOptions.Id = Guid.NewGuid().ToString("D");
+        workflowOptions.TaskQueue = Guid.NewGuid().ToString("D");
+        workflowOptions.Memo = new Dictionary<string, object> { { "env", "test" } };
+
+        var clientOptions = new TemporalClientConnectOptions();
+        clientOptions.TargetHost = _temporalContainer.GetGrpcAddress();
+
+        var connectedClient = await TemporalClient.ConnectAsync(clientOptions)
+            .ConfigureAwait(true);
 
         // When
-        var workflowHandle = await client.StartWorkflowAsync("MyWorkflow", Array.Empty<object>(), new(id: workflowId, taskQueue: "my-task-queue")
-        {
-            Memo = new Dictionary<string, object> { ["env"] = "test" },
-        }).ConfigureAwait(true);
+        var runningWorkflow = await connectedClient.StartWorkflowAsync(workflowType, Array.Empty<object>(), workflowOptions)
+            .ConfigureAwait(true);
 
-        var workflowExecutionDescription = await workflowHandle.DescribeAsync().ConfigureAwait(true);
+        var workflowDescription = await runningWorkflow.DescribeAsync()
+            .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(workflowId, workflowExecutionDescription.Id);
-        Assert.Equal("MyWorkflow", workflowExecutionDescription.WorkflowType);
-        Assert.Equal("my-task-queue", workflowExecutionDescription.TaskQueue);
-        Assert.True(workflowExecutionDescription.Memo.ContainsKey("env"));
+        Assert.Equal(workflowType, workflowDescription.WorkflowType);
+        Assert.Equal(workflowOptions.Id, workflowDescription.Id);
+        Assert.Equal(workflowOptions.TaskQueue, workflowDescription.TaskQueue);
+        Assert.True(workflowDescription.Memo.ContainsKey("env"));
     }
-    // # --8<-- [end:UseTemporalContainer]
 }

@@ -14,21 +14,21 @@ public sealed class TemporalContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the Temporal gRPC endpoint for SDK clients and workers.
+    /// Gets the Temporal gRPC address.
     /// </summary>
     /// <remarks>
-    /// The Temporal .NET SDK expects <c>host:port</c> without a protocol scheme.
-    /// Using a URI like <c>http://host:port</c> will throw an <see cref="ArgumentException" />.
-    /// <para>
-    /// Usage example:
-    /// <code>
-    /// var client = await TemporalClient.ConnectAsync(
-    ///     new("localhost:7233") { Namespace = "default" });
-    /// </code>
-    /// </para>
-    /// <seealso href="https://github.com/temporalio/sdk-dotnet?tab=readme-ov-file#running-a-worker"/>
+    /// The Temporal SDK (client library) expects <c>host:port</c> without a scheme.
     /// </remarks>
-    /// <returns>The Temporal gRPC endpoint in <c>host:port</c> format.</returns>
+    /// <example>
+    ///   <code>
+    ///    var clientOptions = new TemporalClientConnectOptions();
+    ///    clientOptions.TargetHost = temporalContainer.GetGrpcAddress();
+    ///   <br />
+    ///    var connectedClient = await TemporalClient.ConnectAsync(clientOptions);
+    ///   </code>
+    /// </example>
+    /// <seealso href="https://github.com/temporalio/sdk-dotnet?tab=readme-ov-file#running-a-worker" />
+    /// <returns>The Temporal gRPC address in <c>host:port</c> format.</returns>
     public string GetGrpcAddress()
     {
         return Hostname + ":" + GetMappedPublicPort(TemporalBuilder.TemporalGrpcPort);

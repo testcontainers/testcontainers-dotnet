@@ -4,16 +4,16 @@ namespace Testcontainers.Temporalio;
 [PublicAPI]
 public sealed class TemporalBuilder : ContainerBuilder<TemporalBuilder, TemporalContainer, TemporalConfiguration>
 {
-    public const int TemporalGrpcPort = 7233;
+    public const ushort TemporalGrpcPort = 7233;
 
-    public const int TemporalHttpPort = 8233;
+    public const ushort TemporalHttpPort = 8233;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TemporalBuilder" /> class.
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>temporalio/temporal:1.5.1</c>, <c>temporalio/temporal:latest</c>).
+    /// (e.g., <c>temporalio/temporal:1.5.1</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/temporalio/temporal/tags" />.
@@ -68,9 +68,10 @@ public sealed class TemporalBuilder : ContainerBuilder<TemporalBuilder, Temporal
             .WithCommand("server", "start-dev", "--ip", "0.0.0.0")
             .WithConnectionStringProvider(new TemporalConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilExternalTcpPortIsAvailable(TemporalGrpcPort)
+                .UntilExternalTcpPortIsAvailable(TemporalHttpPort)
                 .UntilHttpRequestIsSucceeded(request =>
-                    request.ForPath("/api/v1/namespaces").ForPort(TemporalHttpPort))
-                .UntilInternalTcpPortIsAvailable(TemporalGrpcPort));
+                    request.ForPath("/api/v1/system-info").ForPort(TemporalHttpPort)));
     }
 
     /// <inheritdoc />
