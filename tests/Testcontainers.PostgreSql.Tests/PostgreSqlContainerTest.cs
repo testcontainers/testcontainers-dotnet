@@ -114,8 +114,8 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     public class PostgreSqlSslVerifyCaFixture(IMessageSink messageSink)
         : PostgreSqlDefaultFixture(messageSink)
     {
-        protected override PostgreSqlBuilder Configure()
         // # --8<-- [start:PostgreSqlSslBuilder]
+        protected override PostgreSqlBuilder Configure()
             => base.Configure().WithSsl(ServerCertificateFilePath, ServerCertificateKeyFilePath, CaCertificateFilePath);
         // # --8<-- [end:PostgreSqlSslBuilder]
 
