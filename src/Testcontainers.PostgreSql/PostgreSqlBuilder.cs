@@ -15,6 +15,16 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
     public const string DefaultPassword = "postgres";
 
+    private const ushort PostgresUid = 999;
+
+    private const ushort PostgresGid = 999;
+
+    private const string CertificateFilePath = "/etc/ssl/postgresql/server.crt";
+
+    private const string CertificateKeyFilePath = "/etc/ssl/postgresql/server.key";
+
+    private const string CaCertificateFilePath = "/etc/ssl/postgresql/root.crt";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
@@ -100,6 +110,35 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     {
         return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(password: password))
             .WithEnvironment("POSTGRES_PASSWORD", password);
+    }
+
+    /// <summary>
+    /// Enables SSL for PostgreSql.
+    /// </summary>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+        return WithResourceMapping(new FileInfo(certificateFilePath), new FileInfo(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithResourceMapping(new FileInfo(certificateKeyFilePath), new FileInfo(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithCommand("-c", "ssl=on")
+            .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
+            .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
+    }
+
+    /// <summary>
+    /// Enables SSL for PostgreSql.
+    /// </summary>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <param name="caCertificateFilePath">The CA certificate file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath, string caCertificateFilePath)
+    {
+        return WithSsl(certificateFilePath, certificateKeyFilePath)
+            .WithResourceMapping(new FileInfo(caCertificateFilePath), new FileInfo(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
     }
 
     /// <inheritdoc />
