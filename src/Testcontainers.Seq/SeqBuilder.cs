@@ -78,7 +78,7 @@ public sealed class SeqBuilder : ContainerBuilder<SeqBuilder, SeqContainer, SeqC
     /// When <paramref name="acceptLicenseAgreement" /> is set to <c>true</c>, the Seq <see href="https://datalust.co/doc/eula-current.pdf">license</see> is accepted.
     /// </remarks>
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the Seq license agreement is accepted.</param>
-    /// <returns>A configured instance of <see cref="SeqContainer" />.</returns>
+    /// <returns>A configured instance of <see cref="SeqBuilder" />.</returns>
     public override SeqBuilder WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
         var licenseAgreement = acceptLicenseAgreement ? AcceptLicenseAgreement : DeclineLicenseAgreement;

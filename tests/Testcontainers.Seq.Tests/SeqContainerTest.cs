@@ -30,6 +30,9 @@ public sealed class SeqContainerTest : IAsyncLifetime
         var logger = loggerFactory.CreateLogger(nameof(SeqContainerTest));
         logger.LogInformation(helloWorld);
 
+        // Ensure pending messages are sent before querying.
+        loggerFactory.Dispose();
+
         using var connection = new SeqConnection(endpoint);
 
         // When
