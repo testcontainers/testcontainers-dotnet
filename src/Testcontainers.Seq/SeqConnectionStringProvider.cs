@@ -1,7 +1,7 @@
 namespace Testcontainers.Seq;
 
 /// <summary>
-/// Provides the Redpanda connection string.
+/// Provides the Seq connection string.
 /// </summary>
 internal sealed class SeqConnectionStringProvider : ContainerConnectionStringProvider<SeqContainer, SeqConfiguration>
 {
