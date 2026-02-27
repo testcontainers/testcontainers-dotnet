@@ -1,0 +1,1 @@
+FROM rancher/k3s:v1.26.2-k3s1

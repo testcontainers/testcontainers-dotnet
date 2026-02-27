@@ -3,25 +3,25 @@ namespace Testcontainers.Tests;
 public sealed class WaitStrategyTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithTimeout()
     {
-        return Assert.ThrowsAsync<TimeoutException>(() => new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        return Assert.ThrowsAsync<TimeoutException>(() => new ContainerBuilder(CommonImages.Alpine)
             .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithTimeout(TimeSpan.FromSeconds(1))))
             .Build()
-            .StartAsync());
+            .StartAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task WithRetries()
     {
-        return Assert.ThrowsAsync<RetryLimitExceededException>(() => new ContainerBuilder()
-            .WithImage(CommonImages.Alpine)
+        return Assert.ThrowsAsync<RetryLimitExceededException>(() => new ContainerBuilder(CommonImages.Alpine)
             .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(FailingWaitStrategy.Instance, o => o.WithRetries(1)))
             .Build()
-            .StartAsync());
+            .StartAsync(TestContext.Current.CancellationToken));
     }
 
     private sealed class FailingWaitStrategy : IWaitUntil

@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
-    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.9.0");
+    private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.14.0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
 
@@ -55,16 +55,16 @@ namespace DotNet.Testcontainers.Containers
 
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode)
     {
-      _resourceReaperContainer = new ContainerBuilder()
-        .WithName($"testcontainers-ryuk-{sessionId:D}")
+      _resourceReaperContainer = new ContainerBuilder(resourceReaperImage)
         .WithDockerEndpoint(dockerEndpointAuthConfig)
-        .WithImage(resourceReaperImage)
+        .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
         .WithMount(dockerSocket)
         .WithLogger(logger)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"))
         .Build();
 
       SessionId = sessionId;
@@ -89,6 +89,13 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     public static Guid DefaultSessionId { get; }
       = Guid.NewGuid();
+
+    /// <summary>
+    /// Gets a value indicating whether the default <see cref="ResourceReaper" /> instance is running and available.
+    /// </summary>
+    [PublicAPI]
+    public static bool IsUnavailable
+      => _defaultInstance == null || _defaultInstance._disposed;
 
     /// <summary>
     /// Gets the <see cref="ResourceReaper" /> session id.
@@ -156,7 +163,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
         await _maintainConnectionCts.CancelAsync()
           .ConfigureAwait(false);
 #else
@@ -215,7 +222,7 @@ namespace DotNet.Testcontainers.Containers
 
       var resourceReaper = new ResourceReaper(sessionId, dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode);
 
-      initTimeout = TimeSpan.Equals(default, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
+      initTimeout = TimeSpan.Equals(TimeSpan.Zero, initTimeout) ? TimeSpan.FromSeconds(ConnectionTimeoutInSeconds) : initTimeout;
 
       try
       {
@@ -297,6 +304,7 @@ namespace DotNet.Testcontainers.Containers
 
         using (var tcpClient = new TcpClient())
         {
+          tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
           tcpClient.LingerState = DiscardAllPendingData;
 
           try
@@ -358,22 +366,34 @@ namespace DotNet.Testcontainers.Containers
 #pragma warning restore S907
                   }
 
-                  var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n');
+                  var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n', 0, numberOfBytes);
 
                   if (indexOfNewLine == -1)
                   {
                     // We have not received the entire message yet. Read from stream again.
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+                      .ConfigureAwait(false);
+#endif
 
                     hasAcknowledge = false;
                   }
                   else
                   {
+#if NETSTANDARD2_0
                     await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
                       .ConfigureAwait(false);
+#else
+                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+                      .ConfigureAwait(false);
+#endif
 
-                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
+                    var buffer = messageBuffer.GetBuffer();
+
+                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(buffer, 0, (int)messageBuffer.Length), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
                   }
                 }

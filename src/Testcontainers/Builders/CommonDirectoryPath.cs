@@ -76,7 +76,7 @@ namespace DotNet.Testcontainers.Builders
     [PublicAPI]
     public static CommonDirectoryPath GetSolutionDirectory([CallerFilePath, NotNull] string filePath = "")
     {
-      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.sln"));
+      return new CommonDirectoryPath(GetDirectoryPath(Path.GetDirectoryName(filePath), "*.sln", "*.slnx"));
     }
 
     /// <summary>

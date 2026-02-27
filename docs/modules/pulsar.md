@@ -8,7 +8,7 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.Pulsar
 ```
 
-You can start a Apache Pulsar container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+You can start an Apache Pulsar container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
 
 === "Create Container Instance"
     ```csharp
@@ -48,7 +48,7 @@ string pulsarServiceUrl = _pulsarContainer.GetHttpServiceUrl();
 If you need to use token authentication, use the following builder configuration to enable authentication:
 
 ```csharp
-PulsarContainer _pulsarContainer = PulsarBuilder().WithTokenAuthentication().Build();
+PulsarContainer _pulsarContainer = new PulsarBuilder("apachepulsar/pulsar:3.0.9").WithTokenAuthentication().Build();
 ```
 
 Start the container and obtain an authentication token with a specified expiration time
@@ -70,5 +70,5 @@ var authToken = await container.CreateAuthenticationTokenAsync(Timeout.InfiniteT
 If you need to use Pulsar Functions, use the following builder configuration to enable it:
 
 ```csharp
-PulsarContainer _pulsarContainer = PulsarBuilder().WithFunctions().Build();
+PulsarContainer _pulsarContainer = new PulsarBuilder("apachepulsar/pulsar:3.0.9").WithFunctions().Build();
 ```

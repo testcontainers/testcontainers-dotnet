@@ -10,7 +10,7 @@ namespace Testcontainers.Xunit;
 [PublicAPI]
 public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMessageSink messageSink)
     : ContainerFixture<TBuilderEntity, TContainerEntity>(messageSink), IDbContainerTestMethods
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
     private DbContainerTestMethods _testMethods;
@@ -21,7 +21,7 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
         await base.InitializeAsync()
             .ConfigureAwait(false);
 
-        _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
+        _testMethods = new DbContainerTestMethods(DbProviderFactory, new Lazy<string>(() => ConnectionString));
     }
 
     /// <inheritdoc />

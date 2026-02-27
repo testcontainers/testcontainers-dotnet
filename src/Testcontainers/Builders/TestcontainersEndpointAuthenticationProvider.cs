@@ -58,6 +58,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      return _customConfiguration.GetDockerApiVersion();
+    }
+
+    /// <inheritdoc />
     public string GetDockerConfig()
     {
       return _customConfiguration.GetDockerConfig();
@@ -118,7 +124,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return _customConfiguration.GetRyukContainerPrivileged();
     }
@@ -151,6 +157,12 @@ namespace DotNet.Testcontainers.Builders
     public TimeSpan? GetWaitStrategyTimeout()
     {
       return _customConfiguration.GetWaitStrategyTimeout();
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      return _customConfiguration.GetNamedPipeConnectionTimeout();
     }
 
     private sealed class TestcontainersConfiguration : PropertiesFileConfiguration

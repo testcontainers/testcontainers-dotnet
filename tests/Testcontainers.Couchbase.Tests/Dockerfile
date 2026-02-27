@@ -1,0 +1,1 @@
+FROM couchbase:community-7.0.2

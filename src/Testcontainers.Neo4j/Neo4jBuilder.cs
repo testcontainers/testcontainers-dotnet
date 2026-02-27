@@ -4,25 +4,52 @@ namespace Testcontainers.Neo4j;
 [PublicAPI]
 public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer, Neo4jConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string Neo4jImage = "neo4j:5.4";
 
     public const ushort Neo4jHttpPort = 7474;
 
     public const ushort Neo4jBoltPort = 7687;
 
-    private const string AcceptLicenseAgreementEnvVar = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
-
-    private const string AcceptLicenseAgreement = "yes";
-
-    private const string DeclineLicenseAgreement = "no";
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
+    public Neo4jBuilder()
+        : this(Neo4jImage)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
     /// </summary>
-    public Neo4jBuilder()
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>neo4j:5.4</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// </remarks>
+    public Neo4jBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Neo4jBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// </remarks>
+    public Neo4jBuilder(IImage image)
         : this(new Neo4jConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -37,6 +64,15 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
     /// <inheritdoc />
     protected override Neo4jConfiguration DockerResourceConfiguration { get; }
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreementEnvVar { get; } = "NEO4J_ACCEPT_LICENSE_AGREEMENT";
+
+    /// <inheritdoc />
+    protected override string AcceptLicenseAgreement { get; } = "yes";
+
+    /// <inheritdoc />
+    protected override string DeclineLicenseAgreement { get; } = "no";
 
     /// <summary>
     /// Sets the image to the Neo4j Enterprise Edition.
@@ -120,10 +156,10 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     protected override Neo4jBuilder Init()
     {
         return base.Init()
-            .WithImage(Neo4jImage)
             .WithPortBinding(Neo4jHttpPort, true)
             .WithPortBinding(Neo4jBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")
+            .WithConnectionStringProvider(new Neo4jConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(Neo4jHttpPort)));
     }

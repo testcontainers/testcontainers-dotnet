@@ -41,7 +41,7 @@ public sealed class FirebirdSqlContainer : DockerContainer, IDatabaseContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "/usr/local/firebird/bin/isql", "-i", scriptFilePath, "-user", _configuration.Username, "-pass", _configuration.Password, _configuration.Database }, ct)

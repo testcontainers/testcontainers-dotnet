@@ -39,15 +39,40 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Gets a predicate that determines whether or not a <see cref="JsonProperty" /> contains a Docker registry key.
+    /// Determines whether the specified JSON property contains a Docker registry
+    /// that matches the given registry host.
     /// </summary>
-    public static Func<JsonProperty, string, bool> HasDockerRegistryKey { get; }
-      = (property, hostname) => property.Name.Equals(hostname, StringComparison.OrdinalIgnoreCase) || property.Name.EndsWith("://" + hostname, StringComparison.OrdinalIgnoreCase);
+    /// <param name="property">The JSON property to check.</param>
+    /// <param name="registryHost">The registry host to match against.</param>
+    /// <returns><c>true</c> if the property contains a matching Docker registry; otherwise, <c>false</c>.</returns>
+    public static bool HasDockerRegistryName(JsonProperty property, string registryHost)
+    {
+      var propertyName = property.Name;
+
+      if (propertyName.Equals(registryHost, StringComparison.OrdinalIgnoreCase))
+      {
+        return true;
+      }
+
+      if (propertyName.EndsWith("://" + registryHost, StringComparison.OrdinalIgnoreCase))
+      {
+        return true;
+      }
+
+      if (TryGetHost(propertyName, out var propertyNameNormalized) && TryGetHost(registryHost, out var registryHostNormalized))
+      {
+        return string.Equals(propertyNameNormalized, registryHostNormalized, StringComparison.OrdinalIgnoreCase);
+      }
+      else
+      {
+        return false;
+      }
+    }
 
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(_rootElement) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryKey(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => HasDockerRegistryName(property, hostname));
     }
 
     /// <inheritdoc />
@@ -60,7 +85,7 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var authProperty = _rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryKey(property, hostname));
+      var authProperty = _rootElement.EnumerateObject().LastOrDefault(property => HasDockerRegistryName(property, hostname));
 
       if (JsonValueKind.Undefined.Equals(authProperty.Value.ValueKind))
       {
@@ -119,6 +144,28 @@ namespace DotNet.Testcontainers.Builders
 
       _logger.DockerRegistryCredentialFound(hostname);
       return new DockerRegistryAuthenticationConfiguration(authProperty.Name, credential[0], credential[1]);
+    }
+
+    /// <summary>
+    /// Tries to extract the host from the specified value.
+    /// </summary>
+    /// <param name="value">The string to extract the host from.</param>
+    /// <param name="host">The extracted host if successful; otherwise, the original string.</param>
+    /// <returns><c>true</c> if the host was successfully extracted; otherwise, <c>false</c>.</returns>
+    private static bool TryGetHost(string value, out string host)
+    {
+      var uriToParse = value.Contains("://") ? value : "dummy://" + value;
+
+      if (Uri.TryCreate(uriToParse, UriKind.Absolute, out var uri))
+      {
+        host = uri.Port == -1 || uri.IsDefaultPort ? uri.Host : uri.Host + ":" + uri.Port;
+        return true;
+      }
+      else
+      {
+        host = value;
+        return false;
+      }
     }
   }
 }

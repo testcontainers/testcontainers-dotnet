@@ -8,12 +8,43 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.PostgreSql
 ```
 
-You can start an PostgreSQL container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+You can start a PostgreSQL container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
+
+=== "Start a PostgreSQL container"
+    ```csharp
+    var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
+    await postgreSqlContainer.StartAsync();
+    ```
+
+The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) module to reduce overhead by automatically managing the lifecycle of the dependent container instance. It creates and starts the container using the module-specific builder and injects it as a shared class fixture into the test class.
 
 === "Usage Example"
     ```csharp
     --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:UsePostgreSqlContainer"
     ```
+
+## SSL
+
+Use `WithSsl` to enable TLS and map the server certificates. Configure the client connection string with `SslMode` and (for validation) the CA certificate.
+
+!!! note
+    When SSL is enabled, Testcontainers doesn't set the SSL mode for the connection string. You'll need to choose the `SslMode` and configure it yourself.
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslBuilder"
+```
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslConnectionString"
+```
+
+### VerifyFull and DNS SANs
+
+`SslMode=VerifyFull` validates DNS SANs. Use a DNS host like `localhost` if you need full verification.
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslVerifyFull"
+```
 
 The test example uses the following NuGet dependencies:
 

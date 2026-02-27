@@ -1,0 +1,22 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <RunSettingsFilePath>$(MSBuildProjectDirectory)/linux.runsettings</RunSettingsFilePath>
+    </PropertyGroup>
+    <Target Name="SetEnvironmentVariables" BeforeTargets="RunTests;VSTest">
+        <XmlPoke
+            XmlInputPath="linux.runsettings"
+            Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib:$(MSBuildProjectDirectory)/$(OutputPath)clidriver/lib/icc"
+            Query="/RunSettings/RunConfiguration/EnvironmentVariables/LD_LIBRARY_PATH"
+        />
+        <XmlPoke
+            XmlInputPath="linux.runsettings"
+            Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver/bin"
+            Query="/RunSettings/RunConfiguration/EnvironmentVariables/PATH"
+        />
+        <XmlPoke
+            XmlInputPath="linux.runsettings"
+            Value="$(MSBuildProjectDirectory)/$(OutputPath)clidriver"
+            Query="/RunSettings/RunConfiguration/EnvironmentVariables/DB2_CLI_DRIVER_INSTALL_PATH"
+        />
+    </Target>
+</Project>

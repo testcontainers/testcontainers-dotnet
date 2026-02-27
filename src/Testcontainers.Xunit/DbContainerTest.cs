@@ -9,7 +9,7 @@ namespace Testcontainers.Xunit;
 [PublicAPI]
 public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
     : ContainerTest<TBuilderEntity, TContainerEntity>(testOutputHelper, configure), IDbContainerTestMethods
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer, IDatabaseContainer
 {
     private DbContainerTestMethods _testMethods;
@@ -20,7 +20,7 @@ public abstract class DbContainerTest<TBuilderEntity, TContainerEntity>(ITestOut
         await base.InitializeAsync()
             .ConfigureAwait(false);
 
-        _testMethods = new DbContainerTestMethods(DbProviderFactory, ConnectionString);
+        _testMethods = new DbContainerTestMethods(DbProviderFactory, new Lazy<string>(() => ConnectionString));
     }
 
     /// <inheritdoc />

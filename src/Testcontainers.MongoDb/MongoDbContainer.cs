@@ -26,6 +26,7 @@ public sealed class MongoDbContainer : DockerContainer
         var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbBuilder.MongoDbPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password);
+        endpoint.Query = "?directConnection=true";
         return endpoint.ToString();
     }
 
@@ -39,7 +40,7 @@ public sealed class MongoDbContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         var whichMongoDbShell = await ExecAsync(new[] { "which", "mongosh" }, ct)

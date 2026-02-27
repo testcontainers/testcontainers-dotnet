@@ -1,7 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
   using DotNet.Testcontainers.Images;
-  using Xunit.Abstractions;
+  using Xunit.Sdk;
 
   public sealed class DockerImageFixtureSerializable : IXunitSerializable
   {
@@ -22,7 +22,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var registry = info.GetValue<string>("Registry");
       var tag = info.GetValue<string>("Tag");
       var digest = info.GetValue<string>("Digest");
-      Image = new DockerImage(repository, registry, tag, digest);
+      var platform = info.GetValue<string>("Platform");
+      Image = new DockerImage(repository, registry, tag, digest, platform);
     }
 
     public void Serialize(IXunitSerializationInfo info)
@@ -31,6 +32,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       info.AddValue("Registry", Image.Registry);
       info.AddValue("Tag", Image.Tag);
       info.AddValue("Digest", Image.Digest);
+      info.AddValue("Platform", Image.Platform);
     }
   }
 }

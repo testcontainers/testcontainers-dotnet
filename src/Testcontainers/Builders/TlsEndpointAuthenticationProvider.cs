@@ -76,7 +76,11 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>The root certificate authority (CA).</returns>
     protected virtual X509Certificate2 GetCaCertificate()
     {
+#if NET9_0_OR_GREATER
+      return X509CertificateLoader.LoadCertificateFromFile(Path.Combine(CertificatesDirectoryPath, CaCertificateFileName));
+#else
       return new X509Certificate2(Path.Combine(CertificatesDirectoryPath, CaCertificateFileName));
+#endif
     }
 
     /// <summary>

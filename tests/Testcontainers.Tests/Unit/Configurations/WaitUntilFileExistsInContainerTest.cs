@@ -16,21 +16,21 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage(CommonImages.Alpine)
+    private readonly IContainer _container = new ContainerBuilder(CommonImages.Alpine)
       .WithEntrypoint("/bin/sh", "-c")
       .WithCommand("hostname > " + ContainerFilePath + "; trap : TERM INT; sleep infinity & wait")
       .WithWaitStrategy(Wait.ForUnixContainer().UntilFileExists(ContainerFilePath, FileSystem.Container))
       .Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _container.StartAsync(_cts.Token);
+      await _container.StartAsync(_cts.Token)
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync().AsTask();
+      return _container.DisposeAsync();
     }
 
     public void Dispose()
@@ -41,7 +41,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task ContainerIsRunning()
     {
-      var execResult = await _container.ExecAsync(new List<string> { "test", "-f", ContainerFilePath })
+      var execResult = await _container.ExecAsync(new List<string> { "test", "-f", ContainerFilePath }, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       Assert.Equal(0, execResult.ExitCode);

@@ -1,9 +1,9 @@
 namespace Testcontainers.Xunit;
 
-internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory, string connectionString) : IDbContainerTestMethods, IAsyncDisposable
+internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory, Lazy<string> connectionString) : IDbContainerTestMethods, IAsyncDisposable
 {
     private readonly DbProviderFactory _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
-    private readonly string _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    private readonly Lazy<string> _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
 #if NET8_0_OR_GREATER
     [CanBeNull]
@@ -12,7 +12,7 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
     {
         get
         {
-            _dbDataSource ??= _dbProviderFactory.CreateDataSource(_connectionString);
+            _dbDataSource ??= _dbProviderFactory.CreateDataSource(_connectionString.Value);
             return _dbDataSource;
         }
     }
@@ -32,7 +32,7 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
     public DbConnection CreateConnection()
     {
         var connection = _dbProviderFactory.CreateConnection() ?? throw new InvalidOperationException($"DbProviderFactory.CreateConnection() returned null for {_dbProviderFactory}");
-        connection.ConnectionString = _connectionString;
+        connection.ConnectionString = _connectionString.Value;
         return connection;
     }
 

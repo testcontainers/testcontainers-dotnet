@@ -2,16 +2,17 @@ namespace Testcontainers.Kusto;
 
 public sealed class KustoContainerTest : IAsyncLifetime
 {
-    private readonly KustoContainer _kustoContainer = new KustoBuilder().Build();
+    private readonly KustoContainer _kustoContainer = new KustoBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _kustoContainer.StartAsync();
+        await _kustoContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _kustoContainer.DisposeAsync().AsTask();
+        return _kustoContainer.DisposeAsync();
     }
 
     [Fact]
@@ -30,5 +31,6 @@ public sealed class KustoContainerTest : IAsyncLifetime
         // Then
         Assert.Equal("DatabaseName", dataReader.GetName(0));
         Assert.Equal("NetDefaultDB", dataReader.GetString(0));
+        Assert.Equal(_kustoContainer.GetConnectionString(), _kustoContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

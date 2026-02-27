@@ -12,14 +12,18 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public abstract string Edition { get; }
 
     // # --8<-- [start:UseNeo4jContainer]
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _neo4jContainer.StartAsync();
+        await _neo4jContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _neo4jContainer.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -45,15 +49,21 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(neo4jDatabase, session.SessionConfig.Database);
         Assert.Equal(Edition, edition);
+        Assert.Equal(_neo4jContainer.GetConnectionString(), _neo4jContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseNeo4jContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _neo4jContainer.DisposeAsync();
+    }
 
     // # --8<-- [start:CreateNeo4jContainer]
     [UsedImplicitly]
     public sealed class Neo4jDefaultConfiguration : Neo4jContainerTest
     {
         public Neo4jDefaultConfiguration()
-            : base(new Neo4jBuilder().Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 
@@ -64,7 +74,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jEnterpriseEditionConfiguration : Neo4jContainerTest
     {
         public Neo4jEnterpriseEditionConfiguration()
-            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).WithEnterpriseEdition(true).Build())
         {
         }
 

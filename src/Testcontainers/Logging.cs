@@ -23,6 +23,12 @@ namespace DotNet.Testcontainers
     private static readonly Action<ILogger, string, Exception> _StopDockerContainer
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Stop Docker container {Id}");
 
+    private static readonly Action<ILogger, string, Exception> _PauseDockerContainer
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Pause Docker container {Id}");
+
+    private static readonly Action<ILogger, string, Exception> _UnpauseDockerContainer
+      = LoggerMessage.Define<string>(LogLevel.Information, default, "Unpause Docker container {Id}");
+
     private static readonly Action<ILogger, string, Exception> _DeleteDockerContainer
       = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker container {Id}");
 
@@ -130,6 +136,16 @@ namespace DotNet.Testcontainers
     public static void StopDockerContainer(this ILogger logger, string id)
     {
       _StopDockerContainer(logger, TruncId(id), null);
+    }
+
+    public static void PauseDockerContainer(this ILogger logger, string id)
+    {
+      _PauseDockerContainer(logger, TruncId(id), null);
+    }
+
+    public static void UnpauseDockerContainer(this ILogger logger, string id)
+    {
+      _UnpauseDockerContainer(logger, TruncId(id), null);
     }
 
     public static void DeleteDockerContainer(this ILogger logger, string id)

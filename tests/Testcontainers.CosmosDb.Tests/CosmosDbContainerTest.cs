@@ -2,16 +2,17 @@ namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _cosmosDbContainer.StartAsync();
+        await _cosmosDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _cosmosDbContainer.DisposeAsync().AsTask();
+        return _cosmosDbContainer.DisposeAsync();
     }
 
     [Fact(Skip = "The Cosmos DB Linux Emulator Docker image does not run on Microsoft's CI environment (GitHub, Azure DevOps).")] // https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45.
@@ -22,7 +23,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         using var httpClient = _cosmosDbContainer.HttpClient;
 
         var cosmosClientOptions = new CosmosClientOptions();
-        cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+        cosmosClientOptions.ConnectionMode = CosmosConnectionMode.Gateway;
         cosmosClientOptions.HttpClientFactory = () => httpClient;
 
         using var cosmosClient = new CosmosClient(_cosmosDbContainer.GetConnectionString(), cosmosClientOptions);
@@ -33,5 +34,6 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("localhost", accountProperties.Id);
+        Assert.Equal(_cosmosDbContainer.GetConnectionString(), _cosmosDbContainer.GetConnectionString(TestcontainersConnectionMode.Host));
     }
 }

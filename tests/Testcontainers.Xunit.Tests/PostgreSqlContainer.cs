@@ -4,10 +4,9 @@ namespace Testcontainers.Xunit.Example3;
 public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutputHelper)
     : DbContainerTest<PostgreSqlBuilder, PostgreSqlContainer>(testOutputHelper)
 {
-    protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
+    protected override PostgreSqlBuilder Configure()
     {
-        return builder
-            .WithImage("postgres:15.1")
+        return new PostgreSqlBuilder("postgres:15.1")
             .WithResourceMapping("Chinook_PostgreSql_AutoIncrementPKs.sql", "/docker-entrypoint-initdb.d/");
     }
 }
@@ -16,7 +15,8 @@ public sealed partial class PostgreSqlContainerTest(ITestOutputHelper testOutput
 public sealed partial class PostgreSqlContainerTest
 {
     // # --8<-- [start:ConfigureDbProviderFactory]
-    public override DbProviderFactory DbProviderFactory => NpgsqlFactory.Instance;
+    public override DbProviderFactory DbProviderFactory
+        => NpgsqlFactory.Instance;
     // # --8<-- [end:ConfigureDbProviderFactory]
 }
 
@@ -36,6 +36,7 @@ public sealed partial class PostgreSqlContainerTest
 public sealed partial class PostgreSqlContainerTest
 {
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void ImageShouldMatchDefaultModuleImage()
     {
         Assert.Equal(PostgreSqlBuilder.PostgreSqlImage, Container.Image.FullName);
@@ -43,10 +44,15 @@ public sealed partial class PostgreSqlContainerTest
 
     // # --8<-- [start:RunTests]
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task Test1()
     {
         const string sql = "SELECT title FROM album ORDER BY album_id";
+#if XUNIT_V3
+        using var connection = await OpenConnectionAsync(TestContext.Current.CancellationToken);
+#else
         using var connection = await OpenConnectionAsync();
+#endif
         var title = await connection.QueryFirstAsync<string>(sql);
         Assert.Equal("For Those About To Rock We Salute You", title);
     }

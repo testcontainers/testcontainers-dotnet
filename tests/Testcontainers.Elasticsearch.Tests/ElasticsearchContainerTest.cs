@@ -1,18 +1,27 @@
 namespace Testcontainers.Elasticsearch;
 
-public sealed class ElasticsearchContainerTest : IAsyncLifetime
+public abstract class ElasticsearchContainerTest : IAsyncLifetime
 {
-    // # --8<-- [start:UseElasticsearchContainer]
-    private readonly ElasticsearchContainer _elasticsearchContainer = new ElasticsearchBuilder().Build();
+    private readonly ElasticsearchContainer _elasticsearchContainer;
 
-    public Task InitializeAsync()
+    private ElasticsearchContainerTest(ElasticsearchContainer elasticsearchContainer)
     {
-        return _elasticsearchContainer.StartAsync();
+        _elasticsearchContainer = elasticsearchContainer;
     }
 
-    public Task DisposeAsync()
+    // # --8<-- [start:UseElasticsearchContainer]
+    public async ValueTask InitializeAsync()
     {
-        return _elasticsearchContainer.DisposeAsync().AsTask();
+        await _elasticsearchContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -30,6 +39,32 @@ public sealed class ElasticsearchContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(response.IsValidResponse);
+        Assert.Equal(_elasticsearchContainer.GetConnectionString(), _elasticsearchContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseElasticsearchContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _elasticsearchContainer.DisposeAsync();
+    }
+
+    // # --8<-- [start:CreateElasticsearchContainer]
+    [UsedImplicitly]
+    public sealed class ElasticsearchDefaultConfiguration : ElasticsearchContainerTest
+    {
+        public ElasticsearchDefaultConfiguration()
+            : base(new ElasticsearchBuilder(TestSession.GetImageFromDockerfile()).Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class ElasticsearchAuthConfiguration : ElasticsearchContainerTest
+    {
+        public ElasticsearchAuthConfiguration()
+            : base(new ElasticsearchBuilder(TestSession.GetImageFromDockerfile()).WithPassword("some-password").Build())
+        {
+        }
+    }
+    // # --8<-- [end:CreateElasticsearchContainer]
 }

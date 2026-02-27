@@ -32,30 +32,27 @@ public sealed class AzuriteContainer : DockerContainer
     /// <summary>
     /// Gets the blob endpoint
     /// </summary>
-    /// <returns>The azurite blob endpoint</returns>
+    /// <returns>The Azurite blob endpoint</returns>
     public string GetBlobEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort),
-            AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.BlobPort), AzuriteBuilder.AccountName).ToString();
     }
 
     /// <summary>
     /// Gets the queue endpoint
     /// </summary>
-    /// <returns>The azurite queue endpoint</returns>
+    /// <returns>The Azurite queue endpoint</returns>
     public string GetQueueEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort),
-            AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.QueuePort), AzuriteBuilder.AccountName).ToString();
     }
 
     /// <summary>
     /// Gets the table endpoint
     /// </summary>
-    /// <returns>The azurite table endpoint</returns>
+    /// <returns>The Azurite table endpoint</returns>
     public string GetTableEndpoint()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort),
-            AzuriteBuilder.AccountName).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AzuriteBuilder.TablePort), AzuriteBuilder.AccountName).ToString();
     }
 }

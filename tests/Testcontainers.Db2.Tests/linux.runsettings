@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <RunConfiguration>
+        <EnvironmentVariables>
+            <LD_LIBRARY_PATH>Set by MSBuild</LD_LIBRARY_PATH>
+            <PATH>Set by MSBuild</PATH>
+            <DB2_CLI_DRIVER_INSTALL_PATH>Set by MSBuild</DB2_CLI_DRIVER_INSTALL_PATH>
+        </EnvironmentVariables>
+    </RunConfiguration>
+</RunSettings>

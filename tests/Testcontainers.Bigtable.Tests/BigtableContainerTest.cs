@@ -2,16 +2,17 @@ namespace Testcontainers.Bigtable;
 
 public sealed class BigtableContainerTest : IAsyncLifetime
 {
-    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder().Build();
+    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _bigtableContainer.StartAsync();
+        await _bigtableContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _bigtableContainer.DisposeAsync().AsTask();
+        return _bigtableContainer.DisposeAsync();
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public sealed class BigtableContainerTest : IAsyncLifetime
         bigtableClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
 
         // When
-        var bigtableClient = await bigtableClientBuilder.BuildAsync()
+        var bigtableClient = await bigtableClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await bigtableClient.CreateTableAsync(instanceName, tableName.TableId, table)
@@ -56,5 +57,6 @@ public sealed class BigtableContainerTest : IAsyncLifetime
         Assert.Equal(projectId, actualTable.TableName.ProjectId);
         Assert.Equal(instanceId, actualTable.TableName.InstanceId);
         Assert.Equal(tableId, actualTable.TableName.TableId);
+        Assert.Equal(_bigtableContainer.GetEmulatorEndpoint(), _bigtableContainer.GetConnectionString());
     }
 }

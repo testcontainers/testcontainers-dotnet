@@ -11,8 +11,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class ReadFileFromContainerTest : IAsyncLifetime
   {
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage("alpine")
+    private readonly IContainer _container = new ContainerBuilder("alpine")
       .WithEntrypoint(CommonCommands.SleepInfinity)
       .Build();
 
@@ -25,10 +24,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dayOfWeek = DateTime.UtcNow.DayOfWeek.ToString();
 
       // When
-      _ = await _container.ExecAsync(new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" })
+      _ = await _container.ExecAsync(new[] { "/bin/sh", "-c", $"echo {dayOfWeek} > {dayOfWeekFilePath}" }, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
-      var fileContent = await _container.ReadFileAsync(dayOfWeekFilePath)
+      var fileContent = await _container.ReadFileAsync(dayOfWeekFilePath, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -38,23 +37,24 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public Task AccessNotExistingFileThrowsFileNotFoundException()
     {
-      return Assert.ThrowsAsync<FileNotFoundException>(() => _container.ReadFileAsync("/tmp/fileNotFound"));
+      return Assert.ThrowsAsync<FileNotFoundException>(() => _container.ReadFileAsync("/tmp/fileNotFound", TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public Task AccessDirectoryThrowsInvalidOperationException()
     {
-      return Assert.ThrowsAsync<InvalidOperationException>(() => _container.ReadFileAsync("/tmp"));
+      return Assert.ThrowsAsync<InvalidOperationException>(() => _container.ReadFileAsync("/tmp", TestContext.Current.CancellationToken));
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _container.StartAsync();
+      await _container.StartAsync()
+          .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.DisposeAsync().AsTask();
+      return _container.DisposeAsync();
     }
   }
 }

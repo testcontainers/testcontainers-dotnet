@@ -39,6 +39,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
+    /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <param name="autoRemove">A value indicating whether Docker removes the container after it exits or not.</param>
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(
@@ -49,7 +50,7 @@ namespace DotNet.Testcontainers.Configurations
       string macAddress = null,
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
-      IEnumerable<string> command = null,
+      ComposableEnumerable<string> command = null,
       IReadOnlyDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
@@ -61,7 +62,8 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<string> extraHosts = null,
       IOutputConsumer outputConsumer = null,
       IEnumerable<WaitStrategy> waitStrategies = null,
-      Func<IContainer, CancellationToken, Task> startupCallback = null,
+      Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
+      IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -87,6 +89,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
+      ConnectionStringProvider = connectionStringProvider;
     }
 
     /// <summary>
@@ -135,6 +138,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
       WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
+      ConnectionStringProvider = BuildConfiguration.Combine(oldValue.ConnectionStringProvider, newValue.ConnectionStringProvider);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
@@ -173,7 +177,7 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> Entrypoint { get; }
 
     /// <inheritdoc />
-    public IEnumerable<string> Command { get; }
+    public ComposableEnumerable<string> Command { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> Environments { get; }
@@ -216,6 +220,10 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
-    public Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+    public Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
   }
 }

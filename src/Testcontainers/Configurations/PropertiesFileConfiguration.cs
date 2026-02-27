@@ -57,6 +57,13 @@ namespace DotNet.Testcontainers.Configurations
       = new PropertiesFileConfiguration();
 
     /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      const string propertyName = "docker.api.version";
+      return GetDockerApiVersion(propertyName);
+    }
+
+    /// <inheritdoc />
     public string GetDockerConfig()
     {
       const string propertyName = "docker.config";
@@ -127,7 +134,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       const string propertyName = "ryuk.container.privileged";
       return GetRyukContainerPrivileged(propertyName);
@@ -165,6 +172,13 @@ namespace DotNet.Testcontainers.Configurations
     public TimeSpan? GetWaitStrategyTimeout()
     {
       const string propertyName = "wait.strategy.timeout";
+      return GetWaitStrategyTimeout(propertyName);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      const string propertyName = "named.pipe.connection.timeout";
       return GetWaitStrategyTimeout(propertyName);
     }
   }

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+        <OutputType>Exe</OutputType>
+        <DefineConstants>$(DefineConstants);XUNIT_V3</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="Dapper"/>
+        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="StackExchange.Redis"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="../Testcontainers.Xunit.Tests/*.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="../Testcontainers.Xunit.Tests/Chinook_PostgreSql_AutoIncrementPKs.sql">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

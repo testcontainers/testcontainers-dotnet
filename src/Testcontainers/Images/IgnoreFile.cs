@@ -185,17 +185,17 @@ namespace DotNet.Testcontainers.Images
       /// <inheritdoc />
       public string Replace(string input)
       {
-        // Find last non recursive wildcard in pattern.
+        // Find last non-recursive wildcard in pattern.
         var index = input.LastIndexOf("*", StringComparison.Ordinal);
 
-        // If last character is a non recursive wildcard, add the end of string regular expression.
+        // If last character is a non-recursive wildcard, add the end of string regular expression.
         if (input.EndsWith("*", StringComparison.Ordinal) && index >= 0)
         {
           input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?$");
           index = -1;
         }
 
-        // Replace the last non recursive wildcard with a match-zero-or-one quantifier regular expression.
+        // Replace the last non-recursive wildcard with a match-zero-or-one quantifier regular expression.
 #if NETSTANDARD2_0
         if (input.Contains("*") && index >= 0)
 #else
@@ -205,7 +205,7 @@ namespace DotNet.Testcontainers.Images
           input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?");
         }
 
-        // Replace remaining non recursive wildcards.
+        // Replace remaining non-recursive wildcards.
         return input.Replace("*", MatchAllExceptPathSeparator);
       }
     }

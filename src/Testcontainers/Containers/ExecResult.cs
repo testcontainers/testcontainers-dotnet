@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="stdout">The stdout output.</param>
     /// <param name="stderr">The stderr output.</param>
     /// <param name="exitCode">The exit code.</param>
-    public ExecResult(string stdout, string stderr, long exitCode)
+    public ExecResult(string stdout, string stderr, long? exitCode)
     {
       Stdout = stdout;
       Stderr = stderr;
@@ -37,6 +37,6 @@ namespace DotNet.Testcontainers.Containers
     /// Gets the exit code.
     /// </summary>
     [PublicAPI]
-    public long ExitCode { get; }
+    public long? ExitCode { get; }
   }
 }

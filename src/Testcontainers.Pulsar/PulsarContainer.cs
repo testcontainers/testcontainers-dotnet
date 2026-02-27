@@ -105,7 +105,7 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.WriteLine("export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)");
             startupScript.WriteLine("export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters");
             startupScript.WriteLine("bin/apply-config-from-env.py conf/standalone.conf");
-            startupScript.WriteLine("bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf");
+            startupScript.WriteLine("bin/apply-config-from-env.py --prefix CLIENT_PREFIX_ conf/client.conf");
         }
 
         startupScript.Write("bin/pulsar standalone");
@@ -116,7 +116,7 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.Write(" --no-stream-storage");
         }
 
-        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
+        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
     }
 
     private static bool IsVersionAffectedByGhIssue22811(System.Version version)

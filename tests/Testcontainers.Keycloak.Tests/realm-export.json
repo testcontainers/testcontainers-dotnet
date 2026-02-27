@@ -1,0 +1,47 @@
+{
+  "realm": "test-realm",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "test-client",
+      "secret": "secret",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "name": "Test Client",
+      "attributes": {
+        "jwt.client.claims": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "test-client",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "email": "admin@example.com"
+    }
+  ]
+}
