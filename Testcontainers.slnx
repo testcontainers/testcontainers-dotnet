@@ -62,6 +62,7 @@
         <Project Path="src/Testcontainers.RavenDb/Testcontainers.RavenDb.csproj"/>
         <Project Path="src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
         <Project Path="src/Testcontainers.Redpanda/Testcontainers.Redpanda.csproj"/>
+        <Project Path="src/Testcontainers.Seq/Testcontainers.Seq.csproj"/>
         <Project Path="src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
         <Project Path="src/Testcontainers.Sftp/Testcontainers.Sftp.csproj"/>
         <Project Path="src/Testcontainers.Temporalio/Testcontainers.Temporalio.csproj"/>
@@ -134,6 +135,7 @@
         <Project Path="tests/Testcontainers.Redis.Tests/Testcontainers.Redis.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Redpanda.Tests/Testcontainers.Redpanda.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ResourceReaper.Tests/Testcontainers.ResourceReaper.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Seq.Tests/Testcontainers.Seq.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ServiceBus.Tests/Testcontainers.ServiceBus.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Sftp.Tests/Testcontainers.Sftp.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Temporalio.Tests/Testcontainers.Temporalio.Tests.csproj"/>
