@@ -1,38 +1,43 @@
-using Microsoft.Extensions.Logging;
-using Seq.Api;
-using System;
-using System.Linq;
-
 namespace Testcontainers.Seq;
 
 public sealed class SeqContainerTest : IAsyncLifetime
 {
-    private readonly SeqContainer _seqContainer = new SeqBuilder().Build();
+    private readonly SeqContainer _seqContainer = new SeqBuilder(TestSession.GetImageFromDockerfile()).WithAcceptLicenseAgreement(true).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _seqContainer.StartAsync();
+        await _seqContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _seqContainer.DisposeAsync().AsTask();
+        return _seqContainer.DisposeAsync();
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task CanLog()
+    public async Task LogsMessageToSeq()
     {
-        var currentSeqApiPort = _seqContainer.GetMappedPublicPort(80);
-        var currentSeqHostname = _seqContainer.Hostname;
+        // Given
+        const string helloWorld = "Hello, World!";
 
-        ILoggerFactory loggerFactory = new LoggerFactory();
-        loggerFactory.AddSeq(_seqContainer.GetServerApiUrl());
-        var testLogger = loggerFactory.CreateLogger("testlogger");
-        testLogger.LogInformation("TRY THIS");
+        var endpoint = _seqContainer.GetEndpoint();
 
-        var seqConnection = new SeqConnection(_seqContainer.GetServerApiUrl());
-        var eventList = await seqConnection.Events.ListAsync(fromDateUtc: DateTime.Now.AddMinutes(-1));
-        Assert.Contains(eventList, e => e.MessageTemplateTokens.Last().Text == "TRY THIS");
+        var loggerFactory = new LoggerFactory();
+        loggerFactory.AddSeq(endpoint);
+
+        var logger = loggerFactory.CreateLogger(nameof(SeqContainerTest));
+        logger.LogInformation(helloWorld);
+
+        using var connection = new SeqConnection(endpoint);
+
+        // When
+        var events = await connection.Events.ListAsync(cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Single(events);
+        Assert.Equal(helloWorld, events[0].MessageTemplateTokens.Last().Text);
     }
 }

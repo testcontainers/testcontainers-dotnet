@@ -1,0 +1,1 @@
+FROM datalust/seq:2025.2

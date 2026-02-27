@@ -1,5 +1,3 @@
-using System;
-
 namespace Testcontainers.Seq;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -15,8 +13,12 @@ public sealed class SeqContainer : DockerContainer
     {
     }
 
-    public string GetServerApiUrl()
+    /// <summary>
+    /// Gets the Seq endpoint.
+    /// </summary>
+    /// <returns>The Seq endpoint.</returns>
+    public string GetEndpoint()
     {
-        return new UriBuilder("http", Hostname, GetMappedPublicPort(SeqBuilder.SeqApiPort)).Uri.ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(SeqBuilder.SeqPort)).ToString();
     }
 }

@@ -89,8 +89,8 @@
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
         <PackageVersion Include="RavenDB.Client" Version="5.4.100"/>
         <PackageVersion Include="Selenium.WebDriver" Version="4.8.1"/>
-        <PackageVersion Include="Seq.Api" Version="2024.3.0"/>
-        <PackageVersion Include="Seq.Extensions.Logging" Version="8.0.0"/>
+        <PackageVersion Include="Seq.Api" Version="2025.2.2"/>
+        <PackageVersion Include="Seq.Extensions.Logging" Version="9.0.0"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
         <PackageVersion Include="Temporalio" Version="1.11.0"/>
         <PackageVersion Include="ToxiproxyNetCore" Version="1.0.40"/>
