@@ -2,7 +2,7 @@
 
 The Connection String Provider API provides a standardized way to access and manage connection information for Testcontainers (modules). It allows developers to customize module-provided connection strings or add their own, and to access module-specific connection strings or endpoints (e.g., database connection strings, HTTP API base addresses) in a uniform way.
 
-!!!note
+!!! note
 
     Testcontainers modules do not yet implement this feature. Developers can use the provider to define and manage their own connection strings or endpoints. Providers will be integrated by modules in future releases.
 

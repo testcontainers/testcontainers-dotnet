@@ -22,7 +22,7 @@ To build a Docker image with Testcontainers, it's important to understand the bu
 2. **Dockerfile name**: The name of the Dockerfile to use
 3. **Dockerfile directory**: Where the Dockerfile is located
 
-!!!tip
+!!! tip
 
     The build context is optional. If you don't specify one, it defaults to the Dockerfile directory.
 
@@ -56,7 +56,7 @@ _ = new ImageFromDockerfileBuilder()
 
 As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
 
-!!!tip
+!!! tip
 
     To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
 
@@ -119,7 +119,7 @@ _ = new ImageFromDockerfileBuilder()
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 

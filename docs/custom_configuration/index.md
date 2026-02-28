@@ -115,7 +115,7 @@ In .NET logging usually goes through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:06.26] Start Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
     [testcontainers.org 00:00:06.64] Delete Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
 
-!!!tip
+!!! tip
 
     These log messages are from the Testcontainers library and contain information about the test resources. They do not include log messages from the containers. To get the container log messages, see: [Getting log messages](https://dotnet.testcontainers.org/api/create_docker_container/#getting-log-messages).
 

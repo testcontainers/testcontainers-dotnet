@@ -4,7 +4,7 @@
 
 The Testcontainers Redis module is compatible with the Valkey container image. You can use the existing [`Testcontainers.Redis`](/modules/redis/) package without requiring a separate Garnet module.
 
-!!!note
+!!! note
 
     If Valkey introduces features or configuration options that require dedicated support in the future, we can introduce a separate module at that time.
 
