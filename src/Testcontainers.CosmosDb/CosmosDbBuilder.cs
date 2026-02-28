@@ -141,20 +141,20 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
                         "version": "EN20260227"
                     }
 
-                    The following conditions will check if the endpoint return an Success status code
-                        and if the "gateway" and "postgres" checks are healthy, which indicates that the CosmosDB Emulator is ready to accept requests.
+                    The following conditions will check that the endpoint returns a success status code
+                        and that the "gateway" and "postgres" checks are healthy, which indicates that the CosmosDB Emulator is ready to accept requests.
                     This is because sometimes the /alive endpoint may return a successful response before the CosmosDB Emulator is fully ready
-                        to accept requests, and checking the "gateway" and "postgres" checks can provide a more reliable indication of readiness.
+                        to accept requests. Checking the "gateway" and "postgres" checks can provide a more reliable indication of readiness.
                 */
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    var content = await httpResponse.Content.ReadAsStringAsync();
+                    var content = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
                     if (jsonDocument.RootElement.TryGetProperty("checks", out var checksProperty) &&
-                       checksProperty.TryGetProperty("gateway", out var gatewayProperty) &&
-                       "healthy".Equals(gatewayProperty.GetString(), StringComparison.OrdinalIgnoreCase) &&
-                       checksProperty.TryGetProperty("postgres", out var postgresProperty) &&
-                       "healthy".Equals(postgresProperty.GetString(), StringComparison.OrdinalIgnoreCase))
+                        checksProperty.TryGetProperty("gateway", out var gatewayProperty) &&
+                        "healthy".Equals(gatewayProperty.GetString(), StringComparison.OrdinalIgnoreCase) &&
+                        checksProperty.TryGetProperty("postgres", out var postgresProperty) &&
+                        "healthy".Equals(postgresProperty.GetString(), StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }

@@ -65,7 +65,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
 
         // When
-        var response = await container.CreateItemAsync(
+        await container.CreateItemAsync(
             new FakeItem { id = id, Name = name },
             new PartitionKey(id));
 

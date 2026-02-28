@@ -26,7 +26,7 @@ public sealed class CosmosDbContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets a configured HTTP client that automatically trusts the CosmosDb Emulator's certificate.
+    /// Gets a configured HTTP client for the CosmosDb Emulator instance.
     /// </summary>
     public HttpClient HttpClient => new HttpClient(new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)));
 
