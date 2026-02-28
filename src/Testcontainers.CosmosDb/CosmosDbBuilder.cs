@@ -102,20 +102,24 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     }
 
     /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
+    private sealed class WaitUntil : IWaitUntil, IDisposable
     {
+        // CosmosDB's preconfigured HTTP client will redirect the request to the container.
+        private const string RequestUri = "http://localhost/alive";
+        private HttpClient? _httpClient;
+
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string REQUEST_URI = "http://localhost/alive";
-
-            using var httpClient = ((CosmosDbContainer)container).HttpClientHealthCheck;
+            if(_httpClient is null)
+            {
+                _httpClient = ((CosmosDbContainer)container).HttpClientHealthCheck;
+            }
 
             try
             {
-                using var httpResponse = await httpClient
-                    .GetAsync(REQUEST_URI)
+                using var httpResponse = await _httpClient
+                    .GetAsync(RequestUri)
                     .ConfigureAwait(false);
 
                 /*
@@ -163,6 +167,12 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
             catch { }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            try { _httpClient?.Dispose(); }
+            catch { }
         }
     }
 }

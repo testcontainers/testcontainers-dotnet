@@ -35,7 +35,7 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
         // When
         var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("fakedb")).Database;
         await database.CreateContainerIfNotExistsAsync("fakecontainer", "/id");
-        var databaseProperties = (await cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
+        var databaseProperties = (await database.ReadAsync()).Resource;
 
 
         // Then
