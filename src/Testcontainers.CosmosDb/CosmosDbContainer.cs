@@ -26,14 +26,14 @@ public sealed class CosmosDbContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets a configured HTTP message handler that automatically trusts the CosmosDb Emulator's certificate.
-    /// </summary>
-    public HttpMessageHandler HttpMessageHandler => new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort));
-
-    /// <summary>
     /// Gets a configured HTTP client that automatically trusts the CosmosDb Emulator's certificate.
     /// </summary>
-    public HttpClient HttpClient => new HttpClient(HttpMessageHandler);
+    public HttpClient HttpClient => new HttpClient(new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)));
+
+    /// <summary>
+    /// Gets a configured HTTP client for health checks.
+    /// </summary>
+    internal HttpClient HttpClientHealthCheck => new HttpClient(new UriRewriter(Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbHealthCheckPort)));
 
     /// <summary>
     /// Rewrites the HTTP requests to target the running CosmosDb Emulator instance.

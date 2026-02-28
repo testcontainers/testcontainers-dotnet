@@ -5,10 +5,10 @@ namespace Testcontainers.CosmosDb;
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview";
 
     public const ushort CosmosDbPort = 8081;
-
+    public const ushort CosmosDbHealthCheckPort = 8080;
     public const string DefaultAccountKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
 
     /// <summary>
@@ -77,6 +77,8 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     {
         return base.Init()
             .WithPortBinding(CosmosDbPort, true)
+            .WithPortBinding(CosmosDbHealthCheckPort, true)
+            .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
@@ -105,19 +107,56 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
         public async Task<bool> UntilAsync(IContainer container)
         {
             // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string REQUEST_URI = "http://localhost";
+            const string REQUEST_URI = "http://localhost/alive";
 
-            using var httpClient = ((CosmosDbContainer)container).HttpClient;
+            using var httpClient = ((CosmosDbContainer)container).HttpClientHealthCheck;
 
             try
             {
-                using var httpResponse = await httpClient.GetAsync(REQUEST_URI)
+                using var httpResponse = await httpClient
+                    .GetAsync(REQUEST_URI)
                     .ConfigureAwait(false);
 
+                /*
+                    Example response from CosmosDB Emulator's /alive endpoint:
+
+                    HTTP/1.1 200 OK
+                    Content-Type: application/json
+                    Connection: close
+                    Content-Length: 280
+
+                    {
+                        "alive": true,
+                        "checks": {
+                            "explorer": "disabled",
+                            "gateway": "healthy",
+                            "postgres": "healthy"
+                        },
+                        "overall": true,
+                        "protocol": "http",
+                        "ready": true,
+                        "status": "healthy",
+                        "timestamp": "2026-02-28T08:52:40.328000942+00:00",
+                        "version": "EN20260227"
+                    }
+
+                    The following conditions will check if the endpoint return an Success status code
+                        and if the "gateway" and "postgres" checks are healthy, which indicates that the CosmosDB Emulator is ready to accept requests.
+                    This is because sometimes the /alive endpoint may return a successful response before the CosmosDB Emulator is fully ready
+                        to accept requests, and checking the "gateway" and "postgres" checks can provide a more reliable indication of readiness.
+                */
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    await Task.Delay(2_000);
-                    return true;
+                    var content = await httpResponse.Content.ReadAsStringAsync();
+                    using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
+                    if (jsonDocument.RootElement.TryGetProperty("checks", out var checksProperty) &&
+                       checksProperty.TryGetProperty("gateway", out var gatewayProperty) &&
+                       "healthy".Equals(gatewayProperty.GetString(), StringComparison.OrdinalIgnoreCase) &&
+                       checksProperty.TryGetProperty("postgres", out var postgresProperty) &&
+                       "healthy".Equals(postgresProperty.GetString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
             }
             catch { }
