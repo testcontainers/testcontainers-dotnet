@@ -65,6 +65,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("Hello world", headingElementText);
+        Assert.Equal(_playwrightContainer.GetConnectionString(), _playwrightContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UsePlaywrightContainer]
 

@@ -63,7 +63,7 @@ jobs:
 
     env:
       # Lowest API version that GitHub runners support.
-      DOCKER_API_VERSION: 1.47
+      DOCKER_API_VERSION: 1.44
 
     steps:
       - name: Checkout Repository

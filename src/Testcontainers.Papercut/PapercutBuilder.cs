@@ -78,6 +78,7 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
         return base.Init()
             .WithPortBinding(SmtpPort, true)
             .WithPortBinding(HttpPort, true)
+            .WithConnectionStringProvider(new PapercutConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health").ForPort(HttpPort).ForResponseMessageMatching(IsInstanceHealthyAsync)));
     }

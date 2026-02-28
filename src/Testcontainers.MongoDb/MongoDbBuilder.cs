@@ -145,6 +145,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .WithPortBinding(MongoDbPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new MongoDbConnectionStringProvider())
             .WithStartupCallback(InitiateReplicaSetAsync);
     }
 

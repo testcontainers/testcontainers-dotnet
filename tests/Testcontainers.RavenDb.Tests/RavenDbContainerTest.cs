@@ -29,5 +29,6 @@ public sealed class RavenDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Contains(buildNumber.ProductVersion, _ravenDbContainer.Image.Tag);
+        Assert.Equal(_ravenDbContainer.GetConnectionString(), _ravenDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

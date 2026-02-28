@@ -39,5 +39,6 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         Assert.NotEmpty(ping.Id);
         Assert.NotEmpty(ping.Services);
         Assert.NotEmpty(bucket.Name);
+        Assert.Equal(_couchbaseContainer.GetConnectionString(), _couchbaseContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

@@ -11,5 +11,6 @@ global using Amazon.S3;
 global using Amazon.SimpleNotificationService;
 global using Amazon.SQS;
 global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
 global using JetBrains.Annotations;
 global using Xunit;

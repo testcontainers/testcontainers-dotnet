@@ -3,7 +3,7 @@ namespace WeatherForecast.Tests;
 [UsedImplicitly]
 public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
 {
-  private static readonly X509Certificate Certificate = new X509Certificate2(WeatherForecastImage.CertificateFilePath, WeatherForecastImage.CertificatePassword);
+  private static readonly X509Certificate Certificate = X509CertificateLoader.LoadPkcs12FromFile(WeatherForecastImage.CertificateFilePath, WeatherForecastImage.CertificatePassword);
 
   private static readonly WeatherForecastImage Image = new WeatherForecastImage();
 
@@ -27,13 +27,12 @@ public sealed class WeatherForecastContainer : HttpClient, IAsyncLifetime
     _weatherForecastNetwork = new NetworkBuilder()
       .Build();
 
-    _postgreSqlContainer = new PostgreSqlBuilder()
+    _postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1")
       .WithNetwork(_weatherForecastNetwork)
       .WithNetworkAliases(weatherForecastStorage)
       .Build();
 
-    _weatherForecastContainer = new ContainerBuilder()
-      .WithImage(Image)
+    _weatherForecastContainer = new ContainerBuilder(Image)
       .WithNetwork(_weatherForecastNetwork)
       .WithPortBinding(WeatherForecastImage.HttpsPort, true)
       .WithEnvironment("ASPNETCORE_URLS", "https://+")

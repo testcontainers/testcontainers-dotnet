@@ -38,7 +38,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public async Task SendEventDataBatchShouldNotThrowException()
     {
         // Given
-        var message = Guid.NewGuid().ToString();
+        var message = Guid.NewGuid().ToString("D");
 
         var readOptions = new ReadEventOptions();
         readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);
@@ -63,6 +63,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
+        Assert.Equal(_eventHubsContainer.GetConnectionString(), _eventHubsContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseEventHubsContainer]
 

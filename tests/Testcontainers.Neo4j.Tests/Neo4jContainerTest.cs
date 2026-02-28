@@ -49,6 +49,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(neo4jDatabase, session.SessionConfig.Database);
         Assert.Equal(Edition, edition);
+        Assert.Equal(_neo4jContainer.GetConnectionString(), _neo4jContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseNeo4jContainer]
 

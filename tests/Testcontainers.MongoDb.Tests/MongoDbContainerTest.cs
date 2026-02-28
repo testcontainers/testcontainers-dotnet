@@ -39,6 +39,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Contains(databases.ToEnumerable(TestContext.Current.CancellationToken), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
+        Assert.Equal(_mongoDbContainer.GetConnectionString(), _mongoDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

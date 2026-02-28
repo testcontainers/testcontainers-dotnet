@@ -74,7 +74,7 @@ _ = Wait.ForUnixContainer()
   .UntilInternalTcpPortIsAvailable(8080);
 ```
 
-!!!note
+!!! note
 
     Just because a service is listening on the internal TCP port does not necessarily mean it is fully ready to handle requests. Often, wait strategies such as checking for specific log messages or verifying a health endpoint provide more reliable confirmation that the service is operational.
 
@@ -87,7 +87,7 @@ _ = Wait.ForUnixContainer()
   .UntilExternalTcpPortIsAvailable(8080);
 ```
 
-!!!note
+!!! note
 
     External TCP port availability doesn't guarantee that the actual service inside the container is ready to handle requests. It only confirms that the port mapping is established and a connection can be made to the host-side proxy.
 

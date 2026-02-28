@@ -25,7 +25,7 @@ The example below demonstrates how to override the `Configure(TBuilderEntity)` m
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`1.cs:ConfigureRedisContainer"
     ```
 
-!!!tip
+!!! tip
     Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag may pointing to a new version.
 
 The base class also receives an instance of xUnit.net's [ITestOutputHelper](https://xunit.net/docs/capturing-output) to capture and forward log messages to the running test.

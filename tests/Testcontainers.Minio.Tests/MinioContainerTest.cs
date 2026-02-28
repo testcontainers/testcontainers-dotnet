@@ -31,6 +31,7 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+        Assert.Equal(_minioContainer.GetConnectionString(), _minioContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

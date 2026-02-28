@@ -10,8 +10,7 @@ public sealed class DbFixture : IAsyncLifetime
         // Testcontainers starts the dependent database (PostgreSQL) and copies the SQL scripts
         // to the container before it starts. The PostgreSQL container runs the scripts
         // automatically during startup, creating the database schema.
-        _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:15-alpine")
+        _postgreSqlContainer = new PostgreSqlBuilder("postgres:15-alpine")
             .WithResourceMapping("migrate/", "/docker-entrypoint-initdb.d/")
             .Build();
     }

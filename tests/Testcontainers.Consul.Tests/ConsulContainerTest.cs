@@ -42,5 +42,6 @@ public sealed class ConsulContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         Assert.Equal(helloWorld, Encoding.Default.GetString(actual.Response.Value));
+        Assert.Equal(_consulContainer.GetBaseAddress(), _consulContainer.GetConnectionString());
     }
 }

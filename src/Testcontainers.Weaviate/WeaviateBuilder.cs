@@ -73,6 +73,7 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
             .WithPortBinding(WeaviateGrpcPort, true)
             .WithEnvironment("AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED", "true")
             .WithEnvironment("PERSISTENCE_DATA_PATH", "/var/lib/weaviate")
+            .WithConnectionStringProvider(new WeaviateConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilInternalTcpPortIsAvailable(WeaviateHttpPort)
                 .UntilInternalTcpPortIsAvailable(WeaviateGrpcPort)

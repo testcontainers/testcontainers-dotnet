@@ -169,6 +169,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
             .WithNetworkAliases(WebDriverNetworkAlias)
             .WithPortBinding(WebDriverPort, true)
             .WithPortBinding(VncServerPort, true)
+            .WithConnectionStringProvider(new WebDriverConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/wd/hub/status").ForPort(WebDriverPort).ForResponseMessageMatching(IsGridReadyAsync)));
     }

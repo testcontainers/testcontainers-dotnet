@@ -41,6 +41,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(response.IsValid);
+        Assert.Equal(_openSearchContainer.GetConnectionString(), _openSearchContainer.GetConnectionString(ConnectionMode.Host));
     }
     // <!-- -8<- [end:PingExample] -->
 
@@ -77,7 +78,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         // Given
         var client = CreateClient();
 
-        var document = new Document(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        var document = new Document(Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"));
 
         // When
         Func<IndexDescriptor<Document>, IIndexRequest<Document>> indexRequest = i =>
@@ -150,6 +151,7 @@ public abstract class OpenSearchContainerTest : IAsyncLifetime
         {
             var connectionString = new Uri(_openSearchContainer.GetConnectionString());
             Assert.Equal(Uri.UriSchemeHttp, connectionString.Scheme);
+
             return new OpenSearchClient(connectionString);
         }
     }

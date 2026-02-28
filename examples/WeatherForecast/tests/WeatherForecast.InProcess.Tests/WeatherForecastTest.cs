@@ -3,7 +3,7 @@ namespace WeatherForecast.InProcess.Tests;
 [UsedImplicitly]
 public sealed class WeatherForecastTest : IAsyncLifetime
 {
-  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
+  private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
 
   public Task InitializeAsync()
   {

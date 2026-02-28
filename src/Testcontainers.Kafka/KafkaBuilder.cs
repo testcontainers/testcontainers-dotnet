@@ -264,7 +264,8 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithEnvironment("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
             .WithEnvironment("CLUSTER_ID", ClusterId)
             .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; {StartupScriptFilePath}");
+            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; {StartupScriptFilePath}")
+            .WithConnectionStringProvider(new KafkaConnectionStringProvider());
     }
 
     /// <inheritdoc />

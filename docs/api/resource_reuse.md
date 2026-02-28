@@ -17,7 +17,7 @@ _ = new ContainerBuilder("alpine:3.20.0")
 
 The current implementation considers the following resource configurations and their corresponding builder APIs when calculating the hash value.
 
-!!!note
+!!! note
 
     Version 3.8.0 did not include the container configuration's name in the hash value.
 
@@ -41,7 +41,7 @@ The current implementation considers the following resource configurations and t
 
 By default, all module resource configurations are included. This works well for simple value and reference types that can be serialized and deserialized to JSON without custom converters. However, more complex resource configurations may require a custom converter to properly serialize and deserialize their values.
 
-!!!warning
+!!! warning
 
     Reuse does not replace singleton implementations to improve test performance. Prefer proper shared instances according to your chosen test framework.
 

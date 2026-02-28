@@ -56,14 +56,15 @@ namespace DotNet.Testcontainers.Containers
     private ResourceReaper(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode)
     {
       _resourceReaperContainer = new ContainerBuilder(resourceReaperImage)
-        .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithDockerEndpoint(dockerEndpointAuthConfig)
+        .WithName($"testcontainers-ryuk-{sessionId:D}")
         .WithPrivileged(requiresPrivilegedMode)
         .WithAutoRemove(true)
         .WithCleanUp(false)
         .WithPortBinding(TestcontainersSettings.ResourceReaperPublicHostPort.Invoke(dockerEndpointAuthConfig), RyukPort)
         .WithMount(dockerSocket)
         .WithLogger(logger)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"))
         .Build();
 
       SessionId = sessionId;
@@ -303,6 +304,7 @@ namespace DotNet.Testcontainers.Containers
 
         using (var tcpClient = new TcpClient())
         {
+          tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
           tcpClient.LingerState = DiscardAllPendingData;
 
           try
@@ -364,7 +366,7 @@ namespace DotNet.Testcontainers.Containers
 #pragma warning restore S907
                   }
 
-                  var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n');
+                  var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n', 0, numberOfBytes);
 
                   if (indexOfNewLine == -1)
                   {
@@ -389,7 +391,9 @@ namespace DotNet.Testcontainers.Containers
                       .ConfigureAwait(false);
 #endif
 
-                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(messageBuffer.ToArray()), StringComparison.OrdinalIgnoreCase);
+                    var buffer = messageBuffer.GetBuffer();
+
+                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(buffer, 0, (int)messageBuffer.Length), StringComparison.OrdinalIgnoreCase);
                     messageBuffer.SetLength(0);
                   }
                 }

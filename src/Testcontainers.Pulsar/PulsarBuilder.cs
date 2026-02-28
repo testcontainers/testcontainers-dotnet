@@ -128,6 +128,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithFunctionsWorker(false)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
+            .WithConnectionStringProvider(new PulsarConnectionStringProvider())
             .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
     }
 

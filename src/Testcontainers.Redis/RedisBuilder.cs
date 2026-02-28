@@ -75,6 +75,7 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     {
         return base.Init()
             .WithPortBinding(RedisPort, true)
+            .WithConnectionStringProvider(new RedisConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("redis-cli", "ping"));
     }
 

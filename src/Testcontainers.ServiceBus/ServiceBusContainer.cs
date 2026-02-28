@@ -26,4 +26,21 @@ public sealed class ServiceBusContainer : DockerContainer
         properties.Add("UseDevelopmentEmulator", "true");
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
+
+    /// <summary>
+    /// Gets the Service Bus HTTP connection string.
+    /// </summary>
+    /// <remarks>
+    /// This connection string is intended for use with the ServiceBusAdministrationClient.
+    /// </remarks>
+    /// <returns>The Service Bus HTTP connection string.</returns>
+    public string GetHttpConnectionString()
+    {
+        var properties = new Dictionary<string, string>();
+        properties.Add("Endpoint", new UriBuilder("sb", Hostname, GetMappedPublicPort(ServiceBusBuilder.ServiceBusHttpPort)).ToString());
+        properties.Add("SharedAccessKeyName", "RootManageSharedAccessKey");
+        properties.Add("SharedAccessKey", "SAS_KEY_VALUE");
+        properties.Add("UseDevelopmentEmulator", "true");
+        return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+    }
 }

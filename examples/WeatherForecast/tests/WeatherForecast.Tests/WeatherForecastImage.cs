@@ -21,6 +21,8 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 
   public string Digest => _image.Digest;
 
+  public string Platform => _image.Platform;
+
   public string FullName => _image.FullName;
 
   public async Task InitializeAsync()

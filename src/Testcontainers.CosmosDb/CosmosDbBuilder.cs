@@ -79,6 +79,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
             .WithPortBinding(CosmosDbPort, true)
             .WithPortBinding(CosmosDbHealthCheckPort, true)
             .WithEnvironment("ENABLE_EXPLORER", "false")
+            .WithConnectionStringProvider(new CosmosDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
