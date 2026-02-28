@@ -1,0 +1,1 @@
+FROM ghcr.io/goccy/bigquery-emulator:0.4

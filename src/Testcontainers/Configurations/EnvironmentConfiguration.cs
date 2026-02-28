@@ -10,6 +10,8 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   internal class EnvironmentConfiguration : CustomConfiguration, ICustomConfiguration
   {
+    private const string DockerApiVersion = "DOCKER_API_VERSION";
+
     private const string DockerConfig = "DOCKER_CONFIG";
 
     private const string DockerHost = "DOCKER_HOST";
@@ -42,6 +44,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const string WaitStrategyTimeout = "TESTCONTAINERS_WAIT_STRATEGY_TIMEOUT";
 
+    private const string NamedPipeConnectionTimeout = "TESTCONTAINERS_NAMED_PIPE_CONNECTION_TIMEOUT";
+
     static EnvironmentConfiguration()
     {
     }
@@ -52,11 +56,12 @@ namespace DotNet.Testcontainers.Configurations
     public EnvironmentConfiguration()
       : base(new[]
         {
-          DockerAuthConfig,
-          DockerCertPath,
+          DockerApiVersion,
           DockerConfig,
           DockerHost,
           DockerContext,
+          DockerAuthConfig,
+          DockerCertPath,
           DockerTls,
           DockerTlsVerify,
           DockerHostOverride,
@@ -68,6 +73,7 @@ namespace DotNet.Testcontainers.Configurations
           WaitStrategyRetries,
           WaitStrategyInterval,
           WaitStrategyTimeout,
+          NamedPipeConnectionTimeout,
         }
         .ToDictionary(key => key, Environment.GetEnvironmentVariable))
     {
@@ -78,6 +84,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public static ICustomConfiguration Instance { get; }
       = new EnvironmentConfiguration();
+
+    /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      return GetDockerApiVersion(DockerApiVersion);
+    }
 
     /// <inheritdoc />
     public string GetDockerConfig()
@@ -173,6 +185,12 @@ namespace DotNet.Testcontainers.Configurations
     public TimeSpan? GetWaitStrategyTimeout()
     {
       return GetWaitStrategyTimeout(WaitStrategyTimeout);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
+    {
+      return GetWaitStrategyTimeout(NamedPipeConnectionTimeout);
     }
   }
 }

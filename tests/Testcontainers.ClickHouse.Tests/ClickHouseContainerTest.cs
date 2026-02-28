@@ -1,6 +1,6 @@
 namespace Testcontainers.ClickHouse;
 
-public abstract class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
+public abstract partial class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouseDefaultFixture fixture)
 {
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -35,6 +35,9 @@ public abstract class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouse
     public class ClickHouseDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<ClickHouseBuilder, ClickHouseContainer>(messageSink)
     {
+        protected override ClickHouseBuilder Configure()
+            => new ClickHouseBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => ClickHouseConnectionFactory.Instance;
     }
@@ -43,8 +46,8 @@ public abstract class ClickHouseContainerTest(ClickHouseContainerTest.ClickHouse
     public class ClickHouseWaitForDatabaseFixture(IMessageSink messageSink)
         : ClickHouseDefaultFixture(messageSink)
     {
-        protected override ClickHouseBuilder Configure(ClickHouseBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override ClickHouseBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

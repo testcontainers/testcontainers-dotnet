@@ -7,12 +7,18 @@ public sealed class KafkaConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConfiguration" /> class.
     /// </summary>
+    /// <param name="vendor">The Kafka vendor.</param>
+    /// <param name="consensusProtocol">The consensus protocol.</param>
     /// <param name="listeners">A list of listeners.</param>
     /// <param name="advertisedListeners">A list of advertised listeners.</param>
     public KafkaConfiguration(
+        KafkaVendor? vendor = null,
+        ConsensusProtocol? consensusProtocol = null,
         IEnumerable<string> listeners = null,
         IEnumerable<string> advertisedListeners = null)
     {
+        Vendor = vendor;
+        ConsensusProtocol = consensusProtocol;
         Listeners = listeners;
         AdvertisedListeners = advertisedListeners;
     }
@@ -55,9 +61,21 @@ public sealed class KafkaConfiguration : ContainerConfiguration
     public KafkaConfiguration(KafkaConfiguration oldValue, KafkaConfiguration newValue)
         : base(oldValue, newValue)
     {
+        Vendor = BuildConfiguration.Combine(oldValue.Vendor, newValue.Vendor);
+        ConsensusProtocol = BuildConfiguration.Combine(oldValue.ConsensusProtocol, newValue.ConsensusProtocol);
         Listeners = BuildConfiguration.Combine(oldValue.Listeners, newValue.Listeners);
         AdvertisedListeners = BuildConfiguration.Combine(oldValue.AdvertisedListeners, newValue.AdvertisedListeners);
     }
+
+    /// <summary>
+    /// Gets the Kafka vendor.
+    /// </summary>
+    public KafkaVendor? Vendor { get; }
+
+    /// <summary>
+    /// Gets the consensus protocol.
+    /// </summary>
+    public ConsensusProtocol? ConsensusProtocol { get; }
 
     /// <summary>
     /// Gets a list of listeners.

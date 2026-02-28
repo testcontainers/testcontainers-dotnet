@@ -11,6 +11,14 @@ namespace DotNet.Testcontainers.Configurations
   internal interface ICustomConfiguration
   {
     /// <summary>
+    /// Gets the Docker API version custom configuration.
+    /// </summary>
+    /// <returns>The Docker API version custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    Version GetDockerApiVersion();
+
+    /// <summary>
     /// Gets the Docker config custom configuration.
     /// </summary>
     /// <returns>The Docker config custom configuration.</returns>
@@ -134,5 +142,13 @@ namespace DotNet.Testcontainers.Configurations
     /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
     [CanBeNull]
     TimeSpan? GetWaitStrategyTimeout();
+
+    /// <summary>
+    /// Gets the named pipe connection timeout custom configuration.
+    /// </summary>
+    /// <returns>The named pipe connection timeout custom configuration.</returns>
+    /// <remarks>https://dotnet.testcontainers.org/custom_configuration/.</remarks>
+    [CanBeNull]
+    TimeSpan? GetNamedPipeConnectionTimeout();
   }
 }

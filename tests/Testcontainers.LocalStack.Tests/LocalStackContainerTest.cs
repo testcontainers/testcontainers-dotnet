@@ -23,9 +23,12 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _localStackContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -149,11 +152,16 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _localStackContainer.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
         public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -162,7 +170,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile(stage: "localstack1.4")).Build())
         {
         }
     }

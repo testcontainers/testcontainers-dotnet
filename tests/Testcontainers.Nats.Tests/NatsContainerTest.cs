@@ -15,9 +15,12 @@ public abstract class NatsContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _natsContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -62,11 +65,16 @@ public abstract class NatsContainerTest : IAsyncLifetime
         Assert.Equal(message, actualMessage);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _natsContainer.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
         public NatsDefaultConfiguration()
-            : base(new NatsBuilder().Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -75,20 +83,22 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public sealed class NatsAuthConfiguration : NatsContainerTest
     {
         public NatsAuthConfiguration()
-            : base(new NatsBuilder().WithUsername("%username!").WithPassword("?password&").Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("%username!").WithPassword("?password&").Build())
         {
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfUsernameIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithPassword("password").Build());
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfPasswordIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("username").Build());
         }
     }
 }

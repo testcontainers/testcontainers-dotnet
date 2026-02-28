@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
         <OutputType>Exe</OutputType>
@@ -11,9 +11,14 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
         <PackageReference Include="Microsoft.Azure.Kusto.Data"/>
-  </ItemGroup>
-  <ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
-  </ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

@@ -8,10 +8,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
   public sealed class GetContainerLogsTest : IAsyncLifetime
   {
-    private readonly IContainer _container = new ContainerBuilder()
-      .WithImage("amazon/dynamodb-local:1.20.0")
-      .WithWaitStrategy(Wait.ForUnixContainer()
-        .UntilPortIsAvailable(8000))
+    private readonly IContainer _container = new ContainerBuilder("amazon/dynamodb-local:1.20.0")
+      .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(8000))
       .Build();
 
     [Fact]

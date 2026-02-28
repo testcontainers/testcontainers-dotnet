@@ -12,7 +12,7 @@ public sealed class QdrantSecureContainerTest : IAsyncLifetime
 
     private static readonly string Thumbprint = PemCertificate.Instance.Thumbprint;
 
-    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder()
+    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder(TestSession.GetImageFromDockerfile())
         // # --8<-- [start:ConfigureQdrantContainerApiKey]
         .WithApiKey(ApiKey)
         // # --8<-- [end:ConfigureQdrantContainerApiKey]

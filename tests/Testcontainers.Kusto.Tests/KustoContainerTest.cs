@@ -2,7 +2,7 @@ namespace Testcontainers.Kusto;
 
 public sealed class KustoContainerTest : IAsyncLifetime
 {
-    private readonly KustoContainer _kustoContainer = new KustoBuilder().Build();
+    private readonly KustoContainer _kustoContainer = new KustoBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

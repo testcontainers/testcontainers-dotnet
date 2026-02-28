@@ -3,7 +3,7 @@ namespace Testcontainers.Qdrant;
 public sealed class QdrantDefaultContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseQdrantContainer]
-    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder().Build();
+    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

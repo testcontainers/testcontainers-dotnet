@@ -48,8 +48,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryContainerInformationOfCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
+      var container = new ContainerBuilder(CommonImages.Nginx)
         .Build();
 
       // When
@@ -68,8 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryContainerInformationOfNotCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
+      var container = new ContainerBuilder(CommonImages.Nginx)
         .Build();
 
       // When

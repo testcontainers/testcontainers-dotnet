@@ -15,9 +15,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -34,16 +37,21 @@ public abstract class PortForwardingTest : IAsyncLifetime
         Assert.Equal(bool.TrueString, stdout);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _container.DisposeAsync();
+    }
+
     [UsedImplicitly]
     public sealed class PortForwardingDefaultConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingDefaultConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
@@ -53,13 +61,13 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public sealed class PortForwardingNetworkConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingNetworkConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }

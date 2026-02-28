@@ -21,12 +21,16 @@ public abstract class PulsarContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _pulsarContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReceivesSendMessage()
     {
         // Given
@@ -59,6 +63,9 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         _ = await consumer.OnStateChangeTo(ConsumerState.Active, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
+        _ = await producer.OnStateChangeTo(ProducerState.Connected, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
         _ = await producer.Send(helloPulsar, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
@@ -70,12 +77,17 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UsePulsarContainer]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _pulsarContainer.DisposeAsync();
+    }
+
     // # --8<-- [start:CreatePulsarContainer]
     [UsedImplicitly]
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
         public PulsarDefaultConfiguration()
-            : base(new PulsarBuilder()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
                 .WithEnvironment(MemorySettings)
                 .Build(), false)
         {
@@ -87,7 +99,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarAuthConfiguration : PulsarContainerTest
     {
         public PulsarAuthConfiguration()
-            : base(new PulsarBuilder()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
                 .WithAuthentication()
                 .WithEnvironment(MemorySettings)
                 .Build(), true)
@@ -99,8 +111,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4Configuration : PulsarContainerTest
     {
         public PulsarV4Configuration()
-            : base(new PulsarBuilder()
-                .WithImage("apachepulsar/pulsar:4.0.2")
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
                 .WithEnvironment(MemorySettings)
                 .Build(), false)
         {
@@ -111,8 +122,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
         public PulsarV4AuthConfiguration()
-            : base(new PulsarBuilder()
-                .WithImage("apachepulsar/pulsar:4.0.2")
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
                 .WithAuthentication()
                 .WithEnvironment(MemorySettings)
                 .Build(), true)

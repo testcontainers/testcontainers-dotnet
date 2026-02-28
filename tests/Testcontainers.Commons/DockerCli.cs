@@ -44,7 +44,7 @@ public static class DockerCli
     public static bool PlatformIsEnabled(DockerPlatform platform)
     {
         var commandResult = new Command("version", "--format {{.Server.Os}}").Execute();
-        return 0.Equals(commandResult.ExitCode) && commandResult.Stdout.Contains(platform.ToString().ToLowerInvariant());
+        return 0.Equals(commandResult.ExitCode) && commandResult.Stdout.Contains(platform.ToString(), StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool ResourceExists(DockerResource resource, string id)

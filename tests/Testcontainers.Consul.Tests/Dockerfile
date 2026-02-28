@@ -1,0 +1,1 @@
+FROM consul:1.15

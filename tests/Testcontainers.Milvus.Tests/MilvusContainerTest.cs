@@ -2,8 +2,6 @@ namespace Testcontainers.Milvus;
 
 public abstract class MilvusContainerTest : IAsyncLifetime
 {
-    private const string MilvusVersion = "v2.3.10";
-
     private readonly MilvusContainer _milvusContainer;
 
     private MilvusContainerTest(MilvusContainer milvusContainer)
@@ -17,9 +15,12 @@ public abstract class MilvusContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _milvusContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -34,14 +35,19 @@ public abstract class MilvusContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(MilvusVersion, version);
+        Assert.EndsWith(version, _milvusContainer.Image.Tag);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _milvusContainer.DisposeAsync();
     }
 
     [UsedImplicitly]
     public sealed class MilvusDefaultConfiguration : MilvusContainerTest
     {
         public MilvusDefaultConfiguration()
-            : base(new MilvusBuilder().WithImage("milvusdb/milvus:" + MilvusVersion).Build())
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -55,11 +61,9 @@ public abstract class MilvusContainerTest : IAsyncLifetime
         }
 
         private MilvusSidecarConfiguration(INetwork network)
-            : base(new MilvusBuilder()
-                .WithImage("milvusdb/milvus:" + MilvusVersion)
+            : base(new MilvusBuilder(TestSession.GetImageFromDockerfile())
                 .WithEtcdEndpoint("etcd:2379")
-                .DependsOn(new ContainerBuilder()
-                    .WithImage("quay.io/coreos/etcd:v3.5.5")
+                .DependsOn(new ContainerBuilder("quay.io/coreos/etcd:v3.5.5")
                     .WithNetworkAliases("etcd")
                     .WithCommand("etcd")
                     .WithCommand("-advertise-client-urls=http://127.0.0.1:2379")

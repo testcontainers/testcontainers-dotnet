@@ -4,6 +4,7 @@ namespace Testcontainers.Pulsar;
 [PublicAPI]
 public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContainer, PulsarConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PulsarImage = "apachepulsar/pulsar:3.0.9";
 
     public const ushort PulsarBrokerDataPort = 6650;
@@ -21,10 +22,42 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// <summary>
     /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public PulsarBuilder()
+        : this(PulsarImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>apachepulsar/pulsar:3.0.9</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
+    public PulsarBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PulsarBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// </remarks>
+    public PulsarBuilder(IImage image)
         : this(new PulsarConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -90,7 +123,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     protected override PulsarBuilder Init()
     {
         return base.Init()
-            .WithImage(PulsarImage)
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)
@@ -137,9 +169,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly HttpWaitStrategy _httpWaitStrategy = new HttpWaitStrategy()
-            .ForPath("/admin/v2/clusters")
-            .ForPort(PulsarWebServicePort)
-            .ForResponseMessageMatching(IsClusterHealthyAsync);
+            .ForPath("/admin/v2/namespaces/public/default")
+            .ForPort(PulsarWebServicePort);
 
         private readonly bool _authenticationEnabled;
 
@@ -180,32 +211,6 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
 
             return await _httpWaitStrategy.UntilAsync(container)
                 .ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Determines whether the cluster is healthy or not.
-        /// </summary>
-        /// <param name="response">The HTTP response that contains the cluster information.</param>
-        /// <returns>A value indicating whether the cluster is healthy or not.</returns>
-        private static async Task<bool> IsClusterHealthyAsync(HttpResponseMessage response)
-        {
-            var jsonString = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            try
-            {
-                var status = JsonDocument.Parse(jsonString)
-                    .RootElement
-                    .EnumerateArray()
-                    .ElementAt(0)
-                    .GetString();
-
-                return "standalone".Equals(status);
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

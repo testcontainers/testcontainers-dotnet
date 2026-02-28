@@ -12,7 +12,7 @@ You can start a MSSQL container instance from any .NET application. To create an
 
 === "Start a MSSQL container"
     ```csharp
-    var msSqlContainer = new MsSqlBuilder().Build();
+    var msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build();
     await msSqlContainer.StartAsync();
     ```
 

@@ -18,6 +18,11 @@ namespace DotNet.Testcontainers.Configurations
     bool? DeleteIfExists { get; }
 
     /// <summary>
+    /// Gets the context directory.
+    /// </summary>
+    string ContextDirectory { get; }
+
+    /// <summary>
     /// Gets the Dockerfile.
     /// </summary>
     string Dockerfile { get; }
@@ -26,6 +31,11 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the Dockerfile directory.
     /// </summary>
     string DockerfileDirectory { get; }
+
+    /// <summary>
+    /// Gets the target.
+    /// </summary>
+    string Target { get; }
 
     /// <summary>
     /// Gets the image.

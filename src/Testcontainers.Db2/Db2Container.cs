@@ -39,7 +39,7 @@ public sealed class Db2Container : DockerContainer, IDatabaseContainer
 
         var db2ShellCommand = string.Format(db2ShellCommandFormat, _configuration.Database, _configuration.Username, scriptFilePath);
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, Unix.FileMode644, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "/bin/sh", "-c", db2ShellCommand}, ct)

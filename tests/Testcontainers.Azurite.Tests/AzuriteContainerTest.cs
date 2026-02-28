@@ -15,9 +15,12 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _azuriteContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -65,6 +68,11 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         Assert.False(HasError(properties));
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _azuriteContainer.DisposeAsync();
+    }
+
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
     {
         using (var rawResponse = response.GetRawResponse())
@@ -77,7 +85,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public sealed class AzuriteDefaultConfiguration : AzuriteContainerTest
     {
         public AzuriteDefaultConfiguration()
-            : base(new AzuriteBuilder().Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -86,7 +94,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public sealed class AzuriteInMemoryConfiguration : AzuriteContainerTest
     {
         public AzuriteInMemoryConfiguration()
-            : base(new AzuriteBuilder().WithInMemoryPersistence().Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).WithInMemoryPersistence().Build())
         {
         }
     }
@@ -99,11 +107,12 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         private static readonly string[] LineEndings = { "\r\n", "\n" };
 
         public AzuriteMemoryLimitConfiguration()
-            : base(new AzuriteBuilder().WithInMemoryPersistence(MemoryLimitInMb).Build())
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).WithInMemoryPersistence(MemoryLimitInMb).Build())
         {
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task MemoryLimitIsConfigured()
         {
             // Given

@@ -18,9 +18,12 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _serviceBusContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -57,12 +60,17 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UseServiceBusContainer]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _serviceBusContainer.DisposeAsync();
+    }
+
     // # --8<-- [start:CreateServiceBusContainer]
     [UsedImplicitly]
     public sealed class ServiceBusDefaultMsSqlConfiguration : ServiceBusContainerTest
     {
         public ServiceBusDefaultMsSqlConfiguration()
-            : base(new ServiceBusBuilder()
+            : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .Build())
         {
@@ -74,7 +82,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusCustomMsSqlConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomMsSqlConfiguration(DatabaseFixture fixture)
-            : base(new ServiceBusBuilder()
+            : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 // # --8<-- [start:ReuseExistingMsSqlContainer]
                 .WithMsSqlContainer(fixture.Network, fixture.Container, DatabaseFixture.DatabaseNetworkAlias)
@@ -88,7 +96,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
     public sealed class ServiceBusCustomQueueConfiguration : ServiceBusContainerTest, IClassFixture<DatabaseFixture>
     {
         public ServiceBusCustomQueueConfiguration()
-            : base(new ServiceBusBuilder()
+            : base(new ServiceBusBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 // # --8<-- [start:UseCustomConfiguration]
                 .WithConfig("custom-queue-config.json")
@@ -108,7 +116,7 @@ public abstract class ServiceBusContainerTest : IAsyncLifetime
             Network = new NetworkBuilder()
                 .Build();
 
-            Container = new MsSqlBuilder()
+            Container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
                 .WithNetwork(Network)
                 .WithNetworkAliases(DatabaseNetworkAlias)
                 .Build();

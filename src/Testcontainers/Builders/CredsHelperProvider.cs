@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => Base64Provider.HasDockerRegistryKey(property, hostname));
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !JsonValueKind.Null.Equals(_rootElement.ValueKind) && _rootElement.EnumerateObject().Any(property => Base64Provider.HasDockerRegistryName(property, hostname));
     }
 
     /// <inheritdoc />
@@ -52,7 +52,7 @@ namespace DotNet.Testcontainers.Builders
         return null;
       }
 
-      var registryEndpointProperty = _rootElement.EnumerateObject().LastOrDefault(property => Base64Provider.HasDockerRegistryKey(property, hostname));
+      var registryEndpointProperty = _rootElement.EnumerateObject().LastOrDefault(property => Base64Provider.HasDockerRegistryName(property, hostname));
 
       if (!JsonValueKind.String.Equals(registryEndpointProperty.Value.ValueKind))
       {

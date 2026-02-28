@@ -37,6 +37,9 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
+        protected override MsSqlBuilder Configure()
+            => new MsSqlBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => SqlClientFactory.Instance;
     }
@@ -45,8 +48,8 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public class MsSqlWaitForDatabaseFixture(IMessageSink messageSink)
         : MsSqlDefaultFixture(messageSink)
     {
-        protected override MsSqlBuilder Configure(MsSqlBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override MsSqlBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

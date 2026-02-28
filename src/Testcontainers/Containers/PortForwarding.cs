@@ -107,7 +107,9 @@ namespace DotNet.Testcontainers.Containers
           .WithPortBinding(SshdPort, true)
           .WithUsername("root")
           .WithPassword("root")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(SshdPort));
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilInternalTcpPortIsAvailable(SshdPort)
+            .UntilExternalTcpPortIsAvailable(SshdPort));
       }
 
       /// <inheritdoc />

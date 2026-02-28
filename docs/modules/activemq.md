@@ -30,9 +30,9 @@ You can start an Apache ActiveMQ Artemis container instance from any .NET applic
 
 Connect to the container and produce a message:
 
-=== "EstablishesConnection"
+=== "Establish connection"
     ```csharp
-    --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:ArtemisContainerEstablishesConnection"
+    --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:EstablishConnection"
     ```
 
 The test example uses the following NuGet dependencies:

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
         <IsTestProject>false</IsTestProject>
@@ -12,5 +12,10 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers/Testcontainers.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="ssl/**/*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

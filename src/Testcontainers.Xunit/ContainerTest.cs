@@ -11,8 +11,9 @@ namespace Testcontainers.Xunit;
 [PublicAPI]
 public abstract class ContainerTest<TBuilderEntity, TContainerEntity>(ITestOutputHelper testOutputHelper, Func<TBuilderEntity, TBuilderEntity> configure = null)
     : ContainerLifetime<TBuilderEntity, TContainerEntity>(new TestOutputLogger(testOutputHelper))
-    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity>, new()
+    where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer
 {
+    [Obsolete("This method is obsolete and will be removed. Use the parameterless Configure() method and create the builder explicitly instead.")]
     protected override TBuilderEntity Configure(TBuilderEntity builder) => configure != null ? configure(builder) : builder;
 }

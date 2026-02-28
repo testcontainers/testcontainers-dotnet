@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
         <OutputType>Exe</OutputType>
@@ -26,6 +26,11 @@
         <ProjectReference Include="../../src/Testcontainers.Db2/Testcontainers.Db2.csproj"/>
         <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <Import Project="Testcontainers.Db2.Tests.targets" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
 </Project>

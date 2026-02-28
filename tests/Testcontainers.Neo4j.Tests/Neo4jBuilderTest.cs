@@ -27,7 +27,7 @@ public sealed class Neo4jBuilderTest
     [InlineData("neo4j@sha256:20eb19e3d60f9f07c12c89eac8d8722e393be7e45c6d7e56004a2c493b8e2032", null)]
     public void AppendsEnterpriseSuffixWhenEnterpriseEditionLicenseAgreementIsAccepted(string image, string expected)
     {
-        var neo4jContainer = new Neo4jBuilder().WithImage(image).WithEnterpriseEdition(true).Build();
+        var neo4jContainer = new Neo4jBuilder(image).WithEnterpriseEdition(true).Build();
         Assert.Equal(expected, neo4jContainer.Image.Tag);
     }
 
@@ -43,7 +43,7 @@ public sealed class Neo4jBuilderTest
     {
         public Neo4jBuilderConfigurations()
         {
-            Add(new Neo4jBuilder().WithImage(Neo4jBuilder.Neo4jImage + "-enterprise"));
+            Add(new Neo4jBuilder(Neo4jBuilder.Neo4jImage + "-enterprise"));
             Add(new Neo4jBuilder().WithEnterpriseEdition(false));
         }
     }

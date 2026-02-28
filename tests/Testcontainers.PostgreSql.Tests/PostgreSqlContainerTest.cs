@@ -69,6 +69,9 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     public class PostgreSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<PostgreSqlBuilder, PostgreSqlContainer>(messageSink)
     {
+        protected override PostgreSqlBuilder Configure()
+            => new PostgreSqlBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => NpgsqlFactory.Instance;
     }
@@ -77,8 +80,8 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     public class PostgreSqlWaitForDatabaseFixture(IMessageSink messageSink)
         : PostgreSqlDefaultFixture(messageSink)
     {
-        protected override PostgreSqlBuilder Configure(PostgreSqlBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override PostgreSqlBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

@@ -10,8 +10,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     private WebDriverContainerTest(WebDriverContainer webDriverContainer)
     {
-        _helloWorldContainer = new ContainerBuilder()
-            .WithImage(CommonImages.HelloWorld)
+        _helloWorldContainer = new ContainerBuilder(CommonImages.HelloWorld)
             .WithNetwork(webDriverContainer.GetNetwork())
             .WithNetworkAliases(_helloWorldBaseAddress.Host)
             .WithPortBinding(_helloWorldBaseAddress.Port, true)
@@ -33,14 +32,14 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await _helloWorldContainer.DisposeAsync()
+        await DisposeAsyncCore()
             .ConfigureAwait(false);
 
-        await _webDriverContainer.DisposeAsync()
-            .ConfigureAwait(false);
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void HeadingElementReturnsHelloWorld()
     {
         // Given
@@ -54,21 +53,33 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         Assert.Equal("Hello world", headingElementText);
     }
 
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        await _helloWorldContainer.DisposeAsync()
+            .ConfigureAwait(false);
+
+        await _webDriverContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
     [UsedImplicitly]
     public sealed class RecordingEnabled : WebDriverContainerTest
     {
         public RecordingEnabled()
-            : base(new WebDriverBuilder().WithRecording().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).WithRecording().Build())
         {
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public async Task ExportVideoWritesFile()
         {
             // Given
             var videoFilePath = Path.Combine(TestSession.TempDirectoryPath, Path.GetRandomFileName());
 
             // When
+            HeadingElementReturnsHelloWorld();
+
             await _webDriverContainer.StopAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
@@ -80,9 +91,11 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(()
+                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 
@@ -90,14 +103,16 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingDisabled : WebDriverContainerTest
     {
         public RecordingDisabled()
-            : base(new WebDriverBuilder().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 
         [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public Task ExportVideoThrowsInvalidOperationException()
         {
-            return Assert.ThrowsAsync<InvalidOperationException>(() => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
+            return Assert.ThrowsAsync<InvalidOperationException>(()
+                => _webDriverContainer.ExportVideoAsync(string.Empty, TestContext.Current.CancellationToken));
         }
     }
 }

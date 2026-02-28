@@ -35,6 +35,9 @@ public abstract class CockroachDbContainerTest(CockroachDbContainerTest.Cockroac
     public class CockroachDbDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<CockroachDbBuilder, CockroachDbContainer>(messageSink)
     {
+        protected override CockroachDbBuilder Configure()
+            => new CockroachDbBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => NpgsqlFactory.Instance;
     }
@@ -43,8 +46,8 @@ public abstract class CockroachDbContainerTest(CockroachDbContainerTest.Cockroac
     public class CockroachDbWaitForDatabaseFixture(IMessageSink messageSink)
         : CockroachDbDefaultFixture(messageSink)
     {
-        protected override CockroachDbBuilder Configure(CockroachDbBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override CockroachDbBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

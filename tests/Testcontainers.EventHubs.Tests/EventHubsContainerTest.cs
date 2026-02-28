@@ -20,9 +20,12 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _eventHubsContainer.DisposeAsync();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     private static EventHubsServiceConfiguration GetServiceConfiguration()
@@ -63,12 +66,17 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     }
     // # --8<-- [end:UseEventHubsContainer]
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _eventHubsContainer.DisposeAsync();
+    }
+
     // # --8<-- [start:CreateEventHubsContainer]
     [UsedImplicitly]
     public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
     {
         public EventHubsDefaultAzuriteConfiguration()
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 .Build())
@@ -81,7 +89,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
     {
         public EventHubsCustomAzuriteConfiguration(DatabaseFixture fixture)
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 // # --8<-- [start:ReuseExistingAzuriteContainer]
@@ -100,7 +108,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             Network = new NetworkBuilder()
                 .Build();
 
-            Container = new AzuriteBuilder()
+            Container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.28.0")
                 .WithNetwork(Network)
                 .WithNetworkAliases(AzuriteNetworkAlias)
                 .Build();

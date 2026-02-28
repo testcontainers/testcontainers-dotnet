@@ -35,14 +35,12 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
         _network = new NetworkBuilder()
             .Build();
 
-        _kafkaContainer = new KafkaBuilder()
-            .WithImage("confluentinc/cp-kafka:6.1.9")
+        _kafkaContainer = new KafkaBuilder("confluentinc/cp-kafka:6.1.9")
             .WithNetwork(_network)
             .WithListener(Listener)
             .Build();
 
-        _schemaRegistryContainer = new ContainerBuilder()
-            .WithImage("confluentinc/cp-schema-registry:6.1.9")
+        _schemaRegistryContainer = new ContainerBuilder("confluentinc/cp-schema-registry:6.1.9")
             .WithPortBinding(RestPort, true)
             .WithNetwork(_network)
             .WithNetworkAliases(SchemaRegistryNetworkAlias)
@@ -77,6 +75,7 @@ public sealed class KafkaContainerRegistryTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ConsumerReturnsProducerMessage()
     {
         // Given

@@ -12,7 +12,7 @@ You can start an Apache Cassandra container instance from any .NET application. 
 
 === "Start a Cassandra container"
     ```csharp
-    var cassandraContainer = new CassandraBuilder().Build();
+    var cassandraContainer = new CassandraBuilder("cassandra:5.0").Build();
     await cassandraContainer.StartAsync();
     ```
 

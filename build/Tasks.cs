@@ -16,7 +16,9 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
             Filter = Parameters.TestFilter,
             ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
             ArgumentCustomization = args => args
-                .AppendSwitchQuoted("--blame-hang-timeout", "5m"),
+                // The windows-2025 GH-hosted runner no longer has cached images. Pulling the
+                // servercore:ltsc2025 image takes significantly longer.
+                .AppendSwitchQuoted("--blame-hang-timeout", "10m"),
         });
     }
 }
@@ -87,7 +89,14 @@ public sealed class BuildTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var param = context.Parameters;
-        context.DotNetBuild(param.Solution, new DotNetBuildSettings
+
+        // If a test project is specified, just build the project and its dependent projects to
+        // save build time.
+        var solutionOrProjectFilePath = string.IsNullOrEmpty(param.TestProject)
+            ? param.Solution
+            : param.Projects.OnlyTests.Single(testProject => testProject.Path.FullPath.EndsWith(param.TestProject + ".Tests.csproj")).Path.FullPath;
+
+        context.DotNetBuild(solutionOrProjectFilePath, new DotNetBuildSettings
         {
             Configuration = param.Configuration,
             Verbosity = param.Verbosity,
@@ -193,7 +202,7 @@ public sealed class CreateNuGetPackagesTask : FrostingTask<BuildContext>
 public sealed class SignNuGetPackagesTask : FrostingTask<BuildContext>
 {
     // We do not have access to a valid code signing certificate anymore.
-    public override bool ShouldRun(BuildContext context) => context.Parameters.ShouldPublish && false;
+    public override bool ShouldRun(BuildContext context) => /* context.Parameters.ShouldPublish */ false;
 
     public override void Run(BuildContext context)
     {

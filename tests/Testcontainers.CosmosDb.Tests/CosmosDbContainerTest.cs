@@ -5,7 +5,7 @@ namespace Testcontainers.CosmosDb.Tests;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
-    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder().Build();
+    private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

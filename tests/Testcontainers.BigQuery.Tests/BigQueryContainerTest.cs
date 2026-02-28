@@ -2,7 +2,7 @@ namespace Testcontainers.BigQuery;
 
 public sealed class BigQueryContainerTest : IAsyncLifetime
 {
-    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder().Build();
+    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {

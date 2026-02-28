@@ -12,12 +12,21 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="hostPath">The absolute path of a file to map on the host system.</param>
     /// <param name="containerPath">The absolute path of a file to map in the container.</param>
+    /// <param name="uid">The user ID to set for the copied resource.</param>
+    /// <param name="gid">The group ID to set for the copied resource.</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
-    public FileResourceMapping(string hostPath, string containerPath, UnixFileModes fileMode)
+    public FileResourceMapping(
+      string hostPath,
+      string containerPath,
+      uint uid,
+      uint gid,
+      UnixFileModes fileMode)
     {
       Type = MountType.Bind;
       Source = hostPath;
       Target = containerPath;
+      UserId = uid;
+      GroupId = gid;
       FileMode = fileMode;
       AccessMode = AccessMode.ReadOnly;
     }
@@ -33,6 +42,12 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public string Target { get; }
+
+    /// <inheritdoc />
+    public uint UserId { get; }
+
+    /// <inheritdoc />
+    public uint GroupId { get; }
 
     /// <inheritdoc />
     public UnixFileModes FileMode { get; }

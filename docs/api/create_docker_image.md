@@ -16,11 +16,19 @@ await futureImage.CreateAsync()
   .ConfigureAwait(false);
 ```
 
+To build a Docker image with Testcontainers, it's important to understand the build context. Testcontainers needs three things:
+
+1. **Docker build context**: The directory containing files Docker can use during the build
+2. **Dockerfile name**: The name of the Dockerfile to use
+3. **Dockerfile directory**: Where the Dockerfile is located
+
 !!!tip
 
-    The Dockerfile must be part of the build context, otherwise the build fails.
+    The build context is optional. If you don't specify one, it defaults to the Dockerfile directory.
 
-It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure, the build context is `/Users/testcontainers/WeatherForecast/`.
+Testcontainers creates a tarball with all files and subdirectorys in the build context, incl. the Dockerfile. This tarball is sent to the Docker daemon to build the image. The build context acts as the root for all file operations in the Dockerfile, so all paths (like `COPY` commands) must be relative to it.
+
+For example, if your project looks like this, the build context would be: `/Users/testcontainers/WeatherForecast/`.
 
     /
     └── Users/
@@ -61,6 +69,17 @@ RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --o
 ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
 ```
 
+### Choosing a build context
+
+You can use `WithContextDirectory(string)` to set a build context separate from your Dockerfile. This is useful when the Dockerfile is in one directory but the files you want to include are in another.
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithContextDirectory("/path/to/build/context")
+  .WithDockerfile("Dockerfile")
+  .WithDockerfileDirectory("/path/to/dockerfile/directory");
+```
+
 ## Delete multi-stage intermediate layers
 
 A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers' Resource Reaper is unable to automatically delete these layers after the test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To delete the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
@@ -92,8 +111,9 @@ _ = new ImageFromDockerfileBuilder()
 | `WithCleanUp`                 | Will remove the image automatically after all tests have been run.           |
 | `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`. |
 | `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
+| `WithContextDirectory`        | Sets the Docker build context directory.                                     |
 | `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
-| `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).      |
+| `WithDockerfileDirectory`     | Sets the directory path that contains the `Dockerfile`.                      |
 | `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |

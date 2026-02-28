@@ -1,5 +1,7 @@
 namespace Testcontainers.WebDriver;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 /// <remarks>
 /// Find further information about the Selenium Grid image, including its configurations, here: https://github.com/SeleniumHQ/docker-selenium.
@@ -9,6 +11,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
 {
     public const string WebDriverNetworkAlias = "standalone-container";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FFmpegNetworkAlias = "ffmpeg-container";
 
     public const string FFmpegImage = "selenium/video:ffmpeg-4.3.1-20230306";
@@ -22,10 +25,76 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public WebDriverBuilder()
+        : this(WebDriverBrowser.Chrome.Image)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>selenium/standalone-chrome:110.0</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags for standalone Selenium browsers:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             Chrome: <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Firefox: <see href="https://hub.docker.com/r/selenium/standalone-firefox/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Edge: <see href="https://hub.docker.com/r/selenium/standalone-edge/tags" />.
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
+    public WebDriverBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebDriverBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags for standalone Selenium browsers:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             Chrome: <see href="https://hub.docker.com/r/selenium/standalone-chrome/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Firefox: <see href="https://hub.docker.com/r/selenium/standalone-firefox/tags" />.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             Edge: <see href="https://hub.docker.com/r/selenium/standalone-edge/tags" />.
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
+    public WebDriverBuilder(IImage image)
         : this(new WebDriverConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -70,11 +139,11 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     /// <summary>
     /// Enables the video recording.
     /// </summary>
+    /// <param name="ffmpegImage">The FFmpeg image to use for recording.</param>
     /// <returns>A configured instance of <see cref="WebDriverBuilder" />.</returns>
-    public WebDriverBuilder WithRecording()
+    public WebDriverBuilder WithRecording(string ffmpegImage = FFmpegImage)
     {
-        var ffmpegContainer = new ContainerBuilder()
-            .WithImage(FFmpegImage)
+        var ffmpegContainer = new ContainerBuilder(ffmpegImage)
             .WithNetwork(DockerResourceConfiguration.Networks.Single())
             .WithNetworkAliases(FFmpegNetworkAlias)
             .WithEnvironment("FILE_NAME", Path.GetFileName(VideoFilePath))

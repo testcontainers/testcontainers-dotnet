@@ -11,6 +11,12 @@ namespace DotNet.Testcontainers.Configurations
   public interface IDockerEndpointAuthenticationConfiguration
   {
     /// <summary>
+    /// Gets the Docker API version.
+    /// </summary>
+    [CanBeNull]
+    Version Version { get; }
+
+    /// <summary>
     /// Gets the Docker API endpoint.
     /// </summary>
     [NotNull]

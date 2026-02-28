@@ -3,14 +3,14 @@
 Reuse is an experimental feature designed to simplify and enhance the development experience. Instead of disposing resources after the tests are finished, enabling reuse will retain the resources and reuse them in the next test run. Testcontainers assigns a hash value according to the builder configuration. If it identifies a matching resource, it will reuse this resource instead of creating a new one. Enabling reuse will disable the resource reaper, meaning the resource will not be cleaned up.
 
 ```csharp title="Enable container reuse"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithReuse(true);
 ```
 
 The reuse implementation does currently not consider (support) all builder APIs when calculating the hash value. Therefore, collisions may occur. To prevent collisions, simply use a distinct label to identify the resource.
 
 ```csharp title="Label container resource to identify it"
-_ = new ContainerBuilder()
+_ = new ContainerBuilder("alpine:3.20.0")
   .WithReuse(true)
   .WithLabel("reuse-id", "WeatherForecast");
 ```

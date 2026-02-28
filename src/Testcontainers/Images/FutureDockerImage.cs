@@ -69,6 +69,16 @@ namespace DotNet.Testcontainers.Images
     }
 
     /// <inheritdoc />
+    public string Platform
+    {
+      get
+      {
+        ThrowIfResourceNotFound();
+        return _configuration.Image.Platform;
+      }
+    }
+
+    /// <inheritdoc />
     public string FullName
     {
       get

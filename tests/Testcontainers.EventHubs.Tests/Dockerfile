@@ -1,0 +1,1 @@
+FROM mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest
