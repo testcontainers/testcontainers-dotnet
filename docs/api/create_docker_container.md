@@ -22,7 +22,7 @@ _ = new ContainerBuilder()
   .WithImage(new DockerImage("postgres:15.1", new Platform("linux/amd64")));
 ```
 
-!!!tip
+!!! tip
 
     A specifier has the format `<os>|<arch>|<os>/<arch>[/<variant>]`. The user can provide either the operating system or the architecture or both. For more details, see [containerd/platforms](https://github.com/containerd/platforms).
 
@@ -42,7 +42,7 @@ _ = new ContainerBuilder("nginx:1.26.3-alpine3.20")
 
 Apps or services running inside a container are usually configured either with environment variables or configuration files. `WithEnvironment(string, string)` sets an environment variable, while `WithResourceMapping(string, string)` copies a file into a container before it starts. This covers common use cases among many .NET applications.
 
-!!!tip
+!!! tip
 
     The majority of builder methods are overloaded and have different parameters to set configurations.
 
@@ -177,7 +177,7 @@ var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1")
 
 Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default command configurations. This is useful when you want full control over the PostgreSQL startup or when the default configurations do not match your requirements.
 
-!!!tip
+!!! tip
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
@@ -232,7 +232,7 @@ var magicNumber = await magicNumberReader.ReadLineAsync()
 Assert.Equal(MagicNumber, magicNumber);
 ```
 
-!!!tip
+!!! tip
 
     To avoid port conflicts, do not bind a fix host port. Instead, assign a random host port by using `WithPortBinding(80, true)` and retrieve it from the container instance by using `GetMappedPublicPort(80)`.
 
@@ -269,10 +269,10 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithStartupCallback`         | Sets the startup callback to invoke after the container start.                                                                                                                       |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker container create parameter.                                                                                                             |
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects private Docker registry configurations and applies the credentials automatically to authenticate against registries.
