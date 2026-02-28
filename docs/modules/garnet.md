@@ -2,8 +2,7 @@
 
 [Garnet](https://github.com/microsoft/garnet) is a high-performance, Redis-compatible in-memory data store.
 
-The Testcontainers Redis module is compatible with the Garnet container image.
-You can use the existing [`Testcontainers.Redis`](modules/redis/) package without requiring a separate Garnet module.
+The Testcontainers Redis module is compatible with the Garnet container image. You can use the existing [`Testcontainers.Redis`](/modules/redis/) package without requiring a separate Garnet module.
 
 !!!note
 
