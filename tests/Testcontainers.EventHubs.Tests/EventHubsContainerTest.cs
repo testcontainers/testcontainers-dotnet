@@ -38,7 +38,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public async Task SendEventDataBatchShouldNotThrowException()
     {
         // Given
-        var message = Guid.NewGuid().ToString();
+        var message = Guid.NewGuid().ToString("D");
 
         var readOptions = new ReadEventOptions();
         readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);

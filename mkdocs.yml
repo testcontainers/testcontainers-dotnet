@@ -57,6 +57,7 @@ nav:
     - modules/clickhouse.md
     - modules/db2.md
     - modules/elasticsearch.md
+    - modules/garnet.md
     - modules/grafana.md
     - modules/mongodb.md
     - modules/mssql.md
@@ -67,5 +68,6 @@ nav:
     - modules/qdrant.md
     - modules/rabbitmq.md
     - modules/toxiproxy.md
+    - modules/valkey.md
   - contributing.md
   - contributing_docs.md
