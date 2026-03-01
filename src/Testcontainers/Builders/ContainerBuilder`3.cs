@@ -271,7 +271,7 @@ namespace DotNet.Testcontainers.Builders
         using (var streamReader = new BinaryReader(fileStream))
         {
           var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
-          return WithResourceMapping(resourceContent, target.ToString(), uid, gid, fileMode);
+          return WithResourceMapping(resourceContent, target, uid, gid, fileMode);
         }
       }
     }

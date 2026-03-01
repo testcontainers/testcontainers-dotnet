@@ -252,8 +252,8 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="resourceContent">The byte array content of the resource mapping.</param>
     /// <param name="filePath">The target file path to copy the file to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -277,7 +277,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use one of the more specific WithResourceMapping(…) methods instead.")]
+    [Obsolete("Use one of the more specific WithResourceMapping(...) methods instead.")]
     TBuilderEntity WithResourceMapping(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -298,8 +298,8 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -323,8 +323,8 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -380,8 +380,8 @@ namespace DotNet.Testcontainers.Builders
     /// </remarks>
     /// <param name="source">The source URL of the file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
@@ -399,8 +399,8 @@ namespace DotNet.Testcontainers.Builders
     /// </remarks>
     /// <param name="source">The source URL of the file to be copied.</param>
     /// <param name="target">The target file path to copy the file to.</param>
-    /// <param name="uid"></param>
-    /// <param name="gid"></param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
