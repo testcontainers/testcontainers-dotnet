@@ -144,6 +144,10 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             var targetDirectoryPath7 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath8 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath9 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath10 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+
+            const string httpFileName = "test.txt";
+            var httpFileUri = new Uri(new Uri(_testHttpUri), httpFileName);
 
             var targetFilePaths = new List<string>();
             targetFilePaths.Add(targetFilePath1);
@@ -163,6 +167,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             targetFilePaths.Add(string.Join("/", targetDirectoryPath7, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath8, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath9, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath10, httpFileName));
 
             await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
@@ -179,6 +184,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithResourceMapping(new Uri(_testFileUri), new DirectoryInfo(targetDirectoryPath7))
                 .WithResourceMapping(_testFile.FullName.AsFile(), targetDirectoryPath8.AsDirectory())
                 .WithResourceMapping(_testFile.Directory!.FullName.AsDirectory(), targetDirectoryPath9.AsDirectory())
+                .WithResourceMapping(httpFileUri, new DirectoryInfo(targetDirectoryPath10))
                 .Build();
 
             // When

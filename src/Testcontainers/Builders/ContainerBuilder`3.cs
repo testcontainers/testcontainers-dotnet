@@ -315,12 +315,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      if (source.IsFile)
-      {
-        return WithResourceMapping(FilePath.Of(new FileInfo(source.AbsolutePath).FullName), target, uid, gid, fileMode);
-      }
-
-      return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
+      var fileName = Path.GetFileName(source.LocalPath);
+      var targetFile = FilePath.Of(Path.Combine(target.Value, fileName));
+      return WithResourceMapping(source, targetFile, uid, gid, fileMode);
     }
 
     /// <inheritdoc />
@@ -334,7 +331,7 @@ namespace DotNet.Testcontainers.Builders
     {
       if (source.IsFile)
       {
-        return WithResourceMapping(FilePath.Of(new FileInfo(source.AbsolutePath).FullName), target, uid, gid, fileMode);
+        return WithResourceMapping(FilePath.Of(source.LocalPath), target, uid, gid, fileMode);
       }
 
       return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
