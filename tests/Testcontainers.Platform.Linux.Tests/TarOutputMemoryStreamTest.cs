@@ -124,42 +124,71 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         public async Task TestFileExistsInContainer()
         {
             // Given
+            var fileContent = await GetAllBytesAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
             var targetFilePath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
             var targetFilePath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
             var targetFilePath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath4 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath5 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath6 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath7 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
+            var targetFilePath8 = string.Join("/", string.Empty, "tmp", Guid.NewGuid(), _testFile.Name);
             var targetDirectoryPath1 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath2 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath3 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath4 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
             var targetDirectoryPath5 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath6 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath7 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath8 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
+            var targetDirectoryPath9 = string.Join("/", string.Empty, "tmp", Guid.NewGuid());
 
             var targetFilePaths = new List<string>();
             targetFilePaths.Add(targetFilePath1);
             targetFilePaths.Add(targetFilePath2);
             targetFilePaths.Add(targetFilePath3);
+            targetFilePaths.Add(targetFilePath4);
+            targetFilePaths.Add(targetFilePath5);
+            targetFilePaths.Add(targetFilePath6);
+            targetFilePaths.Add(targetFilePath7);
+            targetFilePaths.Add(targetFilePath8);
             targetFilePaths.Add(string.Join("/", targetDirectoryPath1, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath2, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath3, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath4, _testFile.Name));
             targetFilePaths.Add(string.Join("/", targetDirectoryPath5, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath6, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath7, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath8, _testFile.Name));
+            targetFilePaths.Add(string.Join("/", targetDirectoryPath9, _testFile.Name));
 
             await using var container = new ContainerBuilder(CommonImages.Alpine)
                 .WithEntrypoint(CommonCommands.SleepInfinity)
                 .WithResourceMapping(_testFile, new FileInfo(targetFilePath1))
+                .WithResourceMapping(_testHttpUri, targetFilePath2)
+                .WithResourceMapping(new Uri(_testFileUri), new FileInfo(targetFilePath4))
+                .WithResourceMapping(fileContent, new FileInfo(targetFilePath5))
+                .WithResourceMapping(fileContent, targetFilePath6.AsFile())
+                .WithResourceMapping(_testFile.FullName.AsFile(), targetFilePath7.AsFile())
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
                 .WithResourceMapping(_testFile.Directory!.FullName, targetDirectoryPath2)
-                .WithResourceMapping(_testHttpUri, targetFilePath2)
                 .WithResourceMapping(_testFileUri, targetDirectoryPath3)
+                .WithResourceMapping(_testFile, new DirectoryInfo(targetDirectoryPath6))
+                .WithResourceMapping(new Uri(_testFileUri), new DirectoryInfo(targetDirectoryPath7))
+                .WithResourceMapping(_testFile.FullName.AsFile(), targetDirectoryPath8.AsDirectory())
+                .WithResourceMapping(_testFile.Directory!.FullName.AsDirectory(), targetDirectoryPath9.AsDirectory())
                 .Build();
 
             // When
-            var fileContent = await GetAllBytesAsync(TestContext.Current.CancellationToken)
-                .ConfigureAwait(true);
-
             await container.StartAsync(TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             await container.CopyAsync(fileContent, targetFilePath3, ct: TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            await container.CopyAsync(fileContent, targetFilePath8, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             await container.CopyAsync(_testFile.FullName, targetDirectoryPath4, ct: TestContext.Current.CancellationToken)

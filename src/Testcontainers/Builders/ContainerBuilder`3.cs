@@ -216,7 +216,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath.FullName, uid, gid, fileMode));
+      return WithResourceMapping(resourceContent, FilePath.Of(filePath.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
@@ -248,7 +254,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(DirectoryInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target.FullName, uid, gid, fileMode));
+      return WithResourceMapping(DirectoryPath.Of(source.FullName), DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(DirectoryPath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new FileResourceMapping(source.Value, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
@@ -260,13 +272,25 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target.FullName, uid, gid, fileMode));
+      return WithResourceMapping(FilePath.Of(source.FullName), DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FilePath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new FileResourceMapping(source.Value, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      using (var fileStream = source.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      return WithResourceMapping(FilePath.Of(source.FullName), FilePath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FilePath source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      using (var fileStream = new FileInfo(source.Value).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       {
         using (var streamReader = new BinaryReader(fileStream))
         {
@@ -285,23 +309,35 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
+      return WithResourceMapping(source, DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
       if (source.IsFile)
       {
-        return WithResourceMapping(new FileInfo(source.AbsolutePath), target, uid, gid, fileMode);
+        return WithResourceMapping(FilePath.Of(new FileInfo(source.AbsolutePath).FullName), target, uid, gid, fileMode);
       }
 
-      return WithResourceMapping(new UriResourceMapping(source, target.FullName, uid, gid, fileMode));
+      return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
+      return WithResourceMapping(source, FilePath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
       if (source.IsFile)
       {
-        return WithResourceMapping(new FileInfo(source.AbsolutePath), target, uid, gid, fileMode);
+        return WithResourceMapping(FilePath.Of(new FileInfo(source.AbsolutePath).FullName), target, uid, gid, fileMode);
       }
 
-      return WithResourceMapping(new UriResourceMapping(source, target.FullName, uid, gid, fileMode));
+      return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
