@@ -14,6 +14,7 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -35,6 +36,9 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
     public class MariaDbDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MariaDbBuilder, MariaDbContainer>(messageSink)
     {
+        protected override MariaDbBuilder Configure()
+            => new MariaDbBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => MySqlConnectorFactory.Instance;
     }
@@ -43,8 +47,8 @@ public abstract class MariaDbContainerTest(MariaDbContainerTest.MariaDbDefaultFi
     public class MariaDbWaitForDatabaseFixture(IMessageSink messageSink)
         : MariaDbDefaultFixture(messageSink)
     {
-        protected override MariaDbBuilder Configure(MariaDbBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override MariaDbBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

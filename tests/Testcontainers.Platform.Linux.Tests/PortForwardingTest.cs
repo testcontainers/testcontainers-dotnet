@@ -46,12 +46,12 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public sealed class PortForwardingDefaultConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingDefaultConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }
@@ -61,13 +61,13 @@ public abstract class PortForwardingTest : IAsyncLifetime
     public sealed class PortForwardingNetworkConfiguration : PortForwardingTest, IClassFixture<HostedService>
     {
         public PortForwardingNetworkConfiguration(HostedService fixture)
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.Alpine)
+            : base(new ContainerBuilder(CommonImages.Alpine)
                 .WithAutoRemove(false)
                 .WithEntrypoint("nc")
                 .WithCommand(HostedService.Host, fixture.Port.ToString(CultureInfo.InvariantCulture))
                 .WithNetwork(new NetworkBuilder().Build())
-                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .WithWaitStrategy(Wait.ForUnixContainer()
+                    .AddCustomWaitStrategy(new WaitUntil(), o => o.WithMode(WaitStrategyMode.OneShot)))
                 .Build())
         {
         }

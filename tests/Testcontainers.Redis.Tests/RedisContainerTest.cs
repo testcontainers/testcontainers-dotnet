@@ -2,7 +2,8 @@ namespace Testcontainers.Redis;
 
 public sealed class RedisContainerTest : IAsyncLifetime
 {
-    private readonly RedisContainer _redisContainer = new RedisBuilder().Build();
+    // # --8<-- [start:UseRedisContainer]
+    private readonly RedisContainer _redisContainer = new RedisBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -21,7 +22,9 @@ public sealed class RedisContainerTest : IAsyncLifetime
     {
         using var connection = ConnectionMultiplexer.Connect(_redisContainer.GetConnectionString());
         Assert.True(connection.IsConnected);
+        Assert.Equal(_redisContainer.GetConnectionString(), _redisContainer.GetConnectionString(ConnectionMode.Host));
     }
+    // # --8<-- [end:UseRedisContainer]
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]

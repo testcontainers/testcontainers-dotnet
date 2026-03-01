@@ -50,6 +50,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_localStackContainer.GetConnectionString(), _localStackContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -161,7 +162,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
     {
         public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -170,7 +171,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     public sealed class LocalStackV1Configuration : LocalStackContainerTest
     {
         public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
+            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile(stage: "localstack1.4")).Build())
         {
         }
     }

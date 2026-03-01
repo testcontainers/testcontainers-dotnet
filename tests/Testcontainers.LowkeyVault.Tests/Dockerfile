@@ -1,0 +1,1 @@
+FROM nagyesta/lowkey-vault:2.7.1-ubi9-minimal

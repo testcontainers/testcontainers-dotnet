@@ -5,7 +5,7 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
 {
   public const ushort HttpsPort = 443;
 
-  public const string CertificateFilePath = "certificate.crt";
+  public const string CertificateFilePath = "certificate.pfx";
 
   public const string CertificatePassword = "password";
 
@@ -20,6 +20,8 @@ public sealed class WeatherForecastImage : IImage, IAsyncLifetime
   public string Tag => _image.Tag;
 
   public string Digest => _image.Digest;
+
+  public string Platform => _image.Platform;
 
   public string FullName => _image.FullName;
 

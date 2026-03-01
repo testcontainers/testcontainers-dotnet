@@ -2,7 +2,7 @@ namespace Testcontainers.PubSub;
 
 public sealed class PubSubContainerTest : IAsyncLifetime
 {
-    private readonly PubSubContainer _pubSubContainer = new PubSubBuilder().Build();
+    private readonly PubSubContainer _pubSubContainer = new PubSubBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -67,5 +67,6 @@ public sealed class PubSubContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloPubSub, response.ReceivedMessages.Single().Message.Data.ToStringUtf8());
+        Assert.Equal(_pubSubContainer.GetEmulatorEndpoint(), _pubSubContainer.GetConnectionString());
     }
 }

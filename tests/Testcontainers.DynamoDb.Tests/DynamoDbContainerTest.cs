@@ -2,7 +2,7 @@ namespace Testcontainers.DynamoDb;
 
 public sealed class DynamoDbContainerTest : IAsyncLifetime
 {
-    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder().Build();
+    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static DynamoDbContainerTest()
     {
@@ -37,6 +37,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, tables.HttpStatusCode);
+        Assert.Equal(_dynamoDbContainer.GetConnectionString(), _dynamoDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

@@ -29,6 +29,8 @@ namespace DotNet.Testcontainers.Containers
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
 
+    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
     /// </summary>
@@ -372,36 +374,36 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(byte[] fileContent, string filePath, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, fileMode), ct);
+      return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, uid, gid, fileMode), ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(string source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       var fileAttributes = File.GetAttributes(source);
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return CopyAsync(new DirectoryInfo(source), target, fileMode, ct);
+        return CopyAsync(new DirectoryInfo(source), target, uid, gid, fileMode, ct);
       }
       else
       {
-        return CopyAsync(new FileInfo(source), target, fileMode, ct);
+        return CopyAsync(new FileInfo(source), target, uid, gid, fileMode, ct);
       }
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />
-    public Task CopyAsync(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
+    public Task CopyAsync(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
-      return _client.CopyAsync(Id, source, target, fileMode, ct);
+      return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
     }
 
     /// <inheritdoc />
@@ -414,6 +416,28 @@ namespace DotNet.Testcontainers.Containers
     public Task<ExecResult> ExecAsync(IList<string> command, CancellationToken ct = default)
     {
       return _client.ExecAsync(Id, command, ct);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(connectionMode);
+    }
+
+    /// <inheritdoc />
+    public string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      return _connectionStringProvider.GetConnectionString(name, connectionMode);
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
@@ -549,7 +573,7 @@ namespace DotNet.Testcontainers.Containers
 
       Starting?.Invoke(this, EventArgs.Empty);
 
-      await _configuration.StartupCallback(this, ct)
+      await _configuration.StartupCallback(this, _configuration, ct)
         .ConfigureAwait(false);
 
       Logger.StartReadinessCheck(_container.ID);
@@ -560,6 +584,13 @@ namespace DotNet.Testcontainers.Containers
       Logger.CompleteReadinessCheck(_container.ID);
 
       StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+
+      if (_configuration.ConnectionStringProvider != null)
+      {
+        _connectionStringProvider = _configuration.ConnectionStringProvider;
+        _connectionStringProvider.Configure(this, _configuration);
+      }
+
       Started?.Invoke(this, EventArgs.Empty);
     }
 
@@ -671,11 +702,27 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>A task representing the asynchronous operation, returning true if the wait strategy indicates readiness; otherwise, false.</returns>
     private async Task<bool> CheckReadinessAsync(WaitStrategy waitStrategy, CancellationToken ct = default)
     {
+      Exception exception = null;
+
       _container = await _client.Container.ByIdAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
-      return await waitStrategy.UntilAsync(this, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        return await waitStrategy.UntilAsync(this, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerApiException e)
+      {
+        exception = e;
+      }
+      finally
+      {
+        await ThrowIfContainerNotRunningAsync(waitStrategy.Mode, exception)
+          .ConfigureAwait(false);
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -699,6 +746,28 @@ namespace DotNet.Testcontainers.Containers
       return true;
     }
 
+    /// <summary>
+    /// Throws <see cref="ContainerNotRunningException" /> when the container exited unexpectedly.
+    /// </summary>
+    /// <param name="waitStrategyMode">The wait strategy mode.</param>
+    /// <param name="innerException">The inner exception.</param>
+    /// <exception cref="ContainerNotRunningException">The container exited unexpectedly.</exception>
+    private async Task ThrowIfContainerNotRunningAsync(WaitStrategyMode waitStrategyMode, [CanBeNull] Exception innerException = null)
+    {
+      if (innerException == null && (TestcontainersStates.Exited != State || WaitStrategyMode.Running != waitStrategyMode))
+      {
+        return;
+      }
+
+      var (stdout, stderr) = await GetLogsAsync()
+        .ConfigureAwait(false);
+
+      var exitCode = await GetExitCodeAsync()
+        .ConfigureAwait(false);
+
+      throw new ContainerNotRunningException(Id, stdout, stderr, exitCode, innerException);
+    }
+
     private sealed class WaitUntilPortBindingsMapped : WaitStrategy
     {
       private readonly DockerContainer _parent;
@@ -706,6 +775,7 @@ namespace DotNet.Testcontainers.Containers
       public WaitUntilPortBindingsMapped(DockerContainer parent)
       {
         _parent = parent;
+        _ = WithMode(WaitStrategyMode.OneShot);
         _ = WithInterval(TimeSpan.FromSeconds(1));
         _ = WithTimeout(TimeSpan.FromSeconds(15));
       }

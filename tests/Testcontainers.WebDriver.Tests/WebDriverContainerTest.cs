@@ -10,8 +10,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
     private WebDriverContainerTest(WebDriverContainer webDriverContainer)
     {
-        _helloWorldContainer = new ContainerBuilder()
-            .WithImage(CommonImages.HelloWorld)
+        _helloWorldContainer = new ContainerBuilder(CommonImages.HelloWorld)
             .WithNetwork(webDriverContainer.GetNetwork())
             .WithNetworkAliases(_helloWorldBaseAddress.Host)
             .WithPortBinding(_helloWorldBaseAddress.Port, true)
@@ -52,6 +51,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("Hello world", headingElementText);
+        Assert.Equal(_webDriverContainer.GetConnectionString(), _webDriverContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     protected virtual async ValueTask DisposeAsyncCore()
@@ -67,7 +67,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingEnabled : WebDriverContainerTest
     {
         public RecordingEnabled()
-            : base(new WebDriverBuilder().WithRecording().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).WithRecording().Build())
         {
         }
 
@@ -104,7 +104,7 @@ public abstract class WebDriverContainerTest : IAsyncLifetime
     public sealed class RecordingDisabled : WebDriverContainerTest
     {
         public RecordingDisabled()
-            : base(new WebDriverBuilder().Build())
+            : base(new WebDriverBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 

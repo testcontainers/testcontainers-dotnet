@@ -1,0 +1,1 @@
+FROM semitechnologies/weaviate:1.26.14

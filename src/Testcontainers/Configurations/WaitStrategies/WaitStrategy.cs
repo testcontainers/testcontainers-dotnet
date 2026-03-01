@@ -42,6 +42,12 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
+    /// Gets the wait strategy mode.
+    /// </summary>
+    public WaitStrategyMode Mode { get; private set; }
+      =  WaitStrategyMode.Running;
+
+    /// <summary>
     /// Gets the number of retries.
     /// </summary>
     public ushort Retries { get; private set; }
@@ -58,6 +64,13 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     public TimeSpan Timeout { get; private set; }
       = TestcontainersSettings.WaitStrategyTimeout ?? TimeSpan.FromHours(1);
+
+    /// <inheritdoc />
+    public IWaitStrategy WithMode(WaitStrategyMode mode)
+    {
+      Mode = mode;
+      return this;
+    }
 
     /// <inheritdoc />
     public IWaitStrategy WithRetries(ushort retries)

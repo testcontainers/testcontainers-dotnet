@@ -2,7 +2,7 @@ namespace Testcontainers.Bigtable;
 
 public sealed class BigtableContainerTest : IAsyncLifetime
 {
-    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder().Build();
+    private readonly BigtableContainer _bigtableContainer = new BigtableBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -57,5 +57,6 @@ public sealed class BigtableContainerTest : IAsyncLifetime
         Assert.Equal(projectId, actualTable.TableName.ProjectId);
         Assert.Equal(instanceId, actualTable.TableName.InstanceId);
         Assert.Equal(tableId, actualTable.TableName.TableId);
+        Assert.Equal(_bigtableContainer.GetEmulatorEndpoint(), _bigtableContainer.GetConnectionString());
     }
 }

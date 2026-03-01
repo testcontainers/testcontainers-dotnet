@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
+  using JetBrains.Annotations;
   using Xunit;
 
   public static class DockerConfigTests
@@ -152,7 +153,10 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     private sealed class SkipIfHostOrContextIsSet : FactAttribute
     {
-      public SkipIfHostOrContextIsSet()
+      public SkipIfHostOrContextIsSet(
+        [CallerFilePath] [CanBeNull] string sourceFilePath = null,
+        [CallerLineNumber] int sourceLineNumber = -1)
+        : base(sourceFilePath, sourceLineNumber)
       {
         const string reason = "The Docker CLI doesn't know about ~/.testcontainers.properties file.";
         var dockerHost = PropertiesFileConfiguration.Instance.GetDockerHost();

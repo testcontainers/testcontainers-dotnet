@@ -2,7 +2,7 @@ namespace Testcontainers.Papercut;
 
 public sealed class PapercutContainerTest : IAsyncLifetime
 {
-    private readonly PapercutContainer _papercutContainer = new PapercutBuilder().Build();
+    private readonly PapercutContainer _papercutContainer = new PapercutBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -38,29 +38,17 @@ public sealed class PapercutContainerTest : IAsyncLifetime
 
         // Then
         Assert.Single(messages, message => subject.Equals(message.Subject));
+        Assert.Equal(_papercutContainer.GetBaseAddress(), _papercutContainer.GetConnectionString());
     }
 
-    private readonly struct Message
+    private sealed record Message
     {
-        [JsonConstructor]
-        public Message(string id, string subject, string size, DateTime createdAt)
+        public Message(string subject)
         {
-            Id = id;
             Subject = subject;
-            Size = size;
-            CreatedAt = createdAt;
         }
-
-        [JsonPropertyName("id")]
-        public string Id { get; }
 
         [JsonPropertyName("subject")]
         public string Subject { get; }
-
-        [JsonPropertyName("size")]
-        public string Size { get; }
-
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; }
     }
 }

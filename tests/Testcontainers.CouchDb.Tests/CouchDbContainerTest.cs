@@ -2,7 +2,7 @@ namespace Testcontainers.CouchDb;
 
 public sealed class CouchDbContainerTest : IAsyncLifetime
 {
-    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder().Build();
+    private readonly CouchDbContainer _couchDbContainer = new CouchDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -28,5 +28,6 @@ public sealed class CouchDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.Created, database.StatusCode);
+        Assert.Equal(_couchDbContainer.GetConnectionString(), _couchDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

@@ -12,7 +12,7 @@ You can start a PostgreSQL container instance from any .NET application. To crea
 
 === "Start a PostgreSQL container"
     ```csharp
-    var postgreSqlContainer = new PostgreSqlBuilder().Build();
+    var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
     await postgreSqlContainer.StartAsync();
     ```
 
@@ -22,6 +22,29 @@ The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) modu
     ```csharp
     --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:UsePostgreSqlContainer"
     ```
+
+## SSL
+
+Use `WithSsl` to enable TLS and map the server certificates. Configure the client connection string with `SslMode` and (for validation) the CA certificate.
+
+!!! note
+    When SSL is enabled, Testcontainers doesn't set the SSL mode for the connection string. You'll need to choose the `SslMode` and configure it yourself.
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslBuilder"
+```
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslConnectionString"
+```
+
+### VerifyFull and DNS SANs
+
+`SslMode=VerifyFull` validates DNS SANs. Use a DNS host like `localhost` if you need full verification.
+
+```csharp
+--8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslVerifyFull"
+```
 
 The test example uses the following NuGet dependencies:
 

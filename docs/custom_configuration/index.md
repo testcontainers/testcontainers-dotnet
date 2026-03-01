@@ -4,6 +4,7 @@ Testcontainers supports various configurations to set up your test environment. 
 
 | Properties File                 | Environment Variable                           | Description                                                                                                               | Default                      |
 |---------------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------|
+| `docker.api.version`            | `DOCKER_API_VERSION`                           | The Docker API version to use.                                                                                            | `1.44`                       |
 | `docker.config`                 | `DOCKER_CONFIG`                                | The directory path that contains the Docker configuration (`config.json`) file.                                           | `~/.docker/`                 |
 | `docker.host`                   | `DOCKER_HOST`                                  | The Docker daemon socket to connect to.                                                                                   | -                            |
 | `docker.context`                | `DOCKER_CONTEXT`                               | The Docker context to connect to.                                                                                         | -                            |
@@ -15,7 +16,7 @@ Testcontainers supports various configurations to set up your test environment. 
 | `docker.socket.override`        | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`        | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`       |
 | `ryuk.disabled`                 | `TESTCONTAINERS_RYUK_DISABLED`                 | Disables Ryuk (resource reaper).                                                                                          | `false`                      |
 | `ryuk.container.privileged`     | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED`     | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `true`                       |
-| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.12.0` |
+| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.14.0` |
 | `hub.image.name.prefix`         | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`         | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                            |
 | `wait.strategy.retries`         | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`         | The wait strategy retry count.                                                                                            | `infinite`                   |
 | `wait.strategy.interval`        | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`        | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                   |
@@ -81,13 +82,13 @@ Once configured, Testcontainers will rewrite Docker Hub image names by adding th
 For example, the image:
 
 ```
-testcontainers/helloworld:1.2.0
+testcontainers/helloworld:1.3.0
 ```
 
 will automatically become:
 
 ```
-registry.mycompany.com/mirror/testcontainers/helloworld:1.2.0
+registry.mycompany.com/mirror/testcontainers/helloworld:1.3.0
 ```
 
 ## Enable logging
@@ -106,7 +107,7 @@ In .NET logging usually goes through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:00.47] Searching Docker registry credential in CredsStore
     [testcontainers.org 00:00:00.47] Searching Docker registry credential in Auths
     [testcontainers.org 00:00:00.51] Docker registry credential https://index.docker.io/v1/ found
-    [testcontainers.org 00:00:03.16] Docker image testcontainers/ryuk:0.3.4 created
+    [testcontainers.org 00:00:03.16] Docker image testcontainers/ryuk:0.14.0 created
     [testcontainers.org 00:00:03.24] Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e created
     [testcontainers.org 00:00:03.29] Start Docker container b6fad46fbcec84625281c1401ec91158b25cad6495fa612274af7c920abec14e
     [testcontainers.org 00:00:06.18] Docker image alpine:latest created
@@ -114,7 +115,7 @@ In .NET logging usually goes through the test framework. Testcontainers is not a
     [testcontainers.org 00:00:06.26] Start Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
     [testcontainers.org 00:00:06.64] Delete Docker container 027af397344d08d5fc174bf5b5d449f6b352a8a506306d3d96390aaa2bb0445d
 
-!!!tip
+!!! tip
 
     These log messages are from the Testcontainers library and contain information about the test resources. They do not include log messages from the containers. To get the container log messages, see: [Getting log messages](https://dotnet.testcontainers.org/api/create_docker_container/#getting-log-messages).
 

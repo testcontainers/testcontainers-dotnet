@@ -38,6 +38,7 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         Assert.True(rowSet.IsFullyFetched);
         Assert.Single(rows);
         Assert.Equal("COMPLETED", rows[0]["bootstrapped"]);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseCassandraContainer]
 
@@ -60,6 +61,9 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
     public class CassandraDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<CassandraBuilder, CassandraContainer>(messageSink)
     {
+        protected override CassandraBuilder Configure()
+            => new CassandraBuilder(TestSession.GetImageFromDockerfile());
+
         public override DbProviderFactory DbProviderFactory
             => CqlProviderFactory.Instance;
     }
@@ -68,8 +72,8 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
     public class CassandraWaitForDatabaseFixture(IMessageSink messageSink)
         : CassandraDefaultFixture(messageSink)
     {
-        protected override CassandraBuilder Configure(CassandraBuilder builder)
-            => builder.WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override CassandraBuilder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

@@ -49,6 +49,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(neo4jDatabase, session.SessionConfig.Database);
         Assert.Equal(Edition, edition);
+        Assert.Equal(_neo4jContainer.GetConnectionString(), _neo4jContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseNeo4jContainer]
 
@@ -62,7 +63,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jDefaultConfiguration : Neo4jContainerTest
     {
         public Neo4jDefaultConfiguration()
-            : base(new Neo4jBuilder().Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
 
@@ -73,7 +74,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
     public sealed class Neo4jEnterpriseEditionConfiguration : Neo4jContainerTest
     {
         public Neo4jEnterpriseEditionConfiguration()
-            : base(new Neo4jBuilder().WithEnterpriseEdition(true).Build())
+            : base(new Neo4jBuilder(TestSession.GetImageFromDockerfile()).WithEnterpriseEdition(true).Build())
         {
         }
 

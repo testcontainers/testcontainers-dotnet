@@ -11,7 +11,7 @@ dotnet add package Testcontainers.ModuleName
 All modules follow the same design and come pre-configured with best practices. Usually, you do not need to worry about configuring them yourself. To create and start a container, all you need is:
 
 ```csharp
-var moduleNameContainer = new ModuleNameBuilder().Build();
+var moduleNameContainer = new ModuleNameBuilder("<repository>:<tag>").Build();
 await moduleNameContainer.StartAsync();
 ```
 
@@ -42,11 +42,13 @@ await moduleNameContainer.StartAsync();
 | FakeGcsServer     | `fsouza/fake-gcs-server:1.47`                                       | [NuGet](https://www.nuget.org/packages/Testcontainers.FakeGcsServer) | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.FakeGcsServer) |
 | Firebird          | `jacobalberty/firebird:v4.0`                                        | [NuGet](https://www.nuget.org/packages/Testcontainers.FirebirdSql)   | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.FirebirdSql)   |
 | Firestore         | `gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators` | [NuGet](https://www.nuget.org/packages/Testcontainers.Firestore)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Firestore)     |
+| Grafana           | `grafana/grafana:12.2`                                              | [NuGet](https://www.nuget.org/packages/Testcontainers.Grafana)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Grafana)       |
 | InfluxDB          | `influxdb:2.7`                                                      | [NuGet](https://www.nuget.org/packages/Testcontainers.InfluxDb)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.InfluxDb)      |
 | JanusGraph        | `janusgraph/janusgraph:1.0.0`                                       | [NuGet](https://www.nuget.org/packages/Testcontainers.JanusGraph)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.JanusGraph)    |
 | K3s               | `rancher/k3s:v1.26.2-k3s1`                                          | [NuGet](https://www.nuget.org/packages/Testcontainers.K3s)           | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.K3s)           |
 | Kafka             | `confluentinc/cp-kafka:6.1.9`                                       | [NuGet](https://www.nuget.org/packages/Testcontainers.Kafka)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Kafka)         |
 | Keycloak          | `quay.io/keycloak/keycloak:21.1`                                    | [NuGet](https://www.nuget.org/packages/Testcontainers.Keycloak)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Keycloak)      |
+| KurrentDb         | `kurrentplatform/kurrentdb:25.1`                                    | [NuGet](https://www.nuget.org/packages/Testcontainers.KurrentDb)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.KurrentDb)     |
 | Kusto emulator    | `mcr.microsoft.com/azuredataexplorer/kustainer-linux:latest`        | [NuGet](https://www.nuget.org/packages/Testcontainers.Kusto)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Kusto)         |
 | LocalStack        | `localstack/localstack:2.0`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.LocalStack)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.LocalStack)    |
 | Lowkey Vault      | `nagyesta/lowkey-vault:2.7.1-ubi9-minimal`                          | [NuGet](https://www.nuget.org/packages/Testcontainers.LowkeyVault)   | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.LowkeyVault)   |
@@ -54,12 +56,15 @@ await moduleNameContainer.StartAsync();
 | Milvus            | `milvusdb/milvus:v2.3.10`                                           | [NuGet](https://www.nuget.org/packages/Testcontainers.Milvus)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Milvus)        |
 | MinIO             | `minio/minio:RELEASE.2023-01-31T02-24-19Z`                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Minio)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Minio)         |
 | MongoDB           | `mongo:6.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.MongoDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MongoDb)       |
+| Mosquitto         | `eclipse-mosquitto:2.0`                                             | [NuGet](https://www.nuget.org/packages/Testcontainers.Mosquitto)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Mosquitto)     |
 | MySQL             | `mysql:8.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.MySql)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MySql)         |
 | NATS              | `nats:2.9`                                                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Nats)          | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Nats)          |
 | Neo4j             | `neo4j:5.4`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Neo4j)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Neo4j)         |
+| Ollama            | `ollama/ollama:0.6.6`                                               | [NuGet](https://www.nuget.org/packages/Testcontainers.Ollama)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Ollama)        |
 | OpenSearch        | `opensearchproject/opensearch:2.12.0`                               | [NuGet](https://www.nuget.org/packages/Testcontainers.OpenSearch)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.OpenSearch)    |
 | Oracle            | `gvenzl/oracle-xe:21.3.0-slim-faststart`                            | [NuGet](https://www.nuget.org/packages/Testcontainers.Oracle)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Oracle)        |
 | Papercut          | `changemakerstudiosus/papercut-smtp:latest`                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Papercut)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Papercut)      |
+| Playwright        | `mcr.microsoft.com/playwright:v1.55.1`                              | [NuGet](https://www.nuget.org/packages/Testcontainers.Playwright)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Playwright)    |
 | PostgreSQL        | `postgres:15.1`                                                     | [NuGet](https://www.nuget.org/packages/Testcontainers.PostgreSql)    | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.PostgreSql)    |
 | PubSub            | `gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators` | [NuGet](https://www.nuget.org/packages/Testcontainers.PubSub)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.PubSub)        |
 | Pulsar            | `apachepulsar/pulsar:3.0.6`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Pulsar)        | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Pulsar)        |
@@ -68,11 +73,15 @@ await moduleNameContainer.StartAsync();
 | RavenDB           | `ravendb/ravendb:5.4-ubuntu-latest`                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.RavenDb)       | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.RavenDb)       |
 | Redis             | `redis:7.0`                                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Redis)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Redis)         |
 | Redpanda          | `docker.redpanda.com/redpandadata/redpanda:v22.2.1`                 | [NuGet](https://www.nuget.org/packages/Testcontainers.Redpanda)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Redpanda)      |
+| Seq               | `datalust/seq:2025.2`                                               | [NuGet](https://www.nuget.org/packages/Testcontainers.Seq)           | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Seq)           |
 | Sftp              | `atmoz/sftp:alpine`                                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.Sftp)          | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Sftp)          |
 | SQL Server        | `mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04`             | [NuGet](https://www.nuget.org/packages/Testcontainers.MsSql)         | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.MsSql)         |
+| Temporal          | `temporalio/temporal:1.5.1`                                         | [NuGet](https://www.nuget.org/packages/Testcontainers.Temporal)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Temporal)      |
+| Toxiproxy         | `ghcr.io/shopify/toxiproxy:2.12.0`                                  | [NuGet](https://www.nuget.org/packages/Testcontainers.Toxiproxy)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Toxiproxy)     |
 | Typesense         | `typesense/typesense:28.0`                                          | [NuGet](https://www.nuget.org/packages/Testcontainers.Typesense)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Typesense)     |
 | Weaviate          | `semitechnologies/weaviate:1.26.14`                                 | [NuGet](https://www.nuget.org/packages/Testcontainers.Weaviate)      | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.Weaviate)      |
 | WebDriver         | `selenium/standalone-chrome:110.0`                                  | [NuGet](https://www.nuget.org/packages/Testcontainers.WebDriver)     | [Source](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/src/Testcontainers.WebDriver)     |
+| WireMock          | -                                                                   | [NuGet](https://www.nuget.org/packages/WireMock.Net.Testcontainers)  | [Source](https://github.com/wiremock/WireMock.Net)                                                              |
 
 ## Implement a module
 
@@ -110,10 +119,15 @@ To set the PostgreSQL module default configuration, override the read-only `Dock
 The .NET template already includes this configuration, making it easy for developers to quickly get started by simply commenting out the necessary parts:
 
 ```csharp
-public PostgreSqlBuilder()
+public PostgreSqlBuilder(string image)
+  : this(new DockerImage(image))
+{
+}
+
+public PostgreSqlBuilder(IImage image)
   : this(new PostgreSqlConfiguration())
 {
-  DockerResourceConfiguration = Init().DockerResourceConfiguration;
+  DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
 }
 
 private PostgreSqlBuilder(PostgreSqlConfiguration resourceConfiguration)
@@ -125,13 +139,13 @@ private PostgreSqlBuilder(PostgreSqlConfiguration resourceConfiguration)
 protected override PostgreSqlConfiguration DockerResourceConfiguration { get; }
 ```
 
-To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the `Init()` member and add the necessary configurations such as the Docker image and a wait strategy to the base implementation:
+To append the PostgreSQL configurations to the default Testcontainers configurations override or comment out the `Init()` member and add the necessary configurations and a wait strategy to the base implementation:
 
 ```csharp
 protected override PostgreSqlBuilder Init()
 {
   var waitStrategy = Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready");
-  return base.Init().WithImage("postgres:15.1").WithPortBinding(5432, true).WithWaitStrategy(waitStrategy);
+  return base.Init().WithPortBinding(5432, true).WithWaitStrategy(waitStrategy);
 }
 ```
 

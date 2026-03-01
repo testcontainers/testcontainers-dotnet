@@ -15,6 +15,11 @@ namespace DotNet.Testcontainers.Configurations
       _properties = properties;
     }
 
+    protected virtual Version GetDockerApiVersion(string propertyName)
+    {
+      return _properties.TryGetValue(propertyName, out var propertyValue) && !string.IsNullOrEmpty(propertyValue) && Version.TryParse(propertyValue, out var dockerApiVersion) ? dockerApiVersion : null;
+    }
+
     protected virtual string GetDockerConfig(string propertyName)
     {
       return GetPropertyValue<string>(propertyName);

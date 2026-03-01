@@ -41,7 +41,7 @@ namespace DotNet.Testcontainers.Builders
         {
           using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
           {
-            using (var dockerClient = dockerClientConfiguration.CreateClient())
+            using (var dockerClient = dockerClientConfiguration.CreateClient(authConfig.Version))
             {
               try
               {

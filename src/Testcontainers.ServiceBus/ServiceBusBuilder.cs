@@ -8,6 +8,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
 
     public const string DatabaseNetworkAlias = "database-container";
 
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ServiceBusImage = "mcr.microsoft.com/azure-messaging/servicebus-emulator:latest";
 
     public const ushort ServiceBusPort = 5672;
@@ -17,10 +18,42 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public ServiceBusBuilder()
+        : this(ServiceBusImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-messaging/servicebus-emulator:latest</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
+    public ServiceBusBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBusBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// </remarks>
+    public ServiceBusBuilder(IImage image)
         : this(new ServiceBusConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -115,7 +148,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
         var network = new NetworkBuilder()
             .Build();
 
-        var container = new MsSqlBuilder()
+        var container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
             .WithNetwork(network)
             .WithNetworkAliases(DatabaseNetworkAlias)
             .Build();
@@ -128,12 +161,15 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     protected override ServiceBusBuilder Init()
     {
         return base.Init()
-            .WithImage(ServiceBusImage)
             .WithPortBinding(ServiceBusPort, true)
             .WithPortBinding(ServiceBusHttpPort, true)
             .WithEnvironment("SQL_WAIT_INTERVAL", "0")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(ServiceBusHttpPort).ForPath("/health")));
+            .WithConnectionStringProvider(new ServiceBusConnectionStringProvider())
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                // https://github.com/Azure/azure-event-hubs-emulator-installer/issues/69#issuecomment-3762895979.
+                .UntilMessageIsLogged("Emulator Service is Successfully Up!")
+                .UntilHttpRequestIsSucceeded(request =>
+                    request.ForPort(ServiceBusHttpPort).ForPath("/health")));
     }
 
     /// <inheritdoc />

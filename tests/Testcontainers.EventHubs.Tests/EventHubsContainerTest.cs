@@ -38,7 +38,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public async Task SendEventDataBatchShouldNotThrowException()
     {
         // Given
-        var message = Guid.NewGuid().ToString();
+        var message = Guid.NewGuid().ToString("D");
 
         var readOptions = new ReadEventOptions();
         readOptions.MaximumWaitTime = TimeSpan.FromSeconds(5);
@@ -63,6 +63,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(message, Encoding.UTF8.GetString(asyncEnumerator.Current.Data.Body.Span));
+        Assert.Equal(_eventHubsContainer.GetConnectionString(), _eventHubsContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseEventHubsContainer]
 
@@ -76,7 +77,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsDefaultAzuriteConfiguration : EventHubsContainerTest
     {
         public EventHubsDefaultAzuriteConfiguration()
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 .Build())
@@ -89,7 +90,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
     public sealed class EventHubsCustomAzuriteConfiguration : EventHubsContainerTest, IClassFixture<DatabaseFixture>
     {
         public EventHubsCustomAzuriteConfiguration(DatabaseFixture fixture)
-            : base(new EventHubsBuilder()
+            : base(new EventHubsBuilder(TestSession.GetImageFromDockerfile())
                 .WithAcceptLicenseAgreement(true)
                 .WithConfigurationBuilder(GetServiceConfiguration())
                 // # --8<-- [start:ReuseExistingAzuriteContainer]
@@ -108,7 +109,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
             Network = new NetworkBuilder()
                 .Build();
 
-            Container = new AzuriteBuilder()
+            Container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.28.0")
                 .WithNetwork(Network)
                 .WithNetworkAliases(AzuriteNetworkAlias)
                 .Build();

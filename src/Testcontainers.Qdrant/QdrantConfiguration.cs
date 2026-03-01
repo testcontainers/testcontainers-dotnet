@@ -66,7 +66,7 @@ public sealed class QdrantConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets a value indicating whether TLS is enabled or not.
     /// </summary>
-    public bool TlsEnabled => Certificate != null;
+    public bool TlsEnabled => Certificate != null && CertificateKey != null;
 
     /// <summary>
     /// Gets the API key that secures the instance.

@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Evaluates the condition asynchronously against the specified container.
     /// </summary>
-    /// <param name="container">The container instance to check readiness against.</param>
+    /// <param name="container">The container to check the condition for.</param>
     /// <returns>A task that returns <c>true</c> while the condition holds; otherwise, <c>false</c>.</returns>
     Task<bool> WhileAsync(IContainer container);
   }

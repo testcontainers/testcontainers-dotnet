@@ -34,6 +34,16 @@ namespace DotNet.Testcontainers.Images
     string Digest { get; }
 
     /// <summary>
+    /// Gets the platform.
+    /// </summary>
+    /// <remarks>
+    /// The supported format for a platform value is:
+    /// <c>&lt;os&gt;|&lt;arch&gt;|&lt;os&gt;/&lt;arch&gt;[/&lt;variant&gt;]</c>.
+    /// </remarks>
+    [CanBeNull]
+    string Platform { get; }
+
+    /// <summary>
     /// Gets the full image name.
     /// </summary>
     /// <remarks>

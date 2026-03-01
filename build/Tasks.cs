@@ -16,7 +16,9 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
             Filter = Parameters.TestFilter,
             ResultsDirectory = Parameters.Paths.Directories.TestResultsDirectoryPath,
             ArgumentCustomization = args => args
-                .AppendSwitchQuoted("--blame-hang-timeout", "5m"),
+                // The windows-2025 GH-hosted runner no longer has cached images. Pulling the
+                // servercore:ltsc2025 image takes significantly longer.
+                .AppendSwitchQuoted("--blame-hang-timeout", "10m"),
         });
     }
 }

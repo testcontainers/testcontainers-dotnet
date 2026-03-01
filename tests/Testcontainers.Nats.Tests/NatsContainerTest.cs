@@ -63,6 +63,7 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(message, actualMessage);
+        Assert.Equal(_natsContainer.GetConnectionString(), _natsContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -74,7 +75,7 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public sealed class NatsDefaultConfiguration : NatsContainerTest
     {
         public NatsDefaultConfiguration()
-            : base(new NatsBuilder().Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -83,7 +84,7 @@ public abstract class NatsContainerTest : IAsyncLifetime
     public sealed class NatsAuthConfiguration : NatsContainerTest
     {
         public NatsAuthConfiguration()
-            : base(new NatsBuilder().WithUsername("%username!").WithPassword("?password&").Build())
+            : base(new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("%username!").WithPassword("?password&").Build())
         {
         }
 
@@ -91,14 +92,14 @@ public abstract class NatsContainerTest : IAsyncLifetime
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfUsernameIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithPassword("password").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithPassword("password").Build());
         }
 
         [Fact]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
         public void ThrowsExceptionIfPasswordIsMissing()
         {
-            Assert.Throws<ArgumentException>(() => new NatsBuilder().WithUsername("username").Build());
+            Assert.Throws<ArgumentException>(() => new NatsBuilder(TestSession.GetImageFromDockerfile()).WithUsername("username").Build());
         }
     }
 }

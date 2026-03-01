@@ -2,7 +2,7 @@ namespace Testcontainers.Firestore;
 
 public sealed class FirestoreContainerTest : IAsyncLifetime
 {
-    private readonly FirestoreContainer _firestoreContainer = new FirestoreBuilder().Build();
+    private readonly FirestoreContainer _firestoreContainer = new FirestoreBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -46,5 +46,6 @@ public sealed class FirestoreContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(documentData, querySnapshot.Documents.Select(document => document.ConvertTo<Dictionary<string, string>>()).Single());
+        Assert.Equal(_firestoreContainer.GetEmulatorEndpoint(), _firestoreContainer.GetConnectionString());
     }
 }

@@ -2,7 +2,7 @@ namespace Testcontainers.Redpanda;
 
 public sealed class RedpandaContainerTest : IAsyncLifetime
 {
-    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder().Build();
+    private readonly RedpandaContainer _redpandaContainer = new RedpandaBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -48,5 +48,6 @@ public sealed class RedpandaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+        Assert.Equal(_redpandaContainer.GetBootstrapAddress(), _redpandaContainer.GetConnectionString());
     }
 }

@@ -74,6 +74,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(helloPulsar, Encoding.Default.GetString(message.Data));
+        Assert.Equal(_pulsarContainer.GetBrokerAddress(), _pulsarContainer.GetConnectionString());
     }
     // # --8<-- [end:UsePulsarContainer]
 
@@ -87,7 +88,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarDefaultConfiguration : PulsarContainerTest
     {
         public PulsarDefaultConfiguration()
-            : base(new PulsarBuilder()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
                 .WithEnvironment(MemorySettings)
                 .Build(), false)
         {
@@ -99,7 +100,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarAuthConfiguration : PulsarContainerTest
     {
         public PulsarAuthConfiguration()
-            : base(new PulsarBuilder()
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile())
                 .WithAuthentication()
                 .WithEnvironment(MemorySettings)
                 .Build(), true)
@@ -111,8 +112,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4Configuration : PulsarContainerTest
     {
         public PulsarV4Configuration()
-            : base(new PulsarBuilder()
-                .WithImage("apachepulsar/pulsar:4.0.2")
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
                 .WithEnvironment(MemorySettings)
                 .Build(), false)
         {
@@ -123,8 +123,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
         public PulsarV4AuthConfiguration()
-            : base(new PulsarBuilder()
-                .WithImage("apachepulsar/pulsar:4.0.2")
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
                 .WithAuthentication()
                 .WithEnvironment(MemorySettings)
                 .Build(), true)

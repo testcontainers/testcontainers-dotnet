@@ -2,7 +2,7 @@ namespace Testcontainers.Typesense;
 
 public sealed class TypesenseContainerTest : IAsyncLifetime
 {
-    private readonly TypesenseContainer _typesenseContainer = new TypesenseBuilder().Build();
+    private readonly TypesenseContainer _typesenseContainer = new TypesenseBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -33,5 +33,6 @@ public sealed class TypesenseContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal("[]", response);
+        Assert.Equal(_typesenseContainer.GetBaseAddress(), _typesenseContainer.GetConnectionString());
     }
 }

@@ -117,9 +117,10 @@ namespace DotNet.Testcontainers.Clients
           runtimeInfo.AppendLine("  Labels: ");
           runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
+
         Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         Logger.LogError(e, "Failed to retrieve Docker container runtime information");
       }
@@ -134,7 +135,7 @@ namespace DotNet.Testcontainers.Clients
     {
       using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
       {
-        return dockerClientConfiguration.CreateClient();
+        return dockerClientConfiguration.CreateClient(dockerEndpointAuthConfig.Version);
       }
     }
   }

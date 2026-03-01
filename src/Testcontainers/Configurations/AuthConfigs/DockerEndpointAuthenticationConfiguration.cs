@@ -10,6 +10,9 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public readonly struct DockerEndpointAuthenticationConfiguration : IDockerEndpointAuthenticationConfiguration
   {
+    // https://github.com/moby/moby/releases/tag/docker-v29.0.0.
+    private static readonly Version DockerEngineApi = EnvironmentConfiguration.Instance.GetDockerApiVersion() ?? PropertiesFileConfiguration.Instance.GetDockerApiVersion() ?? new Version(1, 44);
+
     // Since the static `TestcontainersSettings` class holds the detected container
     // runtime information from the auto-discovery mechanism, we can't add a static
     // `NamedPipeConnectionTimeout` property to it because that would create a
@@ -17,7 +20,7 @@ namespace DotNet.Testcontainers.Configurations
     // class or stop exposing the `TestcontainersSettings` properties publicly.
     // Instead, we could rely only on custom configurations via environment variables
     // or the properties file.
-    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
@@ -29,6 +32,9 @@ namespace DotNet.Testcontainers.Configurations
       Endpoint = endpoint;
       Credentials = credentials;
     }
+
+    /// <inheritdoc />
+    public Version Version => DockerEngineApi;
 
     /// <inheritdoc />
     public Uri Endpoint { get; }

@@ -3,7 +3,7 @@ namespace Testcontainers.RabbitMq;
 public sealed class RabbitMqContainerTest : IAsyncLifetime
 {
     // # --8<-- [start:UseRabbitMqContainer]
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -29,6 +29,7 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(connection.IsOpen);
+        Assert.Equal(_rabbitMqContainer.GetConnectionString(), _rabbitMqContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseRabbitMqContainer]
 }

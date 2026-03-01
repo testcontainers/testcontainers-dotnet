@@ -20,8 +20,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public TestcontainersVolumeTest(VolumeFixture volumeFixture)
     {
-      var testcontainersBuilder = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+      var testcontainersBuilder = new ContainerBuilder(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("touch /tmp/$(uname -n) && tail -f /dev/null")
         .WithVolumeMount(volumeFixture.Volume.Name, Destination)

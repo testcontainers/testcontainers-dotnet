@@ -2,7 +2,7 @@ namespace Testcontainers.LowkeyVault;
 
 public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 {
-    private readonly LowkeyVaultContainer _lowkeyVaultContainer = new LowkeyVaultBuilder().Build();
+    private readonly LowkeyVaultContainer _lowkeyVaultContainer = new LowkeyVaultBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     protected abstract TokenCredential GetTokenCredential();
 
@@ -25,15 +25,13 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
     public async Task ServerCertificateValidationSucceedsWithTrustedCertificate()
     {
         // Given
-        var baseAddress = _lowkeyVaultContainer.GetBaseAddress();
-
         var certificates = await _lowkeyVaultContainer.GetCertificateAsync();
 
         using var httpMessageHandler = new HttpClientHandler();
         httpMessageHandler.ServerCertificateCustomValidationCallback = (_, cert, _, _) => certificates.IndexOf(cert) > -1;
 
         using var httpClient = new HttpClient(httpMessageHandler);
-        httpClient.BaseAddress = new Uri(baseAddress);
+        httpClient.BaseAddress = new Uri(_lowkeyVaultContainer.GetBaseAddress());
 
         // When
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "management/vault");
@@ -43,6 +41,7 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+        Assert.Equal(_lowkeyVaultContainer.GetBaseAddress(), _lowkeyVaultContainer.GetConnectionString());
     }
 
     [Fact]

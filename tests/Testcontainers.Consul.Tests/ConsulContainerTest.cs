@@ -2,7 +2,7 @@ namespace Testcontainers.Consul;
 
 public sealed class ConsulContainerTest : IAsyncLifetime
 {
-    private readonly ConsulContainer _consulContainer = new ConsulBuilder().Build();
+    private readonly ConsulContainer _consulContainer = new ConsulBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -42,5 +42,6 @@ public sealed class ConsulContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         Assert.Equal(helloWorld, Encoding.Default.GetString(actual.Response.Value));
+        Assert.Equal(_consulContainer.GetBaseAddress(), _consulContainer.GetConnectionString());
     }
 }

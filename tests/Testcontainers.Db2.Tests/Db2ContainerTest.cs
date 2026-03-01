@@ -15,6 +15,7 @@ public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixtur
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -40,16 +41,16 @@ public abstract class Db2ContainerTest(Db2ContainerTest.Db2DefaultFixture fixtur
         public override DbProviderFactory DbProviderFactory
             => DB2Factory.Instance;
 
-        protected override Db2Builder Configure(Db2Builder builder)
-            => builder.WithAcceptLicenseAgreement(true);
+        protected override Db2Builder Configure()
+            => new Db2Builder(TestSession.GetImageFromDockerfile()).WithAcceptLicenseAgreement(true);
     }
 
     [UsedImplicitly]
     public class Db2WaitForDatabaseFixture(IMessageSink messageSink)
         : Db2DefaultFixture(messageSink)
     {
-        protected override Db2Builder Configure(Db2Builder builder)
-            => base.Configure(builder).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+        protected override Db2Builder Configure()
+            => base.Configure().WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
     }
 
     [UsedImplicitly]

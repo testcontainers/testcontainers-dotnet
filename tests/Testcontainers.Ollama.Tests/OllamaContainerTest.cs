@@ -2,7 +2,7 @@ namespace Testcontainers.Ollama;
 
 public sealed class OllamaContainerTest : IAsyncLifetime
 {
-    private readonly OllamaContainer _ollamaContainer = new OllamaBuilder().Build();
+    private readonly OllamaContainer _ollamaContainer = new OllamaBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -38,5 +38,6 @@ public sealed class OllamaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(embedResponse);
         Assert.NotEmpty(embedResponse.Embeddings);
+        Assert.Equal(_ollamaContainer.GetBaseAddress(), _ollamaContainer.GetConnectionString());
     }
 }

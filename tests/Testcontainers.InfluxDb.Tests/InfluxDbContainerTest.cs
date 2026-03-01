@@ -4,7 +4,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 {
     private const string AdminToken = "YOUR_API_TOKEN";
 
-    private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder().WithAdminToken(AdminToken).Build();
+    private readonly InfluxDbContainer _influxDbContainer = new InfluxDbBuilder(TestSession.GetImageFromDockerfile()).WithAdminToken(AdminToken).Build();
 
     public async ValueTask InitializeAsync()
     {
@@ -30,6 +30,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(result);
+        Assert.Equal(_influxDbContainer.GetAddress(), _influxDbContainer.GetConnectionString());
     }
 
     [Fact]

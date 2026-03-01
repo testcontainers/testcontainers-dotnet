@@ -37,6 +37,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Equal(_keycloakContainer.GetBaseAddress(), _keycloakContainer.GetConnectionString());
     }
 
     [Fact]
@@ -63,7 +64,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakDefaultConfiguration : KeycloakContainerTest
     {
         public KeycloakDefaultConfiguration()
-            : base(new KeycloakBuilder().Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile()).Build())
         {
         }
     }
@@ -72,7 +73,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV25Configuration : KeycloakContainerTest
     {
         public KeycloakV25Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:25.0").Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak25.0")).Build())
         {
         }
     }
@@ -81,8 +82,32 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV26Configuration : KeycloakContainerTest
     {
         public KeycloakV26Configuration()
-            : base(new KeycloakBuilder().WithImage("quay.io/keycloak/keycloak:26.0").Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak26.0")).Build())
         {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class KeycloakRealmConfiguration : KeycloakContainerTest
+    {
+        public KeycloakRealmConfiguration()
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile()).WithRealm("realm-export.json").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task AllRealmsAreEnabled()
+        {
+            // Given
+            var keycloakClient = new KeycloakClient(_keycloakContainer.GetBaseAddress(), KeycloakBuilder.DefaultUsername, KeycloakBuilder.DefaultPassword);
+
+            // When
+            var realms = await keycloakClient.GetRealmsAsync("master", TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Collection(realms, realm => Assert.True(realm.Enabled), realm => Assert.True(realm.Enabled));
         }
     }
 }

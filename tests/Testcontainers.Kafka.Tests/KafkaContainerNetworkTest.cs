@@ -19,14 +19,12 @@ public sealed class KafkaContainerNetworkTest : IAsyncLifetime
         _network = new NetworkBuilder()
             .Build();
 
-        _kafkaContainer = new KafkaBuilder()
-            .WithImage("confluentinc/cp-kafka:6.1.9")
+        _kafkaContainer = new KafkaBuilder("confluentinc/cp-kafka:6.1.9")
             .WithNetwork(_network)
             .WithListener(Listener)
             .Build();
 
-        _kCatContainer = new ContainerBuilder()
-            .WithImage("confluentinc/cp-kafkacat:6.1.9")
+        _kCatContainer = new ContainerBuilder("confluentinc/cp-kafkacat:6.1.9")
             .WithNetwork(_network)
             .WithEntrypoint(CommonCommands.SleepInfinity)
             .WithResourceMapping(Encoding.Default.GetBytes(Message), DataFilePath)
