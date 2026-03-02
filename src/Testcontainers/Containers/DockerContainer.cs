@@ -152,28 +152,28 @@ namespace DotNet.Testcontainers.Containers
           case "http":
           case "https":
           case "tcp":
-          {
-            return dockerEndpoint.Host;
-          }
+            {
+              return dockerEndpoint.Host;
+            }
 
           case "npipe":
           case "unix":
-          {
-            const string localhost = "127.0.0.1";
-
-            if (!Exists())
             {
-              return localhost;
-            }
+              const string localhost = "127.0.0.1";
 
-            if (!_client.IsRunningInsideDocker)
-            {
-              return localhost;
-            }
+              if (!Exists())
+              {
+                return localhost;
+              }
 
-            var endpointSettings = _container.NetworkSettings.Networks.First().Value;
-            return endpointSettings.Gateway;
-          }
+              if (!_client.IsRunningInsideDocker)
+              {
+                return localhost;
+              }
+
+              var endpointSettings = _container.NetworkSettings.Networks.First().Value;
+              return endpointSettings.Gateway;
+            }
 
           default:
             throw new InvalidOperationException($"Docker endpoint {dockerEndpoint} is not supported.");
@@ -404,6 +404,12 @@ namespace DotNet.Testcontainers.Containers
     public Task CopyAsync(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       return _client.CopyAsync(Id, source, target, uid, gid, fileMode, ct);
+    }
+
+    /// <inheritdoc />
+    public Task CopyTarArchiveAsync(Stream tarArchive, string containerPath = "/", CancellationToken ct = default)
+    {
+      return _client.CopyTarArchiveAsync(Id, tarArchive, containerPath, ct);
     }
 
     /// <inheritdoc />

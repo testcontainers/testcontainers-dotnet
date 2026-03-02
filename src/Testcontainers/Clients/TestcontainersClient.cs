@@ -264,6 +264,13 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
+    public async Task CopyTarArchiveAsync(string id, Stream tarArchive, string containerPath = "/", CancellationToken ct = default)
+    {
+      await Container.ExtractArchiveToContainerAsync(id, containerPath, tarArchive, ct)
+          .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async Task<byte[]> ReadFileAsync(string id, string filePath, CancellationToken ct = default)
     {
       Stream tarStream;
@@ -350,6 +357,12 @@ namespace DotNet.Testcontainers.Clients
       if (configuration.ResourceMappings.Any())
       {
         await Task.WhenAll(configuration.ResourceMappings.Select(resourceMapping => CopyAsync(id, resourceMapping, ct)))
+          .ConfigureAwait(false);
+      }
+
+      if (configuration.TarArchiveMappings.Any())
+      {
+        await Task.WhenAll(configuration.TarArchiveMappings.Select(tarArchive => CopyTarArchiveAsync(id, tarArchive.TarArchive, tarArchive.ContainerPath, ct)))
           .ConfigureAwait(false);
       }
 

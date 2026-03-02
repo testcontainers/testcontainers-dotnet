@@ -34,6 +34,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="acceptLicenseAgreement">A boolean value indicating whether the license agreement is accepted.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the module does not require a license agreement.</exception>
+    [PublicAPI]
     TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement);
 
     /// <summary>
@@ -321,7 +322,26 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
     TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a tar archive contents to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Set the <paramref name="tarArchive"/> property <see cref="Stream.Position"/> to 0 before calling this method.
+    /// </para>
+    /// <para>
+    /// The caller retains ownership of the stream and is responsible for disposal.
+    /// The stream content is copied during container startup, so the stream must remain open and readable until the container starts.
+    /// </para>
+    /// </remarks>
+    /// <param name="tarArchive">The <see cref="Stream"/> with the tar archive contents.</param>
+    /// <param name="containerPath">The path where tar archive contents should be placed.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithCopyTarArchive(Stream tarArchive, string containerPath = "/");
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.

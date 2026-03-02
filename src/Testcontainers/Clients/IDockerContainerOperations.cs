@@ -1,13 +1,13 @@
 namespace DotNet.Testcontainers.Clients
 {
+  using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Threading;
   using System.Threading.Tasks;
-  using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
 
   internal interface IDockerContainerOperations : IHasListOperations<ContainerListResponse, ContainerInspectResponse>
   {
@@ -25,7 +25,7 @@ namespace DotNet.Testcontainers.Clients
 
     Task RemoveAsync(string id, CancellationToken ct = default);
 
-    Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default);
+    Task ExtractArchiveToContainerAsync(string id, string path, Stream tarStream, CancellationToken ct = default);
 
     Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default);
 
