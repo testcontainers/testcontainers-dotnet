@@ -57,5 +57,6 @@ public sealed class ServiceBusConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the database container.
     /// </summary>
+    [JsonIgnore]
     public IDatabaseContainer DatabaseContainer { get; }
 }
