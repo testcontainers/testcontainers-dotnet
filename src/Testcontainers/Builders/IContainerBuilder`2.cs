@@ -251,25 +251,25 @@ namespace DotNet.Testcontainers.Builders
     /// Copies the byte array content to the created container before it starts.
     /// </summary>
     /// <param name="resourceContent">The byte array content of the resource mapping.</param>
-    /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies the byte array content to the created container before it starts.
     /// </summary>
     /// <param name="resourceContent">The byte array content of the resource mapping.</param>
-    /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies the contents of a URL, a test host directory or file to the container before it starts.

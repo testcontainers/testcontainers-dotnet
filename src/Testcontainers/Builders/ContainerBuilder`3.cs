@@ -214,15 +214,15 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(resourceContent, FilePath.Of(filePath.ToString()), uid, gid, fileMode);
+      return WithResourceMapping(resourceContent, FilePath.Of(target.ToString()), uid, gid, fileMode);
     }
 
     /// <inheritdoc />
-    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath.Value, uid, gid, fileMode));
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
@@ -316,8 +316,8 @@ namespace DotNet.Testcontainers.Builders
     public TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       var fileName = Path.GetFileName(source.LocalPath);
-      var targetFile = FilePath.Of(Path.Combine(target.Value, fileName));
-      return WithResourceMapping(source, targetFile, uid, gid, fileMode);
+      var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
+      return WithResourceMapping(source, filePath, uid, gid, fileMode);
     }
 
     /// <inheritdoc />
@@ -333,8 +333,10 @@ namespace DotNet.Testcontainers.Builders
       {
         return WithResourceMapping(FilePath.Of(source.LocalPath), target, uid, gid, fileMode);
       }
-
-      return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
+      else
+      {
+        return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
+      }
     }
 
     /// <inheritdoc />
