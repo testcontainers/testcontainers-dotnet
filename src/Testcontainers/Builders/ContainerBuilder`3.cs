@@ -237,18 +237,18 @@ namespace DotNet.Testcontainers.Builders
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return WithResourceMapping(new DirectoryInfo(source), target, uid, gid, fileMode);
+        return WithResourceMapping(DirectoryPath.Of(source), DirectoryPath.Of(target), uid, gid, fileMode);
       }
       else
       {
-        return WithResourceMapping(new FileInfo(source), target, uid, gid, fileMode);
+        return WithResourceMapping(FilePath.Of(source), DirectoryPath.Of(target), uid, gid, fileMode);
       }
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
+      return WithResourceMapping(DirectoryPath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
     }
 
     /// <inheritdoc />
@@ -266,7 +266,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
+      return WithResourceMapping(FilePath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
     }
 
     /// <inheritdoc />
@@ -278,7 +278,9 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FilePath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.Value, target.Value, uid, gid, fileMode));
+      var fileName = Path.GetFileName(source.Value);
+      var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
+      return WithResourceMapping(source, filePath, uid, gid, fileMode);
     }
 
     /// <inheritdoc />
@@ -303,7 +305,14 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(source, new DirectoryInfo(target), uid, gid, fileMode);
+      if (source.IsFile)
+      {
+        return WithResourceMapping(source, DirectoryPath.Of(target), uid, gid, fileMode);
+      }
+      else
+      {
+        return WithResourceMapping(source, FilePath.Of(target), uid, gid, fileMode);
+      }
     }
 
     /// <inheritdoc />
@@ -315,7 +324,13 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
+      const string message = "The URI '{0}' does not contain a file name segment.";
+
       var fileName = Path.GetFileName(source.LocalPath);
+
+      _ = Guard.Argument(source, nameof(source))
+        .ThrowIf(_ => string.IsNullOrEmpty(fileName), _ => new ArgumentException(string.Format(message, source), nameof(source)));
+
       var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
       return WithResourceMapping(source, filePath, uid, gid, fileMode);
     }
@@ -501,7 +516,7 @@ namespace DotNet.Testcontainers.Builders
         !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
 
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
     }
 
     /// <summary>

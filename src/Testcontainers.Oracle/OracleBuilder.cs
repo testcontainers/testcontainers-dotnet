@@ -147,7 +147,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
             value.Database != null && value.Image.MatchVersion(v => v.Major < 18);
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
-            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => throw new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
+            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
             .NotNull()
