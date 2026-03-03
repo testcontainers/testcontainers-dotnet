@@ -64,23 +64,49 @@ Sometimes it is necessary to copy files into the container to configure the serv
 
 ```csharp title="Copying a directory"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(DirectoryPath.Of("."), DirectoryPath.Of("/app/"));
+  .WithResourceMapping(
+    DirectoryPath.Of("."),
+    DirectoryPath.Of("/app/"));
 ```
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder("alpine:3.20.0")
   // Copy 'appsettings.json' into the '/app' directory.
-  .WithResourceMapping(FilePath.Of("appsettings.json"), DirectoryPath.Of("/app/"))
-  // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
-  .WithResourceMapping(FilePath.Of("appsettings.Container.json"), FilePath.Of("/app/appsettings.Developer.json"));
+  .WithResourceMapping(
+    FilePath.Of("appsettings.json"),
+    DirectoryPath.Of("/app/"))
+  // Copy 'appsettings.Container.json' to '/app/appsettings.json'.
+  .WithResourceMapping(
+    FilePath.Of("appsettings.Container.json"),
+    FilePath.Of("/app/appsettings.json"));
 ```
 
-Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
+You can also copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
 
 ```csharp title="Copying a byte array"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(Encoding.Default.GetBytes("{}"), FilePath.Of("/app/appsettings.json"));
+  .WithResourceMapping(
+    Encoding.UTF8.GetBytes("{}"),
+    FilePath.Of("/app/appsettings.json"));
 ```
+
+For remote sources, you can copy a file from a URL to a target directory or file before the container starts.
+
+=== "Copying to a directory"
+    ```csharp
+    _ = new ContainerBuilder("alpine:3.20.0")
+      .WithResourceMapping(
+        new Uri("https://localhost:8080/appsettings.json"),
+        DirectoryPath.Of("/app/"));
+    ```
+
+=== "Copying to a file"
+    ```csharp
+    _ = new ContainerBuilder("alpine:3.20.0")
+      .WithResourceMapping(
+        new Uri("https://localhost:8080/appsettings.json"),
+        FilePath.Of("/app/appsettings.json"));
+    ```
 
 ### Specifying file ownership
 
@@ -88,7 +114,11 @@ When copying files into a container, you can specify the user ID (UID) and group
 
 ```csharp title="Copying a file with specific UID and GID"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(DirectoryPath.Of("."), DirectoryPath.Of("/app/"), uid: 1000, gid: 1000);
+  .WithResourceMapping(
+    DirectoryPath.Of("."),
+    DirectoryPath.Of("/app/"),
+    uid: 1000,
+    gid: 1000);
 ```
 
 ### Specifying file permission
@@ -97,7 +127,10 @@ When copying files into a container, you can specify the file mode to set the co
 
 ```csharp title="Copying a script with executable permissions"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(DirectoryPath.Of("."), DirectoryPath.Of("/app/"), fileMode: Unix.FileMode755);
+  .WithResourceMapping(
+    DirectoryPath.Of("."),
+    DirectoryPath.Of("/app/"),
+    fileMode: Unix.FileMode755);
 ```
 
 The `Unix` class provides common permission configurations like `FileMode755` (read, write, execute for owner; read, execute for group and others). For individual permission combinations, you can use the `UnixFileModes` enumeration to create custom configurations.

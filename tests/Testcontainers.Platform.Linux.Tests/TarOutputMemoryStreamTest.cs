@@ -326,6 +326,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
     public sealed class UnixFileModeTest
     {
         [Theory]
+        [InlineData(Unix.FileMode600, "600")]
         [InlineData(Unix.FileMode644, "644")]
         [InlineData(Unix.FileMode666, "666")]
         [InlineData(Unix.FileMode700, "700")]

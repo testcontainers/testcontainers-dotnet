@@ -244,7 +244,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use WithResourceMapping(byte[], FileInfo, UnixFileModes) instead.")]
+    [Obsolete("Use WithResourceMapping(byte[], FilePath, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -267,6 +267,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       Encoding.UTF8.GetBytes("{}"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
@@ -302,7 +310,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use WithResourceMapping(DirectoryInfo, DirectoryInfo, UnixFileModes) instead.")]
+    [Obsolete("Use WithResourceMapping(DirectoryPath, DirectoryPath, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -325,6 +333,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       DirectoryPath.Of("."),
+    ///       DirectoryPath.Of("/app/"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(DirectoryPath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
@@ -332,6 +348,10 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Copies a test host directory or file to the given directory in the container before it starts.
     /// </summary>
+    /// <remarks>
+    /// The filename is taken from the source and copied flat into the target directory.
+    /// Any source directory structure is not preserved.
+    /// </remarks>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
@@ -339,7 +359,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use WithResourceMapping(FileInfo, DirectoryInfo, UnixFileModes) instead.")]
+    [Obsolete("Use WithResourceMapping(FilePath, DirectoryPath, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -362,6 +382,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       FilePath.Of("appsettings.json"),
+    ///       DirectoryPath.Of("/app/"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(FilePath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
@@ -386,6 +414,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       FilePath.Of("appsettings.Container.json"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(FilePath source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
@@ -410,7 +446,7 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use WithResourceMapping(Uri, FileInfo, UnixFileModes) or WithResourceMapping(Uri, DirectoryInfo, UnixFileModes) instead.")]
+    [Obsolete("Use WithResourceMapping(Uri, FilePath, UnixFileModes) or WithResourceMapping(Uri, DirectoryPath, UnixFileModes) instead.")]
     TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
@@ -447,12 +483,23 @@ namespace DotNet.Testcontainers.Builders
     ///
     /// If you prefer to copy a file to a specific target file path instead of a
     /// directory, use: <see cref="WithResourceMapping(Uri, FilePath, uint, uint, UnixFileModes)" />.
+    ///
+    /// The filename is taken from the source and copied flat into the target directory.
+    /// Any source directory structure is not preserved.
     /// </remarks>
     /// <param name="source">The source URL of the file to be copied.</param>
     /// <param name="target">The target directory path to copy the file to.</param>
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       new Uri("https://localhost:8080/appsettings.json"),
+    ///       DirectoryPath.Of("/app"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
@@ -491,6 +538,14 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       new Uri("https://localhost:8080/appsettings.json"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithResourceMapping(Uri source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
