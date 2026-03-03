@@ -159,7 +159,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
 
         _ = Guard.Argument(DockerResourceConfiguration.ServiceConfiguration, nameof(DockerResourceConfiguration.ServiceConfiguration))
             .NotNull()
-            .ThrowIf(argument => !argument.Value.Validate(), _ => throw new ArgumentException("The service configuration of the Azure Event Hubs Emulator is invalid."));
+            .ThrowIf(argument => !argument.Value.Validate(), _ => new ArgumentException("The service configuration of the Azure Event Hubs Emulator is invalid."));
     }
 
     /// <inheritdoc />

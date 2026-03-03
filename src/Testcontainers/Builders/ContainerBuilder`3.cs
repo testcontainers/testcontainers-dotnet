@@ -214,6 +214,18 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(resourceContent, FilePath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new BinaryResourceMapping(resourceContent, target.Value, uid, gid, fileMode));
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       if (Uri.IsWellFormedUriString(source, UriKind.Absolute) && Uri.TryCreate(source, UriKind.Absolute, out var uri) && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme))
@@ -225,35 +237,67 @@ namespace DotNet.Testcontainers.Builders
 
       if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
       {
-        return WithResourceMapping(new DirectoryInfo(source), target, uid, gid, fileMode);
+        return WithResourceMapping(DirectoryPath.Of(source), DirectoryPath.Of(target), uid, gid, fileMode);
       }
       else
       {
-        return WithResourceMapping(new FileInfo(source), target, uid, gid, fileMode);
+        return WithResourceMapping(FilePath.Of(source), DirectoryPath.Of(target), uid, gid, fileMode);
       }
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
+      return WithResourceMapping(DirectoryPath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(DirectoryInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(DirectoryPath.Of(source.FullName), DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(DirectoryPath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(new FileResourceMapping(source.Value, target.Value, uid, gid, fileMode));
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      return WithResourceMapping(new FileResourceMapping(source.FullName, target, uid, gid, fileMode));
+      return WithResourceMapping(FilePath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FileInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(FilePath.Of(source.FullName), DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FilePath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      var fileName = Path.GetFileName(source.Value);
+      var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
+      return WithResourceMapping(source, filePath, uid, gid, fileMode);
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
-      using (var fileStream = source.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      return WithResourceMapping(FilePath.Of(source.FullName), FilePath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(FilePath source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      using (var fileStream = new FileInfo(source.Value).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       {
         using (var streamReader = new BinaryReader(fileStream))
         {
           var resourceContent = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
-          return WithResourceMapping(resourceContent, target.ToString(), uid, gid, fileMode);
+          return WithResourceMapping(resourceContent, target, uid, gid, fileMode);
         }
       }
     }
@@ -263,11 +307,50 @@ namespace DotNet.Testcontainers.Builders
     {
       if (source.IsFile)
       {
-        return WithResourceMapping(new FileResourceMapping(source.AbsolutePath, target, uid, gid, fileMode));
+        return WithResourceMapping(source, DirectoryPath.Of(target), uid, gid, fileMode);
       }
       else
       {
-        return WithResourceMapping(new UriResourceMapping(source, target, uid, gid, fileMode));
+        return WithResourceMapping(source, FilePath.Of(target), uid, gid, fileMode);
+      }
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(source, DirectoryPath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      const string message = "The URI '{0}' does not contain a file name segment.";
+
+      var fileName = Path.GetFileName(source.LocalPath);
+
+      _ = Guard.Argument(source, nameof(source))
+        .ThrowIf(_ => string.IsNullOrEmpty(fileName), _ => new ArgumentException(string.Format(message, source), nameof(source)));
+
+      var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
+      return WithResourceMapping(source, filePath, uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      return WithResourceMapping(source, FilePath.Of(target.ToString()), uid, gid, fileMode);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithResourceMapping(Uri source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
+    {
+      if (source.IsFile)
+      {
+        return WithResourceMapping(FilePath.Of(source.LocalPath), target, uid, gid, fileMode);
+      }
+      else
+      {
+        return WithResourceMapping(new UriResourceMapping(source, target.Value, uid, gid, fileMode));
       }
     }
 
@@ -433,7 +516,7 @@ namespace DotNet.Testcontainers.Builders
         !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
 
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
     }
 
     /// <summary>
