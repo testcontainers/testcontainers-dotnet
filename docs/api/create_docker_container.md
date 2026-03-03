@@ -115,7 +115,7 @@ When copying files into a container, you can specify the user ID (UID) and group
 ```csharp title="Copying a file with specific UID and GID"
 _ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(
-    DirectoryPath.Of("."),
+    FilePath.Of("appsettings.json"),
     DirectoryPath.Of("/app/"),
     uid: 1000,
     gid: 1000);
@@ -128,7 +128,7 @@ When copying files into a container, you can specify the file mode to set the co
 ```csharp title="Copying a script with executable permissions"
 _ = new ContainerBuilder("alpine:3.20.0")
   .WithResourceMapping(
-    DirectoryPath.Of("."),
+    FilePath.Of("docker-entrypoint.sh"),
     DirectoryPath.Of("/app/"),
     fileMode: Unix.FileMode755);
 ```
