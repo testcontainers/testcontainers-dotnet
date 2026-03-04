@@ -5,7 +5,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
 
-  internal class UntilDatabaseIsAvailable : IWaitUntil
+  internal sealed class UntilDatabaseIsAvailable : IWaitUntil
   {
     private readonly DbProviderFactory _dbProviderFactory;
 
@@ -45,7 +45,12 @@ namespace DotNet.Testcontainers.Configurations
       }
       finally
       {
+#if NETSTANDARD2_0
         connection.Dispose();
+#else
+        await connection.DisposeAsync()
+          .ConfigureAwait(false);
+#endif
       }
     }
   }
