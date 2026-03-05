@@ -329,7 +329,7 @@ namespace DotNet.Testcontainers.Builders
       var fileName = Path.GetFileName(source.LocalPath);
 
       _ = Guard.Argument(source, nameof(source))
-        .ThrowIf(_ => string.IsNullOrEmpty(fileName), _ => new ArgumentException(string.Format(message, source), nameof(source)));
+        .ThrowIf(_ => string.IsNullOrEmpty(fileName), argument => new ArgumentException(string.Format(message, argument.Value), argument.Name));
 
       var filePath = FilePath.Of(Path.Combine(target.Value, fileName));
       return WithResourceMapping(source, filePath, uid, gid, fileMode);
