@@ -6,7 +6,6 @@ updates:
       interval: weekly
     labels:
       - dependencies
-      - github_actions
     groups:
       actions:
         patterns:
@@ -17,7 +16,6 @@ updates:
       interval: weekly
     labels:
       - dependencies
-      - nuget
     ignore:
       - dependency-name: '*'
         versions:
