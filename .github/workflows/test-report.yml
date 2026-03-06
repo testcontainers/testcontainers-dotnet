@@ -10,6 +10,8 @@ on:
 jobs:
   test-report:
     permissions:
+      actions: read
+      contents: read
       checks: write
 
     runs-on: ubuntu-24.04
@@ -18,19 +20,19 @@ jobs:
       # https://github.com/dorny/test-reporter/issues/131#issuecomment-2093880211.
       # https://github.com/dorny/test-reporter/issues/234#issuecomment-1462911162.
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           lfs: true
 
       - name: Download Test And Coverage Results
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           pattern: Testcontainers*
 
       - name: Publish Test Report
-        uses: dorny/test-reporter@v2.3.0
+        uses: dorny/test-reporter@3d76b34a4535afbd0600d347b09a6ee5deb3ed7f # v2.6.0
         with:
           name: test-report
           path: '**/*.trx'
