@@ -182,13 +182,14 @@ jobs:
         shell: bash
 
       - name: Attest
+        if: ${{ env.PUBLISH_NUGET_PACKAGE == 'true' }}
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
-          subject-path: '**/*.nupkg'
+          subject-path: artifacts/**/nuget/Testcontainers*.nupkg
 
       # Cake sets the semVer environment variable.
       - name: Draft Release
-        uses: release-drafter/release-drafter@6db134d15f3909ccc9eefd369f02bd1e9cffdf97 # v6.2.0
+        uses: release-drafter/release-drafter@00ce30b0ce8a4d67bccfca59421cdf6c55dd0784 # v6.3.0
         with:
           version: ${{ env.semVer }}
         env:
