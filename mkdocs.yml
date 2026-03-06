@@ -11,6 +11,8 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
+  features:
+    - content.code.copy
   favicon: favicon.ico
   logo: logo.svg
 extra_css:
@@ -29,6 +31,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - toc:
+      permalink: true
 nav:
   - index.md
   - cicd/index.md
