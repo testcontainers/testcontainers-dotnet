@@ -61,6 +61,7 @@ public sealed class EventHubsConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the Azurite container.
     /// </summary>
+    [JsonIgnore]
     public AzuriteContainer AzuriteContainer { get; }
 
     /// <summary>

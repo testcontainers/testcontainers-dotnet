@@ -42,5 +42,6 @@ public sealed class SeqContainerTest : IAsyncLifetime
         // Then
         Assert.Single(events);
         Assert.Equal(helloWorld, events[0].MessageTemplateTokens.Last().Text);
+        Assert.Equal(_seqContainer.GetEndpoint(), _seqContainer.GetConnectionString());
     }
 }

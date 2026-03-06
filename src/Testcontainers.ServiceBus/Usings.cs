@@ -3,6 +3,7 @@ global using System.Collections.Generic;
 global using System.Diagnostics.CodeAnalysis;
 global using System.IO;
 global using System.Linq;
+global using System.Text.Json.Serialization;
 global using Docker.DotNet.Models;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Configurations;

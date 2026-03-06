@@ -96,7 +96,14 @@ namespace DotNet.Testcontainers.Builders
 
       using (var sha256 = SHA256.Create())
       {
-        var dockerContextHash = BitConverter.ToString(sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext))).Replace("-", string.Empty).ToLowerInvariant();
+        var hashBytes = sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext));
+
+#if NET10_0_OR_GREATER
+        var dockerContextHash = Convert.ToHexStringLower(hashBytes);
+#else
+        var dockerContextHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty).ToLowerInvariant();
+#endif
+
         var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
 
         try
