@@ -36,7 +36,7 @@
     class="md-header__inner md-grid"
     aria-label="{{ lang.t('header') }}"
   >
-  
+
     <!-- Button to open drawer -->
     <label class="md-header__button md-icon" for="__drawer">
       {% include ".icons/material/menu" ~ ".svg" %}
@@ -124,9 +124,10 @@
     {% endif %}
 
     <!-- Button to open search modal -->
-    {% if "search" in config.plugins %}
+    {% if "material/search" in config.plugins %}
       <label class="md-header__button md-icon" for="__search">
-        {% include ".icons/material/magnify.svg" %}
+        {% set icon = config.theme.icon.search or "material/magnify" %}
+        {% include ".icons/" ~ icon ~ ".svg" %}
       </label>
 
       <!-- Search interface -->

@@ -125,6 +125,7 @@ labels:
 collaborators:
   - username: HofmeisterAn
     permission: admin
+
   - username: testcontainersbot
     permission: write
 
@@ -142,9 +143,6 @@ teams:
   # See https://github.com/repository-settings/app/discussions/639 for more information about teams and settings
   - name: dotnet-team
     permission: admin
-
-  - name: oss-team
-    permission: maintain
 
     # The permission to grant the team. Can be one of:
     # * `pull` - can pull, but not push to or administer this repository.
@@ -175,7 +173,7 @@ branches:
         # Required. Require branches to be up to date before merging.
         strict: true
         # Required. The list of status checks to require in order to merge into this branch
-        contexts: ["Test Report", "analyze (csharp)"]
+        contexts: [ test-report ]
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
       enforce_admins: false
       # Prevent merge commits from being pushed to matching branches
@@ -207,7 +205,7 @@ branches:
         # Required. Require branches to be up to date before merging.
         strict: true
         # Required. The list of status checks to require in order to merge into this branch
-        contexts: ["Test Report", "analyze (csharp)"]
+        contexts: [ test-report ]
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
       enforce_admins: false
       # Prevent merge commits from being pushed to matching branches
