@@ -103,7 +103,7 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
             .WithApiKey(DefaultApiKey)
             .WithConnectionStringProvider(new TypesenseConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(TypesensePort).ForPath("/health").ForResponseMessageMatching(IsNodeReadyAsync)));
+                request.ForPath("/health").ForPort(TypesensePort).ForResponseMessageMatching(IsNodeReadyAsync)));
     }
 
     /// <inheritdoc />
