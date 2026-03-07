@@ -11,12 +11,23 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: nuget
-    directory: /
+    directory: /src
     schedule:
       interval: weekly
     labels:
       - dependencies
     ignore:
-      - dependency-name: '*'
-        versions:
-          - '>= 0'
+      - dependency-name: Microsoft.Bcl.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.Extensions.*
+        update-types:
+          - version-update:semver-major
+    groups:
+      nuget-patch-minor:
+        update-types:
+          - minor
+          - patch
+      nuget-major:
+        update-types:
+          - major
