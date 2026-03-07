@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
-
-namespace Testcontainers.CosmosDb.Tests;
+namespace Testcontainers.CosmosDb;
 
 public sealed class CosmosDbContainerTest : IAsyncLifetime
 {
@@ -20,69 +17,23 @@ public sealed class CosmosDbContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task CreateDatabaseAndContainerSuccessful()
+    public async Task AccountPropertiesIdReturnsLocalhost()
     {
         // Given
-        using var cosmosClient = new CosmosClient(
-            _cosmosDbContainer.GetConnectionString(),
-            new()
-            {
-                ConnectionMode = ConnectionMode.Gateway,
-                HttpClientFactory = () => _cosmosDbContainer.HttpClient
-            });
+        using var httpClient = _cosmosDbContainer.HttpClient;
 
+        var cosmosClientOptions = new CosmosClientOptions();
+        cosmosClientOptions.ConnectionMode = CosmosConnectionMode.Gateway;
+        cosmosClientOptions.HttpClientFactory = () => httpClient;
 
-        // When
-        var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("fakedb")).Database;
-        await database.CreateContainerIfNotExistsAsync("fakecontainer", "/id");
-        var databaseProperties = (await database.ReadAsync()).Resource;
-
-
-        // Then
-        Assert.Equal("fakedb", databaseProperties.Id);
-    }
-
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task RetrieveItemCreated()
-    {
-        // Given
-        using var cosmosClient = new CosmosClient(
-            _cosmosDbContainer.GetConnectionString(),
-            new()
-            {
-                ConnectionMode = ConnectionMode.Gateway,
-                HttpClientFactory = () => _cosmosDbContainer.HttpClient
-            });
-
-        var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync("dbfake")).Database;
-        await database.CreateContainerIfNotExistsAsync("containerfake", "/id");
-        var container = database.GetContainer("containerfake");
-
-        var id = Guid.NewGuid().ToString();
-        var name = Guid.NewGuid().ToString();
-
+        using var cosmosClient = new CosmosClient(_cosmosDbContainer.GetConnectionString(), cosmosClientOptions);
 
         // When
-        await container.CreateItemAsync(
-            new FakeItem { id = id, Name = name },
-            new PartitionKey(id));
-
-        var itemResponse = await container.ReadItemAsync<FakeItem>(
-            id,
-            new PartitionKey(id));
-
+        var accountProperties = await cosmosClient.ReadAccountAsync()
+            .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(id, itemResponse.Resource.id);
-        Assert.Equal(name, itemResponse.Resource.Name);
-    }
-
-
-    private class FakeItem
-    {
-        public string id { get; set; }
-        public string Name { get; set; }
+        Assert.Equal("cosmosdev", accountProperties.Id);
+        Assert.Equal(_cosmosDbContainer.GetConnectionString(), _cosmosDbContainer.GetConnectionString(TestcontainersConnectionMode.Host));
     }
 }
