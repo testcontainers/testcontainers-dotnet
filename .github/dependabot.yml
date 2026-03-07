@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - dependencies
     groups:
@@ -11,16 +11,25 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: nuget
-    directory: /src
+    directory: /
+    exclude-paths:
+      - examples/**
+    open-pull-requests-limit: 3
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - dependencies
     ignore:
+      - dependency-name: Cake.*
+        update-types:
+          - version-update:semver-major
       - dependency-name: Microsoft.Bcl.*
         update-types:
           - version-update:semver-major
       - dependency-name: Microsoft.Extensions.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: xunit*
         update-types:
           - version-update:semver-major
     groups:
