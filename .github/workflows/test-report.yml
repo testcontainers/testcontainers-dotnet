@@ -7,6 +7,8 @@ on:
     types:
       - completed
 
+permissions: read-all
+
 jobs:
   test-report:
     permissions:
