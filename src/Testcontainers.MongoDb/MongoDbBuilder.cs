@@ -198,6 +198,8 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             return;
         }
 
+        var readiness = new WaitIndicateReadiness(configuration);
+
         // This is a simple workaround to use the default options, which can be configured
         // with custom configurations as needed.
         var options = new WaitStrategy();
@@ -211,6 +213,14 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
 
             return 0L.Equals(execResult.ExitCode);
         };
+
+        // The official MongoDB image starts mongod twice during the first-time
+        // initialization (bootstrap + final process). Waiting here prevents the
+        // replica set from being initiated while this handover is in progress,
+        // which could otherwise cause the container start to fail:
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1636.
+        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container), options.Interval, options.Timeout, options.Retries, ct)
+            .ConfigureAwait(false);
 
         await WaitStrategy.WaitUntilAsync(initiate, options.Interval, options.Timeout, options.Retries, ct)
             .ConfigureAwait(false);
