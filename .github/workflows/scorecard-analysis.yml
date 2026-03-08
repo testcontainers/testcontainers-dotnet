@@ -2,7 +2,7 @@ name: OpenSSF Scorecard
 
 on:
   push:
-    branches: [ develop, main ]
+    branches: [ develop ]
     paths-ignore: [ 'docs/**', 'examples/**' ]
 
 concurrency:
