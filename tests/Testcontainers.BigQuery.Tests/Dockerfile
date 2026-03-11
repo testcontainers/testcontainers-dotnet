@@ -1,1 +1,1 @@
-FROM ghcr.io/goccy/bigquery-emulator:0.4
+FROM ghcr.io/goccy/bigquery-emulator:0.4.4@sha256:967b9efed8c5d0228b8f0370ce37c387df8a799ad53a34c2e96f6a8dfcb0dda2

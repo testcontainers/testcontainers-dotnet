@@ -1,1 +1,1 @@
-FROM couchdb:3.3
+FROM couchdb:3.3.3@sha256:307a3f5276f64c0db28f226b7b5c180b8f2c851afa681cfb4fbb1b1fe7fd5587

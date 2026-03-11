@@ -1,1 +1,1 @@
-FROM temporalio/temporal:1.5.1
+FROM temporalio/temporal:1.5.1@sha256:597a5dbbcc6e7716b326dde4a51622d5ea0879eb0cf06ff8a94381361d0a987d

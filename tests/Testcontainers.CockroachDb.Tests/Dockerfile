@@ -1,1 +1,1 @@
-FROM cockroachdb/cockroach:latest-v23.1
+FROM cockroachdb/cockroach:v23.1.30@sha256:498fd3fe0624f317551a16c9a0ac14c274b9ece1a174ae345f2d6cd81f4059df

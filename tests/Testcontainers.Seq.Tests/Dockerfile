@@ -1,1 +1,1 @@
-FROM datalust/seq:2025.2
+FROM datalust/seq:2025.2.15571@sha256:c211452d7f9b7c124a6883d8fa1ad833f276e4aaee3b626beab1eb9675364708

@@ -1,1 +1,1 @@
-FROM arangodb:3.11.5
+FROM arangodb:3.11.5@sha256:45dbf9477eeef34bb3737d9f48cd3bf2e5afaef01a51195191274ac15346c2a6
