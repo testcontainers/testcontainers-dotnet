@@ -8,11 +8,11 @@
         "resolved": "10.0.3",
         "contentHash": "mr3Zn+ht8lijYvlMIasftw9opU9hsLKDdnOgQMmYI3RjWPJLOF9l8+YHDseRkTs97wOrULmJgo/NDCmzL/EGDg=="
       },
-      "Microsoft.Fast.Components.FluentUI": {
+      "Microsoft.FluentUI.AspNetCore.Components": {
         "type": "Direct",
-        "requested": "[3.8.0, )",
-        "resolved": "3.8.0",
-        "contentHash": "d+qB0w0V0nwhAULmXzawChP+ZjqqbwNKXUM4R/pVKlNPruNuJBiQhYoY1baE3/rWRe0N40dOduLkkTW79P44Ug=="
+        "requested": "[4.13.2, )",
+        "resolved": "4.13.2",
+        "contentHash": "OqJFJiIz32BRBcxVCLX51s6/SNXVe6X16kKBcwxb7ZzZ14w1pT2OcHtqPxfj7NYZzAyA9gpX5EhvAdGHURYD7g=="
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "Direct",
