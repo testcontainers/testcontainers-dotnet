@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN dotnet restore $CSPROJ_FILE_PATH
+RUN dotnet restore $CSPROJ_FILE_PATH --locked-mode
 
 RUN dotnet publish $CSPROJ_FILE_PATH --configuration Release --framework net10.0 --runtime linux-x64 --self-contained false --output out /p:DebugType=None /p:DebugSymbols=false
 
