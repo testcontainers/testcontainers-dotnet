@@ -1,1 +1,1 @@
-FROM apache/activemq-artemis:2.31.2
+FROM apache/activemq-artemis:2.31.2@sha256:7b9398d6cedb81f8cf7cb30c83f64ee4fd8eb1c301ed1f28951f114fa03255c0

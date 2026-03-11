@@ -73,7 +73,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV25Configuration : KeycloakContainerTest
     {
         public KeycloakV25Configuration()
-            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak25.0")).Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "v25_0_6")).Build())
         {
         }
     }
@@ -82,7 +82,7 @@ public abstract class KeycloakContainerTest : IAsyncLifetime
     public sealed class KeycloakV26Configuration : KeycloakContainerTest
     {
         public KeycloakV26Configuration()
-            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "keycloak26.0")).Build())
+            : base(new KeycloakBuilder(TestSession.GetImageFromDockerfile(stage: "v26_0_8")).Build())
         {
         }
     }

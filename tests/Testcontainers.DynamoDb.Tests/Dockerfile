@@ -1,1 +1,1 @@
-FROM amazon/dynamodb-local:1.21.0
+FROM amazon/dynamodb-local:1.21.0@sha256:bd10279256d657b3637862ab813b3b7f1c3438395ac318ccd99b62c17f35d2d3

@@ -1,1 +1,1 @@
-FROM gvenzl/oracle-xe:21.3.0-slim-faststart
+FROM gvenzl/oracle-xe:21.3.0-slim-faststart@sha256:f82bccdf6020d27373fdf0e93046b63eb3f777a0289e329d9839feebaf4555de

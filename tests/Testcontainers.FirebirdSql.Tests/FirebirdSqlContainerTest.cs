@@ -56,7 +56,7 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure()
-            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb2.5-sc"));
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "v2_5-sc"));
     }
 
     [UsedImplicitly]
@@ -64,15 +64,15 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure()
-            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb2.5-ss"));
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "v2_5-ss"));
     }
 
     [UsedImplicitly]
-    public class FirebirdSql30Fixture(IMessageSink messageSink)
+    public class FirebirdSql3010Fixture(IMessageSink messageSink)
         : FirebirdSqlDefaultFixture(messageSink)
     {
         protected override FirebirdSqlBuilder Configure()
-            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "fb3.0"));
+            => new FirebirdSqlBuilder(TestSession.GetImageFromDockerfile(stage: "v3_0_10"));
     }
 
     [UsedImplicitly]
@@ -100,8 +100,8 @@ public abstract class FirebirdSqlContainerTest(FirebirdSqlContainerTest.Firebird
         : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql25SsFixture>;
 
     [UsedImplicitly]
-    public sealed class FirebirdSql30Configuration(FirebirdSql30Fixture fixture)
-        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql30Fixture>;
+    public sealed class FirebirdSql3010Configuration(FirebirdSql3010Fixture fixture)
+        : FirebirdSqlContainerTest(fixture), IClassFixture<FirebirdSql3010Fixture>;
 
     [UsedImplicitly]
     public sealed class FirebirdSqlSysdbaConfiguration(FirebirdSqlSysdbaFixture fixture)

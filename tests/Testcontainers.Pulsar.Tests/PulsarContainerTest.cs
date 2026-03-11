@@ -112,7 +112,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4Configuration : PulsarContainerTest
     {
         public PulsarV4Configuration()
-            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "v4_0_2"))
                 .WithEnvironment(MemorySettings)
                 .Build(), false)
         {
@@ -123,7 +123,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
     public sealed class PulsarV4AuthConfiguration : PulsarContainerTest
     {
         public PulsarV4AuthConfiguration()
-            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "pulsar4.0.2"))
+            : base(new PulsarBuilder(TestSession.GetImageFromDockerfile(stage: "v4_0_2"))
                 .WithAuthentication()
                 .WithEnvironment(MemorySettings)
                 .Build(), true)

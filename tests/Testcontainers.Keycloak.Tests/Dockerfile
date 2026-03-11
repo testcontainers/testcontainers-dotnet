@@ -1,3 +1,3 @@
-FROM quay.io/keycloak/keycloak:21.1
-FROM quay.io/keycloak/keycloak:25.0 AS keycloak25.0
-FROM quay.io/keycloak/keycloak:26.0 AS keycloak26.0
+FROM quay.io/keycloak/keycloak:21.1.2@sha256:3408c186dde4a95c2b99ef1290721bf1d253d64ba3a1de0a46c667b8288051f0
+FROM quay.io/keycloak/keycloak:25.0.6@sha256:82c5b7a110456dbd42b86ea572e728878549954cc8bd03cd65410d75328095d2 AS v25_0_6
+FROM quay.io/keycloak/keycloak:26.0.8@sha256:09a381c715ab0b111835b70f2905955274843a219c6f27efb348e4d9f4086858 AS v26_0_8

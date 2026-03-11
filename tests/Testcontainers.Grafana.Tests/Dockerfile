@@ -1,1 +1,1 @@
-FROM grafana/grafana:12.2
+FROM grafana/grafana:12.2.7@sha256:02193eaeb4a805593f0a2111e9385fc59d7b8cf76e69cfc3145e12ca944b8b17

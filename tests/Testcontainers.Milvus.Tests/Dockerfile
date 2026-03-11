@@ -1,1 +1,1 @@
-FROM milvusdb/milvus:v2.3.10
+FROM milvusdb/milvus:v2.3.10@sha256:cf484d4ed5a29d4f33664152a0793aeff6b19a03da8f7ce07a9a4834ce2ed2dd

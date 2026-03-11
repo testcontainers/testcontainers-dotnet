@@ -1,1 +1,1 @@
-FROM eclipse-mosquitto:2.0
+FROM eclipse-mosquitto:2.0.22@sha256:6852da90a65dfff7aa3a1c8b249e92bb83c17ea8bbcce56bedff8707332a1a29

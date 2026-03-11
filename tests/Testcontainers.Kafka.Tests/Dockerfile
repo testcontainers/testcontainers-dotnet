@@ -1,3 +1,3 @@
-FROM confluentinc/cp-kafka:7.5.12
-FROM apache/kafka:4.1.1 AS kafka4.1.1
-FROM apache/kafka-native:4.1.1 AS kafka-native4.1.1
+FROM confluentinc/cp-kafka:7.5.12@sha256:997883c60e6f1207fb5f779c7a8fdae57312a17f446fd5ea3eb8b73f52d4a1cf
+FROM apache/kafka:4.1.1@sha256:0bc1bb2478f45b6cea78864df86acdc11e8df2c5172477819a4d12942cbe5d40 AS apache-v4_1_1
+FROM apache/kafka-native:4.1.1@sha256:b8faca36f5385f90e46861ea0b2f532ebed86e9b2868b717c75a67f6fda0c7ce AS apache-native-v4_1_1
