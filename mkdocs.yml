@@ -70,6 +70,7 @@ nav:
     - modules/playwright.md
     - modules/postgres.md
     - modules/qdrant.md
+    - modules/questdb.md
     - modules/rabbitmq.md
     - modules/redis.md
     - modules/toxiproxy.md
