@@ -26,7 +26,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest</c>).
+    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
