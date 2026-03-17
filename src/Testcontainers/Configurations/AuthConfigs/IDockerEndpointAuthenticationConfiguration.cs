@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using Docker.DotNet;
+  using Docker.DotNet.Handler.Abstractions;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -23,17 +24,17 @@ namespace DotNet.Testcontainers.Configurations
     Uri Endpoint { get; }
 
     /// <summary>
-    /// Gets the Docker API credentials.
+    /// Gets the Docker API authentication provider.
     /// </summary>
     [CanBeNull]
-    Credentials Credentials { get; }
+    IAuthProvider AuthProvider { get; }
 
     /// <summary>
-    /// Gets the Docker client configuration.
+    /// Gets the Docker client builder.
     /// </summary>
     /// <param name="sessionId">The session id.</param>
-    /// <returns>The Docker client configuration.</returns>
+    /// <returns>The Docker client builder.</returns>
     [NotNull]
-    DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default);
+    DockerClientBuilder GetDockerClientBuilder(Guid sessionId = default);
   }
 }
