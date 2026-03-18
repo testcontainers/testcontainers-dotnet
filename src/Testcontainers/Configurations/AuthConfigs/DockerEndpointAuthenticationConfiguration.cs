@@ -28,11 +28,11 @@ namespace DotNet.Testcontainers.Configurations
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <param name="credentials">The Docker API authentication provider.</param>
-    public DockerEndpointAuthenticationConfiguration(Uri endpoint, IAuthProvider credentials = null)
+    /// <param name="authProvider">The Docker API authentication provider.</param>
+    public DockerEndpointAuthenticationConfiguration(Uri endpoint, IAuthProvider authProvider = null)
     {
       Endpoint = endpoint;
-      AuthProvider = credentials;
+      AuthProvider = authProvider;
     }
 
     /// <inheritdoc />
