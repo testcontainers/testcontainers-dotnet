@@ -93,7 +93,7 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine("Connected to Docker:");
 
         runtimeInfo.Append("  Host: ");
-        runtimeInfo.AppendLine(DockerClient.Configuration.EndpointBaseUri.ToString());
+        runtimeInfo.AppendLine(DockerClient.Options.Endpoint.ToString());
 
         runtimeInfo.Append("  Server Version: ");
         runtimeInfo.AppendLine(dockerInfo.ServerVersion);
@@ -133,10 +133,8 @@ namespace DotNet.Testcontainers.Clients
 
     private static IDockerClient GetDockerClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
-      {
-        return dockerClientConfiguration.CreateClient(dockerEndpointAuthConfig.Version);
-      }
+      var dockerClientBuilder = dockerEndpointAuthConfig.GetDockerClientBuilder(sessionId);
+      return dockerClientBuilder.Build();
     }
   }
 }

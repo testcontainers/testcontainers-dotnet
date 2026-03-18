@@ -73,9 +73,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ShouldReuseExistingResource()
     {
-        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
-
-        using var client = clientConfiguration.CreateClient();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
 
@@ -83,13 +81,13 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
-        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
+        var containers = await dockerClient.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
+        var networks = await dockerClient.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
+        var response = await dockerClient.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         Assert.Single(containers);

@@ -39,11 +39,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     [ClassData(typeof(AuthConfigTestData))]
     internal void AuthConfigShouldGetDockerClientEndpoint(IDockerEndpointAuthenticationConfiguration authConfig, Uri dockerClientEndpoint)
     {
-      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration())
-      {
-        Assert.Equal(dockerClientEndpoint, authConfig.Endpoint);
-        Assert.Equal(dockerClientEndpoint, dockerClientConfiguration.EndpointBaseUri);
-      }
+      var dockerClient = authConfig.GetDockerClientBuilder().Build();
+      Assert.Equal(dockerClientEndpoint, authConfig.Endpoint);
+      Assert.Equal(dockerClientEndpoint, dockerClient.Options.Endpoint);
     }
 
     public sealed class TestcontainersHostEndpointAuthenticationProviderTest
