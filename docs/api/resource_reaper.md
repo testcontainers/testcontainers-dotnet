@@ -10,7 +10,7 @@ Moby Ryuk derives its name from the anime character [Ryuk](https://en.wikipedia.
 
 ## Pinned Ryuk image
 
-Testcontainers for .NET pins the Ryuk image to this manifest list (OCI index) digest:
+Testcontainers for .NET pins the Ryuk image to this manifest list (image index) digest:
 
 ```text
 testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0
