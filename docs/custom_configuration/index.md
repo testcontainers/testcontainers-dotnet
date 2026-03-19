@@ -30,12 +30,12 @@ Testcontainers supports various configurations to set up your test environment. 
 To configure a remote container runtime, Testcontainers provides support for Docker's environment variables in addition to the properties file. During initialization, Testcontainers' auto-discovery feature detect and apply custom configurations including container runtimes. If you are running Docker on a remote host, you can configure it using either of the following methods:
 
 === "Environment Variable"
-    ```
+    ```shell
     DOCKER_HOST=tcp://docker:2375
     ```
 
 === "Properties File"
-    ```
+    ```text
     docker.host=tcp://docker:2375
     ```
 
@@ -43,7 +43,7 @@ To configure a remote container runtime, Testcontainers provides support for Doc
 
 You can switch between contexts using the properties file or an environment variable. Once the context is set, Testcontainers will connect to the specified endpoint based on the given value.
 
-```title="List available contexts"
+```text title="List available contexts"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker context ls
 NAME   DESCRIPTION   DOCKER ENDPOINT           ERROR
 tcc                  tcp://127.0.0.1:60706/0
@@ -52,12 +52,12 @@ tcc                  tcp://127.0.0.1:60706/0
 Setting the context to `tcc` in this example will use the Docker host running at `127.0.0.1:60706` to create and run the test resources.
 
 === "Environment Variable"
-    ```
+    ```shell
     DOCKER_CONTEXT=tcc
     ```
 
 === "Properties File"
-    ```
+    ```text
     docker.context=tcc
     ```
 
@@ -68,12 +68,12 @@ Testcontainers can automatically add a registry prefix to Docker Hub image names
 You can set this up in two ways:
 
 === "Environment Variable"
-    ```
+    ```shell
     TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX=registry.mycompany.com/mirror/
     ```
 
 === "Properties File"
-    ```
+    ```text
     hub.image.name.prefix=registry.mycompany.com/mirror/
     ```
 
@@ -81,13 +81,13 @@ Once configured, Testcontainers will rewrite Docker Hub image names by adding th
 
 For example, the image:
 
-```
+```text
 testcontainers/helloworld:1.3.0
 ```
 
 will automatically become:
 
-```
+```text
 registry.mycompany.com/mirror/testcontainers/helloworld:1.3.0
 ```
 

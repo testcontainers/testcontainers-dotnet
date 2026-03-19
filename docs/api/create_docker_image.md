@@ -60,7 +60,7 @@ As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, a
 
     To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 ARG SLN_FILE_PATH="WeatherForecast.sln"
 COPY . .
@@ -86,7 +86,7 @@ A multi-stage Docker image build generates intermediate layers that serve as cac
 
 The following Dockerfile assigns the `org.testcontainers.resource-reaper-session` label to each stage.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env-1
 ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
 LABEL "org.testcontainers.resource-reaper-session"=$RESOURCE_REAPER_SESSION_ID
@@ -127,7 +127,7 @@ _ = new ImageFromDockerfileBuilder()
 
 - When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user won't automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
 
-   ```Dockerfile
+   ```dockerfile
    FROM mcr.microsoft.com/dotnet/sdk:8.0
    WORKDIR /app
    RUN chown app:app .

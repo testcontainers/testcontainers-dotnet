@@ -12,13 +12,13 @@ Moby Ryuk derives its name from the anime character [Ryuk](https://en.wikipedia.
 
 Testcontainers for .NET pins the Ryuk image to this manifest list (OCI index) digest:
 
-```
+```text
 testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0
 ```
 
-If you depend on a private registry, make the image available there either through a registry proxy or by copying it from Docker Hub with a tool that preserves the manifest list and all platform variants, for example [`skopeo`](https://github.com/containers/skopeo):
+If you depend on a private registry, make the image available there either through a registry proxy (pull-through cache) or by copying it from Docker Hub with a tool that preserves the manifest list and all platform variants, for example [`skopeo`](https://github.com/containers/skopeo):
 
-```
+```shell
 skopeo copy --all docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0 docker://mynexus.mydomain/testcontainers/ryuk:0.14.0
 ```
 
@@ -28,7 +28,7 @@ skopeo copy --all docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed
 
 To use a different image reference, set the `TESTCONTAINERS_RYUK_CONTAINER_IMAGE` environment variable, for example to an unpinned tag:
 
-```
+```shell
 TESTCONTAINERS_RYUK_CONTAINER_IMAGE=testcontainers/ryuk:0.14.0
 ```
 

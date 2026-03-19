@@ -95,7 +95,7 @@ _ = Wait.ForUnixContainer()
 
 If the Docker image supports Dockers's [HEALTHCHECK][docker-docs-healthcheck] feature, like the following configuration:
 
-```Dockerfile
+```dockerfile
 FROM alpine
 HEALTHCHECK --interval=1s CMD test -e /healthcheck
 ```
