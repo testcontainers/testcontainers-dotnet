@@ -18,9 +18,28 @@ testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2
 
 If you depend on a private registry, make the image available there either through a registry proxy (pull-through cache) or by copying it from Docker Hub with a tool that preserves the manifest list and all platform variants, for example [`skopeo`](https://github.com/containers/skopeo):
 
-```shell
-skopeo copy --all docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0 docker://mynexus.mydomain/testcontainers/ryuk:0.14.0
-```
+=== "Linux/macOS"
+    ```shell
+    skopeo \
+      copy \
+      --all \
+      --preserve-digests \
+      docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0 \
+      docker://registry.mycompany.com/testcontainers/ryuk:0.14.0
+    ```
+
+=== "Windows"
+    ```powershell
+    # There's no Skopeo package for Windows.
+    docker run `
+      --rm `
+      quay.io/skopeo/stable:v1.22.0 `
+      copy `
+      --all `
+      --preserve-digests `
+      docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0 `
+      docker://registry.mycompany.com/testcontainers/ryuk:0.14.0
+    ```
 
 !!! warning
 
