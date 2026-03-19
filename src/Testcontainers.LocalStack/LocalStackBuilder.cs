@@ -83,7 +83,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// <inheritdoc />
     protected override void Validate()
     {
-        const string message = "The image '{0}' requires the LOCALSTACK_AUTH_TOKEN environment variable for LocalStack 4.15 and onwards. Set LOCALSTACK_AUTH_TOKEN before starting the container. For more information, see https://blog.localstack.cloud/localstack-single-image-next-steps/.";
+        const string message = "The image '{0}' requires the LOCALSTACK_AUTH_TOKEN environment variable for LocalStack 4.15 and onwards. For more information, see https://blog.localstack.cloud/localstack-single-image-next-steps/.";
 
         base.Validate();
 
