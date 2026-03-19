@@ -8,6 +8,30 @@ Testcontainers automatically assigns a Resource Reaper session id to each Docker
 
 Moby Ryuk derives its name from the anime character [Ryuk](https://en.wikipedia.org/wiki/Ryuk_(Death_Note)) and is a fitting choice due to the intriguing narrative of the anime Death Note.
 
+## Pinned Ryuk image
+
+Testcontainers for .NET pins the Ryuk image to this manifest list (OCI index) digest:
+
+```
+testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0
+```
+
+If you depend on a private registry, make the image available there either through a registry proxy or by copying it from Docker Hub with a tool that preserves the manifest list and all platform variants, for example [`skopeo`](https://github.com/containers/skopeo):
+
+```
+skopeo copy --all docker://docker.io/testcontainers/ryuk@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0 docker://mynexus.mydomain/testcontainers/ryuk:0.14.0
+```
+
+!!! warning
+
+    Pulling, tagging, and pushing the image manually is not sufficient. That workflow creates a new manifest and only includes the platform variant pulled locally, breaking multi-architecture support.
+
+To use a different image reference, set the `TESTCONTAINERS_RYUK_CONTAINER_IMAGE` environment variable, for example to an unpinned tag:
+
+```
+TESTCONTAINERS_RYUK_CONTAINER_IMAGE=testcontainers/ryuk:0.14.0
+```
+
 <!-- ## Examples
 
 Creates a scoped Resource Reaper and assigns its session id to a container (Docker resource). The container is no longer tracked by the default Resource Reaper.
