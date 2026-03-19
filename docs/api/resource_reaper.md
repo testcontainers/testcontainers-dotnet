@@ -45,10 +45,10 @@ If you depend on a private registry, make the image available there either throu
 
     Pulling, tagging, and pushing the image manually is not sufficient. That workflow creates a new manifest and only includes the platform variant pulled locally, breaking multi-architecture support.
 
-To use a different image reference, set the `TESTCONTAINERS_RYUK_CONTAINER_IMAGE` environment variable, for example to an unpinned tag:
+If your registry cannot preserve the digest or you want to use a different image reference, set the `TESTCONTAINERS_RYUK_CONTAINER_IMAGE` environment variable:
 
 ```shell
-TESTCONTAINERS_RYUK_CONTAINER_IMAGE=testcontainers/ryuk:0.14.0
+TESTCONTAINERS_RYUK_CONTAINER_IMAGE=registry.mycompany.com/testcontainers/ryuk:0.14.0
 ```
 
 <!-- ## Examples
