@@ -275,7 +275,8 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
 
         base.Validate();
 
-        Predicate<KafkaVendor?> vendorNotFound = value => value == null && !VendorConfigurations.Any(v => v.IsImageFromVendor(DockerResourceConfiguration.Image));
+        Predicate<KafkaVendor?> vendorNotFound = value =>
+            value == null && !VendorConfigurations.Any(v => v.IsImageFromVendor(DockerResourceConfiguration.Image));
 
         _ = Guard.Argument(DockerResourceConfiguration.Vendor, nameof(DockerResourceConfiguration.Vendor))
             .ThrowIf(argument => vendorNotFound(argument.Value), argument => new ArgumentException(message, argument.Name));
