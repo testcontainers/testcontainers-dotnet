@@ -139,15 +139,15 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <inheritdoc />
     protected override void Validate()
     {
-        base.Validate();
-
         const string message = "The image '{0}' does not support configuring the database. It is only supported on Oracle 18 and onwards.";
+
+        base.Validate();
 
         Predicate<OracleConfiguration> databaseConfigurationNotSupported = value =>
             value.Database != null && value.Image.MatchVersion(v => v.Major < 18);
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Database))
-            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), _ => new NotSupportedException(string.Format(message, DockerResourceConfiguration.Image.FullName)));
+            .ThrowIf(argument => databaseConfigurationNotSupported(argument.Value), argument => new NotSupportedException(string.Format(message, argument.Value.Image.FullName)));
 
         _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
             .NotNull()

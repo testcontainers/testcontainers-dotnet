@@ -87,8 +87,8 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
 
         base.Validate();
 
-        Predicate<LocalStackConfiguration> requiresAuthToken = value => !value.Environments.TryGetValue("LOCALSTACK_AUTH_TOKEN", out _)
-            && (value.Image.MatchLatestOrNightly() || value.Image.MatchVersion(v => v.Major > 4 || v.Major == 4 && v.Minor > 14));
+        Predicate<LocalStackConfiguration> requiresAuthToken = value =>
+            !value.Environments.TryGetValue("LOCALSTACK_AUTH_TOKEN", out _) && (value.Image.MatchLatestOrNightly() || value.Image.MatchVersion(v => v.Major > 4 || v.Major == 4 && v.Minor > 14));
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
             .ThrowIf(argument => requiresAuthToken(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));

@@ -140,14 +140,14 @@ namespace DotNet.Testcontainers.Builders
     /// <exception cref="ArgumentException">Thrown when a mandatory Docker resource configuration is not set.</exception>
     protected virtual void Validate()
     {
-      _ = Guard.Argument(DockerResourceConfiguration.Logger, nameof(IResourceConfiguration<TCreateResourceEntity>.Logger))
+      _ = Guard.Argument(DockerResourceConfiguration.Logger, nameof(DockerResourceConfiguration.Logger))
         .NotNull();
 
-      _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(IResourceConfiguration<TCreateResourceEntity>.DockerEndpointAuthConfig))
+      _ = Guard.Argument(DockerResourceConfiguration.DockerEndpointAuthConfig, nameof(DockerResourceConfiguration.DockerEndpointAuthConfig))
         .ThrowIf(argument => argument.Value == null, CreateDockerUnavailableException);
 
       const string reuseNotSupported = "Reuse cannot be used in conjunction with WithCleanUp(true).";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IResourceConfiguration<TCreateResourceEntity>.Reuse))
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Reuse))
         .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && !Guid.Empty.Equals(argument.Value.SessionId), argument => new ArgumentException(reuseNotSupported, argument.Name));
     }
 

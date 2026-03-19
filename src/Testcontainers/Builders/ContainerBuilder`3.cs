@@ -497,10 +497,10 @@ namespace DotNet.Testcontainers.Builders
       base.Validate();
 
       const string reuseNotSupported = "Reuse cannot be used in conjunction with WithAutoRemove(true).";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IContainerConfiguration.Reuse))
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Reuse))
         .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value && argument.Value.AutoRemove.HasValue && argument.Value.AutoRemove.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
 
-      _ = Guard.Argument(DockerResourceConfiguration.Image, nameof(IContainerConfiguration.Image))
+      _ = Guard.Argument(DockerResourceConfiguration.Image, nameof(DockerResourceConfiguration.Image))
         .NotNull();
     }
 
@@ -516,7 +516,7 @@ namespace DotNet.Testcontainers.Builders
         !value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal);
 
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+        .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));
     }
 
     /// <summary>
