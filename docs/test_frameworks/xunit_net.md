@@ -39,7 +39,7 @@ Considering that xUnit.net runs tests in a deterministic natural sort order (lik
 
 If you check the output of `docker ps`, you will notice that three container instances in total are run, with two of them being Redis instances.
 
-```title="List running containers"
+```text title="List running containers"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
@@ -74,7 +74,7 @@ In this case, retrieving the Redis (string) value in the second test will no lon
 
 The output of `docker ps` shows that, instead of two Redis containers, only one runs.
 
-```title="List running containers"
+```text title="List running containers"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
