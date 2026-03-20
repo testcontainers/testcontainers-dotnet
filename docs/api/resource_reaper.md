@@ -8,7 +8,7 @@ Testcontainers automatically assigns a Resource Reaper session id to each Docker
 
 Moby Ryuk derives its name from the anime character [Ryuk](https://en.wikipedia.org/wiki/Ryuk_(Death_Note)) and is a fitting choice due to the intriguing narrative of the anime Death Note.
 
-## Pinned Ryuk image
+## Copy image to a private registry
 
 Testcontainers for .NET pins the Ryuk image to this manifest list (image index) digest:
 
