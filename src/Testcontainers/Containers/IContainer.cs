@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -253,6 +254,22 @@ namespace DotNet.Testcontainers.Containers
     Task UnpauseAsync(CancellationToken ct = default);
 
     /// <summary>
+    /// Connects the running container to an existing network.
+    /// </summary>
+    /// <param name="network">The existing network to connect to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been connected to the network.</returns>
+    Task ConnectAsync(string network, CancellationToken ct = default);
+
+    /// <summary>
+    /// Connects the running container to an existing network.
+    /// </summary>
+    /// <param name="network">The existing network to connect to.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been connected to the network.</returns>
+    Task ConnectAsync(INetwork network, CancellationToken ct = default);
+
+    /// <summary>
     /// Copies a test host file to the container.
     /// </summary>
     /// <param name="fileContent">The byte array content of the file.</param>
@@ -261,7 +278,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns></returns>
+    /// <returns>A task that completes when the array content has been copied.</returns>
     Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>

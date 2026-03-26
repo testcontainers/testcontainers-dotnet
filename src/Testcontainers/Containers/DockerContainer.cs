@@ -12,6 +12,7 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
+  using DotNet.Testcontainers.Networks;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -374,6 +375,26 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
+    public async Task ConnectAsync(string network, CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeConnectAsync(network, ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task ConnectAsync(INetwork network, CancellationToken ct = default)
+    {
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
+
+      await UnsafeConnectAsync(network.Name, ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default)
     {
       return _client.CopyAsync(Id, new BinaryResourceMapping(fileContent, filePath, uid, gid, fileMode), ct);
@@ -686,6 +707,28 @@ namespace DotNet.Testcontainers.Containers
 
       UnpausedTime = DateTime.UtcNow;
       Unpaused?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Connects the container to an existing network.
+    /// </summary>
+    /// <remarks>
+    /// Only the public members <see cref="ConnectAsync(string, CancellationToken)" /> and <see cref="ConnectAsync(INetwork, CancellationToken)" /> are thread-safe for now.
+    /// </remarks>
+    /// <param name="network">The network name.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been connected to the network.</returns>
+    protected virtual async Task UnsafeConnectAsync(string network, CancellationToken ct = default)
+    {
+      ThrowIfLockNotAcquired();
+
+      ThrowIfResourceNotFound();
+
+      await _client.Network.ConnectAsync(network, _container.ID, ct)
+        .ConfigureAwait(false);
+
+      _container = await _client.Container.ByIdAsync(_container.ID, ct)
+        .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
