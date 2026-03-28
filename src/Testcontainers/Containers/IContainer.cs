@@ -189,7 +189,7 @@ namespace DotNet.Testcontainers.Containers
     /// </remarks>
     /// <param name="containerPort">The container port.</param>
     /// <returns>Returns the public assigned host port.</returns>
-    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    /// <exception cref="InvalidOperationException">Container has not been created, or no mapped port was found.</exception>
     ushort GetMappedPublicPort(string containerPort);
 
     /// <summary>
@@ -259,6 +259,9 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="network">The existing network to connect to.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been connected to the network.</returns>
+    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task ConnectAsync(string network, CancellationToken ct = default);
 
     /// <summary>
@@ -267,6 +270,9 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="network">The existing network to connect to.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the container has been connected to the network.</returns>
+    /// <exception cref="InvalidOperationException">Container has not been created.</exception>
+    /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
+    /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
     Task ConnectAsync(INetwork network, CancellationToken ct = default);
 
     /// <summary>
@@ -278,7 +284,7 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that completes when the array content has been copied.</returns>
+    /// <returns>A task that completes when the byte array content has been copied.</returns>
     Task CopyAsync(byte[] fileContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644, CancellationToken ct = default);
 
     /// <summary>
