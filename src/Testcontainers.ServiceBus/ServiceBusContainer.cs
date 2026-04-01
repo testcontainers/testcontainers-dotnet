@@ -20,7 +20,7 @@ public sealed class ServiceBusContainer : DockerContainer
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("Endpoint", new UriBuilder("amqp", Hostname, GetMappedPublicPort(ServiceBusBuilder.ServiceBusPort)).ToString());
+        properties.Add("Endpoint", new UriBuilder("sb", Hostname, GetMappedPublicPort(ServiceBusBuilder.ServiceBusPort)).ToString());
         properties.Add("SharedAccessKeyName", "RootManageSharedAccessKey");
         properties.Add("SharedAccessKey", "SAS_KEY_VALUE");
         properties.Add("UseDevelopmentEmulator", "true");
