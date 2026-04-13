@@ -92,6 +92,8 @@
         <PackageVersion Include="Seq.Api" Version="2025.2.2"/>
         <PackageVersion Include="Seq.Extensions.Logging" Version="9.0.0"/>
         <PackageVersion Include="StackExchange.Redis" Version="2.6.90"/>
+        <PackageVersion Include="Grpc.HealthCheck" Version="2.76.0"/>
+        <PackageVersion Include="Grpc.Net.Client" Version="2.76.0"/>
         <PackageVersion Include="Temporalio" Version="1.11.0"/>
         <PackageVersion Include="ToxiproxyNetCore" Version="1.0.40"/>
     </ItemGroup>

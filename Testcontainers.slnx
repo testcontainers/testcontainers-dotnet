@@ -68,6 +68,7 @@
         <Project Path="src/Testcontainers.Sftp/Testcontainers.Sftp.csproj"/>
         <Project Path="src/Testcontainers.Temporalio/Testcontainers.Temporalio.csproj"/>
         <Project Path="src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
+        <Project Path="src/Testcontainers.Triton/Testcontainers.Triton.csproj"/>
         <Project Path="src/Testcontainers.Typesense/Testcontainers.Typesense.csproj"/>
         <Project Path="src/Testcontainers.Weaviate/Testcontainers.Weaviate.csproj"/>
         <Project Path="src/Testcontainers.WebDriver/Testcontainers.WebDriver.csproj"/>
@@ -142,6 +143,7 @@
         <Project Path="tests/Testcontainers.Temporalio.Tests/Testcontainers.Temporalio.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Tests/Testcontainers.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Toxiproxy.Tests/Testcontainers.Toxiproxy.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Triton.Tests/Testcontainers.Triton.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Typesense.Tests/Testcontainers.Typesense.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Weaviate.Tests/Testcontainers.Weaviate.Tests.csproj"/>
         <Project Path="tests/Testcontainers.WebDriver.Tests/Testcontainers.WebDriver.Tests.csproj"/>
