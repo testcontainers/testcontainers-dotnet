@@ -110,7 +110,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
             .WithCommand("--debug")
             .WithCommand("--trace")
             .WithConnectionStringProvider(new NatsConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is ready"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(8222).ForPath("/healthz")));
     }
 
     /// <inheritdoc />
