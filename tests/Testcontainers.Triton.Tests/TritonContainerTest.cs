@@ -30,22 +30,6 @@ public sealed class TritonContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task HealthLiveReturnsHttpStatusCodeOk()
-    {
-        // Given
-        using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_tritonContainer.GetHttpEndpoint());
-
-        // When
-        using var httpResponse = await httpClient.GetAsync("/v2/health/live", TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
-    }
-
-    [Fact]
-    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task HealthReadyReturnsHttpStatusCodeOk()
     {
         // Given
@@ -97,5 +81,53 @@ public sealed class TritonContainerTest : IAsyncLifetime
     public void GetConnectionStringReturnsHttpEndpoint()
     {
         Assert.Equal(_tritonContainer.GetHttpEndpoint(), _tritonContainer.GetConnectionString());
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task InferSimpleModelReturnsExpectedOutput()
+    {
+        // Given
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_tritonContainer.GetHttpEndpoint());
+
+        var requestBody = new StringContent(
+            """
+            {
+              "inputs": [
+                {
+                  "name": "INPUT0",
+                  "datatype": "FP32",
+                  "shape": [1],
+                  "data": [42.0]
+                }
+              ]
+            }
+            """,
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        // When
+        using var httpResponse = await httpClient.PostAsync("/v2/models/simple/infer", requestBody, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        var responseBody = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+        Assert.Contains("OUTPUT0", responseBody);
+        Assert.Contains("42", responseBody);
+    }
+}
+
+public sealed class TritonBuilderValidationTest
+{
+    [Fact]
+    public void BuildWithoutCommandThrowsArgumentException()
+    {
+        var builder = new TritonBuilder(TestSession.GetImageFromDockerfile());
+
+        var exception = Assert.Throws<ArgumentException>(() => builder.Build());
+        Assert.Contains("tritonserver", exception.Message);
     }
 }

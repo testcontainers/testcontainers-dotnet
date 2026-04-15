@@ -6,5 +6,4 @@ global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Commons;
 global using Grpc.Health.V1;
 global using Grpc.Net.Client;
-global using JetBrains.Annotations;
 global using Xunit;

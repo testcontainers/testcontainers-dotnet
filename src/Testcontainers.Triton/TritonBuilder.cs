@@ -62,6 +62,18 @@ public sealed class TritonBuilder : ContainerBuilder<TritonBuilder, TritonContai
     }
 
     /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        const string message = "Triton Inference Server requires a command to be specified. " +
+            "Use .WithCommand(\"tritonserver\", \"--model-repository=/path/to/models\") to configure the server.";
+
+        _ = Guard.Argument(DockerResourceConfiguration.Command, nameof(DockerResourceConfiguration.Command))
+            .ThrowIf(argument => argument.Value == null || !argument.Value.Any(), _ => new ArgumentException(message));
+    }
+
+    /// <inheritdoc />
     protected override TritonBuilder Init()
     {
         return base.Init()
@@ -69,8 +81,8 @@ public sealed class TritonBuilder : ContainerBuilder<TritonBuilder, TritonContai
             .WithPortBinding(TritonGrpcPort, true)
             .WithPortBinding(TritonMetricsPort, true)
             .WithConnectionStringProvider(new TritonConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilMessageIsLogged("Started GRPCInferenceService"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(TritonHttpPort).ForPath("/v2/health/ready")));
     }
 
     /// <inheritdoc />
