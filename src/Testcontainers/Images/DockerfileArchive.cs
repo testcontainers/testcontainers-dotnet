@@ -9,9 +9,10 @@ namespace DotNet.Testcontainers.Images
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
   using ICSharpCode.SharpZipLib.Tar;
-  using Microsoft.Extensions.Logging;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// Generates a tar archive with Docker configuration files. The tar archive can be used to build a Docker image.
