@@ -192,7 +192,9 @@ namespace DotNet.Testcontainers.Images
 
       using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
+        // Keep the record size equal to the block size (512 B) so SharpZipLib does
+        // not append extra zero padding after the two EOF blocks.
+        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, TarOutputMemoryStream.TarBlockFactor, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
 

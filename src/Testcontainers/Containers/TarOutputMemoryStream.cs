@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Containers
   /// </summary>
   public sealed class TarOutputMemoryStream : TarOutputStream
   {
+    public const int TarBlockFactor = 1;
+
     private readonly string _targetDirectoryPath;
 
     private readonly ILogger _logger;
@@ -36,13 +38,14 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="logger">The logger.</param>
     public TarOutputMemoryStream(ILogger logger)
-      // blockFactor:1 keeps record size == block size (512 B), so SharpZipLib writes no
-      // trailing zero-padding beyond the two standard EOF blocks. The default factor of 20
-      // produces ~8 KB of post-EOF zeros that trigger a race in Podman's archive handler:
-      // the tar subprocess exits after the EOF blocks while the HTTP sender is still
-      // flushing the padding, causing EPIPE (HTTP 500 "broken pipe").
-      // See: https://github.com/testcontainers/testcontainers-dotnet/issues/1683
-      : base(new MemoryStream(), blockFactor: 1, Encoding.Default)
+      // TarBlockFactor keeps the record size equal to the block size (512 B),
+      // so SharpZipLib does not write extra zero padding beyond the two standard
+      // EOF blocks. The default factor of 20 produces ~8 KB of zeros after EOF,
+      // which can trigger a race in Podman's archive handler: the tar subprocess
+      // exits after the EOF blocks while the HTTP sender is still flushing the
+      // padding, causing EPIPE (HTTP 500 "broken pipe").
+      // See: https://github.com/testcontainers/testcontainers-dotnet/issues/1683.
+      : base(new MemoryStream(), TarBlockFactor, Encoding.Default)
     {
       _logger = logger;
       IsStreamOwner = false;
