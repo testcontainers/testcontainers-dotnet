@@ -136,18 +136,34 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithEntrypoint(params string[] entrypoint);
 
     /// <summary>
-    /// Overrides the container's command arguments.
+    /// Appends command arguments to the container configuration.
     /// </summary>
+    /// <remarks>
+    /// For modules, the specified command arguments are appended to the already pre-configured command.
+    ///
+    /// To overwrite or replace an already pre-configured command, use <see cref="WithCommand(ComposableEnumerable{string})" />
+    /// with <see cref="OverwriteEnumerable{T}" />.
+    ///
+    /// For more information and examples, see
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
+    /// </remarks>
     /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithCommand(params string[] command);
 
     /// <summary>
-    /// Overrides the container's command arguments.
+    /// Appends command arguments to the container configuration.
     /// </summary>
     /// <remarks>
-    /// The <see cref="ComposableEnumerable{T}" /> allows to choose how existing builder configurations are composed.
+    /// The <see cref="ComposableEnumerable{T}" /> parameter controls how the specified command arguments are composed
+    /// with the existing container configuration.
+    ///
+    /// Use <see cref="AppendEnumerable{T}" /> to append command arguments, or <see cref="OverwriteEnumerable{T}" /> to
+    /// overwrite or replace an already pre-configured command.
+    ///
+    /// For more information and examples, see
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
     /// </remarks>
     /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
