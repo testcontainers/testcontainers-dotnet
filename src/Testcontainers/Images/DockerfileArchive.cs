@@ -9,7 +9,6 @@ namespace DotNet.Testcontainers.Images
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Containers;
   using ICSharpCode.SharpZipLib.Tar;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -193,9 +192,7 @@ namespace DotNet.Testcontainers.Images
 
       using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {
-        // Keep the record size equal to the block size (512 B) so SharpZipLib does
-        // not append extra zero padding after the two EOF blocks.
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, TarOutputMemoryStream.TarBlockFactor, Encoding.Default))
+        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, TarArchiveDefaults.TarBlockFactor, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
 
