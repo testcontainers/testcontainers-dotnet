@@ -36,7 +36,7 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     /// <param name="logger">The logger.</param>
     public TarOutputMemoryStream(ILogger logger)
-      : base(new MemoryStream(), Encoding.Default)
+      : base(new MemoryStream(), TarArchiveDefaults.TarBlockFactor, Encoding.Default)
     {
       _logger = logger;
       IsStreamOwner = false;
