@@ -82,13 +82,6 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
 
-      # Workaround for intermittent Docker startup issues on GitHub Windows runners:
-      # https://github.com/actions/runner-images/issues/13729#issuecomment-4183956802.
-      - name: Restart Docker on Windows runners
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: Restart-Service -Name docker -Force
-
       - name: Restore NuGet Packages
         run: ./build.sh --target=Restore-NuGet-Packages
         shell: bash
