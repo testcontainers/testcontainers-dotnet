@@ -1,5 +1,10 @@
 namespace Testcontainers.Tests;
 
+// Parallelization is disabled due to a known issue with GitHub-hosted runners:
+// https://github.com/actions/runner-images/issues/13888.
+[CollectionDefinition(nameof(WindowsContainerTest), DisableParallelization = true)]
+public static class WindowsContainerTestCollectionDefinition;
+
 public abstract class WindowsContainerTest : IAsyncLifetime
 {
     private readonly IContainer _container;
@@ -36,6 +41,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilCommandIsCompleted : WindowsContainerTest
     {
         public UntilCommandIsCompleted()
@@ -49,6 +55,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilInternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilInternalTcpPortIsAvailable()
@@ -62,6 +69,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilExternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilExternalTcpPortIsAvailable()
