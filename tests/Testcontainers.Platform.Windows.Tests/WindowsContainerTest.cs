@@ -1,5 +1,7 @@
 namespace Testcontainers.Tests;
 
+// Parallelization is disabled due to a known issue with GitHub-hosted runners:
+// https://github.com/actions/runner-images/issues/13888.
 [CollectionDefinition(nameof(WindowsContainerTest), DisableParallelization = true)]
 public static class WindowsContainerTestCollectionDefinition;
 
