@@ -1,5 +1,8 @@
 namespace Testcontainers.Tests;
 
+[CollectionDefinition(nameof(WindowsContainerTest), DisableParallelization = true)]
+public static class WindowsContainerTestCollectionDefinition;
+
 public abstract class WindowsContainerTest : IAsyncLifetime
 {
     private readonly IContainer _container;
@@ -36,6 +39,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilCommandIsCompleted : WindowsContainerTest
     {
         public UntilCommandIsCompleted()
@@ -49,6 +53,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilInternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilInternalTcpPortIsAvailable()
@@ -62,6 +67,7 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilExternalTcpPortIsAvailable : WindowsContainerTest
     {
         public UntilExternalTcpPortIsAvailable()
