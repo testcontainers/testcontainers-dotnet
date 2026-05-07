@@ -172,6 +172,22 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 // Then
                 Assert.Equal(hash1, hash2);
             }
+
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForCustomReuseHashProvider()
+            {
+                // Given
+                const string customHash = "custom-hash";
+
+                // When
+                var hash = new ReuseHashContainerBuilder()
+                    .WithReuse(_ => customHash)
+                    .GetReuseHash();
+
+                // Then
+                Assert.Equal(customHash, hash);
+            }
         }
 
         public sealed class NotEqualTest

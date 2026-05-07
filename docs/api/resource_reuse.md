@@ -15,6 +15,13 @@ _ = new ContainerBuilder("alpine:3.20.0")
   .WithLabel("reuse-id", "WeatherForecast");
 ```
 
+To take full control over the hash value, pass a custom function to the `WithReuse` overload. The function receives the resource configuration and returns the hash string used to identify and match the resource.
+
+```csharp title="Override the reuse hash calculation"
+_ = new ContainerBuilder("alpine:3.20.0")
+    .WithReuse(_ => "custom-hash");
+```
+
 The current implementation considers the following resource configurations and their corresponding builder APIs when calculating the hash value.
 
 !!! note

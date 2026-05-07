@@ -114,7 +114,7 @@ public sealed class WebDriverContainer : DockerContainer
         /// Initializes a new instance of the <see cref="FFmpegContainer" /> class.
         /// </summary>
         private FFmpegContainer()
-            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")), null, null, false, NullLogger.Instance)))
+            : base(new ContainerConfiguration(new ResourceConfiguration<CreateContainerParameters>(new DockerEndpointAuthenticationConfiguration(new Uri("tcp://ffmpeg")), null, null, false, null, NullLogger.Instance)))
         {
         }
 
