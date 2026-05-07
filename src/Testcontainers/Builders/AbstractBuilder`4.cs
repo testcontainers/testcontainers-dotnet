@@ -68,7 +68,8 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithReuse(Func<IResourceConfiguration<TCreateResourceEntity>, string> reuseHashProvider)
     {
-      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: true, reuseHashProvider: reuseHashProvider)).WithCleanUp(false);
+      var reuse = reuseHashProvider != null;
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, reuseHashProvider: reuseHashProvider)).WithCleanUp(!reuse);
     }
 
     /// <inheritdoc />

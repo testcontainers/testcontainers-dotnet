@@ -19,8 +19,12 @@ To take full control over the hash value, pass a custom function to the `WithReu
 
 ```csharp title="Override the reuse hash calculation"
 _ = new ContainerBuilder("alpine:3.20.0")
-    .WithReuse(_ => "custom-hash");
+  .WithReuse(_ => "custom-hash");
 ```
+
+!!! warning
+
+    A matching custom hash does not guarantee that the resource is compatible. The default implementation derives the hash from the builder configuration, so a match implies an identical configuration. With a custom hash, it is the caller's responsibility to ensure that the hash uniquely and accurately reflects the intended configuration.
 
 The current implementation considers the following resource configurations and their corresponding builder APIs when calculating the hash value.
 
