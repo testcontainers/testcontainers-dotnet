@@ -133,13 +133,17 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(HttpStatusCode.OK, topicResponse.HttpStatusCode);
     }
-
+ 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     [Trait(AwsService, "sqs")]
     public async Task CreateQueueReturnsHttpStatusCodeOk()
     {
+        Assert.SkipWhen(_localStackContainer.Image.FullName.Contains("1.4.0"),
+            "AWS SDK v4 is incompatible with LocalStack 1.4.0 (JSON protocol not supported)");
+        
         // Given
+        //var config = new AmazonSQSConfig();
         var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
