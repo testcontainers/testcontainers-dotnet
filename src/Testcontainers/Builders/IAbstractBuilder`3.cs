@@ -14,7 +14,7 @@ namespace DotNet.Testcontainers.Builders
   /// <typeparam name="TResourceEntity">The resource entity.</typeparam>
   /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   [PublicAPI]
-  public interface IAbstractBuilder<out TBuilderEntity, out TResourceEntity, out TCreateResourceEntity>
+  public interface IAbstractBuilder<out TBuilderEntity, out TResourceEntity, TCreateResourceEntity>
   {
     /// <summary>
     /// Sets the Docker API endpoint.
@@ -79,6 +79,26 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithReuse(bool reuse);
+
+    /// <summary>
+    /// Reuses an existing Docker resource with a custom reuse hash.
+    /// </summary>
+    /// <remarks>
+    /// If reuse is enabled, Testcontainers will label the resource with a hash value
+    /// according to the respective build/resource configuration. When Testcontainers finds a
+    /// matching resource, it will reuse this resource instead of creating a new one. Enabling
+    /// reuse will disable the resource reaper, meaning the resource will not be cleaned up
+    /// after the tests are finished.
+    ///
+    /// This is an <b>experimental</b> feature. Reuse does not take all builder
+    /// configurations into account when calculating the hash value. There might be configurations
+    /// where Testcontainers is not, or not yet, able to find a matching resource and
+    /// recreate the resource.
+    /// </remarks>
+    /// <param name="reuseHashProvider">A function that receives the resource configuration and returns the reuse hash, replacing the default SHA-1-based implementation.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithReuse(Func<IResourceConfiguration<TCreateResourceEntity>, string> reuseHashProvider);
 
     /// <summary>
     /// Adds user-defined metadata to the Docker resource.

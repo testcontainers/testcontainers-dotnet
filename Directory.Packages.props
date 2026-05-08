@@ -52,7 +52,7 @@
         <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Json" Version="2.8.0"/>
         <PackageVersion Include="Confluent.SchemaRegistry" Version="2.8.0"/>
         <PackageVersion Include="Consul" Version="1.6.10.9"/>
-        <PackageVersion Include="CouchbaseNetClient" Version="3.7.2"/>
+        <PackageVersion Include="CouchbaseNetClient" Version="3.9.2"/>
         <PackageVersion Include="DotPulsar" Version="3.6.0"/>
         <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.15"/>
         <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="23.3.9"/>
@@ -66,13 +66,13 @@
         <PackageVersion Include="JanusGraph.Net" Version="1.1.0"/>
         <PackageVersion Include="Keycloak.Net.Core" Version="1.0.20"/>
         <PackageVersion Include="KubernetesClient" Version="17.0.14"/>
-        <PackageVersion Include="KurrentDB.Client" Version="1.2.0"/>
+        <PackageVersion Include="KurrentDB.Client" Version="1.4.0"/>
         <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1"/>
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="12.2.8"/>
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
         <PackageVersion Include="Microsoft.Playwright" Version="1.55.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.3.0-preview.1"/>
-        <PackageVersion Include="MongoDB.Driver" Version="3.2.0"/>
+        <PackageVersion Include="MongoDB.Driver" Version="3.8.0"/>
         <PackageVersion Include="MQTTnet" Version="5.0.1.1416"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
