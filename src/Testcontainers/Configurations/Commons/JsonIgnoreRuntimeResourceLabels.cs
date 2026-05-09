@@ -6,6 +6,10 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Containers;
 
+  /// <summary>
+  /// Excludes session-specific labels from the reuse hash so containers with
+  /// identical configuration are still recognized as reusable across test sessions.
+  /// </summary>
   internal sealed class JsonIgnoreRuntimeResourceLabels : JsonOrderedKeysConverter
   {
     private static readonly ISet<string> IgnoreLabels = new HashSet<string>
