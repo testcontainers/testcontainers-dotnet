@@ -10,31 +10,10 @@
     <PackageReference Include="coverlet.collector"/>
     <PackageReference Include="xunit.runner.visualstudio"/>
     <PackageReference Include="xunit.v3"/>
-    <PackageReference Include="AWSSDK.S3"/>
-    <PackageReference Include="AWSSDK.SQS"/>
-    <PackageReference Include="AWSSDK.SimpleNotificationService"/>
     <PackageReference Include="AWSSDK.DynamoDBv2"/>
-    <PackageReference Include="AWSSDK.DynamoDBStreams"/>
-    <PackageReference Include="AWSSDK.Kinesis"/>
-    <PackageReference Include="AWSSDK.KeyManagementService"/>
-    <PackageReference Include="AWSSDK.SecretsManager"/>
-    <PackageReference Include="AWSSDK.SimpleSystemsManagement"/>
-    <PackageReference Include="AWSSDK.IdentityManagement"/>
-    <PackageReference Include="AWSSDK.SecurityToken"/>
-    <PackageReference Include="AWSSDK.CloudWatchLogs"/>
-    <PackageReference Include="AWSSDK.CloudWatch"/>
-    <PackageReference Include="AWSSDK.EventBridge"/>
-    <PackageReference Include="AWSSDK.KinesisFirehose"/>
-    <PackageReference Include="AWSSDK.SimpleEmail"/>
-    <PackageReference Include="AWSSDK.StepFunctions"/>
-    <PackageReference Include="AWSSDK.Glue"/>
-    <PackageReference Include="AWSSDK.CertificateManager"/>
-    <PackageReference Include="AWSSDK.CognitoIdentityProvider"/>
-    <PackageReference Include="AWSSDK.CloudFormation"/>
-    <PackageReference Include="AWSSDK.EC2"/>
-    <PackageReference Include="AWSSDK.ECR"/>
-    <PackageReference Include="AWSSDK.ResourceGroupsTaggingAPI"/>
-    <PackageReference Include="AWSSDK.APIGateway"/>
+    <PackageReference Include="AWSSDK.S3"/>
+    <PackageReference Include="AWSSDK.SimpleNotificationService"/>
+    <PackageReference Include="AWSSDK.SQS"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Testcontainers.Floci/Testcontainers.Floci.csproj"/>

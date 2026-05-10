@@ -69,12 +69,13 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
         base.Init()
             .WithImage(FlociContainer.FlociImage)
             .WithPortBinding(FlociContainer.FlociPort, true)
+            .WithConnectionStringProvider(new FlociConnectionStringProvider())
             .WithWaitStrategy(
                 Wait.ForUnixContainer()
                     .UntilHttpRequestIsSucceeded(r => r
                         .ForPath("/_floci/health")
                         .ForPort(FlociContainer.FlociPort)));
-
+    
     /// <inheritdoc />
     protected override FlociBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration) =>
         Merge(DockerResourceConfiguration, new FlociConfiguration(resourceConfiguration));

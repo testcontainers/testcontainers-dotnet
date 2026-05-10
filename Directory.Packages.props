@@ -33,31 +33,11 @@
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.1"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
-        <PackageVersion Include="AWSSDK.APIGateway" Version="4.0.6.11" />
-        <PackageVersion Include="AWSSDK.CertificateManager" Version="4.0.3.8" />
-        <PackageVersion Include="AWSSDK.CloudWatch" Version="4.0.10.1" />
         <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="4.0.24"/>
-        <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="4.0.8.3" />
-        <PackageVersion Include="AWSSDK.CloudFormation" Version="4.0.8.22" />
-        <PackageVersion Include="AWSSDK.EC2" Version="4.0.86" />
-        <PackageVersion Include="AWSSDK.ECR" Version="4.0.13.5" />
-        <PackageVersion Include="AWSSDK.EventBridge" Version="4.0.5.29" />
         <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.18.1"/>
-        <PackageVersion Include="AWSSDK.DynamoDBStreams" Version="4.0.4.28" />
-        <PackageVersion Include="AWSSDK.Glue" Version="4.0.29" />
-        <PackageVersion Include="AWSSDK.IdentityManagement" Version="4.0.9.22" />
-        <PackageVersion Include="AWSSDK.KeyManagementService" Version="4.0.10.1" />
-        <PackageVersion Include="AWSSDK.Kinesis" Version="4.0.8.14" />
-        <PackageVersion Include="AWSSDK.KinesisFirehose" Version="4.0.3.27" />
-        <PackageVersion Include="AWSSDK.ResourceGroupsTaggingAPI" Version="4.0.2.24" />
         <PackageVersion Include="AWSSDK.S3" Version="4.0.23"/>
-        <PackageVersion Include="AWSSDK.SecretsManager" Version="4.0.4.20" />
-        <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.6.3" />
-        <PackageVersion Include="AWSSDK.SimpleEmail" Version="4.0.2.27" />
         <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.0.2.30"/>
-        <PackageVersion Include="AWSSDK.SimpleSystemsManagement" Version="4.0.7.14" />
         <PackageVersion Include="AWSSDK.SQS" Version="4.0.2.28"/>
-        <PackageVersion Include="AWSSDK.StepFunctions" Version="4.0.2.23" />
         <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
         <PackageVersion Include="Azure.Identity" Version="1.13.2"/>
         <PackageVersion Include="Azure.Messaging.EventHubs" Version="5.11.3"/>

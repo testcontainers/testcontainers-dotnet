@@ -1,20 +1,15 @@
 namespace Testcontainers.LocalStack;
 
-public abstract class LocalStackContainerTest : IAsyncLifetime
+public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
 
-    private readonly LocalStackContainer _localStackContainer;
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static LocalStackContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
-    }
-
-    private LocalStackContainerTest(LocalStackContainer localStackContainer)
-    {
-        _localStackContainer = localStackContainer;
     }
 
     public async ValueTask InitializeAsync()
@@ -23,12 +18,9 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
-
-        GC.SuppressFinalize(this);
+        return _localStackContainer.DisposeAsync();
     }
 
     [Fact]
@@ -139,9 +131,6 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
     [Trait(AwsService, "sqs")]
     public async Task CreateQueueReturnsHttpStatusCodeOk()
     {
-        Assert.SkipWhen(_localStackContainer.Image.FullName.Contains("1.4.0"),
-            "AWS SDK v4 is incompatible with LocalStack 1.4.0 (JSON protocol not supported)");
-        
         // Given
         //var config = new AmazonSQSConfig();
         var config = new AmazonSQSConfig();
@@ -155,28 +144,5 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
-    }
-
-    protected virtual ValueTask DisposeAsyncCore()
-    {
-        return _localStackContainer.DisposeAsync();
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
-    {
-        public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
-        {
-        }
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackV1Configuration : LocalStackContainerTest
-    {
-        public LocalStackV1Configuration()
-            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile(stage: "v1_4_0")).Build())
-        {
-        }
     }
 }
