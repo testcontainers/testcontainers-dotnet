@@ -132,7 +132,6 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
     public async Task CreateQueueReturnsHttpStatusCodeOk()
     {
         // Given
-        //var config = new AmazonSQSConfig();
         var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
 
