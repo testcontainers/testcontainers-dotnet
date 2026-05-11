@@ -6,15 +6,17 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string FlociImage = "floci/floci:1.5.13";    
+
+    /// <summary>The port Floci listens on inside the container.</summary>
+    public const ushort FlociPort = 4566;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlociBuilder" /> class.
     /// </summary>
     [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public FlociBuilder()
-        : this(new FlociConfiguration())
+        : this(FlociImage)
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -67,14 +69,10 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     /// <inheritdoc />
     protected override FlociBuilder Init() =>
         base.Init()
-            .WithImage(FlociContainer.FlociImage)
-            .WithPortBinding(FlociContainer.FlociPort, true)
+            .WithPortBinding(FlociPort, true)
             .WithConnectionStringProvider(new FlociConnectionStringProvider())
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
-                    .UntilHttpRequestIsSucceeded(r => r
-                        .ForPath("/_floci/health")
-                        .ForPort(FlociContainer.FlociPort)));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => 
+                request.ForPath("/_floci/health").ForPort(FlociPort)));
     
     /// <inheritdoc />
     protected override FlociBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration) =>
