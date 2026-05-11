@@ -66,6 +66,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public TBuilderEntity WithReuse(Func<IResourceConfiguration<TCreateResourceEntity>, string> reuseHashProvider)
+    {
+      var reuse = reuseHashProvider != null;
+      return Clone(new ResourceConfiguration<TCreateResourceEntity>(reuse: reuse, reuseHashProvider: reuseHashProvider)).WithCleanUp(!reuse);
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity WithLabel(string name, string value)
     {
       return WithLabel(new Dictionary<string, string> { { name, value } });

@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Configurations
   /// </summary>
   /// <typeparam name="TCreateResourceEntity">The underlying Docker.DotNet resource entity.</typeparam>
   [PublicAPI]
-  public interface IResourceConfiguration<in TCreateResourceEntity>
+  public interface IResourceConfiguration<TCreateResourceEntity>
   {
     /// <summary>
     /// Gets the test session id.
@@ -36,6 +36,11 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets a value indicating whether to reuse an existing resource configuration or not.
     /// </summary>
     bool? Reuse { get; }
+
+    /// <summary>
+    /// Gets a function to override the reuse hash calculation, or <c>null</c> to use the default SHA-1-based implementation.
+    /// </summary>
+    Func<IResourceConfiguration<TCreateResourceEntity>, string> ReuseHashProvider { get; }
 
     /// <summary>
     /// Gets the logger.
