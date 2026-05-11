@@ -50,6 +50,10 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
         DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlociBuilder" /> class.
+    /// </summary>
+    /// <param name="resourceConfiguration">The Docker resource configuration.</param>
     private FlociBuilder(FlociConfiguration resourceConfiguration)
         : base(resourceConfiguration)
     {
