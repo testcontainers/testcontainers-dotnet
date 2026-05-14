@@ -1,4 +1,4 @@
-﻿namespace Testcontainers.Floci;
+namespace Testcontainers.Floci;
 
 /// <summary>
 /// Provides the Floci connection string.

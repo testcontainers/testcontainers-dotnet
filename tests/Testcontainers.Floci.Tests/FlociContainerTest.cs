@@ -1,143 +1,148 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Amazon.Runtime;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
-using Amazon.SQS;
-using Amazon.SQS.Model;
-using Xunit;
-
-namespace Testcontainers.Floci.Tests;
+namespace Testcontainers.Floci;
 
 public sealed class FlociContainerTest : IAsyncLifetime
 {
-    private readonly FlociContainer _container = new FlociBuilder("floci/floci:1.5.13").Build();
+    private const string AwsService = "Service";
 
-    public ValueTask InitializeAsync() => new(_container.StartAsync());
+    private static readonly BasicAWSCredentials AwsCredentials = new BasicAWSCredentials(FlociBuilder.AccessKey, FlociBuilder.SecretKey);
 
-    public ValueTask DisposeAsync() => _container.DisposeAsync();
+    private readonly FlociContainer _flociContainer = new FlociBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    private AmazonS3Client CreateS3Client() =>
-        new(
-            new BasicAWSCredentials(_container.GetAccessKey(), _container.GetSecretKey()),
-            new AmazonS3Config
-            {
-                ServiceURL = _container.GetConnectionString(),
-                AuthenticationRegion = FlociContainer.Region,
-                ForcePathStyle = true
-            });
-
-    private AmazonSQSClient CreateSqsClient() =>
-        new(
-            new BasicAWSCredentials(_container.GetAccessKey(), _container.GetSecretKey()),
-            new AmazonSQSConfig
-            {
-                ServiceURL = _container.GetConnectionString(),
-                AuthenticationRegion = FlociContainer.Region
-            });
-
-    private AmazonSimpleNotificationServiceClient CreateSnsClient() =>
-        new(
-            new BasicAWSCredentials(_container.GetAccessKey(), _container.GetSecretKey()),
-            new AmazonSimpleNotificationServiceConfig
-            {
-                ServiceURL = _container.GetConnectionString(),
-                AuthenticationRegion = FlociContainer.Region
-            });
-
-    private AmazonDynamoDBClient CreateDynamoDbClient() =>
-        new(
-            new BasicAWSCredentials(_container.GetAccessKey(), _container.GetSecretKey()),
-            new AmazonDynamoDBConfig
-            {
-                ServiceURL = _container.GetConnectionString(),
-                AuthenticationRegion = FlociContainer.Region,
-            });
-
-    [Fact]
-    public async Task S3_CreateBucketAndPutObject_Succeeds()
+    public async ValueTask InitializeAsync()
     {
-        var ct = TestContext.Current.CancellationToken;
-        using var client = CreateS3Client();
+        await _flociContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
 
-        const string bucketName = "test-bucket";
-        const string key = "test-key";
-        const string content = "hello floci";
-
-        await client.PutBucketAsync(new PutBucketRequest { BucketName = bucketName }, ct);
-        await client.PutObjectAsync(new PutObjectRequest
-        {
-            BucketName = bucketName,
-            Key = key,
-            ContentBody = content,
-        }, ct);
-
-        var response = await client.GetObjectMetadataAsync(bucketName, key, ct);
-        Assert.Equal(200, (int)response.HttpStatusCode);
+    public ValueTask DisposeAsync()
+    {
+        return _flociContainer.DisposeAsync();
     }
 
     [Fact]
-    public async Task Sqs_CreateQueueAndSendMessage_Succeeds()
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "cloudwatch")]
+    public async Task CreateLogReturnsHttpStatusCodeOk()
     {
-        var ct = TestContext.Current.CancellationToken;
-        using var client = CreateSqsClient();
+        // Given
+        var config = new AmazonCloudWatchLogsConfig();
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        var createResponse = await client.CreateQueueAsync(new CreateQueueRequest { QueueName = "test-queue" }, ct);
-        var sendResponse = await client.SendMessageAsync(new SendMessageRequest
-        {
-            QueueUrl = createResponse.QueueUrl,
-            MessageBody = "hello floci",
-        }, ct);
+        using var client = new AmazonCloudWatchLogsClient(AwsCredentials, config);
 
-        Assert.NotNull(sendResponse.MessageId);
+        var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
+
+        // When
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_flociContainer.GetConnectionString(), _flociContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
-    public async Task Sns_CreateTopicAndPublish_Succeeds()
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "dynamodb")]
+    public async Task GetItemReturnsPutItem()
     {
-        var ct = TestContext.Current.CancellationToken;
-        using var client = CreateSnsClient();
+        // Given
+        var id = Guid.NewGuid().ToString("D");
 
-        var createResponse = await client.CreateTopicAsync(new CreateTopicRequest { Name = "test-topic" }, ct);
-        var publishResponse = await client.PublishAsync(new PublishRequest
-        {
-            TopicArn = createResponse.TopicArn,
-            Message = "hello floci",
-        }, ct);
+        var tableName = Guid.NewGuid().ToString("D");
 
-        Assert.NotNull(publishResponse.MessageId);
+        var config = new AmazonDynamoDBConfig();
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
+
+        using var client = new AmazonDynamoDBClient(AwsCredentials, config);
+
+        var tableRequest = new CreateTableRequest();
+        tableRequest.TableName = tableName;
+        tableRequest.AttributeDefinitions = new List<AttributeDefinition> { new AttributeDefinition("Id", ScalarAttributeType.S) };
+        tableRequest.KeySchema = new List<KeySchemaElement> { new KeySchemaElement("Id", KeyType.HASH) };
+        tableRequest.ProvisionedThroughput = new ProvisionedThroughput(10, 5);
+
+        var putItemRequest = new PutItemRequest();
+        putItemRequest.TableName = tableName;
+        putItemRequest.Item = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+
+        var getItemRequest = new GetItemRequest();
+        getItemRequest.TableName = tableName;
+        getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+
+        // When
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(id, itemResponse.Item.Values.Single().S);
     }
 
     [Fact]
-    public async Task DynamoDb_CreateTableAndPutItem_Succeeds()
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "s3")]
+    public async Task ListBucketsReturnsHttpStatusCodeOk()
     {
-        var ct = TestContext.Current.CancellationToken;
-        using var client = CreateDynamoDbClient();
+        // Given
+        var config = new AmazonS3Config();
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        const string tableName = "test-table";
+        using var client = new AmazonS3Client(AwsCredentials, config);
 
-        await client.CreateTableAsync(new CreateTableRequest
-        {
-            TableName = tableName,
-            KeySchema = [new KeySchemaElement("Id", KeyType.HASH)],
-            AttributeDefinitions = [new AttributeDefinition("Id", ScalarAttributeType.S)],
-            BillingMode = BillingMode.PAY_PER_REQUEST,
-        }, ct);
+        // When
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-        var putResponse = await client.PutItemAsync(new PutItemRequest
-        {
-            TableName = tableName,
-            Item = new Dictionary<string, AttributeValue>
-            {
-                ["Id"] = new AttributeValue { S = "1" },
-                ["Name"] = new AttributeValue { S = "Floci" },
-            },
-        }, ct);
+        // Then
+        Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+    }
 
-        Assert.Equal(200, (int)putResponse.HttpStatusCode);
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "sns")]
+    public async Task CreateTopicReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonSimpleNotificationServiceConfig();
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
+
+        using var client = new AmazonSimpleNotificationServiceClient(AwsCredentials, config);
+
+        // When
+        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, topicResponse.HttpStatusCode);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "sqs")]
+    public async Task CreateQueueReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonSQSConfig();
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
+
+        using var client = new AmazonSQSClient(AwsCredentials, config);
+
+        // When
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
     }
 }

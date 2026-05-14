@@ -5,11 +5,16 @@ namespace Testcontainers.Floci;
 public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer, FlociConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string FlociImage = "floci/floci:1.5.13";    
+    public const string FlociImage = "floci/floci:1.5.13";
 
-    /// <summary>The port Floci listens on inside the container.</summary>
     public const ushort FlociPort = 4566;
-    
+
+    public const string AccessKey = "test";
+
+    public const string SecretKey = "test";
+
+    public const string Region = "us-east-1";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FlociBuilder" /> class.
     /// </summary>
@@ -33,7 +38,7 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
         : this(new DockerImage(image))
     {
     }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FlociBuilder" /> class.
     /// </summary>
@@ -49,7 +54,7 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     {
         DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FlociBuilder" /> class.
     /// </summary>
@@ -71,22 +76,30 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     }
 
     /// <inheritdoc />
-    protected override FlociBuilder Init() =>
-        base.Init()
+    protected override FlociBuilder Init()
+    {
+        return base.Init()
             .WithPortBinding(FlociPort, true)
             .WithConnectionStringProvider(new FlociConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => 
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_floci/health").ForPort(FlociPort)));
-    
-    /// <inheritdoc />
-    protected override FlociBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration) =>
-        Merge(DockerResourceConfiguration, new FlociConfiguration(resourceConfiguration));
+    }
 
     /// <inheritdoc />
-    protected override FlociBuilder Clone(IContainerConfiguration resourceConfiguration) =>
-        Merge(DockerResourceConfiguration, new FlociConfiguration(resourceConfiguration));
+    protected override FlociBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new FlociConfiguration(resourceConfiguration));
+    }
 
     /// <inheritdoc />
-    protected override FlociBuilder Merge(FlociConfiguration oldValue, FlociConfiguration newValue) =>
-        new FlociBuilder(new FlociConfiguration(oldValue, newValue));
+    protected override FlociBuilder Clone(IContainerConfiguration resourceConfiguration)
+    {
+        return Merge(DockerResourceConfiguration, new FlociConfiguration(resourceConfiguration));
+    }
+
+    /// <inheritdoc />
+    protected override FlociBuilder Merge(FlociConfiguration oldValue, FlociConfiguration newValue)
+    {
+        return new FlociBuilder(new FlociConfiguration(oldValue, newValue));
+    }
 }

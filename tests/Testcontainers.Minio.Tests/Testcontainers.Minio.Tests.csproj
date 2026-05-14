@@ -10,7 +10,7 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="AWSSDK.S3" VersionOverride="3.7.103.3"/>
+        <PackageReference Include="AWSSDK.S3"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Minio/Testcontainers.Minio.csproj"/>

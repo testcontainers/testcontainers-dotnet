@@ -31,6 +31,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonCloudWatchLogsConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonCloudWatchLogsClient(config);
 
@@ -57,6 +58,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
         var config = new AmazonDynamoDBConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonDynamoDBClient(config);
 
@@ -96,6 +98,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonS3Client(config);
 
@@ -115,6 +118,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSimpleNotificationServiceConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
@@ -125,7 +129,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         // Then
         Assert.Equal(HttpStatusCode.OK, topicResponse.HttpStatusCode);
     }
- 
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     [Trait(AwsService, "sqs")]
@@ -134,6 +138,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSQSClient(config);
 
