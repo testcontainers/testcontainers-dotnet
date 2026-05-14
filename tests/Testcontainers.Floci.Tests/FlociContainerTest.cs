@@ -1,26 +1,22 @@
-namespace Testcontainers.LocalStack;
+namespace Testcontainers.Floci;
 
-public sealed class LocalStackContainerTest : IAsyncLifetime
+public sealed class FlociContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
 
-    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build();
+    private static readonly BasicAWSCredentials AwsCredentials = new BasicAWSCredentials(FlociBuilder.AccessKey, FlociBuilder.SecretKey);
 
-    static LocalStackContainerTest()
-    {
-        Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
-        Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
-    }
+    private readonly FlociContainer _flociContainer = new FlociBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     public async ValueTask InitializeAsync()
     {
-        await _localStackContainer.StartAsync()
+        await _flociContainer.StartAsync()
             .ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
     {
-        return _localStackContainer.DisposeAsync();
+        return _flociContainer.DisposeAsync();
     }
 
     [Fact]
@@ -30,10 +26,10 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonCloudWatchLogsConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
-        config.AuthenticationRegion = "us-east-1";
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        using var client = new AmazonCloudWatchLogsClient(config);
+        using var client = new AmazonCloudWatchLogsClient(AwsCredentials, config);
 
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
@@ -43,7 +39,7 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
-        Assert.Equal(_localStackContainer.GetConnectionString(), _localStackContainer.GetConnectionString(ConnectionMode.Host));
+        Assert.Equal(_flociContainer.GetConnectionString(), _flociContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -57,10 +53,10 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
         var tableName = Guid.NewGuid().ToString("D");
 
         var config = new AmazonDynamoDBConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
-        config.AuthenticationRegion = "us-east-1";
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        using var client = new AmazonDynamoDBClient(config);
+        using var client = new AmazonDynamoDBClient(AwsCredentials, config);
 
         var tableRequest = new CreateTableRequest();
         tableRequest.TableName = tableName;
@@ -97,10 +93,10 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonS3Config();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
-        config.AuthenticationRegion = "us-east-1";
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        using var client = new AmazonS3Client(config);
+        using var client = new AmazonS3Client(AwsCredentials, config);
 
         // When
         var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
@@ -117,10 +113,10 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonSimpleNotificationServiceConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
-        config.AuthenticationRegion = "us-east-1";
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        using var client = new AmazonSimpleNotificationServiceClient(config);
+        using var client = new AmazonSimpleNotificationServiceClient(AwsCredentials, config);
 
         // When
         var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
@@ -137,10 +133,10 @@ public sealed class LocalStackContainerTest : IAsyncLifetime
     {
         // Given
         var config = new AmazonSQSConfig();
-        config.ServiceURL = _localStackContainer.GetConnectionString();
-        config.AuthenticationRegion = "us-east-1";
+        config.ServiceURL = _flociContainer.GetConnectionString();
+        config.AuthenticationRegion = FlociBuilder.Region;
 
-        using var client = new AmazonSQSClient(config);
+        using var client = new AmazonSQSClient(AwsCredentials, config);
 
         // When
         var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)

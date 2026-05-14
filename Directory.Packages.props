@@ -33,11 +33,11 @@
         <!-- Third-party client dependencies to connect and interact with the containers: -->
         <PackageVersion Include="Apache.NMS.ActiveMQ" Version="2.1.1"/>
         <PackageVersion Include="ArangoDBNetStandard" Version="2.0.1"/>
-        <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="3.7.104.14"/>
-        <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.101.42"/>
-        <PackageVersion Include="AWSSDK.S3" Version="3.7.103.3"/>
-        <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.101.7"/>
-        <PackageVersion Include="AWSSDK.SQS" Version="3.7.100.71"/>
+        <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="4.0.24"/>
+        <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.18.1"/>
+        <PackageVersion Include="AWSSDK.S3" Version="4.0.23"/>
+        <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.0.2.30"/>
+        <PackageVersion Include="AWSSDK.SQS" Version="4.0.2.28"/>
         <PackageVersion Include="Azure.Data.Tables" Version="12.8.0"/>
         <PackageVersion Include="Azure.Identity" Version="1.13.2"/>
         <PackageVersion Include="Azure.Messaging.EventHubs" Version="5.11.3"/>
