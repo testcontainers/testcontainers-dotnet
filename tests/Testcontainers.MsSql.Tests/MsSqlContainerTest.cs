@@ -35,6 +35,21 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     }
     // # --8<-- [end:UseMsSqlContainer]
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreatesTableOnTheConfiguredDatabase()
+    {
+        // Given
+        using DbConnection connection = fixture.CreateConnection();
+
+        // When
+        await fixture.Container.ExecScriptAsync("CREATE TABLE dbo.Employee (EmployeeID INT PRIMARY KEY CLUSTERED);", TestContext.Current.CancellationToken);
+
+        // Then
+        using var command = fixture.CreateCommand("SELECT COUNT(*) FROM dbo.Employee;");
+        Assert.Equal(0, await command.ExecuteScalarAsync(TestContext.Current.CancellationToken));
+    }
+
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
@@ -54,10 +69,22 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     }
 
     [UsedImplicitly]
+    public class MsSqlCustomDatabaseFixture(IMessageSink messageSink)
+        : MsSqlDefaultFixture(messageSink)
+    {
+        protected override MsSqlBuilder Configure()
+            => base.Configure().WithDatabase("MyDatabase");
+    }
+
+    [UsedImplicitly]
     public sealed class MsSqlDefaultConfiguration(MsSqlDefaultFixture fixture)
         : MsSqlContainerTest(fixture), IClassFixture<MsSqlDefaultFixture>;
 
     [UsedImplicitly]
     public sealed class MsSqlWaitForDatabaseConfiguration(MsSqlWaitForDatabaseFixture fixture)
         : MsSqlContainerTest(fixture), IClassFixture<MsSqlWaitForDatabaseFixture>;
+
+    [UsedImplicitly]
+    public sealed class MsSqlCustomDatabaseConfiguration(MsSqlCustomDatabaseFixture fixture)
+        : MsSqlContainerTest(fixture), IClassFixture<MsSqlCustomDatabaseFixture>;
 }

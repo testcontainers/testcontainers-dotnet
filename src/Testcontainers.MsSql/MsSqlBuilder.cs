@@ -85,7 +85,11 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     public override MsSqlContainer Build()
     {
         Validate();
-        return new MsSqlContainer(DockerResourceConfiguration);
+
+        // By default, the base builder waits until the container is running. However, for MsSql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
+        // Always append the default MsSql waiting strategy because that's where the custom database is created.
+        var msSqlBuilder = WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        return new MsSqlContainer(msSqlBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -97,8 +101,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithConnectionStringProvider(new MsSqlConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithConnectionStringProvider(new MsSqlConnectionStringProvider());
     }
 
     /// <inheritdoc />
@@ -133,14 +136,14 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Sets the MsSql database.
     /// </summary>
     /// <remarks>
-    /// The Docker image does not allow to configure the database.
+    /// This is useful, for example, when the database needs to be set to single-user mode.
+    /// Typically, Entity Framework Core does it through the <c>EnsureDeleted</c> method.
     /// </remarks>
     /// <param name="database">The MsSql database.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    private MsSqlBuilder WithDatabase(string database)
+    public MsSqlBuilder WithDatabase(string database)
     {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
-            .WithEnvironment("SQLCMDDBNAME", database);
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database));
     }
 
     /// <summary>
@@ -162,7 +165,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
     /// </remarks>
-    private sealed class WaitUntil : IWaitUntil
+    private sealed class WaitUntil(MsSqlConfiguration configuration) : IWaitUntil
     {
         /// <inheritdoc />
         public Task<bool> UntilAsync(IContainer container)
@@ -171,13 +174,22 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         }
 
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private static async Task<bool> UntilAsync(MsSqlContainer container)
+        private async Task<bool> UntilAsync(MsSqlContainer container)
         {
             var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
                 .ConfigureAwait(false);
 
-            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-Q", "SELECT 1;" })
+            var execResult = await container.ExecAsync([sqlCmdFilePath, "-C", "-Q", "SELECT 1;"])
                 .ConfigureAwait(false);
+
+            if (execResult.ExitCode == 0 && configuration.Database != DefaultDatabase)
+            {
+                var createDbScript = $"IF DB_ID('{configuration.Database}') IS NULL " +
+                                     $"BEGIN CREATE DATABASE [{configuration.Database}] END";
+
+                var masterConfiguration = new MsSqlConfiguration(DefaultDatabase, DefaultUsername, configuration.Password);
+                await container.ExecScriptAsync(createDbScript, masterConfiguration);
+            }
 
             return 0L.Equals(execResult.ExitCode);
         }
