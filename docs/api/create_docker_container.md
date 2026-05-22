@@ -214,6 +214,44 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
+## Reusing builder configurations
+
+Testcontainers builders are immutable. Every builder method returns a new instance that includes the updated configuration. The existing builder instance remains unchanged.
+
+This behavior is by design. It allows you to share a common configuration and derive multiple containers from it without modifying the original builder, for example for A/B testing:
+
+```csharp
+var baseBuilder = new PostgreSqlBuilder()
+  .WithUsername("Username")
+  .WithPassword("Password")
+  .WithLabel("Key", "Value");
+
+var postgres15 = baseBuilder
+  .WithImage("postgres:15")
+  .Build();
+
+var postgres14 = baseBuilder
+  .WithImage("postgres:14")
+  .Build();
+```
+
+If you configure a builder across multiple statements or conditionally, reassign the return value. Calling `WithImage(...)` without using the returned builder does not update the existing instance:
+
+```csharp
+var builder = new PostgreSqlBuilder()
+  .WithImage("postgres:15")
+  .WithUsername("Username")
+  .WithPassword("Password")
+  .WithLabel("Key", "Value");
+
+if (Debugger.IsAttached)
+{
+  builder = builder.WithImage("postgres:14");
+}
+
+var container = builder.Build();
+```
+
 ## Examples
 
 An NGINX container that binds the HTTP port to a random host port and hosts static content. The example connects to the web server and checks the HTTP status code.
