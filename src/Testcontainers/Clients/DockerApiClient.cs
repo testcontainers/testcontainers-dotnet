@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
+  using DotNet.Testcontainers;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -118,7 +119,7 @@ namespace DotNet.Testcontainers.Clients
           runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
 
-        Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
+        Logger.DockerRuntimeInfo(runtimeInfo.ToString());
       }
       catch (Exception e)
       {
