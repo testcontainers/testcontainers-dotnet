@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers;
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
@@ -73,9 +74,7 @@ namespace DotNet.Testcontainers.Containers
 
       var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
 
-      _logger.LogInformation(
-        "Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
-        tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
+      _logger.AddFileToTarArchive(tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
@@ -153,9 +152,7 @@ namespace DotNet.Testcontainers.Containers
 
         var fileModeOctal = Convert.ToString(tarEntry.TarHeader.Mode, 8).PadLeft(4, '0');
 
-        _logger.LogInformation(
-          "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}",
-          tarEntry.Size, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
+        _logger.AddFileToTarArchive(file.FullName, targetFilePath, tarEntry.TarHeader.UserId, tarEntry.TarHeader.GroupId, fileModeOctal);
 
         await PutNextEntryAsync(tarEntry, ct)
           .ConfigureAwait(false);
