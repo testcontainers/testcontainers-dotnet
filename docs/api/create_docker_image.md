@@ -2,6 +2,10 @@
 
 Testcontainers for .NET uses the builder design pattern to configure, create and delete Docker resources. It prepares and initializes your test environment and disposes of everything after your tests are finished — whether the tests are successful or not. To create a container image from a Dockerfile use `ImageFromDockerfileBuilder`.
 
+!!! warning
+
+    BuildKit features are not supported through the Docker Engine API. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with Testcontainers' image builder API. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903).
+
 ## Examples
 
 Builds and tags a new container image. The Dockerfile is located inside the solution (`.sln`) directory.
