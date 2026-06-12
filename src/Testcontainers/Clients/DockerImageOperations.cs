@@ -14,12 +14,9 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
-    private readonly TraceProgress _traceProgress;
-
     public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig, logger)
     {
-      _traceProgress = new TraceProgress(logger);
     }
 
     public async Task<IEnumerable<ImagesListResponse>> GetAllAsync(CancellationToken ct = default)
@@ -57,6 +54,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default)
     {
+      var traceProgress = new TraceProgress(Logger);
+
       var createParameters = new ImagesCreateParameters
       {
         FromImage = image.FullName,
@@ -71,7 +70,7 @@ namespace DotNet.Testcontainers.Clients
         IdentityToken = dockerRegistryAuthConfig.IdentityToken,
       };
 
-      await DockerClient.Images.CreateImageAsync(createParameters, authConfig, _traceProgress, ct)
+      await DockerClient.Images.CreateImageAsync(createParameters, authConfig, traceProgress, ct)
         .ConfigureAwait(false);
 
       Logger.DockerImageCreated(image);
@@ -85,6 +84,8 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default)
     {
+      var traceProgress = new TraceProgress(Logger);
+
       var image = configuration.Image;
 
       var imageExists = await ExistsWithIdAsync(image.FullName, ct)
@@ -120,7 +121,7 @@ namespace DotNet.Testcontainers.Clients
       {
         using (var dockerfileArchiveStream = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
         {
-          await DockerClient.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileArchiveStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), _traceProgress, ct)
+          await DockerClient.Images.BuildImageFromDockerfileAsync(buildParameters, dockerfileArchiveStream, Array.Empty<AuthConfig>(), new Dictionary<string, string>(), traceProgress, ct)
             .ConfigureAwait(false);
 
           var imageHasBeenCreated = await ExistsWithIdAsync(image.FullName, ct)
@@ -128,7 +129,7 @@ namespace DotNet.Testcontainers.Clients
 
           if (!imageHasBeenCreated)
           {
-            throw new InvalidOperationException($"Docker image {image.FullName} has not been created.");
+            throw new ImageBuildFailedException(image, traceProgress.Errors);
           }
         }
       }

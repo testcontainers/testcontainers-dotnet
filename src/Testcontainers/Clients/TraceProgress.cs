@@ -1,12 +1,16 @@
 namespace DotNet.Testcontainers.Clients
 {
   using System;
+  using System.Collections.Concurrent;
+  using System.Collections.Generic;
   using System.Text.Json;
   using Docker.DotNet.Models;
   using Microsoft.Extensions.Logging;
 
   internal sealed class TraceProgress : IProgress<JSONMessage>
   {
+    private readonly ConcurrentQueue<JSONError> _errors = new ConcurrentQueue<JSONError>();
+
     private readonly ILogger _logger;
 
     public TraceProgress(ILogger logger)
@@ -14,8 +18,15 @@ namespace DotNet.Testcontainers.Clients
       _logger = logger;
     }
 
+    public IEnumerable<JSONError> Errors => _errors;
+
     public void Report(JSONMessage value)
     {
+      if (value.Error != null)
+      {
+        _errors.Enqueue(value.Error);
+      }
+
       if (!_logger.IsEnabled(LogLevel.Error))
       {
         return;
@@ -38,7 +49,7 @@ namespace DotNet.Testcontainers.Clients
         return;
       }
 
-      if (value.Progress != null && value.Progress.Total > 0)
+      if (value.Progress != null && value.Progress.Current.HasValue && value.Progress.Total > 0)
       {
         var percentage = (double)value.Progress.Current / value.Progress.Total * 100;
         _logger.LogDebug("ID={ID}: {Status} {Percentage,6:F2}% ({Current}/{Total})", value.ID, value.Status, percentage, value.Progress.Current, value.Progress.Total);
