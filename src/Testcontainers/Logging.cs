@@ -7,49 +7,64 @@ namespace DotNet.Testcontainers
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
+  internal readonly struct TruncatedId
+  {
+    private readonly string _id;
+
+    public TruncatedId(string id)
+    {
+      _id = id;
+    }
+
+    public override string ToString()
+    {
+      return _id.Substring(0, Math.Min(12, _id.Length));
+    }
+  }
+
   internal static partial class Logging
   {
     [LoggerMessage(Level = LogLevel.Information, Message = "Pattern {IgnorePattern} added to the regex cache")]
     private static partial void IgnorePatternAddedCore(ILogger logger, Regex ignorePattern);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker container {Id} created")]
-    private static partial void DockerContainerCreatedCore(ILogger logger, string id);
+    private static partial void DockerContainerCreatedCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Start Docker container {Id}")]
-    private static partial void StartDockerContainerCore(ILogger logger, string id);
+    private static partial void StartDockerContainerCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Stop Docker container {Id}")]
-    private static partial void StopDockerContainerCore(ILogger logger, string id);
+    private static partial void StopDockerContainerCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Pause Docker container {Id}")]
-    private static partial void PauseDockerContainerCore(ILogger logger, string id);
+    private static partial void PauseDockerContainerCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Unpause Docker container {Id}")]
-    private static partial void UnpauseDockerContainerCore(ILogger logger, string id);
+    private static partial void UnpauseDockerContainerCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker container {Id}")]
-    private static partial void DeleteDockerContainerCore(ILogger logger, string id);
+    private static partial void DeleteDockerContainerCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Wait for Docker container {Id} to complete readiness checks")]
-    private static partial void StartReadinessCheckCore(ILogger logger, string id);
+    private static partial void StartReadinessCheckCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker container {Id} ready")]
-    private static partial void CompleteReadinessCheckCore(ILogger logger, string id);
+    private static partial void CompleteReadinessCheckCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Copy tar archive to container: Content length: {Length} byte(s), Docker container: {Id}")]
-    private static partial void CopyArchiveToDockerContainerCore(ILogger logger, long length, string id);
+    private static partial void CopyArchiveToDockerContainerCore(ILogger logger, long length, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Read \"{Path}\" from Docker container {Id}")]
-    private static partial void ReadArchiveFromDockerContainerCore(ILogger logger, string path, string id);
+    private static partial void ReadArchiveFromDockerContainerCore(ILogger logger, string path, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Attach {OutputConsumer} at Docker container {Id}")]
-    private static partial void AttachToDockerContainerCore(ILogger logger, Type outputConsumer, string id);
+    private static partial void AttachToDockerContainerCore(ILogger logger, Type outputConsumer, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Connect Docker container {ContainerId} to Docker network {NetworkId}")]
-    private static partial void ConnectToDockerNetworkCore(ILogger logger, string containerId, string networkId);
+    private static partial void ConnectToDockerNetworkCore(ILogger logger, TruncatedId containerId, TruncatedId networkId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Execute \"{Command}\" at Docker container {Id}")]
-    private static partial void ExecuteCommandInDockerContainerCore(ILogger logger, string command, string id);
+    private static partial void ExecuteCommandInDockerContainerCore(ILogger logger, string command, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} created")]
     private static partial void DockerImageCreatedCore(ILogger logger, string fullName);
@@ -61,10 +76,10 @@ namespace DotNet.Testcontainers
     private static partial void DeleteDockerImageCore(ILogger logger, string fullName);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker network {Id} created")]
-    private static partial void DockerNetworkCreatedCore(ILogger logger, string id);
+    private static partial void DockerNetworkCreatedCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker network {Id}")]
-    private static partial void DeleteDockerNetworkCore(ILogger logger, string id);
+    private static partial void DeleteDockerNetworkCore(ILogger logger, TruncatedId id);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker volume {Name} created")]
     private static partial void DockerVolumeCreatedCore(ILogger logger, string name);
@@ -130,67 +145,67 @@ namespace DotNet.Testcontainers
 
     public static void DockerContainerCreated(this ILogger logger, string id)
     {
-      DockerContainerCreatedCore(logger, TruncId(id));
+      DockerContainerCreatedCore(logger, new TruncatedId(id));
     }
 
     public static void StartDockerContainer(this ILogger logger, string id)
     {
-      StartDockerContainerCore(logger, TruncId(id));
+      StartDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void StopDockerContainer(this ILogger logger, string id)
     {
-      StopDockerContainerCore(logger, TruncId(id));
+      StopDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void PauseDockerContainer(this ILogger logger, string id)
     {
-      PauseDockerContainerCore(logger, TruncId(id));
+      PauseDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void UnpauseDockerContainer(this ILogger logger, string id)
     {
-      UnpauseDockerContainerCore(logger, TruncId(id));
+      UnpauseDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void DeleteDockerContainer(this ILogger logger, string id)
     {
-      DeleteDockerContainerCore(logger, TruncId(id));
+      DeleteDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void StartReadinessCheck(this ILogger logger, string id)
     {
-      StartReadinessCheckCore(logger, TruncId(id));
+      StartReadinessCheckCore(logger, new TruncatedId(id));
     }
 
     public static void CompleteReadinessCheck(this ILogger logger, string id)
     {
-      CompleteReadinessCheckCore(logger, TruncId(id));
+      CompleteReadinessCheckCore(logger, new TruncatedId(id));
     }
 
     public static void CopyArchiveToDockerContainer(this ILogger logger, string id, long length)
     {
-      CopyArchiveToDockerContainerCore(logger, length, TruncId(id));
+      CopyArchiveToDockerContainerCore(logger, length, new TruncatedId(id));
     }
 
     public static void ReadArchiveFromDockerContainer(this ILogger logger, string id, string path)
     {
-      ReadArchiveFromDockerContainerCore(logger, path, TruncId(id));
+      ReadArchiveFromDockerContainerCore(logger, path, new TruncatedId(id));
     }
 
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
     {
-      AttachToDockerContainerCore(logger, type, TruncId(id));
+      AttachToDockerContainerCore(logger, type, new TruncatedId(id));
     }
 
     public static void ConnectToDockerNetwork(this ILogger logger, string networkId, string containerId)
     {
-      ConnectToDockerNetworkCore(logger, TruncId(containerId), TruncId(networkId));
+      ConnectToDockerNetworkCore(logger, new TruncatedId(containerId), new TruncatedId(networkId));
     }
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)
     {
-      ExecuteCommandInDockerContainerCore(logger, string.Join(" ", command), TruncId(id));
+      ExecuteCommandInDockerContainerCore(logger, string.Join(" ", command), new TruncatedId(id));
     }
 
     public static void DockerImageCreated(this ILogger logger, IImage image)
@@ -210,12 +225,12 @@ namespace DotNet.Testcontainers
 
     public static void DockerNetworkCreated(this ILogger logger, string id)
     {
-      DockerNetworkCreatedCore(logger, TruncId(id));
+      DockerNetworkCreatedCore(logger, new TruncatedId(id));
     }
 
     public static void DeleteDockerNetwork(this ILogger logger, string id)
     {
-      DeleteDockerNetworkCore(logger, TruncId(id));
+      DeleteDockerNetworkCore(logger, new TruncatedId(id));
     }
 
     public static void DockerVolumeCreated(this ILogger logger, string name)
@@ -313,11 +328,6 @@ namespace DotNet.Testcontainers
     public static void ReusableResourceNotFound(this ILogger logger)
     {
       ReusableResourceNotFoundCore(logger);
-    }
-
-    private static string TruncId(string id)
-    {
-      return id.Substring(0, Math.Min(12, id.Length));
     }
   }
 }
