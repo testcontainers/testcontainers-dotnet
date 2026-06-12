@@ -228,6 +228,24 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.DoesNotContain(logger.Logs, line => line.Contains("FROM build AS final"));
     }
 
+    [Fact]
+    public async Task BuildFailureIncludesDetailedErrorMessage()
+    {
+      // Given
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/buildFailure/")
+        .Build();
+
+      // When
+      var exception = await Assert.ThrowsAsync<ImageBuildFailedException>(() => imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken))
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.StartsWith("Docker image ", exception.Message);
+      Assert.Contains(" has not been created.", exception.Message);
+      Assert.EndsWith("The command '/bin/sh -c command-that-does-not-exist' returned a non-zero code: 127", exception.Message);
+    }
+
     private sealed class TestLogger : ILogger
     {
       public IList<string> Logs { get; }
