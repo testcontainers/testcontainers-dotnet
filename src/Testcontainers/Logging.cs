@@ -205,6 +205,11 @@ namespace DotNet.Testcontainers
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)
     {
+      if (!logger.IsEnabled(LogLevel.Information))
+      {
+        return;
+      }
+
       ExecuteCommandInDockerContainerCore(logger, string.Join(" ", command), new TruncatedId(id));
     }
 
