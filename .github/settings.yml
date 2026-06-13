@@ -88,9 +88,13 @@ labels:
     color: '#b5f7d9'
     description: An official Testcontainers module
 
-  - name: podman
+  - name: container runtime
     color: '#b52710'
-    description: An issue related to Podman
+    description: An issue related to container runtimes such as Docker, Podman, Rancher or Colima
+
+  - name: buildkit
+    color: '#5319e7'
+    description: An issue related to BuildKit
 
   - name: breaking change
     color: '#c91873'
@@ -115,6 +119,10 @@ labels:
   - name: test flakiness
     color: '#602a4f'
     description: A flaky test
+
+  - name: stale
+    color: '#ededed'
+    description: Inactive issue or pull request pending cleanup
 
   - name: won't fix
     color: '#ffffff'
