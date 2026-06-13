@@ -17,10 +17,10 @@
         <PackageVersion Include="Cake.Frosting" Version="5.1.0"/>
         <PackageVersion Include="Cake.Sonar" Version="5.0.0"/>
         <!-- Unit and integration test dependencies: -->
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0"/>
         <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="8.10.0"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
-        <PackageVersion Include="Dapper" Version="2.1.66"/>
+        <PackageVersion Include="Dapper" Version="2.1.79"/>
         <PackageVersion Include="Moq" Version="4.20.72"/>
         <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
         <PackageVersion Include="xunit.analyzers" Version="1.27.0"/>
@@ -72,7 +72,7 @@
         <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
         <PackageVersion Include="Microsoft.Playwright" Version="1.55.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.3.0-preview.1"/>
-        <PackageVersion Include="MongoDB.Driver" Version="3.8.1"/>
+        <PackageVersion Include="MongoDB.Driver" Version="3.9.0"/>
         <PackageVersion Include="MQTTnet" Version="5.0.1.1416"/>
         <PackageVersion Include="MyCouch" Version="7.6.0"/>
         <PackageVersion Include="MySqlConnector" Version="2.2.5"/>
