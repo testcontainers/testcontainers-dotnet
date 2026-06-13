@@ -13,10 +13,10 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
     {
     }
 
+    protected abstract MqttClientOptions GetClientOptions();
+  
     protected override MosquittoBuilder Configure()
         => new MosquittoBuilder(TestSession.GetImageFromDockerfile());
-
-    protected abstract MqttClientOptions GetClientOptions();
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -31,6 +31,7 @@ public abstract class MosquittoContainerTest : ContainerTest<MosquittoBuilder, M
 
         // Then
         Assert.Equal(MqttClientConnectResultCode.Success, result.ResultCode);
+        Assert.Equal(Container.GetConnectionString(), Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

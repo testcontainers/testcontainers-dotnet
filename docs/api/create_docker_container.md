@@ -22,7 +22,7 @@ _ = new ContainerBuilder()
   .WithImage(new DockerImage("postgres:15.1", new Platform("linux/amd64")));
 ```
 
-!!!tip
+!!! tip
 
     A specifier has the format `<os>|<arch>|<os>/<arch>[/<variant>]`. The user can provide either the operating system or the architecture or both. For more details, see [containerd/platforms](https://github.com/containerd/platforms).
 
@@ -42,7 +42,7 @@ _ = new ContainerBuilder("nginx:1.26.3-alpine3.20")
 
 Apps or services running inside a container are usually configured either with environment variables or configuration files. `WithEnvironment(string, string)` sets an environment variable, while `WithResourceMapping(string, string)` copies a file into a container before it starts. This covers common use cases among many .NET applications.
 
-!!!tip
+!!! tip
 
     The majority of builder methods are overloaded and have different parameters to set configurations.
 
@@ -60,27 +60,53 @@ _ = new ContainerBuilder("mcr.microsoft.com/dotnet/aspnet:10.0")
 
 ## Copying directories or files to the container
 
-Sometimes it is necessary to copy files into the container to configure the services running inside the container in advance, like the `appsettings.json` or an SSL certificate. The container builder API provides a member `WithResourceMapping(string, string)`, including several overloads to copy directories or individual files to a container's directory.
+Sometimes it is necessary to copy files into the container to configure the services running inside the container in advance, like the `appsettings.json` or an SSL certificate. The container builder API provides `WithResourceMapping(...)` overloads that support strongly typed source and target paths via `FilePath` and `DirectoryPath`.
 
 ```csharp title="Copying a directory"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(new DirectoryInfo("."), "/app/");
+  .WithResourceMapping(
+    DirectoryPath.Of("."),
+    DirectoryPath.Of("/app/"));
 ```
 
 ```csharp title="Copying a file"
 _ = new ContainerBuilder("alpine:3.20.0")
   // Copy 'appsettings.json' into the '/app' directory.
-  .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
-  // Copy 'appsettings.Container.json' to '/app/appsettings.Developer.json'.
-  .WithResourceMapping(new FileInfo("appsettings.Container.json"), new FileInfo("/app/appsettings.Developer.json"));
+  .WithResourceMapping(
+    FilePath.Of("appsettings.json"),
+    DirectoryPath.Of("/app/"))
+  // Copy 'appsettings.Container.json' to '/app/appsettings.json'.
+  .WithResourceMapping(
+    FilePath.Of("appsettings.Container.json"),
+    FilePath.Of("/app/appsettings.json"));
 ```
 
-Another overloaded member of the container builder API allows you to copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
+You can also copy the contents of a byte array to a specific file path within the container. This can be useful when you already have the file content stored in memory or when you need to dynamically generate the file content before copying it.
 
 ```csharp title="Copying a byte array"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(Encoding.Default.GetBytes("{}"), "/app/appsettings.json");
+  .WithResourceMapping(
+    Encoding.UTF8.GetBytes("{}"),
+    FilePath.Of("/app/appsettings.json"));
 ```
+
+For remote sources, you can copy a file from a URL to a target directory or file before the container starts.
+
+=== "Copying to a directory"
+    ```csharp
+    _ = new ContainerBuilder("alpine:3.20.0")
+      .WithResourceMapping(
+        new Uri("https://localhost:8080/appsettings.json"),
+        DirectoryPath.Of("/app/"));
+    ```
+
+=== "Copying to a file"
+    ```csharp
+    _ = new ContainerBuilder("alpine:3.20.0")
+      .WithResourceMapping(
+        new Uri("https://localhost:8080/appsettings.json"),
+        FilePath.Of("/app/appsettings.json"));
+    ```
 
 ### Specifying file ownership
 
@@ -88,7 +114,11 @@ When copying files into a container, you can specify the user ID (UID) and group
 
 ```csharp title="Copying a file with specific UID and GID"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(new DirectoryInfo("."), "/app/", uid: 1000, gid: 1000);
+  .WithResourceMapping(
+    FilePath.Of("appsettings.json"),
+    DirectoryPath.Of("/app/"),
+    uid: 1000,
+    gid: 1000);
 ```
 
 ### Specifying file permission
@@ -97,7 +127,10 @@ When copying files into a container, you can specify the file mode to set the co
 
 ```csharp title="Copying a script with executable permissions"
 _ = new ContainerBuilder("alpine:3.20.0")
-  .WithResourceMapping(new DirectoryInfo("."), "/app/", fileMode: Unix.FileMode755);
+  .WithResourceMapping(
+    FilePath.Of("docker-entrypoint.sh"),
+    DirectoryPath.Of("/app/"),
+    fileMode: Unix.FileMode755);
 ```
 
 The `Unix` class provides common permission configurations like `FileMode755` (read, write, execute for owner; read, execute for group and others). For individual permission combinations, you can use the `UnixFileModes` enumeration to create custom configurations.
@@ -177,9 +210,47 @@ var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1")
 
 Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default command configurations. This is useful when you want full control over the PostgreSQL startup or when the default configurations do not match your requirements.
 
-!!!tip
+!!! tip
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
+
+## Reusing builder configurations
+
+Testcontainers builders are immutable. Every builder method returns a new instance that includes the updated configuration. The existing builder instance remains unchanged.
+
+This behavior is by design. It allows you to share a common configuration and derive multiple containers from it without modifying the original builder, for example for A/B testing:
+
+```csharp
+var baseBuilder = new PostgreSqlBuilder()
+  .WithUsername("Username")
+  .WithPassword("Password")
+  .WithLabel("Key", "Value");
+
+var postgres15 = baseBuilder
+  .WithImage("postgres:15")
+  .Build();
+
+var postgres14 = baseBuilder
+  .WithImage("postgres:14")
+  .Build();
+```
+
+If you configure a builder across multiple statements or conditionally, reassign the return value. Calling `WithImage(...)` without using the returned builder does not update the existing instance:
+
+```csharp
+var builder = new PostgreSqlBuilder()
+  .WithImage("postgres:15")
+  .WithUsername("Username")
+  .WithPassword("Password")
+  .WithLabel("Key", "Value");
+
+if (Debugger.IsAttached)
+{
+  builder = builder.WithImage("postgres:14");
+}
+
+var container = builder.Build();
+```
 
 ## Examples
 
@@ -232,7 +303,7 @@ var magicNumber = await magicNumberReader.ReadLineAsync()
 Assert.Equal(MagicNumber, magicNumber);
 ```
 
-!!!tip
+!!! tip
 
     To avoid port conflicts, do not bind a fix host port. Instead, assign a random host port by using `WithPortBinding(80, true)` and retrieve it from the container instance by using `GetMappedPublicPort(80)`.
 
@@ -269,10 +340,10 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithStartupCallback`         | Sets the startup callback to invoke after the container start.                                                                                                                       |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker container create parameter.                                                                                                             |
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects private Docker registry configurations and applies the credentials automatically to authenticate against registries.

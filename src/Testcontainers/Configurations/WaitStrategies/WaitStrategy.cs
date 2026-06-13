@@ -147,7 +147,7 @@ namespace DotNet.Testcontainers.Configurations
           }
 
           _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
+            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => new RetryLimitExceededException(MaximumRetryExceededException));
 
           await Task.Delay(interval, ct)
             .ConfigureAwait(false);
@@ -203,7 +203,7 @@ namespace DotNet.Testcontainers.Configurations
           }
 
           _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => throw new RetryLimitExceededException(MaximumRetryExceededException));
+            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => new RetryLimitExceededException(MaximumRetryExceededException));
 
           await Task.Delay(interval, ct)
             .ConfigureAwait(false);

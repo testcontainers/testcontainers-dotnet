@@ -1,1 +1,1 @@
-FROM fsouza/fake-gcs-server:1.47
+FROM fsouza/fake-gcs-server:1.47.8@sha256:0eeaaeba5385c7274e8b11a9ff145569799bf17fdb8ba69226a88ff231ad0b44

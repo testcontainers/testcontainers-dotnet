@@ -1,1 +1,1 @@
-FROM clickhouse/clickhouse-server:23.6-alpine
+FROM clickhouse/clickhouse-server:23.6.3@sha256:d36e3dd739b0af0d4944defa61f2b7db0b2cde71236d81c2f4e71fafda5f7aac

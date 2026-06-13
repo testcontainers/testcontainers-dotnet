@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
+  using DotNet.Testcontainers;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -93,7 +94,7 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine("Connected to Docker:");
 
         runtimeInfo.Append("  Host: ");
-        runtimeInfo.AppendLine(DockerClient.Configuration.EndpointBaseUri.ToString());
+        runtimeInfo.AppendLine(DockerClient.Options.Endpoint.ToString());
 
         runtimeInfo.Append("  Server Version: ");
         runtimeInfo.AppendLine(dockerInfo.ServerVersion);
@@ -118,7 +119,7 @@ namespace DotNet.Testcontainers.Clients
           runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
         }
 
-        Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
+        Logger.DockerRuntimeInfo(runtimeInfo.ToString());
       }
       catch (Exception e)
       {
@@ -133,10 +134,8 @@ namespace DotNet.Testcontainers.Clients
 
     private static IDockerClient GetDockerClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
-      {
-        return dockerClientConfiguration.CreateClient(dockerEndpointAuthConfig.Version);
-      }
+      var dockerClientBuilder = dockerEndpointAuthConfig.GetDockerClientBuilder(sessionId);
+      return dockerClientBuilder.Build();
     }
   }
 }

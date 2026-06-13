@@ -2,6 +2,10 @@
 
 Testcontainers for .NET uses the builder design pattern to configure, create and delete Docker resources. It prepares and initializes your test environment and disposes of everything after your tests are finished — whether the tests are successful or not. To create a container image from a Dockerfile use `ImageFromDockerfileBuilder`.
 
+!!! warning
+
+    BuildKit features are not supported through the Docker Engine API. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with Testcontainers' image builder API. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903).
+
 ## Examples
 
 Builds and tags a new container image. The Dockerfile is located inside the solution (`.sln`) directory.
@@ -22,7 +26,7 @@ To build a Docker image with Testcontainers, it's important to understand the bu
 2. **Dockerfile name**: The name of the Dockerfile to use
 3. **Dockerfile directory**: Where the Dockerfile is located
 
-!!!tip
+!!! tip
 
     The build context is optional. If you don't specify one, it defaults to the Dockerfile directory.
 
@@ -56,11 +60,11 @@ _ = new ImageFromDockerfileBuilder()
 
 As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
 
-!!!tip
+!!! tip
 
     To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 ARG SLN_FILE_PATH="WeatherForecast.sln"
 COPY . .
@@ -86,7 +90,7 @@ A multi-stage Docker image build generates intermediate layers that serve as cac
 
 The following Dockerfile assigns the `org.testcontainers.resource-reaper-session` label to each stage.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env-1
 ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
 LABEL "org.testcontainers.resource-reaper-session"=$RESOURCE_REAPER_SESSION_ID
@@ -119,7 +123,7 @@ _ = new ImageFromDockerfileBuilder()
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 
@@ -127,7 +131,7 @@ _ = new ImageFromDockerfileBuilder()
 
 - When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user won't automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
 
-   ```Dockerfile
+   ```dockerfile
    FROM mcr.microsoft.com/dotnet/sdk:8.0
    WORKDIR /app
    RUN chown app:app .

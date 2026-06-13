@@ -1,2 +1,2 @@
-FROM mysql:8.0
-FROM mysql:8.0.28 AS mysql8.0.28
+FROM mysql:8.0.45@sha256:a3dff78d876222746a0bacc36dd7e4bf9e673c85fb7ee0d12ed25bd32c43c19b
+FROM mysql:8.0.28@sha256:e9fee3e714fd69cd2ccfa0c6a141fac0a60f2a02f72d43c0e7055601aaf481b0 AS v8_0_28

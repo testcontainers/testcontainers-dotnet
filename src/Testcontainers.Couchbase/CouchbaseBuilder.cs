@@ -175,6 +175,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
             .WithPortBinding(KvPort, true)
             .WithPortBinding(KvSslPort, true)
             .WithBucket(CouchbaseBucket.Default)
+            .WithConnectionStringProvider(new CouchbaseConnectionStringProvider())
             .WithStartupCallback(ConfigureCouchbaseAsync);
     }
 

@@ -14,7 +14,7 @@ GitHub-hosted runners have the same configuration as Microsoft-hosted agents. Th
 
 To configure the Docker service in GitLab CI ([Docker-in-Docker](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker)), you need to define the service in your `.gitlab-ci.yml` file and expose the Docker host address `docker:2375` by setting the `DOCKER_HOST` environment variable.
 
-```yml title=".gitlab-ci.yml file"
+```yaml title=".gitlab-ci.yml file"
 services:
   - docker:dind
 variables:
@@ -25,7 +25,7 @@ variables:
 
 Enable Bitbucket Pipelines as usual on the **Repository settings → Pipelines → Settings** page. After enabling your pipeline, replace the contents of the `bitbucket-pipelines.yml` file, located at the root of your repository, with the following:
 
-```yml title="bitbucket-pipelines.yml file"
+```yaml title="bitbucket-pipelines.yml file"
 image: mcr.microsoft.com/dotnet/sdk:8.0
 options:
   docker: true

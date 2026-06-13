@@ -29,6 +29,7 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(connection.IsOpen);
+        Assert.Equal(_rabbitMqContainer.GetConnectionString(), _rabbitMqContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseRabbitMqContainer]
 }

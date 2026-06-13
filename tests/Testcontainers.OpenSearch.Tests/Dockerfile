@@ -1,1 +1,1 @@
-FROM opensearchproject/opensearch:2.12.0
+FROM opensearchproject/opensearch:2.12.0@sha256:645d3d9390ade7ebef988d3c9bc61a6616f1863ff41efe97e2347d6bf7972504

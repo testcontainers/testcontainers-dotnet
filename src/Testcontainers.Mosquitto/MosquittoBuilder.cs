@@ -150,6 +150,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
         return base.Init()
             .WithPortBinding(MqttPort, true)
             .WithPortBinding(MqttWsPort, true)
+            .WithConnectionStringProvider(new MosquittoConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("mosquitto.*running"));
     }
 

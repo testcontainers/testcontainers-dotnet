@@ -1,1 +1,1 @@
-FROM nagyesta/lowkey-vault:2.7.1-ubi9-minimal
+FROM nagyesta/lowkey-vault:2.7.1-ubi9-minimal@sha256:68405f7d648478f2fd797e347f8eba295cb02cfa2acdb55b9ab1050bc8147021

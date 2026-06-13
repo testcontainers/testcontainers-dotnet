@@ -1,1 +1,1 @@
-FROM docker.redpanda.com/redpandadata/redpanda:v22.2.1
+FROM docker.redpanda.com/redpandadata/redpanda:v22.2.13@sha256:87ad4244aa5471df5efc20e513b4d829aedba72ceb7d34aa1ced2302364616cb

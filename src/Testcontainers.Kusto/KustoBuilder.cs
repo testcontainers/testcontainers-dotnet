@@ -80,6 +80,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
         return base.Init()
             .WithPortBinding(KustoPort, true)
             .WithEnvironment("ACCEPT_EULA", "Y")
+            .WithConnectionStringProvider(new KustoConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request
                 .WithMethod(HttpMethod.Post)
                 .ForPort(KustoPort)

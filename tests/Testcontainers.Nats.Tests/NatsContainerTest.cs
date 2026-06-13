@@ -63,6 +63,7 @@ public abstract class NatsContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(message, actualMessage);
+        Assert.Equal(_natsContainer.GetConnectionString(), _natsContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     protected virtual ValueTask DisposeAsyncCore()

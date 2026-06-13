@@ -4,6 +4,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Linq;
   using System.Threading.Tasks;
   using Docker.DotNet;
+  using Docker.DotNet.Handler.Abstractions;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -41,11 +42,11 @@ namespace DotNet.Testcontainers.Tests.Unit
       public Uri Endpoint
         => _authConfig.Endpoint;
 
-      public Credentials Credentials
-        => _authConfig.Credentials;
+      public IAuthProvider AuthProvider
+        => _authConfig.AuthProvider;
 
-      public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
-        => _authConfig.GetDockerClientConfiguration(sessionId);
+      public DockerClientBuilder GetDockerClientBuilder(Guid sessionId = default)
+        => _authConfig.GetDockerClientBuilder(sessionId).WithApiVersion(Version);
 
       [Fact]
       public async Task GetVersionReturnsVersion()

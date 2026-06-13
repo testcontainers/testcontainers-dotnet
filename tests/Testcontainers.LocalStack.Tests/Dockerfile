@@ -1,2 +1,1 @@
-FROM localstack/localstack:2.0
-FROM localstack/localstack:1.4 AS localstack1.4
+FROM localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a

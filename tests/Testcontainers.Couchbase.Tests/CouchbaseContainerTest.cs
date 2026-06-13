@@ -25,7 +25,7 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         clusterOptions.UserName = CouchbaseBuilder.DefaultUsername;
         clusterOptions.Password = CouchbaseBuilder.DefaultPassword;
 
-        var cluster = await Cluster.ConnectAsync(clusterOptions)
+        var cluster = await Cluster.ConnectAsync(clusterOptions, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // When
@@ -39,5 +39,6 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         Assert.NotEmpty(ping.Id);
         Assert.NotEmpty(ping.Services);
         Assert.NotEmpty(bucket.Name);
+        Assert.Equal(_couchbaseContainer.GetConnectionString(), _couchbaseContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

@@ -77,6 +77,7 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
             .WithPortBinding(PubSubPort, true)
             .WithEntrypoint("gcloud")
             .WithCommand("beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:" + PubSubPort)
+            .WithConnectionStringProvider(new PubSubConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*started.*$"));
     }
 

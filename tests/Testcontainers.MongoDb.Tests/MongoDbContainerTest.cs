@@ -39,6 +39,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Contains(databases.ToEnumerable(TestContext.Current.CancellationToken), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
+        Assert.Equal(_mongoDbContainer.GetConnectionString(), _mongoDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -111,7 +112,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV5Configuration : MongoDbContainerTest
     {
         public MongoDbV5Configuration()
-            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "mongo5.0")).Build())
+            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "v5_0_32")).Build())
         {
         }
     }
@@ -120,7 +121,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public sealed class MongoDbV4Configuration : MongoDbContainerTest
     {
         public MongoDbV4Configuration()
-            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "mongo4.4")).Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
+            : base(new MongoDbBuilder(TestSession.GetImageFromDockerfile(stage: "v4_4_30")).Build(), true /* Replica set status returns "ok" in MongoDB 4.4 without initialization. */)
         {
         }
     }

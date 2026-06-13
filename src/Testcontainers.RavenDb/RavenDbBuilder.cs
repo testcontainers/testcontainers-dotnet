@@ -75,6 +75,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     {
         return base.Init()
             .WithPortBinding(RavenDbPort, true)
+            .WithConnectionStringProvider(new RavenDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server started"));
     }
 

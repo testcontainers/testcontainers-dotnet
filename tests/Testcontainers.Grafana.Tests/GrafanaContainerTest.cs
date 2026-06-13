@@ -47,6 +47,7 @@ public abstract class GrafanaContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Equal(_grafanaContainer.GetBaseAddress(), _grafanaContainer.GetConnectionString());
     }
     // # --8<-- [end:UseGrafanaContainer]
 

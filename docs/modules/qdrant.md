@@ -70,6 +70,6 @@ The module creates a container that listens to requests over **HTTP**. The offic
 
 1. Configuring the module to use TLS.
 1. Configuring server certificate validation.
-1. Reference [`System.Net.Http.WinHttpHandler`](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler) version `6.0.1` or later, and configure `WinHttpHandler` as the handler for `GrpcChannelOptions` in the Qdrant client.
+1. Reference [`System.Net.Http.WinHttpHandler`](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler) version `6.0.1` or later, and configure `WinHttpHandler` as handler for `GrpcChannelOptions` in the Qdrant client.
 
 Refer to the official [Qdrant .NET SDK](https://github.com/qdrant/qdrant-dotnet) for more information.

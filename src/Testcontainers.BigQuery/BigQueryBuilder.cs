@@ -88,6 +88,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
         return base.Init()
             .WithPortBinding(BigQueryPort, true)
             .WithProject(DefaultProjectId)
+            .WithConnectionStringProvider(new BigQueryConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*listening.*$"));
     }
 

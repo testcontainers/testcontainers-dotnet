@@ -1,1 +1,1 @@
-FROM mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
+FROM mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview

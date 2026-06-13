@@ -1,1 +1,1 @@
-FROM kurrentplatform/kurrentdb:25.1
+FROM kurrentplatform/kurrentdb:25.1.4@sha256:455ce2af7120d8fc72ea2d51a80321d12334e7ed409a7d0357f05f32a9f91f41

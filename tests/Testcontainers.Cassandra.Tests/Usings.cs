@@ -6,6 +6,7 @@ global using Cassandra;
 global using Cassandra.Data;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
 global using JetBrains.Annotations;
 global using Testcontainers.Xunit;
 global using Xunit;

@@ -1,1 +1,1 @@
-FROM changemakerstudiosus/papercut-smtp:7.0
+FROM changemakerstudiosus/papercut-smtp:7.0.2@sha256:edaad598b6d2f84e73e9f7f7f3e05f04da54677643664854c7a141fabd5835f7

@@ -62,9 +62,7 @@ public sealed class DependsOnTest : IAsyncLifetime
     public async Task DependsOnCreatesDependentResources()
     {
         // Given
-        using var clientConfiguration = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientConfiguration(Guid.NewGuid());
-
-        using var client = clientConfiguration.CreateClient();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         var containersListParameters = new ContainersListParameters { All = true, Filters = _filters };
 
@@ -73,13 +71,13 @@ public sealed class DependsOnTest : IAsyncLifetime
         var volumesListParameters = new VolumesListParameters { Filters = _filters };
 
         // When
-        var containers = await client.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
+        var containers = await dockerClient.Containers.ListContainersAsync(containersListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var networks = await client.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
+        var networks = await dockerClient.Networks.ListNetworksAsync(networksListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var response = await client.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
+        var response = await dockerClient.Volumes.ListAsync(volumesListParameters, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

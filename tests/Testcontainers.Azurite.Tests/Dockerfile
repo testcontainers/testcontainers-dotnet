@@ -1,1 +1,1 @@
-FROM mcr.microsoft.com/azure-storage/azurite:3.28.0
+FROM mcr.microsoft.com/azure-storage/azurite:3.28.0@sha256:b2edf4c05060390f368fef3dde4b82981b7125c763a3c6fdeb16e74b20094375

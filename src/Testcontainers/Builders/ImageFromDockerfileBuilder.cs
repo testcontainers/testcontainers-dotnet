@@ -133,7 +133,7 @@ namespace DotNet.Testcontainers.Builders
       base.Validate();
 
       const string reuseNotSupported = "Building an image does not support the reuse feature. To keep the built image, disable the cleanup.";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IImageFromDockerfileConfiguration.Reuse))
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Reuse))
         .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
     }
 

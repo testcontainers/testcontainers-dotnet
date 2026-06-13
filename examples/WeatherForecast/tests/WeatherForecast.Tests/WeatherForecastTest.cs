@@ -66,14 +66,17 @@ public static class WeatherForecastTest
 
       using var chrome = new ChromeDriver(ChromeOptions);
 
+      var wait = new WebDriverWait(chrome, TimeSpan.FromSeconds(10));
+
       // When
-      chrome.Navigate().GoToUrl(_weatherForecastContainer.BaseAddress);
+      chrome.Navigate().GoToUrl(_weatherForecastContainer.BaseAddress!);
+
+      wait.Until(webDriver => 1.Equals(webDriver.FindElements(By.TagName("fluent-button")).Count));
 
       chrome.GetScreenshot().SaveAsFile(Path.Combine(CommonDirectoryPath.GetSolutionDirectory().DirectoryPath, ScreenshotFileName()));
 
       chrome.FindElement(By.TagName("fluent-button")).Click();
 
-      var wait = new WebDriverWait(chrome, TimeSpan.FromSeconds(10));
       wait.Until(webDriver => 1.Equals(webDriver.FindElements(By.TagName("span")).Count));
 
       chrome.GetScreenshot().SaveAsFile(Path.Combine(CommonDirectoryPath.GetSolutionDirectory().DirectoryPath, ScreenshotFileName()));

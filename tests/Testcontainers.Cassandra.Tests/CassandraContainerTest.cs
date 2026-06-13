@@ -38,6 +38,7 @@ public abstract class CassandraContainerTest(CassandraContainerTest.CassandraDef
         Assert.True(rowSet.IsFullyFetched);
         Assert.Single(rows);
         Assert.Equal("COMPLETED", rows[0]["bootstrapped"]);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseCassandraContainer]
 

@@ -75,6 +75,7 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     {
         return base.Init()
             .WithPortBinding(DynamoDbPort, true)
+            .WithConnectionStringProvider(new DynamoDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(DynamoDbPort).ForStatusCode(HttpStatusCode.BadRequest)));
     }

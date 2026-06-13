@@ -75,8 +75,23 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     {
         return base.Init()
             .WithPortBinding(LocalStackPort, true)
+            .WithConnectionStringProvider(new LocalStackConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_localstack/health").ForPort(LocalStackPort)));
+    }
+
+    /// <inheritdoc />
+    protected override void Validate()
+    {
+        const string message = "The image '{0}' requires the LOCALSTACK_AUTH_TOKEN environment variable for LocalStack 4.15 and onwards. For more information, see https://blog.localstack.cloud/localstack-single-image-next-steps/.";
+
+        base.Validate();
+
+        Predicate<LocalStackConfiguration> requiresAuthToken = value =>
+            !value.Environments.TryGetValue("LOCALSTACK_AUTH_TOKEN", out _) && (value.Image.MatchLatestOrNightly() || value.Image.MatchVersion(v => v.Major > 4 || v.Major == 4 && v.Minor > 14));
+
+        _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
+            .ThrowIf(argument => requiresAuthToken(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));
     }
 
     /// <inheritdoc />

@@ -1,14 +1,42 @@
 version: 2
 updates:
-  - package-ecosystem: nuget
+  - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
-    reviewers:
-      - HofmeisterAn
-    assignees:
-      - HofmeisterAn
+    labels:
+      - dependencies
+    groups:
+      actions:
+        patterns:
+          - '*'
+  - package-ecosystem: nuget
+    directory: /
+    exclude-paths:
+      - examples/**
+    open-pull-requests-limit: 3
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
     ignore:
-      - dependency-name: '*'
-        versions:
-          - '>= 0'
+      - dependency-name: Cake.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.Bcl.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.Extensions.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: xunit*
+        update-types:
+          - version-update:semver-major
+    groups:
+      nuget-patch-minor:
+        update-types:
+          - minor
+          - patch
+      nuget-major:
+        update-types:
+          - major

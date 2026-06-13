@@ -14,6 +14,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -64,7 +65,7 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
     {
         // https://github.com/testcontainers/testcontainers-dotnet/issues/1142.
         protected override MySqlBuilder Configure()
-            => new MySqlBuilder(TestSession.GetImageFromDockerfile(stage: "mysql8.0.28"));
+            => new MySqlBuilder(TestSession.GetImageFromDockerfile(stage: "v8_0_28"));
     }
 
     [UsedImplicitly]

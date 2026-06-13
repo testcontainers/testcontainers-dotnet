@@ -37,6 +37,7 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, tables.HttpStatusCode);
+        Assert.Equal(_dynamoDbContainer.GetConnectionString(), _dynamoDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

@@ -1,1 +1,1 @@
-FROM influxdb:2.7
+FROM influxdb:2.7.12@sha256:3de4b6d4a18415d3d0e3b1c6409be46630bf6e5a01fcab3000b00c5c809128df

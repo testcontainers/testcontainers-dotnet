@@ -145,11 +145,11 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
 
         base.Validate();
 
-        Predicate<Neo4jConfiguration> licenseAgreementNotAccepted = value => value.Image.Tag != null && value.Image.Tag.Contains("enterprise")
-            && (!value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal));
+        Predicate<Neo4jConfiguration> licenseAgreementNotAccepted = value =>
+            value.Image.Tag != null && value.Image.Tag.Contains("enterprise") && (!value.Environments.TryGetValue(AcceptLicenseAgreementEnvVar, out var licenseAgreementValue) || !AcceptLicenseAgreement.Equals(licenseAgreementValue, StringComparison.Ordinal));
 
         _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
-            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => throw new ArgumentException(string.Format(message, DockerResourceConfiguration.Image.FullName), argument.Name));
+            .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));
     }
 
     /// <inheritdoc />
@@ -159,6 +159,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
             .WithPortBinding(Neo4jHttpPort, true)
             .WithPortBinding(Neo4jBoltPort, true)
             .WithEnvironment("NEO4J_AUTH", "none")
+            .WithConnectionStringProvider(new Neo4jConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(Neo4jHttpPort)));
     }

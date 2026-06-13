@@ -1,1 +1,1 @@
-FROM couchbase:community-7.0.2
+FROM couchbase:community-7.0.2@sha256:19698d38ea39a37df127b8aedc8a0a636e6b70d05dac2ff8ae8bd7eb23367bfe

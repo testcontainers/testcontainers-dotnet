@@ -39,26 +39,23 @@ namespace DotNet.Testcontainers.Builders
 
       return TaskFactory.StartNew(async () =>
         {
-          using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration(ResourceReaper.DefaultSessionId))
+          using (var dockerClient = authConfig.GetDockerClientBuilder(ResourceReaper.DefaultSessionId).Build())
           {
-            using (var dockerClient = dockerClientConfiguration.CreateClient(authConfig.Version))
+            try
             {
-              try
-              {
-                await dockerClient.System.PingAsync()
-                  .ConfigureAwait(false);
+              await dockerClient.System.PingAsync()
+                .ConfigureAwait(false);
 
-                _cachedException = null;
+              _cachedException = null;
 
-                return true;
-              }
-              catch (Exception e)
-              {
-                var message = $"Failed to connect to Docker endpoint at '{dockerClientConfiguration.EndpointBaseUri}'.";
-                _cachedException = new DockerUnavailableException(message, e);
+              return true;
+            }
+            catch (Exception e)
+            {
+              var message = $"Failed to connect to Docker endpoint at '{dockerClient.Options.Endpoint}'.";
+              _cachedException = new DockerUnavailableException(message, e);
 
-                return false;
-              }
+              return false;
             }
           }
         })

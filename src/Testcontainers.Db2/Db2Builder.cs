@@ -139,6 +139,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
         .WithUsername(DefaultUsername)
         .WithPassword(DefaultPassword)
         .WithPrivileged(true)
+        .WithConnectionStringProvider(new Db2ConnectionStringProvider())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Setup has completed."));
 
     /// <inheritdoc />

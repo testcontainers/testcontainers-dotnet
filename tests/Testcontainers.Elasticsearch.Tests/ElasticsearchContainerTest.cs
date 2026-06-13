@@ -39,6 +39,7 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(response.IsValidResponse);
+        Assert.Equal(_elasticsearchContainer.GetConnectionString(), _elasticsearchContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseElasticsearchContainer]
 

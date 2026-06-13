@@ -10,8 +10,8 @@ namespace DotNet.Testcontainers.Images
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using ICSharpCode.SharpZipLib.Tar;
-  using Microsoft.Extensions.Logging;
   using JetBrains.Annotations;
+  using Microsoft.Extensions.Logging;
 
   /// <summary>
   /// Generates a tar archive with Docker configuration files. The tar archive can be used to build a Docker image.
@@ -116,7 +116,7 @@ namespace DotNet.Testcontainers.Images
     /// excludes stages that do not correspond to base images. For example, it will not include
     /// the second line from the following Dockerfile configuration:
     /// <code>
-    ///   FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+    ///   FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
     ///   FROM build
     /// </code>
     /// </remarks>
@@ -192,7 +192,7 @@ namespace DotNet.Testcontainers.Images
 
       using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
+        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, TarArchiveDefaults.TarBlockFactor, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
 

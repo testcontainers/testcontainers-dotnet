@@ -78,6 +78,7 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
             .WithEnvironment("KURRENTDB_RUN_PROJECTIONS", "All")
             .WithEnvironment("KURRENTDB_START_STANDARD_PROJECTIONS", "true")
             .WithEnvironment("KURRENTDB_INSECURE", "true")
+            .WithConnectionStringProvider(new KurrentDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy());
     }
 

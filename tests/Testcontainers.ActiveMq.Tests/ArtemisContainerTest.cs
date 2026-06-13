@@ -73,6 +73,7 @@ public abstract class ArtemisContainerTest : IAsyncLifetime
             .ConfigureAwait(true);
 
         Assert.Equal(producedMessage.Text, receivedMessage.Body<string>());
+        Assert.Equal(_artemisContainer.GetBrokerAddress(), _artemisContainer.GetConnectionString());
     }
     // # --8<-- [end:EstablishConnection]
 

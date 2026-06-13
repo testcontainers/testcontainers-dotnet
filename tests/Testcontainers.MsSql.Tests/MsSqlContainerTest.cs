@@ -15,6 +15,7 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
 
         // Then
         Assert.Equal(ConnectionState.Open, connection.State);
+        Assert.Equal(fixture.Container.GetConnectionString(), fixture.Container.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]

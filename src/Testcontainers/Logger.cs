@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers
 {
   using System;
   using System.Diagnostics;
-  using System.Runtime.InteropServices;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
@@ -22,31 +21,31 @@ namespace DotNet.Testcontainers
   ///   internal sealed class UssDiscovery : ITestDiscoverer, ITestExecutor
   ///   {
   ///     private const string DllFileExtension = &quot;.dll&quot;;
-  ///
+  ///   <br />
   ///     private const string ExeFileExtension = &quot;.exe&quot;;
-  ///
+  ///   <br />
   ///     private const string ExecutorUri = &quot;executor://testcontainers.org/v1&quot;;
-  ///
+  ///   <br />
   ///     private const string Category = &quot;managed&quot;;
-  ///
+  ///   <br />
   ///     public void DiscoverTests(IEnumerable&lt;string&gt; sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
   ///     {
   ///     }
-  ///
+  ///   <br />
   ///     public void RunTests(IEnumerable&lt;TestCase&gt; tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
   ///     {
   ///       SetLogger(frameworkHandle);
   ///     }
-  ///
+  ///   <br />
   ///     public void RunTests(IEnumerable&lt;string&gt; sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
   ///     {
   ///       SetLogger(frameworkHandle);
   ///     }
-  ///
+  ///   <br />
   ///     public void Cancel()
   ///     {
   ///     }
-  ///
+  ///   <br />
   ///     private static void SetLogger(IMessageLogger logger)
   ///     {
   ///       // Set the TestcontainersSettings.Logger. Use a semaphore to block the test execution until the logger is set.
@@ -67,10 +66,6 @@ namespace DotNet.Testcontainers
 
     private ConsoleLogger()
     {
-      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected && !Console.IsErrorRedirected)
-      {
-        Console.BufferWidth = short.MaxValue - 1;
-      }
     }
 
     /// <summary>

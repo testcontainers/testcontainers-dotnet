@@ -103,6 +103,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
             .WithPortBinding(RabbitMqPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new RabbitMqConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server startup complete"));
     }
 

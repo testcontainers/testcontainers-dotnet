@@ -1,1 +1,1 @@
-FROM consul:1.15
+FROM consul:1.15.4@sha256:10084bbbed746968b0b9f8edab2f8552e44f117e35b88153a5e0a3ad1e15aa1a

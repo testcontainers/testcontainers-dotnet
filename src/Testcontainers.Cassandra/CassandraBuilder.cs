@@ -83,6 +83,7 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
             .WithEnvironment("CASSANDRA_SNITCH", "GossipingPropertyFileSnitch")
             .WithEnvironment("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
             .WithEnvironment("CASSANDRA_DC", DefaultDatacenterName)
+            .WithConnectionStringProvider(new CassandraConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Startup complete"));
     }
 

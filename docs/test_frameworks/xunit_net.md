@@ -25,7 +25,7 @@ The example below demonstrates how to override the `Configure(TBuilderEntity)` m
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`1.cs:ConfigureRedisContainer"
     ```
 
-!!!tip
+!!! tip
     Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag may pointing to a new version.
 
 The base class also receives an instance of xUnit.net's [ITestOutputHelper](https://xunit.net/docs/capturing-output) to capture and forward log messages to the running test.
@@ -39,7 +39,7 @@ Considering that xUnit.net runs tests in a deterministic natural sort order (lik
 
 If you check the output of `docker ps`, you will notice that three container instances in total are run, with two of them being Redis instances.
 
-```title="List running containers"
+```text title="List running containers"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 be115f3df138   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago
@@ -74,7 +74,7 @@ In this case, retrieving the Redis (string) value in the second test will no lon
 
 The output of `docker ps` shows that, instead of two Redis containers, only one runs.
 
-```title="List running containers"
+```text title="List running containers"
 PS C:\Sources\dotnet\testcontainers-dotnet> docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED
 d29a393816ce   redis:7.0                   "docker-entrypoint.s…"   3 seconds ago

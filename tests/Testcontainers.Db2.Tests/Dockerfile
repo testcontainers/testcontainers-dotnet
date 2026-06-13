@@ -1,1 +1,1 @@
-FROM icr.io/db2_community/db2:12.1.0.0
+FROM icr.io/db2_community/db2:12.1.0.0@sha256:feaf79431bedf185b1fc8fcf2ac2ae020be54eb78e774d44bf467da55e63e1e2

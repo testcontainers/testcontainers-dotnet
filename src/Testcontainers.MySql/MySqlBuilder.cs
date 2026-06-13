@@ -122,6 +122,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new MySqlConnectionStringProvider())
             .WithStartupCallback((container, ct) => Task.WhenAll(container.CreateMySqlFilesDirectoryAsync(ct), container.WriteConfigurationFileAsync(ct)));
     }
 

@@ -1,2 +1,2 @@
-FROM apachepulsar/pulsar:3.0.9
-FROM apachepulsar/pulsar:4.0.2 AS pulsar4.0.2
+FROM apachepulsar/pulsar:3.0.9@sha256:480856a9ab7cf72936cebd3fa21489647b94a4a8204e1706c632a36047e97b8b
+FROM apachepulsar/pulsar:4.0.2@sha256:8c0729055f56a8e30dec5d3cc7f85bd1aea9485858e95da57b96b9e43833b910 AS v4_0_2

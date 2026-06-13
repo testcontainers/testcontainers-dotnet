@@ -46,5 +46,6 @@ public sealed class FirestoreContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(documentData, querySnapshot.Documents.Select(document => document.ConvertTo<Dictionary<string, string>>()).Single());
+        Assert.Equal(_firestoreContainer.GetEmulatorEndpoint(), _firestoreContainer.GetConnectionString());
     }
 }

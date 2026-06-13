@@ -1,0 +1,7 @@
+# Default owners for all paths in this repository.
+
+* @HofmeisterAn
+
+# Documentation can additionally be reviewed by OSS maintainers.
+
+/docs/ @testcontainers/dotnet-team

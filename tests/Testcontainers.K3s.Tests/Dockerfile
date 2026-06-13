@@ -1,1 +1,1 @@
-FROM rancher/k3s:v1.26.2-k3s1
+FROM rancher/k3s:v1.26.2-k3s1@sha256:a0a409f92f0d0a51b5688f055327035ad3bb8fba5ef73f698c5fb09481039804

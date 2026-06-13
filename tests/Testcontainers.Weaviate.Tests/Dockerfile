@@ -1,1 +1,1 @@
-FROM semitechnologies/weaviate:1.26.14
+FROM semitechnologies/weaviate:1.26.14@sha256:be4afbbbb56bd35457076c5c01a5eb5d0aa544563706bd5477d4bfa68cc03a5c

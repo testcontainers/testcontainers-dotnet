@@ -1,6 +1,7 @@
 Dockerfile
 credHelpers
 credsStore
+buildFailure
 context
 healthWaitStrategy
 pullBaseImages

@@ -1,1 +1,1 @@
-FROM typesense/typesense:28.0
+FROM typesense/typesense:28.0@sha256:6955c02616216b3464880b5324e4ca4f0a43ac228d1494ba33e8b79cc6d79ad3

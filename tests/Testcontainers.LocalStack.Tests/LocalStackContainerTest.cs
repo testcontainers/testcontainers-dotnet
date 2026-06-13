@@ -1,20 +1,15 @@
 namespace Testcontainers.LocalStack;
 
-public abstract class LocalStackContainerTest : IAsyncLifetime
+public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
 
-    private readonly LocalStackContainer _localStackContainer;
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static LocalStackContainerTest()
     {
         Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
-    }
-
-    private LocalStackContainerTest(LocalStackContainer localStackContainer)
-    {
-        _localStackContainer = localStackContainer;
     }
 
     public async ValueTask InitializeAsync()
@@ -23,12 +18,9 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
             .ConfigureAwait(false);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await DisposeAsyncCore()
-            .ConfigureAwait(false);
-
-        GC.SuppressFinalize(this);
+        return _localStackContainer.DisposeAsync();
     }
 
     [Fact]
@@ -39,6 +31,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonCloudWatchLogsConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonCloudWatchLogsClient(config);
 
@@ -50,6 +43,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_localStackContainer.GetConnectionString(), _localStackContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -64,6 +58,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         var config = new AmazonDynamoDBConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonDynamoDBClient(config);
 
@@ -103,6 +98,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonS3Client(config);
 
@@ -122,6 +118,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSimpleNotificationServiceConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
@@ -141,6 +138,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSQSClient(config);
 
@@ -150,28 +148,5 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
-    }
-
-    protected virtual ValueTask DisposeAsyncCore()
-    {
-        return _localStackContainer.DisposeAsync();
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
-    {
-        public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
-        {
-        }
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackV1Configuration : LocalStackContainerTest
-    {
-        public LocalStackV1Configuration()
-            : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile(stage: "localstack1.4")).Build())
-        {
-        }
     }
 }

@@ -120,6 +120,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
+            .WithConnectionStringProvider(new ClickHouseConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(HttpPort).ForResponseMessageMatching(IsNodeReadyAsync)));
     }

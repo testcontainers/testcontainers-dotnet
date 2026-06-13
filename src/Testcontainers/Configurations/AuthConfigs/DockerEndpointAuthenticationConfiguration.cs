@@ -3,6 +3,8 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using Docker.DotNet;
+  using Docker.DotNet.Handler.Abstractions;
+  using Docker.DotNet.NPipe;
   using DotNet.Testcontainers.Clients;
   using JetBrains.Annotations;
 
@@ -15,22 +17,22 @@ namespace DotNet.Testcontainers.Configurations
 
     // Since the static `TestcontainersSettings` class holds the detected container
     // runtime information from the auto-discovery mechanism, we can't add a static
-    // `NamedPipeConnectionTimeout` property to it because that would create a
+    // `NPipeConnectTimeout` property to it because that would create a
     // circular dependency during discovery. To fix this, we either need to split the
     // class or stop exposing the `TestcontainersSettings` properties publicly.
     // Instead, we could rely only on custom configurations via environment variables
     // or the properties file.
-    private static readonly TimeSpan NamedPipeConnectionTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan NPipeConnectTimeout = EnvironmentConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? PropertiesFileConfiguration.Instance.GetNamedPipeConnectionTimeout() ?? TimeSpan.FromSeconds(10);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerEndpointAuthenticationConfiguration" /> struct.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
-    /// <param name="credentials">The Docker API authentication credentials.</param>
-    public DockerEndpointAuthenticationConfiguration(Uri endpoint, Credentials credentials = null)
+    /// <param name="authProvider">The Docker API authentication provider.</param>
+    public DockerEndpointAuthenticationConfiguration(Uri endpoint, IAuthProvider authProvider = null)
     {
       Endpoint = endpoint;
-      Credentials = credentials;
+      AuthProvider = authProvider;
     }
 
     /// <inheritdoc />
@@ -40,16 +42,33 @@ namespace DotNet.Testcontainers.Configurations
     public Uri Endpoint { get; }
 
     /// <inheritdoc />
-    public Credentials Credentials { get; }
+    public IAuthProvider AuthProvider { get; }
 
     /// <inheritdoc />
-    public DockerClientConfiguration GetDockerClientConfiguration(Guid sessionId = default)
+    public DockerClientBuilder GetDockerClientBuilder(Guid sessionId = default)
     {
-      var defaultHttpRequestHeaders = new Dictionary<string, string>();
-      defaultHttpRequestHeaders.Add("User-Agent", "tc-dotnet/" + TestcontainersClient.Version);
-      defaultHttpRequestHeaders.Add("x-tc-sid", sessionId.ToString("D"));
+      var headers = new Dictionary<string, string>();
+      headers.Add("User-Agent", "tc-dotnet/" + TestcontainersClient.Version);
+      headers.Add("x-tc-sid", sessionId.ToString("D"));
 
-      return new DockerClientConfiguration(Endpoint, Credentials, namedPipeConnectTimeout: NamedPipeConnectionTimeout, defaultHttpRequestHeaders: defaultHttpRequestHeaders);
+      var dockerClientBuilder = new DockerClientBuilder()
+        .WithApiVersion(Version)
+        .WithEndpoint(Endpoint)
+        .WithAuthProvider(AuthProvider)
+        .WithHeaders(headers);
+
+      if ("npipe".Equals(Endpoint.Scheme, StringComparison.OrdinalIgnoreCase))
+      {
+        var transportOptions = new NPipeTransportOptions
+        {
+          ConnectTimeout = NPipeConnectTimeout,
+        };
+
+        dockerClientBuilder = dockerClientBuilder
+          .WithTransportOptions(transportOptions);
+      }
+
+      return dockerClientBuilder;
     }
   }
 }

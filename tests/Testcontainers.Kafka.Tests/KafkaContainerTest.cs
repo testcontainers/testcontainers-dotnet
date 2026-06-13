@@ -56,6 +56,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         // Then
         Assert.NotNull(result);
         Assert.Equal(message.Value, result.Message.Value);
+        Assert.Equal(_kafkaContainer.GetBootstrapAddress(), _kafkaContainer.GetConnectionString());
     }
 
     protected virtual ValueTask DisposeAsyncCore()
@@ -99,7 +100,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
     public sealed class ApacheKafkaConfiguration : KafkaContainerTest
     {
         public ApacheKafkaConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka4.1.1"))
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-v4_1_1"))
                 .Build())
         {
         }
@@ -109,7 +110,7 @@ public abstract class KafkaContainerTest : IAsyncLifetime
     public sealed class ApacheKafkaNativeConfiguration : KafkaContainerTest
     {
         public ApacheKafkaNativeConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "kafka-native4.1.1"))
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-native-v4_1_1"))
                 .Build())
         {
         }

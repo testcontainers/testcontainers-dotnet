@@ -208,6 +208,7 @@ namespace DotNet.Testcontainers.Configurations
     public IEnumerable<string> NetworkAliases { get; }
 
     /// <inheritdoc />
+    [JsonConverter(typeof(JsonIgnoreRuntimeExtraHosts))]
     public IEnumerable<string> ExtraHosts { get; }
 
     /// <inheritdoc />

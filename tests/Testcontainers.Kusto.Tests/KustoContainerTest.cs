@@ -31,5 +31,6 @@ public sealed class KustoContainerTest : IAsyncLifetime
         // Then
         Assert.Equal("DatabaseName", dataReader.GetName(0));
         Assert.Equal("NetDefaultDB", dataReader.GetString(0));
+        Assert.Equal(_kustoContainer.GetConnectionString(), _kustoContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

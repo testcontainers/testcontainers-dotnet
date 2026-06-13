@@ -30,6 +30,7 @@ public sealed class InfluxDbContainerTest : IAsyncLifetime
 
         // Then
         Assert.True(result);
+        Assert.Equal(_influxDbContainer.GetAddress(), _influxDbContainer.GetConnectionString());
     }
 
     [Fact]

@@ -11,6 +11,8 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
+  features:
+    - content.code.copy
   favicon: favicon.ico
   logo: logo.svg
 extra_css:
@@ -29,6 +31,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - toc:
+      permalink: true
 nav:
   - index.md
   - cicd/index.md
@@ -57,6 +61,7 @@ nav:
     - modules/clickhouse.md
     - modules/db2.md
     - modules/elasticsearch.md
+    - modules/garnet.md
     - modules/grafana.md
     - modules/mongodb.md
     - modules/mssql.md
@@ -67,6 +72,8 @@ nav:
     - modules/qdrant.md
     - modules/questdb.md
     - modules/rabbitmq.md
+    - modules/redis.md
     - modules/toxiproxy.md
+    - modules/valkey.md
   - contributing.md
   - contributing_docs.md

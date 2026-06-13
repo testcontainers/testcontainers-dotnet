@@ -36,6 +36,7 @@ public abstract class MilvusContainerTest : IAsyncLifetime
 
         // Then
         Assert.EndsWith(version, _milvusContainer.Image.Tag);
+        Assert.Equal(_milvusContainer.GetEndpoint().ToString(), _milvusContainer.GetConnectionString());
     }
 
     protected virtual ValueTask DisposeAsyncCore()

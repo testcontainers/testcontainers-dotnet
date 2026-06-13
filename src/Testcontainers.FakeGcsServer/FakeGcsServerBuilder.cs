@@ -79,6 +79,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
             .WithPortBinding(FakeGcsServerPort, true)
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
+            .WithConnectionStringProvider(new FakeGcsServerConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("server started"))
             .WithStartupCallback((container, ct) =>
             {

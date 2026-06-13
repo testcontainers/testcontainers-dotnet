@@ -1,4 +1,4 @@
-FROM jacobalberty/firebird:v4.0
-FROM jacobalberty/firebird:2.5-sc AS fb2.5-sc
-FROM jacobalberty/firebird:2.5-ss AS fb2.5-ss
-FROM jacobalberty/firebird:v3.0 AS fb3.0
+FROM jacobalberty/firebird:v4.0.2@sha256:aebff0bb0b7833d38608c707b8d183356e811b864b790e88232c10159d8c5b81
+FROM jacobalberty/firebird:2.5-sc@sha256:bc359ae5b0b30cffeae68d9e3cca662a85e72faa4d6c10fba882e2a2263e61b5 AS v2_5-sc
+FROM jacobalberty/firebird:2.5-ss@sha256:6efd02fc057818e3f9b5da77d56997bafd883a582e666cf7e5371aefec7f84ac AS v2_5-ss
+FROM jacobalberty/firebird:v3.0.10@sha256:765807beb822a182205259dbcadf5b06df66fa6c51a746ac67d48deb981026d7 AS v3_0_10

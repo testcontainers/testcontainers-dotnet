@@ -103,6 +103,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
             .WithEnvironment("ETCD_CONFIG_PATH", MilvusEtcdConfigFilePath)
             .WithEnvironment("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
             .WithResourceMapping(EtcdConfig, MilvusEtcdConfigFilePath)
+            .WithConnectionStringProvider(new MilvusConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
             .WithCreateParameterModifier(parameterModifier =>
                 parameterModifier.Healthcheck = Healthcheck.Instance);
@@ -134,11 +135,10 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     {
         private Healthcheck()
         {
-            const long ninetySeconds = 90 * 1_000_000_000L;
             Test = ["CMD-SHELL", $"curl -f http://localhost:{MilvusManagementPort}/healthz"];
             Interval = TimeSpan.FromSeconds(30);
             Timeout = TimeSpan.FromSeconds(20);
-            StartPeriod = ninetySeconds;
+            StartPeriod = TimeSpan.FromSeconds(90);
             Retries = 3;
         }
 

@@ -1,1 +1,1 @@
-FROM janusgraph/janusgraph:1.0.0
+FROM janusgraph/janusgraph:1.0.0@sha256:164893be6d2bb20d07729413fbae7e844d26ddbb2ebdad4cd3bad9187f464faa

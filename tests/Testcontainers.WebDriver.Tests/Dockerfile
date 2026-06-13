@@ -1,1 +1,1 @@
-FROM selenium/standalone-chrome:110.0
+FROM selenium/standalone-chrome:110.0@sha256:67185e70f55740ebe1920b132169ad9904c3fd6115ade639e0fe231b1ec5d4f7

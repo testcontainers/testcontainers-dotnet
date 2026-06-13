@@ -5,7 +5,7 @@ namespace Testcontainers.CosmosDb;
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview";
 
     public const ushort CosmosDbPort = 8081;
 
@@ -26,7 +26,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest</c>).
+    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
@@ -77,7 +77,10 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     {
         return base.Init()
             .WithPortBinding(CosmosDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithEnvironment("ENABLE_EXPLORER", "false")
+            .WithEnvironment("ENABLE_TELEMETRY", "false")
+            .WithConnectionStringProvider(new CosmosDbConnectionStringProvider())
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"));
     }
 
     /// <inheritdoc />
@@ -96,34 +99,5 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Merge(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
     {
         return new CosmosDbBuilder(new CosmosDbConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string requestUri = "https://localhost/_explorer/emulator.pem";
-
-            var httpClient = ((CosmosDbContainer)container).HttpClient;
-
-            try
-            {
-                using var httpResponse = await httpClient.GetAsync(requestUri)
-                    .ConfigureAwait(false);
-
-                return httpResponse.IsSuccessStatusCode;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally
-            {
-                httpClient.Dispose();
-            }
-        }
     }
 }

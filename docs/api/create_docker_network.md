@@ -56,6 +56,37 @@ var execResult = await ultimateQuestionContainer.ExecAsync(new[] { "nc", MagicNu
 Assert.Equal(MagicNumber, execResult.Stdout.Trim());
 ```
 
+## Connecting a running container to an existing network
+
+If a container is already running, use `IContainer.ConnectAsync(...)` to attach it to an existing network.
+
+The network must already exist. You can reference it either by network name or by an `INetwork` instance:
+
+```csharp
+var network = new NetworkBuilder()
+  .WithName(Guid.NewGuid().ToString("D"))
+  .Build();
+
+var container = new ContainerBuilder("alpine:3.20.0")
+  .WithEntrypoint("top")
+  .Build();
+
+await network.CreateAsync()
+  .ConfigureAwait(false);
+
+await container.StartAsync()
+  .ConfigureAwait(false);
+
+await container.ConnectAsync(network)
+  .ConfigureAwait(false);
+
+// Equivalent when only the network name is available:
+await container.ConnectAsync(network.Name)
+  .ConfigureAwait(false);
+```
+
+Prefer `WithNetwork(...)` during container configuration whenever possible. Use `ConnectAsync(...)` when you explicitly need to attach a running container to an already existing network.
+
 ## Exposing container ports to the host
 
 It is common to connect to a container from your test process running on your test host. To bind and expose a container port, use the `WithPortBinding(ushort, true)` container builder member. To retrieve the actual port at runtime, use the container `GetMappedPublicPort(ushort)` member. Further information on network configurations is included in our [best practices](https://dotnet.testcontainers.org/api/best_practices/).

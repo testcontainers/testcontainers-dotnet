@@ -63,6 +63,7 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         Assert.Equal(expectedRow["player"], results.Single()["player"]);
         Assert.Equal(expectedRow["gameStarted"], results.Single()["gameStarted"]);
         Assert.Equal(expectedRow["score"], results.Single()["score"]);
+        Assert.Equal(_bigQueryContainer.GetEmulatorEndpoint(), _bigQueryContainer.GetConnectionString());
     }
 
     private sealed class Credential : ICredential
