@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     private sealed class PortForwardingBuilder : ContainerBuilder<PortForwardingBuilder, PortForwardingContainer, PortForwardingConfiguration>
     {
-      public const string SshdImage = "testcontainers/sshd:1.3.0@sha256:c50c0f59554dcdb2d9e5e705112144428ae9d04ac0af6322b365a18e24213a6a";
+      public const string SshdImage = "testcontainers/sshd:1.4.0@sha256:bdae17f702908bee93c877ab3e97eddd782e2fb5bdd23a9f29869b9a87b30acd";
 
       public const ushort SshdPort = 22;
 
