@@ -20,8 +20,8 @@ public sealed class CosmosDbContainer : DockerContainer
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("AccountEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)).ToString());
-        properties.Add("AccountKey", CosmosDbBuilder.DefaultAccountKey);
+        properties.Add("AccountEndpoint", GetAccountEndpoint());
+        properties.Add("AccountKey", GetAccountKey());
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
     }
 
@@ -34,6 +34,24 @@ public sealed class CosmosDbContainer : DockerContainer
     /// Gets a configured HTTP client that automatically trusts the CosmosDb Emulator's certificate.
     /// </summary>
     public HttpClient HttpClient => new HttpClient(HttpMessageHandler);
+    
+    /// <summary>
+    /// Gets the CosmosDb account endpoint
+    /// </summary>
+    /// <returns>The CosmosDb account endpoint</returns>
+    public string GetAccountEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)).ToString();
+    }
+    
+    /// <summary>
+    /// Gets the CosmosDb account key
+    /// </summary>
+    /// <returns>The CosmosDb account key</returns>
+    public string GetAccountKey()
+    {
+        return CosmosDbBuilder.DefaultAccountKey;
+    }
 
     /// <summary>
     /// Rewrites the HTTP requests to target the running CosmosDb Emulator instance.
