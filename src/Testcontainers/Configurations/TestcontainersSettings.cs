@@ -138,6 +138,18 @@ namespace DotNet.Testcontainers.Configurations
       = EnvironmentConfiguration.Instance.GetWaitStrategyTimeout() ?? PropertiesFileConfiguration.Instance.GetWaitStrategyTimeout();
 
     /// <summary>
+    /// Gets or sets a function that substitutes the image name before an image is pulled.
+    /// </summary>
+    /// <remarks>
+    /// This allows replacing an image name with an alternative on the fly, for example to pull
+    /// from a private registry mirror instead of Docker Hub. The substitution runs before the
+    /// Docker Hub image name prefix is applied (see <see cref="HubImageNamePrefix" />).
+    /// Return the original image to leave it unchanged.
+    /// </remarks>
+    [CanBeNull]
+    public static Func<IImage, IImage> ImageNameSubstitution { get; set; }
+
+    /// <summary>
     /// Gets or sets the host operating system.
     /// </summary>
     [NotNull]
