@@ -92,7 +92,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public TBuilderEntity WithImage(IImage image)
     {
-      return Clone(new ContainerConfiguration(image: image.ApplyHubImageNamePrefix()));
+      return Clone(new ContainerConfiguration(image: image.ApplyImageNameSubstitution()));
     }
 
     /// <inheritdoc />

@@ -61,6 +61,28 @@ Setting the context to `tcc` in this example will use the Docker host running at
     docker.context=tcc
     ```
 
+## Substitute image names
+
+Testcontainers supports substituting an image name with an alternative on the fly, for example to pull from a private registry mirror instead of Docker Hub. This is useful if you have complex rules that a simple prefix cannot express, such as a non-deterministic name mapping, rules depending on the developer or environment, or auditing and restricting the images used in a build.
+
+Set `TestcontainersSettings.ImageNameSubstitution` to a function that receives the original `IImage` and returns the image to use instead. Return the original image (or `null`) to leave it unchanged.
+
+Configure the substitution once before any test resources are created. A static class with a [`[ModuleInitializer]`](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.moduleinitializerattribute) method runs automatically before the first type in the test assembly is used:
+
+```csharp
+internal static class TestcontainersConfiguration
+{
+  [ModuleInitializer]
+  public static void Initialize()
+  {
+    TestcontainersSettings.ImageNameSubstitution = image
+      => new DockerImage(image.Repository, "registry.mycompany.com", image.Tag, image.Digest, image.Platform);
+  }
+}
+```
+
+The substitution runs first, then the Docker Hub image name prefix (`TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`) is applied to the substituted image. As with any image, the prefix is only added when the image does not already specify a registry, so a substitution that sets a registry (such as the examples above) takes precedence over the prefix.
+
 ## Automatically modify Docker Hub image names
 
 Testcontainers can automatically add a registry prefix to Docker Hub image names used in your tests. This is handy if you use a private registry that mirrors Docker Hub images with predictable naming.

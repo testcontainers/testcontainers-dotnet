@@ -60,7 +60,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithName(IImage image)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyHubImageNamePrefix()));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyImageNameSubstitution()));
     }
 
     /// <inheritdoc />
