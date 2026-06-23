@@ -51,13 +51,30 @@ Debug.Assert(Guid.TryParse(guid, out _));
   <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
     <img src="language-logos/python.svg" />Python
   </a>
-  <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
+  <a class="card-grid-item" href="https://rust.testcontainers.org/">
     <img src="language-logos/rust.svg" />Rust
   </a>
-  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
-    <img src="language-logos/haskell.svg"/>Haskell
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-ruby/">
+    <img src="language-logos/ruby.svg" />Ruby
   </a>
-  <a href="https://github.com/testcontainers/testcontainers-ruby/" class="card-grid-item" ><img src="language-logos/ruby.svg"/>Ruby</a>
+  <a class="card-grid-item" href="https://php.testcontainers.org/">
+    <img src="language-logos/php.svg" />PHP
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
+    <img src="language-logos/haskell.svg" />Haskell
+  </a>
+  <a class="card-grid-item" href="https://cljdoc.org/d/clj-test-containers/clj-test-containers/">
+    <img src="language-logos/clojure.svg" />Clojure
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-elixir">
+    <img src="language-logos/elixir.svg" />Elixir
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-scala/">
+    <img src="language-logos/scala.svg" />Scala
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-native">
+    <img src="language-logos/c.svg" />Native
+  </a>
 </div>
 
 ## About
