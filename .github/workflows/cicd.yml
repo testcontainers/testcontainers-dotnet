@@ -46,8 +46,8 @@ jobs:
 
       - id: set-test-projects
         name: Collect Test Projects
-        shell: pwsh
         run: echo "test-projects=$(.github/scripts/Collect-TestProjects.ps1)" >> $env:GITHUB_OUTPUT
+        shell: pwsh
         env:
           ALL_CHANGED_FILES: ${{ steps.get-all-changed-files.outputs.all_changed_files }}
 
@@ -81,6 +81,14 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
+
+      # Windows runners often report the Docker service as started before the
+      # engine accepts connections, causing flaky npipe timeouts.
+      # Wait until the daemon answers before running anything that talks to it.
+      - name: Wait for Docker Daemon
+        run: do { docker info *> $null; Start-Sleep 2 } until ($LASTEXITCODE -Eq 0)
+        shell: pwsh
+        timeout-minutes: 10
 
       - name: Restore NuGet Packages
         run: ./build.sh --target=Restore-NuGet-Packages
