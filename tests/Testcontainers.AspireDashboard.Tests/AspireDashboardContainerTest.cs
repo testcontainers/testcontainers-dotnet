@@ -2,6 +2,7 @@ namespace Testcontainers.AspireDashboard;
 
 public sealed class AspireDashboardContainerTest : IAsyncLifetime
 {
+    // # --8<-- [start:UseAspireDashboardContainer]
     private readonly AspireDashboardContainer _aspireDashboardContainer = new AspireDashboardBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     private readonly string _serviceName = Guid.NewGuid().ToString("N");
@@ -20,6 +21,7 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task GetDashboardReturnsHttpStatusCodeOk()
     {
         // Given
@@ -35,6 +37,7 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task OtlpExportOverGrpcSpanIsIngested()
     {
         var endpoint = new Uri(_aspireDashboardContainer.GetOtlpGrpcAddress());
@@ -42,6 +45,7 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
     }
 
     [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public Task OtlpExportOverHttpSpanIsIngested()
     {
         var endpoint = new Uri(new Uri(_aspireDashboardContainer.GetOtlpHttpAddress()), "/v1/traces");
@@ -84,8 +88,12 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
         var spansJson = await httpClient.GetStringAsync("/api/telemetry/spans")
             .ConfigureAwait(true);
 
-        Assert.Contains("\"totalCount\":1", spansJson);
+        using var jsonDocument = JsonDocument.Parse(spansJson);
+        var totalCount = jsonDocument.RootElement.GetProperty("totalCount").GetInt32();
+
+        Assert.Equal(1, totalCount);
         Assert.Contains(_serviceName, spansJson);
         Assert.Contains(_spanName, spansJson);
     }
+    // # --8<-- [end:UseAspireDashboardContainer]
 }
