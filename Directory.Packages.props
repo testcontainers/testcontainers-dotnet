@@ -84,6 +84,7 @@
         <PackageVersion Include="Npgsql" Version="6.0.11"/>
         <PackageVersion Include="OllamaSharp" Version="5.1.13"/>
         <PackageVersion Include="OpenSearch.Client" Version="1.8.0"/>
+        <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0"/>
         <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.7.0"/>
         <PackageVersion Include="Qdrant.Client" Version="1.13.0"/>
         <PackageVersion Include="RabbitMQ.Client" Version="6.4.0"/>
