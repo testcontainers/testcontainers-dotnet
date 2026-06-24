@@ -37,27 +37,44 @@ Debug.Assert(Guid.TryParse(guid, out _));
 </p>
 <div class="card-grid">
   <a class="card-grid-item" href="https://java.testcontainers.org">
-    <img src="language-logos/java.svg" />Java
+    <img src="language-logos/java.svg" alt="" />Java
   </a>
   <a class="card-grid-item" href="https://golang.testcontainers.org">
-    <img src="language-logos/go.svg" />Go
+    <img src="language-logos/go.svg" alt="" />Go
   </a>
   <a class="card-grid-item">
-    <img src="language-logos/dotnet.svg" />.NET
+    <img src="language-logos/dotnet.svg" alt="" />.NET
   </a>
   <a class="card-grid-item" href="https://node.testcontainers.org">
-    <img src="language-logos/nodejs.svg" />Node.js
+    <img src="language-logos/nodejs.svg" alt="" />Node.js
   </a>
   <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
-    <img src="language-logos/python.svg" />Python
+    <img src="language-logos/python.svg" alt="" />Python
   </a>
-  <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
-    <img src="language-logos/rust.svg" />Rust
+  <a class="card-grid-item" href="https://rust.testcontainers.org/">
+    <img src="language-logos/rust.svg" alt="" />Rust
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-ruby/">
+    <img src="language-logos/ruby.svg" alt="" />Ruby
+  </a>
+  <a class="card-grid-item" href="https://php.testcontainers.org/">
+    <img src="language-logos/php.svg" alt="" />PHP
   </a>
   <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
-    <img src="language-logos/haskell.svg"/>Haskell
+    <img src="language-logos/haskell.svg" alt="" />Haskell
   </a>
-  <a href="https://github.com/testcontainers/testcontainers-ruby/" class="card-grid-item" ><img src="language-logos/ruby.svg"/>Ruby</a>
+  <a class="card-grid-item" href="https://cljdoc.org/d/clj-test-containers/clj-test-containers/">
+    <img src="language-logos/clojure.svg" alt="" />Clojure
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-elixir">
+    <img src="language-logos/elixir.svg" alt="" />Elixir
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-scala/">
+    <img src="language-logos/scala.svg" alt="" />Scala
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-native">
+    <img src="language-logos/c.svg" alt="" />Native
+  </a>
 </div>
 
 ## About
