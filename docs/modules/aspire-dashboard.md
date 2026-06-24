@@ -1,6 +1,6 @@
 # Aspire Dashboard
 
-The [.NET Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview) is a standalone tool for viewing the logs, traces, and metrics that your apps emit over the OpenTelemetry Protocol (OTLP). It provides a web interface to explore telemetry during local development.
+The [Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview) is a standalone tool for viewing the logs, traces, and metrics that your apps emit over the OpenTelemetry Protocol (OTLP). It provides a web interface to explore telemetry during local development.
 
 Add the following dependency to your project file:
 
