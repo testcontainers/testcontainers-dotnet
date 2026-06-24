@@ -29,11 +29,12 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
         httpClient.BaseAddress = new Uri(_aspireDashboardContainer.GetDashboardAddress());
 
         // When
-        using var response = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
+        using var httpResponse = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Equal(_aspireDashboardContainer.GetDashboardAddress(), _aspireDashboardContainer.GetConnectionString());
     }
 
     [Fact]
