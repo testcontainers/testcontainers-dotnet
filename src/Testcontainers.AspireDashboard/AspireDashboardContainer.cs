@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Testcontainers.AspireDashboard;
 
 /// <inheritdoc cref="DockerContainer" />
@@ -13,52 +11,32 @@ public sealed class AspireDashboardContainer : DockerContainer
     public AspireDashboardContainer(AspireDashboardConfiguration configuration)
         : base(configuration)
     {
-        Started += (_, _) => Logger.LogInformation("AspireDashboard container is ready!");
-        Logger.LogInformation(
-            "Dashboard available at {Url}.",
-            new UriBuilder(
-                Uri.UriSchemeHttp,
-                Hostname,
-                GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort)
-            )
-        );
-        Logger.LogInformation(
-            "OTLP endpoint available at {Url}.",
-            new UriBuilder(
-                Uri.UriSchemeHttp,
-                Hostname,
-                GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpPort)
-            )
-        );
     }
 
     /// <summary>
-    /// Gets the AspireDashboard URL.
+    ///
     /// </summary>
-    /// <returns>The AspireDashboard URL.</returns>
-    public string GetDashboardUrl()
+    /// <returns></returns>
+    public string GetDashboardAddress()
     {
-        var endpoint = new UriBuilder(
-            Uri.UriSchemeHttp,
-            Hostname,
-            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardFrontendPort)
-        );
-
-        return endpoint.ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardHttpPort)).ToString();
     }
 
     /// <summary>
-    /// Gets the AspireDashboard OTLP endpoint URL.
+    ///
     /// </summary>
-    /// <returns>The AspireDashboard OTLP endpoint URL.</returns>
-    public string GetOtlpEndpointUrl()
+    /// <returns></returns>
+    public string GetOltpGrpcAddress()
     {
-        var endpoint = new UriBuilder(
-            Uri.UriSchemeHttp,
-            Hostname,
-            GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpPort)
-        );
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOltpGrpcPort)).ToString();
+    }
 
-        return endpoint.ToString();
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    public string GetOltpHttpAddress()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOltpHttpPort)).ToString();
     }
 }

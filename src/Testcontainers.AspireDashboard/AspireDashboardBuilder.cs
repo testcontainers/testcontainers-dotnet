@@ -2,27 +2,56 @@ namespace Testcontainers.AspireDashboard;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class AspireDashboardBuilder
-    : ContainerBuilder<
-        AspireDashboardBuilder,
-        AspireDashboardContainer,
-        AspireDashboardConfiguration
-    >
+public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBuilder, AspireDashboardContainer, AspireDashboardConfiguration>
 {
-    // https://mcr.microsoft.com/en-us/product/dotnet/aspire-dashboard/tags
-    public const string AspireDashboardImage = "mcr.microsoft.com/dotnet/aspire-dashboard:8.1.0";
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string AspireDashboardImage = "mcr.microsoft.com/dotnet/aspire-dashboard:13";
 
-    public const ushort AspireDashboardFrontendPort = 18888;
+    public const ushort AspireDashboardHttpPort = 18888;
 
-    public const ushort AspireDashboardOtlpPort = 18889;
+    public const ushort AspireDashboardOltpGrpcPort = 18889;
+
+    public const ushort AspireDashboardOltpHttpPort = 18890;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AspireDashboardBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public AspireDashboardBuilder()
+        : this(AspireDashboardImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AspireDashboardBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/azure-storage/azurite:13</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/dotnet-aspire-dashboard" />.
+    /// </remarks>
+    public AspireDashboardBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AspireDashboardBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/dotnet-aspire-dashboard" />.
+    /// </remarks>
+    public AspireDashboardBuilder(IImage image)
         : this(new AspireDashboardConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -38,34 +67,6 @@ public sealed class AspireDashboardBuilder
     /// <inheritdoc />
     protected override AspireDashboardConfiguration DockerResourceConfiguration { get; }
 
-    /// <summary>
-    /// Configures the dashboard to accept anonymous access.
-    /// </summary>
-    /// <param name="allowed">A value indicating whether anonymous access is allowed.</param>
-    /// <returns>A configured instance of <see cref="AspireDashboardBuilder" />.</returns>
-    public AspireDashboardBuilder AllowAnonymous(bool allowed)
-    {
-        return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration())
-            .WithEnvironment(
-                "DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS",
-                allowed.ToString().ToLowerInvariant()
-            );
-    }
-
-    /// <summary>
-    /// Configures the dashboard to allow unsecured transport.
-    /// </summary>
-    /// <param name="allowed">A value indicating whether unsecured transport is allowed.</param>
-    /// <returns>A configured instance of <see cref="AspireDashboardBuilder" />.</returns>
-    public AspireDashboardBuilder AllowUnsecuredTransport(bool allowed)
-    {
-        return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration())
-            .WithEnvironment(
-                "ASPIRE_ALLOW_UNSECURED_TRANSPORT",
-                allowed.ToString().ToLowerInvariant()
-            );
-    }
-
     /// <inheritdoc />
     public override AspireDashboardContainer Build()
     {
@@ -78,40 +79,28 @@ public sealed class AspireDashboardBuilder
     {
         return base.Init()
             .WithImage(AspireDashboardImage)
-            .WithPortBinding(AspireDashboardFrontendPort, true)
-            .WithPortBinding(AspireDashboardOtlpPort, true)
-            .AllowAnonymous(true)
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
-                    .UntilHttpRequestIsSucceeded(r => r.ForPort(AspireDashboardFrontendPort))
-            );
+            .WithPortBinding(AspireDashboardHttpPort, true)
+            .WithPortBinding(AspireDashboardOltpGrpcPort, true)
+            .WithPortBinding(AspireDashboardOltpHttpPort, true)
+            .WithEnvironment("DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS", "true")
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(AspireDashboardHttpPort)));
     }
 
     /// <inheritdoc />
-    protected override AspireDashboardBuilder Clone(
-        IResourceConfiguration<CreateContainerParameters> resourceConfiguration
-    )
+    protected override AspireDashboardBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
-        return Merge(
-            DockerResourceConfiguration,
-            new AspireDashboardConfiguration(resourceConfiguration)
-        );
+        return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
     protected override AspireDashboardBuilder Clone(IContainerConfiguration resourceConfiguration)
     {
-        return Merge(
-            DockerResourceConfiguration,
-            new AspireDashboardConfiguration(resourceConfiguration)
-        );
+        return Merge(DockerResourceConfiguration, new AspireDashboardConfiguration(resourceConfiguration));
     }
 
     /// <inheritdoc />
-    protected override AspireDashboardBuilder Merge(
-        AspireDashboardConfiguration oldValue,
-        AspireDashboardConfiguration newValue
-    )
+    protected override AspireDashboardBuilder Merge(AspireDashboardConfiguration oldValue, AspireDashboardConfiguration newValue)
     {
         return new AspireDashboardBuilder(new AspireDashboardConfiguration(oldValue, newValue));
     }

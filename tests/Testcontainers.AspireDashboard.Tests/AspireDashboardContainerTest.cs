@@ -2,23 +2,17 @@ namespace Testcontainers.AspireDashboard;
 
 public sealed class AspireDashboardContainerTest : IAsyncLifetime
 {
-    private readonly AspireDashboardContainer _container = new AspireDashboardBuilder()
-        .AllowAnonymous(true)
-        .AllowUnsecuredTransport(false)
-        .WithPortBinding(
-            AspireDashboardBuilder.AspireDashboardFrontendPort,
-            AspireDashboardBuilder.AspireDashboardFrontendPort
-        )
-        .Build();
+    private readonly AspireDashboardContainer _aspireDashboardContainer = new AspireDashboardBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _container.StartAsync();
+        await _aspireDashboardContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync().AsTask();
+        return _aspireDashboardContainer.DisposeAsync();
     }
 
     [Fact]
@@ -27,11 +21,12 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
         // Given
         using var httpClient = new HttpClient();
 
-        var address = new Uri(_container.GetDashboardUrl());
+        var address = new Uri(_aspireDashboardContainer.GetDashboardAddress());
         httpClient.BaseAddress = address;
 
         // When
-        using var response = await httpClient.GetAsync("/");
+        using var response = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
