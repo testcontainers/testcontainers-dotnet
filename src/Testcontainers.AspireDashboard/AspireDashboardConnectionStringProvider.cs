@@ -8,6 +8,6 @@ internal sealed class AspireDashboardConnectionStringProvider : ContainerConnect
     /// <inheritdoc />
     protected override string GetHostConnectionString()
     {
-        return Container.GetConnectionString();
+        return Container.GetDashboardAddress();
     }
 }
