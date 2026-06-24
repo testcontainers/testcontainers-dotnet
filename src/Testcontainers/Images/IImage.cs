@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Images
 {
+  using System;
   using JetBrains.Annotations;
 
   /// <summary>
@@ -15,16 +16,32 @@ namespace DotNet.Testcontainers.Images
     string Repository { get; }
 
     /// <summary>
-    /// Gets the name.
+    /// Gets the registry.
     /// </summary>
-    [NotNull]
-    string Name { get; }
+    [CanBeNull]
+    string Registry { get; }
 
     /// <summary>
     /// Gets the tag.
     /// </summary>
-    [NotNull]
+    [CanBeNull]
     string Tag { get; }
+
+    /// <summary>
+    /// Gets the digest.
+    /// </summary>
+    [CanBeNull]
+    string Digest { get; }
+
+    /// <summary>
+    /// Gets the platform.
+    /// </summary>
+    /// <remarks>
+    /// The supported format for a platform value is:
+    /// <c>&lt;os&gt;|&lt;arch&gt;|&lt;os&gt;/&lt;arch&gt;[/&lt;variant&gt;]</c>.
+    /// </remarks>
+    [CanBeNull]
+    string Platform { get; }
 
     /// <summary>
     /// Gets the full image name.
@@ -41,5 +58,25 @@ namespace DotNet.Testcontainers.Images
     /// <returns>The registry hostname.</returns>
     [CanBeNull]
     string GetHostname();
+
+    /// <summary>
+    /// Checks if the tag matches either the latest or nightly tag.
+    /// </summary>
+    /// <returns>True if the tag matches the latest or nightly tag, otherwise false.</returns>
+    bool MatchLatestOrNightly();
+
+    /// <summary>
+    /// Checks if the tag matches the specified predicate.
+    /// </summary>
+    /// <param name="predicate">The predicate to match the tag against.</param>
+    /// <returns>True if the tag matches the predicate, otherwise false.</returns>
+    bool MatchVersion(Predicate<string> predicate);
+
+    /// <summary>
+    /// Checks if the tag matches the specified predicate.
+    /// </summary>
+    /// <param name="predicate">The predicate to match the tag against.</param>
+    /// <returns>True if the tag matches the predicate, otherwise false.</returns>
+    bool MatchVersion(Predicate<Version> predicate);
   }
 }

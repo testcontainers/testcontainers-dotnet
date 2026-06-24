@@ -38,7 +38,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public bool IsApplicable(string hostname)
     {
-      return !default(JsonElement).Equals(_rootElement) && !string.IsNullOrEmpty(_rootElement.GetString());
+      return !JsonValueKind.Undefined.Equals(_rootElement.ValueKind) && !string.IsNullOrEmpty(_rootElement.GetString());
     }
 
     /// <inheritdoc />

@@ -19,8 +19,7 @@ public sealed class DbFixture : IAsyncLifetime
         // as soon as the database is ready. Once the migration is finished, the Flyway
         // container exits, and the database container becomes available for tests.
 
-        _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:15-alpine")
+        _postgreSqlContainer = new PostgreSqlBuilder("postgres:15-alpine")
             .WithNetwork(_network)
             .WithNetworkAliases(nameof(_postgreSqlContainer))
             .Build();
@@ -30,8 +29,7 @@ public sealed class DbFixture : IAsyncLifetime
         // the files are available as soon as the container starts. Flyway will
         // automatically pick them up and start the database migration process.
 
-        _flywayContainer = new ContainerBuilder()
-            .WithImage("flyway/flyway:9-alpine")
+        _flywayContainer = new ContainerBuilder("flyway/flyway:9-alpine")
             .WithResourceMapping("migrate/", "/flyway/sql/")
             .WithCommand("-url=jdbc:postgresql://" + nameof(_postgreSqlContainer) + "/")
             .WithCommand("-user=" + PostgreSqlBuilder.DefaultUsername)
@@ -40,7 +38,7 @@ public sealed class DbFixture : IAsyncLifetime
             .WithCommand("migrate")
             .WithNetwork(_network)
             .DependsOn(_postgreSqlContainer)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new MigrationCompleted()))
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new MigrationCompleted(), o => o.WithMode(WaitStrategyMode.OneShot)))
             .Build();
     }
 

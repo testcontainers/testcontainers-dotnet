@@ -19,28 +19,28 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public async Task QueryNotExistingDockerContainerById()
     {
-      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Container.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerImageById()
     {
-      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Image.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerNetworkById()
     {
-      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Network.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
     [Fact]
     public async Task QueryNotExistingDockerVolumeById()
     {
-      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName)
+      Assert.False(await Client.Volume.ExistsWithIdAsync(ResourceIdOrName, TestContext.Current.CancellationToken)
         .ConfigureAwait(true));
     }
 
@@ -48,12 +48,11 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryContainerInformationOfCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
+      var container = new ContainerBuilder(CommonImages.Nginx)
         .Build();
 
       // When
-      await container.StartAsync()
+      await container.StartAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -68,8 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task QueryContainerInformationOfNotCreatedContainer()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(CommonImages.Nginx)
+      var container = new ContainerBuilder(CommonImages.Nginx)
         .Build();
 
       // When
@@ -99,8 +97,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.Throws<InvalidOperationException>(() => image.Repository);
-      Assert.Throws<InvalidOperationException>(() => image.Name);
+      Assert.Throws<InvalidOperationException>(() => image.Registry);
       Assert.Throws<InvalidOperationException>(() => image.Tag);
+      Assert.Throws<InvalidOperationException>(() => image.Digest);
       Assert.Throws<InvalidOperationException>(() => image.FullName);
       Assert.Throws<InvalidOperationException>(() => image.GetHostname());
     }

@@ -21,12 +21,14 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="labels">The test session id.</param>
     /// <param name="parameterModifiers">A list of low level modifications of the Docker.DotNet entity.</param>
     /// <param name="reuse">A value indicating whether to reuse an existing resource configuration or not.</param>
+    /// <param name="reuseHashProvider">A function to override the reuse hash calculation, or <c>null</c> to use the default SHA-1-based implementation.</param>
     /// <param name="logger">The logger.</param>
     public ResourceConfiguration(
       IDockerEndpointAuthenticationConfiguration dockerEndpointAuthenticationConfiguration = null,
       IReadOnlyDictionary<string, string> labels = null,
       IReadOnlyList<Action<TCreateResourceEntity>> parameterModifiers = null,
       bool? reuse = null,
+      Func<IResourceConfiguration<TCreateResourceEntity>, string> reuseHashProvider = null,
       ILogger logger = null)
     {
       SessionId = labels != null && labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && Guid.TryParseExact(resourceReaperSessionId, "D", out var sessionId) ? sessionId : Guid.Empty;
@@ -34,6 +36,7 @@ namespace DotNet.Testcontainers.Configurations
       Labels = labels;
       ParameterModifiers = parameterModifiers;
       Reuse = reuse;
+      ReuseHashProvider = reuseHashProvider;
       Logger = logger;
     }
 
@@ -57,6 +60,7 @@ namespace DotNet.Testcontainers.Configurations
         labels: BuildConfiguration.Combine(oldValue.Labels, newValue.Labels),
         parameterModifiers: BuildConfiguration.Combine(oldValue.ParameterModifiers, newValue.ParameterModifiers),
         reuse: (oldValue.Reuse.HasValue && oldValue.Reuse.Value) || (newValue.Reuse.HasValue && newValue.Reuse.Value),
+        reuseHashProvider: BuildConfiguration.Combine(oldValue.ReuseHashProvider, newValue.ReuseHashProvider),
         logger: BuildConfiguration.Combine(oldValue.Logger, newValue.Logger))
     {
     }
@@ -83,12 +87,21 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
+    public Func<IResourceConfiguration<TCreateResourceEntity>, string> ReuseHashProvider { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
     public ILogger Logger { get; }
 
     /// <inheritdoc />
     public virtual string GetReuseHash()
     {
-      var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType());
+      if (ReuseHashProvider != null)
+      {
+        return ReuseHashProvider(this);
+      }
+
+      var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType(), DefaultJsonSerializerOptions.Instance);
 
 #if NET6_0_OR_GREATER
       return Convert.ToBase64String(SHA1.HashData(jsonUtf8Bytes));

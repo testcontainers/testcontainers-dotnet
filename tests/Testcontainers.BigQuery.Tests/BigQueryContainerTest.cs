@@ -2,16 +2,17 @@ namespace Testcontainers.BigQuery;
 
 public sealed class BigQueryContainerTest : IAsyncLifetime
 {
-    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder().Build();
+    private readonly BigQueryContainer _bigQueryContainer = new BigQueryBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _bigQueryContainer.StartAsync();
+        await _bigQueryContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _bigQueryContainer.DisposeAsync().AsTask();
+        return _bigQueryContainer.DisposeAsync();
     }
 
     [Fact]
@@ -41,20 +42,20 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         expectedRow.Add("gameStarted", utcNowWithoutMilliseconds);
         expectedRow.Add("score", 85L);
 
-        using var bigQueryClient = await bigQueryClientBuilder.BuildAsync()
+        using var bigQueryClient = await bigQueryClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var dataset = await bigQueryClient.GetOrCreateDatasetAsync("mydata")
+        var dataset = await bigQueryClient.GetOrCreateDatasetAsync("mydata", cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // When
-        var table = await dataset.CreateTableAsync("scores", tableSchema)
+        var table = await dataset.CreateTableAsync("scores", tableSchema, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await table.InsertRowAsync(expectedRow)
+        _ = await table.InsertRowAsync(expectedRow, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var results = await bigQueryClient.ExecuteQueryAsync($"SELECT * FROM {table}", null)
+        var results = await bigQueryClient.ExecuteQueryAsync($"SELECT * FROM {table}", null, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -62,6 +63,7 @@ public sealed class BigQueryContainerTest : IAsyncLifetime
         Assert.Equal(expectedRow["player"], results.Single()["player"]);
         Assert.Equal(expectedRow["gameStarted"], results.Single()["gameStarted"]);
         Assert.Equal(expectedRow["score"], results.Single()["score"]);
+        Assert.Equal(_bigQueryContainer.GetEmulatorEndpoint(), _bigQueryContainer.GetConnectionString());
     }
 
     private sealed class Credential : ICredential

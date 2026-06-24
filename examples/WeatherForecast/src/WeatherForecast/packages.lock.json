@@ -1,0 +1,137 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Microsoft.AspNetCore.App.Internal.Assets": {
+        "type": "Direct",
+        "requested": "[10.0.3, )",
+        "resolved": "10.0.3",
+        "contentHash": "mr3Zn+ht8lijYvlMIasftw9opU9hsLKDdnOgQMmYI3RjWPJLOF9l8+YHDseRkTs97wOrULmJgo/NDCmzL/EGDg=="
+      },
+      "Microsoft.FluentUI.AspNetCore.Components": {
+        "type": "Direct",
+        "requested": "[4.13.2, )",
+        "resolved": "4.13.2",
+        "contentHash": "OqJFJiIz32BRBcxVCLX51s6/SNXVe6X16kKBcwxb7ZzZ14w1pT2OcHtqPxfj7NYZzAyA9gpX5EhvAdGHURYD7g=="
+      },
+      "Npgsql.EntityFrameworkCore.PostgreSQL": {
+        "type": "Direct",
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "E2+uSWxSB8LdsUVwPaqRWOcGOP92biry2JEwc0KJMdLJF+aZdczeIdEXVwEyv4nSVMQJH0o8tLhyAMiR6VF0lw==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "[10.0.0, 11.0.0)",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, 11.0.0)",
+          "Npgsql": "10.0.0"
+        }
+      },
+      "Testcontainers.PostgreSql": {
+        "type": "Direct",
+        "requested": "[4.10.0, )",
+        "resolved": "4.10.0",
+        "contentHash": "TP7j3N014O9MONT21lqZPzlVuP1LJYhkRKYZPbRdHl3VN+4RPk5Jt799WvLfxDsOFLVNibNO3B7tP1vcYQmXHA==",
+        "dependencies": {
+          "Testcontainers": "4.10.0"
+        }
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.6.2",
+        "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
+      },
+      "Docker.DotNet.Enhanced": {
+        "type": "Transitive",
+        "resolved": "3.131.1",
+        "contentHash": "hGLHCNUsQbT2Ab/HUznRnNqYZQs40zInXa3eLwYjeNyfUYbw1pqqDGqcOLl5uGepS8IuigEYakEdAcVT/2ezYg=="
+      },
+      "Docker.DotNet.Enhanced.X509": {
+        "type": "Transitive",
+        "resolved": "3.131.1",
+        "contentHash": "8FU7zmttFQzp0xb0EPupxQ0nGtC2cTpukgh3jMxMT8luj5TSDyzIKTnroDpXCjpg9P2fV+6JIvC+IetsMEfyBA==",
+        "dependencies": {
+          "Docker.DotNet.Enhanced": "3.131.1"
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.1",
+        "contentHash": "sp6Uq8Oc3RVGtmxLS3ZgzVeFHrpLNymsMudoeqRmB9pRTWgvq2S903sF5OnaaZmh4Bz6kpq7FwofE+DOhKJYvg=="
+      },
+      "Microsoft.EntityFrameworkCore.Analyzers": {
+        "type": "Transitive",
+        "resolved": "10.0.1",
+        "contentHash": "Ug2lxkiz1bpnxQF/xdswLl5EBA6sAG2ig5nMjmtpQZO0C88ZnvUkbpH2vQq+8ultIRmvp5Ec2jndLGRMPjW0Ew=="
+      },
+      "Microsoft.EntityFrameworkCore.Relational": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "A3MX1ee7RDxWCUdx/KqP+74fbksz0UIhkVZh56YHvbPkEKsffCXgHU3LGkRDwqR/MrBNWLCWC/IVX79tzM30ZA==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.0"
+        }
+      },
+      "Npgsql": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "xZAYhPOU2rUIFpV48xsqhCx9vXs6Y+0jX2LCoSEfDFYMw9jtAOUk3iQsCnDLrFIv9NT3JGMihn7nnuZsPKqJmA=="
+      },
+      "SharpZipLib": {
+        "type": "Transitive",
+        "resolved": "1.4.2",
+        "contentHash": "yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A=="
+      },
+      "SSH.NET": {
+        "type": "Transitive",
+        "resolved": "2025.1.0",
+        "contentHash": "jrnbtf0ItVaXAe6jE8X/kSLa6uC+0C+7W1vepcnRQB/rD88qy4IxG7Lf1FIbWmkoc4iVXv0pKrz+Wc6J4ngmHw==",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.2"
+        }
+      },
+      "Testcontainers": {
+        "type": "Transitive",
+        "resolved": "4.10.0",
+        "contentHash": "a7tH+s9IRME6QEeMRgl/mTqQyudgtGNJmJRPn1+LwW8w/2L11cJzRJd7Io0QoSrP+i6lAOETX2SRY7cLbElcdQ==",
+        "dependencies": {
+          "Docker.DotNet.Enhanced": "3.131.1",
+          "Docker.DotNet.Enhanced.X509": "3.131.1",
+          "SSH.NET": "2025.1.0",
+          "SharpZipLib": "1.4.2"
+        }
+      },
+      "weatherforecast.contexts": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "[10.0.1, )",
+          "WeatherForecast.Repositories": "[0.1.0, )"
+        }
+      },
+      "weatherforecast.entities": {
+        "type": "Project"
+      },
+      "weatherforecast.interactors": {
+        "type": "Project",
+        "dependencies": {
+          "WeatherForecast.Entities": "[0.1.0, )",
+          "WeatherForecast.Repositories": "[0.1.0, )"
+        }
+      },
+      "weatherforecast.repositories": {
+        "type": "Project",
+        "dependencies": {
+          "WeatherForecast.Entities": "[0.1.0, )"
+        }
+      },
+      "Microsoft.EntityFrameworkCore": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.1, )",
+        "resolved": "10.0.1",
+        "contentHash": "QsXvZ8G7Dl7x09rlq0b2dye7QqfReMq8yGdl7Mffi3Ip+aTa+JUMixBZ4lhCs9Ygjz2e9tiUACstxI+ADkwaFg==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.1",
+          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.1"
+        }
+      }
+    }
+  }
+}

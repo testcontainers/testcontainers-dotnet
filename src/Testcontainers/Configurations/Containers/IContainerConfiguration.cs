@@ -64,7 +64,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the command.
     /// </summary>
-    IEnumerable<string> Command { get; }
+    ComposableEnumerable<string> Command { get; }
 
     /// <summary>
     /// Gets a dictionary of environment variables.
@@ -124,6 +124,11 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the startup callback.
     /// </summary>
-    Func<IContainer, CancellationToken, Task> StartupCallback { get; }
+    Func<IContainer, IContainerConfiguration, CancellationToken, Task> StartupCallback { get; }
+
+    /// <summary>
+    /// Gets the connection string provider.
+    /// </summary>
+    IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
   }
 }

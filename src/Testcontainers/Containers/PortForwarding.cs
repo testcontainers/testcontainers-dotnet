@@ -61,7 +61,7 @@ namespace DotNet.Testcontainers.Containers
     [PublicAPI]
     private sealed class PortForwardingBuilder : ContainerBuilder<PortForwardingBuilder, PortForwardingContainer, PortForwardingConfiguration>
     {
-      public const string SshdImage = "testcontainers/sshd:1.2.0";
+      public const string SshdImage = "testcontainers/sshd:1.4.0@sha256:bdae17f702908bee93c877ab3e97eddd782e2fb5bdd23a9f29869b9a87b30acd";
 
       public const ushort SshdPort = 22;
 
@@ -107,7 +107,9 @@ namespace DotNet.Testcontainers.Containers
           .WithPortBinding(SshdPort, true)
           .WithUsername("root")
           .WithPassword("root")
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(SshdPort));
+          .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilInternalTcpPortIsAvailable(SshdPort)
+            .UntilExternalTcpPortIsAvailable(SshdPort));
       }
 
       /// <inheritdoc />

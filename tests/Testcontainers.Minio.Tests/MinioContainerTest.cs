@@ -2,16 +2,17 @@ namespace Testcontainers.Minio;
 
 public sealed class MinioContainerTest : IAsyncLifetime
 {
-    private readonly MinioContainer _minioContainer = new MinioBuilder().Build();
+    private readonly MinioContainer _minioContainer = new MinioBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _minioContainer.StartAsync();
+        await _minioContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _minioContainer.DisposeAsync().AsTask();
+        return _minioContainer.DisposeAsync();
     }
 
     [Fact]
@@ -21,15 +22,18 @@ public sealed class MinioContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+        config.ForcePathStyle = true;
 
         using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 
         // When
-        var buckets = await client.ListBucketsAsync()
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+        Assert.Equal(_minioContainer.GetConnectionString(), _minioContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -41,6 +45,8 @@ public sealed class MinioContainerTest : IAsyncLifetime
 
         var config = new AmazonS3Config();
         config.ServiceURL = _minioContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+        config.ForcePathStyle = true;
 
         using var client = new AmazonS3Client(_minioContainer.GetAccessKey(), _minioContainer.GetSecretKey(), config);
 
@@ -48,15 +54,16 @@ public sealed class MinioContainerTest : IAsyncLifetime
         objectRequest.BucketName = Guid.NewGuid().ToString("D");
         objectRequest.Key = Guid.NewGuid().ToString("D");
         objectRequest.InputStream = inputStream;
+        objectRequest.UseChunkEncoding = false;
 
         // When
-        _ = await client.PutBucketAsync(objectRequest.BucketName)
+        _ = await client.PutBucketAsync(objectRequest.BucketName, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutObjectAsync(objectRequest)
+        _ = await client.PutObjectAsync(objectRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key)
+        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

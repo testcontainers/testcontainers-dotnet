@@ -7,281 +7,328 @@ namespace DotNet.Testcontainers
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
-  internal static class Logging
+  internal readonly struct TruncatedId
   {
-#pragma warning disable InconsistentNaming, SA1309
+    private readonly string _id;
 
-    private static readonly Action<ILogger, Regex, Exception> _IgnorePatternAdded
-      = LoggerMessage.Define<Regex>(LogLevel.Information, default, "Pattern {IgnorePattern} added to the regex cache");
+    public TruncatedId(string id)
+    {
+      _id = id;
+    }
 
-    private static readonly Action<ILogger, string, Exception> _DockerContainerCreated
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} created");
+    public override string ToString()
+    {
+      return _id.Substring(0, Math.Min(12, _id.Length));
+    }
+  }
 
-    private static readonly Action<ILogger, string, Exception> _StartDockerContainer
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Start Docker container {Id}");
+  internal static partial class Logging
+  {
+    [LoggerMessage(Level = LogLevel.Information, Message = "Pattern {IgnorePattern} added to the regex cache")]
+    private static partial void IgnorePatternAddedCore(ILogger logger, Regex ignorePattern);
 
-    private static readonly Action<ILogger, string, Exception> _StopDockerContainer
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Stop Docker container {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker container {Id} created")]
+    private static partial void DockerContainerCreatedCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _DeleteDockerContainer
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker container {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Start Docker container {Id}")]
+    private static partial void StartDockerContainerCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _StartReadinessCheck
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Wait for Docker container {Id} to complete readiness checks");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Stop Docker container {Id}")]
+    private static partial void StopDockerContainerCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _CompleteReadinessCheck
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker container {Id} ready");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Pause Docker container {Id}")]
+    private static partial void PauseDockerContainerCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, long, string, Exception> _CopyArchiveToDockerContainer
-      = LoggerMessage.Define<long, string>(LogLevel.Information, default, "Copy tar archive to container: Content length: {Length} byte(s), Docker container: {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Unpause Docker container {Id}")]
+    private static partial void UnpauseDockerContainerCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, string, Exception> _ReadArchiveFromDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Read \"{Path}\" from Docker container {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker container {Id}")]
+    private static partial void DeleteDockerContainerCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, Type, string, Exception> _AttachToDockerContainer
-      = LoggerMessage.Define<Type, string>(LogLevel.Information, default, "Attach {OutputConsumer} at Docker container {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Wait for Docker container {Id} to complete readiness checks")]
+    private static partial void StartReadinessCheckCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, string, Exception> _ConnectToDockerNetwork
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Connect Docker container {ContainerId} to Docker network {NetworkId}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker container {Id} ready")]
+    private static partial void CompleteReadinessCheckCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, string, string, Exception> _ExecuteCommandInDockerContainer
-      = LoggerMessage.Define<string, string>(LogLevel.Information, default, "Execute \"{Command}\" at Docker container {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Copy tar archive to container: Content length: {Length} byte(s), Docker container: {Id}")]
+    private static partial void CopyArchiveToDockerContainerCore(ILogger logger, long length, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _DockerImageCreated
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker image {FullName} created");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Read \"{Path}\" from Docker container {Id}")]
+    private static partial void ReadArchiveFromDockerContainerCore(ILogger logger, string path, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _DockerImageBuilt
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker image {FullName} built");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Attach {OutputConsumer} at Docker container {Id}")]
+    private static partial void AttachToDockerContainerCore(ILogger logger, Type outputConsumer, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _DeleteDockerImage
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker image {FullName}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Connect Docker container {ContainerId} to Docker network {NetworkId}")]
+    private static partial void ConnectToDockerNetworkCore(ILogger logger, TruncatedId containerId, TruncatedId networkId);
 
-    private static readonly Action<ILogger, string, Exception> _DockerNetworkCreated
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker network {Id} created");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Execute \"{Command}\" at Docker container {Id}")]
+    private static partial void ExecuteCommandInDockerContainerCore(ILogger logger, string command, TruncatedId id);
 
-    private static readonly Action<ILogger, string, Exception> _DeleteDockerNetwork
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker network {Id}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} created")]
+    private static partial void DockerImageCreatedCore(ILogger logger, string fullName);
 
-    private static readonly Action<ILogger, string, Exception> _DockerVolumeCreated
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker volume {Name} created");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} built")]
+    private static partial void DockerImageBuiltCore(ILogger logger, string fullName);
 
-    private static readonly Action<ILogger, string, Exception> _DeleteDockerVolume
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Delete Docker volume {Name}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker image {FullName}")]
+    private static partial void DeleteDockerImageCore(ILogger logger, string fullName);
 
-    private static readonly Action<ILogger, Guid, Exception> _CanNotGetResourceReaperEndpoint
-      = LoggerMessage.Define<Guid>(LogLevel.Debug, default, "Cannot get resource reaper {Id} endpoint");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker network {Id} created")]
+    private static partial void DockerNetworkCreatedCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, Guid, string, Exception> _CanNotConnectToResourceReaper
-      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Cannot connect to resource reaper {Id} at {Endpoint}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker network {Id}")]
+    private static partial void DeleteDockerNetworkCore(ILogger logger, TruncatedId id);
 
-    private static readonly Action<ILogger, Guid, string, Exception> _LostConnectionToResourceReaper
-      = LoggerMessage.Define<Guid, string>(LogLevel.Debug, default, "Lost connection to resource reaper {Id} at {Endpoint}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker volume {Name} created")]
+    private static partial void DockerVolumeCreatedCore(ILogger logger, string name);
 
-    private static readonly Action<ILogger, string, Exception> _DockerConfigFileNotFound
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker config \"{DockerConfigFilePath}\" not found");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker volume {Name}")]
+    private static partial void DeleteDockerVolumeCore(ILogger logger, string name);
 
-    private static readonly Action<ILogger, string, Exception> _SearchingDockerRegistryCredential
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Searching Docker registry credential in {CredentialStore}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "{RuntimeInfo}")]
+    private static partial void DockerRuntimeInfoCore(ILogger logger, string runtimeInfo);
 
-    private static readonly Action<ILogger, string, JsonValueKind, Exception> _DockerRegistryAuthPropertyValueKindInvalid
-      = LoggerMessage.Define<string, JsonValueKind>(LogLevel.Warning, default, "The \"auth\" property value kind for {DockerRegistry} is invalid: {ValueKind}");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Add file to tar archive: Content length: {Length} byte(s), Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}")]
+    private static partial void AddFileToTarArchiveCore(ILogger logger, long length, string target, int uid, int gid, string mode);
 
-    private static readonly Action<ILogger, string, Exception> _DockerRegistryAuthPropertyValueNotFound
-      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" property value for {DockerRegistry} not found");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}")]
+    private static partial void AddFileToTarArchiveCore(ILogger logger, string source, string target, int uid, int gid, string mode);
 
-    private static readonly Action<ILogger, string, Exception> _DockerRegistryAuthPropertyValueInvalidBase64
-      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" property value for {DockerRegistry} is not a valid Base64 string");
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Cannot get resource reaper {Id} endpoint")]
+    private static partial void CanNotGetResourceReaperEndpointCore(ILogger logger, Guid id, Exception exception);
 
-    private static readonly Action<ILogger, string, Exception> _DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormat
-      = LoggerMessage.Define<string>(LogLevel.Warning, default, "The \"auth\" property value for {DockerRegistry} should contain one colon separating the username and the password (basic authentication)");
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Cannot connect to resource reaper {Id} at {Endpoint}")]
+    private static partial void CanNotConnectToResourceReaperCore(ILogger logger, Guid id, string endpoint, Exception exception);
 
-    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialNotFound
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} not found");
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Lost connection to resource reaper {Id} at {Endpoint}")]
+    private static partial void LostConnectionToResourceReaperCore(ILogger logger, Guid id, string endpoint, Exception exception);
 
-    private static readonly Action<ILogger, string, Exception> _DockerRegistryCredentialFound
-      = LoggerMessage.Define<string>(LogLevel.Information, default, "Docker registry credential {DockerRegistry} found");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker config \"{DockerConfigFilePath}\" not found")]
+    private static partial void DockerConfigFileNotFoundCore(ILogger logger, string dockerConfigFilePath);
 
-    private static readonly Action<ILogger, Exception> _ReusableExperimentalFeature
-      = LoggerMessage.Define(LogLevel.Warning, default, "Reuse is an experimental feature. For more information, visit: https://dotnet.testcontainers.org/api/resource_reuse/");
+    [LoggerMessage(Level = LogLevel.Information, Message = "Searching Docker registry credential in {CredentialStore}")]
+    private static partial void SearchingDockerRegistryCredentialCore(ILogger logger, string credentialStore);
 
-    private static readonly Action<ILogger, Exception> _ReusableResourceFound
-      = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource found");
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The \"auth\" property value kind for {DockerRegistry} is invalid: {ValueKind}")]
+    private static partial void DockerRegistryAuthPropertyValueKindInvalidCore(ILogger logger, string dockerRegistry, JsonValueKind valueKind);
 
-    private static readonly Action<ILogger, Exception> _ReusableResourceNotFound
-      = LoggerMessage.Define(LogLevel.Information, default, "Reusable resource not found, create resource");
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The \"auth\" property value for {DockerRegistry} not found")]
+    private static partial void DockerRegistryAuthPropertyValueNotFoundCore(ILogger logger, string dockerRegistry);
 
-#pragma warning restore InconsistentNaming, SA1309
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The \"auth\" property value for {DockerRegistry} is not a valid Base64 string")]
+    private static partial void DockerRegistryAuthPropertyValueInvalidBase64Core(ILogger logger, string dockerRegistry, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The \"auth\" property value for {DockerRegistry} should contain one colon separating the username and the password (basic authentication)")]
+    private static partial void DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormatCore(ILogger logger, string dockerRegistry);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker registry credential {DockerRegistry} not found")]
+    private static partial void DockerRegistryCredentialNotFoundCore(ILogger logger, string dockerRegistry);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker registry credential {DockerRegistry} found")]
+    private static partial void DockerRegistryCredentialFoundCore(ILogger logger, string dockerRegistry);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Reuse is an experimental feature. For more information, visit: https://dotnet.testcontainers.org/api/resource_reuse/")]
+    private static partial void ReusableExperimentalFeatureCore(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Reusable resource found")]
+    private static partial void ReusableResourceFoundCore(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Reusable resource not found, create resource")]
+    private static partial void ReusableResourceNotFoundCore(ILogger logger);
 
     public static void IgnorePatternAdded(this ILogger logger, Regex ignorePattern)
     {
-      _IgnorePatternAdded(logger, ignorePattern, null);
+      IgnorePatternAddedCore(logger, ignorePattern);
     }
 
     public static void DockerContainerCreated(this ILogger logger, string id)
     {
-      _DockerContainerCreated(logger, TruncId(id), null);
+      DockerContainerCreatedCore(logger, new TruncatedId(id));
     }
 
     public static void StartDockerContainer(this ILogger logger, string id)
     {
-      _StartDockerContainer(logger, TruncId(id), null);
+      StartDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void StopDockerContainer(this ILogger logger, string id)
     {
-      _StopDockerContainer(logger, TruncId(id), null);
+      StopDockerContainerCore(logger, new TruncatedId(id));
+    }
+
+    public static void PauseDockerContainer(this ILogger logger, string id)
+    {
+      PauseDockerContainerCore(logger, new TruncatedId(id));
+    }
+
+    public static void UnpauseDockerContainer(this ILogger logger, string id)
+    {
+      UnpauseDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void DeleteDockerContainer(this ILogger logger, string id)
     {
-      _DeleteDockerContainer(logger, TruncId(id), null);
+      DeleteDockerContainerCore(logger, new TruncatedId(id));
     }
 
     public static void StartReadinessCheck(this ILogger logger, string id)
     {
-      _StartReadinessCheck(logger, TruncId(id), null);
+      StartReadinessCheckCore(logger, new TruncatedId(id));
     }
 
     public static void CompleteReadinessCheck(this ILogger logger, string id)
     {
-      _CompleteReadinessCheck(logger, TruncId(id), null);
+      CompleteReadinessCheckCore(logger, new TruncatedId(id));
     }
 
     public static void CopyArchiveToDockerContainer(this ILogger logger, string id, long length)
     {
-      _CopyArchiveToDockerContainer(logger, length, TruncId(id), null);
+      CopyArchiveToDockerContainerCore(logger, length, new TruncatedId(id));
     }
 
     public static void ReadArchiveFromDockerContainer(this ILogger logger, string id, string path)
     {
-      _ReadArchiveFromDockerContainer(logger, path, TruncId(id), null);
+      ReadArchiveFromDockerContainerCore(logger, path, new TruncatedId(id));
     }
 
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
     {
-      _AttachToDockerContainer(logger, type, TruncId(id), null);
+      AttachToDockerContainerCore(logger, type, new TruncatedId(id));
     }
 
     public static void ConnectToDockerNetwork(this ILogger logger, string networkId, string containerId)
     {
-      _ConnectToDockerNetwork(logger, TruncId(containerId), TruncId(networkId), null);
+      ConnectToDockerNetworkCore(logger, new TruncatedId(containerId), new TruncatedId(networkId));
     }
 
     public static void ExecuteCommandInDockerContainer(this ILogger logger, string id, IEnumerable<string> command)
     {
-      _ExecuteCommandInDockerContainer(logger, string.Join(" ", command), TruncId(id), null);
+      var commandLine = string.Join(" ", command);
+      ExecuteCommandInDockerContainerCore(logger, commandLine, new TruncatedId(id));
     }
 
     public static void DockerImageCreated(this ILogger logger, IImage image)
     {
-      _DockerImageCreated(logger, image.FullName, null);
+      DockerImageCreatedCore(logger, image.FullName);
     }
 
     public static void DockerImageBuilt(this ILogger logger, IImage image)
     {
-      _DockerImageBuilt(logger, image.FullName, null);
+      DockerImageBuiltCore(logger, image.FullName);
     }
 
     public static void DeleteDockerImage(this ILogger logger, IImage image)
     {
-      _DeleteDockerImage(logger, image.FullName, null);
+      DeleteDockerImageCore(logger, image.FullName);
     }
 
     public static void DockerNetworkCreated(this ILogger logger, string id)
     {
-      _DockerNetworkCreated(logger, TruncId(id), null);
+      DockerNetworkCreatedCore(logger, new TruncatedId(id));
     }
 
     public static void DeleteDockerNetwork(this ILogger logger, string id)
     {
-      _DeleteDockerNetwork(logger, TruncId(id), null);
+      DeleteDockerNetworkCore(logger, new TruncatedId(id));
     }
 
     public static void DockerVolumeCreated(this ILogger logger, string name)
     {
-      _DockerVolumeCreated(logger, name, null);
+      DockerVolumeCreatedCore(logger, name);
     }
 
     public static void DeleteDockerVolume(this ILogger logger, string name)
     {
-      _DeleteDockerVolume(logger, name, null);
+      DeleteDockerVolumeCore(logger, name);
+    }
+
+    public static void DockerRuntimeInfo(this ILogger logger, string runtimeInfo)
+    {
+      DockerRuntimeInfoCore(logger, runtimeInfo);
+    }
+
+    public static void AddFileToTarArchive(this ILogger logger, long length, string target, int uid, int gid, string mode)
+    {
+      AddFileToTarArchiveCore(logger, length, target, uid, gid, mode);
+    }
+
+    public static void AddFileToTarArchive(this ILogger logger, string source, string target, int uid, int gid, string mode)
+    {
+      AddFileToTarArchiveCore(logger, source, target, uid, gid, mode);
     }
 
     public static void CanNotGetResourceReaperEndpoint(this ILogger logger, Guid id, Exception e)
     {
-      _CanNotGetResourceReaperEndpoint(logger, id, logger.IsEnabled(LogLevel.Debug) ? e : null);
+      CanNotGetResourceReaperEndpointCore(logger, id, logger.IsEnabled(LogLevel.Debug) ? e : null);
     }
 
     public static void CanNotConnectToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
     {
       var endpoint = $"{host}:{port}";
-      _CanNotConnectToResourceReaper(logger, id, endpoint, e);
+      CanNotConnectToResourceReaperCore(logger, id, endpoint, e);
     }
 
     public static void LostConnectionToResourceReaper(this ILogger logger, Guid id, string host, ushort port, Exception e)
     {
       var endpoint = $"{host}:{port}";
-      _LostConnectionToResourceReaper(logger, id, endpoint, e);
+      LostConnectionToResourceReaperCore(logger, id, endpoint, e);
     }
 
     public static void DockerConfigFileNotFound(this ILogger logger, string dockerConfigFilePath)
     {
-      _DockerConfigFileNotFound(logger, dockerConfigFilePath, null);
+      DockerConfigFileNotFoundCore(logger, dockerConfigFilePath);
     }
 
     public static void SearchingDockerRegistryCredential(this ILogger logger, string credentialStore)
     {
-      _SearchingDockerRegistryCredential(logger, credentialStore, null);
+      SearchingDockerRegistryCredentialCore(logger, credentialStore);
     }
 
     public static void DockerRegistryAuthPropertyValueKindInvalid(this ILogger logger, string dockerRegistry, JsonValueKind valueKind)
     {
-      _DockerRegistryAuthPropertyValueKindInvalid(logger, dockerRegistry, valueKind, null);
+      DockerRegistryAuthPropertyValueKindInvalidCore(logger, dockerRegistry, valueKind);
     }
 
     public static void DockerRegistryAuthPropertyValueNotFound(this ILogger logger, string dockerRegistry)
     {
-      _DockerRegistryAuthPropertyValueNotFound(logger, dockerRegistry, null);
+      DockerRegistryAuthPropertyValueNotFoundCore(logger, dockerRegistry);
     }
 
     public static void DockerRegistryAuthPropertyValueInvalidBase64(this ILogger logger, string dockerRegistry, Exception e)
     {
-      _DockerRegistryAuthPropertyValueInvalidBase64(logger, dockerRegistry, e);
+      DockerRegistryAuthPropertyValueInvalidBase64Core(logger, dockerRegistry, e);
     }
 
     public static void DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormat(this ILogger logger, string dockerRegistry)
     {
-      _DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormat(logger, dockerRegistry, null);
+      DockerRegistryAuthPropertyValueInvalidBasicAuthenticationFormatCore(logger, dockerRegistry);
     }
 
     public static void DockerRegistryCredentialNotFound(this ILogger logger, string dockerRegistry)
     {
-      _DockerRegistryCredentialNotFound(logger, dockerRegistry, null);
+      DockerRegistryCredentialNotFoundCore(logger, dockerRegistry);
     }
 
     public static void DockerRegistryCredentialFound(this ILogger logger, string dockerRegistry)
     {
-      _DockerRegistryCredentialFound(logger, dockerRegistry, null);
+      DockerRegistryCredentialFoundCore(logger, dockerRegistry);
     }
 
     public static void ReusableExperimentalFeature(this ILogger logger)
     {
-      _ReusableExperimentalFeature(logger, null);
+      ReusableExperimentalFeatureCore(logger);
     }
 
     public static void ReusableResourceFound(this ILogger logger)
     {
-      _ReusableResourceFound(logger, null);
+      ReusableResourceFoundCore(logger);
     }
 
     public static void ReusableResourceNotFound(this ILogger logger)
     {
-      _ReusableResourceNotFound(logger, null);
-    }
-
-    private static string TruncId(string id)
-    {
-      return id.Substring(0, Math.Min(12, id.Length));
+      ReusableResourceNotFoundCore(logger);
     }
   }
 }

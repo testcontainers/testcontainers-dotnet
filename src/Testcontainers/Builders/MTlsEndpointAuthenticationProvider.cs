@@ -50,12 +50,15 @@ namespace DotNet.Testcontainers.Builders
       var clientCertificateFilePath = Path.Combine(CertificatesDirectoryPath, ClientCertificateFileName);
       var clientCertificateKeyFilePath = Path.Combine(CertificatesDirectoryPath, ClientCertificateKeyFileName);
 
-#if NETSTANDARD
-      return Polyfills.X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
-#else
-      var certificate = X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
       // The certificate must be exported to PFX on Windows to avoid "No credentials are available in the security package":
       // https://stackoverflow.com/questions/72096812/loading-x509certificate2-from-pem-file-results-in-no-credentials-are-available/72101855#72101855.
+#if NETSTANDARD
+      return Polyfills.X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
+#elif NET9_0_OR_GREATER
+      var certificate = X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
+      return OperatingSystem.IsWindows() ? X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), null) : certificate;
+#elif NET6_0_OR_GREATER
+      var certificate = X509Certificate2.CreateFromPemFile(clientCertificateFilePath, clientCertificateKeyFilePath);
       return OperatingSystem.IsWindows() ? new X509Certificate2(certificate.Export(X509ContentType.Pfx)) : certificate;
 #endif
     }

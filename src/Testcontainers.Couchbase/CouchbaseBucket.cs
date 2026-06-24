@@ -3,6 +3,7 @@ namespace Testcontainers.Couchbase;
 /// <summary>
 /// A Couchbase bucket.
 /// </summary>
+[PublicAPI]
 public sealed class CouchbaseBucket
 {
     /// <summary>

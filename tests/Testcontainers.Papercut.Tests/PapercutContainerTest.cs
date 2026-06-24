@@ -2,16 +2,17 @@ namespace Testcontainers.Papercut;
 
 public sealed class PapercutContainerTest : IAsyncLifetime
 {
-    private readonly PapercutContainer _papercutContainer = new PapercutBuilder().Build();
+    private readonly PapercutContainer _papercutContainer = new PapercutBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _papercutContainer.StartAsync();
+        await _papercutContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _papercutContainer.DisposeAsync().AsTask();
+        return _papercutContainer.DisposeAsync();
     }
 
     [Fact]
@@ -21,52 +22,33 @@ public sealed class PapercutContainerTest : IAsyncLifetime
         // Given
         const string subject = "Test";
 
-        Message[] messages;
+        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
 
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri(_papercutContainer.GetBaseAddress());
 
-        using var smtpClient = new SmtpClient(_papercutContainer.Hostname, _papercutContainer.SmtpPort);
-
         // When
         smtpClient.Send("from@example.com", "to@example.com", subject, "A test message");
 
-        do
-        {
-            var messagesJson = await httpClient.GetStringAsync("/api/messages")
-                .ConfigureAwait(true);
+        var messagesJson = await httpClient.GetStringAsync("/api/messages", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
-            var jsonDocument = JsonDocument.Parse(messagesJson);
-            messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
-        }
-        while (messages.Length == 0);
+        var jsonDocument = JsonDocument.Parse(messagesJson);
+        var messages = jsonDocument.RootElement.GetProperty("messages").Deserialize<Message[]>();
 
         // Then
-        Assert.NotEmpty(messages);
-        Assert.Equal(subject, messages[0].Subject);
+        Assert.Single(messages, message => subject.Equals(message.Subject));
+        Assert.Equal(_papercutContainer.GetBaseAddress(), _papercutContainer.GetConnectionString());
     }
 
-    private readonly struct Message
+    private sealed record Message
     {
-        [JsonConstructor]
-        public Message(string id, string subject, string size, DateTime createdAt)
+        public Message(string subject)
         {
-            Id = id;
             Subject = subject;
-            Size = size;
-            CreatedAt = createdAt;
         }
-
-        [JsonPropertyName("id")]
-        public string Id { get; }
 
         [JsonPropertyName("subject")]
         public string Subject { get; }
-
-        [JsonPropertyName("size")]
-        public string Size { get; }
-
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; }
     }
 }

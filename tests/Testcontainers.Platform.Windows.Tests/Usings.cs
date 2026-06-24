@@ -1,3 +1,5 @@
+global using System;
+global using System.Runtime.CompilerServices;
 global using System.Threading.Tasks;
 global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Commons;

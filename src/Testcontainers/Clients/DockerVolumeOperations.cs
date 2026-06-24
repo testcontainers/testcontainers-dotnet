@@ -35,23 +35,23 @@ namespace DotNet.Testcontainers.Clients
 
     public async Task<VolumeResponse> ByIdAsync(string id, CancellationToken ct = default)
     {
-      try
-      {
-        return await DockerClient.Volumes.InspectAsync(id, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerApiException)
-      {
-        return null;
-      }
+      return await DockerClient.Volumes.InspectAsync(id, ct)
+        .ConfigureAwait(false);
     }
 
     public async Task<bool> ExistsWithIdAsync(string id, CancellationToken ct = default)
     {
-      var response = await ByIdAsync(id, ct)
-        .ConfigureAwait(false);
+      try
+      {
+        _ = await ByIdAsync(id, ct)
+          .ConfigureAwait(false);
 
-      return response != null;
+        return true;
+      }
+      catch (DockerApiException)
+      {
+        return false;
+      }
     }
 
     public async Task<string> CreateAsync(IVolumeConfiguration configuration, CancellationToken ct = default)

@@ -1,10 +1,10 @@
 namespace Testcontainers.LocalStack;
 
-public abstract class LocalStackContainerTest : IAsyncLifetime
+public sealed class LocalStackContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
 
-    private readonly LocalStackContainer _localStackContainer;
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static LocalStackContainerTest()
     {
@@ -12,19 +12,15 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
     }
 
-    private LocalStackContainerTest(LocalStackContainer localStackContainer)
+    public async ValueTask InitializeAsync()
     {
-        _localStackContainer = localStackContainer;
+        await _localStackContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task InitializeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _localStackContainer.StartAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return _localStackContainer.DisposeAsync().AsTask();
+        return _localStackContainer.DisposeAsync();
     }
 
     [Fact]
@@ -35,17 +31,19 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonCloudWatchLogsConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonCloudWatchLogsClient(config);
 
         var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
 
         // When
-        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest)
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_localStackContainer.GetConnectionString(), _localStackContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -60,6 +58,7 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
 
         var config = new AmazonDynamoDBConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonDynamoDBClient(config);
 
@@ -78,13 +77,13 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest)
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest)
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest)
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -99,11 +98,12 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonS3Config();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonS3Client(config);
 
         // When
-        var buckets = await client.ListBucketsAsync()
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -118,11 +118,12 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSimpleNotificationServiceConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSimpleNotificationServiceClient(config);
 
         // When
-        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"))
+        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -137,32 +138,15 @@ public abstract class LocalStackContainerTest : IAsyncLifetime
         // Given
         var config = new AmazonSQSConfig();
         config.ServiceURL = _localStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
 
         using var client = new AmazonSQSClient(config);
 
         // When
-        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"))
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackDefaultConfiguration : LocalStackContainerTest
-    {
-        public LocalStackDefaultConfiguration()
-            : base(new LocalStackBuilder().Build())
-        {
-        }
-    }
-
-    [UsedImplicitly]
-    public sealed class LocalStackV1Configuration : LocalStackContainerTest
-    {
-        public LocalStackV1Configuration()
-            : base(new LocalStackBuilder().WithImage("localstack/localstack:1.4").Build())
-        {
-        }
     }
 }

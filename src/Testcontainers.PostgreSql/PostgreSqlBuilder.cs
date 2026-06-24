@@ -4,6 +4,7 @@ namespace Testcontainers.PostgreSql;
 [PublicAPI]
 public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, PostgreSqlContainer, PostgreSqlConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string PostgreSqlImage = "postgres:15.1";
 
     public const ushort PostgreSqlPort = 5432;
@@ -14,13 +15,55 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
     public const string DefaultPassword = "postgres";
 
+    private const ushort PostgresUid = 999;
+
+    private const ushort PostgresGid = 999;
+
+    private const string CertificateFilePath = "/etc/ssl/postgresql/server.crt";
+
+    private const string CertificateKeyFilePath = "/etc/ssl/postgresql/server.key";
+
+    private const string CaCertificateFilePath = "/etc/ssl/postgresql/root.crt";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public PostgreSqlBuilder()
+        : this(PostgreSqlImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>postgres:15.1</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
+    public PostgreSqlBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// </remarks>
+    public PostgreSqlBuilder(IImage image)
         : this(new PostgreSqlConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -69,6 +112,35 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             .WithEnvironment("POSTGRES_PASSWORD", password);
     }
 
+    /// <summary>
+    /// Enables SSL for PostgreSql.
+    /// </summary>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+        return WithResourceMapping(new FileInfo(certificateFilePath), new FileInfo(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithResourceMapping(new FileInfo(certificateKeyFilePath), new FileInfo(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithCommand("-c", "ssl=on")
+            .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
+            .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
+    }
+
+    /// <summary>
+    /// Enables SSL for PostgreSql.
+    /// </summary>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <param name="caCertificateFilePath">The CA certificate file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath, string caCertificateFilePath)
+    {
+        return WithSsl(certificateFilePath, certificateKeyFilePath)
+            .WithResourceMapping(new FileInfo(caCertificateFilePath), new FileInfo(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+            .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
+    }
+
     /// <inheritdoc />
     public override PostgreSqlContainer Build()
     {
@@ -84,7 +156,6 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     protected override PostgreSqlBuilder Init()
     {
         return base.Init()
-            .WithImage(PostgreSqlImage)
             .WithPortBinding(PostgreSqlPort, true)
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
@@ -92,7 +163,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             // Disable durability: https://www.postgresql.org/docs/current/non-durability.html.
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
-            .WithCommand("-c", "synchronous_commit=off");
+            .WithCommand("-c", "synchronous_commit=off")
+            .WithConnectionStringProvider(new PostgreSqlConnectionStringProvider());
     }
 
     /// <inheritdoc />

@@ -20,14 +20,13 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ContainerHealthCheckShouldBeHealthy()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(_image)
+      var container = new ContainerBuilder(_image)
         .WithEnvironment("START_HEALTHY", bool.TrueString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
         .Build();
 
       // When
-      await container.StartAsync()
+      await container.StartAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -38,14 +37,13 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task ContainerHealthCheckShouldBeUnhealthy()
     {
       // Given
-      var container = new ContainerBuilder()
-        .WithImage(_image)
+      var container = new ContainerBuilder(_image)
         .WithEnvironment("START_HEALTHY", bool.FalseString.ToLowerInvariant())
         .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy(10))
         .Build();
 
       // When
-      _ = await Record.ExceptionAsync(() => container.StartAsync())
+      _ = await Record.ExceptionAsync(() => container.StartAsync(TestContext.Current.CancellationToken))
         .ConfigureAwait(true);
 
       // Then

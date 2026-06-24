@@ -1,0 +1,1 @@
+FROM qdrant/qdrant:v1.13.4@sha256:318c11b72aaab96b36e9662ad244de3cabd0653a1b942d4e8191f18296c81af0

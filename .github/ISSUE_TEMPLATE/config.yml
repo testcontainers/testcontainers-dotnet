@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Need help?
     url: https://slack.testcontainers.org/
-    about: Visit our Slack workspace.
+    about: Visit our Slack Workspace.
   - name: Have a question or want to drive a community conversation?
     url: https://github.com/testcontainers/testcontainers-dotnet/discussions/
     about: Visit our Discussions page.

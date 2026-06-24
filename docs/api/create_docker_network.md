@@ -29,9 +29,8 @@ var network = new NetworkBuilder()
   .WithName(Guid.NewGuid().ToString("D"))
   .Build();
 
-var deepThoughtContainer = new ContainerBuilder()
+var deepThoughtContainer = new ContainerBuilder("alpine:3.20.0")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("alpine")
   .WithEnvironment("MAGIC_NUMBER", MagicNumber)
   .WithEntrypoint("/bin/sh", "-c")
   .WithCommand($"while true; do echo \"$MAGIC_NUMBER\" | nc -l -p {MagicNumberPort}; done")
@@ -39,9 +38,8 @@ var deepThoughtContainer = new ContainerBuilder()
   .WithNetworkAliases(MagicNumberHost)
   .Build();
 
-var ultimateQuestionContainer = new ContainerBuilder()
+var ultimateQuestionContainer = new ContainerBuilder("alpine:3.20.0")
   .WithName(Guid.NewGuid().ToString("D"))
-  .WithImage("alpine")
   .WithEntrypoint("top")
   .WithNetwork(network)
   .Build();
@@ -57,6 +55,37 @@ var execResult = await ultimateQuestionContainer.ExecAsync(new[] { "nc", MagicNu
 
 Assert.Equal(MagicNumber, execResult.Stdout.Trim());
 ```
+
+## Connecting a running container to an existing network
+
+If a container is already running, use `IContainer.ConnectAsync(...)` to attach it to an existing network.
+
+The network must already exist. You can reference it either by network name or by an `INetwork` instance:
+
+```csharp
+var network = new NetworkBuilder()
+  .WithName(Guid.NewGuid().ToString("D"))
+  .Build();
+
+var container = new ContainerBuilder("alpine:3.20.0")
+  .WithEntrypoint("top")
+  .Build();
+
+await network.CreateAsync()
+  .ConfigureAwait(false);
+
+await container.StartAsync()
+  .ConfigureAwait(false);
+
+await container.ConnectAsync(network)
+  .ConfigureAwait(false);
+
+// Equivalent when only the network name is available:
+await container.ConnectAsync(network.Name)
+  .ConfigureAwait(false);
+```
+
+Prefer `WithNetwork(...)` during container configuration whenever possible. Use `ConnectAsync(...)` when you explicitly need to attach a running container to an already existing network.
 
 ## Exposing container ports to the host
 

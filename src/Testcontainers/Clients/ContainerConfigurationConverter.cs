@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.Linq;
-  using System.Net;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Networks;
@@ -11,11 +10,13 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class ContainerConfigurationConverter
   {
-    private const string UdpPortSuffix = "/udp";
+    private const string UdpProtocolSuffix = "/udp";
 
-    private const string TcpPortSuffix = "/tcp";
+    private const string TcpProtocolSuffix = "/tcp";
 
-    private const string SctpPortSuffix = "/sctp";
+    private const string SctpProtocolSuffix = "/sctp";
+
+    private static readonly string[] Protocols = new[] { UdpProtocolSuffix, TcpProtocolSuffix, SctpProtocolSuffix };
 
     public ContainerConfigurationConverter(IContainerConfiguration configuration)
     {
@@ -48,9 +49,10 @@ namespace DotNet.Testcontainers.Clients
 
     public IDictionary<string, EndpointSettings> Networks { get; }
 
-    private static string GetQualifiedPort(string containerPort)
+    public static string GetQualifiedPort(string containerPort)
     {
-      return Array.Exists(new[] { UdpPortSuffix, TcpPortSuffix, SctpPortSuffix }, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase)) ? containerPort.ToLowerInvariant() : containerPort + TcpPortSuffix;
+      return Array.Exists(Protocols, portSuffix => containerPort.EndsWith(portSuffix, StringComparison.OrdinalIgnoreCase))
+        ? containerPort.ToLowerInvariant() : containerPort + TcpProtocolSuffix;
     }
 
     private sealed class ToCollection : CollectionConverter<string, string>
@@ -95,7 +97,8 @@ namespace DotNet.Testcontainers.Clients
 
       public override IEnumerable<KeyValuePair<string, EndpointSettings>> Convert([CanBeNull] IEnumerable<INetwork> source)
       {
-        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, new EndpointSettings { Aliases = _configuration.NetworkAliases?.ToList() }));
+        var endpointSettings = new EndpointSettings { Aliases = _configuration.NetworkAliases?.ToList(), MacAddress = _configuration.MacAddress };
+        return source?.Select(network => new KeyValuePair<string, EndpointSettings>(network.Name, endpointSettings));
       }
     }
 
@@ -148,9 +151,8 @@ namespace DotNet.Testcontainers.Clients
 
       public override IEnumerable<KeyValuePair<string, IList<PortBinding>>> Convert([CanBeNull] IEnumerable<KeyValuePair<string, string>> source)
       {
-        // https://github.com/moby/moby/pull/41805#issuecomment-893349240.
         return source?.Select(portBinding => new KeyValuePair<string, IList<PortBinding>>(
-          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostIP = IPAddress.Any.ToString(), HostPort = portBinding.Value } }));
+          GetQualifiedPort(portBinding.Key), new[] { new PortBinding { HostPort = portBinding.Value } }));
       }
     }
   }

@@ -16,22 +16,22 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     public WaitUntilMessageIsLoggedTest()
     {
-      _container = new ContainerBuilder()
-        .WithImage(CommonImages.Alpine)
+      _container = new ContainerBuilder(CommonImages.Alpine)
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("echo \"Started\" | tee /dev/stderr && trap : TERM INT; sleep infinity & wait")
         .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"))
         .Build();
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return _container.StartAsync(_cts.Token);
+      await _container.StartAsync(_cts.Token)
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-      return _container.StartAsync();
+      return _container.DisposeAsync();
     }
 
     public void Dispose()

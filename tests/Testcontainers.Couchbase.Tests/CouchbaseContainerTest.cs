@@ -2,16 +2,17 @@ namespace Testcontainers.Couchbase;
 
 public sealed class CouchbaseContainerTest : IAsyncLifetime
 {
-    private readonly CouchbaseContainer _couchbaseContainer = new CouchbaseBuilder().Build();
+    private readonly CouchbaseContainer _couchbaseContainer = new CouchbaseBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _couchbaseContainer.StartAsync();
+        await _couchbaseContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _couchbaseContainer.DisposeAsync().AsTask();
+        return _couchbaseContainer.DisposeAsync();
     }
 
     [Fact]
@@ -24,7 +25,7 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         clusterOptions.UserName = CouchbaseBuilder.DefaultUsername;
         clusterOptions.Password = CouchbaseBuilder.DefaultPassword;
 
-        var cluster = await Cluster.ConnectAsync(clusterOptions)
+        var cluster = await Cluster.ConnectAsync(clusterOptions, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // When
@@ -38,5 +39,6 @@ public sealed class CouchbaseContainerTest : IAsyncLifetime
         Assert.NotEmpty(ping.Id);
         Assert.NotEmpty(ping.Services);
         Assert.NotEmpty(bucket.Name);
+        Assert.Equal(_couchbaseContainer.GetConnectionString(), _couchbaseContainer.GetConnectionString(ConnectionMode.Host));
     }
 }

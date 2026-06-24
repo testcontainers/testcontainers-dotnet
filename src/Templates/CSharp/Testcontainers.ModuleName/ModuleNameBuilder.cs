@@ -7,19 +7,38 @@ public sealed class ModuleNameBuilder : ContainerBuilder<ModuleNameBuilder, Modu
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleNameBuilder" /> class.
     /// </summary>
-    public ModuleNameBuilder()
-        : this(new ModuleNameConfiguration())
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>repository:tag</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/..." />.
+    /// </remarks>
+    public ModuleNameBuilder(string image)
+        : this(new DockerImage(image))
     {
         // 1) To change the ContainerBuilder default configuration override the DockerResourceConfiguration property and the "ModuleNameBuilder Init()" method.
-        //    Append the module configuration to base.Init() e.g. base.Init().WithImage("alpine:3.17") to set the modules' default image.
+        //    Append the module configuration to base.Init() e.g. base.Init().WithXXX().
 
         // 2) To customize the ContainerBuilder validation override the "void Validate()" method.
         //    Use Testcontainers' Guard.Argument<TType>(TType, string) or your own guard implementation to validate the module configuration.
 
         // 3) Add custom builder methods to extend the ContainerBuilder capabilities such as "ModuleNameBuilder WithModuleNameConfig(object)".
         //    Merge the current module configuration with a new instance of the immutable ModuleNameConfiguration type to update the module configuration.
+    }
 
-        // DockerResourceConfiguration = Init().DockerResourceConfiguration;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ModuleNameBuilder" /> class.
+    /// </summary>
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/..." />.
+    /// </remarks>
+    public ModuleNameBuilder(IImage image)
+        : this(new ModuleNameConfiguration())
+    {
+        // DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>

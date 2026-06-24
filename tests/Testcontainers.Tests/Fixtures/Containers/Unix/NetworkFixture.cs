@@ -17,14 +17,16 @@ namespace DotNet.Testcontainers.Tests.Fixtures
         .WithName(Guid.NewGuid().ToString("D"))
         .Build();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-      return Network.CreateAsync();
+      await Network.CreateAsync()
+        .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-      return Network.DeleteAsync();
+      await Network.DeleteAsync()
+        .ConfigureAwait(false);
     }
   }
 }

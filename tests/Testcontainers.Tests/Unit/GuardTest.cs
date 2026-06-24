@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         [Fact]
         public void IfNull()
         {
-          var exception = Record.Exception(() => Guard.Argument((object)null, nameof(IfNull)).Null());
+          var exception = Record.Exception(() => Guard.Argument<object>(null, nameof(IfNull)).Null());
           Assert.Null(exception);
         }
 
@@ -36,7 +36,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         [Fact]
         public void IfNull()
         {
-          Assert.Throws<ArgumentException>(() => Guard.Argument((object)null, nameof(IfNull)).NotNull());
+          Assert.Throws<ArgumentException>(() => Guard.Argument<object>(null, nameof(IfNull)).NotNull());
         }
 
         [Fact]

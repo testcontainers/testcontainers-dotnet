@@ -6,4 +6,5 @@ global using System.Threading.Tasks;
 global using Amazon.DynamoDBv2;
 global using Amazon.DynamoDBv2.Model;
 global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
 global using Xunit;

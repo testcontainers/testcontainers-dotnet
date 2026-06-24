@@ -56,16 +56,16 @@ public sealed class PulsarContainer : DockerContainer
             "--secret-key",
             PulsarBuilder.SecretKeyFilePath,
             "--subject",
-            PulsarBuilder.Username
+            PulsarBuilder.Username,
         };
 
         if (!Timeout.InfiniteTimeSpan.Equals(expiryTime))
         {
             int secondsToMilliseconds;
 
-            if (_configuration.Image.Tag.StartsWith("3.2") || _configuration.Image.Tag.StartsWith("latest"))
+            if (_configuration.Image.MatchVersion(IsVersionAffectedByGhIssue22811))
             {
-                Logger.LogWarning("The 'apachepulsar/pulsar:3.2.?' image contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
+                Logger.LogWarning("The 'apachepulsar/pulsar:3.2.0-3' and '3.3.0' images contains a regression. The expiry time is converted to the wrong unit of time: https://github.com/apache/pulsar/issues/22811.");
                 secondsToMilliseconds = 1000;
             }
             else
@@ -105,7 +105,7 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.WriteLine("export brokerClientAuthenticationParameters=token:$(bin/pulsar tokens create --secret-key $PULSAR_PREFIX_tokenSecretKey --subject $superUserRoles)");
             startupScript.WriteLine("export CLIENT_PREFIX_authParams=$brokerClientAuthenticationParameters");
             startupScript.WriteLine("bin/apply-config-from-env.py conf/standalone.conf");
-            startupScript.WriteLine("bin/apply-config-from-env-with-prefix.py CLIENT_PREFIX_ conf/client.conf");
+            startupScript.WriteLine("bin/apply-config-from-env.py --prefix CLIENT_PREFIX_ conf/client.conf");
         }
 
         startupScript.Write("bin/pulsar standalone");
@@ -116,6 +116,11 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.Write(" --no-stream-storage");
         }
 
-        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, Unix.FileMode755, ct);
+        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
+    }
+
+    private static bool IsVersionAffectedByGhIssue22811(System.Version version)
+    {
+        return version.Major == 3 && ((version.Minor == 2 && version.Build is >= 0 and <= 3) || (version.Minor == 3 && version.Build == 0));
     }
 }

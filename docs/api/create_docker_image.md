@@ -2,6 +2,10 @@
 
 Testcontainers for .NET uses the builder design pattern to configure, create and delete Docker resources. It prepares and initializes your test environment and disposes of everything after your tests are finished — whether the tests are successful or not. To create a container image from a Dockerfile use `ImageFromDockerfileBuilder`.
 
+!!! warning
+
+    BuildKit features are not supported through the Docker Engine API. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with Testcontainers' image builder API. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903).
+
 ## Examples
 
 Builds and tags a new container image. The Dockerfile is located inside the solution (`.sln`) directory.
@@ -16,11 +20,19 @@ await futureImage.CreateAsync()
   .ConfigureAwait(false);
 ```
 
-!!!tip
+To build a Docker image with Testcontainers, it's important to understand the build context. Testcontainers needs three things:
 
-    The Dockerfile must be part of the build context, otherwise the build fails.
+1. **Docker build context**: The directory containing files Docker can use during the build
+2. **Dockerfile name**: The name of the Dockerfile to use
+3. **Dockerfile directory**: Where the Dockerfile is located
 
-It is essential to take into account and comprehend the build context to enable Testcontainers to build the Docker image. Testcontainers generates a tarball that contains all the files and subdirectories within the build context. The tarball is passed to the Docker daemon to build the image. The tarball serves as the new root of the Dockerfile's content. Therefore, all paths must be relative to the new root. If your app or service follows to the following project structure, the build context is `/Users/testcontainers/WeatherForecast/`.
+!!! tip
+
+    The build context is optional. If you don't specify one, it defaults to the Dockerfile directory.
+
+Testcontainers creates a tarball with all files and subdirectorys in the build context, incl. the Dockerfile. This tarball is sent to the Docker daemon to build the image. The build context acts as the root for all file operations in the Dockerfile, so all paths (like `COPY` commands) must be relative to it.
+
+For example, if your project looks like this, the build context would be: `/Users/testcontainers/WeatherForecast/`.
 
     /
     └── Users/
@@ -48,11 +60,11 @@ _ = new ImageFromDockerfileBuilder()
 
 As the tarball's content is based on `/Users/testcontainers/WeatherForecast/`, all paths inside the Dockerfile must be relative to this path. For example, Docker's `COPY` instruction copies all files inside the `WeatherForecast/` directory to the image.
 
-!!!tip
+!!! tip
 
     To improve the build time and to reduce the size of the image, it is recommended to include only necessary files. Exclude unnecessary files or directories such as `bin/`, `obj/` and `tests/` with the `.dockerignore` file.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 ARG SLN_FILE_PATH="WeatherForecast.sln"
 COPY . .
@@ -61,13 +73,24 @@ RUN dotnet publish $SLN_FILE_PATH --configuration Release --framework net6.0 --o
 ENTRYPOINT ["dotnet", "/app/WeatherForecast.dll"]
 ```
 
+### Choosing a build context
+
+You can use `WithContextDirectory(string)` to set a build context separate from your Dockerfile. This is useful when the Dockerfile is in one directory but the files you want to include are in another.
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithContextDirectory("/path/to/build/context")
+  .WithDockerfile("Dockerfile")
+  .WithDockerfileDirectory("/path/to/dockerfile/directory");
+```
+
 ## Delete multi-stage intermediate layers
 
 A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers' Resource Reaper is unable to automatically delete these layers after the test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To delete the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
 
 The following Dockerfile assigns the `org.testcontainers.resource-reaper-session` label to each stage.
 
-```Dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env-1
 ARG RESOURCE_REAPER_SESSION_ID="00000000-0000-0000-0000-000000000000"
 LABEL "org.testcontainers.resource-reaper-session"=$RESOURCE_REAPER_SESSION_ID
@@ -92,14 +115,15 @@ _ = new ImageFromDockerfileBuilder()
 | `WithCleanUp`                 | Will remove the image automatically after all tests have been run.           |
 | `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`. |
 | `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
+| `WithContextDirectory`        | Sets the Docker build context directory.                                     |
 | `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
-| `WithDockerfileDirectory`     | Sets the build context (directory path that contains the `Dockerfile`).      |
+| `WithDockerfileDirectory`     | Sets the directory path that contains the `Dockerfile`.                      |
 | `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
 
-!!!tip
+!!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 
@@ -107,7 +131,7 @@ _ = new ImageFromDockerfileBuilder()
 
 - When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user won't automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
 
-   ```Dockerfile
+   ```dockerfile
    FROM mcr.microsoft.com/dotnet/sdk:8.0
    WORKDIR /app
    RUN chown app:app .

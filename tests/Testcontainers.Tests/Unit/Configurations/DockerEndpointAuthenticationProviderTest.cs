@@ -23,9 +23,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     static DockerEndpointAuthenticationProviderTest()
     {
       _ = Directory.CreateDirectory(CertificatesDirectoryPath);
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "ca.pem"));
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "cert.pem"));
-      _ = File.Create(Path.Combine(CertificatesDirectoryPath, "key.pem"));
+      using var fileStream1 = File.Create(Path.Combine(CertificatesDirectoryPath, "ca.pem"));
+      using var fileStream2 = File.Create(Path.Combine(CertificatesDirectoryPath, "cert.pem"));
+      using var fileStream3 = File.Create(Path.Combine(CertificatesDirectoryPath, "key.pem"));
     }
 
     [Theory]
@@ -39,10 +39,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     [ClassData(typeof(AuthConfigTestData))]
     internal void AuthConfigShouldGetDockerClientEndpoint(IDockerEndpointAuthenticationConfiguration authConfig, Uri dockerClientEndpoint)
     {
-      using (var dockerClientConfiguration = authConfig.GetDockerClientConfiguration())
+      using (var dockerClient = authConfig.GetDockerClientBuilder().Build())
       {
         Assert.Equal(dockerClientEndpoint, authConfig.Endpoint);
-        Assert.Equal(dockerClientEndpoint, dockerClientConfiguration.EndpointBaseUri);
+        Assert.Equal(dockerClientEndpoint, dockerClient.Options.Endpoint);
       }
     }
 

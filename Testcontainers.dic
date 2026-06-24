@@ -17,6 +17,7 @@ lipsum
 ltsc
 memopt
 mongosh
+mosquitto
 mycounter
 mydatabase
 myregistry
@@ -34,4 +35,6 @@ testcontainer
 testcontainers
 tlsverify
 toml
+toxiproxy
 vstest
+weaviate

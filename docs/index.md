@@ -1,14 +1,12 @@
 # Welcome to Testcontainers for .NET!
 
-```console title="Install the NuGet dependency"
+```shell title="Install the NuGet dependency"
 dotnet add package Testcontainers
 ```
 
 ```csharp title="Run the Hello World container"
 // Create a new instance of a container.
-var container = new ContainerBuilder()
-  // Set the image for the container to "testcontainers/helloworld:1.1.0".
-  .WithImage("testcontainers/helloworld:1.1.0")
+var container = new ContainerBuilder("testcontainers/helloworld:1.3.0")
   // Bind port 8080 of the container to a random port on the host.
   .WithPortBinding(8080, true)
   // Wait until the HTTP endpoint of the container is available.
@@ -21,7 +19,7 @@ await container.StartAsync()
   .ConfigureAwait(false);
 
 // Create a new instance of HttpClient to send HTTP requests.
-var httpClient = new HttpClient();
+using var httpClient = new HttpClient();
 
 // Construct the request URI by specifying the scheme, hostname, assigned random host port, and the endpoint "uuid".
 var requestUri = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(8080), "uuid").Uri;
@@ -39,32 +37,49 @@ Debug.Assert(Guid.TryParse(guid, out _));
 </p>
 <div class="card-grid">
   <a class="card-grid-item" href="https://java.testcontainers.org">
-    <img src="language-logos/java.svg" />Java
+    <img src="language-logos/java.svg" alt="" />Java
   </a>
   <a class="card-grid-item" href="https://golang.testcontainers.org">
-    <img src="language-logos/go.svg" />Go
+    <img src="language-logos/go.svg" alt="" />Go
   </a>
   <a class="card-grid-item">
-    <img src="language-logos/dotnet.svg" />.NET
+    <img src="language-logos/dotnet.svg" alt="" />.NET
   </a>
   <a class="card-grid-item" href="https://node.testcontainers.org">
-    <img src="language-logos/nodejs.svg" />Node.js
+    <img src="language-logos/nodejs.svg" alt="" />Node.js
   </a>
   <a class="card-grid-item" href="https://testcontainers-python.readthedocs.io/en/latest/">
-    <img src="language-logos/python.svg" />Python
+    <img src="language-logos/python.svg" alt="" />Python
   </a>
-  <a class="card-grid-item" href="https://docs.rs/testcontainers/latest/testcontainers/">
-    <img src="language-logos/rust.svg" />Rust
+  <a class="card-grid-item" href="https://rust.testcontainers.org/">
+    <img src="language-logos/rust.svg" alt="" />Rust
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-ruby/">
+    <img src="language-logos/ruby.svg" alt="" />Ruby
+  </a>
+  <a class="card-grid-item" href="https://php.testcontainers.org/">
+    <img src="language-logos/php.svg" alt="" />PHP
   </a>
   <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-hs/">
-    <img src="language-logos/haskell.svg"/>Haskell
+    <img src="language-logos/haskell.svg" alt="" />Haskell
   </a>
-  <a href="https://github.com/testcontainers/testcontainers-ruby/" class="card-grid-item" ><img src="language-logos/ruby.svg"/>Ruby</a>
+  <a class="card-grid-item" href="https://cljdoc.org/d/clj-test-containers/clj-test-containers/">
+    <img src="language-logos/clojure.svg" alt="" />Clojure
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-elixir">
+    <img src="language-logos/elixir.svg" alt="" />Elixir
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-scala/">
+    <img src="language-logos/scala.svg" alt="" />Scala
+  </a>
+  <a class="card-grid-item" href="https://github.com/testcontainers/testcontainers-native">
+    <img src="language-logos/c.svg" alt="" />Native
+  </a>
 </div>
 
 ## About
 
-Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker remote API and provides a lightweight implementation to support your test environment in all circumstances.
+Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers for all compatible .NET Standard versions. The library is built on top of the .NET Docker Remote API and provides a lightweight implementation to support your test environment in all circumstances.
 
 Choose from existing pre-configured modules and start containers within a second, to support and run your tests. Or create your own container images with Dockerfiles and run your containers and tests immediately afterward.
 
@@ -88,13 +103,13 @@ See [LICENSE](https://raw.githubusercontent.com/testcontainers/testcontainers-do
 
 ## Copyright
 
-Copyright (c) 2019 - 2024 Andre Hofmeister and other authors.
+Copyright (c) 2019 - 2026 Andre Hofmeister and other authors.
 
 See [contributors][testcontainers-dotnet-contributors] for all contributors.
 
 ----
 
-Join our [Slack workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
+Join our [Slack Workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
 
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/

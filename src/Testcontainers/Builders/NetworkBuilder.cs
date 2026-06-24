@@ -83,7 +83,7 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(INetworkConfiguration.Name))
+      _ = Guard.Argument(DockerResourceConfiguration.Name, nameof(DockerResourceConfiguration.Name))
         .NotNull()
         .NotEmpty();
     }

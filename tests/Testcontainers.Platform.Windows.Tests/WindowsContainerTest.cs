@@ -1,5 +1,10 @@
 namespace Testcontainers.Tests;
 
+// Parallelization is disabled due to a known issue with GitHub-hosted runners:
+// https://github.com/actions/runner-images/issues/13888.
+[CollectionDefinition(nameof(WindowsContainerTest), DisableParallelization = true)]
+public static class WindowsContainerTestCollectionDefinition;
+
 public abstract class WindowsContainerTest : IAsyncLifetime
 {
     private readonly IContainer _container;
@@ -9,14 +14,18 @@ public abstract class WindowsContainerTest : IAsyncLifetime
         _container = container;
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _container.StartAsync();
+        await _container.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _container.DisposeAsync().AsTask();
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
     }
 
     [SkipOnLinuxEngine]
@@ -26,12 +35,17 @@ public abstract class WindowsContainerTest : IAsyncLifetime
         Assert.Equal(TestcontainersStates.Running, _container.State);
     }
 
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _container.DisposeAsync();
+    }
+
     [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
     public sealed class UntilCommandIsCompleted : WindowsContainerTest
     {
         public UntilCommandIsCompleted()
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.ServerCore)
+            : base(new ContainerBuilder(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
                 .WithCommand("Start-Sleep -Seconds 120")
                 .WithWaitStrategy(Wait.ForWindowsContainer().UntilCommandIsCompleted("Exit(-Not(Test-Path -Path 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'))"))
@@ -41,14 +55,29 @@ public abstract class WindowsContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class UntilPortIsAvailable : WindowsContainerTest
+    [Collection(nameof(WindowsContainerTest))]
+    public sealed class UntilInternalTcpPortIsAvailable : WindowsContainerTest
     {
-        public UntilPortIsAvailable()
-            : base(new ContainerBuilder()
-                .WithImage(CommonImages.ServerCore)
+        public UntilInternalTcpPortIsAvailable()
+            : base(new ContainerBuilder(CommonImages.ServerCore)
                 .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
-                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]80; $tcpListener.Start(); Start-Sleep -Seconds 120")
-                .WithWaitStrategy(Wait.ForWindowsContainer().UntilPortIsAvailable(80))
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilInternalTcpPortIsAvailable(8080))
+                .Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    [Collection(nameof(WindowsContainerTest))]
+    public sealed class UntilExternalTcpPortIsAvailable : WindowsContainerTest
+    {
+        public UntilExternalTcpPortIsAvailable()
+            : base(new ContainerBuilder(CommonImages.ServerCore)
+                .WithPortBinding(8080, true)
+                .WithEntrypoint("PowerShell", "-NoLogo", "-Command")
+                .WithCommand("$tcpListener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, 8080); $tcpListener.Start(); Start-Sleep -Seconds 120")
+                .WithWaitStrategy(Wait.ForWindowsContainer().UntilExternalTcpPortIsAvailable(8080))
                 .Build())
         {
         }

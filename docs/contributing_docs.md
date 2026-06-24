@@ -11,9 +11,13 @@ We publish our documentation using Netlify.
 
 ### Using Python locally
 
-* Ensure that you have Python 3.8.0 or higher.
+* Ensure that you have Python 3.11.0 or higher.
 * Set up a virtualenv and run `pip install -r requirements.txt` in the `testcontainers-dotnet` root directory.
 * Once Python dependencies have been installed, run `mkdocs serve` to start a local auto-updating MkDocs server.
+
+### Using Docker
+
+The root of the project contains a `compose.yml` file. Simply run `docker compose up` and access the docs at: `http://localhost:8000`.
 
 ### PR preview deployments
 

@@ -6,7 +6,7 @@ namespace DotNet.Testcontainers.Configurations
   /// Docker mount access mode.
   /// </summary>
   [PublicAPI]
-  public readonly struct AccessMode
+  public readonly record struct AccessMode
   {
     /// <summary>
     /// Gets access modes ReadOnly.

@@ -11,6 +11,13 @@ namespace DotNet.Testcontainers.Configurations
   public sealed class Unix : IOperatingSystem
   {
     /// <summary>
+    /// Represents the Unix file mode 600, which grants read and write permissions to the user and no permissions to the group and others.
+    /// </summary>
+    public const UnixFileModes FileMode600 =
+      UnixFileModes.UserRead |
+      UnixFileModes.UserWrite;
+
+    /// <summary>
     /// Represents the Unix file mode 644, which grants read and write permissions to the user and read permissions to the group and others.
     /// </summary>
     public const UnixFileModes FileMode644 =

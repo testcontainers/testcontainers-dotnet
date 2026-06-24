@@ -19,6 +19,10 @@ namespace DotNet.Testcontainers.Clients
 
     Task StopAsync(string id, CancellationToken ct = default);
 
+    Task PauseAsync(string id, CancellationToken ct = default);
+
+    Task UnpauseAsync(string id, CancellationToken ct = default);
+
     Task RemoveAsync(string id, CancellationToken ct = default);
 
     Task ExtractArchiveToContainerAsync(string id, string path, TarOutputMemoryStream tarStream, CancellationToken ct = default);

@@ -58,9 +58,15 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ImageFromDockerfileBuilder WithName(IImage name)
+    public ImageFromDockerfileBuilder WithName(IImage image)
     {
-      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: name));
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(image: image.ApplyImageNameSubstitution()));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithContextDirectory(string contextDirectory)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(contextDirectory: contextDirectory));
     }
 
     /// <inheritdoc />
@@ -81,6 +87,12 @@ namespace DotNet.Testcontainers.Builders
     {
       var dockerfileDirectoryPath = Path.Combine(commonDirectoryPath.DirectoryPath, dockerfileDirectory);
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfileDirectory: dockerfileDirectoryPath));
+    }
+
+    /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithTarget(string target)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(target: target));
     }
 
     /// <inheritdoc />
@@ -112,7 +124,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     protected sealed override ImageFromDockerfileBuilder Init()
     {
-      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty));
+      return base.Init().WithImageBuildPolicy(PullPolicy.Always).WithDockerfile("Dockerfile").WithDockerfileDirectory(Directory.GetCurrentDirectory()).WithName(new DockerImage(string.Join("/", "localhost", "testcontainers", Guid.NewGuid().ToString("D"))));
     }
 
     /// <inheritdoc />
@@ -121,7 +133,7 @@ namespace DotNet.Testcontainers.Builders
       base.Validate();
 
       const string reuseNotSupported = "Building an image does not support the reuse feature. To keep the built image, disable the cleanup.";
-      _ = Guard.Argument(DockerResourceConfiguration, nameof(IImageFromDockerfileConfiguration.Reuse))
+      _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Reuse))
         .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
     }
 

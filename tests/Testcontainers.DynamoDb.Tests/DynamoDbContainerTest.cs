@@ -2,7 +2,7 @@ namespace Testcontainers.DynamoDb;
 
 public sealed class DynamoDbContainerTest : IAsyncLifetime
 {
-    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder().Build();
+    private readonly DynamoDbContainer _dynamoDbContainer = new DynamoDbBuilder(TestSession.GetImageFromDockerfile()).Build();
 
     static DynamoDbContainerTest()
     {
@@ -10,14 +10,15 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _dynamoDbContainer.StartAsync();
+        await _dynamoDbContainer.StartAsync()
+            .ConfigureAwait(false);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _dynamoDbContainer.DisposeAsync().AsTask();
+        return _dynamoDbContainer.DisposeAsync();
     }
 
     [Fact]
@@ -31,11 +32,12 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         using var client = new AmazonDynamoDBClient(config);
 
         // When
-        var tables = await client.ListTablesAsync()
+        var tables = await client.ListTablesAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
         Assert.Equal(HttpStatusCode.OK, tables.HttpStatusCode);
+        Assert.Equal(_dynamoDbContainer.GetConnectionString(), _dynamoDbContainer.GetConnectionString(ConnectionMode.Host));
     }
 
     [Fact]
@@ -67,13 +69,13 @@ public sealed class DynamoDbContainerTest : IAsyncLifetime
         getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
 
         // When
-        _ = await client.CreateTableAsync(tableRequest)
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        _ = await client.PutItemAsync(putItemRequest)
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var itemResponse = await client.GetItemAsync(getItemRequest)
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then

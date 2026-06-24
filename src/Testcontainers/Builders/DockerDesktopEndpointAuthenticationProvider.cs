@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="DockerDesktopEndpointAuthenticationProvider" /> class.
     /// </summary>
     public DockerDesktopEndpointAuthenticationProvider()
-      : base(GetSocketPathFromHomeDesktopDir(), GetSocketPathFromHomeRunDir())
+      : base(DockerConfig.Instance.GetCurrentEndpoint())
     {
     }
 
@@ -26,6 +26,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public Version GetDockerApiVersion()
+    {
+      return null;
+    }
+
+    /// <inheritdoc />
     public string GetDockerConfig()
     {
       return null;
@@ -33,6 +39,12 @@ namespace DotNet.Testcontainers.Builders
 
     /// <inheritdoc />
     public Uri GetDockerHost()
+    {
+      return null;
+    }
+
+    /// <inheritdoc />
+    public string GetDockerContext()
     {
       return null;
     }
@@ -85,7 +97,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public bool GetRyukContainerPrivileged()
+    public bool? GetRyukContainerPrivileged()
     {
       return false;
     }
@@ -116,6 +128,12 @@ namespace DotNet.Testcontainers.Builders
 
     /// <inheritdoc />
     public TimeSpan? GetWaitStrategyTimeout()
+    {
+      return null;
+    }
+
+    /// <inheritdoc />
+    public TimeSpan? GetNamedPipeConnectionTimeout()
     {
       return null;
     }

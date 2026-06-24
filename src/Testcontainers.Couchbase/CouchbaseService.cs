@@ -3,7 +3,7 @@ namespace Testcontainers.Couchbase;
 /// <summary>
 /// A Couchbase service.
 /// </summary>
-internal readonly struct CouchbaseService
+internal readonly record struct CouchbaseService
 {
     /// <summary>
     /// Gets the Data service.

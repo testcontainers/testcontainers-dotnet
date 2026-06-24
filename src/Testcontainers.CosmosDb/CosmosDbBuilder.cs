@@ -4,7 +4,8 @@ namespace Testcontainers.CosmosDb;
 [PublicAPI]
 public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDbContainer, CosmosDbConfiguration>
 {
-    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest";
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string CosmosDbImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview";
 
     public const ushort CosmosDbPort = 8081;
 
@@ -13,10 +14,42 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
     public CosmosDbBuilder()
+        : this(CosmosDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview</c>).
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// </remarks>
+    public CosmosDbBuilder(string image)
+        : this(new DockerImage(image))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosDbBuilder" /> class.
+    /// </summary>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
+    /// <remarks>
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// </remarks>
+    public CosmosDbBuilder(IImage image)
         : this(new CosmosDbConfiguration())
     {
-        DockerResourceConfiguration = Init().DockerResourceConfiguration;
+        DockerResourceConfiguration = Init().WithImage(image).DockerResourceConfiguration;
     }
 
     /// <summary>
@@ -43,9 +76,11 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Init()
     {
         return base.Init()
-            .WithImage(CosmosDbImage)
             .WithPortBinding(CosmosDbPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithEnvironment("ENABLE_EXPLORER", "false")
+            .WithEnvironment("ENABLE_TELEMETRY", "false")
+            .WithConnectionStringProvider(new CosmosDbConnectionStringProvider())
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"));
     }
 
     /// <inheritdoc />
@@ -64,34 +99,5 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     protected override CosmosDbBuilder Merge(CosmosDbConfiguration oldValue, CosmosDbConfiguration newValue)
     {
         return new CosmosDbBuilder(new CosmosDbConfiguration(oldValue, newValue));
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string requestUri = "https://localhost/_explorer/emulator.pem";
-
-            var httpClient = ((CosmosDbContainer)container).HttpClient;
-
-            try
-            {
-                using var httpResponse = await httpClient.GetAsync(requestUri)
-                    .ConfigureAwait(false);
-
-                return httpResponse.IsSuccessStatusCode;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally
-            {
-                httpClient.Dispose();
-            }
-        }
     }
 }

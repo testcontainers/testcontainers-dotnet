@@ -2,29 +2,45 @@ name: Test Report
 
 on:
   workflow_run:
-    workflows: ['Continuous Integration & Delivery']
+    workflows:
+      - Continuous Integration & Delivery
     types:
       - completed
 
+permissions: read-all
+
 jobs:
-  report:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-22.04, windows-2022 ]
-
-    runs-on: ${{ matrix.os }}
-
+  test-report:
     permissions:
       actions: read
-      checks: write
       contents: read
+      checks: write
+
+    runs-on: ubuntu-24.04
 
     steps:
-      - name: Publish Test Report
-        uses: dorny/test-reporter@v1.8.0
+      # https://github.com/dorny/test-reporter/issues/131#issuecomment-2093880211.
+      # https://github.com/dorny/test-reporter/issues/234#issuecomment-1462911162.
+      - name: Checkout Repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          artifact: ${{ matrix.os }}-v3
-          name: report (${{ matrix.os }})
-          path: '*.trx'
+          lfs: true
+
+      - name: Download Test And Coverage Results
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          pattern: Testcontainers*
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        with:
+          name: test-report
+          path: '**/*.trx'
           reporter: dotnet-trx
+          only-summary: true
+          use-actions-summary: false
+          list-suites: failed
+          list-tests: failed
+          fail-on-empty: false

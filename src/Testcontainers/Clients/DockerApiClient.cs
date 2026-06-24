@@ -4,10 +4,12 @@ namespace DotNet.Testcontainers.Clients
   using System.Collections.Concurrent;
   using System.Collections.Generic;
   using System.Globalization;
+  using System.Linq;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet;
+  using DotNet.Testcontainers;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
@@ -92,7 +94,7 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.AppendLine("Connected to Docker:");
 
         runtimeInfo.Append("  Host: ");
-        runtimeInfo.AppendLine(DockerClient.Configuration.EndpointBaseUri.ToString());
+        runtimeInfo.AppendLine(DockerClient.Options.Endpoint.ToString());
 
         runtimeInfo.Append("  Server Version: ");
         runtimeInfo.AppendLine(dockerInfo.ServerVersion);
@@ -109,9 +111,17 @@ namespace DotNet.Testcontainers.Clients
         runtimeInfo.Append("  Total Memory: ");
         runtimeInfo.AppendFormat(CultureInfo.InvariantCulture, "{0:F} {1}", dockerInfo.MemTotal / Math.Pow(1024, byteUnits.Length), byteUnits[byteUnits.Length - 1]);
 
-        Logger.LogInformation("{RuntimeInfo}", runtimeInfo);
+        var labels = dockerInfo.Labels;
+        if (labels != null && labels.Count > 0)
+        {
+          runtimeInfo.AppendLine();
+          runtimeInfo.AppendLine("  Labels: ");
+          runtimeInfo.Append(string.Join(Environment.NewLine, labels.Select(label => "    " + label)));
+        }
+
+        Logger.DockerRuntimeInfo(runtimeInfo.ToString());
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         Logger.LogError(e, "Failed to retrieve Docker container runtime information");
       }
@@ -124,10 +134,8 @@ namespace DotNet.Testcontainers.Clients
 
     private static IDockerClient GetDockerClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig)
     {
-      using (var dockerClientConfiguration = dockerEndpointAuthConfig.GetDockerClientConfiguration(sessionId))
-      {
-        return dockerClientConfiguration.CreateClient();
-      }
+      var dockerClientBuilder = dockerEndpointAuthConfig.GetDockerClientBuilder(sessionId);
+      return dockerClientBuilder.Build();
     }
   }
 }

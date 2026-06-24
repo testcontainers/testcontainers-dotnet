@@ -18,9 +18,24 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   /// <typeparam name="TBuilderEntity">The builder entity.</typeparam>
   /// <typeparam name="TContainerEntity">The resource entity.</typeparam>
+  /// <typeparam name="TConfigurationEntity">The configuration entity.</typeparam>
   [PublicAPI]
-  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
+  public interface IContainerBuilder<out TBuilderEntity, out TContainerEntity, out TConfigurationEntity> : IAbstractBuilder<TBuilderEntity, TContainerEntity, CreateContainerParameters>
+    where TContainerEntity : IContainer
+    where TConfigurationEntity : IContainerConfiguration
   {
+    /// <summary>
+    /// Accepts the license agreement.
+    /// </summary>
+    /// <remarks>
+    /// Modules that require a license agreement must override and implement this
+    /// method to enforce proper license acceptance behavior.
+    /// </remarks>
+    /// <param name="acceptLicenseAgreement">A boolean value indicating whether the license agreement is accepted.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not require a license agreement.</exception>
+    TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement);
+
     /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
@@ -121,12 +136,39 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithEntrypoint(params string[] entrypoint);
 
     /// <summary>
-    /// Overrides the container's command arguments.
+    /// Appends command arguments to the container configuration.
     /// </summary>
+    /// <remarks>
+    /// For modules, the specified command arguments are appended to the already pre-configured command.
+    ///
+    /// To overwrite or replace an already pre-configured command, use <see cref="WithCommand(ComposableEnumerable{string})" />
+    /// with <see cref="OverwriteEnumerable{T}" />.
+    ///
+    /// For more information and examples, see
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
+    /// </remarks>
     /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithCommand(params string[] command);
+
+    /// <summary>
+    /// Appends command arguments to the container configuration.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ComposableEnumerable{T}" /> parameter controls how the specified command arguments are composed
+    /// with the existing container configuration.
+    ///
+    /// Use <see cref="AppendEnumerable{T}" /> to append command arguments, or <see cref="OverwriteEnumerable{T}" /> to
+    /// overwrite or replace an already pre-configured command.
+    ///
+    /// For more information and examples, see
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
+    /// </remarks>
+    /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithCommand(ComposableEnumerable<string> command);
 
     /// <summary>
     /// Sets the environment variable.
@@ -213,10 +255,45 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="resourceContent">The byte array content of the resource mapping.</param>
     /// <param name="filePath">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, UnixFileModes fileMode = Unix.FileMode644);
+    [Obsolete("Use WithResourceMapping(byte[], FilePath, UnixFileModes) instead.")]
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies the byte array content to the created container before it starts.
+    /// </summary>
+    /// <param name="resourceContent">The byte array content of the resource mapping.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies the byte array content to the created container before it starts.
+    /// </summary>
+    /// <param name="resourceContent">The byte array content of the resource mapping.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       Encoding.UTF8.GetBytes("{}"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(byte[] resourceContent, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies the contents of a URL, a test host directory or file to the container before it starts.
@@ -227,44 +304,143 @@ namespace DotNet.Testcontainers.Builders
     /// corresponds to HTTP or HTTPS, the content is copied to the target file path.
     ///
     /// If you prefer to copy a file to a specific target file path instead of a
-    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, UnixFileModes)" />.
+    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, uint, uint, UnixFileModes)" />.
     /// </remarks>
     /// <param name="source">The source URL, directory or file to be copied.</param>
     /// <param name="target">The target directory or file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(string source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    [Obsolete("Use one of the more specific WithResourceMapping(...) methods instead.")]
+    TBuilderEntity WithResourceMapping(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
     /// </summary>
     /// <param name="source">The source directory to be copied.</param>
     /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    [Obsolete("Use WithResourceMapping(DirectoryPath, DirectoryPath, UnixFileModes) instead.")]
+    TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host directory or file to the container before it starts.
     /// </summary>
-    /// <param name="source">The source file to be copied.</param>
-    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="source">The source directory to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(FileInfo source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(DirectoryInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source directory to be copied.</param>
+    /// <param name="target">The target directory path to copy the files to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       DirectoryPath.Of("."),
+    ///       DirectoryPath.Of("/app/"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(DirectoryPath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the given directory in the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// The filename is taken from the source and copied flat into the target directory.
+    /// Any source directory structure is not preserved.
+    /// </remarks>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    [Obsolete("Use WithResourceMapping(FilePath, DirectoryPath, UnixFileModes) instead.")]
+    TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the given directory in the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FileInfo source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host directory or file to the given directory in the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       FilePath.Of("appsettings.json"),
+    ///       DirectoryPath.Of("/app/"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FilePath source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a test host file to the container before it starts.
     /// </summary>
     /// <param name="source">The source file to be copied.</param>
     /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, UnixFileModes fileMode = Unix.FileMode644);
+    TBuilderEntity WithResourceMapping(FileInfo source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a test host file to the container before it starts.
+    /// </summary>
+    /// <param name="source">The source file to be copied.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       FilePath.Of("appsettings.Container.json"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(FilePath source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Copies a file from a URL to the container before it starts.
@@ -277,13 +453,118 @@ namespace DotNet.Testcontainers.Builders
     /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
     ///
     /// If you prefer to copy a file to a specific target file path instead of a
-    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, UnixFileModes)" />.
+    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, uint, uint, UnixFileModes)" />.
     /// </remarks>
     /// <param name="source">The source URL of the file to be copied.</param>
     /// <param name="target">The target directory or file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
     /// <param name="fileMode">The POSIX file mode permission.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    TBuilderEntity WithResourceMapping(Uri source, string target, UnixFileModes fileMode = Unix.FileMode644);
+    [PublicAPI]
+    [Obsolete("Use WithResourceMapping(Uri, FilePath, UnixFileModes) or WithResourceMapping(Uri, DirectoryPath, UnixFileModes) instead.")]
+    TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    ///
+    /// If you prefer to copy a file to a specific target file path instead of a
+    /// directory, use: <see cref="WithResourceMapping(FileInfo, FileInfo, uint, uint, UnixFileModes)" />.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, DirectoryInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    ///
+    /// If you prefer to copy a file to a specific target file path instead of a
+    /// directory, use: <see cref="WithResourceMapping(Uri, FilePath, uint, uint, UnixFileModes)" />.
+    ///
+    /// The filename is taken from the source and copied flat into the target directory.
+    /// Any source directory structure is not preserved.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target directory path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       new Uri("https://localhost:8080/appsettings.json"),
+    ///       DirectoryPath.Of("/app"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, DirectoryPath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, FileInfo target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
+
+    /// <summary>
+    /// Copies a file from a URL to the container before it starts.
+    /// </summary>
+    /// <remarks>
+    /// If the Uri scheme corresponds to a file, the content is copied to the target
+    /// directory path. If the Uri scheme corresponds to HTTP or HTTPS, the content is
+    /// copied to the target file path.
+    ///
+    /// The Uri scheme must be either <c>http</c>, <c>https</c> or <c>file</c>.
+    /// </remarks>
+    /// <param name="source">The source URL of the file to be copied.</param>
+    /// <param name="target">The target file path to copy the file to.</param>
+    /// <param name="uid">The user ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="gid">The group ID to set for the copied file or directory. Defaults to 0 (root).</param>
+    /// <param name="fileMode">The POSIX file mode permission.</param>
+    /// <example>
+    ///   <code>
+    ///   _ = new ContainerBuilder("alpine:3.20.0")
+    ///     .WithResourceMapping(
+    ///       new Uri("https://localhost:8080/appsettings.json"),
+    ///       FilePath.Of("/app/appsettings.json"));
+    ///   </code>
+    /// </example>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithResourceMapping(Uri source, FilePath target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644);
 
     /// <summary>
     /// Assigns the mount configuration to manage data in the container.
@@ -378,7 +659,7 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Assigns the specified network to the container.
     /// </summary>
-    /// <param name="network">The network to connect container to.</param>
+    /// <param name="network">The network to connect the container to.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithNetwork(INetwork network);
@@ -412,7 +693,7 @@ namespace DotNet.Testcontainers.Builders
     /// Cleans up the container after it exits.
     /// </summary>
     /// <remarks>
-    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource-reaper/.
+    /// It is recommended to rely on the Resource Reaper to clean up resources: https://dotnet.testcontainers.org/api/resource_reaper/.
     /// </remarks>
     /// <param name="autoRemove">Determines whether Docker removes the container after it exits or not.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -453,5 +734,24 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithStartupCallback(Func<TContainerEntity, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets a startup callback to invoke after the container start.
+    /// </summary>
+    /// <remarks>
+    /// The callback method is invoked after the container start, but before the wait strategies.
+    /// </remarks>
+    /// <param name="startupCallback">The callback method to invoke.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithStartupCallback(Func<TContainerEntity, TConfigurationEntity, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets the connection string provider.
+    /// </summary>
+    /// <param name="connectionStringProvider">The connection string provider.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider);
   }
 }

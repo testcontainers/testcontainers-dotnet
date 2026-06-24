@@ -50,7 +50,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var client = new TestcontainersClient(ResourceReaper.DefaultSessionId, TestcontainersSettings.OS.DockerEndpointAuthConfig, NullLogger.Instance);
 
       // When
-      var volumeResponse = await client.Volume.ByIdAsync(_volume.Name)
+      var volumeResponse = await client.Volume.ByIdAsync(_volume.Name, TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
       // Then
@@ -69,15 +69,15 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public string Name => _volume.Name;
 
-      public Task InitializeAsync()
+      public async ValueTask InitializeAsync()
       {
-        return CreateAsync();
+        await CreateAsync()
+          .ConfigureAwait(false);
       }
 
-      public Task DisposeAsync()
+      public ValueTask DisposeAsync()
       {
-        IAsyncDisposable asyncDisposable = this;
-        return asyncDisposable.DisposeAsync().AsTask();
+        return _volume.DisposeAsync();
       }
 
       public Task CreateAsync(CancellationToken ct = default)
@@ -88,11 +88,6 @@ namespace DotNet.Testcontainers.Tests.Unit
       public Task DeleteAsync(CancellationToken ct = default)
       {
         return _volume.DeleteAsync(ct);
-      }
-
-      ValueTask IAsyncDisposable.DisposeAsync()
-      {
-        return _volume.DisposeAsync();
       }
     }
   }
