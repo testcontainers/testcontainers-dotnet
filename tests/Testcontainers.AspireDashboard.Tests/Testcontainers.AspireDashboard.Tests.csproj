@@ -10,6 +10,7 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.AspireDashboard/Testcontainers.AspireDashboard.csproj"/>
