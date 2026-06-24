@@ -273,7 +273,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             private readonly IContainer _container = new ContainerBuilder(CommonImages.Socat)
                 .WithCommand("-v")
                 .WithCommand($"TCP-LISTEN:{HttpPort},crlf,reuseaddr,fork")
-                .WithCommand("SYSTEM:'echo -e \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
+                .WithCommand("SYSTEM:'while read line; do [ -z \"$line\" ] && break; done; printf \"HTTP/1.1 200 OK\\nContent-Length: 0\\n\\n\"'")
                 .WithPortBinding(HttpPort, true)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request))
                 .Build();
