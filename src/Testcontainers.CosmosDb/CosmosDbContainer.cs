@@ -16,13 +16,35 @@ public sealed class CosmosDbContainer : DockerContainer
     /// <summary>
     /// Gets the CosmosDb connection string.
     /// </summary>
+    /// <remarks>
+    /// The connection string includes the emulator account endpoint and
+    /// the default account key permitted by the emulator, which is also
+    /// available through <see cref="CosmosDbBuilder.DefaultAccountKey" />.
+    /// </remarks>
     /// <returns>The CosmosDb connection string.</returns>
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
-        properties.Add("AccountEndpoint", new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)).ToString());
+        properties.Add("AccountEndpoint", GetAccountEndpoint());
         properties.Add("AccountKey", CosmosDbBuilder.DefaultAccountKey);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
+    }
+
+    /// <summary>
+    /// Gets the CosmosDb account endpoint.
+    /// </summary>
+    /// <remarks>
+    /// This returns only the account endpoint. Use
+    /// <see cref="GetConnectionString" /> when you also need the default
+    /// account key permitted by the emulator. For more information, see
+    /// <see href="https://learn.microsoft.com/en-us/azure/cosmos-db/emulator">
+    /// Azure Cosmos DB emulator documentation
+    /// </see>.
+    /// </remarks>
+    /// <returns>The CosmosDb account endpoint.</returns>
+    public string GetAccountEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(CosmosDbBuilder.CosmosDbPort)).ToString();
     }
 
     /// <summary>
