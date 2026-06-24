@@ -32,8 +32,8 @@ public sealed class AspireDashboardConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="AspireDashboardConfiguration" /> class.
     /// </summary>
-    /// <param name="oldValue">The old Aspire Dashboard configuration.</param>
-    /// <param name="newValue">The new Aspire Dashboard configuration.</param>
+    /// <param name="oldValue">The old Aspire dashboard configuration.</param>
+    /// <param name="newValue">The new Aspire dashboard configuration.</param>
     public AspireDashboardConfiguration(AspireDashboardConfiguration oldValue, AspireDashboardConfiguration newValue)
         : base(oldValue, newValue)
     {

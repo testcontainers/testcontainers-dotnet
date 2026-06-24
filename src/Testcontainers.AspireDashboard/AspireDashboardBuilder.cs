@@ -9,9 +9,9 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
 
     public const ushort AspireDashboardHttpPort = 18888;
 
-    public const ushort AspireDashboardOltpGrpcPort = 18889;
+    public const ushort AspireDashboardOtlpGrpcPort = 18889;
 
-    public const ushort AspireDashboardOltpHttpPort = 18890;
+    public const ushort AspireDashboardOtlpHttpPort = 18890;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AspireDashboardBuilder" /> class.
@@ -28,7 +28,7 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>mcr.microsoft.com/azure-storage/azurite:13</c>).
+    /// (e.g., <c>mcr.microsoft.com/dotnet/aspire-dashboard:13</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/dotnet-aspire-dashboard" />.
@@ -80,9 +80,10 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
         return base.Init()
             .WithImage(AspireDashboardImage)
             .WithPortBinding(AspireDashboardHttpPort, true)
-            .WithPortBinding(AspireDashboardOltpGrpcPort, true)
-            .WithPortBinding(AspireDashboardOltpHttpPort, true)
+            .WithPortBinding(AspireDashboardOtlpGrpcPort, true)
+            .WithPortBinding(AspireDashboardOtlpHttpPort, true)
             .WithEnvironment("DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS", "true")
+            .WithConnectionStringProvider(new AspireDashboardConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(AspireDashboardHttpPort)));
     }

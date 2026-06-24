@@ -14,29 +14,29 @@ public sealed class AspireDashboardContainer : DockerContainer
     }
 
     /// <summary>
-    ///
+    /// Gets the Aspire dashboard address.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The Aspire dashboard address.</returns>
     public string GetDashboardAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardHttpPort)).ToString();
     }
 
     /// <summary>
-    ///
+    /// Gets the OTLP gRPC endpoint address.
     /// </summary>
-    /// <returns></returns>
-    public string GetOltpGrpcAddress()
+    /// <returns>The OTLP gRPC endpoint address.</returns>
+    public string GetOtlpGrpcAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOltpGrpcPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpGrpcPort)).ToString();
     }
 
     /// <summary>
-    ///
+    /// Gets the OTLP HTTP endpoint address.
     /// </summary>
-    /// <returns></returns>
-    public string GetOltpHttpAddress()
+    /// <returns>The OTLP HTTP endpoint address.</returns>
+    public string GetOtlpHttpAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOltpHttpPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(AspireDashboardBuilder.AspireDashboardOtlpHttpPort)).ToString();
     }
 }
