@@ -192,7 +192,7 @@ namespace DotNet.Testcontainers.Images
 
       using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
       {
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, TarArchiveDefaults.TarBlockFactor, Encoding.Default))
+        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
         {
           tarOutputStream.IsStreamOwner = false;
 
