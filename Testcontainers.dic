@@ -25,6 +25,7 @@ myregistryhost
 nlcm
 npipe
 postgre
+questdb
 ramsize
 rebalance
 redpanda
