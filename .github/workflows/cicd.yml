@@ -74,7 +74,7 @@ jobs:
           lfs: true
 
       - name: Cache NuGet Packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: ${{ matrix.test-projects.runs-on }}-nuget-${{ hashFiles('Directory.Packages.props') }}
           path: ~/.nuget/packages
@@ -155,13 +155,13 @@ jobs:
         shell: pwsh
 
       - name: Cache NuGet Packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: ubuntu-24.04-nuget-${{ hashFiles('Directory.Packages.props') }}
           path: ~/.nuget/packages
 
       - name: Setup Java
-        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: temurin
           java-version: 21
