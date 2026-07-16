@@ -8,23 +8,21 @@ public sealed class MailpitContainer : DockerContainer
     /// Initializes a new instance of the <see cref="MailpitContainer" /> class.
     /// </summary>
     /// <param name="configuration">The container configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MailpitContainer(MailpitConfiguration configuration, ILogger logger)
-        : base(configuration, logger) { }
-
-    /// <summary>
-    /// SMTP server port.
-    /// </summary>
-    public ushort SmtpPort
+    public MailpitContainer(MailpitConfiguration configuration)
+        : base(configuration)
     {
-        get => GetMappedPublicPort(MailpitBuilder.MAILPIT_SMTP_PORT);
     }
 
     /// <summary>
-    /// Web API server port.
+    /// The SMTP server port.
     /// </summary>
-    public ushort ApiPort
+    public ushort SmtpPort => GetMappedPublicPort(MailpitBuilder.SmtpPort);
+
+    /// <summary>
+    /// Gets the web server address of the user interface. Can also be used as the base URL for the <see href="https://mailpit.axllent.org/docs/api-v1/"> REST API</see>.
+    /// </summary>
+    public string GetWebAddress()
     {
-        get => GetMappedPublicPort(MailpitBuilder.MAILPIT_API_PORT);
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MailpitBuilder.WebPort)).ToString();
     }
 }
